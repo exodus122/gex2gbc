@@ -57,7 +57,7 @@ INCLUDE "bank13.asm"
 
 SECTION "bank14", ROMX[$4000], BANK[$14]
 image_014_4000.bin:
-    INCBIN ".gfx/tilesets/image_014_4000.bin"
+    INCBIN ".gfx/spritesheets/image_014_4000.bin"
 
 SECTION "bank15", ROMX[$4000], BANK[$15]
 SECTION "bank16", ROMX[$4000], BANK[$16]
