@@ -31,8 +31,8 @@ def extract_images_vertical():
             width = 0x80
             
             if b == 0x14:
-                next_chunk = 0x2000
-                width = 0x100
+                next_chunk = 0x1000
+                width = 0x80
             
             count = 0
             for data in iter(lambda: bf.read(next_chunk), ''):
