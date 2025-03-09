@@ -13,7 +13,7 @@ def extract_banks():
             out.close()
             count = count + 1
 
-#extract_banks()
+extract_banks()
 
 def extract_images_vertical():
     banks = [0x4, 0x5, 0x6, 0x7, 0x11, 0x12, 0x14, 0x18, 0x19, 0x1a, 0x1b, 0x1c]
@@ -78,10 +78,6 @@ def extract_images_horizontal():
             if b == 0x10:
                 next_chunk = 0x2600
                 width = 16
-                
-            '''if b == 0x13:
-                next_chunk = 0x280
-                width = 8'''
                 
             if b == 0x1e or b == 0x1d or b == 0x3d:
                 next_chunk = 0x1600

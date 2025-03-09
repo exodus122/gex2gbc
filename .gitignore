@@ -13,7 +13,6 @@
 
 # rgbds extras
 *.map
-*.sym
 
 # tool binaries
 *.exe
@@ -35,3 +34,5 @@
 *.dep
 *.obj
 tools/banks/*
+tools/map2png/tile_bins/*
+tools/map2png/temp.bin

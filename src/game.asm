@@ -127,64 +127,64 @@ INCLUDE "bank23.asm"
 INCLUDE "bank24.asm"
 
 SECTION "bank25", ROMX[$4000], BANK[$25]
-map_circuit_central_bank25.bin:
-    INCBIN "maps/circuit_central/map_circuit_central_bank25.bin"
+map_circuit_central3.bin:
+    INCBIN "maps/circuit_central/map_circuit_central3.bin"
 
 SECTION "bank26", ROMX[$4000], BANK[$26]
 image_026_4000.bin:
     INCBIN ".gfx/tilesets/image_026_4000.bin"
 
 SECTION "bank27", ROMX[$4000], BANK[$27]
-channel_map_data_unknown_bank27.bin:
-    INCBIN "maps/channel_map_data_unknown_bank27.bin"
+blockset_data_channel_z.bin:
+    INCBIN "maps/channel_z/blockset_data_channel_z.bin"
 
 SECTION "bank28", ROMX[$4000], BANK[$28]
-map_unknown_bank28.bin:
-    INCBIN "maps/map_unknown_bank28.bin"
+map_channel_z.bin:
+    INCBIN "maps/channel_z/map_channel_z.bin"
 
 SECTION "bank29", ROMX[$4000], BANK[$29]
-map_unknown_bank29.bin:
-    INCBIN "maps/map_unknown_bank29.bin"
+map_rezopolis1.bin:
+    INCBIN "maps/rezopolis/map_rezopolis1.bin"
 
 SECTION "bank2a", ROMX[$4000], BANK[$2a]
-map_unknown_bank2a.bin:
-    INCBIN "maps/map_unknown_bank2a.bin"
+map_circuit_central1.bin:
+    INCBIN "maps/circuit_central/map_circuit_central1.bin"
 
 SECTION "bank2b", ROMX[$4000], BANK[$2b]
-map_circuit_central_bank2b.bin:
-    INCBIN "maps/circuit_central/map_circuit_central_bank2b.bin"
+map_circuit_central2.bin:
+    INCBIN "maps/circuit_central/map_circuit_central2.bin"
 
 SECTION "bank2c", ROMX[$4000], BANK[$2c]
-map_kung_fu_tv_bank2c.bin:
-    INCBIN "maps/kung_fu_tv/map_kung_fu_tv_bank2c.bin"
+map_kung_fu_theater1.bin:
+    INCBIN "maps/kung_fu_theater/map_kung_fu_theater1.bin"
 
 SECTION "bank2d", ROMX[$4000], BANK[$2d]
-map_kung_fu_tv_bank2d.bin:
-    INCBIN "maps/kung_fu_tv/map_kung_fu_tv_bank2d.bin"
+map_kung_fu_theater2.bin:
+    INCBIN "maps/kung_fu_theater/map_kung_fu_theater2.bin"
 
 SECTION "bank2e", ROMX[$4000], BANK[$2e]
-map_pre_history_channel_bank2e.bin:
-    INCBIN "maps/pre_history_channel/map_pre_history_channel_bank2e.bin"
+map_prehistory_channel1.bin:
+    INCBIN "maps/prehistory_channel/map_prehistory_channel1.bin"
 
 SECTION "bank2f", ROMX[$4000], BANK[$2f]
-map_pre_history_channel_bank2f.bin:
-    INCBIN "maps/pre_history_channel/map_pre_history_channel_bank2f.bin"
+map_prehistory_channel2.bin:
+    INCBIN "maps/prehistory_channel/map_prehistory_channel2.bin"
 
 SECTION "bank30", ROMX[$4000], BANK[$30]
-map_media_dimension_bank30.bin:
-    INCBIN "maps/media_dimension/map_media_dimension_bank30.bin"
+map_media_dimension.bin:
+    INCBIN "maps/media_dimension/map_media_dimension.bin"
 
 SECTION "bank31", ROMX[$4000], BANK[$31]
-map_toon_tv_bank31.bin:
-    INCBIN "maps/toon_tv/map_toon_tv_bank31.bin"
+map_toon_tv.bin:
+    INCBIN "maps/toon_tv/map_toon_tv.bin"
 
 SECTION "bank32", ROMX[$4000], BANK[$32]
-map_scream_tv_bank32.bin:
-    INCBIN "maps/scream_tv/map_scream_tv_bank32.bin"
+map_scream_tv1.bin:
+    INCBIN "maps/scream_tv/map_scream_tv1.bin"
 
 SECTION "bank33", ROMX[$4000], BANK[$33]
-map_scream_tv_bank33.bin:
-    INCBIN "maps/scream_tv/map_scream_tv_bank33.bin"
+map_scream_tv2.bin:
+    INCBIN "maps/scream_tv/map_scream_tv2.bin"
 
 SECTION "bank34", ROMX[$4000], BANK[$34]
 object_map_data_bank34.bin:
@@ -213,33 +213,33 @@ image_037_6000.bin:
     INCBIN ".gfx/tilesets/image_037_6000.bin"
 
 SECTION "bank38", ROMX[$4000], BANK[$38]
-channel_map_data_media_dimension_bank38.bin:
-    INCBIN "maps/media_dimension/channel_map_data_media_dimension_bank38.bin"
+blockset_data_media_dimension.bin:
+    INCBIN "maps/media_dimension/blockset_data_media_dimension.bin"
 
 SECTION "bank39", ROMX[$4000], BANK[$39]
-channel_map_data_toon_tv_bank39.bin:
-    INCBIN "maps/toon_tv/channel_map_data_toon_tv_bank39.bin"
+blockset_data_toon_tv.bin:
+    INCBIN "maps/toon_tv/blockset_data_toon_tv.bin"
 
 SECTION "bank3A", ROMX[$4000], BANK[$3a]
-channel_map_data_scream_tv_bank3a.bin:
-    INCBIN "maps/scream_tv/channel_map_data_scream_tv_bank3a.bin"
+blockset_data_scream_tv.bin:
+    INCBIN "maps/scream_tv/blockset_data_scream_tv.bin"
 
 SECTION "bank3B", ROMX[$4000], BANK[$3b]
-channel_map_data_circuit_central_bank3b.bin:
-    INCBIN "maps/circuit_central/channel_map_data_circuit_central_bank3b.bin"
+blockset_data_circuit_central.bin:
+    INCBIN "maps/circuit_central/blockset_data_circuit_central.bin"
 
 SECTION "bank3C", ROMX[$4000], BANK[$3c]
-channel_map_data_kung_fu_tv_bank3c.bin:
-    INCBIN "maps/kung_fu_tv/channel_map_data_kung_fu_tv_bank3c.bin"
+blockset_data_kung_fu_theater.bin:
+    INCBIN "maps/kung_fu_theater/blockset_data_kung_fu_theater.bin"
 
 SECTION "bank3d", ROMX[$4000], BANK[$3d]
 image_03d_4000.bin:
     INCBIN ".gfx/credits/image_03d_4000.bin"
 
 SECTION "bank3E", ROMX[$4000], BANK[$3e]
-channel_map_data_pre_history_channel_bank3e.bin:
-    INCBIN "maps/pre_history_channel/channel_map_data_pre_history_channel_bank3e.bin"
+blockset_data_prehistory_channel.bin:
+    INCBIN "maps/prehistory_channel/blockset_data_prehistory_channel.bin"
 
 SECTION "bank3F", ROMX[$4000], BANK[$3f]
-channel_map_data_unknown_bank3f.bin:
-    INCBIN "maps/channel_map_data_unknown_bank3f.bin"
+blockset_data_rezopolis.bin:
+    INCBIN "maps/rezopolis/blockset_data_rezopolis.bin"
