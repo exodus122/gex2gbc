@@ -14,6 +14,8 @@ wC400:
 wC600:
     ds 1536                                            ;; c600
 
+;C800 to CC00 looks like collision data for the current screen
+
 wCC00:
     ds 1                                               ;; cc00
 
@@ -47,7 +49,7 @@ wCCFE:
 wCCFF:
     ds 513                                             ;; ccff
 
-wCF00:
+wCF00_SpecialTilePaletteIds:
     ds 256                                             ;; cf00
 
 wD000:
@@ -179,7 +181,7 @@ wD58A:
 wD59A:
     ds 2                                               ;; d59a
 
-wD59C:
+wD59C_CurrentROMBank:
     ds 1                                               ;; d59c
 
 wD59D:
@@ -188,7 +190,7 @@ wD59D:
 wD59E:
     ds 1                                               ;; d59e
 
-wD59F:
+wD59F_CurrentInputs: ; A = 01, B = 02, Select = 04, Start = 08, Right = 0x10, Left = 0x20, Up = 0x40, Down = 0x80
     ds 1                                               ;; d59f
 
 wD5A0:
@@ -209,7 +211,7 @@ wD5A4:
 wD5A5:
     ds 1                                               ;; d5a5
 
-wD5A6:
+wD5A6_TextBuffer: ; goes until at least D5CC
     ds 1                                               ;; d5a6
 
 wD5A7:
@@ -287,7 +289,7 @@ wD623:
 wD624:
     ds 1                                               ;; d624
 
-wD625:
+wD625_TotalsMenuPage:
     ds 1                                               ;; d625
 
 wD626:
@@ -299,8 +301,32 @@ wD627:
 wD628:
     ds 1                                               ;; d628
 
-wD629:
+wD629_RemoteProgressBitfields: 
     ds 30                                              ;; d629
+; D62A : out of toon obtained remotes bitfield (1F = all)
+; D62B : smellraiser obtained remotes bitfield (1F = all)
+; D62C : frankensteinfeld obtained remotes bitfield (1F = all)
+; D62D : www.dotcom.com obtained remotes bitfield (1B = all)
+; D62E : moa tse tongue obtained remotes bitfield (1B = all)
+; D62F : ? obtained remotes bitfield (unused byte, deleted world?)
+; D630 : pangaea 90210 obtained remotes bitfield (1B = all)
+; D631 : fine tooning obtained remotes bitfield (1B = all)
+; D632 : this old cave obtained remotes bitfield (1F = all)
+; D633 : honey I shrunk the gecko obtained remotes bitfield (1F = all)
+; D634 : poltergex obtained remotes bitfield (1F = all)
+; D635 : ? obtained remotes bitfield (unused byte, deleted world?)
+; D636 : samurai night fever obtained remotes bitfield (1F = all)
+; D637 : no weddings and a funeral obtained remotes bitfield (19 = all)
+; D638 : ? obtained remotes bitfield (unused byte, deleted world?)
+; D639 : thursday the 12th obtained remotes bitfield (20 = all)
+
+
+; D63E : lizard in a china shop obtained remotes bitfield (20 = all)
+; D63F : bugged out obtained remotes bitfield (20 = all)
+; D640 : chips and dips obtained remotes bitfield (20 = all)
+; D641 : lava daba doo obtained remotes bitfield (01 = all)
+; D642 : texas chainsaw manicure obtained remotes bitfield (01 = all)
+; D643 : mazed and confused obtained remotes bitfield (03 = all)
 
 wD647:
     ds 1                                               ;; d647
@@ -308,7 +334,7 @@ wD647:
 wD648:
     ds 1                                               ;; d648
 
-wD649:
+wD649_CollectibleAmount:
     ds 1                                               ;; d649
 
 wD64A:
@@ -539,13 +565,15 @@ wD6DC:
 wD6DD:
     ds 1                                               ;; d6dd
 
-wD6DE:
+wD6DE_MenuType: 
+; 0 = pause in media dimension, 1 = exit game, 2 = pause in world, 3 = exit to map
+; 5 = view totals, 6 = current password, B = mission select, F = enter password
     ds 1                                               ;; d6de
 
-wD6DF:
+wD6DF_MenuSelectedColumn: ; used for password entry, but not totals screen
     ds 1                                               ;; d6df
 
-wD6E0:
+wD6E0_MenuSelectedRow: ; used for password entry, title screen, mission select, and leaving maps
     ds 1                                               ;; d6e0
 
 wD6E1:
@@ -560,16 +588,16 @@ wD6E3:
 wD6E4:
     ds 1                                               ;; d6e4
 
-wD6E5:
+wD6E5: ; Entering Password value?
     ds 1                                               ;; d6e5
 
-wD6E6:
+wD6E6: ; Entering Password value?
     ds 1                                               ;; d6e6
 
-wD6E7:
+wD6E7: ; Entering Password value?
     ds 1                                               ;; d6e7
 
-wD6E8:
+wD6E8: ; Entering Password value?
     ds 1                                               ;; d6e8
 
 wD6E9:
@@ -602,10 +630,10 @@ wD6F3:
 wD6F5_CurrentMapBank:
     ds 1                                               ;; d6f5
 
-wD6F6:
+wD6F6_CurrentMap3435Bank:
     ds 1                                               ;; d6f6
 
-wD6F7:
+wD6F7_CurrentBlocksetAndCollisionBank:
     ds 2                                               ;; d6f7
 
 wD6F9:
@@ -740,7 +768,7 @@ wD73B:
 wD73C:
     ds 1                                               ;; d73c
 
-wD73D:
+wD73D_LivesRemaining:
     ds 1                                               ;; d73d
 
 wD73E:
@@ -752,7 +780,7 @@ wD73F:
 wD740:
     ds 1                                               ;; d740
 
-wD741:
+wD741_PlayerHealth:
     ds 1                                               ;; d741
 
 wD742:

@@ -6,7 +6,7 @@ call_01_4000:
     ld   HL, wD6DD                                     ;; 01:4000 $21 $dd $d6
     ld   [HL], $00                                     ;; 01:4003 $36 $00
 .jp_01_4005:
-    ld   [wD6DE], A                                    ;; 01:4005 $ea $de $d6
+    ld   [wD6DE_MenuType], A                                    ;; 01:4005 $ea $de $d6
     ld   L, A                                          ;; 01:4008 $6f
     ld   H, $00                                        ;; 01:4009 $26 $00
     add  HL, HL                                        ;; 01:400b $29
@@ -18,7 +18,7 @@ call_01_4000:
     ld   BC, $08                                       ;; 01:4015 $01 $08 $00
     call call_00_07b0_CopyBytes                                  ;; 01:4018 $cd $b0 $07
     xor  A, A                                          ;; 01:401b $af
-    ld   [wD6E0], A                                    ;; 01:401c $ea $e0 $d6
+    ld   [wD6E0_MenuSelectedRow], A                                    ;; 01:401c $ea $e0 $d6
     ld   A, [wD68C]                                    ;; 01:401f $fa $8c $d6
     and  A, $02                                        ;; 01:4022 $e6 $02
     jr   Z, .jr_01_402e                                ;; 01:4024 $28 $08
@@ -27,7 +27,7 @@ call_01_4000:
     jr   Z, .jr_01_402e                                ;; 01:402a $28 $02
     ld   A, $01                                        ;; 01:402c $3e $01
 .jr_01_402e:
-    ld   [wD6DF], A                                    ;; 01:402e $ea $df $d6
+    ld   [wD6DF_MenuSelectedColumn], A                                    ;; 01:402e $ea $df $d6
     ld   HL, wD68A                                     ;; 01:4031 $21 $8a $d6
     ld   A, [HL+]                                      ;; 01:4034 $2a
     ld   H, [HL]                                       ;; 01:4035 $66
@@ -40,7 +40,7 @@ call_01_4000:
     ld   A, $05                                        ;; 01:4042 $3e $05
     ld   [wD61A], A                                    ;; 01:4044 $ea $1a $d6
     call call_01_4e94                                  ;; 01:4047 $cd $94 $4e
-    ld   A, [wD6DE]                                    ;; 01:404a $fa $de $d6
+    ld   A, [wD6DE_MenuType]                                    ;; 01:404a $fa $de $d6
     cp   A, $14                                        ;; 01:404d $fe $14
     jr   NZ, .jp_01_405c                               ;; 01:404f $20 $0b
     ld   B, $b4                                        ;; 01:4051 $06 $b4
@@ -84,14 +84,14 @@ call_01_4000:
     ld   A, [wD68C]                                    ;; 01:408f $fa $8c $d6
     and  A, $02                                        ;; 01:4092 $e6 $02
     jp   Z, .jp_01_413a                                ;; 01:4094 $ca $3a $41
-    ld   A, [wD59F]                                    ;; 01:4097 $fa $9f $d5
+    ld   A, [wD59F_CurrentInputs]                                    ;; 01:4097 $fa $9f $d5
     and  A, $03                                        ;; 01:409a $e6 $03
     jr   Z, .jr_01_40d0                                ;; 01:409c $28 $32
-    ld   A, [wD59F]                                    ;; 01:409e $fa $9f $d5
+    ld   A, [wD59F_CurrentInputs]                                    ;; 01:409e $fa $9f $d5
     and  A, $f0                                        ;; 01:40a1 $e6 $f0
     swap A                                             ;; 01:40a3 $cb $37
     ld   E, A                                          ;; 01:40a5 $5f
-    ld   A, [wD59F]                                    ;; 01:40a6 $fa $9f $d5
+    ld   A, [wD59F_CurrentInputs]                                    ;; 01:40a6 $fa $9f $d5
     and  A, $01                                        ;; 01:40a9 $e6 $01
     jr   NZ, .jr_01_40af                               ;; 01:40ab $20 $02
     set  4, E                                          ;; 01:40ad $cb $e3
@@ -120,13 +120,13 @@ call_01_4000:
     jp   Z, .jp_01_405c                                ;; 01:40d4 $ca $5c $40
     call call_00_10fb                                  ;; 01:40d7 $cd $fb $10
     jr   Z, .jr_01_40f2                                ;; 01:40da $28 $16
-    ld   HL, wD6DF                                     ;; 01:40dc $21 $df $d6
+    ld   HL, wD6DF_MenuSelectedColumn                                     ;; 01:40dc $21 $df $d6
     inc  [HL]                                          ;; 01:40df $34
     ld   A, [HL]                                       ;; 01:40e0 $7e
     sub  A, $06                                        ;; 01:40e1 $d6 $06
     jr   NZ, .jp_01_4132                               ;; 01:40e3 $20 $4d
     ld   [HL], A                                       ;; 01:40e5 $77
-    ld   HL, wD6E0                                     ;; 01:40e6 $21 $e0 $d6
+    ld   HL, wD6E0_MenuSelectedRow                                     ;; 01:40e6 $21 $e0 $d6
     inc  [HL]                                          ;; 01:40e9 $34
     ld   A, [HL]                                       ;; 01:40ea $7e
     sub  A, $05                                        ;; 01:40eb $d6 $05
@@ -136,12 +136,12 @@ call_01_4000:
 .jr_01_40f2:
     call call_00_10f5                                  ;; 01:40f2 $cd $f5 $10
     jr   Z, .jr_01_410d                                ;; 01:40f5 $28 $16
-    ld   HL, wD6DF                                     ;; 01:40f7 $21 $df $d6
+    ld   HL, wD6DF_MenuSelectedColumn                                     ;; 01:40f7 $21 $df $d6
     dec  [HL]                                          ;; 01:40fa $35
     bit  7, [HL]                                       ;; 01:40fb $cb $7e
     jr   Z, .jp_01_4132                                ;; 01:40fd $28 $33
     ld   [HL], $05                                     ;; 01:40ff $36 $05
-    ld   HL, wD6E0                                     ;; 01:4101 $21 $e0 $d6
+    ld   HL, wD6E0_MenuSelectedRow                                     ;; 01:4101 $21 $e0 $d6
     dec  [HL]                                          ;; 01:4104 $35
     bit  7, [HL]                                       ;; 01:4105 $cb $7e
     jr   Z, .jp_01_4132                                ;; 01:4107 $28 $29
@@ -150,7 +150,7 @@ call_01_4000:
 .jr_01_410d:
     call call_00_1107                                  ;; 01:410d $cd $07 $11
     jr   Z, .jr_01_411f                                ;; 01:4110 $28 $0d
-    ld   HL, wD6E0                                     ;; 01:4112 $21 $e0 $d6
+    ld   HL, wD6E0_MenuSelectedRow                                     ;; 01:4112 $21 $e0 $d6
     inc  [HL]                                          ;; 01:4115 $34
     ld   A, [HL]                                       ;; 01:4116 $7e
     cp   A, $05                                        ;; 01:4117 $fe $05
@@ -160,7 +160,7 @@ call_01_4000:
 .jr_01_411f:
     call call_00_1101                                  ;; 01:411f $cd $01 $11
     jp   Z, .jp_01_405c                                ;; 01:4122 $ca $5c $40
-    ld   HL, wD6E0                                     ;; 01:4125 $21 $e0 $d6
+    ld   HL, wD6E0_MenuSelectedRow                                     ;; 01:4125 $21 $e0 $d6
     dec  [HL]                                          ;; 01:4128 $35
     bit  7, [HL]                                       ;; 01:4129 $cb $7e
     jp   Z, .jp_01_4132                                ;; 01:412b $ca $32 $41
@@ -176,7 +176,7 @@ call_01_4000:
     jr   Z, .jr_01_416a                                ;; 01:413e $28 $2a
     call call_00_1101                                  ;; 01:4140 $cd $01 $11
     jr   Z, .jr_01_414f                                ;; 01:4143 $28 $0a
-    ld   HL, wD6E0                                     ;; 01:4145 $21 $e0 $d6
+    ld   HL, wD6E0_MenuSelectedRow                                     ;; 01:4145 $21 $e0 $d6
     ld   A, [HL]                                       ;; 01:4148 $7e
     and  A, A                                          ;; 01:4149 $a7
     jr   Z, .jr_01_416a                                ;; 01:414a $28 $1e
@@ -187,7 +187,7 @@ call_01_4000:
     jr   Z, .jr_01_416a                                ;; 01:4152 $28 $16
     ld   A, [wD68D]                                    ;; 01:4154 $fa $8d $d6
     dec  A                                             ;; 01:4157 $3d
-    ld   HL, wD6E0                                     ;; 01:4158 $21 $e0 $d6
+    ld   HL, wD6E0_MenuSelectedRow                                     ;; 01:4158 $21 $e0 $d6
     cp   A, [HL]                                       ;; 01:415b $be
     jr   Z, .jr_01_416a                                ;; 01:415c $28 $0c
     inc  [HL]                                          ;; 01:415e $34
@@ -203,7 +203,7 @@ call_01_4000:
 .jr_01_4171:
     call call_00_10fb                                  ;; 01:4171 $cd $fb $10
     jr   Z, .jr_01_4187                                ;; 01:4174 $28 $11
-    ld   HL, wD625                                     ;; 01:4176 $21 $25 $d6
+    ld   HL, wD625_TotalsMenuPage                                     ;; 01:4176 $21 $25 $d6
     inc  [HL]                                          ;; 01:4179 $34
     ld   A, [HL]                                       ;; 01:417a $7e
     sub  A, $1e                                        ;; 01:417b $d6 $1e
@@ -216,7 +216,7 @@ call_01_4000:
 .jr_01_4187:
     call call_00_10f5                                  ;; 01:4187 $cd $f5 $10
     jr   Z, .jr_01_41b5                                ;; 01:418a $28 $29
-    ld   HL, wD625                                     ;; 01:418c $21 $25 $d6
+    ld   HL, wD625_TotalsMenuPage                                     ;; 01:418c $21 $25 $d6
     dec  [HL]                                          ;; 01:418f $35
     bit  7, [HL]                                       ;; 01:4190 $cb $7e
     jr   Z, .jr_01_4196                                ;; 01:4192 $28 $02
@@ -254,7 +254,7 @@ call_01_4000:
     and  A, $20                                        ;; 01:41de $e6 $20
     call NZ, call_00_110d                              ;; 01:41e0 $c4 $0d $11
     jp   Z, .jp_01_405c                                ;; 01:41e3 $ca $5c $40
-    ld   A, [wD6DE]                                    ;; 01:41e6 $fa $de $d6
+    ld   A, [wD6DE_MenuType]                                    ;; 01:41e6 $fa $de $d6
     ld   [wD6DD], A                                    ;; 01:41e9 $ea $dd $d6
     ld   A, $00                                        ;; 01:41ec $3e $00
     jp   .jp_01_4005                                   ;; 01:41ee $c3 $05 $40
@@ -263,7 +263,7 @@ call_01_4000:
     ld   A, [wD68D]                                    ;; 01:41f4 $fa $8d $d6
     and  A, A                                          ;; 01:41f7 $a7
     jr   Z, .jp_01_421e                                ;; 01:41f8 $28 $24
-    ld   HL, wD6E0                                     ;; 01:41fa $21 $e0 $d6
+    ld   HL, wD6E0_MenuSelectedRow                                     ;; 01:41fa $21 $e0 $d6
     ld   L, [HL]                                       ;; 01:41fd $6e
     ld   H, $00                                        ;; 01:41fe $26 $00
     ld   DE, wD6C5                                     ;; 01:4200 $11 $c5 $d6
@@ -323,7 +323,7 @@ call_01_4000:
     jp   .jp_01_4005                                   ;; 01:4262 $c3 $05 $40
 
 call_01_4265:
-    ld   HL, wD625                                     ;; 01:4265 $21 $25 $d6
+    ld   HL, wD625_TotalsMenuPage                                     ;; 01:4265 $21 $25 $d6
     ld   L, [HL]                                       ;; 01:4268 $6e
     ld   H, $00                                        ;; 01:4269 $26 $00
     ld   DE, .data_01_4272                             ;; 01:426b $11 $72 $42
@@ -359,7 +359,7 @@ call_01_4291:
     ld   HL, wD626                                     ;; 01:42af $21 $26 $d6
     add  A, [HL]                                       ;; 01:42b2 $86
     call call_01_4000                                  ;; 01:42b3 $cd $00 $40
-    ld   A, [wD6E0]                                    ;; 01:42b6 $fa $e0 $d6
+    ld   A, [wD6E0_MenuSelectedRow]                                    ;; 01:42b6 $fa $e0 $d6
     ld   [wD627], A                                    ;; 01:42b9 $ea $27 $d6
     ret                                                ;; 01:42bc $c9
     ld   A, [wD621]                                    ;; 01:42bd $fa $21 $d6
@@ -395,7 +395,7 @@ call_01_4291:
     ld   HL, wD624                                     ;; 01:42f8 $21 $24 $d6
     ld   L, [HL]                                       ;; 01:42fb $6e
     ld   H, $00                                        ;; 01:42fc $26 $00
-    ld   DE, wD629                                     ;; 01:42fe $11 $29 $d6
+    ld   DE, wD629_RemoteProgressBitfields                                     ;; 01:42fe $11 $29 $d6
     add  HL, DE                                        ;; 01:4301 $19
     ld   A, [wD64C]                                    ;; 01:4302 $fa $4c $d6
     or   A, C                                          ;; 01:4305 $b1
@@ -454,7 +454,7 @@ call_01_4349:
     ld   HL, wD624                                     ;; 01:436c $21 $24 $d6
     ld   L, [HL]                                       ;; 01:436f $6e
     ld   H, $00                                        ;; 01:4370 $26 $00
-    ld   DE, wD629                                     ;; 01:4372 $11 $29 $d6
+    ld   DE, wD629_RemoteProgressBitfields                                     ;; 01:4372 $11 $29 $d6
     add  HL, DE                                        ;; 01:4375 $19
     ld   E, [HL]                                       ;; 01:4376 $5e
     ld   D, A                                          ;; 01:4377 $57
@@ -484,7 +484,7 @@ call_01_4349:
     jr   NZ, .jr_01_4360                               ;; 01:439b $20 $c3
     pop  AF                                            ;; 01:439d $f1
     ld   [wD624], A                                    ;; 01:439e $ea $24 $d6
-    ld   A, [wD73D]                                    ;; 01:43a1 $fa $3d $d7
+    ld   A, [wD73D_LivesRemaining]                                    ;; 01:43a1 $fa $3d $d7
     ld   [wD65A], A                                    ;; 01:43a4 $ea $5a $d6
     ld   HL, wD652                                     ;; 01:43a7 $21 $52 $d6
     ld   B, $09                                        ;; 01:43aa $06 $09
@@ -517,7 +517,7 @@ call_01_43c7:
     ret                                                ;; 01:43e5 $c9
 
 call_01_43e6:
-    ld   HL, wD6DE                                     ;; 01:43e6 $21 $de $d6
+    ld   HL, wD6DE_MenuType                                     ;; 01:43e6 $21 $de $d6
     ld   L, [HL]                                       ;; 01:43e9 $6e
     ld   H, $00                                        ;; 01:43ea $26 $00
     add  HL, HL                                        ;; 01:43ec $29
@@ -552,7 +552,7 @@ call_01_43e6:
     ld   C, $4e                                        ;; 01:442d $0e $4e
     ld   B, $08                                        ;; 01:442f $06 $08
 .jr_01_4431:
-    ld   A, [wD6E0]                                    ;; 01:4431 $fa $e0 $d6
+    ld   A, [wD6E0_MenuSelectedRow]                                    ;; 01:4431 $fa $e0 $d6
     ld   E, A                                          ;; 01:4434 $5f
     ld   A, C                                          ;; 01:4435 $79
     sub  A, B                                          ;; 01:4436 $90
@@ -571,7 +571,7 @@ call_01_43e6:
     ld   B, $08                                        ;; 01:4448 $06 $08
     jr   .jr_01_4431                                   ;; 01:444a $18 $e5
 .data_01_444c:
-    ld   HL, wD6E0                                     ;; 01:444c $21 $e0 $d6
+    ld   HL, wD6E0_MenuSelectedRow                                     ;; 01:444c $21 $e0 $d6
     ld   L, [HL]                                       ;; 01:444f $6e
     ld   H, $00                                        ;; 01:4450 $26 $00
     add  HL, HL                                        ;; 01:4452 $29
@@ -611,7 +611,7 @@ call_01_446f:
     call call_00_07b9                                  ;; 01:449a $cd $b9 $07
     jr   .jr_01_4480                                   ;; 01:449d $18 $e1
 .jr_01_449f:
-    ld   HL, wD6DE                                     ;; 01:449f $21 $de $d6
+    ld   HL, wD6DE_MenuType                                     ;; 01:449f $21 $de $d6
     ld   L, [HL]                                       ;; 01:44a2 $6e
     ld   H, $00                                        ;; 01:44a3 $26 $00
     add  HL, HL                                        ;; 01:44a5 $29
@@ -968,7 +968,7 @@ data_01_473a:
     add  A, A                                          ;; 01:4777 $87
     add  A, A                                          ;; 01:4778 $87
     add  A, A                                          ;; 01:4779 $87
-    ld   [wD5A6], A                                    ;; 01:477a $ea $a6 $d5
+    ld   [wD5A6_TextBuffer], A                                    ;; 01:477a $ea $a6 $d5
     ld   A, [wD694]                                    ;; 01:477d $fa $94 $d6
     inc  A                                             ;; 01:4780 $3c
     sub  A, $02                                        ;; 01:4781 $d6 $02
@@ -1015,7 +1015,7 @@ data_01_47c5:
 data_01_47ea:
     call call_01_47f6                                  ;; 01:47ea $cd $f6 $47
     call call_01_4ce5                                  ;; 01:47ed $cd $e5 $4c
-    ld   HL, wD5A6                                     ;; 01:47f0 $21 $a6 $d5
+    ld   HL, wD5A6_TextBuffer                                     ;; 01:47f0 $21 $a6 $d5
     jp   call_01_4e6f                                  ;; 01:47f3 $c3 $6f $4e
 
 call_01_47f6:
@@ -1032,10 +1032,10 @@ call_01_47f6:
     db   $28, $48, $34, $48, $47, $48, $69, $48        ;; 01:480a ????????
     db   $6e, $48                                      ;; 01:4812 ??
 .data_01_4814:
-    ld   A, [wD73D]                                    ;; 01:4814 $fa $3d $d7
+    ld   A, [wD73D_LivesRemaining]                                    ;; 01:4814 $fa $3d $d7
     ret                                                ;; 01:4817 $c9
 .data_01_4818:
-    ld   A, [wD741]                                    ;; 01:4818 $fa $41 $d7
+    ld   A, [wD741_PlayerHealth]                                    ;; 01:4818 $fa $41 $d7
     ret                                                ;; 01:481b $c9
 .data_01_481c:
     ld   C, $07                                        ;; 01:481c $0e $07
@@ -1053,7 +1053,7 @@ call_01_47f6:
     db   $48, $d6, $fe, $02, $fa, $49, $d6, $d0        ;; 01:4848 ????????
     db   $af, $c9                                      ;; 01:4850 ??
 .jr_01_4852:
-    ld   HL, wD629                                     ;; 01:4852 $21 $29 $d6
+    ld   HL, wD629_RemoteProgressBitfields                                     ;; 01:4852 $21 $29 $d6
     ld   B, $1e                                        ;; 01:4855 $06 $1e
     ld   E, $00                                        ;; 01:4857 $1e $00
 .jr_01_4859:
@@ -1088,15 +1088,15 @@ data_01_4879:
     cp   A, $07                                        ;; 01:488f $fe $07
     jr   NZ, .jr_01_48d0                               ;; 01:4891 $20 $3d
     ld   A, [wD624]                                    ;; 01:4893 $fa $24 $d6
-    ld   [wD625], A                                    ;; 01:4896 $ea $25 $d6
+    ld   [wD625_TotalsMenuPage], A                                    ;; 01:4896 $ea $25 $d6
 .jr_01_4899:
     ld   A, [wD624]                                    ;; 01:4899 $fa $24 $d6
     push AF                                            ;; 01:489c $f5
-    ld   A, [wD625]                                    ;; 01:489d $fa $25 $d6
+    ld   A, [wD625_TotalsMenuPage]                                    ;; 01:489d $fa $25 $d6
     ld   [wD624], A                                    ;; 01:48a0 $ea $24 $d6
     ld   L, A                                          ;; 01:48a3 $6f
     ld   H, $00                                        ;; 01:48a4 $26 $00
-    ld   DE, wD629                                     ;; 01:48a6 $11 $29 $d6
+    ld   DE, wD629_RemoteProgressBitfields                                     ;; 01:48a6 $11 $29 $d6
     add  HL, DE                                        ;; 01:48a9 $19
     ld   C, [HL]                                       ;; 01:48aa $4e
     ld   HL, wD5AA                                     ;; 01:48ab $21 $aa $d5
@@ -1129,12 +1129,12 @@ data_01_4879:
     db   $98, $98, $98, $a4, $a4, $b0                  ;; 01:48d9 ......
 
 data_01_48df:
-    ld   A, [wD625]                                    ;; 01:48df $fa $25 $d6
+    ld   A, [wD625_TotalsMenuPage]                                    ;; 01:48df $fa $25 $d6
     and  A, A                                          ;; 01:48e2 $a7
     jr   Z, .jr_01_48f7                                ;; 01:48e3 $28 $12
     ld   A, [wD624]                                    ;; 01:48e5 $fa $24 $d6
     push AF                                            ;; 01:48e8 $f5
-    ld   A, [wD625]                                    ;; 01:48e9 $fa $25 $d6
+    ld   A, [wD625_TotalsMenuPage]                                    ;; 01:48e9 $fa $25 $d6
     ld   [wD624], A                                    ;; 01:48ec $ea $24 $d6
     call call_01_4734                                  ;; 01:48ef $cd $34 $47
     pop  AF                                            ;; 01:48f2 $f1
@@ -1423,7 +1423,7 @@ call_01_4bd3:
     ld   A, [HL+]                                      ;; 01:4bd6 $2a
     ld   H, [HL]                                       ;; 01:4bd7 $66
     ld   L, A                                          ;; 01:4bd8 $6f
-    ld   DE, wD5A6                                     ;; 01:4bd9 $11 $a6 $d5
+    ld   DE, wD5A6_TextBuffer                                     ;; 01:4bd9 $11 $a6 $d5
 .jr_01_4bdc:
     ld   A, [HL+]                                      ;; 01:4bdc $2a
     ld   [DE], A                                       ;; 01:4bdd $12
@@ -1432,7 +1432,7 @@ call_01_4bd3:
     jr   Z, .jr_01_4bdc                                ;; 01:4be1 $28 $f9
     xor  A, A                                          ;; 01:4be3 $af
     ld   [DE], A                                       ;; 01:4be4 $12
-    ld   HL, wD5A6                                     ;; 01:4be5 $21 $a6 $d5
+    ld   HL, wD5A6_TextBuffer                                     ;; 01:4be5 $21 $a6 $d5
     call call_01_4e6f                                  ;; 01:4be8 $cd $6f $4e
 .jr_01_4beb:
     call call_01_4c81                                  ;; 01:4beb $cd $81 $4c
@@ -1489,7 +1489,7 @@ call_01_4bd3:
 .jr_01_4c33:
     ld   A, [wD698]                                    ;; 01:4c33 $fa $98 $d6
     ld   [wD6DB], A                                    ;; 01:4c36 $ea $db $d6
-    ld   HL, wD5A6                                     ;; 01:4c39 $21 $a6 $d5
+    ld   HL, wD5A6_TextBuffer                                     ;; 01:4c39 $21 $a6 $d5
     call call_01_4e6f                                  ;; 01:4c3c $cd $6f $4e
     ld   A, [wD6A4]                                    ;; 01:4c3f $fa $a4 $d6
     inc  A                                             ;; 01:4c42 $3c
@@ -1610,7 +1610,7 @@ call_01_4cab:
     ret                                                ;; 01:4ce4 $c9
 
 call_01_4ce5:
-    ld   HL, wD5A6                                     ;; 01:4ce5 $21 $a6 $d5
+    ld   HL, wD5A6_TextBuffer                                     ;; 01:4ce5 $21 $a6 $d5
     cp   A, $0a                                        ;; 01:4ce8 $fe $0a
     jr   C, .jr_01_4d04                                ;; 01:4cea $38 $18
     cp   A, $64                                        ;; 01:4cec $fe $64
@@ -1657,7 +1657,7 @@ call_01_4d25:
     ld   A, [HL]                                       ;; 01:4d28 $7e
     and  A, A                                          ;; 01:4d29 $a7
     ret  Z                                             ;; 01:4d2a $c8
-    ld   A, [wD59F]                                    ;; 01:4d2b $fa $9f $d5
+    ld   A, [wD59F_CurrentInputs]                                    ;; 01:4d2b $fa $9f $d5
     and  A, A                                          ;; 01:4d2e $a7
     jr   Z, .jr_01_4d33                                ;; 01:4d2f $28 $02
     ld   [HL], $01                                     ;; 01:4d31 $36 $01
@@ -1738,7 +1738,7 @@ call_01_4d72:
     ld   [HL], C                                       ;; 01:4d95 $71
     ld   HL, wD6BD                                     ;; 01:4d96 $21 $bd $d6
     ld   [HL], B                                       ;; 01:4d99 $70
-    ld   A, [wD6E0]                                    ;; 01:4d9a $fa $e0 $d6
+    ld   A, [wD6E0_MenuSelectedRow]                                    ;; 01:4d9a $fa $e0 $d6
     ld   C, A                                          ;; 01:4d9d $4f
     inc  C                                             ;; 01:4d9e $0c
     ld   A, [wD691]                                    ;; 01:4d9f $fa $91 $d6
@@ -1750,7 +1750,7 @@ call_01_4d72:
     dec  C                                             ;; 01:4da8 $0d
     jr   NZ, .jr_01_4da7                               ;; 01:4da9 $20 $fc
     ld   [wD6BA], A                                    ;; 01:4dab $ea $ba $d6
-    ld   A, [wD6DF]                                    ;; 01:4dae $fa $df $d6
+    ld   A, [wD6DF_MenuSelectedColumn]                                    ;; 01:4dae $fa $df $d6
     ld   C, A                                          ;; 01:4db1 $4f
     inc  C                                             ;; 01:4db2 $0c
     ld   A, [wD690]                                    ;; 01:4db3 $fa $90 $d6
@@ -1775,7 +1775,7 @@ jp_01_4dc8:
     cp   A, $ff                                        ;; 01:4dd0 $fe $ff
     ret  Z                                             ;; 01:4dd2 $c8
     add  A, $10                                        ;; 01:4dd3 $c6 $10
-    ld   [wD5A6], A                                    ;; 01:4dd5 $ea $a6 $d5
+    ld   [wD5A6_TextBuffer], A                                    ;; 01:4dd5 $ea $a6 $d5
     ld   A, [HL+]                                      ;; 01:4dd8 $2a
     add  A, $08                                        ;; 01:4dd9 $c6 $08
     ld   [wD5A7], A                                    ;; 01:4ddb $ea $a7 $d5
@@ -1812,16 +1812,16 @@ call_01_4e01:
     ld   DE, wCC00                                     ;; 01:4e09 $11 $00 $cc
     add  HL, DE                                        ;; 01:4e0c $19
     srl  B                                             ;; 01:4e0d $cb $38
-    ld   A, [wD5A6]                                    ;; 01:4e0f $fa $a6 $d5
+    ld   A, [wD5A6_TextBuffer]                                    ;; 01:4e0f $fa $a6 $d5
 .jr_01_4e12:
     push BC                                            ;; 01:4e12 $c5
     push AF                                            ;; 01:4e13 $f5
-    ld   [wD5A6], A                                    ;; 01:4e14 $ea $a6 $d5
+    ld   [wD5A6_TextBuffer], A                                    ;; 01:4e14 $ea $a6 $d5
 .jr_01_4e17:
-    ld   A, [wD5A6]                                    ;; 01:4e17 $fa $a6 $d5
+    ld   A, [wD5A6_TextBuffer]                                    ;; 01:4e17 $fa $a6 $d5
     ld   [HL+], A                                      ;; 01:4e1a $22
     add  A, $10                                        ;; 01:4e1b $c6 $10
-    ld   [wD5A6], A                                    ;; 01:4e1d $ea $a6 $d5
+    ld   [wD5A6_TextBuffer], A                                    ;; 01:4e1d $ea $a6 $d5
     ld   A, [wD5A7]                                    ;; 01:4e20 $fa $a7 $d5
     ld   [HL+], A                                      ;; 01:4e23 $22
     ld   A, [wD5A8]                                    ;; 01:4e24 $fa $a8 $d5
@@ -1909,7 +1909,7 @@ call_01_4e94:
     dec  [HL]                                          ;; 01:4ea0 $35
     ld   A, [wD68C]                                    ;; 01:4ea1 $fa $8c $d6
     and  A, $02                                        ;; 01:4ea4 $e6 $02
-    ld   A, [wD59F]                                    ;; 01:4ea6 $fa $9f $d5
+    ld   A, [wD59F_CurrentInputs]                                    ;; 01:4ea6 $fa $9f $d5
     jr   Z, .jr_01_4ead                                ;; 01:4ea9 $28 $02
     and  A, $fc                                        ;; 01:4eab $e6 $fc
 .jr_01_4ead:
@@ -1930,7 +1930,7 @@ call_01_4eb1:
 .jr_01_4ec1:
     ld   HL, wD624                                     ;; 01:4ec1 $21 $24 $d6
     ld   E, [HL]                                       ;; 01:4ec4 $5e
-    ld   HL, wD629                                     ;; 01:4ec5 $21 $29 $d6
+    ld   HL, wD629_RemoteProgressBitfields                                     ;; 01:4ec5 $21 $29 $d6
     add  HL, DE                                        ;; 01:4ec8 $19
     ld   A, B                                          ;; 01:4ec9 $78
     and  A, [HL]                                       ;; 01:4eca $a6
@@ -1981,13 +1981,13 @@ call_01_4ecf:
     jp   call_01_4d0a                                  ;; 01:4f18 $c3 $0a $4d
 
 call_01_4f1b:
-    ld   A, [wD6E0]                                    ;; 01:4f1b $fa $e0 $d6
+    ld   A, [wD6E0_MenuSelectedRow]                                    ;; 01:4f1b $fa $e0 $d6
     add  A, A                                          ;; 01:4f1e $87
     ld   E, A                                          ;; 01:4f1f $5f
     add  A, A                                          ;; 01:4f20 $87
     add  A, E                                          ;; 01:4f21 $83
     ld   E, A                                          ;; 01:4f22 $5f
-    ld   A, [wD6DF]                                    ;; 01:4f23 $fa $df $d6
+    ld   A, [wD6DF_MenuSelectedColumn]                                    ;; 01:4f23 $fa $df $d6
     add  A, E                                          ;; 01:4f26 $83
     ld   E, A                                          ;; 01:4f27 $5f
     ld   D, $00                                        ;; 01:4f28 $16 $00
@@ -1997,13 +1997,13 @@ call_01_4f1b:
     ret                                                ;; 01:4f2f $c9
 
 call_01_4f30:
-    ld   A, [wD6E0]                                    ;; 01:4f30 $fa $e0 $d6
+    ld   A, [wD6E0_MenuSelectedRow]                                    ;; 01:4f30 $fa $e0 $d6
     add  A, A                                          ;; 01:4f33 $87
     ld   L, A                                          ;; 01:4f34 $6f
     add  A, A                                          ;; 01:4f35 $87
     add  A, L                                          ;; 01:4f36 $85
     ld   L, A                                          ;; 01:4f37 $6f
-    ld   A, [wD6DF]                                    ;; 01:4f38 $fa $df $d6
+    ld   A, [wD6DF_MenuSelectedColumn]                                    ;; 01:4f38 $fa $df $d6
     add  A, L                                          ;; 01:4f3b $85
     add  A, A                                          ;; 01:4f3c $87
     add  A, A                                          ;; 01:4f3d $87
@@ -2232,7 +2232,7 @@ call_01_5271:
     cp   A, [HL]                                       ;; 01:52c0 $be
     jr   NZ, .jp_01_531a                               ;; 01:52c1 $20 $57
     ld   A, [wD664]                                    ;; 01:52c3 $fa $64 $d6
-    ld   [wD73D], A                                    ;; 01:52c6 $ea $3d $d7
+    ld   [wD73D_LivesRemaining], A                                    ;; 01:52c6 $ea $3d $d7
     ld   A, [wD624]                                    ;; 01:52c9 $fa $24 $d6
     push AF                                            ;; 01:52cc $f5
     xor  A, A                                          ;; 01:52cd $af
@@ -2270,7 +2270,7 @@ call_01_5271:
     ld   HL, wD624                                     ;; 01:52fc $21 $24 $d6
     ld   L, [HL]                                       ;; 01:52ff $6e
     ld   H, $00                                        ;; 01:5300 $26 $00
-    ld   DE, wD629                                     ;; 01:5302 $11 $29 $d6
+    ld   DE, wD629_RemoteProgressBitfields                                     ;; 01:5302 $11 $29 $d6
     add  HL, DE                                        ;; 01:5305 $19
     ld   [HL], A                                       ;; 01:5306 $77
     pop  HL                                            ;; 01:5307 $e1

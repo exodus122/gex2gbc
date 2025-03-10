@@ -1494,7 +1494,7 @@ call_0b_5df8:
     ld   A, [HL+]                                      ;; 0b:6429 $2a
     ld   H, [HL]                                       ;; 0b:642a $66
     ld   L, A                                          ;; 0b:642b $6f
-    ld   DE, wCF00                                     ;; 0b:642c $11 $00 $cf
+    ld   DE, wCF00_SpecialTilePaletteIds                                     ;; 0b:642c $11 $00 $cf
 .jr_0b_642f:
     ld   A, [HL+]                                      ;; 0b:642f $2a
     ld   [DE], A                                       ;; 0b:6430 $12

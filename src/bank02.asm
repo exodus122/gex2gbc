@@ -851,7 +851,7 @@ call_02_4939:
     ld   [wD61E], A                                    ;; 02:4961 $ea $1e $d6
     ret                                                ;; 02:4964 $c9
 .jr_02_4965:
-    ld   A, [wD59F]                                    ;; 02:4965 $fa $9f $d5
+    ld   A, [wD59F_CurrentInputs]                                    ;; 02:4965 $fa $9f $d5
 .jr_02_4968:
     ld   C, A                                          ;; 02:4968 $4f
     ld   E, A                                          ;; 02:4969 $5f

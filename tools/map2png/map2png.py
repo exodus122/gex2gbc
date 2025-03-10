@@ -7,8 +7,8 @@ import os
 palette = []
 palette_ids = []
 
-levels = [
-    ["media_dimension", "", "../../.gfx/tilesets/image_036_4000.bin"],
+'''
+
     ["toon_tv", "", "../../.gfx/tilesets/image_036_5000.bin"],
     ["scream_tv", "1", "../../.gfx/tilesets/image_036_6000.bin"],
     ["scream_tv", "2", "../../.gfx/tilesets/image_036_6000.bin"],
@@ -19,8 +19,12 @@ levels = [
     ["circuit_central", "3", "../../.gfx/tilesets/image_036_7000.bin"],
     ["prehistory_channel", "1", "../../.gfx/tilesets/image_037_5000.bin"],
     ["prehistory_channel", "2", "../../.gfx/tilesets/image_037_5000.bin"],
-    ["rezopolis", "1", "../../.gfx/tilesets/image_037_6000.bin"],
+    ["rezopolis", "", "../../.gfx/tilesets/image_037_6000.bin"],
     ["channel_z", "", "../../.gfx/tilesets/image_026_4000.bin"],  
+'''
+
+levels = [
+    ["media_dimension", "", "../../.gfx/tilesets/image_036_4000.bin"],
 ]
 
 for i in range(0, len(levels)):
@@ -98,10 +102,27 @@ for i in range(0, len(levels)):
             
             count = count + 1
     
-    blockset_img.save("./blockset_images/"+level_name+"_blockset.png")
-    
     # add the special tiles to the blockset
-    # TODO
+    count = 0x1000
+    for y in range(0, 16):
+        for x in range(0, 16):
+            #draw2.rectangle(((x*32,y*32), ((x+1)*32,(y+1)*32)), 0,3)
+            
+            #block_img =  PIL.Image.new("RGB", (32, 32))
+            
+            val = count
+            for inner_y in range(0, 4):
+                for inner_x in range(0, 4):
+                    #blockset_img.paste(tiles[blockset_data[count]], (x*32, y*32))
+                    #block_img.paste(tiles[blockset_data[val]], (inner_x*8, inner_y*8))
+                    val = val + 0x100
+            
+            #block_img.save("./block_images/block"+str(count)+".png")
+            #blockset_img.paste(block_img, (x*32, y*32))
+            
+            count = count + 1
+    
+    blockset_img.save("./blockset_images/"+level_name+"_blockset.png")
     
     # create the level's map from the blockset
     blockset_img2 = PIL.Image.open("./blockset_images/"+level_name+"_blockset.png")

@@ -99,7 +99,7 @@ jp_00_0150:
     ld   [HL], E                                       ;; 00:01c3 $73
     inc  HL                                            ;; 00:01c4 $23
     ld   [HL], D                                       ;; 00:01c5 $72
-    ld   [wD59C], A                                    ;; 00:01c6 $ea $9c $d5
+    ld   [wD59C_CurrentROMBank], A                                    ;; 00:01c6 $ea $9c $d5
     ld   [DE], A                                       ;; 00:01c9 $12
     ld   [MBC1RomBank], A                                    ;; 00:01ca $ea $01 $20
     swap A                                             ;; 00:01cd $cb $37
@@ -199,8 +199,8 @@ jp_00_0150:
     ld   [wD61F], A                                    ;; 00:029a $ea $1f $d6
 .jp_00_029d:
     ld   A, $05                                        ;; 00:029d $3e $05
-    ld   [wD73D], A                                    ;; 00:029f $ea $3d $d7
-    ld   HL, wD629                                     ;; 00:02a2 $21 $29 $d6
+    ld   [wD73D_LivesRemaining], A                                    ;; 00:029f $ea $3d $d7
+    ld   HL, wD629_RemoteProgressBitfields                                     ;; 00:02a2 $21 $29 $d6
     ld   B, $1e                                        ;; 00:02a5 $06 $1e
 .jr_00_02a7:
     ld   [HL], $00                                     ;; 00:02a7 $36 $00
@@ -281,12 +281,12 @@ jp_00_0150:
     xor  A, A                                          ;; 00:0350 $af
     ld   [wD618], A                                    ;; 00:0351 $ea $18 $d6
     ld   [wD686], A                                    ;; 00:0354 $ea $86 $d6
-    ld   [wD625], A                                    ;; 00:0357 $ea $25 $d6
+    ld   [wD625_TotalsMenuPage], A                                    ;; 00:0357 $ea $25 $d6
     ld   [wD648], A                                    ;; 00:035a $ea $48 $d6
     ld   HL, wD624                                     ;; 00:035d $21 $24 $d6
     ld   L, [HL]                                       ;; 00:0360 $6e
     ld   H, $00                                        ;; 00:0361 $26 $00
-    ld   DE, wD629                                     ;; 00:0363 $11 $29 $d6
+    ld   DE, wD629_RemoteProgressBitfields                                     ;; 00:0363 $11 $29 $d6
     add  HL, DE                                        ;; 00:0366 $19
     ld   A, [HL]                                       ;; 00:0367 $7e
     and  A, $18                                        ;; 00:0368 $e6 $18
@@ -317,7 +317,7 @@ jp_00_0150:
     ld   [wD5A4], A                                    ;; 00:03ad $ea $a4 $d5
     ld   [wD5A5], A                                    ;; 00:03b0 $ea $a5 $d5
     ld   A, $04                                        ;; 00:03b3 $3e $04
-    ld   [wD741], A                                    ;; 00:03b5 $ea $41 $d7
+    ld   [wD741_PlayerHealth], A                                    ;; 00:03b5 $ea $41 $d7
     ld   [wD59D], A                                    ;; 00:03b8 $ea $9d $d5
     ld   A, $0b                                        ;; 00:03bb $3e $0b
     ld   HL, call_01_4000                              ;; 00:03bd $21 $00 $40
@@ -363,7 +363,7 @@ jp_00_0150:
     call call_00_0521                                  ;; 00:0425 $cd $21 $05
 .jp_00_0428:
     call call_00_0ab4                                  ;; 00:0428 $cd $b4 $0a
-    ld   A, [wD59F]                                    ;; 00:042b $fa $9f $d5
+    ld   A, [wD59F_CurrentInputs]                                    ;; 00:042b $fa $9f $d5
     cp   A, $0f                                        ;; 00:042e $fe $0f
     jp   Z, .jp_00_0220                                ;; 00:0430 $ca $20 $02
     ld   A, [wD621]                                    ;; 00:0433 $fa $21 $d6
@@ -378,7 +378,7 @@ jp_00_0150:
     ld   A, [wD621]                                    ;; 00:0447 $fa $21 $d6
     and  A, $02                                        ;; 00:044a $e6 $02
     jr   Z, .jr_00_0468                                ;; 00:044c $28 $1a
-    ld   A, [wD73D]                                    ;; 00:044e $fa $3d $d7
+    ld   A, [wD73D_LivesRemaining]                                    ;; 00:044e $fa $3d $d7
     and  A, A                                          ;; 00:0451 $a7
     jp   NZ, .jp_00_0370                               ;; 00:0452 $c2 $70 $03
     ld   [wD59D], A                                    ;; 00:0455 $ea $9d $d5
@@ -425,7 +425,7 @@ jp_00_0150:
     jr   Z, .jr_00_04bb                                ;; 00:04ad $28 $0c
     cp   A, $ff                                        ;; 00:04af $fe $ff
     jp   Z, .jp_00_0254                                ;; 00:04b1 $ca $54 $02
-    ld   A, [wD59F]                                    ;; 00:04b4 $fa $9f $d5
+    ld   A, [wD59F_CurrentInputs]                                    ;; 00:04b4 $fa $9f $d5
     and  A, A                                          ;; 00:04b7 $a7
     jp   NZ, .jp_00_0254                               ;; 00:04b8 $c2 $54 $02
 .jr_00_04bb:
@@ -517,7 +517,7 @@ call_00_0562:
     ld   DE, $579                                      ;; 00:0568 $11 $79 $05
     add  HL, DE                                        ;; 00:056b $19
     ld   A, [HL]                                       ;; 00:056c $7e
-    ld   [wD649], A                                    ;; 00:056d $ea $49 $d6
+    ld   [wD649_CollectibleAmount], A                                    ;; 00:056d $ea $49 $d6
     ld   HL, wD623                                     ;; 00:0570 $21 $23 $d6
     ld   [HL], A                                       ;; 00:0573 $77
     and  A, A                                          ;; 00:0574 $a7
@@ -607,7 +607,7 @@ call_00_05c7:
     ld   [wD687], A                                    ;; 00:0618 $ea $87 $d6
     ret                                                ;; 00:061b $c9
 .jr_00_061c:
-    ld   A, [wD741]                                    ;; 00:061c $fa $41 $d7
+    ld   A, [wD741_PlayerHealth]                                    ;; 00:061c $fa $41 $d7
     cp   A, $02                                        ;; 00:061f $fe $02
     jr   C, .jr_00_0616                                ;; 00:0621 $38 $f3
     ld   A, $82                                        ;; 00:0623 $3e $82
@@ -688,7 +688,7 @@ jr_00_067a:
 
 jp_00_068a:
     call call_00_074d                                  ;; 00:068a $cd $4d $07
-    ld   HL, wD73D                                     ;; 00:068d $21 $3d $d7
+    ld   HL, wD73D_LivesRemaining                                     ;; 00:068d $21 $3d $d7
     inc  [HL]                                          ;; 00:0690 $34
     jr   NZ, call_00_0634                              ;; 00:0691 $20 $a1
     dec  [HL]                                          ;; 00:0693 $35
@@ -707,7 +707,7 @@ jp_00_0696:
     and  A, A                                          ;; 00:06ab $a7
     ret  NZ                                            ;; 00:06ac $c0
     call call_00_074d                                  ;; 00:06ad $cd $4d $07
-    ld   HL, wD73D                                     ;; 00:06b0 $21 $3d $d7
+    ld   HL, wD73D_LivesRemaining                                     ;; 00:06b0 $21 $3d $d7
     dec  [HL]                                          ;; 00:06b3 $35
     jp   call_00_0634                                  ;; 00:06b4 $c3 $34 $06
 ;    db   $21, $41, $d7, $36, $04, $c3, $29, $06        ;; 00:06b7 ????????
@@ -724,7 +724,7 @@ call_00_06bf:
     ld   [HL], $00                                     ;; 00:06c7 $36 $00
     and  A, A                                          ;; 00:06c9 $a7
     jr   NZ, .jr_00_06d2                               ;; 00:06ca $20 $06
-    ld   HL, wD741                                     ;; 00:06cc $21 $41 $d7
+    ld   HL, wD741_PlayerHealth                                     ;; 00:06cc $21 $41 $d7
     dec  [HL]                                          ;; 00:06cf $35
     jr   Z, jp_00_0696                                 ;; 00:06d0 $28 $c4
 .jr_00_06d2:
@@ -750,14 +750,14 @@ call_00_06ec:
     ld   A, [wD621]                                    ;; 00:06fd $fa $21 $d6
     and  A, $10                                        ;; 00:0700 $e6 $10
     ret  NZ                                            ;; 00:0702 $c0
-    ld   HL, wD649                                     ;; 00:0703 $21 $49 $d6
+    ld   HL, wD649_CollectibleAmount                                     ;; 00:0703 $21 $49 $d6
     ld   A, [HL]                                       ;; 00:0706 $7e
     and  A, A                                          ;; 00:0707 $a7
     ret  Z                                             ;; 00:0708 $c8
     dec  [HL]                                          ;; 00:0709 $35
     ret                                                ;; 00:070a $c9
 .jr_00_070b:
-    ld   HL, wD649                                     ;; 00:070b $21 $49 $d6
+    ld   HL, wD649_CollectibleAmount                                     ;; 00:070b $21 $49 $d6
     inc  [HL]                                          ;; 00:070e $34
     jr   NZ, .jr_00_0713                               ;; 00:070f $20 $02
     dec  [HL]                                          ;; 00:0711 $35
@@ -771,7 +771,7 @@ call_00_06ec:
     ld   A, [HL]                                       ;; 00:071d $7e
     cp   A, $32                                        ;; 00:071e $fe $32
     jr   Z, .jr_00_0733                                ;; 00:0720 $28 $11
-    ld   HL, wD649                                     ;; 00:0722 $21 $49 $d6
+    ld   HL, wD649_CollectibleAmount                                     ;; 00:0722 $21 $49 $d6
     cp   A, [HL]                                       ;; 00:0725 $be
     ret  NZ                                            ;; 00:0726 $c0
     ld   [HL], $00                                     ;; 00:0727 $36 $00
@@ -781,7 +781,7 @@ call_00_06ec:
     set  3, [HL]                                       ;; 00:0730 $cb $de
     ret                                                ;; 00:0732 $c9
 .jr_00_0733:
-    ld   A, [wD649]                                    ;; 00:0733 $fa $49 $d6
+    ld   A, [wD649_CollectibleAmount]                                    ;; 00:0733 $fa $49 $d6
 .jr_00_0736:
     sub  A, $32                                        ;; 00:0736 $d6 $32
     ret  C                                             ;; 00:0738 $d8
@@ -791,7 +791,7 @@ call_00_06ec:
     jp   NZ, jp_00_068a                                ;; 00:0740 $c2 $8a $06
     set  3, [HL]                                       ;; 00:0743 $cb $de
     xor  A, A                                          ;; 00:0745 $af
-    ld   [wD649], A                                    ;; 00:0746 $ea $49 $d6
+    ld   [wD649_CollectibleAmount], A                                    ;; 00:0746 $ea $49 $d6
     ret                                                ;; 00:0749 $c9
     db   $1e, $28, $32                                 ;; 00:074a .??
 
@@ -1285,7 +1285,7 @@ jp_00_0a54:
     call call_22_410c                                  ;; 00:0a97 $cd $0c $41
     ld   HL, wD73B                                     ;; 00:0a9a $21 $3b $d7
     inc  [HL]                                          ;; 00:0a9d $34
-    ld   A, [wD59C]                                    ;; 00:0a9e $fa $9c $d5
+    ld   A, [wD59C_CurrentROMBank]                                    ;; 00:0a9e $fa $9c $d5
     ld   [MBC1RomBank], A                                    ;; 00:0aa1 $ea $01 $20
     swap A                                             ;; 00:0aa4 $cb $37
     rrca                                               ;; 00:0aa6 $0f
@@ -2065,7 +2065,7 @@ call_00_1089_SwitchBank:
     ld   [HL], D                                       ;; 00:1091 $72
     dec  HL                                            ;; 00:1092 $2b
     ld   [HL], E                                       ;; 00:1093 $73
-    ld   [wD59C], A                                    ;; 00:1094 $ea $9c $d5
+    ld   [wD59C_CurrentROMBank], A                                    ;; 00:1094 $ea $9c $d5
     ld   [MBC1RomBank], A                                    ;; 00:1097 $ea $01 $20
     swap A                                             ;; 00:109a $cb $37
     rrca                                               ;; 00:109c $0f
@@ -2083,7 +2083,7 @@ call_00_10a3:
     ld   [HL], D                                       ;; 00:10ab $72
     dec  HL                                            ;; 00:10ac $2b
     ld   [HL], E                                       ;; 00:10ad $73
-    ld   [wD59C], A                                    ;; 00:10ae $ea $9c $d5
+    ld   [wD59C_CurrentROMBank], A                                    ;; 00:10ae $ea $9c $d5
     ld   [MBC1RomBank], A                                    ;; 00:10b1 $ea $01 $20
     swap A                                             ;; 00:10b4 $cb $37
     rrca                                               ;; 00:10b6 $0f
@@ -2129,38 +2129,38 @@ call_00_10be:
     ld   A, $30                                        ;; 00:10e3 $3e $30
     ldh  [C], A                                        ;; 00:10e5 $e2
     ld   A, B                                          ;; 00:10e6 $78
-    ld   [wD59F], A                                    ;; 00:10e7 $ea $9f $d5
+    ld   [wD59F_CurrentInputs], A                                    ;; 00:10e7 $ea $9f $d5
     ret                                                ;; 00:10ea $c9
 
 call_00_10eb:
     call call_00_0ab4                                  ;; 00:10eb $cd $b4 $0a
-    ld   A, [wD59F]                                    ;; 00:10ee $fa $9f $d5
+    ld   A, [wD59F_CurrentInputs]                                    ;; 00:10ee $fa $9f $d5
     and  A, A                                          ;; 00:10f1 $a7
     jr   NZ, call_00_10eb                              ;; 00:10f2 $20 $f7
     ret                                                ;; 00:10f4 $c9
 
 call_00_10f5:
-    ld   A, [wD59F]                                    ;; 00:10f5 $fa $9f $d5
+    ld   A, [wD59F_CurrentInputs]                                    ;; 00:10f5 $fa $9f $d5
     and  A, $20                                        ;; 00:10f8 $e6 $20
     ret                                                ;; 00:10fa $c9
 
 call_00_10fb:
-    ld   A, [wD59F]                                    ;; 00:10fb $fa $9f $d5
+    ld   A, [wD59F_CurrentInputs]                                    ;; 00:10fb $fa $9f $d5
     and  A, $10                                        ;; 00:10fe $e6 $10
     ret                                                ;; 00:1100 $c9
 
 call_00_1101:
-    ld   A, [wD59F]                                    ;; 00:1101 $fa $9f $d5
+    ld   A, [wD59F_CurrentInputs]                                    ;; 00:1101 $fa $9f $d5
     and  A, $40                                        ;; 00:1104 $e6 $40
     ret                                                ;; 00:1106 $c9
 
 call_00_1107:
-    ld   A, [wD59F]                                    ;; 00:1107 $fa $9f $d5
+    ld   A, [wD59F_CurrentInputs]                                    ;; 00:1107 $fa $9f $d5
     and  A, $80                                        ;; 00:110a $e6 $80
     ret                                                ;; 00:110c $c9
 
 call_00_110d:
-    ld   A, [wD59F]                                    ;; 00:110d $fa $9f $d5
+    ld   A, [wD59F_CurrentInputs]                                    ;; 00:110d $fa $9f $d5
     cp   A, $08                                        ;; 00:1110 $fe $08
     jr   Z, .jr_00_1116                                ;; 00:1112 $28 $02
     xor  A, A                                          ;; 00:1114 $af
@@ -2170,7 +2170,7 @@ call_00_110d:
     ret                                                ;; 00:1117 $c9
 
 call_00_1118:
-    ld   A, [wD59F]                                    ;; 00:1118 $fa $9f $d5
+    ld   A, [wD59F_CurrentInputs]                                    ;; 00:1118 $fa $9f $d5
     cp   A, $04                                        ;; 00:111b $fe $04
     jr   Z, .jr_00_1121                                ;; 00:111d $28 $02
     xor  A, A                                          ;; 00:111f $af
@@ -2180,12 +2180,12 @@ call_00_1118:
     ret                                                ;; 00:1122 $c9
 
 call_00_1123:
-    ld   A, [wD59F]                                    ;; 00:1123 $fa $9f $d5
+    ld   A, [wD59F_CurrentInputs]                                    ;; 00:1123 $fa $9f $d5
     and  A, $01                                        ;; 00:1126 $e6 $01
     ret                                                ;; 00:1128 $c9
 
 call_00_1129:
-    ld   A, [wD59F]                                    ;; 00:1129 $fa $9f $d5
+    ld   A, [wD59F_CurrentInputs]                                    ;; 00:1129 $fa $9f $d5
     and  A, $02                                        ;; 00:112c $e6 $02
     ret                                                ;; 00:112e $c9
 
@@ -2307,9 +2307,9 @@ call_00_1264_LoadMap:
     call call_00_2e77                                  ;; 00:1267 $cd $77 $2e
     ld   [wD6F5_CurrentMapBank], A                                    ;; 00:126a $ea $f5 $d6
     call call_00_2e80                                  ;; 00:126d $cd $80 $2e
-    ld   [wD6F6], A                                    ;; 00:1270 $ea $f6 $d6
+    ld   [wD6F6_CurrentMap3435Bank], A                                    ;; 00:1270 $ea $f6 $d6
     call call_00_2e89                                  ;; 00:1273 $cd $89 $2e
-    ld   [wD6F7], A                                    ;; 00:1276 $ea $f7 $d6
+    ld   [wD6F7_CurrentBlocksetAndCollisionBank], A                                    ;; 00:1276 $ea $f7 $d6
     call call_00_2e93                                  ;; 00:1279 $cd $93 $2e
     ld   [wD6FE], A                                    ;; 00:127c $ea $fe $d6
     call call_00_2e9c                                  ;; 00:127f $cd $9c $2e
@@ -2637,7 +2637,7 @@ call_00_1472:
     ld   H, A                                          ;; 00:14d4 $67
     push HL                                            ;; 00:14d5 $e5
     push HL                                            ;; 00:14d6 $e5
-    ld   A, [wD6F5_CurrentMapBank]                                    ;; 00:14d7 $fa $f5 $d6
+    ld   A, [wD6F5_CurrentMapBank]                     ;; 00:14d7 $fa $f5 $d6
     call call_00_1089_SwitchBank                       ;; 00:14da $cd $89 $10 switch to map file bank
     pop  HL                                            ;; 00:14dd $e1
     ld   DE, wD702                                     ;; 00:14de $11 $02 $d7
@@ -2664,37 +2664,37 @@ call_00_1472:
     ld   A, [HL+]                                      ;; 00:14f5 $2a
     ld   [DE], A                                       ;; 00:14f6 $12
     call call_00_10a3                                  ;; 00:14f7 $cd $a3 $10
-    ld   A, [wD6F6]                                    ;; 00:14fa $fa $f6 $d6
-    call call_00_1089_SwitchBank                                  ;; 00:14fd $cd $89 $10
-    pop  HL                                            ;; 00:1500 $e1
-    ld   DE, wD703                                     ;; 00:1501 $11 $03 $d7
-    ld   A, [HL+]                                      ;; 00:1504 $2a
-    ld   [DE], A                                       ;; 00:1505 $12
+    ld   A, [wD6F6_CurrentMap3435Bank]                                    ;; 00:14fa $fa $f6 $d6
+    call call_00_1089_SwitchBank                       ;; 00:14fd $cd $89 $10 switch to map data file 34/35
+    pop  HL                                            ;; 00:1500 $e1 hl = 44b4
+    ld   DE, wD703                                     ;; 00:1501 $11 $03 $d7 de = d703
+    ld   A, [HL+]                                      ;; 00:1504 $2a a = 0, hl++
+    ld   [DE], A                                       ;; 00:1505 $12 [wD703] = a (which is 0)
     inc  DE                                            ;; 00:1506 $13
-    inc  DE                                            ;; 00:1507 $13
-    ld   A, [HL+]                                      ;; 00:1508 $2a
-    ld   [DE], A                                       ;; 00:1509 $12
+    inc  DE                                            ;; 00:1507 $13 de = D705
+    ld   A, [HL+]                                      ;; 00:1508 $2a a = [hl (44b5)]  AND hl++ (44B6 now)
+    ld   [DE], A                                       ;; 00:1509 $12 [wD705] = a (which is 0)
     inc  DE                                            ;; 00:150a $13
-    inc  DE                                            ;; 00:150b $13
+    inc  DE                                            ;; 00:150b $13 de = D707
     ld   A, [HL+]                                      ;; 00:150c $2a
     ld   [DE], A                                       ;; 00:150d $12
     inc  DE                                            ;; 00:150e $13
-    inc  DE                                            ;; 00:150f $13
+    inc  DE                                            ;; 00:150f $13 de = D709
     ld   A, [HL+]                                      ;; 00:1510 $2a
     ld   [DE], A                                       ;; 00:1511 $12
     inc  DE                                            ;; 00:1512 $13
-    inc  DE                                            ;; 00:1513 $13
+    inc  DE                                            ;; 00:1513 $13 de = D70B
     ld   A, [HL+]                                      ;; 00:1514 $2a
     ld   [DE], A                                       ;; 00:1515 $12
     inc  DE                                            ;; 00:1516 $13
-    inc  DE                                            ;; 00:1517 $13
+    inc  DE                                            ;; 00:1517 $13 de = D70D
     ld   A, [HL+]                                      ;; 00:1518 $2a
     ld   [DE], A                                       ;; 00:1519 $12
     call call_00_10a3                                  ;; 00:151a $cd $a3 $10
     ld   HL, wD702                                     ;; 00:151d $21 $02 $d7
     call call_00_18a7                                  ;; 00:1520 $cd $a7 $18
-    ld   A, [wD6F7]                                    ;; 00:1523 $fa $f7 $d6
-    call call_00_1089_SwitchBank                                  ;; 00:1526 $cd $89 $10
+    ld   A, [wD6F7_CurrentBlocksetAndCollisionBank]                                    ;; 00:1523 $fa $f7 $d6
+    call call_00_1089_SwitchBank                       ;; 00:1526 $cd $89 $10
     pop  AF                                            ;; 00:1529 $f1
     pop  HL                                            ;; 00:152a $e1
     ld   B, A                                          ;; 00:152b $47
@@ -2869,7 +2869,7 @@ call_00_157a:
     ld   A, [HL]                                       ;; 00:1607 $7e
     ld   [DE], A                                       ;; 00:1608 $12
     call call_00_10a3                                  ;; 00:1609 $cd $a3 $10
-    ld   A, [wD6F6]                                    ;; 00:160c $fa $f6 $d6
+    ld   A, [wD6F6_CurrentMap3435Bank]                                    ;; 00:160c $fa $f6 $d6
     call call_00_1089_SwitchBank                                  ;; 00:160f $cd $89 $10
     pop  HL                                            ;; 00:1612 $e1
     ld   DE, wD70F                                     ;; 00:1613 $11 $0f $d7
@@ -2904,7 +2904,7 @@ call_00_157a:
     call call_00_10a3                                  ;; 00:1634 $cd $a3 $10
     ld   HL, wD70E                                     ;; 00:1637 $21 $0e $d7
     call call_00_18e4                                  ;; 00:163a $cd $e4 $18
-    ld   A, [wD6F7]                                    ;; 00:163d $fa $f7 $d6
+    ld   A, [wD6F7_CurrentBlocksetAndCollisionBank]                                    ;; 00:163d $fa $f7 $d6
     call call_00_1089_SwitchBank                                  ;; 00:1640 $cd $89 $10
     pop  AF                                            ;; 00:1643 $f1
     pop  HL                                            ;; 00:1644 $e1
@@ -2977,7 +2977,7 @@ call_00_157a:
     ret                                                ;; 00:169e $c9
 
 call_00_169f:
-    ld   A, [wD6F7]                                    ;; 00:169f $fa $f7 $d6
+    ld   A, [wD6F7_CurrentBlocksetAndCollisionBank]                                    ;; 00:169f $fa $f7 $d6
     call call_00_1089_SwitchBank                                  ;; 00:16a2 $cd $89 $10
     ld   HL, wD780                                     ;; 00:16a5 $21 $80 $d7
     ld   E, [HL]                                       ;; 00:16a8 $5e
@@ -3566,7 +3566,7 @@ jr_00_1922:
     ld   L, A                                          ;; 00:199a $6f
     ld   DE, $240                                      ;; 00:199b $11 $40 $02
     add  HL, DE                                        ;; 00:199e $19
-    ld   DE, wCF00                                     ;; 00:199f $11 $00 $cf
+    ld   DE, wCF00_SpecialTilePaletteIds                                     ;; 00:199f $11 $00 $cf
     ld   B, $24                                        ;; 00:19a2 $06 $24
 .jr_00_19a4:
     ld   A, [HL+]                                      ;; 00:19a4 $2a
@@ -4440,7 +4440,7 @@ call_00_2329:
     ld   A, [wD775]                                    ;; 00:23a0 $fa $75 $d7
     and  A, A                                          ;; 00:23a3 $a7
     jr   Z, .jr_00_23b1                                ;; 00:23a4 $28 $0b
-    ld   A, [wD59F]                                    ;; 00:23a6 $fa $9f $d5
+    ld   A, [wD59F_CurrentInputs]                                    ;; 00:23a6 $fa $9f $d5
     and  A, A                                          ;; 00:23a9 $a7
     jr   Z, .jr_00_23b1                                ;; 00:23aa $28 $05
     pop  HL                                            ;; 00:23ac $e1
@@ -4485,7 +4485,7 @@ call_00_2329:
     ld   A, [wD775]                                    ;; 00:23f2 $fa $75 $d7
     and  A, A                                          ;; 00:23f5 $a7
     jr   Z, .jr_00_23fe                                ;; 00:23f6 $28 $06
-    ld   A, [wD59F]                                    ;; 00:23f8 $fa $9f $d5
+    ld   A, [wD59F_CurrentInputs]                                    ;; 00:23f8 $fa $9f $d5
     and  A, A                                          ;; 00:23fb $a7
     jr   NZ, .jp_00_2445                               ;; 00:23fc $20 $47
 .jr_00_23fe:
@@ -4515,7 +4515,7 @@ call_00_2329:
     ld   A, [wD775]                                    ;; 00:2432 $fa $75 $d7
     and  A, A                                          ;; 00:2435 $a7
     jr   Z, .jr_00_2441                                ;; 00:2436 $28 $09
-    ld   A, [wD59F]                                    ;; 00:2438 $fa $9f $d5
+    ld   A, [wD59F_CurrentInputs]                                    ;; 00:2438 $fa $9f $d5
     and  A, A                                          ;; 00:243b $a7
     jr   Z, .jr_00_2441                                ;; 00:243c $28 $03
     pop  AF                                            ;; 00:243e $f1
@@ -6127,7 +6127,7 @@ call_00_38c1:
     ld   HL, wD624                                     ;; 00:38e0 $21 $24 $d6
     ld   L, [HL]                                       ;; 00:38e3 $6e
     ld   H, $00                                        ;; 00:38e4 $26 $00
-    ld   DE, wD629                                     ;; 00:38e6 $11 $29 $d6
+    ld   DE, wD629_RemoteProgressBitfields                                     ;; 00:38e6 $11 $29 $d6
     add  HL, DE                                        ;; 00:38e9 $19
     and  A, [HL]                                       ;; 00:38ea $a6
     ld   E, A                                          ;; 00:38eb $5f
@@ -6520,7 +6520,7 @@ call_00_3c3f:
 
 call_00_3c54:
     push HL                                            ;; 00:3c54 $e5
-    ld   HL, wD629                                     ;; 00:3c55 $21 $29 $d6
+    ld   HL, wD629_RemoteProgressBitfields                                     ;; 00:3c55 $21 $29 $d6
     ld   B, $1e                                        ;; 00:3c58 $06 $1e
     ld   E, $00                                        ;; 00:3c5a $1e $00
 .jr_00_3c5c:

@@ -1773,7 +1773,7 @@ call_03_5b5b:
     db   $10, $00, $78, $10, $80, $7e, $11, $88        ;; 03:5c23 ????????
     db   $7a, $10, $90, $7c, $10, $00, $70, $10        ;; 03:5c2b ????????
 .jp_03_5c33:
-    ld   A, [wD741]                                    ;; 03:5c33 $fa $41 $d7
+    ld   A, [wD741_PlayerHealth]                                    ;; 03:5c33 $fa $41 $d7
     swap A                                             ;; 03:5c36 $cb $37
     add  A, $58                                        ;; 03:5c38 $c6 $58
     ld   E, A                                          ;; 03:5c3a $5f
@@ -3173,7 +3173,7 @@ call_03_6d13:
     ld   [HL+], A                                      ;; 03:6d1e $22
     ld   [HL-], A                                      ;; 03:6d1f $32
     dec  HL                                            ;; 03:6d20 $2b
-    ld   A, [wD73D]                                    ;; 03:6d21 $fa $3d $d7
+    ld   A, [wD73D_LivesRemaining]                                    ;; 03:6d21 $fa $3d $d7
     cp   A, $64                                        ;; 03:6d24 $fe $64
     jr   NC, .jr_03_6d2e                               ;; 03:6d26 $30 $06
     cp   A, $0a                                        ;; 03:6d28 $fe $0a
@@ -3212,7 +3212,7 @@ jr_03_6d5e:
     ld   A, $0a                                        ;; 03:6d61 $3e $0a
     ld   [HL+], A                                      ;; 03:6d63 $22
     ld   [HL-], A                                      ;; 03:6d64 $32
-    ld   A, [wD649]                                    ;; 03:6d65 $fa $49 $d6
+    ld   A, [wD649_CollectibleAmount]                                    ;; 03:6d65 $fa $49 $d6
     cp   A, $0a                                        ;; 03:6d68 $fe $0a
     jr   C, .jr_03_6d76                                ;; 03:6d6a $38 $0a
     ld   [HL], $ff                                     ;; 03:6d6c $36 $ff
