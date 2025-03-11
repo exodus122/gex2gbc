@@ -135,12 +135,6 @@ image_00d_16_palette_ids.bin:
     INCBIN "gfx/special_tilesets/palette_ids/image_00d_16_palette_ids.bin"
 image_00d_17.bin:
     INCBIN ".gfx/special_tilesets/image_00d_17.bin"
-image_00d_17_palette_ids.bin:
-    INCBIN "gfx/special_tilesets/palette_ids/image_00d_17_palette_ids.bin"
-image_00d_18.bin:
-    INCBIN ".gfx/special_tilesets/image_00d_18.bin"
-image_00d_18_palette_ids.bin:
-    INCBIN "gfx/special_tilesets/palette_ids/image_00d_18_palette_ids.bin"
 
 SECTION "bank0e", ROMX[$4000], BANK[$0e]
 image_00e_0.bin:
@@ -217,16 +211,6 @@ image_00e_17_palette_ids.bin:
     INCBIN "gfx/special_tilesets/palette_ids/image_00e_17_palette_ids.bin"
 image_00e_18.bin:
     INCBIN ".gfx/special_tilesets/image_00e_18.bin"
-image_00e_18_palette_ids.bin:
-    INCBIN "gfx/special_tilesets/palette_ids/image_00e_18_palette_ids.bin"
-image_00e_19.bin:
-    INCBIN ".gfx/special_tilesets/image_00e_19.bin"
-image_00e_19_palette_ids.bin:
-    INCBIN "gfx/special_tilesets/palette_ids/image_00e_19_palette_ids.bin"
-image_00e_20.bin:
-    INCBIN ".gfx/special_tilesets/image_00e_20.bin"
-image_00e_20_palette_ids.bin:
-    INCBIN "gfx/special_tilesets/palette_ids/image_00e_20_palette_ids.bin"
 
 SECTION "bank0f", ROMX[$4000], BANK[$0f]
 image_00f_0.bin:
@@ -279,8 +263,6 @@ image_00f_11_palette_ids.bin:
     INCBIN "gfx/special_tilesets/palette_ids/image_00f_11_palette_ids.bin"
 image_00f_12.bin:
     INCBIN ".gfx/special_tilesets/image_00f_12.bin"
-image_00f_12_palette_ids.bin:
-    INCBIN "gfx/special_tilesets/palette_ids/image_00f_12_palette_ids.bin"
 
 SECTION "bank10", ROMX[$4000], BANK[$10]
 image_010_0.bin:

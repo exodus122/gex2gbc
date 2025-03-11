@@ -92,7 +92,7 @@ def extract_special_tilesets_horizontal():
                 
             if b == 0xd or b == 0xe or b == 0xf or b == 0x10 or b == 0x13:
                 next_chunk = 0x240
-                width = 0x4
+                width = 0x6
             elif b != 0xc:
                 continue
             
@@ -138,6 +138,15 @@ def extract_special_tilesets_horizontal():
                     else:
                         next_chunk = 0x240
                         count2 = count2 + 1
+                    if b == 0xd and count2 == 17:
+                        next_chunk = 0x480
+                        width = 9
+                    elif b == 0xe and count2 == 18:
+                        next_chunk = 0x900
+                        width = 16
+                    elif b == 0xf and count2 == 12:
+                        next_chunk = 0x300
+                        width = 2
                 
                 count = count + 1
                 
@@ -199,5 +208,5 @@ def extract_splash():
                     
       
 #extract_sprites_vertical()
-#extract_special_tilesets_horizontal()
-extract_splash()
+extract_special_tilesets_horizontal()
+#extract_splash()

@@ -1150,9 +1150,6 @@
 0d:7000 image_00d_16.bin
 0d:7240 image_00d_16_palette_ids.bin
 0d:7300 image_00d_17.bin
-0d:7540 image_00d_17_palette_ids.bin
-0d:7600 image_00d_18.bin
-0d:7840 image_00d_18_palette_ids.bin
 0e:4000 image_00e_0.bin
 0e:4240 image_00e_0_palette_ids.bin
 0e:4300 image_00e_1.bin
@@ -1190,11 +1187,6 @@
 0e:7300 image_00e_17.bin
 0e:7540 image_00e_17_palette_ids.bin
 0e:7600 image_00e_18.bin
-0e:7840 image_00e_18_palette_ids.bin
-0e:7900 image_00e_19.bin
-0e:7b40 image_00e_19_palette_ids.bin
-0e:7c00 image_00e_20.bin
-0e:7e40 image_00e_20_palette_ids.bin
 0f:4000 image_00f_0.bin
 0f:4240 image_00f_0_palette_ids.bin
 0f:4300 image_00f_1.bin
@@ -1220,7 +1212,6 @@
 0f:6100 image_00f_11.bin
 0f:6340 image_00f_11_palette_ids.bin
 0f:6400 image_00f_12.bin
-0f:6640 image_00f_12_palette_ids.bin
 10:4000 image_010_0.bin
 10:4240 image_010_0_palette_ids.bin
 10:4300 image_010_1.bin
