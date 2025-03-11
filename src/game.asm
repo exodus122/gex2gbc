@@ -33,7 +33,17 @@ SECTION "bank07", ROMX[$4000], BANK[$07]
 image_007_4000.bin:
     INCBIN ".gfx/spritesheets/image_007_4000.bin"
 
-INCLUDE "bank08.asm"
+SECTION "bank08", ROMX[$4000], BANK[$08]
+image_008_0.bin:
+    INCBIN ".gfx/splash/image_008_0.bin"
+image_008_0_palette_ids.bin:
+    INCBIN "gfx/splash/palette_ids/image_008_0_palette_ids.bin"
+image_008_1.bin:
+    INCBIN ".gfx/splash/image_008_1.bin"
+image_008_1_palette_ids.bin:
+    INCBIN "gfx/splash/palette_ids/image_008_1_palette_ids.bin"
+image_008_2.bin:
+    INCBIN ".gfx/splash/image_008_2.bin"
 
 SECTION "bank09", ROMX[$4000], BANK[$09]
 image_009_4000.bin:
@@ -41,11 +51,290 @@ image_009_4000.bin:
 
 INCLUDE "bank0A.asm"
 INCLUDE "bank0B.asm"
-INCLUDE "bank0C.asm"
-INCLUDE "bank0D.asm"
-INCLUDE "bank0E.asm"
-INCLUDE "bank0F.asm"
-INCLUDE "bank10.asm"
+
+SECTION "bank0c", ROMX[$4000], BANK[$0c]
+image_00c_0.bin:
+    INCBIN ".gfx/splash/image_00c_0.bin"
+image_00c_0_palette_ids.bin:
+    INCBIN "gfx/splash/palette_ids/image_00c_0_palette_ids.bin"
+image_00c_1.bin:
+    INCBIN ".gfx/splash/image_00c_1.bin"
+image_00c_2.bin:
+    INCBIN ".gfx/splash/image_00c_2.bin"
+image_00c_2_palette_ids.bin:
+    INCBIN "gfx/splash/palette_ids/image_00c_2_palette_ids.bin"
+
+SECTION "bank0d", ROMX[$4000], BANK[$0d]
+image_00d_0.bin:
+    INCBIN ".gfx/special_tilesets/image_00d_0.bin"
+image_00d_0_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00d_0_palette_ids.bin"
+image_00d_1.bin:
+    INCBIN ".gfx/special_tilesets/image_00d_1.bin"
+image_00d_1_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00d_1_palette_ids.bin"
+image_00d_2.bin:
+    INCBIN ".gfx/special_tilesets/image_00d_2.bin"
+image_00d_2_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00d_2_palette_ids.bin"
+image_00d_3.bin:
+    INCBIN ".gfx/special_tilesets/image_00d_3.bin"
+image_00d_3_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00d_3_palette_ids.bin"
+image_00d_4.bin:
+    INCBIN ".gfx/special_tilesets/image_00d_4.bin"
+image_00d_4_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00d_4_palette_ids.bin"
+image_00d_5.bin:
+    INCBIN ".gfx/special_tilesets/image_00d_5.bin"
+image_00d_5_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00d_5_palette_ids.bin"
+image_00d_6.bin:
+    INCBIN ".gfx/special_tilesets/image_00d_6.bin"
+image_00d_6_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00d_6_palette_ids.bin"
+image_00d_7.bin:
+    INCBIN ".gfx/special_tilesets/image_00d_7.bin"
+image_00d_7_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00d_7_palette_ids.bin"
+image_00d_8.bin:
+    INCBIN ".gfx/special_tilesets/image_00d_8.bin"
+image_00d_8_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00d_8_palette_ids.bin"
+image_00d_9.bin:
+    INCBIN ".gfx/special_tilesets/image_00d_9.bin"
+image_00d_9_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00d_9_palette_ids.bin"
+image_00d_10.bin:
+    INCBIN ".gfx/special_tilesets/image_00d_10.bin"
+image_00d_10_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00d_10_palette_ids.bin"
+image_00d_11.bin:
+    INCBIN ".gfx/special_tilesets/image_00d_11.bin"
+image_00d_11_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00d_11_palette_ids.bin"
+image_00d_12.bin:
+    INCBIN ".gfx/special_tilesets/image_00d_12.bin"
+image_00d_12_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00d_12_palette_ids.bin"
+image_00d_13.bin:
+    INCBIN ".gfx/special_tilesets/image_00d_13.bin"
+image_00d_13_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00d_13_palette_ids.bin"
+image_00d_14.bin:
+    INCBIN ".gfx/special_tilesets/image_00d_14.bin"
+image_00d_14_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00d_14_palette_ids.bin"
+image_00d_15.bin:
+    INCBIN ".gfx/special_tilesets/image_00d_15.bin"
+image_00d_15_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00d_15_palette_ids.bin"
+image_00d_16.bin:
+    INCBIN ".gfx/special_tilesets/image_00d_16.bin"
+image_00d_16_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00d_16_palette_ids.bin"
+image_00d_17.bin:
+    INCBIN ".gfx/special_tilesets/image_00d_17.bin"
+image_00d_17_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00d_17_palette_ids.bin"
+image_00d_18.bin:
+    INCBIN ".gfx/special_tilesets/image_00d_18.bin"
+image_00d_18_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00d_18_palette_ids.bin"
+
+SECTION "bank0e", ROMX[$4000], BANK[$0e]
+image_00e_0.bin:
+    INCBIN ".gfx/special_tilesets/image_00e_0.bin"
+image_00e_0_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00e_0_palette_ids.bin"
+image_00e_1.bin:
+    INCBIN ".gfx/special_tilesets/image_00e_1.bin"
+image_00e_1_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00e_1_palette_ids.bin"
+image_00e_2.bin:
+    INCBIN ".gfx/special_tilesets/image_00e_2.bin"
+image_00e_2_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00e_2_palette_ids.bin"
+image_00e_3.bin:
+    INCBIN ".gfx/special_tilesets/image_00e_3.bin"
+image_00e_3_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00e_3_palette_ids.bin"
+image_00e_4.bin:
+    INCBIN ".gfx/special_tilesets/image_00e_4.bin"
+image_00e_4_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00e_4_palette_ids.bin"
+image_00e_5.bin:
+    INCBIN ".gfx/special_tilesets/image_00e_5.bin"
+image_00e_5_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00e_5_palette_ids.bin"
+image_00e_6.bin:
+    INCBIN ".gfx/special_tilesets/image_00e_6.bin"
+image_00e_6_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00e_6_palette_ids.bin"
+image_00e_7.bin:
+    INCBIN ".gfx/special_tilesets/image_00e_7.bin"
+image_00e_7_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00e_7_palette_ids.bin"
+image_00e_8.bin:
+    INCBIN ".gfx/special_tilesets/image_00e_8.bin"
+image_00e_8_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00e_8_palette_ids.bin"
+image_00e_9.bin:
+    INCBIN ".gfx/special_tilesets/image_00e_9.bin"
+image_00e_9_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00e_9_palette_ids.bin"
+image_00e_10.bin:
+    INCBIN ".gfx/special_tilesets/image_00e_10.bin"
+image_00e_10_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00e_10_palette_ids.bin"
+image_00e_11.bin:
+    INCBIN ".gfx/special_tilesets/image_00e_11.bin"
+image_00e_11_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00e_11_palette_ids.bin"
+image_00e_12.bin:
+    INCBIN ".gfx/special_tilesets/image_00e_12.bin"
+image_00e_12_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00e_12_palette_ids.bin"
+image_00e_13.bin:
+    INCBIN ".gfx/special_tilesets/image_00e_13.bin"
+image_00e_13_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00e_13_palette_ids.bin"
+image_00e_14.bin:
+    INCBIN ".gfx/special_tilesets/image_00e_14.bin"
+image_00e_14_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00e_14_palette_ids.bin"
+image_00e_15.bin:
+    INCBIN ".gfx/special_tilesets/image_00e_15.bin"
+image_00e_15_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00e_15_palette_ids.bin"
+image_00e_16.bin:
+    INCBIN ".gfx/special_tilesets/image_00e_16.bin"
+image_00e_16_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00e_16_palette_ids.bin"
+image_00e_17.bin:
+    INCBIN ".gfx/special_tilesets/image_00e_17.bin"
+image_00e_17_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00e_17_palette_ids.bin"
+image_00e_18.bin:
+    INCBIN ".gfx/special_tilesets/image_00e_18.bin"
+image_00e_18_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00e_18_palette_ids.bin"
+image_00e_19.bin:
+    INCBIN ".gfx/special_tilesets/image_00e_19.bin"
+image_00e_19_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00e_19_palette_ids.bin"
+image_00e_20.bin:
+    INCBIN ".gfx/special_tilesets/image_00e_20.bin"
+image_00e_20_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00e_20_palette_ids.bin"
+
+SECTION "bank0f", ROMX[$4000], BANK[$0f]
+image_00f_0.bin:
+    INCBIN ".gfx/special_tilesets/image_00f_0.bin"
+image_00f_0_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00f_0_palette_ids.bin"
+image_00f_1.bin:
+    INCBIN ".gfx/special_tilesets/image_00f_1.bin"
+image_00f_1_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00f_1_palette_ids.bin"
+image_00f_2.bin:
+    INCBIN ".gfx/special_tilesets/image_00f_2.bin"
+image_00f_2_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00f_2_palette_ids.bin"
+image_00f_3.bin:
+    INCBIN ".gfx/special_tilesets/image_00f_3.bin"
+image_00f_3_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00f_3_palette_ids.bin"
+image_00f_4.bin:
+    INCBIN ".gfx/special_tilesets/image_00f_4.bin"
+image_00f_4_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00f_4_palette_ids.bin"
+image_00f_5.bin:
+    INCBIN ".gfx/special_tilesets/image_00f_5.bin"
+image_00f_5_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00f_5_palette_ids.bin"
+image_00f_6.bin:
+    INCBIN ".gfx/special_tilesets/image_00f_6.bin"
+image_00f_6_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00f_6_palette_ids.bin"
+image_00f_7.bin:
+    INCBIN ".gfx/special_tilesets/image_00f_7.bin"
+image_00f_7_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00f_7_palette_ids.bin"
+image_00f_8.bin:
+    INCBIN ".gfx/special_tilesets/image_00f_8.bin"
+image_00f_8_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00f_8_palette_ids.bin"
+image_00f_9.bin:
+    INCBIN ".gfx/special_tilesets/image_00f_9.bin"
+image_00f_9_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00f_9_palette_ids.bin"
+image_00f_10.bin:
+    INCBIN ".gfx/special_tilesets/image_00f_10.bin"
+image_00f_10_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00f_10_palette_ids.bin"
+image_00f_11.bin:
+    INCBIN ".gfx/special_tilesets/image_00f_11.bin"
+image_00f_11_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00f_11_palette_ids.bin"
+image_00f_12.bin:
+    INCBIN ".gfx/special_tilesets/image_00f_12.bin"
+image_00f_12_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_00f_12_palette_ids.bin"
+
+SECTION "bank10", ROMX[$4000], BANK[$10]
+image_010_0.bin:
+    INCBIN ".gfx/special_tilesets/image_010_0.bin"
+image_010_0_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_010_0_palette_ids.bin"
+image_010_1.bin:
+    INCBIN ".gfx/special_tilesets/image_010_1.bin"
+image_010_1_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_010_1_palette_ids.bin"
+image_010_2.bin:
+    INCBIN ".gfx/special_tilesets/image_010_2.bin"
+image_010_2_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_010_2_palette_ids.bin"
+image_010_3.bin:
+    INCBIN ".gfx/special_tilesets/image_010_3.bin"
+image_010_3_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_010_3_palette_ids.bin"
+image_010_4.bin:
+    INCBIN ".gfx/special_tilesets/image_010_4.bin"
+image_010_4_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_010_4_palette_ids.bin"
+image_010_5.bin:
+    INCBIN ".gfx/special_tilesets/image_010_5.bin"
+image_010_5_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_010_5_palette_ids.bin"
+image_010_6.bin:
+    INCBIN ".gfx/special_tilesets/image_010_6.bin"
+image_010_6_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_010_6_palette_ids.bin"
+image_010_7.bin:
+    INCBIN ".gfx/special_tilesets/image_010_7.bin"
+image_010_7_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_010_7_palette_ids.bin"
+image_010_8.bin:
+    INCBIN ".gfx/special_tilesets/image_010_8.bin"
+image_010_8_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_010_8_palette_ids.bin"
+image_010_9.bin:
+    INCBIN ".gfx/special_tilesets/image_010_9.bin"
+image_010_9_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_010_9_palette_ids.bin"
+image_010_10.bin:
+    INCBIN ".gfx/special_tilesets/image_010_10.bin"
+image_010_10_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_010_10_palette_ids.bin"
+image_010_11.bin:
+    INCBIN ".gfx/special_tilesets/image_010_11.bin"
+image_010_11_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_010_11_palette_ids.bin"
+image_010_12.bin:
+    INCBIN ".gfx/special_tilesets/image_010_12.bin"
+image_010_12_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_010_12_palette_ids.bin"
 
 SECTION "bank11", ROMX[$4000], BANK[$11]
 image_011_4000.bin:
@@ -57,7 +346,87 @@ image_012_4000.bin:
 image_012_6000.bin:
     INCBIN ".gfx/spritesheets/image_012_6000.bin"
 
-INCLUDE "bank13.asm"
+SECTION "bank13", ROMX[$4000], BANK[$13]
+image_013_0.bin:
+    INCBIN ".gfx/special_tilesets/image_013_0.bin"
+image_013_0_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_013_0_palette_ids.bin"
+image_013_1.bin:
+    INCBIN ".gfx/special_tilesets/image_013_1.bin"
+image_013_1_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_013_1_palette_ids.bin"
+image_013_2.bin:
+    INCBIN ".gfx/special_tilesets/image_013_2.bin"
+image_013_2_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_013_2_palette_ids.bin"
+image_013_3.bin:
+    INCBIN ".gfx/special_tilesets/image_013_3.bin"
+image_013_3_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_013_3_palette_ids.bin"
+image_013_4.bin:
+    INCBIN ".gfx/special_tilesets/image_013_4.bin"
+image_013_4_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_013_4_palette_ids.bin"
+image_013_5.bin:
+    INCBIN ".gfx/special_tilesets/image_013_5.bin"
+image_013_5_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_013_5_palette_ids.bin"
+image_013_6.bin:
+    INCBIN ".gfx/special_tilesets/image_013_6.bin"
+image_013_6_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_013_6_palette_ids.bin"
+image_013_7.bin:
+    INCBIN ".gfx/special_tilesets/image_013_7.bin"
+image_013_7_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_013_7_palette_ids.bin"
+image_013_8.bin:
+    INCBIN ".gfx/special_tilesets/image_013_8.bin"
+image_013_8_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_013_8_palette_ids.bin"
+image_013_9.bin:
+    INCBIN ".gfx/special_tilesets/image_013_9.bin"
+image_013_9_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_013_9_palette_ids.bin"
+image_013_10.bin:
+    INCBIN ".gfx/special_tilesets/image_013_10.bin"
+image_013_10_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_013_10_palette_ids.bin"
+image_013_11.bin:
+    INCBIN ".gfx/special_tilesets/image_013_11.bin"
+image_013_11_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_013_11_palette_ids.bin"
+image_013_12.bin:
+    INCBIN ".gfx/special_tilesets/image_013_12.bin"
+image_013_12_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_013_12_palette_ids.bin"
+image_013_13.bin:
+    INCBIN ".gfx/special_tilesets/image_013_13.bin"
+image_013_13_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_013_13_palette_ids.bin"
+image_013_14.bin:
+    INCBIN ".gfx/special_tilesets/image_013_14.bin"
+image_013_14_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_013_14_palette_ids.bin"
+image_013_15.bin:
+    INCBIN ".gfx/special_tilesets/image_013_15.bin"
+image_013_15_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_013_15_palette_ids.bin"
+image_013_16.bin:
+    INCBIN ".gfx/special_tilesets/image_013_16.bin"
+image_013_16_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_013_16_palette_ids.bin"
+image_013_17.bin:
+    INCBIN ".gfx/special_tilesets/image_013_17.bin"
+image_013_17_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_013_17_palette_ids.bin"
+image_013_18.bin:
+    INCBIN ".gfx/special_tilesets/image_013_18.bin"
+image_013_18_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_013_18_palette_ids.bin"
+image_013_19.bin:
+    INCBIN ".gfx/special_tilesets/image_013_19.bin"
+image_013_19_palette_ids.bin:
+    INCBIN "gfx/special_tilesets/palette_ids/image_013_19_palette_ids.bin"
 
 SECTION "bank14", ROMX[$4000], BANK[$14]
 image_014_4000.bin:
@@ -102,22 +471,34 @@ image_01c_6000.bin:
     INCBIN ".gfx/spritesheets/image_01c_6000.bin"
 
 SECTION "bank1d", ROMX[$4000], BANK[$1d]
-image_01d_4000.bin:
-    INCBIN ".gfx/credits/image_01d_4000.bin"
-image_01d_5600.bin:
-    INCBIN ".gfx/credits/image_01d_5600.bin"
+image_01d_0.bin:
+    INCBIN ".gfx/splash/image_01d_0.bin"
+image_01d_0_palette_ids.bin:
+    INCBIN "gfx/splash/palette_ids/image_01d_0_palette_ids.bin"
+image_01d_1.bin:
+    INCBIN ".gfx/splash/image_01d_1.bin"
+image_01d_1_palette_ids.bin:
+    INCBIN "gfx/splash/palette_ids/image_01d_1_palette_ids.bin"
 
 SECTION "bank1e", ROMX[$4000], BANK[$1e]
-image_01e_4000.bin:
-    INCBIN ".gfx/splash/image_01e_4000.bin"
-image_01e_5600.bin:
-    INCBIN ".gfx/credits/image_01e_5600.bin"
+image_01e_0.bin:
+    INCBIN ".gfx/splash/image_01e_0.bin"
+image_01e_0_palette_ids.bin:
+    INCBIN "gfx/splash/palette_ids/image_01e_0_palette_ids.bin"
+image_01e_1.bin:
+    INCBIN ".gfx/splash/image_01e_1.bin"
+image_01e_1_palette_ids.bin:
+    INCBIN "gfx/splash/palette_ids/image_01e_1_palette_ids.bin"
 
 SECTION "bank1f", ROMX[$4000], BANK[$1f]
-image_01f_4000.bin:
-    INCBIN ".gfx/splash/image_01f_4000.bin"
-image_01f_5900.bin:
-    INCBIN ".gfx/splash/image_01f_5900.bin"
+image_01f_0.bin:
+    INCBIN ".gfx/splash/image_01f_0.bin"
+image_01f_0_palette_ids.bin:
+    INCBIN "gfx/splash/palette_ids/image_01f_0_palette_ids.bin"
+image_01f_1.bin:
+    INCBIN ".gfx/splash/image_01f_1.bin"
+image_01f_1_palette_ids.bin:
+    INCBIN "gfx/splash/palette_ids/image_01f_1_palette_ids.bin"
 
 SECTION "bank20", ROMX[$4000], BANK[$20]
 
@@ -233,8 +614,8 @@ blockset_data_kung_fu_theater.bin:
     INCBIN "maps/kung_fu_theater/blockset_data_kung_fu_theater.bin"
 
 SECTION "bank3d", ROMX[$4000], BANK[$3d]
-image_03d_4000.bin:
-    INCBIN ".gfx/credits/image_03d_4000.bin"
+image_03d_0.bin:
+    INCBIN ".gfx/splash/image_03d_0.bin"
 
 SECTION "bank3E", ROMX[$4000], BANK[$3e]
 blockset_data_prehistory_channel.bin:
