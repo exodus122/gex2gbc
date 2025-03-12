@@ -1078,15 +1078,14 @@
 0a:4019 call_0a_4000.data_0a_4019
 0a:4057 data_MediaDimensionObjects
 0a:4488 data_OutOfToonObjects
-0a:48c9 data_SmellRaiserObjects
-0a:4aba data_FrankensteinFeldObjects
+0a:48c9 data_SmellraiserObjects
+0a:4aba data_FrankensteinfeldObjects
 0a:4ddb data_wwwdotcomcomObjects
 0a:51ec data_MaoTseTongueObjects
 0a:54ed data_Pangaea90210_Objects
 0a:57ee data_FineTooningObjects
 0a:5c8f data_ThisOldCaveObjects
 0a:5e20 data_HoneyIShrunkTheGeckoObjects
-0a:5f57 data_0a_5f57
 0a:6331 data_PoltergexObjects
 0a:6692 data_SamuraiNightFeverObjects
 0a:6a43 data_NoWeddingsAndAFuneralObjects
@@ -1095,9 +1094,7 @@
 0a:6dc6 data_BuggedOutObjects
 0a:6df7 data_ChipsAndDipsObjects
 0a:6e78 data_LavaDabbaDooObjects
-0a:7102 data_0a_7102
 0a:7149 data_TexasChainsawManicureObjects
-0a:7211 data_0a_7211
 0a:734a data_MazedAndConfusedObjects
 0a:751b data_ChannelZObjects
 0a:75fc data_0a_75fc
