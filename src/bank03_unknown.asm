@@ -994,9 +994,9 @@ jp_03_4c76:
     ld   [wD750], A                                    ;; 03:4e6e $ea $50 $d7
     ld   A, $19                                        ;; 03:4e71 $3e $19
     ld   [wD59D], A                                    ;; 03:4e73 $ea $9d $d5
-    ld   A, $02                                        ;; 03:4e76 $3e $02
+    ld   A, Bank02                                        ;; 03:4e76 $3e $02
     ld   HL, .data_03_4ccd                             ;; 03:4e78 $21 $cd $4c
-    call call_00_1078_AltSwitchBank                                  ;; 03:4e7b $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 03:4e7b $cd $78 $10
     ret                                                ;; 03:4e7e $c9
     db   $26, $d2, $fa, $00, $d3, $f6, $17, $6f        ;; 03:4e7f ????????
     db   $cb, $46, $c0, $cd, $9b, $51, $d0, $fe        ;; 03:4e87 ????????
@@ -1221,7 +1221,7 @@ call_03_519b:
 
 call_03_52be:
     call call_00_075b                                  ;; 03:52be $cd $5b $07
-    call Z, call_00_06bf                               ;; 03:52c1 $cc $bf $06
+    call Z, call_00_06bf_GexTakesDamage                               ;; 03:52c1 $cc $bf $06
     ret                                                ;; 03:52c4 $c9
 
 data_03_52c5:

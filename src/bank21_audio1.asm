@@ -1,6 +1,10 @@
 ;; Disassembled with BadBoy Disassembler: https://github.com/daid/BadBoy
 
+; Note: All of the code in this file is identical in banks 0x21, 0x22, 0x23, and 0x24. This is a duplicated 
+; audio engine. The data that follows the code is different and contains different songs or sound effects.
+
 SECTION "bank21", ROMX[$4000], BANK[$21]
+entry_21_4000:
     ld   HL, data_21_4460                              ;; 21:4000 $21 $60 $44
     ld   A, L                                          ;; 21:4003 $7d
     ld   [wDFAE], A                                    ;; 21:4004 $ea $ae $df
@@ -23,7 +27,6 @@ SECTION "bank21", ROMX[$4000], BANK[$21]
     ld   HL, wDFD2                                     ;; 21:4032 $21 $d2 $df
     ld   C, $14                                        ;; 21:4035 $0e $14
     xor  A, A                                          ;; 21:4037 $af
-
 jr_21_4038:
     ld   [HL+], A                                      ;; 21:4038 $22
     dec  C                                             ;; 21:4039 $0d
@@ -36,187 +39,149 @@ jr_21_4038:
     dec  C                                             ;; 21:4043 $0d
     jr   NZ, .jr_21_4042                               ;; 21:4044 $20 $fc
     ret                                                ;; 21:4046 $c9
-;    db   $ea, $d0, $df, $3e, $01, $ea, $d1, $df        ;; 21:4047 ????????
-;    db   $fa, $d0, $df, $cb, $27, $5f, $cb, $27        ;; 21:404f ????????
-;    db   $4f, $cb, $27, $83, $11, $9e, $43, $83        ;; 21:4057 ????????
-;    db   $5f, $30, $01, $14, $21, $d2, $df, $fa        ;; 21:405f ????????
-;    db   $d0, $df, $81, $85, $6f, $30, $01, $24        ;; 21:4067 ????????
-;    db   $06, $ff, $1a, $a7, $28, $0a, $13, $4f        ;; 21:406f ????????
-;    db   $0a, $4f, $1a, $13, $a1, $22, $18, $f2        ;; 21:4077 ????????
-;    db   $fa, $ae, $df, $5f, $fa, $af, $df, $57        ;; 21:407f ????????
-;    db   $1a, $83, $6f, $13, $1a, $1b, $8a, $57        ;; 21:4087 ????????
-;    db   $5d, $18, $12, $ea, $d0, $df, $3e, $02        ;; 21:408f ????????
-;    db   $ea, $d1, $df, $fa, $ae, $df, $5f, $fa        ;; 21:4097 ????????
-;    db   $af, $df, $57, $13, $13, $fa, $d0, $df        ;; 21:409f ????????
-;    db   $87, $6f, $7a, $ce, $00, $57, $7b, $85        ;; 21:40a7 ????????
-;    db   $5f, $7a, $ce, $00, $57, $1a, $83, $6f        ;; 21:40af ????????
-;    db   $13, $1a, $1b, $8a, $57, $5d, $1a, $ea        ;; 21:40b7 ????????
-;    db   $fe, $df, $6f, $af, $37, $cb, $17, $2d        ;; 21:40bf ????????
-;    db   $20, $fb, $ea, $c1, $df, $6f, $fa, $d1        ;; 21:40c7 ????????
-;    db   $df, $fe, $01, $20, $0f, $fa, $cf, $df        ;; 21:40cf ????????
-;    db   $b5, $ea, $cf, $df, $21, $c3, $df, $01        ;; 21:40d7 ????????
-;    db   $cb, $df, $18, $0d, $fa, $c2, $df, $b5        ;; 21:40df ????????
-;    db   $ea, $c2, $df, $21, $b0, $df, $01, $b9        ;; 21:40e7 ????????
-;    db   $df, $1a, $3d, $cb, $27, $85, $6f, $30        ;; 21:40ef ????????
-;    db   $01, $24, $1a, $3d, $81, $4f, $30, $01        ;; 21:40f7 ????????
-;    db   $04, $13, $73, $23, $72, $2b, $c5, $cd        ;; 21:40ff ????????
-;    db   $99, $41, $c1, $02, $c9                       ;; 21:4107 ?????
 
-    ld [$dfd0], a
-    ld a, $01
-    ld [$dfd1], a
-    ld a, [$dfd0]
-    sla a
-    ld e, a
-    sla a
-    ld c, a
-    sla a
-    add e
-    ld de, $439e
-    add e
-    ld e, a
-    jr nc, .jr_021_4063
+call_21_4047:
+    ld   [wDFD0], A                                    ;; 21:4047 $ea $d0 $df
+    ld   A, $01                                        ;; 21:404a $3e $01
+    ld   [wDFD1], A                                    ;; 21:404c $ea $d1 $df
+    ld   A, [wDFD0]                                    ;; 21:404f $fa $d0 $df
+    sla  A                                             ;; 21:4052 $cb $27
+    ld   E, A                                          ;; 21:4054 $5f
+    sla  A                                             ;; 21:4055 $cb $27
+    ld   C, A                                          ;; 21:4057 $4f
+    sla  A                                             ;; 21:4058 $cb $27
+    add  A, E                                          ;; 21:405a $83
+    ld   DE, data_21_439e                              ;; 21:405b $11 $9e $43
+    add  A, E                                          ;; 21:405e $83
+    ld   E, A                                          ;; 21:405f $5f
+    jr   NC, .jr_21_4063                               ;; 21:4060 $30 $01
+    inc  D                                             ;; 21:4062 $14
+.jr_21_4063:
+    ld   HL, wDFD2                                     ;; 21:4063 $21 $d2 $df
+    ld   A, [wDFD0]                                    ;; 21:4066 $fa $d0 $df
+    add  A, C                                          ;; 21:4069 $81
+    add  A, L                                          ;; 21:406a $85
+    ld   L, A                                          ;; 21:406b $6f
+    jr   NC, .jr_21_406f                               ;; 21:406c $30 $01
+    inc  H                                             ;; 21:406e $24
+.jr_21_406f:
+    ld   B, $ff                                        ;; 21:406f $06 $ff
+.jr_21_4071:
+    ld   A, [DE]                                       ;; 21:4071 $1a
+    and  A, A                                          ;; 21:4072 $a7
+    jr   Z, .jr_21_407f                                ;; 21:4073 $28 $0a
+    inc  DE                                            ;; 21:4075 $13
+    ld   C, A                                          ;; 21:4076 $4f
+    ld   A, [BC]                                       ;; 21:4077 $0a
+    ld   C, A                                          ;; 21:4078 $4f
+    ld   A, [DE]                                       ;; 21:4079 $1a
+    inc  DE                                            ;; 21:407a $13
+    and  A, C                                          ;; 21:407b $a1
+    ld   [HL+], A                                      ;; 21:407c $22
+    jr   .jr_21_4071                                   ;; 21:407d $18 $f2
+.jr_21_407f:
+    ld   A, [wDFAE]                                    ;; 21:407f $fa $ae $df
+    ld   E, A                                          ;; 21:4082 $5f
+    ld   A, [wDFAF]                                    ;; 21:4083 $fa $af $df
+    ld   D, A                                          ;; 21:4086 $57
+    ld   A, [DE]                                       ;; 21:4087 $1a
+    add  A, E                                          ;; 21:4088 $83
+    ld   L, A                                          ;; 21:4089 $6f
+    inc  DE                                            ;; 21:408a $13
+    ld   A, [DE]                                       ;; 21:408b $1a
+    dec  DE                                            ;; 21:408c $1b
+    adc  A, D                                          ;; 21:408d $8a
+    ld   D, A                                          ;; 21:408e $57
+    ld   E, L                                          ;; 21:408f $5d
+    jr   jr_21_40a4                                    ;; 21:4090 $18 $12
 
-    inc d
+call_21_4092:
+    ld   [wDFD0], A                                    ;; 21:4092 $ea $d0 $df
+    ld   A, $02                                        ;; 21:4095 $3e $02
+    ld   [wDFD1], A                                    ;; 21:4097 $ea $d1 $df
+    ld   A, [wDFAE]                                    ;; 21:409a $fa $ae $df
+    ld   E, A                                          ;; 21:409d $5f
+    ld   A, [wDFAF]                                    ;; 21:409e $fa $af $df
+    ld   D, A                                          ;; 21:40a1 $57
+    inc  DE                                            ;; 21:40a2 $13
+    inc  DE                                            ;; 21:40a3 $13
 
-.jr_021_4063:
-    ld hl, $dfd2
-    ld a, [$dfd0]
-    add c
-    add l
-    ld l, a
-    jr nc, .jr_021_406f
+jr_21_40a4:
+    ld   A, [wDFD0]                                    ;; 21:40a4 $fa $d0 $df
+    add  A, A                                          ;; 21:40a7 $87
+    ld   L, A                                          ;; 21:40a8 $6f
+    ld   A, D                                          ;; 21:40a9 $7a
+    adc  A, $00                                        ;; 21:40aa $ce $00
+    ld   D, A                                          ;; 21:40ac $57
+    ld   A, E                                          ;; 21:40ad $7b
+    add  A, L                                          ;; 21:40ae $85
+    ld   E, A                                          ;; 21:40af $5f
+    ld   A, D                                          ;; 21:40b0 $7a
+    adc  A, $00                                        ;; 21:40b1 $ce $00
+    ld   D, A                                          ;; 21:40b3 $57
+    ld   A, [DE]                                       ;; 21:40b4 $1a
+    add  A, E                                          ;; 21:40b5 $83
+    ld   L, A                                          ;; 21:40b6 $6f
+    inc  DE                                            ;; 21:40b7 $13
+    ld   A, [DE]                                       ;; 21:40b8 $1a
+    dec  DE                                            ;; 21:40b9 $1b
+    adc  A, D                                          ;; 21:40ba $8a
+    ld   D, A                                          ;; 21:40bb $57
+    ld   E, L                                          ;; 21:40bc $5d
+    ld   A, [DE]                                       ;; 21:40bd $1a
+    ld   [wDFFE], A                                    ;; 21:40be $ea $fe $df
+    ld   L, A                                          ;; 21:40c1 $6f
+    xor  A, A                                          ;; 21:40c2 $af
+    scf                                                ;; 21:40c3 $37
+.jr_21_40c4:
+    rl   A                                             ;; 21:40c4 $cb $17
+    dec  L                                             ;; 21:40c6 $2d
+    jr   NZ, .jr_21_40c4                               ;; 21:40c7 $20 $fb
+    ld   [wDFC1], A                                    ;; 21:40c9 $ea $c1 $df
+    ld   L, A                                          ;; 21:40cc $6f
+    ld   A, [wDFD1]                                    ;; 21:40cd $fa $d1 $df
+    cp   A, $01                                        ;; 21:40d0 $fe $01
+    jr   NZ, .jr_21_40e3                               ;; 21:40d2 $20 $0f
+    ld   A, [wDFCF]                                    ;; 21:40d4 $fa $cf $df
+    or   A, L                                          ;; 21:40d7 $b5
+    ld   [wDFCF], A                                    ;; 21:40d8 $ea $cf $df
+    ld   HL, wDFC3                                     ;; 21:40db $21 $c3 $df
+    ld   BC, wDFCB                                     ;; 21:40de $01 $cb $df
+    jr   .jr_21_40f0                                   ;; 21:40e1 $18 $0d
+.jr_21_40e3:
+    ld   A, [wDFC2]                                    ;; 21:40e3 $fa $c2 $df
+    or   A, L                                          ;; 21:40e6 $b5
+    ld   [wDFC2], A                                    ;; 21:40e7 $ea $c2 $df
+    ld   HL, wDFB0                                     ;; 21:40ea $21 $b0 $df
+    ld   BC, wDFB9                                     ;; 21:40ed $01 $b9 $df
+.jr_21_40f0:
+    ld   A, [DE]                                       ;; 21:40f0 $1a
+    dec  A                                             ;; 21:40f1 $3d
+    sla  A                                             ;; 21:40f2 $cb $27
+    add  A, L                                          ;; 21:40f4 $85
+    ld   L, A                                          ;; 21:40f5 $6f
+    jr   NC, .jr_21_40f9                               ;; 21:40f6 $30 $01
+    inc  H                                             ;; 21:40f8 $24
+.jr_21_40f9:
+    ld   A, [DE]                                       ;; 21:40f9 $1a
+    dec  A                                             ;; 21:40fa $3d
+    add  A, C                                          ;; 21:40fb $81
+    ld   C, A                                          ;; 21:40fc $4f
+    jr   NC, .jr_21_4100                               ;; 21:40fd $30 $01
+    inc  B                                             ;; 21:40ff $04
+.jr_21_4100:
+    inc  DE                                            ;; 21:4100 $13
+    ld   [HL], E                                       ;; 21:4101 $73
+    inc  HL                                            ;; 21:4102 $23
+    ld   [HL], D                                       ;; 21:4103 $72
+    dec  HL                                            ;; 21:4104 $2b
+    push BC                                            ;; 21:4105 $c5
+    call call_21_4199                                  ;; 21:4106 $cd $99 $41
+    pop  BC                                            ;; 21:4109 $c1
+    ld   [BC], A                                       ;; 21:410a $02
+    ret                                                ;; 21:410b $c9
 
-    inc h
-
-.jr_021_406f:
-    ld b, $ff
-
-.jr_021_4071:
-    ld a, [de]
-    and a
-    jr z, .jr_021_407f
-
-    inc de
-    ld c, a
-    ld a, [bc]
-    ld c, a
-    ld a, [de]
-    inc de
-    and c
-    ld [hl+], a
-    jr .jr_021_4071
-
-.jr_021_407f:
-    ld a, [$dfae]
-    ld e, a
-    ld a, [$dfaf]
-    ld d, a
-    ld a, [de]
-    add e
-    ld l, a
-    inc de
-    ld a, [de]
-    dec de
-    adc d
-    ld d, a
-    ld e, l
-    jr .jr_021_40a4
-
-    ld [$dfd0], a
-    ld a, $02
-    ld [$dfd1], a
-    ld a, [$dfae]
-    ld e, a
-    ld a, [$dfaf]
-    ld d, a
-    inc de
-    inc de
-
-.jr_021_40a4:
-    ld a, [$dfd0]
-    add a
-    ld l, a
-    ld a, d
-    adc $00
-    ld d, a
-    ld a, e
-    add l
-    ld e, a
-    ld a, d
-    adc $00
-    ld d, a
-    ld a, [de]
-    add e
-    ld l, a
-    inc de
-    ld a, [de]
-    dec de
-    adc d
-    ld d, a
-    ld e, l
-    ld a, [de]
-    ld [$dffe], a
-    ld l, a
-    xor a
-    scf
-
-.jr_021_40c4:
-    rl a
-    dec l
-    jr nz, .jr_021_40c4
-
-    ld [$dfc1], a
-    ld l, a
-    ld a, [$dfd1]
-    cp $01
-    jr nz, .jr_021_40e3
-
-    ld a, [$dfcf]
-    or l
-    ld [$dfcf], a
-    ld hl, $dfc3
-    ld bc, $dfcb
-    jr .jr_021_40f0
-
-.jr_021_40e3:
-    ld a, [$dfc2]
-    or l
-    ld [$dfc2], a
-    ld hl, $dfb0
-    ld bc, $dfb9
-
-.jr_021_40f0:
-    ld a, [de]
-    dec a
-    sla a
-    add l
-    ld l, a
-    jr nc, .jr_021_40f9
-
-    inc h
-
-.jr_021_40f9:
-    ld a, [de]
-    dec a
-    add c
-    ld c, a
-    jr nc, .jr_021_4100
-
-    inc b
-
-.jr_021_4100:
-    inc de
-    ld [hl], e
-    inc hl
-    ld [hl], d
-    dec hl
-    push bc
-    call call_21_4199
-    pop bc
-    ld [bc], a
-    ret
-	
+call_21_410c:
     ld   BC, wDFB9                                     ;; 21:410c $01 $b9 $df
     ld   HL, wDFB0                                     ;; 21:410f $21 $b0 $df
     ld   A, $01                                        ;; 21:4112 $3e $01
@@ -340,7 +305,7 @@ call_21_4199:
     ld   A, [wDFFE]                                    ;; 21:41e3 $fa $fe $df
     add  A, E                                          ;; 21:41e6 $83
     ld   E, A                                          ;; 21:41e7 $5f
-    ld   HL, .data_21_439e                             ;; 21:41e8 $21 $9e $43
+    ld   HL, data_21_439e                              ;; 21:41e8 $21 $9e $43
     ld   A, [wDFFE]                                    ;; 21:41eb $fa $fe $df
     sla  A                                             ;; 21:41ee $cb $27
     ld   C, A                                          ;; 21:41f0 $4f
@@ -382,7 +347,7 @@ call_21_4199:
     ld   L, A                                          ;; 21:4224 $6f
     ld   A, [wDFC1]                                    ;; 21:4225 $fa $c1 $df
     dec  A                                             ;; 21:4228 $3d
-    ld   DE, .data_21_43c6                             ;; 21:4229 $11 $c6 $43
+    ld   DE, data_21_43c6                              ;; 21:4229 $11 $c6 $43
     add  A, E                                          ;; 21:422c $83
     ld   E, A                                          ;; 21:422d $5f
     jr   NC, .jr_21_4231                               ;; 21:422e $30 $01
@@ -518,7 +483,7 @@ call_21_4199:
     inc  BC                                            ;; 21:42fb $03
     jp   .jp_21_4392                                   ;; 21:42fc $c3 $92 $43
 .jr_21_42ff:
-    ld   DE, .data_21_43ce                             ;; 21:42ff $11 $ce $43
+    ld   DE, data_21_43ce                              ;; 21:42ff $11 $ce $43
     add  A, E                                          ;; 21:4302 $83
     ld   E, A                                          ;; 21:4303 $5f
     jr   NC, .jr_21_4307                               ;; 21:4304 $30 $01
@@ -549,7 +514,7 @@ call_21_4199:
     jr   NZ, .jr_21_4390                               ;; 21:4333 $20 $5b
 .jr_21_4335:
     ld   A, [wDFC0]                                    ;; 21:4335 $fa $c0 $df
-    ld   DE, .data_21_43c6                             ;; 21:4338 $11 $c6 $43
+    ld   DE, data_21_43c6                              ;; 21:4338 $11 $c6 $43
     add  A, E                                          ;; 21:433b $83
     ld   E, A                                          ;; 21:433c $5f
     jr   NC, .jr_21_4340                               ;; 21:433d $30 $01
@@ -609,17 +574,20 @@ call_21_4199:
     dec  HL                                            ;; 21:4393 $2b
     ld   [HL], C                                       ;; 21:4394 $71
     ret                                                ;; 21:4395 $c9
-	
+    
     db   $00, $02, $00, $04, $00, $00, $00, $06        ;; 21:4396 ????????
-.data_21_439e:
+
+data_21_439e:
     db   $10, $7f, $11, $ff, $12, $ff, $14, $c7        ;; 21:439e ????????
     db   $00, $00, $16, $ff, $17, $ff, $19, $c7        ;; 21:43a6 ????????
     db   $00, $00, $00, $00, $1b, $ff, $1c, $60        ;; 21:43ae ????????
     db   $1e, $c7, $00, $00, $00, $00, $20, $3f        ;; 21:43b6 ????????
     db   $21, $ff, $23, $c0, $00, $00, $00, $00        ;; 21:43be ????????
-.data_21_43c6:
+
+data_21_43c6:
     db   $13, $18, $00, $1d, $00, $00, $00, $23        ;; 21:43c6 ????????
-.data_21_43ce:
+
+data_21_43ce:
     db   $00, $00, $2c, $00, $9c, $00, $06, $01        ;; 21:43ce ????????
     db   $6b, $01, $c9, $01, $23, $02, $77, $02        ;; 21:43d6 ????????
     db   $c6, $02, $12, $03, $56, $03, $9b, $03        ;; 21:43de ????????

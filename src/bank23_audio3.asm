@@ -1,11 +1,15 @@
 ;; Disassembled with BadBoy Disassembler: https://github.com/daid/BadBoy
 
+; Note: All of the code in this file is identical in banks 0x21, 0x22, 0x23, and 0x24. This is a duplicated 
+; audio engine. The data that follows the code is different and contains different songs or sound effects.
+
 SECTION "bank23", ROMX[$4000], BANK[$23]
+entry_23_4000:
     ld   HL, data_23_4460                              ;; 23:4000 $21 $60 $44
-	ld   A, L                                          ;; 23:4003 $7d
+    ld   A, L                                          ;; 23:4003 $7d
     ld   [wDFAE], A                                    ;; 23:4004 $ea $ae $df
     ld   A, H                                          ;; 23:4007 $7c
-	ld   [wDFAF], A                                    ;; 23:4008 $ea $af $df
+    ld   [wDFAF], A                                    ;; 23:4008 $ea $af $df
     xor  A, A                                          ;; 23:400b $af
     ld   [wDFC2], A                                    ;; 23:400c $ea $c2 $df
     ld   [wDFC1], A                                    ;; 23:400f $ea $c1 $df
@@ -19,7 +23,7 @@ SECTION "bank23", ROMX[$4000], BANK[$23]
     ld   [wDFCB], A                                    ;; 23:4026 $ea $cb $df
     ld   [wDFCC], A                                    ;; 23:4029 $ea $cc $df
     ld   [wDFCD], A                                    ;; 23:402c $ea $cd $df
-	ld   [wDFCE], A                                    ;; 23:402f $ea $ce $df
+    ld   [wDFCE], A                                    ;; 23:402f $ea $ce $df
     ld   HL, wDFD2                                     ;; 23:4032 $21 $d2 $df
     ld   C, $14                                        ;; 23:4035 $0e $14
     xor  A, A                                          ;; 23:4037 $af
@@ -35,6 +39,8 @@ jr_23_4038:
     dec  C                                             ;; 23:4043 $0d
     jr   NZ, .jr_23_4042                               ;; 23:4044 $20 $fc
     ret                                                ;; 23:4046 $c9
+
+call_23_4047:
     ld   [wDFD0], A                                    ;; 23:4047 $ea $d0 $df
     ld   A, $01                                        ;; 23:404a $3e $01
     ld   [wDFD1], A                                    ;; 23:404c $ea $d1 $df
@@ -48,10 +54,9 @@ jr_23_4038:
     ld   DE, data_23_439e                              ;; 23:405b $11 $9e $43
     add  A, E                                          ;; 23:405e $83
     ld   E, A                                          ;; 23:405f $5f
-    jr   NC, jr_23_4063                                ;; 23:4060 $30 $01
+    jr   NC, .jr_23_4063                               ;; 23:4060 $30 $01
     inc  D                                             ;; 23:4062 $14
-
-jr_23_4063:
+.jr_23_4063:
     ld   HL, wDFD2                                     ;; 23:4063 $21 $d2 $df
     ld   A, [wDFD0]                                    ;; 23:4066 $fa $d0 $df
     add  A, C                                          ;; 23:4069 $81
@@ -88,7 +93,9 @@ jr_23_4063:
     adc  A, D                                          ;; 23:408d $8a
     ld   D, A                                          ;; 23:408e $57
     ld   E, L                                          ;; 23:408f $5d
-    jr   .jr_23_40a4                                   ;; 23:4090 $18 $12
+    jr   jr_23_40a4                                    ;; 23:4090 $18 $12
+
+call_23_4092:
     ld   [wDFD0], A                                    ;; 23:4092 $ea $d0 $df
     ld   A, $02                                        ;; 23:4095 $3e $02
     ld   [wDFD1], A                                    ;; 23:4097 $ea $d1 $df
@@ -98,7 +105,8 @@ jr_23_4063:
     ld   D, A                                          ;; 23:40a1 $57
     inc  DE                                            ;; 23:40a2 $13
     inc  DE                                            ;; 23:40a3 $13
-.jr_23_40a4:
+
+jr_23_40a4:
     ld   A, [wDFD0]                                    ;; 23:40a4 $fa $d0 $df
     add  A, A                                          ;; 23:40a7 $87
     ld   L, A                                          ;; 23:40a8 $6f
@@ -172,6 +180,8 @@ jr_23_4063:
     pop  BC                                            ;; 23:4109 $c1
     ld   [BC], A                                       ;; 23:410a $02
     ret                                                ;; 23:410b $c9
+
+call_23_410c:
     ld   BC, wDFB9                                     ;; 23:410c $01 $b9 $df
     ld   HL, wDFB0                                     ;; 23:410f $21 $b0 $df
     ld   A, $01                                        ;; 23:4112 $3e $01
@@ -564,6 +574,7 @@ call_23_4199:
     dec  HL                                            ;; 23:4393 $2b
     ld   [HL], C                                       ;; 23:4394 $71
     ret                                                ;; 23:4395 $c9
+
     db   $00, $02, $00, $04, $00, $00, $00, $06        ;; 23:4396 ????????
 
 data_23_439e:
@@ -596,7 +607,7 @@ data_23_43ce:
     db   $cb, $07, $ce, $07, $d1, $07, $d4, $07        ;; 23:444e p.p.p.p.
     db   $d6, $07, $d9, $07, $db, $07, $dd, $07        ;; 23:4456 p.p.p.p.
     db   $df, $07                                      ;; 23:445e p.p.p.p.
-	
+    
 data_23_4460:
     db   $12, $00, $94, $00, $7e, $03                  ;; 23:4460 p.p.p.p.
     db   $b8, $05, $21, $0a, $69, $10, $7b, $16        ;; 23:4466 p.p.p.p.

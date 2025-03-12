@@ -1,9 +1,12 @@
 ;; Disassembled with BadBoy Disassembler: https://github.com/daid/BadBoy
 
+; Note: All of the code in this file is identical in banks 0x21, 0x22, 0x23, and 0x24. This is a duplicated 
+; audio engine. The data that follows the code is different and contains different songs or sound effects.
+
 SECTION "bank22", ROMX[$4000], BANK[$22]
-	
-	ld   HL, data_22_4460                              ;; 22:4000 $21 $60 $44
-	ld   A, L                                          ;; 22:4003 $7d
+entry_22_4000:
+    ld   HL, data_22_4460                              ;; 22:4000 $21 $60 $44
+    ld   A, L                                          ;; 22:4003 $7d
     ld   [wDFAE], A                                    ;; 22:4004 $ea $ae $df
     ld   A, H                                          ;; 22:4007 $7c
     ld   [wDFAF], A                                    ;; 22:4008 $ea $af $df
@@ -571,6 +574,7 @@ call_22_4199:
     dec  HL                                            ;; 22:4393 $2b
     ld   [HL], C                                       ;; 22:4394 $71
     ret                                                ;; 22:4395 $c9
+
     db   $00, $02, $00, $04, $00, $00, $00, $06        ;; 22:4396 ????????
 
 data_22_439e:
@@ -603,7 +607,7 @@ data_22_43ce:
     db   $cb, $07, $ce, $07, $d1, $07, $d4, $07        ;; 22:444e p.p.p.p.
     db   $d6, $07, $d9, $07, $db, $07, $dd, $07        ;; 22:4456 p.p.p.p.
     db   $df, $07                                      ;; 22:445e p.p.p.p.
-	
+    
 data_22_4460:
     db   $1a, $00, $9c, $00, $72, $05                  ;; 22:4460 p.p.p.p.
     db   $02, $08, $33, $0b, $47, $0b, $ab, $0c        ;; 22:4466 p.p.p.p.

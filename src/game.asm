@@ -6,10 +6,10 @@ INCLUDE "include/charmaps.inc"
 INCLUDE "include/constants.inc"
 INCLUDE "memory.asm"
 
-INCLUDE "bank00.asm"
-INCLUDE "bank01.asm"
-INCLUDE "bank02.asm"
-INCLUDE "bank03.asm"
+INCLUDE "bank00_home.asm"
+INCLUDE "bank01_menus.asm"
+INCLUDE "bank02_objects.asm"
+INCLUDE "bank03_unknown.asm"
 
 SECTION "bank04", ROMX[$4000], BANK[$04]
 image_004_4000.bin:
@@ -47,10 +47,10 @@ image_008_2.bin:
 
 SECTION "bank09", ROMX[$4000], BANK[$09]
 image_009_4000.bin:
-    INCBIN ".gfx/tilesets/image_009_4000.bin"
+    INCBIN ".gfx/special_tilesets/image_009_4000.bin"
 
-INCLUDE "bank0A.asm"
-INCLUDE "bank0B.asm"
+INCLUDE "bank0A_unknown.asm"
+INCLUDE "bank0B_palettes.asm"
 
 SECTION "bank0c", ROMX[$4000], BANK[$0c]
 image_00c_0.bin:
@@ -484,18 +484,18 @@ image_01f_1_palette_ids.bin:
 
 SECTION "bank20", ROMX[$4000], BANK[$20]
 
-INCLUDE "bank21.asm"
-INCLUDE "bank22.asm"
-INCLUDE "bank23.asm"
-INCLUDE "bank24.asm"
+INCLUDE "bank21_audio1.asm"
+INCLUDE "bank22_audio2.asm"
+INCLUDE "bank23_audio3.asm"
+INCLUDE "bank24_audio4.asm"
 
 SECTION "bank25", ROMX[$4000], BANK[$25]
 map_circuit_central3.bin:
     INCBIN "maps/circuit_central/map_circuit_central3.bin"
 
 SECTION "bank26", ROMX[$4000], BANK[$26]
-image_026_4000.bin:
-    INCBIN ".gfx/tilesets/image_026_4000.bin"
+tileset_channel_z.bin:
+    INCBIN ".gfx/tilesets/tileset_channel_z.bin"
 
 SECTION "bank27", ROMX[$4000], BANK[$27]
 blockset_data_channel_z.bin:
@@ -506,8 +506,8 @@ map_channel_z.bin:
     INCBIN "maps/channel_z/map_channel_z.bin"
 
 SECTION "bank29", ROMX[$4000], BANK[$29]
-map_rezopolis1.bin:
-    INCBIN "maps/rezopolis/map_rezopolis1.bin"
+map_rezopolis.bin:
+    INCBIN "maps/rezopolis/map_rezopolis.bin"
 
 SECTION "bank2a", ROMX[$4000], BANK[$2a]
 map_circuit_central1.bin:
@@ -558,22 +558,22 @@ object_map_data_bank35.bin:
     INCBIN "maps/object_map_data_bank35.bin"
 
 SECTION "bank36", ROMX[$4000], BANK[$36]
-image_036_4000.bin:
-    INCBIN ".gfx/tilesets/image_036_4000.bin"
-image_036_5000.bin:
-    INCBIN ".gfx/tilesets/image_036_5000.bin"
-image_036_6000.bin:
-    INCBIN ".gfx/tilesets/image_036_6000.bin"
-image_036_7000.bin:
-    INCBIN ".gfx/tilesets/image_036_7000.bin"
+tileset_media_dimension.bin:
+    INCBIN ".gfx/tilesets/tileset_media_dimension.bin"
+tileset_toon_tv.bin:
+    INCBIN ".gfx/tilesets/tileset_toon_tv.bin"
+tileset_scream_tv.bin:
+    INCBIN ".gfx/tilesets/tileset_scream_tv.bin"
+tileset_circuit_central.bin:
+    INCBIN ".gfx/tilesets/tileset_circuit_central.bin"
 
 SECTION "bank37", ROMX[$4000], BANK[$37]
-image_037_4000.bin:
-    INCBIN ".gfx/tilesets/image_037_4000.bin"
+tileset_kung_fu_theater.bin:
+    INCBIN ".gfx/tilesets/tileset_kung_fu_theater.bin"
 image_037_5000.bin:
-    INCBIN ".gfx/tilesets/image_037_5000.bin"
+    INCBIN ".gfx/tilesets/tileset_prehistory_channel.bin"
 image_037_6000.bin:
-    INCBIN ".gfx/tilesets/image_037_6000.bin"
+    INCBIN ".gfx/tilesets/tileset_rezopolis.bin"
 
 SECTION "bank38", ROMX[$4000], BANK[$38]
 blockset_data_media_dimension.bin:

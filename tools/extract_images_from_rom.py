@@ -13,8 +13,6 @@ def extract_banks():
             out.close()
             count = count + 1
 
-#extract_banks()
-
 def extract_sprites_vertical():
     banks = [0x4, 0x5, 0x6, 0x7, 0x11, 0x12, 0x14, 0x18, 0x19, 0x1a, 0x1b, 0x1c]
     
@@ -206,7 +204,8 @@ def extract_splash():
                 next_chunk = bank_chunks[chunk_counter]
                 #print("now next_chunk is: "+f"{next_chunk:0{4}x}")
                     
-      
-#extract_sprites_vertical()
+
+#extract_banks()
+extract_sprites_vertical()
 extract_special_tilesets_horizontal()
-#extract_splash()
+extract_splash()

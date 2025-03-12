@@ -9,22 +9,22 @@ palette_ids = []
 
 '''
 
-    ["toon_tv", "", "../../.gfx/tilesets/image_036_5000.bin"],
-    ["scream_tv", "1", "../../.gfx/tilesets/image_036_6000.bin"],
-    ["scream_tv", "2", "../../.gfx/tilesets/image_036_6000.bin"],
-    ["kung_fu_theater", "1", "../../.gfx/tilesets/image_037_4000.bin"],
-    ["kung_fu_theater", "2", "../../.gfx/tilesets/image_037_4000.bin"],
-    ["circuit_central", "1", "../../.gfx/tilesets/image_036_7000.bin"],
-    ["circuit_central", "2", "../../.gfx/tilesets/image_036_7000.bin"],
-    ["circuit_central", "3", "../../.gfx/tilesets/image_036_7000.bin"],
-    ["prehistory_channel", "1", "../../.gfx/tilesets/image_037_5000.bin"],
-    ["prehistory_channel", "2", "../../.gfx/tilesets/image_037_5000.bin"],
-    ["rezopolis", "", "../../.gfx/tilesets/image_037_6000.bin"],
-    ["channel_z", "", "../../.gfx/tilesets/image_026_4000.bin"],  
+    ["toon_tv", ""],
+    ["scream_tv", "1"],
+    ["scream_tv", "2"],
+    ["kung_fu_theater", "1"],
+    ["kung_fu_theater", "2"],
+    ["circuit_central", "1"],
+    ["circuit_central", "2"],
+    ["circuit_central", "3"],
+    ["prehistory_channel", "1"],
+    ["prehistory_channel", "2"],
+    ["rezopolis", ""],
+    ["channel_z", ""], 
 '''
 
 levels = [
-    ["media_dimension", "", "../../.gfx/tilesets/image_036_4000.bin"],
+    ["media_dimension", ""],
 ]
 
 for i in range(0, len(levels)):
@@ -33,9 +33,9 @@ for i in range(0, len(levels)):
     channel_map_number = levels[i][1]
     map_file = "../../maps/"+level_name+"/map_"+level_name+channel_map_number+".bin"
     blockset_data_file = "../../maps/"+level_name+"/blockset_data_"+level_name+".bin"
-    tileset_file = levels[i][2]
-    palette_ids_file = "../../maps/"+level_name+"/palette_ids_"+level_name+".bin"
-    palette_file = "../../maps/"+level_name+"/palette_"+level_name+".bin"
+    tileset_file = "../../.gfx/tilesets/tileset_"+level_name+".bin"
+    palette_ids_file = "../../gfx/tilesets/palette_ids/palette_ids_"+level_name+".bin"
+    palette_file = "../../gfx/tilesets/palettes/palette_"+level_name+".bin"
     
     # update the level's tileset to have color, using palettes
     palette_data = open(palette_file, "rb").read()

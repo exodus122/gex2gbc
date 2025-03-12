@@ -952,9 +952,9 @@ jr_0b_4002:
     ld   BC, $08                                       ;; 0b:563f $01 $08 $00
     call call_00_07b0_CopyBytes                                  ;; 0b:5642 $cd $b0 $07
     ld   [wD59D], A                                    ;; 0b:5645 $ea $9d $d5
-    ld   A, $03                                        ;; 0b:5648 $3e $03
+    ld   A, Bank03                                        ;; 0b:5648 $3e $03
     ld   HL, $6be5                                     ;; 0b:564a $21 $e5 $6b
-    call call_00_1078_AltSwitchBank                                  ;; 0b:564d $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 0b:564d $cd $78 $10
     ret                                                ;; 0b:5650 $c9
 .jr_0b_5651:
     ld   L, C                                          ;; 0b:5651 $69
@@ -1139,23 +1139,23 @@ jr_0b_4002:
     db   $00, $00, $00, $00, $8a, $02, $fd, $03        ;; 0b:5b03 ........
 
 palette_media_dimension.bin:
-    INCBIN "maps/media_dimension/palette_media_dimension.bin"
+    INCBIN "gfx/tilesets/palettes/palette_media_dimension.bin"
 palette_toon_tv.bin:
-    INCBIN "maps/toon_tv/palette_toon_tv.bin"
+    INCBIN "gfx/tilesets/palettes/palette_toon_tv.bin"
 palette_scream_tv.bin:
-    INCBIN "maps/scream_tv/palette_scream_tv.bin"
+    INCBIN "gfx/tilesets/palettes/palette_scream_tv.bin"
 palette_circuit_central.bin:
-    INCBIN "maps/circuit_central/palette_circuit_central.bin"
+    INCBIN "gfx/tilesets/palettes/palette_circuit_central.bin"
 palette_kung_fu_theater.bin:
-    INCBIN "maps/kung_fu_theater/palette_kung_fu_theater.bin"
+    INCBIN "gfx/tilesets/palettes/palette_kung_fu_theater.bin"
 palette_unknown.bin:
-    INCBIN "maps/palette_unknown.bin"
+    INCBIN "gfx/palette_unknown.bin"
 palette_prehistory_channel.bin:
-    INCBIN "maps/prehistory_channel/palette_prehistory_channel.bin"
+    INCBIN "gfx/tilesets/palettes/palette_prehistory_channel.bin"
 palette_rezopolis.bin:
-    INCBIN "maps/rezopolis/palette_rezopolis.bin"
+    INCBIN "gfx/tilesets/palettes/palette_rezopolis.bin"
 palette_channel_z.bin:
-    INCBIN "maps/channel_z/palette_channel_z.bin"
+    INCBIN "gfx/tilesets/palettes/palette_channel_z.bin"
 
     ld   A, [wD59E]                                    ;; 0b:5d4b $fa $9e $d5
     and  A, A                                          ;; 0b:5d4e $a7
@@ -1512,18 +1512,18 @@ call_0b_5df8:
     db   $73, $64, $73, $64, $73, $6b,                 ;; 0b:646d ??????..
 
 palette_ids_media_dimension.bin:
-    INCBIN "maps/media_dimension/palette_ids_media_dimension.bin"
+    INCBIN "gfx/tilesets/palette_ids/palette_ids_media_dimension.bin"
 palette_ids_toon_tv.bin:
-    INCBIN "maps/toon_tv/palette_ids_toon_tv.bin"
+    INCBIN "gfx/tilesets/palette_ids/palette_ids_toon_tv.bin"
 palette_ids_scream_tv.bin:
-    INCBIN "maps/scream_tv/palette_ids_scream_tv.bin"
+    INCBIN "gfx/tilesets/palette_ids/palette_ids_scream_tv.bin"
 palette_ids_circuit_central.bin:
-    INCBIN "maps/circuit_central/palette_ids_circuit_central.bin"
+    INCBIN "gfx/tilesets/palette_ids/palette_ids_circuit_central.bin"
 palette_ids_kung_fu_theater.bin:
-    INCBIN "maps/kung_fu_theater/palette_ids_kung_fu_theater.bin"
+    INCBIN "gfx/tilesets/palette_ids/palette_ids_kung_fu_theater.bin"
 palette_ids_prehistory_channel.bin:
-    INCBIN "maps/prehistory_channel/palette_ids_prehistory_channel.bin"
+    INCBIN "gfx/tilesets/palette_ids/palette_ids_prehistory_channel.bin"
 palette_ids_rezopolis.bin:
-    INCBIN "maps/rezopolis/palette_ids_rezopolis.bin"
+    INCBIN "gfx/tilesets/palette_ids/palette_ids_rezopolis.bin"
 palette_ids_channel_z.bin:
-    INCBIN "maps/channel_z/palette_ids_channel_z.bin"
+    INCBIN "gfx/tilesets/palette_ids/palette_ids_channel_z.bin"

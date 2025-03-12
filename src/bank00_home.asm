@@ -32,7 +32,7 @@ SECTION "entry", ROM0[$0100]
 
 entry:
     nop                                                ;; 00:0100 $00
-    jp   jp_00_0150                                   ;; 00:0101 $c3 $50 $01
+    jp   jp_00_0150_Init                                   ;; 00:0101 $c3 $50 $01
     ds   $30                                           ;; 00:0104
     db   "GEX GECKO", $00, $00, $00, $00, $00, $00     ;; 00:0134
     db   CART_COMPATIBLE_DMG_GBC                       ;; 00:0143
@@ -43,7 +43,9 @@ entry:
     ds   3                                             ;; 00:014d
 
 SECTION "bank00_0150", ROM0[$0150]
-jp_00_0150:
+
+jp_00_0150_Init:
+; Entry point of the code
     di                                                 ;; 00:0150 $f3
     ld   SP, $fffe                                     ;; 00:0151 $31 $fe $ff
     push AF                                            ;; 00:0154 $f5
@@ -119,9 +121,9 @@ jp_00_0150:
     ld   A, $21                                        ;; 00:01ea $3e $21
     ld   [wD788], A                                    ;; 00:01ec $ea $88 $d7
     ld   [wD59D], A                                    ;; 00:01ef $ea $9d $d5
-    ld   A, $21                                        ;; 00:01f2 $3e $21
+    ld   A, Bank21                                        ;; 00:01f2 $3e $21
     ld   HL, call_01_4000                              ;; 00:01f4 $21 $00 $40
-    call call_00_1078_AltSwitchBank                                  ;; 00:01f7 $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                    ;; 00:01f7 $cd $78 $10
     ld   A, $ff                                        ;; 00:01fa $3e $ff
     ld   [wD78A], A                                    ;; 00:01fc $ea $8a $d7
     ei                                                 ;; 00:01ff $fb
@@ -137,30 +139,31 @@ jp_00_0150:
     ld   A, $03                                        ;; 00:0210 $3e $03
     ld   [wD61D], A                                    ;; 00:0212 $ea $1d $d6
     ld   [wD59D], A                                    ;; 00:0215 $ea $9d $d5
-    ld   A, $01                                        ;; 00:0218 $3e $01
+    ld   A, Bank01                                        ;; 00:0218 $3e $01
     ld   HL, call_01_4f87                              ;; 00:021a $21 $87 $4f
-    call call_00_1078_AltSwitchBank                                  ;; 00:021d $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                    ;; 00:021d $cd $78 $10
 .jp_00_0220:
+; Main loop starts here
     ld   A, $14                                        ;; 00:0220 $3e $14
     ld   [wD59D], A                                    ;; 00:0222 $ea $9d $d5
-    ld   A, $01                                        ;; 00:0225 $3e $01
+    ld   A, Bank01                                        ;; 00:0225 $3e $01
     ld   HL, call_01_4000                              ;; 00:0227 $21 $00 $40
-    call call_00_1078_AltSwitchBank                                  ;; 00:022a $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:022a $cd $78 $10
     ld   A, $13                                        ;; 00:022d $3e $13
     ld   [wD59D], A                                    ;; 00:022f $ea $9d $d5
-    ld   A, $01                                        ;; 00:0232 $3e $01
+    ld   A, Bank01                                        ;; 00:0232 $3e $01
     ld   HL, call_01_4000                              ;; 00:0234 $21 $00 $40
-    call call_00_1078_AltSwitchBank                                  ;; 00:0237 $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:0237 $cd $78 $10
     ld   A, $16                                        ;; 00:023a $3e $16
     ld   [wD59D], A                                    ;; 00:023c $ea $9d $d5
-    ld   A, $01                                        ;; 00:023f $3e $01
+    ld   A, Bank01                                        ;; 00:023f $3e $01
     ld   HL, call_01_4000                              ;; 00:0241 $21 $00 $40
-    call call_00_1078_AltSwitchBank                                  ;; 00:0244 $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:0244 $cd $78 $10
     ld   A, $10                                        ;; 00:0247 $3e $10
     ld   [wD59D], A                                    ;; 00:0249 $ea $9d $d5
-    ld   A, $01                                        ;; 00:024c $3e $01
+    ld   A, Bank01                                        ;; 00:024c $3e $01
     ld   HL, call_01_4000                              ;; 00:024e $21 $00 $40
-    call call_00_1078_AltSwitchBank                                  ;; 00:0251 $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:0251 $cd $78 $10
 .jp_00_0254:
     ld   A, $07                                        ;; 00:0254 $3e $07
     call call_00_120c                                  ;; 00:0256 $cd $0c $12
@@ -168,9 +171,9 @@ jp_00_0150:
     ld   [wD61E], A                                    ;; 00:025a $ea $1e $d6
     ld   A, $07                                        ;; 00:025d $3e $07
     ld   [wD59D], A                                    ;; 00:025f $ea $9d $d5
-    ld   A, $01                                        ;; 00:0262 $3e $01
+    ld   A, Bank01                                        ;; 00:0262 $3e $01
     ld   HL, call_01_4000                              ;; 00:0264 $21 $00 $40
-    call call_00_1078_AltSwitchBank                                  ;; 00:0267 $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:0267 $cd $78 $10
     cp   A, $30                                        ;; 00:026a $fe $30
     jr   Z, .jr_00_02b8                                ;; 00:026c $28 $4a
     cp   A, $10                                        ;; 00:026e $fe $10
@@ -198,8 +201,12 @@ jp_00_0150:
     ld   A, $01                                        ;; 00:0298 $3e $01
     ld   [wD61F], A                                    ;; 00:029a $ea $1f $d6
 .jp_00_029d:
+
+    ; Set Lives Remaining to 5
     ld   A, $05                                        ;; 00:029d $3e $05
-    ld   [wD73D_LivesRemaining], A                                    ;; 00:029f $ea $3d $d7
+    ld   [wD73D_LivesRemaining], A                     ;; 00:029f $ea $3d $d7
+    
+    ; Set Remote Progress bitfields to 0
     ld   HL, wD629_RemoteProgressBitfields                                     ;; 00:02a2 $21 $29 $d6
     ld   B, $1e                                        ;; 00:02a5 $06 $1e
 .jr_00_02a7:
@@ -207,10 +214,12 @@ jp_00_0150:
     inc  HL                                            ;; 00:02a9 $23
     dec  B                                             ;; 00:02aa $05
     jr   NZ, .jr_00_02a7                               ;; 00:02ab $20 $fa
+    
+    
     ld   [wD59D], A                                    ;; 00:02ad $ea $9d $d5
-    ld   A, $01                                        ;; 00:02b0 $3e $01
+    ld   A, Bank01                                        ;; 00:02b0 $3e $01
     ld   HL, call_01_4349                              ;; 00:02b2 $21 $49 $43
-    call call_00_1078_AltSwitchBank                                  ;; 00:02b5 $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                    ;; 00:02b5 $cd $78 $10
 .jr_00_02b8:
     ld   A, [wD61E]                                    ;; 00:02b8 $fa $1e $d6
     and  A, A                                          ;; 00:02bb $a7
@@ -225,9 +234,9 @@ jp_00_0150:
     ld   [wD624], A                                    ;; 00:02c9 $ea $24 $d6
     ld   A, $08                                        ;; 00:02cc $3e $08
     ld   [wD59D], A                                    ;; 00:02ce $ea $9d $d5
-    ld   A, $01                                        ;; 00:02d1 $3e $01
+    ld   A, Bank01                                        ;; 00:02d1 $3e $01
     ld   HL, call_01_4000                              ;; 00:02d3 $21 $00 $40
-    call call_00_1078_AltSwitchBank                                  ;; 00:02d6 $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:02d6 $cd $78 $10
     xor  A, A                                          ;; 00:02d9 $af
     ld   [wD621], A                                    ;; 00:02da $ea $21 $d6
     ld   [wD628], A                                    ;; 00:02dd $ea $28 $d6
@@ -244,9 +253,9 @@ jp_00_0150:
     and  A, $04                                        ;; 00:02f7 $e6 $04
     jr   Z, .jr_00_0306                                ;; 00:02f9 $28 $0b
     ld   [wD59D], A                                    ;; 00:02fb $ea $9d $d5
-    ld   A, $01                                        ;; 00:02fe $3e $01
+    ld   A, Bank01                                        ;; 00:02fe $3e $01
     ld   HL, $42bd                                     ;; 00:0300 $21 $bd $42
-    call call_00_1078_AltSwitchBank                                  ;; 00:0303 $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:0303 $cd $78 $10
 .jr_00_0306:
     call call_00_11e0                                  ;; 00:0306 $cd $e0 $11
     ld   A, [wD624]                                    ;; 00:0309 $fa $24 $d6
@@ -254,17 +263,17 @@ jp_00_0150:
     jr   Z, .jr_00_0350                                ;; 00:030d $28 $41
     call call_00_0562                                  ;; 00:030f $cd $62 $05
     ld   [wD59D], A                                    ;; 00:0312 $ea $9d $d5
-    ld   A, $01                                        ;; 00:0315 $3e $01
+    ld   A, Bank01                                        ;; 00:0315 $3e $01
     ld   HL, $4297                                     ;; 00:0317 $21 $97 $42
-    call call_00_1078_AltSwitchBank                                  ;; 00:031a $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:031a $cd $78 $10
     ld   [wD59D], A                                    ;; 00:031d $ea $9d $d5
-    ld   A, $0b                                        ;; 00:0320 $3e $0b
+    ld   A, Bank0b                                        ;; 00:0320 $3e $0b
     ld   HL, call_01_4000                              ;; 00:0322 $21 $00 $40
-    call call_00_1078_AltSwitchBank                                  ;; 00:0325 $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:0325 $cd $78 $10
     ld   [wD59D], A                                    ;; 00:0328 $ea $9d $d5
-    ld   A, $02                                        ;; 00:032b $3e $02
+    ld   A, Bank02                                        ;; 00:032b $3e $02
     ld   HL, $6eb1                                     ;; 00:032d $21 $b1 $6e
-    call call_00_1078_AltSwitchBank                                  ;; 00:0330 $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:0330 $cd $78 $10
     call call_00_3c3f                                  ;; 00:0333 $cd $3f $3c
     call call_00_12e4                                  ;; 00:0336 $cd $e4 $12
     ld   A, $0a                                        ;; 00:0339 $3e $0a
@@ -316,16 +325,19 @@ jp_00_0150:
     ld   [wD5A3], A                                    ;; 00:03aa $ea $a3 $d5
     ld   [wD5A4], A                                    ;; 00:03ad $ea $a4 $d5
     ld   [wD5A5], A                                    ;; 00:03b0 $ea $a5 $d5
+    
+    ; Set Health to 4
     ld   A, $04                                        ;; 00:03b3 $3e $04
     ld   [wD741_PlayerHealth], A                                    ;; 00:03b5 $ea $41 $d7
     ld   [wD59D], A                                    ;; 00:03b8 $ea $9d $d5
-    ld   A, $0b                                        ;; 00:03bb $3e $0b
+    
+    ld   A, Bank0b                                        ;; 00:03bb $3e $0b
     ld   HL, call_01_4000                              ;; 00:03bd $21 $00 $40
-    call call_00_1078_AltSwitchBank                                  ;; 00:03c0 $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:03c0 $cd $78 $10
     ld   [wD59D], A                                    ;; 00:03c3 $ea $9d $d5
-    ld   A, $02                                        ;; 00:03c6 $3e $02
+    ld   A, Bank02                                        ;; 00:03c6 $3e $02
     ld   HL, $6eb1                                     ;; 00:03c8 $21 $b1 $6e
-    call call_00_1078_AltSwitchBank                                  ;; 00:03cb $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:03cb $cd $78 $10
     call call_00_3c3f                                  ;; 00:03ce $cd $3f $3c
     call call_00_12e4                                  ;; 00:03d1 $cd $e4 $12
     call call_00_0547                                  ;; 00:03d4 $cd $47 $05
@@ -344,22 +356,22 @@ jp_00_0150:
     ld   A, $01                                        ;; 00:03f4 $3e $01
     ld   [wD743], A                                    ;; 00:03f6 $ea $43 $d7
     ld   [wD59D], A                                    ;; 00:03f9 $ea $9d $d5
-    ld   A, $0b                                        ;; 00:03fc $3e $0b
+    ld   A, Bank0b                                        ;; 00:03fc $3e $0b
     ld   HL, $4efe                                     ;; 00:03fe $21 $fe $4e
-    call call_00_1078_AltSwitchBank                                  ;; 00:0401 $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:0401 $cd $78 $10
     call call_00_1264_LoadMap                                  ;; 00:0404 $cd $64 $12
     ld   [wD59D], A                                    ;; 00:0407 $ea $9d $d5
-    ld   A, $02                                        ;; 00:040a $3e $02
+    ld   A, Bank02                                        ;; 00:040a $3e $02
     ld   HL, $6e17                                     ;; 00:040c $21 $17 $6e
-    call call_00_1078_AltSwitchBank                                  ;; 00:040f $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:040f $cd $78 $10
     call call_00_0521                                  ;; 00:0412 $cd $21 $05
     jr   .jp_00_0428                                   ;; 00:0415 $18 $11
 .jp_00_0417:
     call call_00_1264_LoadMap                                  ;; 00:0417 $cd $64 $12
     ld   [wD59D], A                                    ;; 00:041a $ea $9d $d5
-    ld   A, $02                                        ;; 00:041d $3e $02
+    ld   A, Bank02                                        ;; 00:041d $3e $02
     ld   HL, $71c8                                     ;; 00:041f $21 $c8 $71
-    call call_00_1078_AltSwitchBank                                  ;; 00:0422 $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:0422 $cd $78 $10
     call call_00_0521                                  ;; 00:0425 $cd $21 $05
 .jp_00_0428:
     call call_00_0ab4                                  ;; 00:0428 $cd $b4 $0a
@@ -382,9 +394,9 @@ jp_00_0150:
     and  A, A                                          ;; 00:0451 $a7
     jp   NZ, .jp_00_0370                               ;; 00:0452 $c2 $70 $03
     ld   [wD59D], A                                    ;; 00:0455 $ea $9d $d5
-    ld   A, $01                                        ;; 00:0458 $3e $01
+    ld   A, Bank01                                        ;; 00:0458 $3e $01
     ld   HL, $43bd                                     ;; 00:045a $21 $bd $43
-    call call_00_1078_AltSwitchBank                                  ;; 00:045d $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:045d $cd $78 $10
     cp   A, $80                                        ;; 00:0460 $fe $80
     jp   Z, .jp_00_029d                                ;; 00:0462 $ca $9d $02
     jp   .jp_00_0254                                   ;; 00:0465 $c3 $54 $02
@@ -406,9 +418,9 @@ jp_00_0150:
     ld   A, $05                                        ;; 00:0484 $3e $05
 .jr_00_0486:
     ld   [wD59D], A                                    ;; 00:0486 $ea $9d $d5
-    ld   A, $01                                        ;; 00:0489 $3e $01
+    ld   A, Bank01                                        ;; 00:0489 $3e $01
     ld   HL, call_01_4000                              ;; 00:048b $21 $00 $40
-    call call_00_1078_AltSwitchBank                                  ;; 00:048e $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:048e $cd $78 $10
     cp   A, $60                                        ;; 00:0491 $fe $60
     jp   NZ, .jp_00_0417                               ;; 00:0493 $c2 $17 $04
     ld   A, [wD624]                                    ;; 00:0496 $fa $24 $d6
@@ -449,18 +461,18 @@ jp_00_0150:
     call call_00_112f                                  ;; 00:04dd $cd $2f $11
 .jr_00_04e0:
     ld   [wD59D], A                                    ;; 00:04e0 $ea $9d $d5
-    ld   A, $02                                        ;; 00:04e3 $3e $02
+    ld   A, Bank02                                        ;; 00:04e3 $3e $02
     ld   HL, $6eba                                     ;; 00:04e5 $21 $ba $6e
-    call call_00_1078_AltSwitchBank                                  ;; 00:04e8 $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:04e8 $cd $78 $10
     call call_00_1455                                  ;; 00:04eb $cd $55 $14
     call call_00_2305                                  ;; 00:04ee $cd $05 $23
     call call_00_1e5b                                  ;; 00:04f1 $cd $5b $1e
     call call_00_05c7                                  ;; 00:04f4 $cd $c7 $05
     call call_00_08fc                                  ;; 00:04f7 $cd $fc $08
     ld   [wD59D], A                                    ;; 00:04fa $ea $9d $d5
-    ld   A, $0b                                        ;; 00:04fd $3e $0b
+    ld   A, Bank0b                                        ;; 00:04fd $3e $0b
     ld   HL, $5ec3                                     ;; 00:04ff $21 $c3 $5e
-    call call_00_1078_AltSwitchBank                                  ;; 00:0502 $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:0502 $cd $78 $10
     ld   HL, wD73C                                     ;; 00:0505 $21 $3c $d7
     inc  [HL]                                          ;; 00:0508 $34
     ld   A, [wD73B]                                    ;; 00:0509 $fa $3b $d7
@@ -478,20 +490,21 @@ jp_00_0150:
     dec  B                                             ;; 00:051b $05
     jr   NZ, .jr_00_0515                               ;; 00:051c $20 $f7
     jp   .jp_00_0428                                   ;; 00:051e $c3 $28 $04
+; End of Main loop
 
 call_00_0521:
     ld   [wD59D], A                                    ;; 00:0521 $ea $9d $d5
-    ld   A, $02                                        ;; 00:0524 $3e $02
+    ld   A, Bank02                                        ;; 00:0524 $3e $02
     ld   HL, $6f80                                     ;; 00:0526 $21 $80 $6f
-    call call_00_1078_AltSwitchBank                                  ;; 00:0529 $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:0529 $cd $78 $10
     call call_00_0971                                  ;; 00:052c $cd $71 $09
     ld   A, $03                                        ;; 00:052f $3e $03
     call call_00_0bae                                  ;; 00:0531 $cd $ae $0b
     ld   C, $00                                        ;; 00:0534 $0e $00
     ld   [wD59D], A                                    ;; 00:0536 $ea $9d $d5
-    ld   A, $0b                                        ;; 00:0539 $3e $0b
+    ld   A, Bank0b                                        ;; 00:0539 $3e $0b
     ld   HL, data_01_5537                              ;; 00:053b $21 $37 $55
-    call call_00_1078_AltSwitchBank                                  ;; 00:053e $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:053e $cd $78 $10
     ld   A, $c7                                        ;; 00:0541 $3e $c7
     call call_00_0f56                                  ;; 00:0543 $cd $56 $0f
     ret                                                ;; 00:0546 $c9
@@ -648,9 +661,9 @@ jp_00_0647:
     ld [hl], a
     push bc
     ld [$d59d], a
-    ld a, $0b
+    ld a, Bank0b
     ld hl, $5f1b
-    call call_00_1078_AltSwitchBank
+    call call_00_1078_SwitchBankWrapper
     pop bc
     ld a, c
     cp $03
@@ -697,9 +710,9 @@ jp_00_068a:
 jp_00_0696:
     ld   A, $10                                        ;; 00:0696 $3e $10
     ld   [wD59D], A                                    ;; 00:0698 $ea $9d $d5
-    ld   A, $02                                        ;; 00:069b $3e $02
+    ld   A, Bank02                                        ;; 00:069b $3e $02
     ld   HL, $4ccd                                   ;; 00:069d $21 $cd $4c (BANK 3)
-    call call_00_1078_AltSwitchBank                                  ;; 00:06a0 $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:06a0 $cd $78 $10
     ld   A, [wD624]                                    ;; 00:06a3 $fa $24 $d6
     and  A, A                                          ;; 00:06a6 $a7
     ret  Z                                             ;; 00:06a7 $c8
@@ -712,11 +725,12 @@ jp_00_0696:
     jp   call_00_0634                                  ;; 00:06b4 $c3 $34 $06
 ;    db   $21, $41, $d7, $36, $04, $c3, $29, $06        ;; 00:06b7 ????????
 jr_00_06b7:
-    ld hl, $d741
-    ld [hl], $04
-    jp jp_00_0629
+    ld   hl, wD741_PlayerHealth
+    ld   [hl], $04
+    jp   jp_00_0629
 
-call_00_06bf:
+call_00_06bf_GexTakesDamage:
+; Deal damage to Gex
     call call_00_075b                                  ;; 00:06bf $cd $5b $07
     ret  NZ                                            ;; 00:06c2 $c0
     ld   HL, wD742                                     ;; 00:06c3 $21 $42 $d7
@@ -734,9 +748,9 @@ call_00_06bf:
     jp   Z, jp_00_0629                                 ;; 00:06d9 $ca $29 $06
     ld   A, $0f                                        ;; 00:06dc $3e $0f
     ld   [wD59D], A                                    ;; 00:06de $ea $9d $d5
-    ld   A, $02                                        ;; 00:06e1 $3e $02
+    ld   A, Bank02                                        ;; 00:06e1 $3e $02
     ld   HL, $4ccd                                   ;; 00:06e3 $21 $cd $4c (BANK 3)
-    call call_00_1078_AltSwitchBank                                  ;; 00:06e6 $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:06e6 $cd $78 $10
     jp   jp_00_0629                                    ;; 00:06e9 $c3 $29 $06
 
 call_00_06ec:
@@ -834,7 +848,7 @@ jp_00_07a1:
     pop  DE                                            ;; 00:07a8 $d1
     pop  HL                                            ;; 00:07a9 $e1
     call call_00_07b0_CopyBytes                                  ;; 00:07aa $cd $b0 $07
-    jp   call_00_10a3                                  ;; 00:07ad $c3 $a3 $10
+    jp   call_00_10a3_SwitchBank2                                  ;; 00:07ad $c3 $a3 $10
 
 call_00_07b0_CopyBytes:
     ld   A, [HL+]                                      ;; 00:07b0 $2a
@@ -974,7 +988,7 @@ jr_00_0834:
     dec b
     jr nz, jr_00_07fb
 
-    jp call_00_10a3
+    jp call_00_10a3_SwitchBank2
 
 jp_00_084d:
     ld   A, [wD6B0]                                    ;; 00:084d $fa $b0 $d6
@@ -1036,7 +1050,7 @@ jp_00_084d:
     pop  AF                                            ;; 00:08aa $f1
     dec  A                                             ;; 00:08ab $3d
     jr   NZ, .jr_00_089b                               ;; 00:08ac $20 $ed
-    jp   call_00_10a3                                  ;; 00:08ae $c3 $a3 $10
+    jp   call_00_10a3_SwitchBank2                                  ;; 00:08ae $c3 $a3 $10
 
 call_00_08b1:
     push HL                                            ;; 00:08b1 $e5
@@ -1070,7 +1084,7 @@ call_00_08b1:
     ld   H, A                                          ;; 00:08db $67
     dec  C                                             ;; 00:08dc $0d
     jr   NZ, .jr_00_08cc                               ;; 00:08dd $20 $ed
-    call call_00_10a3                                  ;; 00:08df $cd $a3 $10
+    call call_00_10a3_SwitchBank2                                  ;; 00:08df $cd $a3 $10
     pop  BC                                            ;; 00:08e2 $c1
     pop  DE                                            ;; 00:08e3 $d1
     pop  HL                                            ;; 00:08e4 $e1
@@ -1139,7 +1153,7 @@ call_00_08fc:
     call call_00_0b6d                                  ;; 00:0966 $cd $6d $0b
     ld   HL, wD60F                                     ;; 00:0969 $21 $0f $d6
     set  7, [HL]                                       ;; 00:096c $cb $fe
-    jp   call_00_10a3                                  ;; 00:096e $c3 $a3 $10
+    jp   call_00_10a3_SwitchBank2                                  ;; 00:096e $c3 $a3 $10
 
 call_00_0971:
     ld   HL, wD60F                                     ;; 00:0971 $21 $0f $d6
@@ -1175,7 +1189,7 @@ call_00_098f:
     ld   DE, $8100                                     ;; 00:09b2 $11 $00 $81
     ld   BC, $100                                      ;; 00:09b5 $01 $00 $01
     call call_00_07b0_CopyBytes                                  ;; 00:09b8 $cd $b0 $07
-    jp   call_00_10a3                                  ;; 00:09bb $c3 $a3 $10
+    jp   call_00_10a3_SwitchBank2                                  ;; 00:09bb $c3 $a3 $10
 
 call_00_09be:
     res  1, [HL]                                       ;; 00:09be $cb $8e
@@ -1192,7 +1206,7 @@ call_00_09be:
     ld   DE, $8300                                     ;; 00:09d7 $11 $00 $83
     ld   BC, $100                                      ;; 00:09da $01 $00 $01
     call call_00_07b0_CopyBytes                                  ;; 00:09dd $cd $b0 $07
-    jp   call_00_10a3                                  ;; 00:09e0 $c3 $a3 $10
+    jp   call_00_10a3_SwitchBank2                                  ;; 00:09e0 $c3 $a3 $10
 
 call_00_09e3:
     res  2, [HL]                                       ;; 00:09e3 $cb $96
@@ -1204,7 +1218,7 @@ call_00_09e3:
     ld   DE, $9000                                     ;; 00:09f1 $11 $00 $90
     ld   BC, $240                                      ;; 00:09f4 $01 $40 $02
     call call_00_07b0_CopyBytes                                  ;; 00:09f7 $cd $b0 $07
-    jp   call_00_10a3                                  ;; 00:09fa $c3 $a3 $10
+    jp   call_00_10a3_SwitchBank2                                  ;; 00:09fa $c3 $a3 $10
 
 call_00_09fd:
     ld   A, [wD624]                                    ;; 00:09fd $fa $24 $d6
@@ -1222,13 +1236,13 @@ call_00_09fd:
     ld   DE, $8600                                     ;; 00:0a15 $11 $00 $86
     ld   BC, $100                                      ;; 00:0a18 $01 $00 $01
     call call_00_07b0_CopyBytes                                  ;; 00:0a1b $cd $b0 $07
-    jp   call_00_10a3                                  ;; 00:0a1e $c3 $a3 $10
+    jp   call_00_10a3_SwitchBank2                                  ;; 00:0a1e $c3 $a3 $10
 
 jp_00_0a21:
     ld   [wD59D], A                                    ;; 00:0a21 $ea $9d $d5
-    ld   A, $02                                        ;; 00:0a24 $3e $02
+    ld   A, Bank02                                        ;; 00:0a24 $3e $02
     ld   HL, $722c                                     ;; 00:0a26 $21 $2c $72
-    call call_00_1078_AltSwitchBank                                  ;; 00:0a29 $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:0a29 $cd $78 $10
     ld   HL, wD60F                                     ;; 00:0a2c $21 $0f $d6
     bit  3, [HL]                                       ;; 00:0a2f $cb $5e
     ret  Z                                             ;; 00:0a31 $c8
@@ -1248,7 +1262,7 @@ jp_00_0a21:
     ld   H, [HL]                                       ;; 00:0a4a $66
     ld   L, A                                          ;; 00:0a4b $6f
     call call_00_07b0_CopyBytes                                  ;; 00:0a4c $cd $b0 $07
-    call call_00_10a3                                  ;; 00:0a4f $cd $a3 $10
+    call call_00_10a3_SwitchBank2                                  ;; 00:0a4f $cd $a3 $10
     jr   jp_00_0a21                                    ;; 00:0a52 $18 $cd
 
 jp_00_0a54:
@@ -1265,7 +1279,7 @@ jp_00_0a54:
     ld   A, [HL+]                                      ;; 00:0a69 $2a
     ld   H, [HL]                                       ;; 00:0a6a $66
     ld   L, A                                          ;; 00:0a6b $6f
-    call call_00_10bd                                  ;; 00:0a6c $cd $bd $10
+    call call_00_10bd_CallAltBankFunc                                  ;; 00:0a6c $cd $bd $10
     call call_00_10be                                  ;; 00:0a6f $cd $be $10
     ld   A, $01                                        ;; 00:0a72 $3e $01
     ld   [wD622], A                                    ;; 00:0a74 $ea $22 $d6
@@ -1993,7 +2007,7 @@ call_00_1004:
     ld   A, [HL+]                                      ;; 00:101e $2a
     ld   H, [HL]                                       ;; 00:101f $66
     ld   L, A                                          ;; 00:1020 $6f
-    call call_00_10bd                                  ;; 00:1021 $cd $bd $10
+    call call_00_10bd_CallAltBankFunc                                  ;; 00:1021 $cd $bd $10
     ld   HL, wDAD7                                     ;; 00:1024 $21 $d7 $da
     bit  0, [HL]                                       ;; 00:1027 $cb $46
     ld   A, $00                                        ;; 00:1029 $3e $00
@@ -2044,14 +2058,14 @@ call_00_104a:
     ld   [HL], C                                       ;; 00:1076 $71
     ret                                                ;; 00:1077 $c9
 
-call_00_1078_AltSwitchBank:
+call_00_1078_SwitchBankWrapper:
     push HL                                            ;; 00:1078 $e5
     call call_00_1089_SwitchBank                                  ;; 00:1079 $cd $89 $10
     pop  HL                                            ;; 00:107c $e1
     ld   A, [wD59D]                                    ;; 00:107d $fa $9d $d5
-    call call_00_10bd                                  ;; 00:1080 $cd $bd $10
+    call call_00_10bd_CallAltBankFunc                                  ;; 00:1080 $cd $bd $10
     push AF                                            ;; 00:1083 $f5
-    call call_00_10a3                                  ;; 00:1084 $cd $a3 $10
+    call call_00_10a3_SwitchBank2                                  ;; 00:1084 $cd $a3 $10
     pop  AF                                            ;; 00:1087 $f1
     ret                                                ;; 00:1088 $c9
 
@@ -2073,7 +2087,7 @@ call_00_1089_SwitchBank:
     ld   [MBC1SRamBank], A                                    ;; 00:109f $ea $01 $40
     ret                                                ;; 00:10a2 $c9
 
-call_00_10a3:
+call_00_10a3_SwitchBank2:
     ld   HL, wD59A                                     ;; 00:10a3 $21 $9a $d5
     ld   E, [HL]                                       ;; 00:10a6 $5e
     inc  HL                                            ;; 00:10a7 $23
@@ -2091,7 +2105,7 @@ call_00_10a3:
     ld   [MBC1SRamBank], A                                    ;; 00:10b9 $ea $01 $40
     ret                                                ;; 00:10bc $c9
 
-call_00_10bd:
+call_00_10bd_CallAltBankFunc:
     jp   HL                                            ;; 00:10bd $e9
 
 call_00_10be:
@@ -2231,7 +2245,7 @@ call_00_113e:
     jr   NZ, .jr_00_1153                               ;; 00:1162 $20 $ef
     ld   A, $ff                                        ;; 00:1164 $3e $ff
     ld   [wD789], A                                    ;; 00:1166 $ea $89 $d7
-    jp   call_00_10a3                                  ;; 00:1169 $c3 $a3 $10
+    jp   call_00_10a3_SwitchBank2                                  ;; 00:1169 $c3 $a3 $10
     db   $01, $00, $01, $01, $01, $02, $01, $03        ;; 00:116c ....????
     db   $01, $04, $01, $05, $01, $06, $01, $07        ;; 00:1174 ????..??
     db   $01, $08, $01, $09, $01, $0a, $01, $0b        ;; 00:117c ????????
@@ -2294,7 +2308,7 @@ call_00_120c:
     rrc  C                                             ;; 00:1237 $cb $09
     dec  B                                             ;; 00:1239 $05
     jr   NZ, .jr_00_122d                               ;; 00:123a $20 $f1
-    call call_00_10a3                                  ;; 00:123c $cd $a3 $10
+    call call_00_10a3_SwitchBank2                                  ;; 00:123c $cd $a3 $10
     ld   A, $00                                        ;; 00:123f $3e $00
     jp   call_00_113e                                  ;; 00:1241 $c3 $3e $11
     db   $21, $04, $0f, $00, $21, $00, $0f, $00        ;; 00:1244 ????????
@@ -2333,9 +2347,9 @@ call_00_1264_LoadMap:
     ld   [wD6F9], A                                    ;; 00:12a5 $ea $f9 $d6
     call call_00_1455                                  ;; 00:12a8 $cd $55 $14
     ld   [wD59D], A                                    ;; 00:12ab $ea $9d $d5
-    ld   A, $03                                        ;; 00:12ae $3e $03
+    ld   A, Bank03                                        ;; 00:12ae $3e $03
     ld   HL, $6f5e                                     ;; 00:12b0 $21 $5e $6f
-    call call_00_1078_AltSwitchBank                                  ;; 00:12b3 $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:12b3 $cd $78 $10
     ld   HL, wD6EF                                     ;; 00:12b6 $21 $ef $d6
     ld   A, [HL]                                       ;; 00:12b9 $7e
     add  A, $08                                        ;; 00:12ba $c6 $08
@@ -2349,13 +2363,13 @@ call_00_1264_LoadMap:
     jr   NZ, .jr_00_12a2                               ;; 00:12c4 $20 $dc
     ld   [wD6F9], A                                    ;; 00:12c6 $ea $f9 $d6
     ld   [wD59D], A                                    ;; 00:12c9 $ea $9d $d5
-    ld   A, $03                                        ;; 00:12cc $3e $03
+    ld   A, Bank03                                        ;; 00:12cc $3e $03
     ld   HL, $66ae                                     ;; 00:12ce $21 $ae $66
-    call call_00_1078_AltSwitchBank                                  ;; 00:12d1 $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:12d1 $cd $78 $10
     ld   [wD59D], A                                    ;; 00:12d4 $ea $9d $d5
-    ld   A, $02                                        ;; 00:12d7 $3e $02
+    ld   A, Bank02                                        ;; 00:12d7 $3e $02
     ld   HL, $715a                                     ;; 00:12d9 $21 $5a $71
-    call call_00_1078_AltSwitchBank                                  ;; 00:12dc $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:12dc $cd $78 $10
     xor  A, A                                          ;; 00:12df $af
     ld   [wD6F9], A                                    ;; 00:12e0 $ea $f9 $d6
     ret                                                ;; 00:12e3 $c9
@@ -2536,16 +2550,16 @@ call_00_1419_WriteTilesToVRAM: ; this function writes to the tiles part of vram 
     ld   A, D                                          ;; 00:1436 $7a
     cp   A, $90                                        ;; 00:1437 $fe $90
     jr   NZ, .jr_00_1433                               ;; 00:1439 $20 $f8
-	;; at this point the tiles have been written
-    call call_00_10a3                                  ;; 00:143b $cd $a3 $10 
-	ld   [wD59D], A                                    ;; 00:143e $ea $9d $d5
-    ld   A, $0b                                        ;; 00:1441 $3e $0b
+    ;; at this point the tiles have been written
+    call call_00_10a3_SwitchBank2                                  ;; 00:143b $cd $a3 $10 
+    ld   [wD59D], A                                    ;; 00:143e $ea $9d $d5
+    ld   A, Bank0b                                        ;; 00:1441 $3e $0b
     ld   HL, $641e                                     ;; 00:1443 $21 $1e $64
-    call call_00_1078_AltSwitchBank                                  ;; 00:1446 $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:1446 $cd $78 $10
     ld   [wD59D], A                                    ;; 00:1449 $ea $9d $d5
-    ld   A, $03                                        ;; 00:144c $3e $03
+    ld   A, Bank03                                        ;; 00:144c $3e $03
     ld   HL, $723c                                     ;; 00:144e $21 $3c $72
-    call call_00_1078_AltSwitchBank                                  ;; 00:1451 $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:1451 $cd $78 $10
     ret                                                ;; 00:1454 $c9
 
 call_00_1455:
@@ -2663,7 +2677,7 @@ call_00_1472:
     inc  DE                                            ;; 00:14f4 $13
     ld   A, [HL+]                                      ;; 00:14f5 $2a
     ld   [DE], A                                       ;; 00:14f6 $12
-    call call_00_10a3                                  ;; 00:14f7 $cd $a3 $10
+    call call_00_10a3_SwitchBank2                                  ;; 00:14f7 $cd $a3 $10
     ld   A, [wD6F6_CurrentMap3435Bank]                                    ;; 00:14fa $fa $f6 $d6
     call call_00_1089_SwitchBank                       ;; 00:14fd $cd $89 $10 switch to map data file 34/35
     pop  HL                                            ;; 00:1500 $e1 hl = 44b4
@@ -2690,7 +2704,7 @@ call_00_1472:
     inc  DE                                            ;; 00:1517 $13 de = D70D
     ld   A, [HL+]                                      ;; 00:1518 $2a
     ld   [DE], A                                       ;; 00:1519 $12
-    call call_00_10a3                                  ;; 00:151a $cd $a3 $10
+    call call_00_10a3_SwitchBank2                                  ;; 00:151a $cd $a3 $10
     ld   HL, wD702                                     ;; 00:151d $21 $02 $d7
     call call_00_18a7                                  ;; 00:1520 $cd $a7 $18
     ld   A, [wD6F7_CurrentBlocksetAndCollisionBank]                                    ;; 00:1523 $fa $f7 $d6
@@ -2756,7 +2770,7 @@ call_00_1472:
     pop  AF                                            ;; 00:1572 $f1
     dec  A                                             ;; 00:1573 $3d
     jr   NZ, .jr_00_1535                               ;; 00:1574 $20 $bf
-    call call_00_10a3                                  ;; 00:1576 $cd $a3 $10
+    call call_00_10a3_SwitchBank2                                  ;; 00:1576 $cd $a3 $10
     ret                                                ;; 00:1579 $c9
 
 call_00_157a:
@@ -2868,7 +2882,7 @@ call_00_157a:
     inc  DE                                            ;; 00:1606 $13
     ld   A, [HL]                                       ;; 00:1607 $7e
     ld   [DE], A                                       ;; 00:1608 $12
-    call call_00_10a3                                  ;; 00:1609 $cd $a3 $10
+    call call_00_10a3_SwitchBank2                                  ;; 00:1609 $cd $a3 $10
     ld   A, [wD6F6_CurrentMap3435Bank]                                    ;; 00:160c $fa $f6 $d6
     call call_00_1089_SwitchBank                                  ;; 00:160f $cd $89 $10
     pop  HL                                            ;; 00:1612 $e1
@@ -2901,7 +2915,7 @@ call_00_157a:
     inc  DE                                            ;; 00:1631 $13
     ld   A, [HL]                                       ;; 00:1632 $7e
     ld   [DE], A                                       ;; 00:1633 $12
-    call call_00_10a3                                  ;; 00:1634 $cd $a3 $10
+    call call_00_10a3_SwitchBank2                                  ;; 00:1634 $cd $a3 $10
     ld   HL, wD70E                                     ;; 00:1637 $21 $0e $d7
     call call_00_18e4                                  ;; 00:163a $cd $e4 $18
     ld   A, [wD6F7_CurrentBlocksetAndCollisionBank]                                    ;; 00:163d $fa $f7 $d6
@@ -2973,7 +2987,7 @@ call_00_157a:
     pop  AF                                            ;; 00:1697 $f1
     dec  A                                             ;; 00:1698 $3d
     jr   NZ, .jr_00_164f                               ;; 00:1699 $20 $b4
-    call call_00_10a3                                  ;; 00:169b $cd $a3 $10
+    call call_00_10a3_SwitchBank2                                  ;; 00:169b $cd $a3 $10
     ret                                                ;; 00:169e $c9
 
 call_00_169f:
@@ -3147,7 +3161,7 @@ call_00_169f:
     jp   NZ, .jp_00_16b4                               ;; 00:176e $c2 $b4 $16
     ld   HL, wD77B                                     ;; 00:1771 $21 $7b $d7
     set  0, [HL]                                       ;; 00:1774 $cb $c6
-    jp   call_00_10a3                                  ;; 00:1776 $c3 $a3 $10
+    jp   call_00_10a3_SwitchBank2                                  ;; 00:1776 $c3 $a3 $10
 
 jp_00_1779:
     ld   A, [wD59E]                                    ;; 00:1779 $fa $9e $d5
@@ -3605,11 +3619,11 @@ jr_00_1922:
 .jr_00_19dc:
     ld   HL, wD60F                                     ;; 00:19dc $21 $0f $d6
     set  2, [HL]                                       ;; 00:19df $cb $d6
-    call call_00_10a3                                  ;; 00:19e1 $cd $a3 $10
+    call call_00_10a3_SwitchBank2                                  ;; 00:19e1 $cd $a3 $10
     ld   [wD59D], A                                    ;; 00:19e4 $ea $9d $d5
-    ld   A, $0b                                        ;; 00:19e7 $3e $0b
+    ld   A, Bank0b                                        ;; 00:19e7 $3e $0b
     ld   HL, $5df8                                     ;; 00:19e9 $21 $f8 $5d
-    call call_00_1078_AltSwitchBank                                  ;; 00:19ec $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:19ec $cd $78 $10
     ret                                                ;; 00:19ef $c9
     db   $40, $13, $40, $0e, $40, $0f, $40, $0f        ;; 00:19f0 ?.?.?.??
     db   $61, $0d, $40, $10, $40, $13, $5b, $0e        ;; 00:19f8 ????????
@@ -4067,7 +4081,7 @@ call_00_1f80:
     pop  HL                                            ;; 00:1fef $e1
     ld   A, L                                          ;; 00:1ff0 $7d
     or   A, H                                          ;; 00:1ff1 $b4
-    call NZ, call_00_10bd                              ;; 00:1ff2 $c4 $bd $10
+    call NZ, call_00_10bd_CallAltBankFunc                              ;; 00:1ff2 $c4 $bd $10
     ret                                                ;; 00:1ff5 $c9
     db   $74, $20, $d3, $20, $ff, $20, $1c, $21        ;; 00:1ff6 ????????
     db   $39, $21, $56, $21, $ae, $21, $c2, $21        ;; 00:1ffe ????????
@@ -4088,13 +4102,13 @@ call_00_1f80:
     db   $01, $00, $00, $00, $01, $01, $2a, $02        ;; 00:2076 ????????
     db   $fa, $01, $8c, $20, $01, $00, $00, $00        ;; 00:207e ????????
     db   $01, $01, $2a, $02, $ea, $01,                 ;; 00:2086 ????????
-;	 db   $21, $82                                      ;; 00:2086 ????????
+;     db   $21, $82                                      ;; 00:2086 ????????
 ;    db   $d7, $4e, $21, $83, $d7, $46, $21, $b6        ;; 00:208e ????????
 ;    db   $20, $11, $04, $00, $e5, $fa, $24, $d6        ;; 00:2096 ????????
 ;    db   $be, $20, $0d, $23, $2a, $b9, $20, $08        ;; 00:209e ????????
 ;    db   $2a, $b8, $20, $04, $7e, $ea, $18, $d6        ;; 00:20a6 ????????
 ;    db   $e1, $19, $7e, $fe, $ff, $20, $e5, $c9        ;; 00:20ae ????????
-	
+    
     ld hl, $d782
     ld c, [hl]
     ld hl, $d783
@@ -4130,8 +4144,8 @@ jr_00_20ae:
     jr nz, jr_00_209a
 
     ret
-	
-	db   $01, $26, $3a, $01, $02, $4b, $0a, $01        ;; 00:20b6 ????????
+    
+    db   $01, $26, $3a, $01, $02, $4b, $0a, $01        ;; 00:20b6 ????????
     db   $05, $10, $15, $01, $0a, $4d, $34, $01        ;; 00:20be ????????
     db   $08, $37, $56, $01, $09, $3f, $70, $01        ;; 00:20c6 ????????
     db   $18, $0e, $34, $01, $ff, $fa, $20, $01        ;; 00:20ce ????????
@@ -4157,7 +4171,7 @@ jr_00_20ae:
     db   $86, $21, $03, $3c, $00, $00, $01, $02        ;; 00:216e ????????
     db   $23, $22, $00, $00, $e2, $01, $08, $d9        ;; 00:2176 ????????
     db   $01, $da, $01, $08, $00, $00, $e2, $01        ;; 00:217e ????????
-	
+    
 ;    db   $21, $72, $d7, $34, $0e, $05, $11, $99        ;; 00:2186 ????????
 ;    db   $d7, $fa, $24, $d6, $fe, $02, $28, $05        ;; 00:218e ????????
 ;    db   $0e, $08, $11, $9a, $d7, $79, $be, $20        ;; 00:2196 ????????
@@ -4185,11 +4199,11 @@ jr_00_219b:
 
 jr_00_21a2:
     ld [$d59d], a
-    ld a, $00
+    ld a, Bank00
     ld hl, $3951
-    call call_00_1078_AltSwitchBank
+    call call_00_1078_SwitchBankWrapper
     ret
-	
+    
     db   $bc, $21, $01, $00, $ff, $00, $02, $01        ;; 00:21ae ????????
     db   $2c, $26, $c9, $01, $ca, $01, $21, $8b        ;; 00:21b6 ????????
     db   $d7, $36, $02, $c9, $00, $00, $05, $08        ;; 00:21be ????????
@@ -4205,7 +4219,7 @@ jr_00_21a2:
     db   $0a, $c7, $01, $21, $8b, $d7, $36, $02        ;; 00:220e ????????
     db   $c9, $25, $22, $01, $08, $00, $ff, $01        ;; 00:2216 ????????
     db   $02, $28, $1b, $f8, $01, $f9, $01             ;; 00:221e ????????
-	
+    
 ;    db   $21        
 ;    db   $82, $d7, $4e, $21, $83, $d7, $46, $21        ;; 00:2226 ????????
 ;    db   $53, $22, $1e, $00, $2a, $b9, $20, $04        ;; 00:222e ????????
@@ -4213,9 +4227,9 @@ jr_00_21a2:
 ;    db   $ff, $20, $f1, $c9, $16, $00, $21, $8b        ;; 00:223e ????????
 ;    db   $d7, $19, $7e, $a7, $c0, $36, $01, $7b        ;; 00:2246 ????????
 ;    db   $fe, $06, $c0, $34, $c9                       ;; 00:224e ????????
-	
-	
-	ld hl, $d782
+    
+    
+    ld hl, $d782
     ld c, [hl]
     ld hl, $d783
     ld b, [hl]
@@ -4257,13 +4271,13 @@ jr_00_2242:
 
     inc [hl]
     ret
-	
+    
     db   $25, $59, $2a
     db   $59, $2f, $59, $47, $51, $54, $55, $5a        ;; 00:2256 ????????
     db   $55, $29, $4a, $39, $64, $10, $47, $ff        ;; 00:225e ????????
     db   $74, $22, $00, $08, $00, $00, $01, $01        ;; 00:2266 ????????
     db   $28, $1b, $f8, $01, $f9, $01                  ;; 00:226e ????????
-	
+    
 ;    db   $21, $82
 ;    db   $d7, $4e, $21, $83, $d7, $46, $21, $a7        ;; 00:2276 ????????
 ;    db   $22, $fa, $24, $d6, $fe, $05, $28, $03        ;; 00:227e ????????
@@ -4316,8 +4330,8 @@ jr_00_229b:
 
     ld [hl], $02
     ret
-	
-	db   $00, $00, $4c, $3a, $4b, $05, $44             ;; 00:22a6 ????????
+    
+    db   $00, $00, $4c, $3a, $4b, $05, $44             ;; 00:22a6 ????????
     db   $36, $00, $00, $32, $04, $5a, $30, $48        ;; 00:22ae ????????
     db   $0e, $ff, $5e, $0d, $43, $1f, $4f, $1f        ;; 00:22b6 ????????
     db   $05, $0f, $75, $04, $51, $1e, $73, $2d        ;; 00:22be ????????
@@ -4410,9 +4424,9 @@ call_00_2329:
     ld   [wD743], A                                    ;; 00:236c $ea $43 $d7
     call call_00_1264_LoadMap                                  ;; 00:236f $cd $64 $12
     ld   [wD59D], A                                    ;; 00:2372 $ea $9d $d5
-    ld   A, $02                                        ;; 00:2375 $3e $02
+    ld   A, Bank02                                        ;; 00:2375 $3e $02
     ld   HL, $6e68                                     ;; 00:2377 $21 $68 $6e
-    call call_00_1078_AltSwitchBank                                  ;; 00:237a $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:237a $cd $78 $10
     call call_00_0521                                  ;; 00:237d $cd $21 $05
     pop  HL                                            ;; 00:2380 $e1
     ld   E, [HL]                                       ;; 00:2381 $5e
@@ -4450,13 +4464,13 @@ call_00_2329:
     call call_00_0ab4                                  ;; 00:23b1 $cd $b4 $0a
     call call_00_2dbf                                  ;; 00:23b4 $cd $bf $2d
     ld   [wD59D], A                                    ;; 00:23b7 $ea $9d $d5
-    ld   A, $02                                        ;; 00:23ba $3e $02
+    ld   A, Bank02                                        ;; 00:23ba $3e $02
     ld   HL, $715a                                     ;; 00:23bc $21 $5a $71
-    call call_00_1078_AltSwitchBank                                  ;; 00:23bf $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:23bf $cd $78 $10
     ld   [wD59D], A                                    ;; 00:23c2 $ea $9d $d5
-    ld   A, $02                                        ;; 00:23c5 $3e $02
+    ld   A, Bank02                                        ;; 00:23c5 $3e $02
     ld   HL, $6eba                                     ;; 00:23c7 $21 $ba $6e
-    call call_00_1078_AltSwitchBank                                  ;; 00:23ca $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:23ca $cd $78 $10
     call call_00_1455                                  ;; 00:23cd $cd $55 $14
     call call_00_08fc                                  ;; 00:23d0 $cd $fc $08
     ld   HL, wD79B                                     ;; 00:23d3 $21 $9b $d7
@@ -4492,9 +4506,9 @@ call_00_2329:
     call call_00_0ab4                                  ;; 00:23fe $cd $b4 $0a
     call call_00_1e5b                                  ;; 00:2401 $cd $5b $1e
     ld   [wD59D], A                                    ;; 00:2404 $ea $9d $d5
-    ld   A, $02                                        ;; 00:2407 $3e $02
+    ld   A, Bank02                                        ;; 00:2407 $3e $02
     ld   HL, $6eba                                     ;; 00:2409 $21 $ba $6e
-    call call_00_1078_AltSwitchBank                                  ;; 00:240c $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:240c $cd $78 $10
     call call_00_08fc                                  ;; 00:240f $cd $fc $08
     ld   A, [wD77D]                                    ;; 00:2412 $fa $7d $d7
     and  A, A                                          ;; 00:2415 $a7
@@ -4508,9 +4522,9 @@ call_00_2329:
     push AF                                            ;; 00:2420 $f5
     call call_00_0ab4                                  ;; 00:2421 $cd $b4 $0a
     ld   [wD59D], A                                    ;; 00:2424 $ea $9d $d5
-    ld   A, $02                                        ;; 00:2427 $3e $02
+    ld   A, Bank02                                        ;; 00:2427 $3e $02
     ld   HL, $6eba                                     ;; 00:2429 $21 $ba $6e
-    call call_00_1078_AltSwitchBank                                  ;; 00:242c $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:242c $cd $78 $10
     call call_00_08fc                                  ;; 00:242f $cd $fc $08
     ld   A, [wD775]                                    ;; 00:2432 $fa $75 $d7
     and  A, A                                          ;; 00:2435 $a7
@@ -4544,9 +4558,9 @@ call_00_2329:
     call call_00_13a6                                  ;; 00:245e $cd $a6 $13
     call call_00_1264_LoadMap                                  ;; 00:2461 $cd $64 $12
     ld   [wD59D], A                                    ;; 00:2464 $ea $9d $d5
-    ld   A, $02                                        ;; 00:2467 $3e $02
+    ld   A, Bank02                                        ;; 00:2467 $3e $02
     ld   HL, $71c8                                     ;; 00:2469 $21 $c8 $71
-    call call_00_1078_AltSwitchBank                                  ;; 00:246c $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:246c $cd $78 $10
     jp   call_00_0521                                  ;; 00:246f $c3 $21 $05
     db   $00, $01, $02, $03, $ff, $ff, $ff, $ff        ;; 00:2472 ????????
     db   $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff        ;; 00:247a ????????
@@ -6231,9 +6245,9 @@ call_00_3985:
     call call_00_393c                                  ;; 00:39ab $cd $3c $39
     xor  A, A                                          ;; 00:39ae $af
     ld   [wD59D], A                                    ;; 00:39af $ea $9d $d5
-    ld   A, $02                                        ;; 00:39b2 $3e $02
+    ld   A, Bank02                                        ;; 00:39b2 $3e $02
     ld   HL, $7102                                     ;; 00:39b4 $21 $02 $71
-    call call_00_1078_AltSwitchBank                                  ;; 00:39b7 $cd $78 $10
+    call call_00_1078_SwitchBankWrapper                                  ;; 00:39b7 $cd $78 $10
     ld   C, $17                                        ;; 00:39ba $0e $17
     call call_00_112f                                  ;; 00:39bc $cd $2f $11
     ret                                                ;; 00:39bf $c9
