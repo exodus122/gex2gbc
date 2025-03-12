@@ -1001,11 +1001,12 @@
 03:6621 call_03_6499.jr_03_6621
 03:662b call_03_6499.jr_03_662b
 03:6633 call_03_6499.jr_03_6633
-03:66e1 call_03_6499.data_03_66e1
-03:6821 call_03_6499.data_03_6821
-03:6921 call_03_6499.data_03_6921
+03:66e1 call_03_6499.image_03_66e1
+03:6821 call_03_6499.image_03_6821
+03:6921 call_03_6499.image_03_6921
 03:6941 call_03_6941
 03:6967 call_03_6941.data_03_6967
+03:69a5 call_03_6941.image_03_69a5
 03:6be5 call_03_6be5
 03:6c1d call_03_6be5.data_03_6c1d
 03:6ceb jp_03_6ceb
@@ -1020,8 +1021,8 @@
 03:6d76 jr_03_6d5e.jr_03_6d76
 03:6d88 call_03_6d88
 03:6d99 call_03_6d88.jr_03_6d99
-03:6d9d call_03_6d88.data_03_6d9d
-03:6e4d call_03_6d88.data_03_6e4d
+03:6d9d call_03_6d88.numbers_003_6d9d
+03:6e4d call_03_6d88.numbers_003_6e4d
 03:6efd call_03_6efd
 03:6f2d call_03_6f2d
 03:6f5e call_00_0eba_WriteVRAMBgMap
@@ -1036,6 +1037,7 @@
 03:72e8 data_03_72e8
 03:72e9 data_03_72e9
 03:734a data_03_734a
+03:76fd image_003_76fd.bin
 03:7bfd data_03_7bfd
 04:4000 image_004_4000.bin
 04:6000 image_004_6000.bin
@@ -1389,6 +1391,7 @@
 21:439e data_21_439e
 21:43c6 data_21_43c6
 21:43ce data_21_43ce
+21:4460 audio_bank21.bin
 21:4460 data_21_4460
 22:4000 entry_22_4000
 22:4038 jr_22_4038
@@ -1442,6 +1445,7 @@
 22:439e data_22_439e
 22:43c6 data_22_43c6
 22:43ce data_22_43ce
+22:4460 audio_bank22.bin
 22:4460 data_22_4460
 23:4000 entry_23_4000
 23:4038 jr_23_4038
@@ -1495,6 +1499,7 @@
 23:439e data_23_439e
 23:43c6 data_23_43c6
 23:43ce data_23_43ce
+23:4460 audio_bank23.bin
 23:4460 data_23_4460
 24:4000 entry_24_4000
 24:4038 jr_24_4038
@@ -1548,6 +1553,7 @@
 24:439e data_24_439e
 24:43c6 data_24_43c6
 24:43ce data_24_43ce
+24:4460 audio_bank24.bin
 24:4460 data_24_4460
 25:4000 map_circuit_central3.bin
 26:4000 tileset_channel_z.bin

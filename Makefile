@@ -28,6 +28,7 @@ $(ROM): $(patsubst src/game.asm,.obj/%.o,$(SRCS))
 	rgbasm -Wall -Wextra --export-all -Isrc -I.gfx -M .dep/$*.mk -MP -MQ .obj/$*.o -MQ .dep/$*.mk -o .obj/$*.o $<
 
 .gfx/spritesheets/%.bin: rgbgfx += --columns
+.gfx/misc/%.bin: rgbgfx += --columns
 
 .gfx/%.bin: gfx/%.png
 	@mkdir -p $(dir .gfx/$*)

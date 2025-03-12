@@ -205,7 +205,47 @@ def extract_splash():
                 #print("now next_chunk is: "+f"{next_chunk:0{4}x}")
                     
 
+def extract_bank03():
+    banks = [0x3]
+    
+    # 0 is a fake chunk
+    chunk_addresses = [0x4000, 0x66e1, 0x6821, 0x6921, 0x6941, 0x69a5, 0x6be5, 0x6d9d, 0x6E4D, 0x6efd, 0x76fd]
+    chunk_sizes =     [0x26e1, 0x140,  0x100,  0x20,   0x64,   0x240,  0x1b8,  0xb0,   0xb0,   0x800,  0x500]
+    chunk_widths =    [999,    10,     8,      1,      999,    18,      999,    11,     11,    999,    16]
+    
+    for b in banks:
+        count = 0
+        bank = f"{b:0{3}x}"
+        with open('./banks/bank_'+bank+'.bin', 'rb') as bf:
+            addr = 0x4000
+            next_chunk = chunk_sizes[0]
+            
+            os.system('mkdir -p banks/bank_'+bank+'/')
+            
+            for data in iter(lambda: bf.read(next_chunk), ''):
+                if not data:
+                    break
+                
+                size = chunk_sizes[count]
+                addr = chunk_addresses[count]
+                addr2 = f"{chunk_addresses[count]:0{3}x}"
+                width = chunk_widths[count]
+                    
+                out = open('./banks/bank_'+bank+'/image_'+bank+'_'+str(addr2)+".bin", "wb")
+                out.write(data)
+                out.close()
+                
+                if chunk_widths[count] != 999:
+                    os.system('rgbgfx --reverse '+str(width)+' --columns -o banks/bank_'+bank+'/image_'+bank+'_'+str(addr2)+'.bin banks/bank_'+bank+'/image_'+bank+'_'+str(addr2)+'.png')
+                
+                count = count + 1
+                if count == len(chunk_sizes):
+                    break
+                next_chunk = chunk_sizes[count]
+            
+
 #extract_banks()
-extract_sprites_vertical()
-extract_special_tilesets_horizontal()
-extract_splash()
+#extract_sprites_vertical()
+#extract_special_tilesets_horizontal()
+#extract_splash()
+extract_bank03()
