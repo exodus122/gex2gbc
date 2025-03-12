@@ -58,6 +58,10 @@ wD000:
 wD100:
     ds 256                                             ;; d100
 
+; From D200 to D300 is the loaded objects space
+; Each object takes up 0x20 of space, and there can be up to 8 objects. 
+; Gex occupies the first slot. The first byte of each object is the id
+
 wD200:
     ds 1                                               ;; d200
 
@@ -82,12 +86,15 @@ wD20A:
 wD20D:
     ds 1                                               ;; d20d
 
+; wD20E and wD20F control gex's x coordinate position (can lock wD20F to sometimes fall through floors)
 wD20E:
     ds 1                                               ;; d20e
 
 wD20F:
     ds 1                                               ;; d20f
 
+; wD20E and wD20F control gex's y coordinate position (can lock both to hover at fixed height)
+; can also set to 0000 to warp to top of map for example
 wD210:
     ds 1                                               ;; d210
 
@@ -100,7 +107,7 @@ wD212:
 wD213:
     ds 13                                              ;; d213
 
-wD220:
+wD220_OtherLoadedObjects:
     ds 224                                             ;; d220
 
 wD300:
@@ -196,10 +203,10 @@ wD59F_CurrentInputs: ; A = 01, B = 02, Select = 04, Start = 08, Right = 0x10, Le
 wD5A0:
     ds 1                                               ;; d5a0
 
-wD5A1:
+wD5A1: ; related to gex's x position
     ds 1                                               ;; d5a1
 
-wD5A2:
+wD5A2: ; related to gex's y position
     ds 1                                               ;; d5a2
 
 wD5A3:
@@ -286,19 +293,22 @@ wD622:
 wD623:
     ds 1                                               ;; d623
 
-wD624:
+wD624_CurrentLevelId:
     ds 1                                               ;; d624
 
 wD625_TotalsMenuPage:
+; which page you are on in the totals menu
     ds 1                                               ;; d625
 
-wD626:
+wD626: ; unknown but related to the level you enter. 1 for smellraiser, 3 for out of toon, 2 for kung fu?, 3 for franken, 1 for thursday
     ds 1                                               ;; d626
 
-wD627:
+wD627_CurrentMission:
+; which mission you selected when entered a level
     ds 1                                               ;; d627
 
-wD628:
+wD628_MediaDimensionRespawnPoint:
+; which tv you respawn at if you die in media dimension
     ds 1                                               ;; d628
 
 wD629_RemoteProgressBitfields: 

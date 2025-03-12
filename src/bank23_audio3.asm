@@ -4,6 +4,7 @@
 ; audio engine. The data that follows the code is different and contains different songs or sound effects.
 
 SECTION "bank23", ROMX[$4000], BANK[$23]
+
 entry_23_4000:
     ld   HL, data_23_4460                              ;; 23:4000 $21 $60 $44
     ld   A, L                                          ;; 23:4003 $7d

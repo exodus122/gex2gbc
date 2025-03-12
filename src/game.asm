@@ -8,7 +8,7 @@ INCLUDE "memory.asm"
 
 INCLUDE "bank00_home.asm"
 INCLUDE "bank01_menus.asm"
-INCLUDE "bank02_objects.asm"
+INCLUDE "bank02_object_routines.asm"
 INCLUDE "bank03_unknown.asm"
 
 SECTION "bank04", ROMX[$4000], BANK[$04]
@@ -49,7 +49,7 @@ SECTION "bank09", ROMX[$4000], BANK[$09]
 image_009_4000.bin:
     INCBIN ".gfx/special_tilesets/image_009_4000.bin"
 
-INCLUDE "bank0A_unknown.asm"
+INCLUDE "bank0A_load_objects.asm"
 INCLUDE "bank0B_palettes.asm"
 
 SECTION "bank0c", ROMX[$4000], BANK[$0c]
@@ -550,12 +550,12 @@ map_scream_tv2.bin:
     INCBIN "maps/scream_tv/map_scream_tv2.bin"
 
 SECTION "bank34", ROMX[$4000], BANK[$34]
-object_map_data_bank34.bin:
-    INCBIN "maps/object_map_data_bank34.bin"
+special_tile_map_data_bank34.bin:
+    INCBIN "maps/special_tile_map_data_bank34.bin"
 
 SECTION "bank35", ROMX[$4000], BANK[$35]
-object_map_data_bank35.bin:
-    INCBIN "maps/object_map_data_bank35.bin"
+special_tile__map_data_bank35.bin:
+    INCBIN "maps/special_tile_map_data_bank35.bin"
 
 SECTION "bank36", ROMX[$4000], BANK[$36]
 tileset_media_dimension.bin:

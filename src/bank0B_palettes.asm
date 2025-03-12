@@ -1,10 +1,11 @@
 ;; Disassembled with BadBoy Disassembler: https://github.com/daid/BadBoy
 
 SECTION "bank0b", ROMX[$4000], BANK[$0b]
+
+entry_0b_4000:
     xor  A, A                                          ;; 0b:4000 $af
     ld   L, A                                          ;; 0b:4001 $6f
-
-jr_0b_4002:
+.jr_0b_4002:
     ld   H, $c4                                        ;; 0b:4002 $26 $c4
     ld   [HL], $ff                                     ;; 0b:4004 $36 $ff
     inc  H                                             ;; 0b:4006 $24
@@ -14,8 +15,8 @@ jr_0b_4002:
     inc  H                                             ;; 0b:400a $24
     ld   [HL], A                                       ;; 0b:400b $77
     inc  L                                             ;; 0b:400c $2c
-    jr   NZ, jr_0b_4002                                ;; 0b:400d $20 $f3
-    ld   HL, wD624                                     ;; 0b:400f $21 $24 $d6
+    jr   NZ, .jr_0b_4002                                ;; 0b:400d $20 $f3
+    ld   HL, wD624_CurrentLevelId                                     ;; 0b:400f $21 $24 $d6
     ld   L, [HL]                                       ;; 0b:4012 $6e
     ld   H, $00                                        ;; 0b:4013 $26 $00
     add  HL, HL                                        ;; 0b:4015 $29
@@ -546,6 +547,8 @@ jr_0b_4002:
     db   $de, $3f, $df, $3e, $df, $3f, $e3, $43        ;; 0b:4eea ????????
     db   $e3, $44, $e8, $36, $e9, $36, $ea, $3a        ;; 0b:4ef2 ????????
     db   $eb, $3a, $00, $00                            ;; 0b:4efa ????
+
+entry_0b_4efe:
     ld   HL, wD621                                     ;; 0b:4efe $21 $21 $d6
     ld   A, [HL]                                       ;; 0b:4f01 $7e
     and  A, $08                                        ;; 0b:4f02 $e6 $08
@@ -571,7 +574,7 @@ jr_0b_4002:
     add  HL, HL                                        ;; 0b:4f1f $29
     add  HL, HL                                        ;; 0b:4f20 $29
     ld   B, H                                          ;; 0b:4f21 $44
-    ld   HL, wD624                                     ;; 0b:4f22 $21 $24 $d6
+    ld   HL, wD624_CurrentLevelId                                     ;; 0b:4f22 $21 $24 $d6
     ld   L, [HL]                                       ;; 0b:4f25 $6e
     ld   H, $00                                        ;; 0b:4f26 $26 $00
     add  HL, HL                                        ;; 0b:4f28 $29
@@ -626,10 +629,10 @@ jr_0b_4002:
     ld   [wD211], A                                    ;; 0b:4f6a $ea $11 $d2
     jp   call_00_13a6                                  ;; 0b:4f6d $c3 $a6 $13
 .jr_0b_4f70:
-    ld   A, [wD624]                                    ;; 0b:4f70 $fa $24 $d6
+    ld   A, [wD624_CurrentLevelId]                                    ;; 0b:4f70 $fa $24 $d6
     and  A, A                                          ;; 0b:4f73 $a7
     jr   NZ, .jr_0b_4faf                               ;; 0b:4f74 $20 $39
-    ld   HL, wD628                                     ;; 0b:4f76 $21 $28 $d6
+    ld   HL, wD628_MediaDimensionRespawnPoint                                     ;; 0b:4f76 $21 $28 $d6
     ld   L, [HL]                                       ;; 0b:4f79 $6e
     ld   H, $00                                        ;; 0b:4f7a $26 $00
     add  HL, HL                                        ;; 0b:4f7c $29
@@ -666,7 +669,7 @@ jr_0b_4002:
     ld   [wD211], A                                    ;; 0b:4fa9 $ea $11 $d2
     jp   call_00_13a6                                  ;; 0b:4fac $c3 $a6 $13
 .jr_0b_4faf:
-    ld   HL, wD624                                     ;; 0b:4faf $21 $24 $d6
+    ld   HL, wD624_CurrentLevelId                                     ;; 0b:4faf $21 $24 $d6
     ld   L, [HL]                                       ;; 0b:4fb2 $6e
     ld   H, $00                                        ;; 0b:4fb3 $26 $00
     add  HL, HL                                        ;; 0b:4fb5 $29
@@ -881,10 +884,12 @@ jr_0b_4002:
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:551f ????????
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:5527 ????????
     db   $06, $7c, $00, $00, $00, $00, $00, $00        ;; 0b:552f ????????
+
+entry_0b_5537:
     ld   A, [wD59E]                                    ;; 0b:5537 $fa $9e $d5
     and  A, A                                          ;; 0b:553a $a7
-    jp   NZ, .jp_0b_561b                               ;; 0b:553b $c2 $1b $56
-    ld   A, [wD624]                                    ;; 0b:553e $fa $24 $d6
+    jp   NZ, call_0b_561b                               ;; 0b:553b $c2 $1b $56
+    ld   A, [wD624_CurrentLevelId]                                    ;; 0b:553e $fa $24 $d6
     ld   DE, .data_0b_555f                             ;; 0b:5541 $11 $5f $55
     inc  C                                             ;; 0b:5544 $0c
     dec  C                                             ;; 0b:5545 $0d
@@ -930,15 +935,16 @@ jr_0b_4002:
     db   $e4, $e4, $24, $00, $e4, $e4, $24, $00        ;; 0b:5603 ????????
     db   $e4, $e4, $24, $00, $e4, $e4, $24, $00        ;; 0b:560b ????????
     db   $e4, $e4, $24, $00, $00, $00, $00, $00        ;; 0b:5613 ????????
-.jp_0b_561b:
+
+call_0b_561b:
     inc  C                                             ;; 0b:561b $0c
     dec  C                                             ;; 0b:561c $0d
-    jr   NZ, .jr_0b_5651                               ;; 0b:561d $20 $32
-    ld   HL, wD624                                     ;; 0b:561f $21 $24 $d6
+    jr   NZ, call_0b_5651                               ;; 0b:561d $20 $32
+    ld   HL, wD624_CurrentLevelId                                     ;; 0b:561f $21 $24 $d6
     ld   L, [HL]                                       ;; 0b:5622 $6e
     ld   H, $00                                        ;; 0b:5623 $26 $00
     add  HL, HL                                        ;; 0b:5625 $29
-    ld   DE, .data_0b_5665                             ;; 0b:5626 $11 $65 $56
+    ld   DE, data_0b_5665                             ;; 0b:5626 $11 $65 $56
     add  HL, DE                                        ;; 0b:5629 $19
     ld   A, [HL+]                                      ;; 0b:562a $2a
     ld   H, [HL]                                       ;; 0b:562b $66
@@ -947,20 +953,21 @@ jr_0b_4002:
     ld   BC, $40                                       ;; 0b:5630 $01 $40 $00
     call call_00_07b0_CopyBytes                                  ;; 0b:5633 $cd $b0 $07
     call call_0b_5df8                                  ;; 0b:5636 $cd $f8 $5d
-    ld   HL, .data_0b_5b03                             ;; 0b:5639 $21 $03 $5b
+    ld   HL, data_0b_5b03                             ;; 0b:5639 $21 $03 $5b
     ld   DE, wDA0B_Obj_Palettes                                     ;; 0b:563c $11 $0b $da
     ld   BC, $08                                       ;; 0b:563f $01 $08 $00
     call call_00_07b0_CopyBytes                                  ;; 0b:5642 $cd $b0 $07
     ld   [wD59D], A                                    ;; 0b:5645 $ea $9d $d5
     ld   A, Bank03                                        ;; 0b:5648 $3e $03
-    ld   HL, $6be5                                     ;; 0b:564a $21 $e5 $6b
+    ld   HL, entry_03_6be5                                     ;; 0b:564a $21 $e5 $6b
     call call_00_1078_SwitchBankWrapper                                  ;; 0b:564d $cd $78 $10
     ret                                                ;; 0b:5650 $c9
-.jr_0b_5651:
+
+call_0b_5651:
     ld   L, C                                          ;; 0b:5651 $69
     ld   H, $00                                        ;; 0b:5652 $26 $00
     add  HL, HL                                        ;; 0b:5654 $29
-    ld   DE, .data_0b_56a3                             ;; 0b:5655 $11 $a3 $56
+    ld   DE, data_0b_56a3                             ;; 0b:5655 $11 $a3 $56
     add  HL, DE                                        ;; 0b:5658 $19
     ld   A, [HL+]                                      ;; 0b:5659 $2a
     ld   H, [HL]                                       ;; 0b:565a $66
@@ -968,7 +975,8 @@ jr_0b_4002:
     ld   DE, wD9CB_Bg_Palettes                                     ;; 0b:565c $11 $cb $d9
     ld   BC, $80                                       ;; 0b:565f $01 $80 $00
     jp   call_00_07b0_CopyBytes                                  ;; 0b:5662 $c3 $b0 $07
-.data_0b_5665:
+
+data_0b_5665:
     db   $0b, $5b, $4b, $5b, $8b, $5b, $8b, $5b        ;; 0b:5665 ......??
     db   $cb, $5b, $0b, $5c, $0b, $5b, $8b, $5c        ;; 0b:566d ????????
     db   $4b, $5b, $8b, $5c, $cb, $5b, $8b, $5b        ;; 0b:5675 ????????
@@ -977,7 +985,7 @@ jr_0b_4002:
     db   $0b, $5b, $4b, $5c, $cb, $5c, $cb, $5b        ;; 0b:568d ????????
     db   $8b, $5c, $8b, $5b, $cb, $5c, $0b, $5b        ;; 0b:5695 ????????
     db   $0b, $5b, $0b, $5b, $0b, $5d                  ;; 0b:569d ??????
-.data_0b_56a3:
+data_0b_56a3:
     db   $00, $00, $c3, $56, $03, $57, $43, $57        ;; 0b:56a3 ??....??
     db   $c3, $57, $03, $58, $83, $5a, $4b, $da        ;; 0b:56ab ????....
     db   $43, $58, $83, $58, $c3, $58, $03, $59        ;; 0b:56b3 ......??
@@ -1000,7 +1008,7 @@ jr_0b_4002:
     db   $40, $01, $c0, $02, $df, $00, $ff, $7f        ;; 0b:572b ........
     db   $0b, $00, $df, $00, $ff, $42, $ff, $7f        ;; 0b:5733 ........
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:573b ........
-.data_5743_Palette: ; Palette for Password Entry Screen on title screen
+.data_5743_Palette: ; Palette for Password Entering Screen on title screen
     db   $00, $00, $4a, $29, $73, $52, $5a, $6b        ;; 0b:5743 ........
     db   $00, $00, $8c, $01, $c0, $02, $5a, $03        ;; 0b:574b ........
     db   $00, $00, $10, $42, $18, $63, $ff, $7f        ;; 0b:5753 ........
@@ -1135,7 +1143,7 @@ jr_0b_4002:
     db   $00, $00, $ef, $01, $f7, $02, $ff, $03        ;; 0b:5aeb ........
     db   $00, $00, $00, $00, $20, $03, $bf, $0b        ;; 0b:5af3 ........
     db   $00, $00, $1f, $00, $ff, $01, $7f, $03        ;; 0b:5afb ........
-.data_0b_5b03:
+data_0b_5b03:
     db   $00, $00, $00, $00, $8a, $02, $fd, $03        ;; 0b:5b03 ........
 
 palette_media_dimension.bin:
@@ -1157,6 +1165,7 @@ palette_rezopolis.bin:
 palette_channel_z.bin:
     INCBIN "gfx/tilesets/palettes/palette_channel_z.bin"
 
+entry_0b_5d4b:
     ld   A, [wD59E]                                    ;; 0b:5d4b $fa $9e $d5
     and  A, A                                          ;; 0b:5d4e $a7
     ret  Z                                             ;; 0b:5d4f $c8
@@ -1187,11 +1196,12 @@ palette_channel_z.bin:
     db   $d5, $7c, $80, $5a, $fd, $3f, $00, $00        ;; 0b:5dea ????????
     db   $29, $25, $93, $4e, $de, $7b                  ;; 0b:5df2 ??????
 
+entry_0b_5df8:
 call_0b_5df8:
     ld   A, [wD59E]                                    ;; 0b:5df8 $fa $9e $d5
     and  A, A                                          ;; 0b:5dfb $a7
     ret  Z                                             ;; 0b:5dfc $c8
-    ld   A, [wD624]                                    ;; 0b:5dfd $fa $24 $d6
+    ld   A, [wD624_CurrentLevelId]                                    ;; 0b:5dfd $fa $24 $d6
     and  A, A                                          ;; 0b:5e00 $a7
     ret  NZ                                            ;; 0b:5e01 $c0
     ld   HL, wD72D                                     ;; 0b:5e02 $21 $2d $d7
@@ -1230,6 +1240,8 @@ call_0b_5df8:
     db   $00, $00, $29, $25, $93, $4e, $de, $7b        ;; 0b:5eab ????????
     db   $00, $00, $d5, $7c, $80, $5a, $fd, $3f        ;; 0b:5eb3 ........
     db   $00, $00, $29, $25, $93, $4e, $de, $7b        ;; 0b:5ebb ........
+
+entry_0b_5ec3:
     ld   A, [wD59E]                                    ;; 0b:5ec3 $fa $9e $d5
     and  A, A                                          ;; 0b:5ec6 $a7
     ret  Z                                             ;; 0b:5ec7 $c8
@@ -1285,6 +1297,8 @@ call_0b_5df8:
     db   $00, $00, $00, $00, $14, $00, $1c, $00        ;; 0b:5f3f ????????
     db   $00, $00, $00, $00, $00, $50, $00, $70        ;; 0b:5f47 ????????
     db   $00, $00, $00, $00, $00, $03, $00, $03        ;; 0b:5f4f ????????
+
+entry_0b_5f57:
     ld   A, [wD300]                                    ;; 0b:5f57 $fa $00 $d3
     rlca                                               ;; 0b:5f5a $07
     rlca                                               ;; 0b:5f5b $07
@@ -1485,7 +1499,9 @@ call_0b_5df8:
     db   $00, $00, $00, $00, $1f, $00, $ff, $02        ;; 0b:6406 ????????
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:640e ????????
     db   $00, $00, $00, $00, $a5, $51, $d7, $46        ;; 0b:6416 ........
-    ld   HL, wD624                                     ;; 0b:641e $21 $24 $d6
+
+entry_0b_641e:
+    ld   HL, wD624_CurrentLevelId                                     ;; 0b:641e $21 $24 $d6
     ld   L, [HL]                                       ;; 0b:6421 $6e
     ld   H, $00                                        ;; 0b:6422 $26 $00
     add  HL, HL                                        ;; 0b:6424 $29

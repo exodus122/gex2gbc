@@ -289,6 +289,8 @@ SECTION "bank03", ROMX[$4000], BANK[$03]
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 03:48e8 ????????
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 03:48f0 ????????
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 03:48f8 ?????.??
+
+entry_03_4900:
     ld   HL, wD585                                     ;; 03:4900 $21 $85 $d5
     ld   A, [HL]                                       ;; 03:4903 $7e
     ld   [HL], $00                                     ;; 03:4904 $36 $00
@@ -296,11 +298,11 @@ SECTION "bank03", ROMX[$4000], BANK[$03]
     ld   A, [wD201]                                    ;; 03:4909 $fa $01 $d2
     and  A, $1f                                        ;; 03:490c $e6 $1f
     cp   A, $1f                                        ;; 03:490e $fe $1f
-    jr   NZ, jr_03_4915                                ;; 03:4910 $20 $03
+    jr   NZ, call_03_4915                                ;; 03:4910 $20 $03
     set  7, [HL]                                       ;; 03:4912 $cb $fe
     ret                                                ;; 03:4914 $c9
 
-jr_03_4915:
+call_03_4915:
     ld   A, [wD74D]                                    ;; 03:4915 $fa $4d $d7
     and  A, A                                          ;; 03:4918 $a7
     jr   Z, .jr_03_491d                                ;; 03:4919 $28 $02
@@ -308,7 +310,7 @@ jr_03_4915:
 .jr_03_491d:
     ld   A, [wD746]                                    ;; 03:491d $fa $46 $d7
     cp   A, $ff                                        ;; 03:4920 $fe $ff
-    jp   NZ, jp_03_4ac4                                ;; 03:4922 $c2 $c4 $4a
+    jp   NZ, call_03_4ac4                                ;; 03:4922 $c2 $c4 $4a
     ld   A, [wD760]                                    ;; 03:4925 $fa $60 $d7
     sub  A, $02                                        ;; 03:4928 $d6 $02
     bit  7, A                                          ;; 03:492a $cb $7f
@@ -576,7 +578,7 @@ call_03_4ab3:
     add  A, [HL]                                       ;; 03:4ac2 $86
     ret                                                ;; 03:4ac3 $c9
 
-jp_03_4ac4:
+call_03_4ac4:
     ld   HL, wD585                                     ;; 03:4ac4 $21 $85 $d5
     set  7, [HL]                                       ;; 03:4ac7 $cb $fe
     ld   A, [wD746]                                    ;; 03:4ac9 $fa $46 $d7
@@ -732,6 +734,8 @@ call_03_4bd4:
     ret                                                ;; 03:4c01 $c9
 .data_03_4c02:
     db   $80, $40, $20, $10, $08, $04, $02, $01        ;; 03:4c02 ????????
+
+entry_03_4c0a:
     ld   A, [wD210]                                    ;; 03:4c0a $fa $10 $d2
     and  A, $f8                                        ;; 03:4c0d $e6 $f8
     ld   L, A                                          ;; 03:4c0f $6f
@@ -803,7 +807,7 @@ call_03_4c5a:
     ld   B, A                                          ;; 03:4c74 $47
     ret                                                ;; 03:4c75 $c9
 
-jp_03_4c76:
+call_03_4c76:
     ld   A, [wD743]                                    ;; 03:4c76 $fa $43 $d7
     and  A, A                                          ;; 03:4c79 $a7
     ret  Z                                             ;; 03:4c7a $c8
@@ -995,7 +999,7 @@ jp_03_4c76:
     ld   A, $19                                        ;; 03:4e71 $3e $19
     ld   [wD59D], A                                    ;; 03:4e73 $ea $9d $d5
     ld   A, Bank02                                        ;; 03:4e76 $3e $02
-    ld   HL, .data_03_4ccd                             ;; 03:4e78 $21 $cd $4c
+    ld   HL, entry_02_4ccd                             ;; 03:4e78 $21 $cd $4c
     call call_00_1078_SwitchBankWrapper                                  ;; 03:4e7b $cd $78 $10
     ret                                                ;; 03:4e7e $c9
     db   $26, $d2, $fa, $00, $d3, $f6, $17, $6f        ;; 03:4e7f ????????
@@ -1702,7 +1706,7 @@ call_03_5b5b:
     ld   A, [wD688]                                    ;; 03:5b5b $fa $88 $d6
     ld   C, A                                          ;; 03:5b5e $4f
     ld   DE, .data_03_5beb                             ;; 03:5b5f $11 $eb $5b
-    ld   A, [wD624]                                    ;; 03:5b62 $fa $24 $d6
+    ld   A, [wD624_CurrentLevelId]                                    ;; 03:5b62 $fa $24 $d6
     and  A, A                                          ;; 03:5b65 $a7
     jr   Z, .jr_03_5ba7                                ;; 03:5b66 $28 $3f
     ld   C, $88                                        ;; 03:5b68 $0e $88
@@ -1808,6 +1812,8 @@ call_03_5b5b:
     db   $5c, $68, $64, $6a, $74, $6c, $7c, $6e        ;; 03:5c90 ........
     db   $2c, $68, $34, $6a, $44, $68, $4c, $6a        ;; 03:5c98 ........
     db   $5c, $68, $64, $6a, $74, $68, $7c, $6a        ;; 03:5ca0 ........
+
+entry_03_5ca8:
     ld   A, [wD586]                                    ;; 03:5ca8 $fa $86 $d5
     ld   HL, wD20D                                     ;; 03:5cab $21 $0d $d2
     bit  5, [HL]                                       ;; 03:5cae $cb $6e
@@ -1967,6 +1973,8 @@ call_03_5b5b:
     db   $fa, $02, $fc, $04, $fe, $02, $00, $04        ;; 03:5ea7 ????????
     db   $00, $02, $fe, $00, $fe, $fe, $fc, $fc        ;; 03:5eaf ????????
     db   $fa, $fa, $fc, $f8, $fe, $fa, $00, $fc        ;; 03:5eb7 ????????
+    
+entry_03_5ebf:
     ld   A, [wD300]                                    ;; 03:5ebf $fa $00 $d3
     rlca                                               ;; 03:5ec2 $07
     rlca                                               ;; 03:5ec3 $07
@@ -2004,17 +2012,17 @@ call_03_5b5b:
     sbc  A, [HL]                                       ;; 03:5ef5 $9e
     jr   C, .jr_03_5f02                                ;; 03:5ef6 $38 $0a
     and  A, A                                          ;; 03:5ef8 $a7
-    jr   NZ, .jr_03_5f2b                               ;; 03:5ef9 $20 $30
+    jr   NZ, call_03_5f2b                               ;; 03:5ef9 $20 $30
     ld   A, C                                          ;; 03:5efb $79
     cp   A, $b8                                        ;; 03:5efc $fe $b8
     jr   C, .jr_03_5f0b                                ;; 03:5efe $38 $0b
-    jr   .jr_03_5f2b                                   ;; 03:5f00 $18 $29
+    jr   call_03_5f2b                                   ;; 03:5f00 $18 $29
 .jr_03_5f02:
     cp   A, $ff                                        ;; 03:5f02 $fe $ff
-    jr   NZ, .jr_03_5f2b                               ;; 03:5f04 $20 $25
+    jr   NZ, call_03_5f2b                               ;; 03:5f04 $20 $25
     ld   A, C                                          ;; 03:5f06 $79
     cp   A, $d8                                        ;; 03:5f07 $fe $d8
-    jr   C, .jr_03_5f2b                                ;; 03:5f09 $38 $20
+    jr   C, call_03_5f2b                                ;; 03:5f09 $38 $20
 .jr_03_5f0b:
     inc  E                                             ;; 03:5f0b $1c
     ld   HL, wD6EF                                     ;; 03:5f0c $21 $ef $d6
@@ -2025,24 +2033,29 @@ call_03_5b5b:
     inc  DE                                            ;; 03:5f13 $13
     ld   A, [DE]                                       ;; 03:5f14 $1a
     sbc  A, [HL]                                       ;; 03:5f15 $9e
-    jr   C, .jr_03_5f22                                ;; 03:5f16 $38 $0a
+    jr   C, call_03_5f22                                ;; 03:5f16 $38 $0a
     and  A, A                                          ;; 03:5f18 $a7
-    jr   NZ, .jr_03_5f2b                               ;; 03:5f19 $20 $10
+    jr   NZ, call_03_5f2b                               ;; 03:5f19 $20 $10
+
+entry_03_5f1b:
     ld   A, B                                          ;; 03:5f1b $78
     cp   A, $f0                                        ;; 03:5f1c $fe $f0
-    jr   NC, .jr_03_5f2b                               ;; 03:5f1e $30 $0b
-    jr   .jr_03_5f32                                   ;; 03:5f20 $18 $10
-.jr_03_5f22:
+    jr   NC, call_03_5f2b                               ;; 03:5f1e $30 $0b
+    jr   call_03_5f32                                   ;; 03:5f20 $18 $10
+
+call_03_5f22:
     cp   A, $ff                                        ;; 03:5f22 $fe $ff
-    jr   NZ, .jr_03_5f2b                               ;; 03:5f24 $20 $05
+    jr   NZ, call_03_5f2b                               ;; 03:5f24 $20 $05
     ld   A, B                                          ;; 03:5f26 $78
     cp   A, $f0                                        ;; 03:5f27 $fe $f0
-    jr   NC, .jr_03_5f32                               ;; 03:5f29 $30 $07
-.jr_03_5f2b:
+    jr   NC, call_03_5f32                               ;; 03:5f29 $30 $07
+
+call_03_5f2b:
     call call_00_350c                                  ;; 03:5f2b $cd $0c $35
     call C, call_00_3910                               ;; 03:5f2e $dc $10 $39
     ret                                                ;; 03:5f31 $c9
-.jr_03_5f32:
+
+call_03_5f32:
     inc  E                                             ;; 03:5f32 $1c
     ld   A, C                                          ;; 03:5f33 $79
     add  A, $08                                        ;; 03:5f34 $c6 $08
@@ -2072,7 +2085,7 @@ call_03_5b5b:
 .jr_03_5f58:
     ld   A, [DE]                                       ;; 03:5f58 $1a
     bit  3, A                                          ;; 03:5f59 $cb $5f
-    jp   NZ, jp_03_4c76                                ;; 03:5f5b $c2 $76 $4c
+    jp   NZ, call_03_4c76                                ;; 03:5f5b $c2 $76 $4c
     bit  0, A                                          ;; 03:5f5e $cb $47
     jp   NZ, .jp_03_6451                               ;; 03:5f60 $c2 $51 $64
     bit  7, A                                          ;; 03:5f63 $cb $7f
@@ -2143,7 +2156,7 @@ call_03_5b5b:
     jr   NZ, .jr_03_5fa4                               ;; 03:5fc2 $20 $e0
     ld   A, E                                          ;; 03:5fc4 $7b
     ld   [wD739], A                                    ;; 03:5fc5 $ea $39 $d7
-    jp   jp_03_4c76                                    ;; 03:5fc8 $c3 $76 $4c
+    jp   call_03_4c76                                    ;; 03:5fc8 $c3 $76 $4c
 .jr_03_5fcb:
     ld   D, $d2                                        ;; 03:5fcb $16 $d2
     ld   A, [wD300]                                    ;; 03:5fcd $fa $00 $d3
@@ -2210,7 +2223,7 @@ call_03_5b5b:
     jr   NZ, .jr_03_6007                               ;; 03:6025 $20 $e0
     ld   A, E                                          ;; 03:6027 $7b
     ld   [wD739], A                                    ;; 03:6028 $ea $39 $d7
-    jp   jp_03_4c76                                    ;; 03:602b $c3 $76 $4c
+    jp   call_03_4c76                                    ;; 03:602b $c3 $76 $4c
 .jp_03_602e:
     push BC                                            ;; 03:602e $c5
     ld   D, $d2                                        ;; 03:602f $16 $d2
@@ -2279,7 +2292,7 @@ call_03_5b5b:
     jr   NZ, .jr_03_6067                               ;; 03:6085 $20 $e0
     ld   A, E                                          ;; 03:6087 $7b
     ld   [wD739], A                                    ;; 03:6088 $ea $39 $d7
-    jp   jp_03_4c76                                    ;; 03:608b $c3 $76 $4c
+    jp   call_03_4c76                                    ;; 03:608b $c3 $76 $4c
 .data_03_608e:
     db   $02, $61, $0b, $61, $14, $61, $25, $61        ;; 03:608e ????....
     db   $36, $61, $4f, $61, $68, $61, $89, $61        ;; 03:6096 ......??
@@ -2411,7 +2424,7 @@ call_03_5b5b:
     ld   D, $cc                                        ;; 03:645a $16 $cc
     ld   A, [HL+]                                      ;; 03:645c $2a
     and  A, A                                          ;; 03:645d $a7
-    jp   Z, jp_03_4c76                                 ;; 03:645e $ca $76 $4c
+    jp   Z, call_03_4c76                                 ;; 03:645e $ca $76 $4c
 .jr_03_6461:
     push AF                                            ;; 03:6461 $f5
     ld   A, E                                          ;; 03:6462 $7b
@@ -2439,9 +2452,9 @@ call_03_5b5b:
     jr   NZ, .jr_03_6461                               ;; 03:647b $20 $e4
     ld   A, E                                          ;; 03:647d $7b
     ld   [wD739], A                                    ;; 03:647e $ea $39 $d7
-    jp   jp_03_4c76                                    ;; 03:6481 $c3 $76 $4c
+    jp   call_03_4c76                                    ;; 03:6481 $c3 $76 $4c
 
-jp_03_6484:
+call_03_6484:
     ld   A, $5f                                        ;; 03:6484 $3e $5f
     ld   HL, wD739                                     ;; 03:6486 $21 $39 $d7
     ld   L, [HL]                                       ;; 03:6489 $6e
@@ -2570,9 +2583,11 @@ call_03_6499:
 .jr_03_653d:
     inc  E                                             ;; 03:653d $1c
     jr   .jr_03_652a                                   ;; 03:653e $18 $ea
+
+entry_03_6540:
     call call_03_6499                                  ;; 03:6540 $cd $99 $64
     call call_03_5b5b                                  ;; 03:6543 $cd $5b $5b
-    jp   jp_03_6484                                    ;; 03:6546 $c3 $84 $64
+    jp   call_03_6484                                    ;; 03:6546 $c3 $84 $64
     db   $cd, $0a, $3a, $d5, $13, $0e, $00, $06        ;; 03:6549 ????????
     db   $08, $cb, $46, $28, $27, $2a, $2a, $2a        ;; 03:6551 ????????
     db   $2f, $3c, $d6, $08, $12, $13, $2a, $2a        ;; 03:6559 ????????
@@ -2581,6 +2596,8 @@ call_03_6499:
     db   $04, $12, $13, $0c, $05, $20, $da, $e1        ;; 03:6571 ????????
     db   $71, $79, $a7, $c9, $23, $23, $23, $23        ;; 03:6579 ????????
     db   $23, $18, $f1                                 ;; 03:6581 ???
+
+entry_03_6584:
     call call_00_3a0a                                  ;; 03:6584 $cd $0a $3a
     push DE                                            ;; 03:6587 $d5
     inc  DE                                            ;; 03:6588 $13
@@ -2633,6 +2650,8 @@ call_03_6499:
     db   $13, $0c, $05, $20, $d4, $e1, $71, $79        ;; 03:65e8 ????????
     db   $a7, $c9, $23, $23, $23, $23, $23, $18        ;; 03:65f0 ????????
     db   $f1                                           ;; 03:65f8 ?
+
+entry_03_65f9:
     call call_00_3a0a                                  ;; 03:65f9 $cd $0a $3a
     push DE                                            ;; 03:65fc $d5
     inc  DE                                            ;; 03:65fd $13
@@ -2700,6 +2719,8 @@ call_03_6499:
     db   $3e, $04, $12, $13, $0c, $05, $20, $dc        ;; 03:669a ????????
     db   $e1, $71, $79, $a7, $c9, $23, $23, $23        ;; 03:66a2 ????????
     db   $23, $23, $18, $f1                            ;; 03:66aa ????
+
+entry_03_66ae:
     ld   HL, .image_03_66e1                             ;; 03:66ae $21 $e1 $66
     ld   DE, $8600                                     ;; 03:66b1 $11 $00 $86
     ld   BC, $140                                      ;; 03:66b4 $01 $40 $01
@@ -2718,20 +2739,21 @@ call_03_6499:
     ld   HL, .image_03_6921                             ;; 03:66d5 $21 $21 $69
     ld   DE, $8680                                     ;; 03:66d8 $11 $80 $86
     call call_03_6efd                                  ;; 03:66db $cd $fd $6e
-    jp   jp_03_6ceb                                    ;; 03:66de $c3 $eb $6c
+    jp   call_03_6ceb                                    ;; 03:66de $c3 $eb $6c
 
 .image_03_66e1:
     INCBIN ".gfx/misc/image_003_66e1.bin"
 .image_03_6821:
-	INCBIN ".gfx/misc/image_003_6821.bin"
+    INCBIN ".gfx/misc/image_003_6821.bin"
 .image_03_6921:
-	INCBIN ".gfx/misc/image_003_6921.bin"
+    INCBIN ".gfx/misc/image_003_6921.bin"
 
+entry_03_6941:
 call_03_6941:
     ld   HL, wD60E                                     ;; 03:6941 $21 $0e $d6
     res  3, [HL]                                       ;; 03:6944 $cb $9e
     call call_03_6be5                                  ;; 03:6946 $cd $e5 $6b
-    ld   HL, wD624                                     ;; 03:6949 $21 $24 $d6
+    ld   HL, wD624_CurrentLevelId                                     ;; 03:6949 $21 $24 $d6
     ld   L, [HL]                                       ;; 03:694c $6e
     ld   H, $00                                        ;; 03:694d $26 $00
     add  HL, HL                                        ;; 03:694f $29
@@ -2761,13 +2783,14 @@ call_03_6941:
     db   $a5, $69, $a5, $69, $a5, $69, $a5, $69        ;; 03:699d ????????
 
 .image_03_69a5:
-	INCBIN ".gfx/misc/image_003_69a5.bin"
+    INCBIN ".gfx/misc/image_003_69a5.bin"
 
+entry_03_6be5:
 call_03_6be5:
     ld   A, [wD59E]                                    ;; 03:6be5 $fa $9e $d5
     and  A, A                                          ;; 03:6be8 $a7
     ret  Z                                             ;; 03:6be9 $c8
-    ld   HL, wD624                                     ;; 03:6bea $21 $24 $d6
+    ld   HL, wD624_CurrentLevelId                                     ;; 03:6bea $21 $24 $d6
     ld   L, [HL]                                       ;; 03:6bed $6e
     ld   H, $00                                        ;; 03:6bee $26 $00
     add  HL, HL                                        ;; 03:6bf0 $29
@@ -2838,7 +2861,8 @@ call_03_6be5:
     db   $00, $00, $6f, $00, $bf, $04, $ff, $31        ;; 03:6cdb ????????
     db   $00, $00, $00, $00, $9c, $02, $7f, $03        ;; 03:6ce3 ????????
 
-jp_03_6ceb:
+entry_03_6ceb:
+call_03_6ceb:
     ld   HL, wD60E                                     ;; 03:6ceb $21 $0e $d6
     res  2, [HL]                                       ;; 03:6cee $cb $96
     ld   A, [wD76F]                                    ;; 03:6cf0 $fa $6f $d7
@@ -2855,6 +2879,7 @@ jp_03_6ceb:
     call call_03_6d88                                  ;; 03:6d0e $cd $88 $6d
     jr   jr_03_6d5e                                    ;; 03:6d11 $18 $4b
 
+entry_03_6d13:
 call_03_6d13:
     ld   HL, wD60E                                     ;; 03:6d13 $21 $0e $d6
     res  1, [HL]                                       ;; 03:6d16 $cb $8e
@@ -3041,7 +3066,8 @@ call_03_6f2d:
     inc  DE                                            ;; 03:6f5c $13
     ret                                                ;; 03:6f5d $c9
 
-call_00_0eba_WriteVRAMBgMap:
+entry_03_6f5e_WriteVRAMBgMap:
+call_03_6f5e_WriteVRAMBgMap:
     ld   A, [wD59E]                                    ;; 03:6f5e $fa $9e $d5
     and  A, A                                          ;; 03:6f61 $a7
     jp   Z, .jp_03_701d                                ;; 03:6f62 $ca $1d $70
@@ -3328,6 +3354,7 @@ call_00_0eba_WriteVRAMBgMap:
     ld   [DE], A                                       ;; 03:708b $12
     ret                                                ;; 03:708c $c9
 
+entry_03_708d:
 call_03_708d:
     ld   A, [wD59E]                                    ;; 03:708d $fa $9e $d5
     and  A, A                                          ;; 03:7090 $a7
@@ -3709,7 +3736,9 @@ call_03_708d:
     ld   A, [HL]                                       ;; 03:7239 $7e
     ld   [DE], A                                       ;; 03:723a $12
     ret                                                ;; 03:723b $c9
-    ld   HL, wD624                                     ;; 03:723c $21 $24 $d6
+
+entry_03_723c:
+    ld   HL, wD624_CurrentLevelId                                     ;; 03:723c $21 $24 $d6
     ld   L, [HL]                                       ;; 03:723f $6e
     ld   H, $00                                        ;; 03:7240 $26 $00
     add  HL, HL                                        ;; 03:7242 $29
@@ -3724,11 +3753,11 @@ call_03_708d:
     ld   [wD612], A                                    ;; 03:724f $ea $12 $d6
     ret                                                ;; 03:7252 $c9
 
-jp_03_7253:
+entry_03_7253:
     ld   A, [wD611]                                    ;; 03:7253 $fa $11 $d6
     and  A, A                                          ;; 03:7256 $a7
     ret  Z                                             ;; 03:7257 $c8
-    ld   HL, wD624                                     ;; 03:7258 $21 $24 $d6
+    ld   HL, wD624_CurrentLevelId                                     ;; 03:7258 $21 $24 $d6
     ld   L, [HL]                                       ;; 03:725b $6e
     ld   H, $00                                        ;; 03:725c $26 $00
     add  HL, HL                                        ;; 03:725e $29
