@@ -13,37 +13,39 @@ INCLUDE "bank03_unknown.asm"
 
 SECTION "bank04", ROMX[$4000], BANK[$04]
 image_004_4000.bin:
-    INCBIN ".gfx/spritesheets/image_004_4000.bin"
+    INCBIN ".gfx/object_sprites/image_004_4000.bin"
 image_004_6000.bin:
-    INCBIN ".gfx/spritesheets/image_004_6000.bin"
+    INCBIN ".gfx/object_sprites/image_004_6000.bin"
 
 SECTION "bank05", ROMX[$4000], BANK[$05]
 image_005_4000.bin:
-    INCBIN ".gfx/spritesheets/image_005_4000.bin"
+    INCBIN ".gfx/object_sprites/image_005_4000.bin"
 image_005_6000.bin:
-    INCBIN ".gfx/spritesheets/image_005_6000.bin"
+    INCBIN ".gfx/object_sprites/image_005_6000.bin"
 
 SECTION "bank06", ROMX[$4000], BANK[$06]
 image_006_4000.bin:
-    INCBIN ".gfx/spritesheets/image_006_4000.bin"
+    INCBIN ".gfx/object_sprites/image_006_4000.bin"
 image_006_6000.bin:
-    INCBIN ".gfx/spritesheets/image_006_6000.bin"
+    INCBIN ".gfx/object_sprites/image_006_6000.bin"
 
 SECTION "bank07", ROMX[$4000], BANK[$07]
 image_007_4000.bin:
-    INCBIN ".gfx/spritesheets/image_007_4000.bin"
+    INCBIN ".gfx/object_sprites/image_007_4000.bin"
 
 SECTION "bank08", ROMX[$4000], BANK[$08]
-image_008_0.bin:
-    INCBIN ".gfx/splash/image_008_0.bin"
+image_title_screen_008_0.bin:
+    INCBIN ".gfx/splash/image_title_screen_008_0.bin"
 image_008_0_palette_ids.bin:
-    INCBIN "gfx/splash/palette_ids/image_008_0_palette_ids.bin"
-image_008_1.bin:
-    INCBIN ".gfx/splash/image_008_1.bin"
+    INCBIN "gfx/splash/palette_ids/image_title_screen_008_0_palette_ids.bin"
+image_title_screen_008_1.bin:
+    INCBIN ".gfx/splash/image_title_screen_008_1.bin"
 image_008_1_palette_ids.bin:
-    INCBIN "gfx/splash/palette_ids/image_008_1_palette_ids.bin"
-image_008_2.bin:
-    INCBIN ".gfx/splash/image_008_2.bin"
+    INCBIN "gfx/splash/palette_ids/image_title_screen_008_1_palette_ids.bin"
+image_title_options_008_2.bin:
+    INCBIN ".gfx/splash/image_title_options_008_2.bin"
+image_filler_008_3.bin:
+    INCBIN ".gfx/splash/image_filler_008_3.bin"
 
 SECTION "bank09", ROMX[$4000], BANK[$09]
 image_009_4000.bin:
@@ -53,16 +55,16 @@ INCLUDE "bank0A_load_objects.asm"
 INCLUDE "bank0B_palettes.asm"
 
 SECTION "bank0c", ROMX[$4000], BANK[$0c]
-image_00c_0.bin:
-    INCBIN ".gfx/splash/image_00c_0.bin"
-image_00c_0_palette_ids.bin:
-    INCBIN "gfx/splash/palette_ids/image_00c_0_palette_ids.bin"
-image_00c_1.bin:
-    INCBIN ".gfx/splash/image_00c_1.bin"
-image_00c_2.bin:
-    INCBIN ".gfx/splash/image_00c_2.bin"
-image_00c_2_palette_ids.bin:
-    INCBIN "gfx/splash/palette_ids/image_00c_2_palette_ids.bin"
+image_audio_menu_00c_0.bin:
+    INCBIN ".gfx/splash/image_audio_menu_00c_0.bin"
+image_audio_menu_00c_0_palette_ids.bin:
+    INCBIN "gfx/splash/palette_ids/image_audio_menu_00c_0_palette_ids.bin"
+image_audio_options00c_1.bin:
+    INCBIN ".gfx/splash/image_audio_options_00c_1.bin"
+image_great_job_0c_2.bin:
+    INCBIN ".gfx/splash/image_great_job_00c_2.bin"
+image_great_job_00c_2_palette_ids.bin:
+    INCBIN "gfx/splash/palette_ids/image_great_job_00c_2_palette_ids.bin"
 
 SECTION "bank0d", ROMX[$4000], BANK[$0d]
 image_00d_0.bin:
@@ -105,7 +107,7 @@ image_00d_9.bin:
     INCBIN ".gfx/special_tilesets/image_00d_9.bin"
 image_00d_9_palette_ids.bin:
     INCBIN "gfx/special_tilesets/palette_ids/image_00d_9_palette_ids.bin"
-image_00d_10.bin:
+image_blank_tv_00d_10.bin:
     INCBIN ".gfx/special_tilesets/image_00d_10.bin"
 image_00d_10_palette_ids.bin:
     INCBIN "gfx/special_tilesets/palette_ids/image_00d_10_palette_ids.bin"
@@ -320,13 +322,13 @@ image_010_12_palette_ids.bin:
 
 SECTION "bank11", ROMX[$4000], BANK[$11]
 image_011_4000.bin:
-    INCBIN ".gfx/spritesheets/image_011_4000.bin"
+    INCBIN ".gfx/object_sprites/image_011_4000.bin"
 
 SECTION "bank12", ROMX[$4000], BANK[$12]
 image_012_4000.bin:
-    INCBIN ".gfx/spritesheets/image_012_4000.bin"
+    INCBIN ".gfx/object_sprites/image_012_4000.bin"
 image_012_6000.bin:
-    INCBIN ".gfx/spritesheets/image_012_6000.bin"
+    INCBIN ".gfx/object_sprites/image_012_6000.bin"
 
 SECTION "bank13", ROMX[$4000], BANK[$13]
 image_013_0.bin:
@@ -411,10 +413,10 @@ image_013_19_palette_ids.bin:
     INCBIN "gfx/special_tilesets/palette_ids/image_013_19_palette_ids.bin"
 
 SECTION "bank14", ROMX[$4000], BANK[$14]
-image_014_4000.bin:
-    INCBIN ".gfx/spritesheets/image_014_4000.bin"
-image_014_5000.bin:
-    INCBIN ".gfx/spritesheets/image_014_5000.bin"
+image_level_names_014_4000.bin:
+    INCBIN ".gfx/misc_sprites/image_level_names_014_4000.bin"
+image_level_names_014_5000.bin:
+    INCBIN ".gfx/misc_sprites/image_level_names_014_5000.bin"
 
 SECTION "bank15", ROMX[$4000], BANK[$15]
 
@@ -424,63 +426,63 @@ SECTION "bank17", ROMX[$4000], BANK[$17]
 
 SECTION "bank18", ROMX[$4000], BANK[$18]
 image_018_4000.bin:
-    INCBIN ".gfx/spritesheets/image_018_4000.bin"
+    INCBIN ".gfx/object_sprites/image_018_4000.bin"
 image_018_6000.bin:
-    INCBIN ".gfx/spritesheets/image_018_6000.bin"
+    INCBIN ".gfx/object_sprites/image_018_6000.bin"
 
 SECTION "bank19", ROMX[$4000], BANK[$19]
 image_019_4000.bin:
-    INCBIN ".gfx/spritesheets/image_019_4000.bin"
+    INCBIN ".gfx/object_sprites/image_019_4000.bin"
 image_019_6000.bin:
-    INCBIN ".gfx/spritesheets/image_019_6000.bin"
+    INCBIN ".gfx/object_sprites/image_019_6000.bin"
 
 SECTION "bank1a", ROMX[$4000], BANK[$1a]
 image_01a_4000.bin:
-    INCBIN ".gfx/spritesheets/image_01a_4000.bin"
+    INCBIN ".gfx/object_sprites/image_01a_4000.bin"
 image_01a_6000.bin:
-    INCBIN ".gfx/spritesheets/image_01a_6000.bin"
+    INCBIN ".gfx/object_sprites/image_01a_6000.bin"
 
 SECTION "bank1b", ROMX[$4000], BANK[$1b]
 image_01b_4000.bin:
-    INCBIN ".gfx/spritesheets/image_01b_4000.bin"
+    INCBIN ".gfx/object_sprites/image_01b_4000.bin"
 image_01b_6000.bin:
-    INCBIN ".gfx/spritesheets/image_01b_6000.bin"
+    INCBIN ".gfx/object_sprites/image_01b_6000.bin"
 
 SECTION "bank1c", ROMX[$4000], BANK[$1c]
 image_01c_4000.bin:
-    INCBIN ".gfx/spritesheets/image_01c_4000.bin"
+    INCBIN ".gfx/object_sprites/image_01c_4000.bin"
 image_01c_6000.bin:
-    INCBIN ".gfx/spritesheets/image_01c_6000.bin"
+    INCBIN ".gfx/object_sprites/image_01c_6000.bin"
 
 SECTION "bank1d", ROMX[$4000], BANK[$1d]
-image_01d_0.bin:
-    INCBIN ".gfx/splash/image_01d_0.bin"
-image_01d_0_palette_ids.bin:
-    INCBIN "gfx/splash/palette_ids/image_01d_0_palette_ids.bin"
-image_01d_1.bin:
-    INCBIN ".gfx/splash/image_01d_1.bin"
-image_01d_1_palette_ids.bin:
-    INCBIN "gfx/splash/palette_ids/image_01d_1_palette_ids.bin"
+image_credits2_01d_0.bin:
+    INCBIN ".gfx/splash/image_credits2_01d_0.bin"
+image_credits2_01d_0_palette_ids.bin:
+    INCBIN "gfx/splash/palette_ids/image_credits2_01d_0_palette_ids.bin"
+image_credits3_01d_1.bin:
+    INCBIN ".gfx/splash/image_credits3_01d_1.bin"
+image_credits3_01d_1_palette_ids.bin:
+    INCBIN "gfx/splash/palette_ids/image_credits3_01d_1_palette_ids.bin"
 
 SECTION "bank1e", ROMX[$4000], BANK[$1e]
-image_01e_0.bin:
-    INCBIN ".gfx/splash/image_01e_0.bin"
-image_01e_0_palette_ids.bin:
-    INCBIN "gfx/splash/palette_ids/image_01e_0_palette_ids.bin"
-image_01e_1.bin:
-    INCBIN ".gfx/splash/image_01e_1.bin"
-image_01e_1_palette_ids.bin:
-    INCBIN "gfx/splash/palette_ids/image_01e_1_palette_ids.bin"
+image_david_01e_0.bin:
+    INCBIN ".gfx/splash/image_david_01e_0.bin"
+image_david_01e_0_palette_ids.bin:
+    INCBIN "gfx/splash/palette_ids/image_david_01e_0_palette_ids.bin"
+image_credits1_01e_1.bin:
+    INCBIN ".gfx/splash/image_credits1_01e_1.bin"
+image_credits1_01e_1_palette_ids.bin:
+    INCBIN "gfx/splash/palette_ids/image_credits1_01e_1_palette_ids.bin"
 
 SECTION "bank1f", ROMX[$4000], BANK[$1f]
-image_01f_0.bin:
-    INCBIN ".gfx/splash/image_01f_0.bin"
-image_01f_0_palette_ids.bin:
-    INCBIN "gfx/splash/palette_ids/image_01f_0_palette_ids.bin"
-image_01f_1.bin:
-    INCBIN ".gfx/splash/image_01f_1.bin"
-image_01f_1_palette_ids.bin:
-    INCBIN "gfx/splash/palette_ids/image_01f_1_palette_ids.bin"
+image_crave_01f_0.bin:
+    INCBIN ".gfx/splash/image_crave_01f_0.bin"
+image_crave_01f_0_palette_ids.bin:
+    INCBIN "gfx/splash/palette_ids/image_crave_01f_0_palette_ids.bin"
+image_splash_01f_1.bin:
+    INCBIN ".gfx/splash/image_splash_01f_1.bin"
+image_splash_01f_1_palette_ids.bin:
+    INCBIN "gfx/splash/palette_ids/image_splash_01f_1_palette_ids.bin"
 
 SECTION "bank20", ROMX[$4000], BANK[$20]
 
@@ -596,8 +598,8 @@ blockset_data_kung_fu_theater.bin:
     INCBIN "maps/kung_fu_theater/blockset_data_kung_fu_theater.bin"
 
 SECTION "bank3d", ROMX[$4000], BANK[$3d]
-image_03d_0.bin:
-    INCBIN ".gfx/splash/image_03d_0.bin"
+image_credits4_03d_0.bin:
+    INCBIN ".gfx/splash/image_credits4_03d_0.bin"
 
 SECTION "bank3E", ROMX[$4000], BANK[$3e]
 blockset_data_prehistory_channel.bin:

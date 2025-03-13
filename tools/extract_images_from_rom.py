@@ -157,7 +157,7 @@ def extract_splash():
         if b == 0xc:
             bank_chunks = [0x1680, 0x168, 0x900, 0x1680, 0x168]
         elif b == 0x8:
-            bank_chunks = [0x1680, 0x168, 0x1680, 0x168, 0xb40]
+            bank_chunks = [0x1680, 0x168, 0x1680, 0x168, 0x480, 0x690] #b40
         elif b == 0x3d:
             bank_chunks = [0x1680]
         elif b == 0x1d or b == 0x1e or b == 0x1f:
@@ -183,8 +183,12 @@ def extract_splash():
                 out.write(data)
                 out.close()
                 
-                if (b == 0xc and chunk_counter == 2) or (b == 0x8 and chunk_counter == 4):
-                    width = 12
+                if b == 0x8 and chunk_counter == 4:
+                    width = 6
+                elif b == 0x8 and chunk_counter == 5:
+                    width = 5
+                elif b == 0xc and chunk_counter == 2:
+                    width = 6
                 else: 
                     width = 20
                 
@@ -194,7 +198,7 @@ def extract_splash():
                     os.system('rgbgfx --reverse '+str(width)+' -o banks/bank_'+bank+'/image_'+bank+'_'+str(count2)+'.bin banks/bank_'+bank+'/image_'+bank+'_'+str(count2)+'.png')
                 
                 
-                if (b == 0xc and (chunk_counter == 1 or chunk_counter == 2)) or (b == 0x8 and (chunk_counter == 1 or chunk_counter == 3)) or ((b == 0x1d or b == 0x1e or b == 0x1f) and (chunk_counter == 1 or chunk_counter == 3)):
+                if (b == 0xc and (chunk_counter == 1 or chunk_counter == 2)) or (b == 0x8 and (chunk_counter == 1 or chunk_counter == 3 or chunk_counter == 4)) or ((b == 0x1d or b == 0x1e or b == 0x1f) and (chunk_counter == 1 or chunk_counter == 3)):
                     count2 = count2 + 1
                     #print("count2 is now: "+str(count2))
                 chunk_counter = chunk_counter + 1
@@ -247,5 +251,5 @@ def extract_bank03():
 #extract_banks()
 #extract_sprites_vertical()
 #extract_special_tilesets_horizontal()
-#extract_splash()
+extract_splash()
 extract_bank03()

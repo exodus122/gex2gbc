@@ -2727,7 +2727,7 @@ entry_03_66ae:
     call call_00_07b0_CopyBytes                                  ;; 03:66b7 $cd $b0 $07
     call call_03_6d13                                  ;; 03:66ba $cd $13 $6d
     call call_03_6941                                  ;; 03:66bd $cd $41 $69
-    ld   HL, .image_03_6821                             ;; 03:66c0 $21 $21 $68
+    ld   HL, .image_demo_mode_03_6821                             ;; 03:66c0 $21 $21 $68
     ld   DE, $8680                                     ;; 03:66c3 $11 $80 $86
     ld   BC, $100                                      ;; 03:66c6 $01 $00 $01
     ld   A, [wD61E]                                    ;; 03:66c9 $fa $1e $d6
@@ -2736,17 +2736,17 @@ entry_03_66ae:
     ld   A, [wD623]                                    ;; 03:66d0 $fa $23 $d6
     and  A, A                                          ;; 03:66d3 $a7
     ret  Z                                             ;; 03:66d4 $c8
-    ld   HL, .image_03_6921                             ;; 03:66d5 $21 $21 $69
+    ld   HL, .image_colon_03_6921                             ;; 03:66d5 $21 $21 $69
     ld   DE, $8680                                     ;; 03:66d8 $11 $80 $86
     call call_03_6efd                                  ;; 03:66db $cd $fd $6e
     jp   call_03_6ceb                                    ;; 03:66de $c3 $eb $6c
 
 .image_03_66e1:
-    INCBIN ".gfx/misc/image_003_66e1.bin"
-.image_03_6821:
-    INCBIN ".gfx/misc/image_003_6821.bin"
-.image_03_6921:
-    INCBIN ".gfx/misc/image_003_6921.bin"
+    INCBIN ".gfx/misc_sprites/image_003_66e1.bin"
+.image_demo_mode_03_6821:
+    INCBIN ".gfx/misc_sprites/image_demo_mode_003_6821.bin"
+.image_colon_03_6921:
+    INCBIN ".gfx/misc_sprites/image_colon_003_6921.bin"
 
 entry_03_6941:
 call_03_6941:
@@ -2783,7 +2783,7 @@ call_03_6941:
     db   $a5, $69, $a5, $69, $a5, $69, $a5, $69        ;; 03:699d ????????
 
 .image_03_69a5:
-    INCBIN ".gfx/misc/image_003_69a5.bin"
+    INCBIN ".gfx/misc_sprites/image_003_69a5.bin"
 
 entry_03_6be5:
 call_03_6be5:
@@ -2961,9 +2961,9 @@ call_03_6d88:
     jp   call_03_6f2d                                  ;; 03:6d9a $c3 $2d $6f
 
 .numbers_003_6d9d:
-    INCBIN ".gfx/misc/numbers_003_6d9d.bin"
+    INCBIN ".gfx/misc_sprites/numbers_003_6d9d.bin"
 .numbers_003_6e4d:
-    INCBIN ".gfx/misc/numbers_003_6e4d.bin"
+    INCBIN ".gfx/misc_sprites/numbers_003_6e4d.bin"
 
 call_03_6efd:
     ld   A, [HL+]                                      ;; 03:6efd $2a
@@ -4271,7 +4271,7 @@ data_03_734a:
     dw   `10100000                                     ;; 03:76fb $a0 $00
 
 image_003_76fd.bin:
-    INCBIN ".gfx/misc/image_003_76fd.bin"
+    INCBIN ".gfx/misc_sprites/image_003_76fd.bin"
 
 data_03_7bfd:
     db   $ff, $00, $00, $00, $00, $00, $00, $00        ;; 03:7bfd ????????

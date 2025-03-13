@@ -2,6 +2,8 @@
 
 SECTION "bank01", ROMX[$4000], BANK[$01]
 
+; This file handles various menus in the game
+
 entry_01_4000:
 call_01_4000:
     ld   HL, wD6DD                                     ;; 01:4000 $21 $dd $d6
