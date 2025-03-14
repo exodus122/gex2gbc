@@ -219,6 +219,7 @@
 00:19a4 jr_00_1922.jr_00_19a4
 00:19be jr_00_1922.jr_00_19be
 00:19dc jr_00_1922.jr_00_19dc
+00:19f0 data_00_19f0
 00:1e3c call_00_1e3c
 00:1e5b call_00_1e5b
 00:1e63 call_00_1e5b.jr_00_1e63
@@ -277,13 +278,14 @@
 00:2e43 call_00_2e43
 00:2e4c call_00_2e4c
 00:2e5f call_00_2e5f
-00:2e77 call_00_2e77
-00:2e80 call_00_2e80
-00:2e89 call_00_2e89
+00:2e77 call_00_2eb0_GetCurrentMapBankNumber
+00:2e80 call_00_2eb0_GetCurrentSpecialTileBank
+00:2e89 call_00_2eb0_GetCurrentBlocksetBank
 00:2e93 call_00_2e93
-00:2e9c call_00_2e9c
+00:2e9c call_00_2eb0_GetCurrentBgTilesetBank
 00:2ea5 call_00_2ea5
-00:2eb0 call_00_2eb0
+00:2eb0 call_00_2eb0_GetMapDataAddr
+00:2ebf data_MapData
 00:30af call_00_30af
 00:30c4 call_00_30af.jr_00_30c4
 00:30ef jr_00_30ef
@@ -618,7 +620,7 @@
 01:71e9 data_01_71e9
 01:74e9 data_01_74e9
 01:74ed data_01_74ed
-02:4000 data_02_4000
+02:4000 data_02_4000_ObjectJumpTables
 02:4120 data_02_4120
 02:41a0 call_02_41a0
 02:41ac call_02_41a0.jr_02_41ac
@@ -1705,7 +1707,7 @@
 00:d588 wD588
 00:d589 wD589
 00:d58a wD58A
-00:d59a wD59A
+00:d59a wD59A_PreviousBankNumber
 00:d59c wD59C_CurrentROMBank
 00:d59d wD59D
 00:d59e wD59E
@@ -1847,7 +1849,7 @@
 00:d6f1 wD6F1
 00:d6f3 wD6F3
 00:d6f5 wD6F5_CurrentMapBank
-00:d6f6 wD6F6_CurrentMap3435Bank
+00:d6f6 wD6F6_CurrentMapSpecialTileBank
 00:d6f7 wD6F7_CurrentBlocksetAndCollisionBank
 00:d6f9 wD6F9
 00:d6fa wD6FA

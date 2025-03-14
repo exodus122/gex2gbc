@@ -185,7 +185,8 @@ wD589:
 wD58A:
     ds 16                                              ;; d58a
 
-wD59A:
+wD59A_PreviousBankNumber:
+; used to switch back to previous bank after loaded asset from a new bank (or ran code?)
     ds 2                                               ;; d59a
 
 wD59C_CurrentROMBank:
@@ -640,7 +641,7 @@ wD6F3:
 wD6F5_CurrentMapBank:
     ds 1                                               ;; d6f5
 
-wD6F6_CurrentMap3435Bank:
+wD6F6_CurrentMapSpecialTileBank:
     ds 1                                               ;; d6f6
 
 wD6F7_CurrentBlocksetAndCollisionBank:

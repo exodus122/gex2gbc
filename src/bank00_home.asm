@@ -95,7 +95,7 @@ call_00_0150_Init:
     ld   BC, $0a                                       ;; 00:01b2 $01 $0a $00
     call call_00_07b0_CopyBytes                                  ;; 00:01b5 $cd $b0 $07
     call call_00_0e87                                  ;; 00:01b8 $cd $87 $0e
-    ld   HL, wD59A                                     ;; 00:01bb $21 $9a $d5
+    ld   HL, wD59A_PreviousBankNumber                                     ;; 00:01bb $21 $9a $d5
     ld   DE, wD58A                                     ;; 00:01be $11 $8a $d5
     ld   A, $01                                        ;; 00:01c1 $3e $01
     ld   [HL], E                                       ;; 00:01c3 $73
@@ -2070,7 +2070,7 @@ call_00_1078_SwitchBankWrapper:
     ret                                                ;; 00:1088 $c9
 
 call_00_1089_SwitchBank:
-    ld   HL, wD59A                                     ;; 00:1089 $21 $9a $d5
+    ld   HL, wD59A_PreviousBankNumber                                     ;; 00:1089 $21 $9a $d5
     ld   E, [HL]                                       ;; 00:108c $5e
     inc  HL                                            ;; 00:108d $23
     ld   D, [HL]                                       ;; 00:108e $56
@@ -2088,7 +2088,7 @@ call_00_1089_SwitchBank:
     ret                                                ;; 00:10a2 $c9
 
 call_00_10a3_SwitchBank2:
-    ld   HL, wD59A                                     ;; 00:10a3 $21 $9a $d5
+    ld   HL, wD59A_PreviousBankNumber                                     ;; 00:10a3 $21 $9a $d5
     ld   E, [HL]                                       ;; 00:10a6 $5e
     inc  HL                                            ;; 00:10a7 $23
     ld   D, [HL]                                       ;; 00:10a8 $56
@@ -2318,15 +2318,15 @@ call_00_120c:
 
 call_00_1264_LoadMap:
     call call_00_0ede                                  ;; 00:1264 $cd $de $0e
-    call call_00_2e77                                  ;; 00:1267 $cd $77 $2e
+    call call_00_2eb0_GetCurrentMapBankNumber                                  ;; 00:1267 $cd $77 $2e
     ld   [wD6F5_CurrentMapBank], A                                    ;; 00:126a $ea $f5 $d6
-    call call_00_2e80                                  ;; 00:126d $cd $80 $2e
-    ld   [wD6F6_CurrentMap3435Bank], A                                    ;; 00:1270 $ea $f6 $d6
-    call call_00_2e89                                  ;; 00:1273 $cd $89 $2e
+    call call_00_2eb0_GetCurrentSpecialTileBank                                  ;; 00:126d $cd $80 $2e
+    ld   [wD6F6_CurrentMapSpecialTileBank], A                                    ;; 00:1270 $ea $f6 $d6
+    call call_00_2eb0_GetCurrentBlocksetBank                                  ;; 00:1273 $cd $89 $2e
     ld   [wD6F7_CurrentBlocksetAndCollisionBank], A                                    ;; 00:1276 $ea $f7 $d6
     call call_00_2e93                                  ;; 00:1279 $cd $93 $2e
     ld   [wD6FE], A                                    ;; 00:127c $ea $fe $d6
-    call call_00_2e9c                                  ;; 00:127f $cd $9c $2e
+    call call_00_2eb0_GetCurrentBgTilesetBank                                  ;; 00:127f $cd $9c $2e
     ld   [wD6FF_CurrentBgTilesetBank], A                                    ;; 00:1282 $ea $ff $d6
     call call_00_2ea5                                  ;; 00:1285 $cd $a5 $2e
     ld   HL, wD700                                     ;; 00:1288 $21 $00 $d7
@@ -2577,6 +2577,7 @@ call_00_1455:
     ret                                                ;; 00:1471 $c9
 
 call_00_1472:
+; load bg map tiles (vertical camera movement)
     ld   HL, wD6EF                                     ;; 00:1472 $21 $ef $d6
     ld   A, [HL+]                                      ;; 00:1475 $2a
     ld   C, A                                          ;; 00:1476 $4f
@@ -2678,7 +2679,7 @@ call_00_1472:
     ld   A, [HL+]                                      ;; 00:14f5 $2a
     ld   [DE], A                                       ;; 00:14f6 $12
     call call_00_10a3_SwitchBank2                                  ;; 00:14f7 $cd $a3 $10
-    ld   A, [wD6F6_CurrentMap3435Bank]                                    ;; 00:14fa $fa $f6 $d6
+    ld   A, [wD6F6_CurrentMapSpecialTileBank]                                    ;; 00:14fa $fa $f6 $d6
     call call_00_1089_SwitchBank                       ;; 00:14fd $cd $89 $10 switch to map data file 34/35
     pop  HL                                            ;; 00:1500 $e1 hl = 44b4
     ld   DE, wD703                                     ;; 00:1501 $11 $03 $d7 de = d703
@@ -2723,7 +2724,7 @@ call_00_1472:
     ld   C, A                                          ;; 00:1537 $4f
     inc  DE                                            ;; 00:1538 $13
     res  4, B                                          ;; 00:1539 $cb $a0
-    ld   A, [DE]                                       ;; 00:153b $1a
+    ld   A, [DE]                                       ;; 00:153b $1a ; loads 3435 data
     and  A, A                                          ;; 00:153c $a7
     jr   Z, .jr_00_1541                                ;; 00:153d $28 $02
     set  4, B                                          ;; 00:153f $cb $e0
@@ -2774,6 +2775,7 @@ call_00_1472:
     ret                                                ;; 00:1579 $c9
 
 call_00_157a:
+; load bg map tiles (horizontal camera movement)
     ld   HL, wD6ED                                     ;; 00:157a $21 $ed $d6
     ld   A, [HL+]                                      ;; 00:157d $2a
     ld   E, A                                          ;; 00:157e $5f
@@ -2883,7 +2885,7 @@ call_00_157a:
     ld   A, [HL]                                       ;; 00:1607 $7e
     ld   [DE], A                                       ;; 00:1608 $12
     call call_00_10a3_SwitchBank2                                  ;; 00:1609 $cd $a3 $10
-    ld   A, [wD6F6_CurrentMap3435Bank]                                    ;; 00:160c $fa $f6 $d6
+    ld   A, [wD6F6_CurrentMapSpecialTileBank]                                    ;; 00:160c $fa $f6 $d6
     call call_00_1089_SwitchBank                                  ;; 00:160f $cd $89 $10
     pop  HL                                            ;; 00:1612 $e1
     ld   DE, wD70F                                     ;; 00:1613 $11 $0f $d7
@@ -3522,11 +3524,11 @@ jr_00_1922:
     ld   D, H                                          ;; 00:193e $54
     pop  HL                                            ;; 00:193f $e1
     ld   B, $06                                        ;; 00:1940 $06 $06
-.jr_00_1942:
+.jr_00_1942: ; loading a value written from 3435 bank
     ld   A, [HL-]                                      ;; 00:1942 $3a
     and  A, A                                          ;; 00:1943 $a7
-    jr   Z, .jr_00_1954                                ;; 00:1944 $28 $0e
-    ld   A, [HL]                                       ;; 00:1946 $7e
+    jr   Z, .jr_00_1954                                ;; 00:1944 $28 $0e ; jmp if 0
+    ld   A, [HL]                                       ;; 00:1946 $7e	; go here if not 0
     sub  A, C                                          ;; 00:1947 $91
     jr   C, .jr_00_1954                                ;; 00:1948 $38 $0a
     push HL                                            ;; 00:194a $e5
@@ -3547,6 +3549,7 @@ jr_00_1922:
     ld   HL, wD72D                                     ;; 00:195a $21 $2d $d7
     cp   A, [HL]                                       ;; 00:195d $be
     ret  Z                                             ;; 00:195e $c8
+
     ld   [HL], A                                       ;; 00:195f $77
     ld   C, A                                          ;; 00:1960 $4f
     add  A, A                                          ;; 00:1961 $87
@@ -3555,7 +3558,7 @@ jr_00_1922:
     ld   L, [HL]                                       ;; 00:1966 $6e
     ld   H, $00                                        ;; 00:1967 $26 $00
     add  HL, HL                                        ;; 00:1969 $29
-    ld   DE, $19f0                                     ;; 00:196a $11 $f0 $19
+    ld   DE, data_00_19f0                                     ;; 00:196a $11 $f0 $19
     add  HL, DE                                        ;; 00:196d $19
     add  A, [HL]                                       ;; 00:196e $86
     ld   [wD728], A                                    ;; 00:196f $ea $28 $d7
@@ -3625,6 +3628,8 @@ jr_00_1922:
     ld   HL, entry_0b_5df8                                     ;; 00:19e9 $21 $f8 $5d
     call call_00_1078_SwitchBankWrapper                                  ;; 00:19ec $cd $78 $10
     ret                                                ;; 00:19ef $c9
+
+data_00_19f0:
     db   $40, $13, $40, $0e, $40, $0f, $40, $0f        ;; 00:19f0 ?.?.?.??
     db   $61, $0d, $40, $10, $40, $13, $5b, $0e        ;; 00:19f8 ????????
     db   $40, $0e, $5b, $0e, $61, $0d, $40, $0f        ;; 00:1a00 ????????
@@ -3640,7 +3645,9 @@ jr_00_1922:
     db   $6c, $1a, $6c, $1a, $6c, $1a, $6c, $1a        ;; 00:1a50 ????????
     db   $4c, $1c, $94, $1d, $da, $1b, $be, $1c        ;; 00:1a58 ????????
     db   $a0, $1b, $94, $1d, $6c, $1a, $6c, $1a        ;; 00:1a60 ????????
-    db   $6c, $1a, $2e, $1e, $53, $00, $00, $00        ;; 00:1a68 ????.???
+    db   $6c, $1a, $2e, $1e, $53
+	; special tile related?
+	db   $00, $00, $00        ;; 00:1a68 ????.???
     db   $00, $00, $09, $09, $09, $09, $07, $07        ;; 00:1a70 ????????
     db   $07, $07, $00, $00, $00, $00, $00, $00        ;; 00:1a78 ????????
     db   $00, $09, $09, $09, $09, $00, $07, $07        ;; 00:1a80 ????????
@@ -3672,6 +3679,7 @@ jr_00_1922:
     db   $08, $08, $08, $08, $08, $08, $08, $08        ;; 00:1b50 ????????
     db   $08, $08, $08, $08, $05, $05, $05, $08        ;; 00:1b58 ????????
     db   $09, $09, $09, $09, $05, $05, $00, $05        ;; 00:1b60 ????????
+	
     db   $05, $05, $05, $05, $00, $00, $02, $02        ;; 00:1b68 ????..??
     db   $06, $06, $06, $06, $07, $09, $09, $09        ;; 00:1b70 ??..????
     db   $09, $03, $03, $03, $06, $06, $06, $06        ;; 00:1b78 ????....
@@ -3765,6 +3773,7 @@ jr_00_1922:
     db   $01, $01, $01, $01                            ;; 00:1e38 ????
 
 call_00_1e3c:
+; this function loads the values that were obtained from bank 34/35
     push HL                                            ;; 00:1e3c $e5
     ld   A, [wD6FE]                                    ;; 00:1e3d $fa $fe $d6
     ld   C, A                                          ;; 00:1e40 $4f
@@ -4933,21 +4942,21 @@ call_00_2dbf:
     ret                                                ;; 00:2e39 $c9
 
 call_00_2e3a:
-    call call_00_2eb0                                  ;; 00:2e3a $cd $b0 $2e
+    call call_00_2eb0_GetMapDataAddr                                  ;; 00:2e3a $cd $b0 $2e
     ld   DE, $00                                       ;; 00:2e3d $11 $00 $00
     add  HL, DE                                        ;; 00:2e40 $19
     ld   A, [HL]                                       ;; 00:2e41 $7e
     ret                                                ;; 00:2e42 $c9
 
 call_00_2e43:
-    call call_00_2eb0                                  ;; 00:2e43 $cd $b0 $2e
+    call call_00_2eb0_GetMapDataAddr                                  ;; 00:2e43 $cd $b0 $2e
     ld   DE, $01                                       ;; 00:2e46 $11 $01 $00
     add  HL, DE                                        ;; 00:2e49 $19
     ld   A, [HL]                                       ;; 00:2e4a $7e
     ret                                                ;; 00:2e4b $c9
 
 call_00_2e4c:
-    call call_00_2eb0                                  ;; 00:2e4c $cd $b0 $2e
+    call call_00_2eb0_GetMapDataAddr                                  ;; 00:2e4c $cd $b0 $2e
     ld   DE, $02                                       ;; 00:2e4f $11 $02 $00
     add  HL, DE                                        ;; 00:2e52 $19
     ld   E, [HL]                                       ;; 00:2e53 $5e
@@ -4962,7 +4971,7 @@ call_00_2e4c:
     ret                                                ;; 00:2e5e $c9
 
 call_00_2e5f:
-    call call_00_2eb0                                  ;; 00:2e5f $cd $b0 $2e
+    call call_00_2eb0_GetMapDataAddr                                  ;; 00:2e5f $cd $b0 $2e
     ld   DE, $02                                       ;; 00:2e62 $11 $02 $00
     add  HL, DE                                        ;; 00:2e65 $19
     ld   E, [HL]                                       ;; 00:2e66 $5e
@@ -4980,44 +4989,44 @@ call_00_2e5f:
     ld   L, E                                          ;; 00:2e75 $6b
     ret                                                ;; 00:2e76 $c9
 
-call_00_2e77:
-    call call_00_2eb0                                  ;; 00:2e77 $cd $b0 $2e
+call_00_2eb0_GetCurrentMapBankNumber:
+    call call_00_2eb0_GetMapDataAddr                                  ;; 00:2e77 $cd $b0 $2e
     ld   DE, $04                                       ;; 00:2e7a $11 $04 $00
     add  HL, DE                                        ;; 00:2e7d $19
     ld   A, [HL]                                       ;; 00:2e7e $7e
     ret                                                ;; 00:2e7f $c9
 
-call_00_2e80:
-    call call_00_2eb0                                  ;; 00:2e80 $cd $b0 $2e
+call_00_2eb0_GetCurrentSpecialTileBank:
+    call call_00_2eb0_GetMapDataAddr                                  ;; 00:2e80 $cd $b0 $2e
     ld   DE, $05                                       ;; 00:2e83 $11 $05 $00
     add  HL, DE                                        ;; 00:2e86 $19
     ld   A, [HL]                                       ;; 00:2e87 $7e
     ret                                                ;; 00:2e88 $c9
 
-call_00_2e89:
-    call call_00_2eb0                                  ;; 00:2e89 $cd $b0 $2e
+call_00_2eb0_GetCurrentBlocksetBank:
+    call call_00_2eb0_GetMapDataAddr                                  ;; 00:2e89 $cd $b0 $2e
     ld   DE, $06                                       ;; 00:2e8c $11 $06 $00
     add  HL, DE                                        ;; 00:2e8f $19
     ld   A, [HL]                                       ;; 00:2e90 $7e
     ret                                                ;; 00:2e91 $c9
-    db   $c9                                           ;; 00:2e92 ?
+    ret                                                ;; 00:2e92 $c9
 
 call_00_2e93:
-    call call_00_2eb0                                  ;; 00:2e93 $cd $b0 $2e
+    call call_00_2eb0_GetMapDataAddr                                  ;; 00:2e93 $cd $b0 $2e
     ld   DE, $08                                       ;; 00:2e96 $11 $08 $00
     add  HL, DE                                        ;; 00:2e99 $19
     ld   A, [HL]                                       ;; 00:2e9a $7e
     ret                                                ;; 00:2e9b $c9
 
-call_00_2e9c:
-    call call_00_2eb0                                  ;; 00:2e9c $cd $b0 $2e
+call_00_2eb0_GetCurrentBgTilesetBank:
+    call call_00_2eb0_GetMapDataAddr                                  ;; 00:2e9c $cd $b0 $2e
     ld   DE, $09                                       ;; 00:2e9f $11 $09 $00
     add  HL, DE                                        ;; 00:2ea2 $19
     ld   A, [HL]                                       ;; 00:2ea3 $7e
     ret                                                ;; 00:2ea4 $c9
 
 call_00_2ea5:
-    call call_00_2eb0                                  ;; 00:2ea5 $cd $b0 $2e
+    call call_00_2eb0_GetMapDataAddr                                  ;; 00:2ea5 $cd $b0 $2e
     ld   DE, $0a                                       ;; 00:2ea8 $11 $0a $00
     add  HL, DE                                        ;; 00:2eab $19
     ld   E, [HL]                                       ;; 00:2eac $5e
@@ -5025,7 +5034,7 @@ call_00_2ea5:
     ld   D, [HL]                                       ;; 00:2eae $56
     ret                                                ;; 00:2eaf $c9
 
-call_00_2eb0:
+call_00_2eb0_GetMapDataAddr:
     ld   HL, wD624_CurrentLevelId                                     ;; 00:2eb0 $21 $24 $d6
     ld   L, [HL]                                       ;; 00:2eb3 $6e
     ld   H, $00                                        ;; 00:2eb4 $26 $00
@@ -5033,55 +5042,105 @@ call_00_2eb0:
     add  HL, HL                                        ;; 00:2eb7 $29
     add  HL, HL                                        ;; 00:2eb8 $29
     add  HL, HL                                        ;; 00:2eb9 $29
-    ld   DE, $2ebf                                     ;; 00:2eba $11 $bf $2e
+    ld   DE, data_MapData                                     ;; 00:2eba $11 $bf $2e
     add  HL, DE                                        ;; 00:2ebd $19
     ret                                                ;; 00:2ebe $c9
+
+data_MapData:
+; List of which banks to use for each of the 31 maps. 0x10 bytes each
+; 0x0
+; 0x1
+; 0x2-0x3 is 
+; 0x4 is map bank number
+; 0x5 is map special tile data bank
+; 0x6 is blockset data bank
+; 0x7
+; 0x8
+; 0x9 is tileset bank
+; 0xa
+; 0xb
+; 0xc
+; 0xd
+; 0xe
+; 0xf
     db   $00, $06                                      ;; 00:2ebf ?w
     dw   $5f88                                         ;; 00:2ec1 wW
     db   $30, $34, $38, $00, $04, $36, $00, $40        ;; 00:2ec3 ...?....
-    db   $00, $00, $00, $00, $07, $00                  ;; 00:2ecb ????ww
+    db   $00, $00, $00, $00
+	
+	db   $07, $00                  ;; 00:2ecb ????ww
     dw   $5fa7                                         ;; 00:2ed1 wW
     db   $31, $34, $39, $00, $08, $36, $00, $50        ;; 00:2ed3 ...?....
-    db   $00, $00, $00, $00, $06, $00                  ;; 00:2edb ????ww
+    db   $00, $00, $00, $00
+	
+	db   $06, $00                  ;; 00:2edb ????ww
     dw   $6007                                         ;; 00:2ee1 wW
     db   $32, $34, $3a, $00, $02, $36, $00, $60        ;; 00:2ee3 ...?....
-    db   $00, $00, $00, $00, $06, $00                  ;; 00:2eeb ?????w
+    db   $00, $00, $00, $00
+	
+	db   $06, $00                  ;; 00:2eeb ?????w
     dw   $606a                                         ;; 00:2ef1 wW
     db   $33, $34, $3a, $00, $01, $36, $00, $60        ;; 00:2ef3 ????????
-    db   $00, $00, $00, $00, $01, $01                  ;; 00:2efb ?????w
+    db   $00, $00, $00, $00
+	
+	db   $01, $01                  ;; 00:2efb ?????w
     dw   $60ca                                         ;; 00:2f01 wW
     db   $25, $35, $3b, $00, $02, $36, $00, $70        ;; 00:2f03 ????????
-    db   $00, $00, $00, $00, $02, $01                  ;; 00:2f0b ?????w
+    db   $00, $00, $00, $00
+	
+	db   $02, $01                  ;; 00:2f0b ?????w
     dw   $611b                                         ;; 00:2f11 wW
     db   $2d, $34, $3c, $00, $80, $37, $00, $40        ;; 00:2f13 ????????
-    db   $00, $00, $00, $00, $05, $06, $5f, $61        ;; 00:2f1b ?????w??
+    db   $00, $00, $00, $00
+	
+	db   $05, $06, $5f, $61        ;; 00:2f1b ?????w??
     db   $32, $34, $38, $00, $00, $36, $00, $40        ;; 00:2f23 ????????
-    db   $00, $00, $00, $00, $03, $01                  ;; 00:2f2b ?????w
+    db   $00, $00, $00, $00
+	
+	db   $03, $01                  ;; 00:2f2b ?????w
     dw   $616b                                         ;; 00:2f31 wW
     db   $2e, $34, $3e, $00, $10, $37, $00, $50        ;; 00:2f33 ????????
-    db   $00, $00, $00, $00, $07, $01                  ;; 00:2f3b ?????w
+    db   $00, $00, $00, $00
+	
+	db   $07, $01                  ;; 00:2f3b ?????w
     dw   $61ac                                         ;; 00:2f41 wW
     db   $31, $34, $39, $00, $08, $36, $00, $50        ;; 00:2f43 ????????
-    db   $00, $00, $00, $00, $03, $00                  ;; 00:2f4b ?????w
+    db   $00, $00, $00, $00
+	
+	db   $03, $00                  ;; 00:2f4b ?????w
     dw   $61e2                                         ;; 00:2f51 wW
     db   $2f, $34, $3e, $00, $20, $37, $00, $50        ;; 00:2f53 ????????
-    db   $00, $00, $00, $00, $01, $00                  ;; 00:2f5b ?????w
+    db   $00, $00, $00, $00
+	
+	db   $01, $00                  ;; 00:2f5b ?????w
     dw   $623d                                         ;; 00:2f61 wW
     db   $2a, $35, $3b, $00, $08, $36, $00, $70        ;; 00:2f63 ????????
-    db   $00, $00, $00, $00, $06, $00                  ;; 00:2f6b ?????w
+    db   $00, $00, $00, $00
+	
+	db   $06, $00                  ;; 00:2f6b ?????w
     dw   $629b                                         ;; 00:2f71 wW
     db   $32, $34, $3a, $00, $02, $36, $00, $60        ;; 00:2f73 ????????
-    db   $00, $00, $00, $00, $05, $06, $fa, $62        ;; 00:2f7b ?????w??
+    db   $00, $00, $00, $00
+	
+	db   $05, $06, $fa, $62        ;; 00:2f7b ?????w??
     db   $32, $34, $38, $00, $00, $36, $00, $40        ;; 00:2f83 ????????
-    db   $00, $00, $00, $00, $02, $00                  ;; 00:2f8b ?????w
+    db   $00, $00, $00, $00
+	
+	db   $02, $00                  ;; 00:2f8b ?????w
     dw   $6306                                         ;; 00:2f91 wW
     db   $2c, $34, $3c, $00, $40, $37, $00, $40        ;; 00:2f93 ????????
-    db   $00, $00, $00, $00, $04, $02                  ;; 00:2f9b ?????w
+    db   $00, $00, $00, $00
+	
+	db   $04, $02                  ;; 00:2f9b ?????w
     dw   $6372                                         ;; 00:2fa1 wW
     db   $29, $35, $3f, $00, $01, $37, $00, $60        ;; 00:2fa3 ????????
-    db   $00, $00, $00, $00, $08, $06, $b4, $63        ;; 00:2fab ?????w??
+    db   $00, $00, $00, $00
+	
+	db   $08, $06, $b4, $63        ;; 00:2fab ?????w??
     db   $32, $34, $38, $00, $00, $36, $00, $40        ;; 00:2fb3 ????????
-    db   $00, $00, $00, $00, $08, $05                  ;; 00:2fbb ?????w
+    db   $00, $00, $00, $00
+	
+	db   $08, $05                  ;; 00:2fbb ?????w
     dw   $63c0                                         ;; 00:2fc1 wW
     db   $32, $34, $3a, $00, $02, $36, $00, $60        ;; 00:2fc3 ????????
     db   $00, $00, $00, $00, $08, $06, $fd, $63        ;; 00:2fcb ?????w??
