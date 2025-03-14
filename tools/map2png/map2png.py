@@ -8,10 +8,7 @@ palette = []
 palette_ids = []
 
 '''
-'''
 
-levels = [
-    ["media_dimension", ""],
     ["toon_tv", ""],
     ["scream_tv", "1"],
     ["scream_tv", "2"],
@@ -24,12 +21,16 @@ levels = [
     ["prehistory_channel", "2"],
     ["rezopolis", ""],
     ["channel_z", ""], 
+'''
+
+levels = [
+    ["media_dimension", ""],
 ]
 
 create_tilesets = True
-create_special_tilesets = False
-create_blocksets = True
-create_maps = True
+create_special_tilesets = True
+create_blocksets = False
+create_maps = False
 
 for i in range(0, len(levels)):
 
@@ -86,6 +87,9 @@ for i in range(0, len(levels)):
         new_tileset_img.save('./tileset_images/'+level_name+'_tileset.png')
     
     # create a colored version of the level's special tilesets, using palettes
+    media_dimension_tv_order = ["scream_tv", "toon_tv", "prehistory_channel", "circuit_central", "kung_fu_theater", "channel_z", "rezopolis", "bonus_tv"]
+    media_dimension_tv_order2 = ["image_013_12", "image_013_13", "image_013_14", "image_013_15", "image_013_16", "image_013_17", "image_013_18", "image_013_19"]
+    
     if create_special_tilesets and level_name != "channel_z":
 
         os.system('mkdir -p special_tile_bins/')
@@ -93,7 +97,6 @@ for i in range(0, len(levels)):
         os.system('mkdir -p special_tileset_images/')
         os.system('mkdir -p special_tileset_images/'+level_name)
         
-        count = 0
         for tileset_file in os.listdir(special_tileset_folder):
             if tileset_file == "image_00f_12.bin" or tileset_file == "image_00e_18.bin":
                 continue # no palette ids
@@ -116,6 +119,19 @@ for i in range(0, len(levels)):
                     palette_index = palette_ids[count]
                     #print(palette_index)
                     temp_palette_data = palette_data[0x8*palette_index:0x8*palette_index+0x8]
+                    
+                    television = -1
+                    q = 0
+                    for q in range (0, len(media_dimension_tv_order2)):
+                        if media_dimension_tv_order2[q] in tileset_file:
+                            television = q
+                            break
+                        q = q + 1
+                    
+                    if level_name == "media_dimension" and television != -1:
+                        palette_file2 = "../../gfx/special_tilesets/"+level_name+"/palettes/"+media_dimension_tv_order[q]+"_television_palette.bin"
+                        temp_palette_data = open(palette_file2, "rb").read()[:8]
+                    
                     f = open("./temp.bin", "wb")
                     f.write(temp_palette_data)
                     f.close()

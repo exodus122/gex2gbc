@@ -1180,8 +1180,9 @@ entry_0b_5d4b:
     db   $d8, $5d, $00, $00, $78, $5d, $88, $5d        ;; 0b:5d6a ????....
     db   $e8, $5d, $00, $00, $c8, $5d, $00, $00        ;; 0b:5d72 ??????..
     db   $df, $00, $ff, $01, $de, $03, $00, $00        ;; 0b:5d7a ........
-    db   $29, $25, $93, $4e, $de, $7b, $08, $00        ;; 0b:5d82 ........
-    db   $1b, $00, $72, $7f, $ff, $7f, $00, $00        ;; 0b:5d8a ........
+    db   $29, $25, $93, $4e, $de, $7b, 
+	db   $08, $00, $1b, $00, $72, $7f, $ff, $7f        ; toon_tv television palette
+	db   $00, $00        ;; 0b:5d8a ........
     db   $d7, $62, $72, $7f, $ff, $7f, $00, $00        ;; 0b:5d92 ......??
     db   $20, $02, $32, $36, $ed, $02, $0a, $38        ;; 0b:5d9a ????????
     db   $2f, $5e, $32, $36, $98, $7f, $00, $00        ;; 0b:5da2 ????????
@@ -1192,9 +1193,9 @@ entry_0b_5d4b:
     db   $05, $2e, $eb, $7e, $f8, $7f, $00, $00        ;; 0b:5dca ????????
     db   $29, $25, $93, $4e, $de, $7b, $00, $00        ;; 0b:5dd2 ????????
     db   $a0, $61, $8e, $03, $fd, $03, $00, $00        ;; 0b:5dda ????????
-    db   $29, $25, $93, $4e, $de, $7b, $00, $00        ;; 0b:5de2 ????????
-    db   $d5, $7c, $80, $5a, $fd, $3f, $00, $00        ;; 0b:5dea ????????
-    db   $29, $25, $93, $4e, $de, $7b                  ;; 0b:5df2 ??????
+    db   $29, $25, $93, $4e, $de, $7b
+	db   $00, $00, $d5, $7c, $80, $5a, $fd, $3f        ;; ???????? ; bonus television palette
+	db   $00, $00, $29, $25, $93, $4e, $de, $7b        ;; 0b:5df2 ??????
 
 entry_0b_5df8:
 call_0b_5df8:
@@ -1208,7 +1209,7 @@ call_0b_5df8:
     ld   L, [HL]                                       ;; 0b:5e05 $6e
     ld   H, $00                                        ;; 0b:5e06 $26 $00
     add  HL, HL                                        ;; 0b:5e08 $29
-    ld   DE, .data_0b_5e1b                             ;; 0b:5e09 $11 $1b $5e
+    ld   DE, .media_dimension_tv_palettes                             ;; 0b:5e09 $11 $1b $5e
     add  HL, DE                                        ;; 0b:5e0c $19
     ld   A, [HL+]                                      ;; 0b:5e0d $2a
     ld   H, [HL]                                       ;; 0b:5e0e $66
@@ -1219,28 +1220,35 @@ call_0b_5df8:
     ld   BC, $10                                       ;; 0b:5e15 $01 $10 $00
     jp   call_00_07b0_CopyBytes                                  ;; 0b:5e18 $c3 $b0 $07
 	
-.data_0b_5e1b:
-    db   $43, $5e, $00, $00, $00, $00, $00, $00        ;; 0b:5e1b ..??..??
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:5e23 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:5e2b ????????
-    db   $00, $00, $53, $5e, $63, $5e, $73, $5e        ;; 0b:5e33 ??..????
-    db   $83, $5e, $93, $5e, $a3, $5e, $b3, $5e        ;; 0b:5e3b ??????..
-    db   $00, $00, $df, $00, $ff, $01, $de, $03        ;; 0b:5e43 ........
-    db   $00, $00, $29, $25, $93, $4e, $de, $7b        ;; 0b:5e4b ........
-    db   $08, $00, $1b, $00, $72, $7f, $ff, $7f        ;; 0b:5e53 ........
-    db   $00, $00, $d7, $62, $72, $7f, $ff, $7f        ;; 0b:5e5b ........
-    db   $00, $00, $20, $02, $32, $36, $ed, $02        ;; 0b:5e63 ????????
-    db   $0a, $38, $2f, $5e, $32, $36, $98, $7f        ;; 0b:5e6b ????????
-    db   $00, $00, $29, $39, $ce, $59, $c0, $03        ;; 0b:5e73 ????????
-    db   $00, $00, $00, $02, $20, $03, $bf, $0b        ;; 0b:5e7b ????????
-    db   $00, $00, $19, $00, $99, $26, $df, $63        ;; 0b:5e83 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:5e8b ????????
-    db   $00, $00, $05, $2e, $eb, $7e, $f8, $7f        ;; 0b:5e93 ????????
-    db   $00, $00, $29, $25, $93, $4e, $de, $7b        ;; 0b:5e9b ????????
-    db   $00, $00, $a0, $61, $8e, $03, $fd, $03        ;; 0b:5ea3 ????????
-    db   $00, $00, $29, $25, $93, $4e, $de, $7b        ;; 0b:5eab ????????
-    db   $00, $00, $d5, $7c, $80, $5a, $fd, $3f        ;; 0b:5eb3 ........
-    db   $00, $00, $29, $25, $93, $4e, $de, $7b        ;; 0b:5ebb ........
+.media_dimension_tv_palettes:
+    dw   .scream_tv_television_palette
+	db   $00, $00, $00, $00, $00, $00, $00, $00
+	db   $00, $00, $00, $00, $00, $00, $00, $00
+	db   $00, $00, $00, $00, $00, $00, $00, $00
+	dw   .toon_tv_television_palette
+	dw   .prehistory_channel_television_palette
+	dw   .circuit_central_television_palette
+	dw   .kung_fu_theater_television_palette
+	dw   .channel_z_television_palette
+	dw   .rezopolis_television_palette
+	dw   .bonus_tv_television_palette
+	
+.scream_tv_television_palette:
+    INCBIN "gfx/special_tilesets/media_dimension/palettes/scream_tv_television_palette.bin"
+.toon_tv_television_palette:
+    INCBIN "gfx/special_tilesets/media_dimension/palettes/toon_tv_television_palette.bin"
+.prehistory_channel_television_palette:
+    INCBIN "gfx/special_tilesets/media_dimension/palettes/prehistory_channel_television_palette.bin"
+.circuit_central_television_palette:
+    INCBIN "gfx/special_tilesets/media_dimension/palettes/circuit_central_television_palette.bin"
+.kung_fu_theater_television_palette:
+    INCBIN "gfx/special_tilesets/media_dimension/palettes/kung_fu_theater_television_palette.bin"
+.channel_z_television_palette:
+    INCBIN "gfx/special_tilesets/media_dimension/palettes/channel_z_television_palette.bin"
+.rezopolis_television_palette:
+    INCBIN "gfx/special_tilesets/media_dimension/palettes/rezopolis_television_palette.bin"
+.bonus_tv_television_palette:
+    INCBIN "gfx/special_tilesets/media_dimension/palettes/bonus_tv_television_palette.bin"
 
 entry_0b_5ec3:
     ld   A, [wD59E]                                    ;; 0b:5ec3 $fa $9e $d5
