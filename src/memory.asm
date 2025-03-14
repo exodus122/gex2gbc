@@ -623,10 +623,10 @@ wD6EB:
 wD6EC:
     ds 1                                               ;; d6ec
 
-wD6ED:
+wD6ED_XPositionInMap: ; current x position in map of screen/player?
     ds 2                                               ;; d6ed
 
-wD6EF:
+wD6EF_YPositionInMap: ; current y position in map of screen/player?
     ds 1                                               ;; d6ef
 
 wD6F0:
@@ -662,7 +662,7 @@ wD6FC:
 wD6FD:
     ds 1                                               ;; d6fd
 
-wD6FE:
+wD6FE_LevelTileOverrideBit:
     ds 1                                               ;; d6fe
 
 wD6FF_CurrentBgTilesetBank:

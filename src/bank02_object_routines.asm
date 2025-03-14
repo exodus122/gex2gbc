@@ -1307,7 +1307,7 @@ entry_02_715a:
     ret                                                ;; 02:7163 $c9
 
 call_02_7164:
-    ld   HL, wD6EF                                     ;; 02:7164 $21 $ef $d6
+    ld   HL, wD6EF_YPositionInMap                                     ;; 02:7164 $21 $ef $d6
     ld   A, [HL+]                                      ;; 02:7167 $2a
     ld   D, [HL]                                       ;; 02:7168 $56
     ld   [wD5A2], A                                    ;; 02:7169 $ea $a2 $d5
@@ -1344,7 +1344,7 @@ call_02_7164:
     ret                                                ;; 02:7195 $c9
 
 call_02_7196:
-    ld   HL, wD6ED                                     ;; 02:7196 $21 $ed $d6
+    ld   HL, wD6ED_XPositionInMap                                     ;; 02:7196 $21 $ed $d6
     ld   A, [HL+]                                      ;; 02:7199 $2a
     ld   D, [HL]                                       ;; 02:719a $56
     ld   [wD5A1], A                                    ;; 02:719b $ea $a1 $d5

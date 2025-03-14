@@ -45,7 +45,7 @@ image_008_1_palette_ids.bin:
 image_title_options_008_2.bin:
     INCBIN ".gfx/splash/image_title_options_008_2.bin"
 image_filler_008_3.bin:
-    INCBIN ".gfx/splash/image_filler_008_3.bin"
+    INCBIN ".gfx/splash/image_gex_008_3.bin"
 
 SECTION "bank09", ROMX[$4000], BANK[$09]
 image_009_4000.bin:
@@ -552,12 +552,12 @@ map_scream_tv2.bin:
     INCBIN "maps/scream_tv/map_scream_tv2.bin"
 
 SECTION "bank34", ROMX[$4000], BANK[$34]
-special_tile_map_data_bank34.bin:
-    INCBIN "maps/special_tile_map_data_bank34.bin"
+blockset_override_data_bank34.bin:
+    INCBIN "maps/blockset_override_data_bank34.bin"
 
 SECTION "bank35", ROMX[$4000], BANK[$35]
-special_tile__map_data_bank35.bin:
-    INCBIN "maps/special_tile_map_data_bank35.bin"
+blockset_override_data_bank35.bin:
+    INCBIN "maps/blockset_override_data_bank35.bin"
 
 SECTION "bank36", ROMX[$4000], BANK[$36]
 tileset_media_dimension.bin:

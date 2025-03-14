@@ -838,7 +838,7 @@ call_02_56dc:
     ld   A, [wD300]                                    ;; 02:56de $fa $00 $d3
     or   A, $10                                        ;; 02:56e1 $f6 $10
     ld   L, A                                          ;; 02:56e3 $6f
-    ld   A, [wD6EF]                                    ;; 02:56e4 $fa $ef $d6
+    ld   A, [wD6EF_YPositionInMap]                                    ;; 02:56e4 $fa $ef $d6
     sub  A, $18                                        ;; 02:56e7 $d6 $18
     ld   [HL+], A                                      ;; 02:56e9 $22
     ld   A, [wD6F0]                                    ;; 02:56ea $fa $f0 $d6
@@ -980,7 +980,7 @@ call_02_576e:
     ld   A, L                                          ;; 02:57c2 $7d
     xor  A, $1a                                        ;; 02:57c3 $ee $1a
     ld   L, A                                          ;; 02:57c5 $6f
-    ld   A, [wD6EF]                                    ;; 02:57c6 $fa $ef $d6
+    ld   A, [wD6EF_YPositionInMap]                                    ;; 02:57c6 $fa $ef $d6
     sub  A, $18                                        ;; 02:57c9 $d6 $18
     ld   [HL+], A                                      ;; 02:57cb $22
     ld   A, [wD6F0]                                    ;; 02:57cc $fa $f0 $d6

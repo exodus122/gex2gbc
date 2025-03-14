@@ -1827,14 +1827,14 @@ entry_03_5ca8:
 .jr_03_5cbd:
     ld   DE, .data_03_5d6f                             ;; 03:5cbd $11 $6f $5d
     call call_00_07b9                                  ;; 03:5cc0 $cd $b9 $07
-    ld   A, [wD6ED]                                    ;; 03:5cc3 $fa $ed $d6
+    ld   A, [wD6ED_XPositionInMap]                                    ;; 03:5cc3 $fa $ed $d6
     ld   C, A                                          ;; 03:5cc6 $4f
     ld   A, [wD20E]                                    ;; 03:5cc7 $fa $0e $d2
     sub  A, C                                          ;; 03:5cca $91
     add  A, $08                                        ;; 03:5ccb $c6 $08
     ld   C, A                                          ;; 03:5ccd $4f
     ld   [wD212], A                                    ;; 03:5cce $ea $12 $d2
-    ld   A, [wD6EF]                                    ;; 03:5cd1 $fa $ef $d6
+    ld   A, [wD6EF_YPositionInMap]                                    ;; 03:5cd1 $fa $ef $d6
     ld   B, A                                          ;; 03:5cd4 $47
     ld   A, [wD210]                                    ;; 03:5cd5 $fa $10 $d2
     sub  A, B                                          ;; 03:5cd8 $90
@@ -2002,7 +2002,7 @@ entry_03_5ebf:
     ld   A, E                                          ;; 03:5ee8 $7b
     xor  A, $04                                        ;; 03:5ee9 $ee $04
     ld   E, A                                          ;; 03:5eeb $5f
-    ld   HL, wD6ED                                     ;; 03:5eec $21 $ed $d6
+    ld   HL, wD6ED_XPositionInMap                                     ;; 03:5eec $21 $ed $d6
     ld   A, [DE]                                       ;; 03:5eef $1a
     sub  A, [HL]                                       ;; 03:5ef0 $96
     ld   C, A                                          ;; 03:5ef1 $4f
@@ -2025,7 +2025,7 @@ entry_03_5ebf:
     jr   C, call_03_5f2b                                ;; 03:5f09 $38 $20
 .jr_03_5f0b:
     inc  E                                             ;; 03:5f0b $1c
-    ld   HL, wD6EF                                     ;; 03:5f0c $21 $ef $d6
+    ld   HL, wD6EF_YPositionInMap                                     ;; 03:5f0c $21 $ef $d6
     ld   A, [DE]                                       ;; 03:5f0f $1a
     sub  A, [HL]                                       ;; 03:5f10 $96
     ld   B, A                                          ;; 03:5f11 $47
@@ -2471,7 +2471,7 @@ call_03_6484:
     ret                                                ;; 03:6498 $c9
 
 call_03_6499:
-    ld   HL, wD6ED                                     ;; 03:6499 $21 $ed $d6
+    ld   HL, wD6ED_XPositionInMap                                     ;; 03:6499 $21 $ed $d6
     ld   A, [HL]                                       ;; 03:649c $7e
     and  A, $0f                                        ;; 03:649d $e6 $0f
     ld   C, A                                          ;; 03:649f $4f
@@ -2494,7 +2494,7 @@ call_03_6499:
     dec  B                                             ;; 03:64b7 $05
     ld   A, [BC]                                       ;; 03:64b8 $0a
     ld   E, A                                          ;; 03:64b9 $5f
-    ld   HL, wD6EF                                     ;; 03:64ba $21 $ef $d6
+    ld   HL, wD6EF_YPositionInMap                                     ;; 03:64ba $21 $ef $d6
     ld   A, [HL]                                       ;; 03:64bd $7e
     and  A, $0f                                        ;; 03:64be $e6 $0f
     ld   B, A                                          ;; 03:64c0 $47

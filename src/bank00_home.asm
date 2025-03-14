@@ -357,7 +357,7 @@ call_00_0150_Init:
     ld   [wD743], A                                    ;; 00:03f6 $ea $43 $d7
     ld   [wD59D], A                                    ;; 00:03f9 $ea $9d $d5
     ld   A, Bank0b                                        ;; 00:03fc $3e $0b
-    ld   HL, entry_0b_4efe                                     ;; 00:03fe $21 $fe $4e
+    ld   HL, entry_0b_4efe_SpawnPositionInMap                                     ;; 00:03fe $21 $fe $4e
     call call_00_1078_SwitchBankWrapper                                  ;; 00:0401 $cd $78 $10
     call call_00_1264_LoadMap                                  ;; 00:0404 $cd $64 $12
     ld   [wD59D], A                                    ;; 00:0407 $ea $9d $d5
@@ -2325,7 +2325,7 @@ call_00_1264_LoadMap:
     call call_00_2eb0_GetCurrentBlocksetBank                                  ;; 00:1273 $cd $89 $2e
     ld   [wD6F7_CurrentBlocksetAndCollisionBank], A                                    ;; 00:1276 $ea $f7 $d6
     call call_00_2e93                                  ;; 00:1279 $cd $93 $2e
-    ld   [wD6FE], A                                    ;; 00:127c $ea $fe $d6
+    ld   [wD6FE_LevelTileOverrideBit], A                                    ;; 00:127c $ea $fe $d6
     call call_00_2eb0_GetCurrentBgTilesetBank                                  ;; 00:127f $cd $9c $2e
     ld   [wD6FF_CurrentBgTilesetBank], A                                    ;; 00:1282 $ea $ff $d6
     call call_00_2ea5                                  ;; 00:1285 $cd $a5 $2e
@@ -2350,7 +2350,7 @@ call_00_1264_LoadMap:
     ld   A, Bank03                                        ;; 00:12ae $3e $03
     ld   HL, entry_03_6f5e_WriteVRAMBgMap                                     ;; 00:12b0 $21 $5e $6f
     call call_00_1078_SwitchBankWrapper                                  ;; 00:12b3 $cd $78 $10
-    ld   HL, wD6EF                                     ;; 00:12b6 $21 $ef $d6
+    ld   HL, wD6EF_YPositionInMap                                     ;; 00:12b6 $21 $ef $d6
     ld   A, [HL]                                       ;; 00:12b9 $7e
     add  A, $08                                        ;; 00:12ba $c6 $08
     ld   [HL], A                                       ;; 00:12bc $77
@@ -2476,7 +2476,7 @@ call_00_13a6:
 .jr_00_13c8:
     ld   DE, $20                                       ;; 00:13c8 $11 $20 $00
 .jr_00_13cb:
-    ld   HL, wD6ED                                     ;; 00:13cb $21 $ed $d6
+    ld   HL, wD6ED_XPositionInMap                                     ;; 00:13cb $21 $ed $d6
     ld   [HL], E                                       ;; 00:13ce $73
     inc  HL                                            ;; 00:13cf $23
     ld   [HL], D                                       ;; 00:13d0 $72
@@ -2512,7 +2512,7 @@ call_00_13a6:
 .jr_00_1401:
     ld   DE, $20                                       ;; 00:1401 $11 $20 $00
 .jr_00_1404:
-    ld   HL, wD6EF                                     ;; 00:1404 $21 $ef $d6
+    ld   HL, wD6EF_YPositionInMap                                     ;; 00:1404 $21 $ef $d6
     ld   [HL], E                                       ;; 00:1407 $73
     inc  HL                                            ;; 00:1408 $23
     ld   [HL], D                                       ;; 00:1409 $72
@@ -2578,50 +2578,50 @@ call_00_1455:
 
 call_00_1472:
 ; load bg map tiles (vertical camera movement)
-    ld   HL, wD6EF                                     ;; 00:1472 $21 $ef $d6
+    ld   HL, wD6EF_YPositionInMap                                     ;; 00:1472 $21 $ef $d6
     ld   A, [HL+]                                      ;; 00:1475 $2a
     ld   C, A                                          ;; 00:1476 $4f
     ld   A, [HL+]                                      ;; 00:1477 $2a
-    ld   B, A                                          ;; 00:1478 $47
-    ld   HL, $90                                       ;; 00:1479 $21 $90 $00
+    ld   B, A                                          ;; 00:1478 $47 ; after this point BC is equal to [wD6EF_YPositionInMap]
+    ld   HL, $90                                       ;; 00:1479 $21 $90 $00 ; HL = $90
     ld   A, [wD6F9]                                    ;; 00:147c $fa $f9 $d6
     and  A, $02                                        ;; 00:147f $e6 $02
     jr   NZ, .jr_00_1486                               ;; 00:1481 $20 $03
-    ld   HL, rIE                                       ;; 00:1483 $21 $ff $ff
+    ld   HL, $ffff                                       ;; 00:1483 $21 $ff $ff (FFFF is -1 basically)
 .jr_00_1486:
-    add  HL, BC                                        ;; 00:1486 $09
-    ld   C, L                                          ;; 00:1487 $4d
-    ld   B, H                                          ;; 00:1488 $44
-    ld   HL, wD6ED                                     ;; 00:1489 $21 $ed $d6
+    add  HL, BC                                        ;; 00:1486 $09 ; HL = HL - 1
+    ld   C, L                                          ;; 00:1487 $4d ; bc = hl
+    ld   B, H                                          ;; 00:1488 $44 ; bc = hl
+    ld   HL, wD6ED_XPositionInMap                      ;; 00:1489 $21 $ed $d6
     ld   A, [HL+]                                      ;; 00:148c $2a
     ld   E, A                                          ;; 00:148d $5f
     ld   A, [HL+]                                      ;; 00:148e $2a
-    ld   D, A                                          ;; 00:148f $57
+    ld   D, A                                          ;; 00:148f $57 ; after this point DE is equal to [wD6ED_XPositionInMap], BC is [wD6EF_YPositionInMap]
     ld   L, C                                          ;; 00:1490 $69
-    ld   H, B                                          ;; 00:1491 $60
+    ld   H, B                                          ;; 00:1491 $60 ; HL = [wD6EF_YPositionInMap]
     add  HL, HL                                        ;; 00:1492 $29
     add  HL, HL                                        ;; 00:1493 $29
-    add  HL, HL                                        ;; 00:1494 $29
+    add  HL, HL                                        ;; 00:1494 $29 ; HL = 8 * HL
     ld   A, H                                          ;; 00:1495 $7c
-    ld   [wD77A], A                                    ;; 00:1496 $ea $7a $d7
+    ld   [wD77A], A                                    ;; 00:1496 $ea $7a $d7 ; [wD77A] = the upper byte of the 8x value
     ld   L, E                                          ;; 00:1499 $6b
-    ld   H, D                                          ;; 00:149a $62
+    ld   H, D                                          ;; 00:149a $62 ; HL = [wD6ED_XPositionInMap]
     add  HL, HL                                        ;; 00:149b $29
     add  HL, HL                                        ;; 00:149c $29
-    add  HL, HL                                        ;; 00:149d $29
+    add  HL, HL                                        ;; 00:149d $29 ; HL = 8 * HL
     ld   A, H                                          ;; 00:149e $7c
-    ld   [wD779], A                                    ;; 00:149f $ea $79 $d7
+    ld   [wD779], A                                    ;; 00:149f $ea $79 $d7 ; [wD779] = the upper byte of the 8x value
     ld   A, C                                          ;; 00:14a2 $79
     and  A, $f8                                        ;; 00:14a3 $e6 $f8
     ld   L, A                                          ;; 00:14a5 $6f
-    ld   H, $00                                        ;; 00:14a6 $26 $00
+    ld   H, $00                                        ;; 00:14a6 $26 $00 ; after this, hl = C(lower byte of y pos) & 0xf8
     add  HL, HL                                        ;; 00:14a8 $29
-    add  HL, HL                                        ;; 00:14a9 $29
-    ld   A, E                                          ;; 00:14aa $7b
+    add  HL, HL                                        ;; 00:14a9 $29 ; HL = 4 * HL
+    ld   A, E                                          ;; 00:14aa $7b ; a = lower byte of x pos
     rrca                                               ;; 00:14ab $0f
     rrca                                               ;; 00:14ac $0f
-    rrca                                               ;; 00:14ad $0f
-    and  A, $1c                                        ;; 00:14ae $e6 $1c
+    rrca                                               ;; 00:14ad $0f ; rotate to check some bits in there
+    and  A, $1c                                        ;; 00:14ae $e6 $1c 
     or   A, L                                          ;; 00:14b0 $b5
     ld   L, A                                          ;; 00:14b1 $6f
     push HL                                            ;; 00:14b2 $e5
@@ -2776,7 +2776,7 @@ call_00_1472:
 
 call_00_157a:
 ; load bg map tiles (horizontal camera movement)
-    ld   HL, wD6ED                                     ;; 00:157a $21 $ed $d6
+    ld   HL, wD6ED_XPositionInMap                                     ;; 00:157a $21 $ed $d6
     ld   A, [HL+]                                      ;; 00:157d $2a
     ld   E, A                                          ;; 00:157e $5f
     ld   A, [HL+]                                      ;; 00:157f $2a
@@ -2790,7 +2790,7 @@ call_00_157a:
     add  HL, DE                                        ;; 00:158e $19
     ld   E, L                                          ;; 00:158f $5d
     ld   D, H                                          ;; 00:1590 $54
-    ld   HL, wD6EF                                     ;; 00:1591 $21 $ef $d6
+    ld   HL, wD6EF_YPositionInMap                                     ;; 00:1591 $21 $ef $d6
     ld   A, [HL+]                                      ;; 00:1594 $2a
     ld   C, A                                          ;; 00:1595 $4f
     ld   A, [HL+]                                      ;; 00:1596 $2a
@@ -3502,7 +3502,7 @@ call_00_18e4:
     pop  HL                                            ;; 00:191f $e1
     jr   jr_00_1922                                    ;; 00:1920 $18 $00
 
-jr_00_1922:
+jr_00_1922: ; special tile related
     ld   A, [wD60F]                                    ;; 00:1922 $fa $0f $d6
     bit  2, A                                          ;; 00:1925 $cb $57
     ret  NZ                                            ;; 00:1927 $c0
@@ -3773,9 +3773,9 @@ data_00_19f0:
     db   $01, $01, $01, $01                            ;; 00:1e38 ????
 
 call_00_1e3c:
-; this function loads the values that were obtained from bank 34/35
+; this function loads the values that were obtained from bank special tile banks 34 and 35
     push HL                                            ;; 00:1e3c $e5
-    ld   A, [wD6FE]                                    ;; 00:1e3d $fa $fe $d6
+    ld   A, [wD6FE_LevelTileOverrideBit]                                    ;; 00:1e3d $fa $fe $d6
     ld   C, A                                          ;; 00:1e40 $4f
     inc  HL                                            ;; 00:1e41 $23
     ld   A, [HL]                                       ;; 00:1e42 $7e
@@ -5143,39 +5143,67 @@ data_MapData:
 	db   $08, $05                  ;; 00:2fbb ?????w
     dw   $63c0                                         ;; 00:2fc1 wW
     db   $32, $34, $3a, $00, $02, $36, $00, $60        ;; 00:2fc3 ????????
-    db   $00, $00, $00, $00, $08, $06, $fd, $63        ;; 00:2fcb ?????w??
+    db   $00, $00, $00, $00
+	
+	db   $08, $06, $fd, $63        ;; 00:2fcb ?????w??
     db   $32, $34, $38, $00, $00, $36, $00, $40        ;; 00:2fd3 ????????
-    db   $00, $00, $00, $00, $08, $06, $09, $64        ;; 00:2fdb ?????w??
+    db   $00, $00, $00, $00
+	
+	db   $08, $06, $09, $64        ;; 00:2fdb ?????w??
     db   $32, $34, $38, $00, $00, $36, $00, $40        ;; 00:2fe3 ????????
-    db   $00, $00, $00, $00, $08, $06, $15, $64        ;; 00:2feb ?????w??
+    db   $00, $00, $00, $00
+	
+	db   $08, $06, $15, $64        ;; 00:2feb ?????w??
     db   $32, $34, $3f, $00, $00, $36, $00, $40        ;; 00:2ff3 ????????
-    db   $00, $00, $00, $00, $08, $06, $21, $64        ;; 00:2ffb ?????w??
+    db   $00, $00, $00, $00
+	
+	db   $08, $06, $21, $64        ;; 00:2ffb ?????w??
     db   $32, $34, $38, $00, $00, $36, $00, $40        ;; 00:3003 ????????
-    db   $00, $00, $00, $00, $08, $05                  ;; 00:300b ?????w
+    db   $00, $00, $00, $00
+	
+	db   $08, $05                  ;; 00:300b ?????w
     dw   $642d                                         ;; 00:3011 wW
     db   $2c, $34, $3c, $00, $40, $37, $00, $40        ;; 00:3013 ????????
-    db   $00, $00, $00, $00, $08, $05                  ;; 00:301b ?????w
+    db   $00, $00, $00, $00
+	
+	db   $08, $05                  ;; 00:301b ?????w
     dw   $646f                                         ;; 00:3021 wW
     db   $29, $35, $3f, $00, $01, $37, $00, $60        ;; 00:3023 ????????
-    db   $00, $00, $00, $00, $08, $05                  ;; 00:302b ?????w
+    db   $00, $00, $00, $00
+	
+	db   $08, $05                  ;; 00:302b ?????w
     dw   $64a5                                         ;; 00:3031 wW
     db   $2b, $35, $3b, $00, $04, $36, $00, $70        ;; 00:3033 ????????
-    db   $00, $00, $00, $00, $03, $04                  ;; 00:303b ?????w
+    db   $00, $00, $00, $00
+	
+	db   $03, $04                  ;; 00:303b ?????w
     dw   $64df                                         ;; 00:3041 wW
     db   $2f, $34, $3e, $00, $20, $37, $00, $50        ;; 00:3043 ????????
-    db   $00, $00, $00, $00, $06, $04                  ;; 00:304b ?????w
+    db   $00, $00, $00, $00
+	
+	db   $06, $04                  ;; 00:304b ?????w
     dw   $6512                                         ;; 00:3051 wW
     db   $33, $34, $3a, $00, $01, $36, $00, $60        ;; 00:3053 ????????
-    db   $00, $00, $00, $00, $04, $03                  ;; 00:305b ?????w
+    db   $00, $00, $00, $00
+	
+	db   $04, $03                  ;; 00:305b ?????w
     dw   $6550                                         ;; 00:3061 wW
     db   $29, $35, $3f, $00, $01, $37, $00, $60        ;; 00:3063 ????????
-    db   $00, $00, $00, $00, $0a, $06, $a7, $65        ;; 00:306b ?????w??
+    db   $00, $00, $00, $00
+	
+	db   $0a, $06, $a7, $65        ;; 00:306b ?????w??
     db   $32, $34, $38, $00, $00, $36, $00, $40        ;; 00:3073 ????????
-    db   $00, $00, $00, $00, $0a, $06, $b3, $65        ;; 00:307b ?????w??
+    db   $00, $00, $00, $00
+	
+	db   $0a, $06, $b3, $65        ;; 00:307b ?????w??
     db   $32, $34, $38, $00, $00, $36, $00, $40        ;; 00:3083 ????????
-    db   $00, $00, $00, $00, $0a, $06, $bf, $65        ;; 00:308b ?????w??
+    db   $00, $00, $00, $00
+	
+	db   $0a, $06, $bf, $65        ;; 00:308b ?????w??
     db   $32, $34, $38, $00, $00, $36, $00, $40        ;; 00:3093 ????????
-    db   $00, $00, $00, $00, $0a, $05, $cb, $65        ;; 00:309b ????????
+    db   $00, $00, $00, $00
+	
+	db   $0a, $05, $cb, $65        ;; 00:309b ????????
     db   $28, $35, $27, $00, $10, $26, $00, $40        ;; 00:30a3 ????????
     db   $00, $00, $00, $00                            ;; 00:30ab ????
 
