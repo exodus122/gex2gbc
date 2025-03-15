@@ -55,7 +55,7 @@ wCF00_SpecialTilePaletteIds:
 wD000:
     ds 256                                             ;; d000
 
-wD100:
+wD100_TilesToLoadBuffer:
     ds 256                                             ;; d100
 
 ; From D200 to D300 is the loaded objects space
@@ -237,7 +237,7 @@ wD5AA:
 wD60E:
     ds 1                                               ;; d60e
 
-wD60F:
+wD60F_BitmapOfThingsToLoad:
     ds 1                                               ;; d60f
 
 wD610:
@@ -710,13 +710,13 @@ wD724:
 wD725:
     ds 1                                               ;; d725
 
-wD726:
+wD726_SpecialTilesetBank:
     ds 1                                               ;; d726
 
 wD727:
     ds 1                                               ;; d727
 
-wD728:
+wD728_CurrentSpecialTilesetAddr: ; this determines which special tilset to load (and is loading)
     ds 1                                               ;; d728
 
 wD729:
@@ -731,7 +731,7 @@ wD72B:
 wD72C:
     ds 1                                               ;; d72c
 
-wD72D:
+wD72D_CurrentSpecialTilesetIndex:
     ds 1                                               ;; d72d
 
 wD72E:

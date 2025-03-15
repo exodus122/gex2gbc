@@ -83,7 +83,7 @@ INCLUDE "./maps/prehistory_channel/object_list_this_old_cave.asm"
 
 data_HoneyIShrunkTheGeckoObjects:
 INCLUDE "./maps/circuit_central/object_list_honey_i_shrunk_the_gecko.asm"
-	
+    
 data_PoltergexObjects:
 INCLUDE "./maps/scream_tv/object_list_poltergex.asm"
 
@@ -110,7 +110,7 @@ INCLUDE "./maps/prehistory_channel/object_list_lava_dabba_doo.asm"
 
 data_TexasChainsawManicureObjects:
 INCLUDE "./maps/scream_tv/object_list_texas_chainsaw_manicure.asm"
-	
+    
 data_MazedAndConfusedObjects:
 INCLUDE "./maps/rezopolis/object_list_mazed_and_confused.asm"
 

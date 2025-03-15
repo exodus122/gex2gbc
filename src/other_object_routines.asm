@@ -610,7 +610,7 @@ call_02_5252:
 call_02_5253:
     call call_00_34ea                                  ;; 02:5253 $cd $ea $34
     call NZ, call_00_3bf4                              ;; 02:5256 $c4 $f4 $3b
-    ld   HL, wD60F                                     ;; 02:5259 $21 $0f $d6
+    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 02:5259 $21 $0f $d6
     bit  4, [HL]                                       ;; 02:525c $cb $66
     call Z, call_00_0634                               ;; 02:525e $cc $34 $06
     ld   A, [wD59E]                                    ;; 02:5261 $fa $9e $d5
@@ -1901,4 +1901,4 @@ call_02_6df1:
 .jr_02_6e11:
     call call_00_3559                                  ;; 02:6e11 $cd $59 $35
     jp   call_00_318d                                    ;; 02:6e14 $c3 $8d $31
-	
+    

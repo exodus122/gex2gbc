@@ -3793,7 +3793,7 @@ entry_03_7253:
     ld   L, A                                          ;; 03:7282 $6f
     bit  7, C                                          ;; 03:7283 $cb $79
     jr   Z, .jr_03_72a4                                ;; 03:7285 $28 $1d
-    ld   A, [wD72D]                                    ;; 03:7287 $fa $2d $d7
+    ld   A, [wD72D_CurrentSpecialTilesetIndex]                                    ;; 03:7287 $fa $2d $d7
     cp   A, $00                                        ;; 03:728a $fe $00
     ret  NZ                                            ;; 03:728c $c0
     res  7, C                                          ;; 03:728d $cb $b9

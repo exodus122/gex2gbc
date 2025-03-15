@@ -845,9 +845,9 @@ entry_0b_4efe_SpawnPositionInMap:
     db   $2d, $ff, $62, $7d, $70, $7d, $ff             ;; 0b:53fa ???????
 .data_MediaDimensionSpawns:
     db   $25, $0d
-	db   $05, $0b
-	db   $36, $0b
-	db   $11, $16        ;; 0b:5401 wwww????
+    db   $05, $0b
+    db   $36, $0b
+    db   $11, $16        ;; 0b:5401 wwww????
     db   $39, $16, $25, $16, $00, $00, $1e, $23        ;; 0b:5409 ????????
     db   $32, $23, $24, $46, $1a, $46, $10, $46        ;; 0b:5411 ????????
     db   $00, $00, $11, $31, $3e, $31, $00, $00        ;; 0b:5419 ????????
@@ -996,9 +996,9 @@ data_0b_56a3:
     db   $43, $58, $83, $58, $c3, $58, $03, $59        ;; 0b:56b3 ......??
     db   $43, $59, $83, $59, $c3, $59, $03, $5a        ;; 0b:56bb ????????
 image_title_screen_008_1_palette.bin: ; Palette for actual title screen splash (start/password)
-    INCBIN "gfx/splash/palettes/image_title_screen_008_1_palette.bin"	
+    INCBIN "gfx/splash/palettes/image_title_screen_008_1_palette.bin"    
 image_title_screen_008_0_palette.bin: ; Palette for 4th title screen splash (big gex image)
-    INCBIN "gfx/splash/palettes/image_title_screen_008_0_palette.bin"	
+    INCBIN "gfx/splash/palettes/image_title_screen_008_0_palette.bin"    
 .data_5743_Palette: ; Palette for Password Entering Screen on title screen
     db   $00, $00, $4a, $29, $73, $52, $5a, $6b        ;; 0b:5743 ........
     db   $00, $00, $8c, $01, $c0, $02, $5a, $03        ;; 0b:574b ........
@@ -1121,13 +1121,13 @@ palette_kung_fu_theater.bin:
     INCBIN "gfx/tilesets/palettes/palette_kung_fu_theater.bin"
 palette_unknown:
     db   $00, $00, $D1, $01, $CF, $45, $73, $5E, 
-	db   $00, $00, $A4, $45, $C4, $51, $05, $5A, 
-	db   $00, $00, $19, $00, $99, $26, $DF, $63, 
-	db   $00, $00, $D1, $01, $86, $6A, $97, $02, 
-	db   $00, $00, $19, $00, $86, $6A, $5E, $03, 
-	db   $00, $00, $19, $00, $7C, $02, $5E, $03, 
-	db   $00, $00, $80, $02, $86, $6A, $2C, $3B, 
-	db   $00, $00, $D1, $01, $A0, $55, $A7, $76
+    db   $00, $00, $A4, $45, $C4, $51, $05, $5A, 
+    db   $00, $00, $19, $00, $99, $26, $DF, $63, 
+    db   $00, $00, $D1, $01, $86, $6A, $97, $02, 
+    db   $00, $00, $19, $00, $86, $6A, $5E, $03, 
+    db   $00, $00, $19, $00, $7C, $02, $5E, $03, 
+    db   $00, $00, $80, $02, $86, $6A, $2C, $3B, 
+    db   $00, $00, $D1, $01, $A0, $55, $A7, $76
 palette_prehistory_channel.bin:
     INCBIN "gfx/tilesets/palettes/palette_prehistory_channel.bin"
 palette_rezopolis.bin:
@@ -1147,16 +1147,16 @@ entry_0b_5d4b:
     jp   call_00_07b0_CopyBytes                                  ;; 0b:5d5f $c3 $b0 $07
 .data_0b_5d62:
     dw   $0000
-	dw   .circuit_central_television_palette
-	dw   .kung_fu_theater_television_palette
-	dw   .prehistory_channel_television_palette        ;; 0b:5d62 ????????
+    dw   .circuit_central_television_palette
+    dw   .kung_fu_theater_television_palette
+    dw   .prehistory_channel_television_palette        ;; 0b:5d62 ????????
     dw   .rezopolis_television_palette
-	dw   $0000
-	dw   .scream_tv_television_palette
-	dw   .toon_tv_television_palette        ;; 0b:5d6a ????....
+    dw   $0000
+    dw   .scream_tv_television_palette
+    dw   .toon_tv_television_palette        ;; 0b:5d6a ????....
     dw   .bonus_tv_television_palette
-	dw   $0000
-	dw   .channel_z_television_palette
+    dw   $0000
+    dw   .channel_z_television_palette
 .scream_tv_television_palette:
     INCBIN "gfx/special_tilesets/media_dimension/palettes/scream_tv_television_palette.bin"
 .toon_tv_television_palette:
@@ -1183,7 +1183,7 @@ call_0b_5df8:
     ld   A, [wD624_CurrentLevelId]                                    ;; 0b:5dfd $fa $24 $d6
     and  A, A                                          ;; 0b:5e00 $a7
     ret  NZ                                            ;; 0b:5e01 $c0
-    ld   HL, wD72D                                     ;; 0b:5e02 $21 $2d $d7
+    ld   HL, wD72D_CurrentSpecialTilesetIndex                                     ;; 0b:5e02 $21 $2d $d7
     ld   L, [HL]                                       ;; 0b:5e05 $6e
     ld   H, $00                                        ;; 0b:5e06 $26 $00
     add  HL, HL                                        ;; 0b:5e08 $29
@@ -1197,20 +1197,20 @@ call_0b_5df8:
     ld   DE, wD9FB                                     ;; 0b:5e12 $11 $fb $d9
     ld   BC, $10                                       ;; 0b:5e15 $01 $10 $00
     jp   call_00_07b0_CopyBytes                                  ;; 0b:5e18 $c3 $b0 $07
-	
+    
 .media_dimension_tv_palettes:
     dw   .scream_tv_television_palette
-	db   $00, $00, $00, $00, $00, $00, $00, $00
-	db   $00, $00, $00, $00, $00, $00, $00, $00
-	db   $00, $00, $00, $00, $00, $00, $00, $00
-	dw   .toon_tv_television_palette
-	dw   .prehistory_channel_television_palette
-	dw   .circuit_central_television_palette
-	dw   .kung_fu_theater_television_palette
-	dw   .channel_z_television_palette
-	dw   .rezopolis_television_palette
-	dw   .bonus_tv_television_palette
-	
+    db   $00, $00, $00, $00, $00, $00, $00, $00
+    db   $00, $00, $00, $00, $00, $00, $00, $00
+    db   $00, $00, $00, $00, $00, $00, $00, $00
+    dw   .toon_tv_television_palette
+    dw   .prehistory_channel_television_palette
+    dw   .circuit_central_television_palette
+    dw   .kung_fu_theater_television_palette
+    dw   .channel_z_television_palette
+    dw   .rezopolis_television_palette
+    dw   .bonus_tv_television_palette
+    
 .scream_tv_television_palette:
     INCBIN "gfx/special_tilesets/media_dimension/palettes/scream_tv_television_palette.bin"
 .toon_tv_television_palette:
@@ -1264,7 +1264,7 @@ entry_0b_5ec3:
     db   $00, $00, $40, $45, $af, $7e, $f5, $7f        ;; 0b:5f0b ????????
 .data_gex_object_palette:
     db   $00, $00, $00, $00, $8a, $02, $fd, $03        ;; 0b:5f13 ........
-	
+    
     ld   A, [wD59E]                                    ;; 0b:5f1b $fa $9e $d5
     and  A, A                                          ;; 0b:5f1e $a7
     ret  Z                                             ;; 0b:5f1f $c8
@@ -1363,37 +1363,37 @@ entry_0b_641e:
     jr   NZ, .jr_0b_642f                               ;; 0b:6432 $20 $fb
     ret                                                ;; 0b:6434 $c9
 .data_level_palette_ids:                                      ;; 0b:6435
-	dw   palette_ids_media_dimension
-	dw   palette_ids_toon_tv
-	dw   palette_ids_scream_tv
-	dw   palette_ids_scream_tv
-	dw   palette_ids_circuit_central
-	dw   palette_ids_kung_fu_theater
-	dw   palette_ids_media_dimension
-	dw   palette_ids_prehistory_channel
-	dw   palette_ids_toon_tv
-	dw   palette_ids_prehistory_channel
-	dw   palette_ids_circuit_central
-	dw   palette_ids_scream_tv
-	dw   palette_ids_media_dimension
-	dw   palette_ids_kung_fu_theater
-	dw   palette_ids_rezopolis
-	dw   palette_ids_media_dimension
-	dw   palette_ids_scream_tv
-	dw   palette_ids_media_dimension
-	dw   palette_ids_media_dimension
-	dw   palette_ids_media_dimension
-	dw   palette_ids_media_dimension
-	dw   palette_ids_kung_fu_theater
-	dw   palette_ids_rezopolis
-	dw   palette_ids_circuit_central
-	dw   palette_ids_prehistory_channel
-	dw   palette_ids_scream_tv
-	dw   palette_ids_rezopolis
-	dw   palette_ids_media_dimension
-	dw   palette_ids_media_dimension
-	dw   palette_ids_media_dimension
-	dw   palette_ids_channel_z
+    dw   palette_ids_media_dimension
+    dw   palette_ids_toon_tv
+    dw   palette_ids_scream_tv
+    dw   palette_ids_scream_tv
+    dw   palette_ids_circuit_central
+    dw   palette_ids_kung_fu_theater
+    dw   palette_ids_media_dimension
+    dw   palette_ids_prehistory_channel
+    dw   palette_ids_toon_tv
+    dw   palette_ids_prehistory_channel
+    dw   palette_ids_circuit_central
+    dw   palette_ids_scream_tv
+    dw   palette_ids_media_dimension
+    dw   palette_ids_kung_fu_theater
+    dw   palette_ids_rezopolis
+    dw   palette_ids_media_dimension
+    dw   palette_ids_scream_tv
+    dw   palette_ids_media_dimension
+    dw   palette_ids_media_dimension
+    dw   palette_ids_media_dimension
+    dw   palette_ids_media_dimension
+    dw   palette_ids_kung_fu_theater
+    dw   palette_ids_rezopolis
+    dw   palette_ids_circuit_central
+    dw   palette_ids_prehistory_channel
+    dw   palette_ids_scream_tv
+    dw   palette_ids_rezopolis
+    dw   palette_ids_media_dimension
+    dw   palette_ids_media_dimension
+    dw   palette_ids_media_dimension
+    dw   palette_ids_channel_z
 
 palette_ids_media_dimension:
     INCBIN "gfx/tilesets/palette_ids/palette_ids_media_dimension.bin"

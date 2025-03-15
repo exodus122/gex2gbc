@@ -107,26 +107,26 @@ def extract_special_tilesets_horizontal():
                     
                 if b == 0xc:
                     if count == 1 or count == 4:
-                        out = open('./banks/bank_'+bank+'/image_'+bank+'_'+str(count2)+"_palette_ids.bin", "wb")
+                        out = open('./banks/bank_'+bank+'/image_'+bank+'_'+f"{count2:02d}"+"_palette_ids.bin", "wb")
                     else:
-                        out = open('./banks/bank_'+bank+'/image_'+bank+'_'+str(count2)+".bin", "wb")
+                        out = open('./banks/bank_'+bank+'/image_'+bank+'_'+f"{count2:02d}"+".bin", "wb")
                         
                 else:
                     if count % 2 == 0:
-                        out = open('./banks/bank_'+bank+'/image_'+bank+'_'+str(count2)+".bin", "wb")
+                        out = open('./banks/bank_'+bank+'/image_'+bank+'_'+f"{count2:02d}"+".bin", "wb")
                     else:
-                        out = open('./banks/bank_'+bank+'/image_'+bank+'_'+str(count2)+"_palette_ids.bin", "wb")
+                        out = open('./banks/bank_'+bank+'/image_'+bank+'_'+f"{count2:02d}"+"_palette_ids.bin", "wb")
                 out.write(data)
                 out.close()
                 
                 if (b != 0xd and b != 0xe and b != 0xf and b != 0x10 and b != 0x13) or count % 2 == 0:
-                    os.system('rgbgfx --reverse '+str(width)+' -o banks/bank_'+bank+'/image_'+bank+'_'+str(count2)+'.bin banks/bank_'+bank+'/image_'+bank+'_'+str(count2)+'.png')
+                    os.system('rgbgfx --reverse '+str(width)+' -o banks/bank_'+bank+'/image_'+bank+'_'+f"{count2:02d}"+'.bin banks/bank_'+bank+'/image_'+bank+'_'+f"{count2:02d}"+'.png')
                 
                 out2 = open('./banks/bank_'+bank+'/text.txt', "a")
                 if count % 2 == 0:
-                    out2.write('image_'+bank+'_'+str(count2)+'.bin:\n    INCBIN \".gfx/special_tilesets/image_'+bank+'_'+str(count2)+'.bin\"\n\n')
+                    out2.write('image_'+bank+'_'+f"{count2:02d}"+'.bin:\n    INCBIN \".gfx/special_tilesets/image_'+bank+'_'+f"{count2:02d}"+'.bin\"\n\n')
                 else:    
-                    out2.write('image_'+bank+'_'+str(count2)+'_palette_ids.bin:\n    INCBIN \"gfx/special_tilesets/palette_ids/image_'+bank+'_'+str(count2)+'_palette_ids.bin\"\n\n')
+                    out2.write('image_'+bank+'_'+f"{count2:02d}"+'_palette_ids.bin:\n    INCBIN \"gfx/special_tilesets/palette_ids/image_'+bank+'_'+f"{count2:02d}"+'_palette_ids.bin\"\n\n')
                 out2.close()
                 
                 if b == 0xd or b == 0xe or b == 0xf or b == 0x10 or b == 0x13:
@@ -250,6 +250,6 @@ def extract_bank03():
 
 #extract_banks()
 #extract_sprites_vertical()
-#extract_special_tilesets_horizontal()
-extract_splash()
-extract_bank03()
+extract_special_tilesets_horizontal()
+#extract_splash()
+#extract_bank03()

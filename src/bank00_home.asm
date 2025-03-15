@@ -317,7 +317,7 @@ call_00_0150_Init:
     ld   [wD73C], A                                    ;; 00:0392 $ea $3c $d7
     ld   [wD6F9], A                                    ;; 00:0395 $ea $f9 $d6
     ld   [wD60E], A                                    ;; 00:0398 $ea $0e $d6
-    ld   [wD60F], A                                    ;; 00:039b $ea $0f $d6
+    ld   [wD60F_BitmapOfThingsToLoad], A                                    ;; 00:039b $ea $0f $d6
     ld   [wD77B], A                                    ;; 00:039e $ea $7b $d7
     ld   [wD77D], A                                    ;; 00:03a1 $ea $7d $d7
     ld   [wD72F], A                                    ;; 00:03a4 $ea $2f $d7
@@ -1095,14 +1095,14 @@ call_00_08b1:
     dw   $6700                                         ;; 00:08f4 wW
     db   $00, $79, $00, $40, $00, $73                  ;; 00:08f6 ??????
 
-call_00_08fc:
-    ld   HL, wD60F                                     ;; 00:08fc $21 $0f $d6
+call_00_08fc: ; this reads special tileset information from other banks and writes to a buffer that gets copied to vram
+    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:08fc $21 $0f $d6
     bit  7, [HL]                                       ;; 00:08ff $cb $7e
     jr   NZ, call_00_08fc                              ;; 00:0901 $20 $f9
     ld   A, [HL]                                       ;; 00:0903 $7e
     and  A, A                                          ;; 00:0904 $a7
     ret  Z                                             ;; 00:0905 $c8
-    ld   HL, wD60F                                     ;; 00:0906 $21 $0f $d6
+    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:0906 $21 $0f $d6
     bit  0, [HL]                                       ;; 00:0909 $cb $46
     jr   NZ, .jr_00_091e                               ;; 00:090b $20 $11
     bit  1, [HL]                                       ;; 00:090d $cb $4e
@@ -1131,9 +1131,9 @@ call_00_08fc:
     ld   A, [wD588]                                    ;; 00:0939 $fa $88 $d5
     jr   .jr_00_095e                                   ;; 00:093c $18 $20
 .jr_00_093e:
-    ld   A, [wD726]                                    ;; 00:093e $fa $26 $d7
+    ld   A, [wD726_SpecialTilesetBank]                                    ;; 00:093e $fa $26 $d7 ; this is where it went when loading seconda tileset info
     call call_00_1089_SwitchBank                                  ;; 00:0941 $cd $89 $10
-    ld   A, [wD728]                                    ;; 00:0944 $fa $28 $d7
+    ld   A, [wD728_CurrentSpecialTilesetAddr]                                    ;; 00:0944 $fa $28 $d7
     jr   .jr_00_095e                                   ;; 00:0947 $18 $15
 .jr_00_0949:
     ld   A, [wD71F]                                    ;; 00:0949 $fa $1f $d7
@@ -1148,21 +1148,21 @@ call_00_08fc:
 .jr_00_095e:
     ld   H, A                                          ;; 00:095e $67
     ld   L, $00                                        ;; 00:095f $2e $00
-    ld   DE, wD100                                     ;; 00:0961 $11 $00 $d1
+    ld   DE, wD100_TilesToLoadBuffer                                     ;; 00:0961 $11 $00 $d1
     ld   B, $10                                        ;; 00:0964 $06 $10
-    call call_00_0b6d                                  ;; 00:0966 $cd $6d $0b
-    ld   HL, wD60F                                     ;; 00:0969 $21 $0f $d6
+    call call_00_0b6d                                  ;; 00:0966 $cd $6d $0b ; this reads special tileset information from other banks
+    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:0969 $21 $0f $d6
     set  7, [HL]                                       ;; 00:096c $cb $fe
     jp   call_00_10a3_SwitchBank2                                  ;; 00:096e $c3 $a3 $10
 
 call_00_0971:
-    ld   HL, wD60F                                     ;; 00:0971 $21 $0f $d6
+    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:0971 $21 $0f $d6
     bit  0, [HL]                                       ;; 00:0974 $cb $46
     call NZ, call_00_098f                              ;; 00:0976 $c4 $8f $09
-    ld   HL, wD60F                                     ;; 00:0979 $21 $0f $d6
+    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:0979 $21 $0f $d6
     bit  1, [HL]                                       ;; 00:097c $cb $4e
     call NZ, call_00_09be                              ;; 00:097e $c4 $be $09
-    ld   HL, wD60F                                     ;; 00:0981 $21 $0f $d6
+    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:0981 $21 $0f $d6
     bit  2, [HL]                                       ;; 00:0984 $cb $56
     call NZ, call_00_09e3                              ;; 00:0986 $c4 $e3 $09
     call call_00_09fd                                  ;; 00:0989 $cd $fd $09
@@ -1210,9 +1210,9 @@ call_00_09be:
 
 call_00_09e3:
     res  2, [HL]                                       ;; 00:09e3 $cb $96
-    ld   A, [wD726]                                    ;; 00:09e5 $fa $26 $d7
+    ld   A, [wD726_SpecialTilesetBank]                                    ;; 00:09e5 $fa $26 $d7
     call call_00_1089_SwitchBank                                  ;; 00:09e8 $cd $89 $10
-    ld   A, [wD728]                                    ;; 00:09eb $fa $28 $d7
+    ld   A, [wD728_CurrentSpecialTilesetAddr]                                    ;; 00:09eb $fa $28 $d7
     ld   H, A                                          ;; 00:09ee $67
     ld   L, $00                                        ;; 00:09ef $2e $00
     ld   DE, $9000                                     ;; 00:09f1 $11 $00 $90
@@ -1243,7 +1243,7 @@ call_00_0a21:
     ld   A, Bank02                                        ;; 00:0a24 $3e $02
     ld   HL, entry_02_722c                                     ;; 00:0a26 $21 $2c $72
     call call_00_1078_SwitchBankWrapper                                  ;; 00:0a29 $cd $78 $10
-    ld   HL, wD60F                                     ;; 00:0a2c $21 $0f $d6
+    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:0a2c $21 $0f $d6
     bit  3, [HL]                                       ;; 00:0a2f $cb $5e
     ret  Z                                             ;; 00:0a31 $c8
     res  3, [HL]                                       ;; 00:0a32 $cb $9e
@@ -1381,7 +1381,7 @@ call_00_0ac1:
     ld   A, [wD738]                                    ;; 00:0b32 $fa $38 $d7
     and  A, $01                                        ;; 00:0b35 $e6 $01
     jr   Z, .jr_00_0b48                                ;; 00:0b37 $28 $0f
-    ld   HL, wD60F                                     ;; 00:0b39 $21 $0f $d6
+    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:0b39 $21 $0f $d6
     bit  2, [HL]                                       ;; 00:0b3c $cb $56
     ret  NZ                                            ;; 00:0b3e $c0
     xor  A, A                                          ;; 00:0b3f $af
@@ -1420,7 +1420,7 @@ call_00_0ac1:
     ld   A, [wD733]                                    ;; 00:0b69 $fa $33 $d7
     ld   B, A                                          ;; 00:0b6c $47
 
-call_00_0b6d: ; writes tile data in VRAM
+call_00_0b6d: ; writes tile data in VRAM, reads from banks
     ld   A, [HL+]                                      ;; 00:0b6d $2a
     ld   [DE], A                                       ;; 00:0b6e $12
     inc  E                                             ;; 00:0b6f $1c
@@ -1526,7 +1526,7 @@ call_00_0bb9:
     db   $3c, $20, $0b, $21, $0f, $d6, $cb, $be        ;; 00:0bff ........
     db   $fa, $83, $0d, $ea, $a0, $cc, $d1, $e1        ;; 00:0c07 ........
     db   $f1, $d9                                      ;; 00:0c0f ..
-    ld   HL, wD60F                                     ;; 00:0c11 $21 $0f $d6
+    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:0c11 $21 $0f $d6
     bit  7, [HL]                                       ;; 00:0c14 $cb $7e
     ret  Z                                             ;; 00:0c16 $c8
     bit  0, [HL]                                       ;; 00:0c17 $cb $46
@@ -1554,7 +1554,7 @@ call_00_0bb9:
     and  A, $01                                        ;; 00:0c47 $e6 $01
     xor  A, $01                                        ;; 00:0c49 $ee $01
     ld   [wD586], A                                    ;; 00:0c4b $ea $86 $d5
-    ld   HL, wD60F                                     ;; 00:0c4e $21 $0f $d6
+    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:0c4e $21 $0f $d6
     res  0, [HL]                                       ;; 00:0c51 $cb $86
     ret                                                ;; 00:0c53 $c9
 .data_00_0c54:
@@ -1572,7 +1572,7 @@ call_00_0bb9:
     and  A, $01                                        ;; 00:0c6b $e6 $01
     xor  A, $01                                        ;; 00:0c6d $ee $01
     ld   [wD587], A                                    ;; 00:0c6f $ea $87 $d5
-    ld   HL, wD60F                                     ;; 00:0c72 $21 $0f $d6
+    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:0c72 $21 $0f $d6
     res  1, [HL]                                       ;; 00:0c75 $cb $8e
     ret                                                ;; 00:0c77 $c9
 .jp_00_0c78:
@@ -1590,11 +1590,11 @@ call_00_0bb9:
     ld   A, [wD72B]                                    ;; 00:0c92 $fa $2b $d7
     dec  A                                             ;; 00:0c95 $3d
     ld   [wCCA4], A                                    ;; 00:0c96 $ea $a4 $cc
-    ld   HL, wD60F                                     ;; 00:0c99 $21 $0f $d6
+    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:0c99 $21 $0f $d6
     res  2, [HL]                                       ;; 00:0c9c $cb $96
     ret                                                ;; 00:0c9e $c9
 .jr_00_0c9f:
-    ld   HL, wD728                                     ;; 00:0c9f $21 $28 $d7
+    ld   HL, wD728_CurrentSpecialTilesetAddr                                     ;; 00:0c9f $21 $28 $d7
     inc  [HL]                                          ;; 00:0ca2 $34
     ld   HL, wD72A                                     ;; 00:0ca3 $21 $2a $d7
     inc  [HL]                                          ;; 00:0ca6 $34
@@ -1603,7 +1603,7 @@ call_00_0bb9:
     ld   A, [HL-]                                      ;; 00:0cab $3a
     or   A, [HL]                                       ;; 00:0cac $b6
     ret  NZ                                            ;; 00:0cad $c0
-    ld   HL, wD60F                                     ;; 00:0cae $21 $0f $d6
+    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:0cae $21 $0f $d6
     res  2, [HL]                                       ;; 00:0cb1 $cb $96
     ret                                                ;; 00:0cb3 $c9
 .jp_00_0cb4:
@@ -1621,7 +1621,7 @@ call_00_0bb9:
     ld   A, [wD724]                                    ;; 00:0cce $fa $24 $d7
     dec  A                                             ;; 00:0cd1 $3d
     ld   [wCCA4], A                                    ;; 00:0cd2 $ea $a4 $cc
-    ld   HL, wD60F                                     ;; 00:0cd5 $21 $0f $d6
+    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:0cd5 $21 $0f $d6
     res  3, [HL]                                       ;; 00:0cd8 $cb $9e
     ret                                                ;; 00:0cda $c9
 .jr_00_0cdb:
@@ -1634,7 +1634,7 @@ call_00_0bb9:
     ld   A, [HL-]                                      ;; 00:0ce7 $3a
     or   A, [HL]                                       ;; 00:0ce8 $b6
     ret  NZ                                            ;; 00:0ce9 $c0
-    ld   HL, wD60F                                     ;; 00:0cea $21 $0f $d6
+    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:0cea $21 $0f $d6
     res  3, [HL]                                       ;; 00:0ced $cb $9e
     ret                                                ;; 00:0cef $c9
 .jp_00_0cf0:
@@ -1646,7 +1646,7 @@ call_00_0bb9:
     ld   [HL], $ff                                     ;; 00:0cfc $36 $ff
     ld   A, $86                                        ;; 00:0cfe $3e $86
     ld   [wCCA7], A                                    ;; 00:0d00 $ea $a7 $cc
-    ld   HL, wD60F                                     ;; 00:0d03 $21 $0f $d6
+    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:0d03 $21 $0f $d6
     res  4, [HL]                                       ;; 00:0d06 $cb $a6
     ret                                                ;; 00:0d08 $c9
     db   $00, $ff, $00, $01, $00, $ff, $00, $01        ;; 00:0d09 ????????
@@ -1840,7 +1840,7 @@ call_00_0f01:
     xor  A, A                                          ;; 00:0f06 $af
     ld   [wD6F9], A                                    ;; 00:0f07 $ea $f9 $d6
     ld   [wD60E], A                                    ;; 00:0f0a $ea $0e $d6
-    ld   [wD60F], A                                    ;; 00:0f0d $ea $0f $d6
+    ld   [wD60F_BitmapOfThingsToLoad], A                                    ;; 00:0f0d $ea $0f $d6
     ld   [wD77B], A                                    ;; 00:0f10 $ea $7b $d7
     ld   [wD72F], A                                    ;; 00:0f13 $ea $2f $d7
     ld   [wD611], A                                    ;; 00:0f16 $ea $11 $d6
@@ -2336,7 +2336,7 @@ call_00_1264_LoadMap:
     call call_00_0f38                                  ;; 00:128e $cd $38 $0f
     call call_00_1419_WriteTilesToVRAM                                  ;; 00:1291 $cd $19 $14
     ld   A, $ff                                        ;; 00:1294 $3e $ff
-    ld   [wD72D], A                                    ;; 00:1296 $ea $2d $d7
+    ld   [wD72D_CurrentSpecialTilesetIndex], A                                    ;; 00:1296 $ea $2d $d7
     xor  A, A                                          ;; 00:1299 $af
     ld   [wD77B], A                                    ;; 00:129a $ea $7b $d7
     ld   [wD77D], A                                    ;; 00:129d $ea $7d $d7
@@ -3413,7 +3413,7 @@ call_00_18a7:
     call call_00_1e3c                                  ;; 00:18a7 $cd $3c $1e
     ld   A, [wD778]                                    ;; 00:18aa $fa $78 $d7
     and  A, A                                          ;; 00:18ad $a7
-    jr   Z, jr_00_1922                                 ;; 00:18ae $28 $72
+    jr   Z, call_00_1922_LoadSpecialTiles                                 ;; 00:18ae $28 $72
     dec  A                                             ;; 00:18b0 $3d
     ld   E, A                                          ;; 00:18b1 $5f
     ld   D, $ce                                        ;; 00:18b2 $16 $ce
@@ -3453,13 +3453,13 @@ call_00_18a7:
     bit  7, E                                          ;; 00:18dd $cb $7b
     jr   Z, .jr_00_18bd                                ;; 00:18df $28 $dc
     pop  HL                                            ;; 00:18e1 $e1
-    jr   jr_00_1922                                    ;; 00:18e2 $18 $3e
+    jr   call_00_1922_LoadSpecialTiles                                    ;; 00:18e2 $18 $3e
 
 call_00_18e4:
     call call_00_1e3c                                  ;; 00:18e4 $cd $3c $1e
     ld   A, [wD778]                                    ;; 00:18e7 $fa $78 $d7
     and  A, A                                          ;; 00:18ea $a7
-    jr   Z, jr_00_1922                                 ;; 00:18eb $28 $35
+    jr   Z, call_00_1922_LoadSpecialTiles                                 ;; 00:18eb $28 $35
     dec  A                                             ;; 00:18ed $3d
     ld   E, A                                          ;; 00:18ee $5f
     ld   D, $cd                                        ;; 00:18ef $16 $cd
@@ -3500,10 +3500,10 @@ call_00_18e4:
     bit  7, E                                          ;; 00:191b $cb $7b
     jr   Z, .jr_00_18fa                                ;; 00:191d $28 $db
     pop  HL                                            ;; 00:191f $e1
-    jr   jr_00_1922                                    ;; 00:1920 $18 $00
+    jr   call_00_1922_LoadSpecialTiles                                    ;; 00:1920 $18 $00
 
-jr_00_1922: ; special tile related
-    ld   A, [wD60F]                                    ;; 00:1922 $fa $0f $d6
+call_00_1922_LoadSpecialTiles: ; special tile related
+    ld   A, [wD60F_BitmapOfThingsToLoad]                                    ;; 00:1922 $fa $0f $d6
     bit  2, A                                          ;; 00:1925 $cb $57
     ret  NZ                                            ;; 00:1927 $c0
     ld   DE, $0b                                       ;; 00:1928 $11 $0b $00
@@ -3513,22 +3513,22 @@ jr_00_1922: ; special tile related
     ld   L, [HL]                                       ;; 00:1930 $6e
     ld   H, $00                                        ;; 00:1931 $26 $00
     add  HL, HL                                        ;; 00:1933 $29
-    ld   BC, $1a2e                                     ;; 00:1934 $01 $2e $1a
+    ld   BC, data_00_1a2e_LevelSpecialTileIndices             ;; 00:1934 $01 $2e $1a
     add  HL, BC                                        ;; 00:1937 $09
     ld   A, [HL+]                                      ;; 00:1938 $2a
     ld   H, [HL]                                       ;; 00:1939 $66
     ld   L, A                                          ;; 00:193a $6f
-    ld   A, [HL+]                                      ;; 00:193b $2a
-    ld   C, A                                          ;; 00:193c $4f
+    ld   A, [HL+]                                      ;; 00:193b $2a ; load first value from the Level's data table
+    ld   C, A                                          ;; 00:193c $4f ; c = a
     ld   E, L                                          ;; 00:193d $5d
-    ld   D, H                                          ;; 00:193e $54
-    pop  HL                                            ;; 00:193f $e1
+    ld   D, H                                          ;; 00:193e $54 ; de = hl
+    pop  HL                                            ;; 00:193f $e1 ; hl = d719
     ld   B, $06                                        ;; 00:1940 $06 $06
 .jr_00_1942: ; loading a value written from 3435 bank
     ld   A, [HL-]                                      ;; 00:1942 $3a
     and  A, A                                          ;; 00:1943 $a7
     jr   Z, .jr_00_1954                                ;; 00:1944 $28 $0e ; jmp if 0
-    ld   A, [HL]                                       ;; 00:1946 $7e	; go here if not 0
+    ld   A, [HL]                                       ;; 00:1946 $7e    ; go here if not 0
     sub  A, C                                          ;; 00:1947 $91
     jr   C, .jr_00_1954                                ;; 00:1948 $38 $0a
     push HL                                            ;; 00:194a $e5
@@ -3538,18 +3538,17 @@ jr_00_1922: ; special tile related
     ld   A, [HL]                                       ;; 00:194f $7e
     pop  HL                                            ;; 00:1950 $e1
     and  A, A                                          ;; 00:1951 $a7
-    jr   NZ, .jr_00_1959                               ;; 00:1952 $20 $05
+    jr   NZ, .jr_00_1959                               ;; 00:1952 $20 $05 ; perform this jump if going to load new special tileset
 .jr_00_1954:
     dec  HL                                            ;; 00:1954 $2b
     dec  B                                             ;; 00:1955 $05
-    jr   NZ, .jr_00_1942                               ;; 00:1956 $20 $ea
+    jr   NZ, .jr_00_1942                               ;; 00:1956 $20 $ea ; looping over d719, d717,  looking for  non-zero value
     ret                                                ;; 00:1958 $c9
 .jr_00_1959:
     dec  A                                             ;; 00:1959 $3d
-    ld   HL, wD72D                                     ;; 00:195a $21 $2d $d7
+    ld   HL, wD72D_CurrentSpecialTilesetIndex          ;; 00:195a $21 $2d $d7
     cp   A, [HL]                                       ;; 00:195d $be
-    ret  Z                                             ;; 00:195e $c8
-
+    ret  Z                                             ;; 00:195e $c8 ; return if the special tileset is already the current one
     ld   [HL], A                                       ;; 00:195f $77
     ld   C, A                                          ;; 00:1960 $4f
     add  A, A                                          ;; 00:1961 $87
@@ -3558,13 +3557,13 @@ jr_00_1922: ; special tile related
     ld   L, [HL]                                       ;; 00:1966 $6e
     ld   H, $00                                        ;; 00:1967 $26 $00
     add  HL, HL                                        ;; 00:1969 $29
-    ld   DE, data_00_19f0                                     ;; 00:196a $11 $f0 $19
+    ld   DE, data_LevelSpecialTilesetBanks                                     ;; 00:196a $11 $f0 $19
     add  HL, DE                                        ;; 00:196d $19
     add  A, [HL]                                       ;; 00:196e $86
-    ld   [wD728], A                                    ;; 00:196f $ea $28 $d7
+    ld   [wD728_CurrentSpecialTilesetAddr], A                                    ;; 00:196f $ea $28 $d7
     inc  HL                                            ;; 00:1972 $23
     ld   A, [HL]                                       ;; 00:1973 $7e
-    ld   [wD726], A                                    ;; 00:1974 $ea $26 $d7
+    ld   [wD726_SpecialTilesetBank], A                                    ;; 00:1974 $ea $26 $d7
     ld   [wD72E], A                                    ;; 00:1977 $ea $2e $d7
     call call_00_1089_SwitchBank                                  ;; 00:197a $cd $89 $10
     xor  A, A                                          ;; 00:197d $af
@@ -3620,7 +3619,7 @@ jr_00_1922: ; special tile related
     ld   A, H                                          ;; 00:19d8 $7c
     ld   [wD737], A                                    ;; 00:19d9 $ea $37 $d7
 .jr_00_19dc:
-    ld   HL, wD60F                                     ;; 00:19dc $21 $0f $d6
+    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:19dc $21 $0f $d6
     set  2, [HL]                                       ;; 00:19df $cb $d6
     call call_00_10a3_SwitchBank2                                  ;; 00:19e1 $cd $a3 $10
     ld   [wD59D], A                                    ;; 00:19e4 $ea $9d $d5
@@ -3629,7 +3628,8 @@ jr_00_1922: ; special tile related
     call call_00_1078_SwitchBankWrapper                                  ;; 00:19ec $cd $78 $10
     ret                                                ;; 00:19ef $c9
 
-data_00_19f0:
+data_LevelSpecialTilesetBanks: ; this table contains the special tileset bank numbers 
+; AND the offset into that bank to start getting the tilesets
     db   $40, $13, $40, $0e, $40, $0f, $40, $0f        ;; 00:19f0 ?.?.?.??
     db   $61, $0d, $40, $10, $40, $13, $5b, $0e        ;; 00:19f8 ????????
     db   $40, $0e, $5b, $0e, $61, $0d, $40, $0f        ;; 00:1a00 ????????
@@ -3637,140 +3637,56 @@ data_00_19f0:
     db   $40, $0f, $40, $13, $40, $13, $40, $13        ;; 00:1a10 ????????
     db   $40, $13, $40, $10, $40, $0d, $61, $0d        ;; 00:1a18 ????????
     db   $5b, $0e, $40, $0f, $40, $0d, $40, $13        ;; 00:1a20 ????????
-    db   $40, $13, $40, $13, $73, $0e, $6c, $1a        ;; 00:1a28 ??????..
-    db   $1a, $1b, $a0, $1b, $a0, $1b, $da, $1b        ;; 00:1a30 ....????
-    db   $4c, $1c, $6c, $1a, $be, $1c, $1a, $1b        ;; 00:1a38 ????????
-    db   $be, $1c, $da, $1b, $a0, $1b, $6c, $1a        ;; 00:1a40 ????????
-    db   $4c, $1c, $94, $1d, $6c, $1a, $a0, $1b        ;; 00:1a48 ????????
-    db   $6c, $1a, $6c, $1a, $6c, $1a, $6c, $1a        ;; 00:1a50 ????????
-    db   $4c, $1c, $94, $1d, $da, $1b, $be, $1c        ;; 00:1a58 ????????
-    db   $a0, $1b, $94, $1d, $6c, $1a, $6c, $1a        ;; 00:1a60 ????????
-    db   $6c, $1a, $2e, $1e, $53
-	; special tile related?
-	db   $00, $00, $00        ;; 00:1a68 ????.???
-    db   $00, $00, $09, $09, $09, $09, $07, $07        ;; 00:1a70 ????????
-    db   $07, $07, $00, $00, $00, $00, $00, $00        ;; 00:1a78 ????????
-    db   $00, $09, $09, $09, $09, $00, $07, $07        ;; 00:1a80 ????????
-    db   $07, $07, $00, $00, $00, $00, $00, $00        ;; 00:1a88 ????????
-    db   $00, $00, $05, $05, $05, $05, $03, $03        ;; 00:1a90 ????????
-    db   $03, $03, $14, $14, $14, $14, $13, $13        ;; 00:1a98 ????..??
-    db   $13, $13, $05, $05, $05, $05, $03, $03        ;; 00:1aa0 ????????
-    db   $03, $03, $00, $00, $00, $00, $12, $12        ;; 00:1aa8 ????????
-    db   $12, $12, $11, $11, $11, $11, $10, $10        ;; 00:1ab0 ????????
-    db   $10, $10, $0b, $0b, $00, $00, $0f, $0f        ;; 00:1ab8 ????????
-    db   $0f, $0f, $0e, $0e, $0e, $0e, $00, $00        ;; 00:1ac0 ???...??
-    db   $00, $00, $0b, $0b, $0b, $0b, $0b, $0b        ;; 00:1ac8 ????????
-    db   $00, $00, $00, $00, $00, $00, $0a, $0a        ;; 00:1ad0 ????????
-    db   $09, $09, $00, $00, $00, $0b, $00, $0b        ;; 00:1ad8 ????????
-    db   $00, $00, $00, $00, $00, $00, $0a, $0a        ;; 00:1ae0 ????????
-    db   $09, $09, $00, $0b, $0b, $0b, $00, $02        ;; 00:1ae8 ????????
-    db   $02, $02, $02, $00, $00, $00, $01, $01        ;; 00:1af0 ????????
-    db   $01, $01, $00, $0b, $00, $00, $08, $08        ;; 00:1af8 ..??????
-    db   $07, $07, $06, $06, $05, $05, $04, $04        ;; 00:1b00 ????????
-    db   $03, $03, $00, $00, $00, $00, $08, $08        ;; 00:1b08 ?.??????
-    db   $07, $07, $06, $06, $05, $05, $04, $04        ;; 00:1b10 ????????
-    db   $03, $03, $7b, $00, $00, $00, $00, $00        ;; 00:1b18 ...?????
-    db   $05, $05, $00, $00, $01, $01, $01, $01        ;; 00:1b20 ????????
-    db   $01, $01, $01, $01, $01, $01, $00, $00        ;; 00:1b28 ????????
-    db   $00, $07, $07, $08, $01, $01, $05, $02        ;; 00:1b30 ????????
-    db   $03, $01, $01, $03, $03, $03, $03, $02        ;; 00:1b38 ????????
-    db   $00, $01, $01, $08, $08, $08, $08, $08        ;; 00:1b40 ??????.?
-    db   $08, $08, $08, $08, $08, $08, $08, $08        ;; 00:1b48 ???.?.??
-    db   $08, $08, $08, $08, $08, $08, $08, $08        ;; 00:1b50 ????????
-    db   $08, $08, $08, $08, $05, $05, $05, $08        ;; 00:1b58 ????????
-    db   $09, $09, $09, $09, $05, $05, $00, $05        ;; 00:1b60 ????????
-	
-    db   $05, $05, $05, $05, $00, $00, $02, $02        ;; 00:1b68 ????..??
-    db   $06, $06, $06, $06, $07, $09, $09, $09        ;; 00:1b70 ??..????
-    db   $09, $03, $03, $03, $06, $06, $06, $06        ;; 00:1b78 ????....
-    db   $01, $01, $05, $05, $05, $05, $05, $05        ;; 00:1b80 ????????
-    db   $05, $05, $05, $05, $05, $05, $03, $07        ;; 00:1b88 ????????
-    db   $07, $04, $04, $04, $05, $04, $01, $01        ;; 00:1b90 ?.?.????
-    db   $01, $01, $02, $02, $02, $02, $02, $02        ;; 00:1b98 ???.?.??
-    db   $c7, $05, $05, $05, $05, $05, $05, $05        ;; 00:1ba0 .???????
-    db   $05, $05, $05, $05, $05, $05, $05, $0c        ;; 00:1ba8 ????????
-    db   $0c, $0c, $0c, $07, $07, $07, $06, $06        ;; 00:1bb0 ????????
-    db   $06, $06, $0b, $0b, $07, $04, $04, $03        ;; 00:1bb8 ????????
-    db   $03, $07, $07, $07, $08, $08, $09, $09        ;; 00:1bc0 ?..?????
-    db   $05, $05, $0a, $0a, $0a, $0a, $0a, $0a        ;; 00:1bc8 ????????
-    db   $01, $01, $01, $01, $02, $02, $02, $02        ;; 00:1bd0 ????????
-    db   $02, $02, $8f, $00, $00, $04, $04, $04        ;; 00:1bd8 ????????
-    db   $04, $04, $01, $01, $01, $01, $01, $01        ;; 00:1be0 ????????
-    db   $01, $00, $00, $00, $00, $03, $03, $03        ;; 00:1be8 ????????
-    db   $03, $03, $03, $01, $01, $03, $03, $03        ;; 00:1bf0 ????????
-    db   $03, $01, $01, $01, $00, $01, $01, $03        ;; 00:1bf8 ????????
-    db   $03, $01, $01, $01, $01, $01, $03, $03        ;; 00:1c00 ????????
-    db   $03, $03, $03, $03, $04, $04, $04, $04        ;; 00:1c08 ????????
-    db   $03, $03, $03, $03, $03, $03, $03, $03        ;; 00:1c10 ????????
-    db   $03, $03, $03, $03, $00, $04, $04, $03        ;; 00:1c18 ????????
-    db   $03, $06, $06, $06, $06, $03, $03, $03        ;; 00:1c20 ????????
-    db   $05, $05, $05, $05, $03, $03, $03, $03        ;; 00:1c28 ????????
-    db   $03, $03, $03, $03, $03, $03, $03, $03        ;; 00:1c30 ????????
-    db   $03, $03, $03, $03, $03, $03, $03, $03        ;; 00:1c38 ????????
-    db   $03, $03, $03, $03, $03, $00, $02, $02        ;; 00:1c40 ????????
-    db   $02, $02, $02, $02, $8f, $00, $00, $00        ;; 00:1c48 ????????
-    db   $0a, $0a, $00, $00, $00, $00, $00, $00        ;; 00:1c50 ????????
-    db   $00, $00, $00, $00, $00, $00, $0a, $0a        ;; 00:1c58 ????????
-    db   $0a, $0a, $00, $00, $00, $00, $00, $00        ;; 00:1c60 ????????
-    db   $00, $00, $00, $00, $00, $00, $0a, $0a        ;; 00:1c68 ????????
-    db   $0a, $0a, $00, $07, $00, $0c, $0c, $0c        ;; 00:1c70 ????????
-    db   $0c, $0c, $0c, $0c, $0c, $00, $0b, $0b        ;; 00:1c78 ????????
-    db   $0b, $0b, $03, $03, $03, $03, $08, $08        ;; 00:1c80 ????????
-    db   $08, $08, $08, $00, $00, $00, $06, $06        ;; 00:1c88 ????????
-    db   $06, $06, $03, $0b, $0b, $0b, $0b, $04        ;; 00:1c90 ????????
-    db   $04, $04, $06, $06, $06, $06, $00, $00        ;; 00:1c98 ????????
-    db   $00, $00, $01, $01, $01, $01, $09, $01        ;; 00:1ca0 ????????
-    db   $02, $02, $02, $02, $02, $02, $00, $00        ;; 00:1ca8 ????????
-    db   $00, $00, $01, $01, $01, $01, $09, $01        ;; 00:1cb0 ????????
-    db   $02, $02, $02, $02, $02, $02, $2b, $00        ;; 00:1cb8 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:1cc0 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:1cc8 ????????
-    db   $00, $01, $05, $05, $00, $00, $00, $00        ;; 00:1cd0 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:1cd8 ????????
-    db   $00, $01, $05, $05, $00, $00, $00, $00        ;; 00:1ce0 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:1ce8 ????????
-    db   $00, $00, $05, $00, $00, $00, $00, $00        ;; 00:1cf0 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:1cf8 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:1d00 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:1d08 ????????
-    db   $00, $03, $03, $00, $00, $00, $00, $00        ;; 00:1d10 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:1d18 ????????
-    db   $00, $00, $00, $03, $00, $00, $00, $00        ;; 00:1d20 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:1d28 ????????
-    db   $00, $00, $00, $05, $00, $00, $00, $00        ;; 00:1d30 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:1d38 ????????
-    db   $00, $04, $04, $04, $05, $05, $05, $05        ;; 00:1d40 ????????
-    db   $05, $00, $00, $05, $05, $00, $05, $05        ;; 00:1d48 ????????
-    db   $05, $00, $05, $05, $08, $08, $08, $08        ;; 00:1d50 ????????
-    db   $07, $07, $07, $05, $05, $05, $05, $00        ;; 00:1d58 ????????
-    db   $05, $05, $05, $00, $06, $06, $06, $06        ;; 00:1d60 ????????
-    db   $05, $08, $08, $08, $08, $00, $05, $05        ;; 00:1d68 ????????
-    db   $06, $06, $06, $06, $05, $00, $05, $05        ;; 00:1d70 ????????
-    db   $05, $05, $05, $05, $05, $05, $05, $05        ;; 00:1d78 ????????
-    db   $05, $05, $05, $05, $05, $05, $05, $05        ;; 00:1d80 ????????
-    db   $05, $05, $05, $03, $03, $03, $02, $02        ;; 00:1d88 ????????
-    db   $02, $02, $02, $02, $67, $00, $00, $00        ;; 00:1d90 ????????
-    db   $00, $00, $00, $00, $00, $00, $0a, $0a        ;; 00:1d98 ????????
-    db   $0a, $0a, $0a, $0a, $0a, $0a, $00, $00        ;; 00:1da0 ????????
-    db   $00, $00, $00, $00, $00, $00, $09, $09        ;; 00:1da8 ????????
-    db   $09, $00, $00, $00, $00, $00, $00, $00        ;; 00:1db0 ????????
-    db   $00, $00, $00, $00, $00, $00, $08, $08        ;; 00:1db8 ????????
-    db   $00, $00, $00, $00, $00, $00, $08, $08        ;; 00:1dc0 ????????
-    db   $08, $08, $08, $00, $00, $00, $07, $07        ;; 00:1dc8 ????????
-    db   $07, $07, $07, $07, $07, $07, $07, $07        ;; 00:1dd0 ????????
-    db   $07, $07, $00, $00, $07, $07, $05, $05        ;; 00:1dd8 ????????
-    db   $00, $00, $05, $05, $00, $00, $00, $07        ;; 00:1de0 ????????
-    db   $00, $00, $00, $00, $00, $00, $0b, $0b        ;; 00:1de8 ????????
-    db   $0b, $0b, $05, $05, $05, $05, $00, $04        ;; 00:1df0 ????????
-    db   $04, $04, $00, $00, $00, $00, $06, $06        ;; 00:1df8 ????????
-    db   $06, $06, $00, $0b, $0b, $0b, $0b, $04        ;; 00:1e00 ????????
-    db   $04, $04, $06, $06, $06, $06, $03, $03        ;; 00:1e08 ????????
-    db   $03, $03, $03, $03, $03, $03, $03, $00        ;; 00:1e10 ????????
-    db   $00, $00, $00, $00, $00, $00, $01, $01        ;; 00:1e18 ????????
-    db   $01, $00, $00, $01, $00, $01, $00, $00        ;; 00:1e20 ????????
-    db   $02, $02, $02, $02, $02, $02, $f3, $00        ;; 00:1e28 ????????
-    db   $00, $00, $00, $00, $00, $00, $01, $01        ;; 00:1e30 ????????
-    db   $01, $01, $01, $01                            ;; 00:1e38 ????
+    db   $40, $13, $40, $13, $73, $0e
+data_00_1a2e_LevelSpecialTileIndices: ; one for each channel, some levels share the same one
+    dw   special_tile_data_media_dimension
+	dw   special_tile_data_toon_tv
+	dw   special_tile_data_scream_tv
+	dw   special_tile_data_scream_tv        ;; 00:1a2e ??????..
+    dw   special_tile_data_circuit_central
+	dw   special_tile_data_kung_fu_theater
+	dw   special_tile_data_media_dimension
+	dw   special_tile_data_prehistory_channel       ;; 00:1a ....????
+    dw   special_tile_data_toon_tv
+	dw   special_tile_data_prehistory_channel
+	dw   special_tile_data_circuit_central
+	dw   special_tile_data_scream_tv        ;; 00:1a3e ????????
+    dw   special_tile_data_media_dimension
+	dw   special_tile_data_kung_fu_theater
+	dw   special_tile_data_rezopolis
+	dw   special_tile_data_media_dimension        ;; 00:1a ????????
+    dw   special_tile_data_scream_tv
+	dw   special_tile_data_media_dimension
+	dw   special_tile_data_media_dimension
+	dw   special_tile_data_media_dimension        ;; 00:1a4e ????????
+    dw   special_tile_data_media_dimension
+	dw   special_tile_data_kung_fu_theater
+	dw   special_tile_data_rezopolis
+	dw   special_tile_data_circuit_central        ;; 00:1a ????????
+    dw   special_tile_data_prehistory_channel
+	dw   special_tile_data_scream_tv
+	dw   special_tile_data_rezopolis
+	dw   special_tile_data_media_dimension        ;; 00:1a5e ????????
+    dw   special_tile_data_media_dimension
+	dw   special_tile_data_media_dimension
+	dw   special_tile_data_channel_z
+
+special_tile_data_media_dimension:
+	INCBIN "maps/media_dimension/special_tile_data_media_dimension.bin"
+special_tile_data_toon_tv:
+	INCBIN "maps/toon_tv/special_tile_data_toon_tv.bin"
+special_tile_data_scream_tv:
+	INCBIN "maps/scream_tv/special_tile_data_scream_tv.bin"
+special_tile_data_circuit_central:
+	INCBIN "maps/circuit_central/special_tile_data_circuit_central.bin"
+special_tile_data_kung_fu_theater:
+	INCBIN "maps/kung_fu_theater/special_tile_data_kung_fu_theater.bin"
+special_tile_data_prehistory_channel:
+	INCBIN "maps/prehistory_channel/special_tile_data_prehistory_channel.bin"
+special_tile_data_rezopolis:
+	INCBIN "maps/rezopolis/special_tile_data_rezopolis.bin"
+special_tile_data_channel_z:
+	INCBIN "maps/channel_z/special_tile_data_channel_z.bin"
 
 call_00_1e3c:
 ; this function loads the values that were obtained from bank special tile banks 34 and 35
@@ -5067,143 +4983,143 @@ data_MapData:
     dw   $5f88                                         ;; 00:2ec1 wW
     db   $30, $34, $38, $00, $04, $36, $00, $40        ;; 00:2ec3 ...?....
     db   $00, $00, $00, $00
-	
-	db   $07, $00                  ;; 00:2ecb ????ww
+    
+    db   $07, $00                  ;; 00:2ecb ????ww
     dw   $5fa7                                         ;; 00:2ed1 wW
     db   $31, $34, $39, $00, $08, $36, $00, $50        ;; 00:2ed3 ...?....
     db   $00, $00, $00, $00
-	
-	db   $06, $00                  ;; 00:2edb ????ww
+    
+    db   $06, $00                  ;; 00:2edb ????ww
     dw   $6007                                         ;; 00:2ee1 wW
     db   $32, $34, $3a, $00, $02, $36, $00, $60        ;; 00:2ee3 ...?....
     db   $00, $00, $00, $00
-	
-	db   $06, $00                  ;; 00:2eeb ?????w
+    
+    db   $06, $00                  ;; 00:2eeb ?????w
     dw   $606a                                         ;; 00:2ef1 wW
     db   $33, $34, $3a, $00, $01, $36, $00, $60        ;; 00:2ef3 ????????
     db   $00, $00, $00, $00
-	
-	db   $01, $01                  ;; 00:2efb ?????w
+    
+    db   $01, $01                  ;; 00:2efb ?????w
     dw   $60ca                                         ;; 00:2f01 wW
     db   $25, $35, $3b, $00, $02, $36, $00, $70        ;; 00:2f03 ????????
     db   $00, $00, $00, $00
-	
-	db   $02, $01                  ;; 00:2f0b ?????w
+    
+    db   $02, $01                  ;; 00:2f0b ?????w
     dw   $611b                                         ;; 00:2f11 wW
     db   $2d, $34, $3c, $00, $80, $37, $00, $40        ;; 00:2f13 ????????
     db   $00, $00, $00, $00
-	
-	db   $05, $06, $5f, $61        ;; 00:2f1b ?????w??
+    
+    db   $05, $06, $5f, $61        ;; 00:2f1b ?????w??
     db   $32, $34, $38, $00, $00, $36, $00, $40        ;; 00:2f23 ????????
     db   $00, $00, $00, $00
-	
-	db   $03, $01                  ;; 00:2f2b ?????w
+    
+    db   $03, $01                  ;; 00:2f2b ?????w
     dw   $616b                                         ;; 00:2f31 wW
     db   $2e, $34, $3e, $00, $10, $37, $00, $50        ;; 00:2f33 ????????
     db   $00, $00, $00, $00
-	
-	db   $07, $01                  ;; 00:2f3b ?????w
+    
+    db   $07, $01                  ;; 00:2f3b ?????w
     dw   $61ac                                         ;; 00:2f41 wW
     db   $31, $34, $39, $00, $08, $36, $00, $50        ;; 00:2f43 ????????
     db   $00, $00, $00, $00
-	
-	db   $03, $00                  ;; 00:2f4b ?????w
+    
+    db   $03, $00                  ;; 00:2f4b ?????w
     dw   $61e2                                         ;; 00:2f51 wW
     db   $2f, $34, $3e, $00, $20, $37, $00, $50        ;; 00:2f53 ????????
     db   $00, $00, $00, $00
-	
-	db   $01, $00                  ;; 00:2f5b ?????w
+    
+    db   $01, $00                  ;; 00:2f5b ?????w
     dw   $623d                                         ;; 00:2f61 wW
     db   $2a, $35, $3b, $00, $08, $36, $00, $70        ;; 00:2f63 ????????
     db   $00, $00, $00, $00
-	
-	db   $06, $00                  ;; 00:2f6b ?????w
+    
+    db   $06, $00                  ;; 00:2f6b ?????w
     dw   $629b                                         ;; 00:2f71 wW
     db   $32, $34, $3a, $00, $02, $36, $00, $60        ;; 00:2f73 ????????
     db   $00, $00, $00, $00
-	
-	db   $05, $06, $fa, $62        ;; 00:2f7b ?????w??
+    
+    db   $05, $06, $fa, $62        ;; 00:2f7b ?????w??
     db   $32, $34, $38, $00, $00, $36, $00, $40        ;; 00:2f83 ????????
     db   $00, $00, $00, $00
-	
-	db   $02, $00                  ;; 00:2f8b ?????w
+    
+    db   $02, $00                  ;; 00:2f8b ?????w
     dw   $6306                                         ;; 00:2f91 wW
     db   $2c, $34, $3c, $00, $40, $37, $00, $40        ;; 00:2f93 ????????
     db   $00, $00, $00, $00
-	
-	db   $04, $02                  ;; 00:2f9b ?????w
+    
+    db   $04, $02                  ;; 00:2f9b ?????w
     dw   $6372                                         ;; 00:2fa1 wW
     db   $29, $35, $3f, $00, $01, $37, $00, $60        ;; 00:2fa3 ????????
     db   $00, $00, $00, $00
-	
-	db   $08, $06, $b4, $63        ;; 00:2fab ?????w??
+    
+    db   $08, $06, $b4, $63        ;; 00:2fab ?????w??
     db   $32, $34, $38, $00, $00, $36, $00, $40        ;; 00:2fb3 ????????
     db   $00, $00, $00, $00
-	
-	db   $08, $05                  ;; 00:2fbb ?????w
+    
+    db   $08, $05                  ;; 00:2fbb ?????w
     dw   $63c0                                         ;; 00:2fc1 wW
     db   $32, $34, $3a, $00, $02, $36, $00, $60        ;; 00:2fc3 ????????
     db   $00, $00, $00, $00
-	
-	db   $08, $06, $fd, $63        ;; 00:2fcb ?????w??
+    
+    db   $08, $06, $fd, $63        ;; 00:2fcb ?????w??
     db   $32, $34, $38, $00, $00, $36, $00, $40        ;; 00:2fd3 ????????
     db   $00, $00, $00, $00
-	
-	db   $08, $06, $09, $64        ;; 00:2fdb ?????w??
+    
+    db   $08, $06, $09, $64        ;; 00:2fdb ?????w??
     db   $32, $34, $38, $00, $00, $36, $00, $40        ;; 00:2fe3 ????????
     db   $00, $00, $00, $00
-	
-	db   $08, $06, $15, $64        ;; 00:2feb ?????w??
+    
+    db   $08, $06, $15, $64        ;; 00:2feb ?????w??
     db   $32, $34, $3f, $00, $00, $36, $00, $40        ;; 00:2ff3 ????????
     db   $00, $00, $00, $00
-	
-	db   $08, $06, $21, $64        ;; 00:2ffb ?????w??
+    
+    db   $08, $06, $21, $64        ;; 00:2ffb ?????w??
     db   $32, $34, $38, $00, $00, $36, $00, $40        ;; 00:3003 ????????
     db   $00, $00, $00, $00
-	
-	db   $08, $05                  ;; 00:300b ?????w
+    
+    db   $08, $05                  ;; 00:300b ?????w
     dw   $642d                                         ;; 00:3011 wW
     db   $2c, $34, $3c, $00, $40, $37, $00, $40        ;; 00:3013 ????????
     db   $00, $00, $00, $00
-	
-	db   $08, $05                  ;; 00:301b ?????w
+    
+    db   $08, $05                  ;; 00:301b ?????w
     dw   $646f                                         ;; 00:3021 wW
     db   $29, $35, $3f, $00, $01, $37, $00, $60        ;; 00:3023 ????????
     db   $00, $00, $00, $00
-	
-	db   $08, $05                  ;; 00:302b ?????w
+    
+    db   $08, $05                  ;; 00:302b ?????w
     dw   $64a5                                         ;; 00:3031 wW
     db   $2b, $35, $3b, $00, $04, $36, $00, $70        ;; 00:3033 ????????
     db   $00, $00, $00, $00
-	
-	db   $03, $04                  ;; 00:303b ?????w
+    
+    db   $03, $04                  ;; 00:303b ?????w
     dw   $64df                                         ;; 00:3041 wW
     db   $2f, $34, $3e, $00, $20, $37, $00, $50        ;; 00:3043 ????????
     db   $00, $00, $00, $00
-	
-	db   $06, $04                  ;; 00:304b ?????w
+    
+    db   $06, $04                  ;; 00:304b ?????w
     dw   $6512                                         ;; 00:3051 wW
     db   $33, $34, $3a, $00, $01, $36, $00, $60        ;; 00:3053 ????????
     db   $00, $00, $00, $00
-	
-	db   $04, $03                  ;; 00:305b ?????w
+    
+    db   $04, $03                  ;; 00:305b ?????w
     dw   $6550                                         ;; 00:3061 wW
     db   $29, $35, $3f, $00, $01, $37, $00, $60        ;; 00:3063 ????????
     db   $00, $00, $00, $00
-	
-	db   $0a, $06, $a7, $65        ;; 00:306b ?????w??
+    
+    db   $0a, $06, $a7, $65        ;; 00:306b ?????w??
     db   $32, $34, $38, $00, $00, $36, $00, $40        ;; 00:3073 ????????
     db   $00, $00, $00, $00
-	
-	db   $0a, $06, $b3, $65        ;; 00:307b ?????w??
+    
+    db   $0a, $06, $b3, $65        ;; 00:307b ?????w??
     db   $32, $34, $38, $00, $00, $36, $00, $40        ;; 00:3083 ????????
     db   $00, $00, $00, $00
-	
-	db   $0a, $06, $bf, $65        ;; 00:308b ?????w??
+    
+    db   $0a, $06, $bf, $65        ;; 00:308b ?????w??
     db   $32, $34, $38, $00, $00, $36, $00, $40        ;; 00:3093 ????????
     db   $00, $00, $00, $00
-	
-	db   $0a, $05, $cb, $65        ;; 00:309b ????????
+    
+    db   $0a, $05, $cb, $65        ;; 00:309b ????????
     db   $28, $35, $27, $00, $10, $26, $00, $40        ;; 00:30a3 ????????
     db   $00, $00, $00, $00                            ;; 00:30ab ????
 
@@ -6601,7 +6517,7 @@ call_00_3bf4:
     cp   A, $ff                                        ;; 00:3c14 $fe $ff
     ret  Z                                             ;; 00:3c16 $c8
     ld   [wD610], A                                    ;; 00:3c17 $ea $10 $d6
-    ld   HL, wD60F                                     ;; 00:3c1a $21 $0f $d6
+    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:3c1a $21 $0f $d6
     set  4, [HL]                                       ;; 00:3c1d $cb $e6
     ret                                                ;; 00:3c1f $c9
     db   $ff, $0f, $05, $04, $02, $0c, $ff, $09        ;; 00:3c20 ?..?????
