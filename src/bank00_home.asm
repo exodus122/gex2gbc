@@ -215,8 +215,9 @@ call_00_0150_Init:
     dec  B                                             ;; 00:02aa $05
     jr   NZ, .jr_00_02a7                               ;; 00:02ab $20 $fa
     
-    
     ld   [wD59D], A                                    ;; 00:02ad $ea $9d $d5
+	
+	; Switch to bank 1
     ld   A, Bank01                                        ;; 00:02b0 $3e $01
     ld   HL, entry_01_4349                              ;; 00:02b2 $21 $49 $43
     call call_00_1078_SwitchBankWrapper                    ;; 00:02b5 $cd $78 $10
@@ -239,7 +240,7 @@ call_00_0150_Init:
     call call_00_1078_SwitchBankWrapper                                  ;; 00:02d6 $cd $78 $10
     xor  A, A                                          ;; 00:02d9 $af
     ld   [wD621], A                                    ;; 00:02da $ea $21 $d6
-    ld   [wD628_MediaDimensionRespawnPoint], A                                    ;; 00:02dd $ea $28 $d6
+    ld   [wD628_MediaDimensionRespawnPoint], A         ;; 00:02dd $ea $28 $d6
     ld   [wD64F], A                                    ;; 00:02e0 $ea $4f $d6
     ld   [wD650], A                                    ;; 00:02e3 $ea $50 $d6
     ld   [wD651], A                                    ;; 00:02e6 $ea $51 $d6

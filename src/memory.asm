@@ -93,7 +93,7 @@ wD20E:
 wD20F:
     ds 1                                               ;; d20f
 
-; wD20E and wD20F control gex's y coordinate position (can lock both to hover at fixed height)
+; wD210 and wD211 control gex's y coordinate position (can lock both to hover at fixed height)
 ; can also set to 0000 to warp to top of map for example
 wD210:
     ds 1                                               ;; d210
@@ -310,6 +310,7 @@ wD627_CurrentMission:
 
 wD628_MediaDimensionRespawnPoint:
 ; which tv you respawn at if you die in media dimension
+; also where you go if you quit current level
     ds 1                                               ;; d628
 
 wD629_RemoteProgressBitfields: 
@@ -390,13 +391,18 @@ wD664:
 wD665:
     ds 2                                               ;; d665
 
-wD667:
+wD667_PasswordExitButton: ; Password exit button (value 49)
     ds 1                                               ;; d667
 
-wD668:
+wD668_PasswordValues: ; password on entry screen and in game
+; 20 is blank
+; solid color arrows: 45 right, 46 left, 47 up, 48 down
+; outlined arrows:  41 right, 42 left, 43 up, 44 down
+; bug: the first time you enter a value after going into the "enter password" screen, 
+; it updates the value, but not visually
     ds 28                                              ;; d668
 
-wD684:
+wD684_PasswordGoButton: ; Password go button (value 4a)
     ds 1                                               ;; d684
 
 wD685:

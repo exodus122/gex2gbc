@@ -4,7 +4,7 @@ SECTION "bank01", ROMX[$4000], BANK[$01]
 
 ; This file handles various menus in the game
 
-entry_01_4000:
+entry_01_4000: ; this is the primary menu updating function
 call_01_4000:
     ld   HL, wD6DD                                     ;; 01:4000 $21 $dd $d6
     ld   [HL], $00                                     ;; 01:4003 $36 $00
@@ -304,7 +304,7 @@ call_01_4000:
     cp   A, $00                                        ;; 01:4237 $fe $00
     jr   Z, .jr_01_422c                                ;; 01:4239 $28 $f1
 .jr_01_423b:
-    call call_01_5271                                  ;; 01:423b $cd $71 $52
+    call call_01_5271_ProcessPassword                                  ;; 01:423b $cd $71 $52
     cp   A, $30                                        ;; 01:423e $fe $30
     ret  Z                                             ;; 01:4240 $c8
     call call_01_4f87                                  ;; 01:4241 $cd $87 $4f
@@ -1224,7 +1224,7 @@ call_01_4969:
     ld hl, wD624_CurrentLevelId
     ld l, [hl]
     ld h, $00
-    ld de, $d629
+    ld de, wD629_RemoteProgressBitfields
     add hl, de
     ld c, [hl]
     pop af
@@ -2108,7 +2108,7 @@ call_01_4f1b:
     add  A, E                                          ;; 01:4f26 $83
     ld   E, A                                          ;; 01:4f27 $5f
     ld   D, $00                                        ;; 01:4f28 $16 $00
-    ld   HL, wD667                                     ;; 01:4f2a $21 $67 $d6
+    ld   HL, wD667_PasswordExitButton                                     ;; 01:4f2a $21 $67 $d6
     add  HL, DE                                        ;; 01:4f2d $19
     ld   A, [HL]                                       ;; 01:4f2e $7e
     ret                                                ;; 01:4f2f $c9
@@ -2147,29 +2147,29 @@ call_01_4f41:
 
 entry_01_4f87:
 call_01_4f87:
-    ld   HL, wD667                                     ;; 01:4f87 $21 $67 $d6
-    ld   DE, wD668                                     ;; 01:4f8a $11 $68 $d6
+    ld   HL, wD667_PasswordExitButton                                     ;; 01:4f87 $21 $67 $d6
+    ld   DE, wD668_PasswordValues                                     ;; 01:4f8a $11 $68 $d6
     ld   BC, $1d                                       ;; 01:4f8d $01 $1d $00
     ld   [HL], $20                                     ;; 01:4f90 $36 $20
     call call_00_07b0_CopyBytes                                  ;; 01:4f92 $cd $b0 $07
     ld   A, $49                                        ;; 01:4f95 $3e $49
-    ld   [wD667], A                                    ;; 01:4f97 $ea $67 $d6
+    ld   [wD667_PasswordExitButton], A                                    ;; 01:4f97 $ea $67 $d6
     ld   A, $4a                                        ;; 01:4f9a $3e $4a
-    ld   [wD684], A                                    ;; 01:4f9c $ea $84 $d6
+    ld   [wD684_PasswordGoButton], A                                    ;; 01:4f9c $ea $84 $d6
     ld   A, $4b                                        ;; 01:4f9f $3e $4b
     ld   [wD685], A                                    ;; 01:4fa1 $ea $85 $d6
     ret                                                ;; 01:4fa4 $c9
 
 call_01_4fa5:
-    ld   HL, wD667                                     ;; 01:4fa5 $21 $67 $d6
-    ld   DE, wD668                                     ;; 01:4fa8 $11 $68 $d6
+    ld   HL, wD667_PasswordExitButton                                     ;; 01:4fa5 $21 $67 $d6
+    ld   DE, wD668_PasswordValues                                     ;; 01:4fa8 $11 $68 $d6
     ld   BC, $1d                                       ;; 01:4fab $01 $1d $00
     ld   [HL], $00                                     ;; 01:4fae $36 $00
     call call_00_07b0_CopyBytes                                  ;; 01:4fb0 $cd $b0 $07
     ld   A, $49                                        ;; 01:4fb3 $3e $49
-    ld   [wD667], A                                    ;; 01:4fb5 $ea $67 $d6
+    ld   [wD667_PasswordExitButton], A                                    ;; 01:4fb5 $ea $67 $d6
     ld   A, $4a                                        ;; 01:4fb8 $3e $4a
-    ld   [wD684], A                                    ;; 01:4fba $ea $84 $d6
+    ld   [wD684_PasswordGoButton], A                                    ;; 01:4fba $ea $84 $d6
     ld   A, $4b                                        ;; 01:4fbd $3e $4b
     ld   [wD685], A                                    ;; 01:4fbf $ea $85 $d6
     ld   HL, .data_01_4fef                             ;; 01:4fc2 $21 $ef $4f
@@ -2200,7 +2200,7 @@ call_01_4fa5:
     jr   .jr_01_4fc5                                   ;; 01:4fdf $18 $e4
 .jr_01_4fe1:
     pop  HL                                            ;; 01:4fe1 $e1
-    ld   HL, wD668                                     ;; 01:4fe2 $21 $68 $d6
+    ld   HL, wD668_PasswordValues                                     ;; 01:4fe2 $21 $68 $d6
     ld   B, $1c                                        ;; 01:4fe5 $06 $1c
 .jr_01_4fe7:
     ld   A, [HL]                                       ;; 01:4fe7 $7e
@@ -2290,33 +2290,39 @@ call_01_4fa5:
     db   $5b, $d6, $04, $00, $81, $d6, $01, $00        ;; 01:5257 ????????
     db   $5b, $d6, $02, $00, $82, $d6, $04, $00        ;; 01:525f ????????
     db   $5b, $d6, $01, $00, $82, $d6, $02, $00        ;; 01:5267 ????????
-    db   $00, $00                                      ;; 01:526f ??
+    db   $00, $00                                    ;; 01:526f ??
 
-call_01_5271:
-    ld   HL, wD668                                     ;; 01:5271 $21 $68 $d6
-    ld   B, $1c                                        ;; 01:5274 $06 $1c
+call_01_5271_ProcessPassword: ; handles setting save data from password
+	
+	; check if any of the boxes are blank. if so, it is an invalid password
+    ld   HL, wD668_PasswordValues                      ;; 01:5271 $21 $68 $d6
+    ld   B, $1c                                        ;; 01:5274 $06 $1c ; 1c is the number of password boxes (28)
 .jr_01_5276:
     ld   A, [HL+]                                      ;; 01:5276 $2a
     cp   A, $20                                        ;; 01:5277 $fe $20
     jp   Z, .jp_01_531a                                ;; 01:5279 $ca $1a $53
     dec  B                                             ;; 01:527c $05
-    jr   NZ, .jr_01_5276                               ;; 01:527d $20 $f7
+    jr   NZ, .jr_01_5276                               ;; 01:527d $20 $f7 
+	
+	; set these 11 bytes to 0
     ld   HL, wD65C                                     ;; 01:527f $21 $5c $d6
-    ld   B, $0b                                        ;; 01:5282 $06 $0b
-    xor  A, A                                          ;; 01:5284 $af
+    ld   B, $0b                                        ;; 01:5282 $06 $0b ; b = 11
+    xor  A, A                                          ;; 01:5284 $af ; a = 0
 .jr_01_5285:
     ld   [HL+], A                                      ;; 01:5285 $22
     dec  B                                             ;; 01:5286 $05
     jr   NZ, .jr_01_5285                               ;; 01:5287 $20 $fc
+	
+	; decode the password into wD65C array of 11 bytes
     ld   HL, wD65C                                     ;; 01:5289 $21 $5c $d6
-    ld   DE, wD668                                     ;; 01:528c $11 $68 $d6
-    ld   A, $1c                                        ;; 01:528f $3e $1c
-    ld   C, $80                                        ;; 01:5291 $0e $80
+    ld   DE, wD668_PasswordValues                      ;; 01:528c $11 $68 $d6
+    ld   A, $1c                                        ;; 01:528f $3e $1c ; 28
+    ld   C, $80                                        ;; 01:5291 $0e $80 ; 128
 .jr_01_5293:
     push AF                                            ;; 01:5293 $f5
     push DE                                            ;; 01:5294 $d5
-    ld   A, [DE]                                       ;; 01:5295 $1a
-    sub  A, $41                                        ;; 01:5296 $d6 $41
+    ld   A, [DE]                                       ;; 01:5295 $1a ; a = value in password box
+    sub  A, $41                                        ;; 01:5296 $d6 $41 ; subtract 0x41 to make value 0-7
     ld   E, A                                          ;; 01:5298 $5f
     ld   B, $03                                        ;; 01:5299 $06 $03
 .jr_01_529b:
@@ -2338,6 +2344,8 @@ call_01_5271:
     pop  AF                                            ;; 01:52ae $f1
     dec  A                                             ;; 01:52af $3d
     jr   NZ, .jr_01_5293                               ;; 01:52b0 $20 $e1
+	
+	; add up all the values into a
     ld   HL, wD65C                                     ;; 01:52b2 $21 $5c $d6
     ld   B, $09                                        ;; 01:52b5 $06 $09
     xor  A, A                                          ;; 01:52b7 $af
@@ -2346,15 +2354,23 @@ call_01_5271:
     inc  HL                                            ;; 01:52b9 $23
     dec  B                                             ;; 01:52ba $05
     jr   NZ, .jr_01_52b8                               ;; 01:52bb $20 $fb
+	
+	; invalid password if the sum of values is not equal to value in wD665
     ld   HL, wD665                                     ;; 01:52bd $21 $65 $d6
     cp   A, [HL]                                       ;; 01:52c0 $be
     jr   NZ, .jp_01_531a                               ;; 01:52c1 $20 $57
+	
+	; set lives to value in wD664
     ld   A, [wD664]                                    ;; 01:52c3 $fa $64 $d6
     ld   [wD73D_LivesRemaining], A                                    ;; 01:52c6 $ea $3d $d7
+	
+	; set current level to 0
     ld   A, [wD624_CurrentLevelId]                                    ;; 01:52c9 $fa $24 $d6
     push AF                                            ;; 01:52cc $f5
     xor  A, A                                          ;; 01:52cd $af
     ld   [wD624_CurrentLevelId], A                                    ;; 01:52ce $ea $24 $d6
+	
+	; set remote bitfields
     ld   HL, wD65C                                     ;; 01:52d1 $21 $5c $d6
     ld   C, $80                                        ;; 01:52d4 $0e $80
 .jr_01_52d6:
@@ -2397,8 +2413,12 @@ call_01_5271:
     ld   [wD624_CurrentLevelId], A                                    ;; 01:530c $ea $24 $d6
     cp   A, $1e                                        ;; 01:530f $fe $1e
     jr   NZ, .jr_01_52d6                               ;; 01:5311 $20 $c3
+	
+	; set current level to 0
     pop  AF                                            ;; 01:5313 $f1
     ld   [wD624_CurrentLevelId], A                                    ;; 01:5314 $ea $24 $d6
+	
+	
     ld   A, $30                                        ;; 01:5317 $3e $30
     ret                                                ;; 01:5319 $c9
 .jp_01_531a:

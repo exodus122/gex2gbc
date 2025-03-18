@@ -4,11 +4,8 @@ import numpy
 import struct
 import os
 
-palette = []
-palette_ids = []
-
 '''
-
+ 
 '''
 
 levels = [
@@ -31,6 +28,9 @@ create_tilesets = True
 create_special_tilesets = True
 create_blocksets = True
 create_maps = True
+show_kill_tiles = False
+draw_tile_ids = False
+
 
 for i in range(0, len(levels)):
 
@@ -161,12 +161,19 @@ for i in range(0, len(levels)):
             new_tileset_img.save('./special_tileset_images/'+level_name+'/'+filename2+'_tileset.png')
     
     
-    
     # create the level's blockset from the tileset
     if create_blocksets:
-        os.system('mkdir -p blockset_images')
-        
         blockset_data = open(blockset_data_file, "rb").read()
+        kill_tile = PIL.Image.new("RGB", (8, 8), (255, 192, 203))
+    
+        if show_kill_tiles == True:
+            blockset_image_path = "./blockset_images/with_kill_tiles/"
+        else:
+            blockset_image_path = "./blockset_images/"
+        
+        os.system('mkdir -p blockset_images')
+        os.system('mkdir -p blockset_images/with_kill_tiles')
+        
         blockset_img = PIL.Image.new("RGB", (512, 512))
         draw2 = PIL.ImageDraw.Draw(blockset_img)
         
@@ -182,25 +189,40 @@ for i in range(0, len(levels)):
                 for inner_y in range(0, 4):
                     for inner_x in range(0, 4):
                         #blockset_img.paste(tiles[blockset_data[count]], (x*32, y*32))
-                        block_img.paste(tiles[blockset_data[val]], (inner_x*8, inner_y*8))
+                        
+                        if blockset_data[0x2000+val] == 0x23 and show_kill_tiles == True:
+                            block_img.paste(kill_tile, (inner_x*8, inner_y*8))
+                        else:
+                            block_img.paste(tiles[blockset_data[val]], (inner_x*8, inner_y*8))
+                        
                         val = val + 0x100
+                
+                #if count == 0x90 or count == 0x91 or count == 0x92:
+                #    kill_tile_img = PIL.Image.new("RGB", (32, 32), (255, 192, 203))
+                    #draw4 = PIL.ImageDraw.Draw(kill_tile_img)
+                    #draw4.rectangle(((x*32,y*32), ((x+1)*32,(y+1)*32)), (255,0,0),3)
+                #    block_img.paste(kill_tile_img, (0, 0))
+                
+                if draw_tile_ids == True:
+                    draw3 = PIL.ImageDraw.Draw(block_img)
+                    draw3.text((0, 0), "0x%02X" % count, (255, 255, 255))
                 
                 #block_img.save("./block_images/block"+str(count)+".png")
                 blockset_img.paste(block_img, (x*32, y*32))
                 
                 count = count + 1
         
-        blockset_img.save("./blockset_images/"+level_name+"_blockset.png")
+        blockset_img.save(blockset_image_path+level_name+"_blockset.png")
         
         #second blockset for each level
         os.system('mkdir -p blockset_images')
+        os.system('mkdir -p blockset_images/with_kill_tiles')
         
-        blockset_data = open(blockset_data_file, "rb").read()
         blockset_img2 = PIL.Image.new("RGB", (512, 512))
         special_tile_data = open(special_tile_data_file, "rb").read()
         draw2 = PIL.ImageDraw.Draw(blockset_img2)
         
-        print("special_tile_data[0] is: "+str(special_tile_data[0]))
+        #print("special_tile_data[0] is: "+str(special_tile_data[0]))
         
         block_counter = 0
         count = 0x1000
@@ -209,6 +231,7 @@ for i in range(0, len(levels)):
                 draw2.rectangle(((x*32,y*32), ((x+1)*32,(y+1)*32)), 0,3)
                 
                 block_img =  PIL.Image.new("RGB", (32, 32))
+                draw3 = PIL.ImageDraw.Draw(block_img)
                 
                 special_tile_override = False
                 if block_counter >= special_tile_data[0]: # and blockset_data[val] 
@@ -221,28 +244,41 @@ for i in range(0, len(levels)):
                 for inner_y in range(0, 4):
                     for inner_x in range(0, 4):
                         if special_tile_override != False and blockset_data[val] < 0x24:
-                            assfdasdf = 0
                             tile_to_paste = special_tiles[(0x24*(special_tileset_to_open-1))+blockset_data[val]]
                         else:
                             tile_to_paste = tiles[blockset_data[val]]
                         
-                        block_img.paste(tile_to_paste, (inner_x*8, inner_y*8))
+                        if blockset_data[0x2000+val] == 0x23 and show_kill_tiles == True:
+                            block_img.paste(kill_tile, (inner_x*8, inner_y*8))
+                        else:
+                            block_img.paste(tile_to_paste, (inner_x*8, inner_y*8))
                         val = val + 0x100
                 
+                #draw3.text((0, 0), "0x%02X" % block_counter, 33)
                 #block_img.save("./block_images/block"+str(count)+".png")
+                
+                if draw_tile_ids == True:
+                    draw3 = PIL.ImageDraw.Draw(block_img)
+                    draw3.text((0, 0), "0x%02X" % (block_counter), (137, 243, 54))
+                
                 blockset_img2.paste(block_img, (x*32, y*32))
                 
                 count = count + 1
                 block_counter = block_counter + 1
         
-        blockset_img2.save("./blockset_images/"+level_name+"_blockset2.png")
+        blockset_img2.save(blockset_image_path+level_name+"_blockset2.png")
     
     
     # create the level's map from the blocksets
     if create_maps:
+        if show_kill_tiles == True:
+            map_image_path = "./map_images/with_kill_tiles/"
+        else:
+            map_image_path = "./map_images/"
+        
         if not create_blocksets:
-            blockset_img = PIL.Image.open("./blockset_images/"+level_name+"_blockset.png")
-            blockset_img2 = PIL.Image.open("./blockset_images/"+level_name+"_blockset2.png")
+            blockset_img = PIL.Image.open(blockset_image_path+level_name+"_blockset.png")
+            blockset_img2 = PIL.Image.open(blockset_image_path+level_name+"_blockset2.png")
         
         blockset = []
         for y in range(0, 16):
@@ -274,6 +310,7 @@ for i in range(0, len(levels)):
                 count = count+1
         
         os.system('mkdir -p map_images')
-        img.save("./map_images/"+level_name+channel_map_number+"_map.png")
+        os.system('mkdir -p map_images/with_kill_tiles/')
+        img.save(map_image_path+level_name+channel_map_number+"_map.png")
     
     print("completed: "+level_name)
