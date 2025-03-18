@@ -5,6 +5,7 @@ import struct
 import os
 
 '''
+    
  
 '''
 
@@ -24,12 +25,113 @@ levels = [
     ["channel_z", "", 35, 0x10], 
 ]
 
-create_tilesets = True
-create_special_tilesets = True
+nothing_color = "white"
+unknown_color = "black"
+special_color = "silver"
+
+floor_color = "red"
+floor_sloped_color = "salmon"
+floor_wobble_color = "magenta"
+wall_left_color = "blue"
+wall_right_color = "cyan"
+ceiling_color = "yellow"
+ceiling_and_wall_color = "green"
+floor_and_wall_color = "purple"
+
+water_color = "navy"
+lava_color = "orange"
+kill_color = "pink"
+door_color = "brown"
+climbable_background_color = "lime"
+climbable_wall_color = "lime"
+
+colors = {
+    0x00: wall_right_color, # wall (right)
+	0x01: wall_left_color, # wall (left)
+	0x02: floor_color, # floor
+	0x03: unknown_color,
+	0x04: wall_right_color, # wall (right)
+	0x05: floor_color, # floor
+	0x06: wall_left_color, # wall (left)
+	0x07: ceiling_color, # ceiling
+	0x08: floor_wobble_color, # floor (wobble on the edge)
+	0x09: floor_wobble_color, # floor (wobble on the edge)
+	0x0A: ceiling_and_wall_color, # ceiling and wall?
+	0x0B: ceiling_and_wall_color,
+	0x0C: floor_and_wall_color, # floor and wall?
+	0x0D: floor_and_wall_color, # floor and wall?
+	0x0E: ceiling_and_wall_color, # ceiling and wall?
+	0x0F: ceiling_and_wall_color, # ceiling and wall?
+	0x10: floor_sloped_color, # steep stairs
+	0x11: floor_sloped_color, # steep stairs
+	0x12: floor_sloped_color, # stairs
+	0x13: floor_sloped_color, # stairs
+	0x14: floor_sloped_color, # stairs
+	0x15: floor_sloped_color, # stairs
+	0x16: floor_sloped_color, # channel z door stairs
+	0x17: floor_sloped_color, # channel z door stairs
+	0x18: unknown_color,
+	0x19: unknown_color,
+	0x1A: unknown_color,
+	0x1B: unknown_color,
+	0x1C: floor_sloped_color, # toon tv rock slopes
+	0x1D: floor_sloped_color, # toon tv rock slopes
+	0x1E: floor_color,
+	0x1F: floor_color,
+	0x20: floor_color,
+	0x21: floor_color, # circuit central platform
+	0x22: door_color, # door
+	0x23: kill_color, # kill tile
+	0x24: lava_color, # lava
+	0x25: water_color, # water
+	0x26: climbable_background_color, # climbable background
+	0x27: unknown_color,
+	0x2A: unknown_color,
+	0x2C: climbable_wall_color, # climbale wall (left)
+	0x2D: climbable_wall_color, # climbable wall (right)
+	0x2E: unknown_color,
+	0x2F: nothing_color,
+	0x30: unknown_color,
+	0x31: unknown_color,
+	0x32: unknown_color,
+	0x33: unknown_color,
+	0xC1: special_color,
+	0xC2: special_color,
+	0xC3: special_color,
+	0xC4: special_color,
+	0xC5: special_color,
+	0xC6: special_color,
+	0xC7: special_color,
+	0xCD: special_color,
+	0xCE: special_color,
+	0xCF: special_color,
+	0xDF: special_color,
+	0xE9: special_color,
+	0xF0: special_color,
+	0xF1: special_color,
+	0xF5: special_color,
+	0xF6: special_color,
+	0xF7: special_color,
+	0xF8: special_color,
+	0xF9: special_color,
+	0xFA: special_color,
+	0xFB: special_color,
+	0xFC: special_color,
+	0xFD: special_color,
+	0xFE: special_color,
+	0xFF: special_color,
+}
+
+
+create_tilesets = False
+create_special_tilesets = False
 create_blocksets = True
 create_maps = True
+
 show_kill_tiles = False
-draw_tile_ids = False
+draw_block_ids = False
+create_collision_blocksets = True
+create_collision_maps = True
 
 
 for i in range(0, len(levels)):
@@ -162,17 +264,20 @@ for i in range(0, len(levels)):
     
     
     # create the level's blockset from the tileset
+    blockset_data = open(blockset_data_file, "rb").read()
     if create_blocksets:
-        blockset_data = open(blockset_data_file, "rb").read()
         kill_tile = PIL.Image.new("RGB", (8, 8), (255, 192, 203))
     
-        if show_kill_tiles == True:
+        if create_collision_blocksets == True:
+            blockset_image_path = "./blockset_images/collision_only/"
+        elif show_kill_tiles == True:
             blockset_image_path = "./blockset_images/with_kill_tiles/"
         else:
             blockset_image_path = "./blockset_images/"
         
         os.system('mkdir -p blockset_images')
         os.system('mkdir -p blockset_images/with_kill_tiles')
+        os.system('mkdir -p blockset_images/collision_only')
         
         blockset_img = PIL.Image.new("RGB", (512, 512))
         draw2 = PIL.ImageDraw.Draw(blockset_img)
@@ -180,9 +285,10 @@ for i in range(0, len(levels)):
         count = 0
         for y in range(0, 16):
             for x in range(0, 16):
-                draw2.rectangle(((x*32,y*32), ((x+1)*32,(y+1)*32)), 0,3)
+                #draw2.rectangle(((x*32,y*32), ((x+1)*32,(y+1)*32)), 0,3)
                 
                 block_img =  PIL.Image.new("RGB", (32, 32))
+                draw3 = PIL.ImageDraw.Draw(block_img)
                 
                 # add the regular tiles to the blockset
                 val = count
@@ -190,7 +296,9 @@ for i in range(0, len(levels)):
                     for inner_x in range(0, 4):
                         #blockset_img.paste(tiles[blockset_data[count]], (x*32, y*32))
                         
-                        if blockset_data[0x2000+val] == 0x23 and show_kill_tiles == True:
+                        if create_collision_blocksets == True:
+                            draw3.rectangle(((inner_x*8, inner_y*8), ((inner_x+1)*8, (inner_y+1)*8)), colors[blockset_data[0x2000+val]])
+                        elif blockset_data[0x2000+val] == 0x23 and show_kill_tiles == True:
                             block_img.paste(kill_tile, (inner_x*8, inner_y*8))
                         else:
                             block_img.paste(tiles[blockset_data[val]], (inner_x*8, inner_y*8))
@@ -203,9 +311,8 @@ for i in range(0, len(levels)):
                     #draw4.rectangle(((x*32,y*32), ((x+1)*32,(y+1)*32)), (255,0,0),3)
                 #    block_img.paste(kill_tile_img, (0, 0))
                 
-                if draw_tile_ids == True:
-                    draw3 = PIL.ImageDraw.Draw(block_img)
-                    draw3.text((0, 0), "0x%02X" % count, (255, 255, 255))
+                if draw_block_ids == True:
+                    draw3.text((0, 0), "0x%02X" % count, "magenta")
                 
                 #block_img.save("./block_images/block"+str(count)+".png")
                 blockset_img.paste(block_img, (x*32, y*32))
@@ -243,21 +350,24 @@ for i in range(0, len(levels)):
                 val = count
                 for inner_y in range(0, 4):
                     for inner_x in range(0, 4):
-                        if special_tile_override != False and blockset_data[val] < 0x24:
-                            tile_to_paste = special_tiles[(0x24*(special_tileset_to_open-1))+blockset_data[val]]
+                        if create_collision_blocksets == True:
+                            draw3.rectangle(((inner_x*8, inner_y*8), ((inner_x+1)*8, (inner_y+1)*8)), colors[blockset_data[0x2000+val]])
                         else:
-                            tile_to_paste = tiles[blockset_data[val]]
-                        
-                        if blockset_data[0x2000+val] == 0x23 and show_kill_tiles == True:
-                            block_img.paste(kill_tile, (inner_x*8, inner_y*8))
-                        else:
-                            block_img.paste(tile_to_paste, (inner_x*8, inner_y*8))
+                            if special_tile_override != False and blockset_data[val] < 0x24:
+                                tile_to_paste = special_tiles[(0x24*(special_tileset_to_open-1))+blockset_data[val]]
+                            else:
+                                tile_to_paste = tiles[blockset_data[val]]
+                            
+                            if blockset_data[0x2000+val] == 0x23 and show_kill_tiles == True:
+                                block_img.paste(kill_tile, (inner_x*8, inner_y*8))
+                            else:
+                                block_img.paste(tile_to_paste, (inner_x*8, inner_y*8))
                         val = val + 0x100
                 
                 #draw3.text((0, 0), "0x%02X" % block_counter, 33)
                 #block_img.save("./block_images/block"+str(count)+".png")
                 
-                if draw_tile_ids == True:
+                if draw_block_ids == True:
                     draw3 = PIL.ImageDraw.Draw(block_img)
                     draw3.text((0, 0), "0x%02X" % (block_counter), (137, 243, 54))
                 
@@ -271,7 +381,9 @@ for i in range(0, len(levels)):
     
     # create the level's map from the blocksets
     if create_maps:
-        if show_kill_tiles == True:
+        if create_collision_maps:
+            map_image_path = "./map_images/collision_only/"
+        elif show_kill_tiles == True:
             map_image_path = "./map_images/with_kill_tiles/"
         else:
             map_image_path = "./map_images/"
@@ -303,7 +415,6 @@ for i in range(0, len(levels)):
                 
                 if blockset_override_data[y*128+x] & level_override_bit != 0:
                     img.paste(blockset2[data[count]], (x*32, y*32))
-                    dasjdasdk = 3
                 else:
                     img.paste(blockset[data[count]], (x*32, y*32))
                 
@@ -311,6 +422,7 @@ for i in range(0, len(levels)):
         
         os.system('mkdir -p map_images')
         os.system('mkdir -p map_images/with_kill_tiles/')
+        os.system('mkdir -p map_images/collision_only/')
         img.save(map_image_path+level_name+channel_map_number+"_map.png")
     
     print("completed: "+level_name)
