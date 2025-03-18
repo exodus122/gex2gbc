@@ -31,9 +31,9 @@ special_color = "silver"
 
 floor_color = "red"
 floor_sloped_color = "salmon"
-floor_wobble_color = "magenta"
-wall_left_color = "blue"
-wall_right_color = "cyan"
+floor_wobble_on_edge_color = "magenta"
+wall_left_facing_color = "blue"
+wall_right_facing_color = "cyan"
 ceiling_color = "yellow"
 ceiling_and_wall_color = "green"
 floor_and_wall_color = "purple"
@@ -46,16 +46,16 @@ climbable_background_color = "lime"
 climbable_wall_color = "lime"
 
 colors = {
-    0x00: wall_right_color, # wall (right)
-	0x01: wall_left_color, # wall (left)
+    0x00: wall_right_facing_color, # wall (right)
+	0x01: wall_left_facing_color, # wall (left)
 	0x02: floor_color, # floor
 	0x03: unknown_color,
-	0x04: wall_right_color, # wall (right)
+	0x04: wall_left_facing_color, # wall (right)
 	0x05: floor_color, # floor
-	0x06: wall_left_color, # wall (left)
+	0x06: wall_right_facing_color, # wall (left)
 	0x07: ceiling_color, # ceiling
-	0x08: floor_wobble_color, # floor (wobble on the edge)
-	0x09: floor_wobble_color, # floor (wobble on the edge)
+	0x08: floor_wobble_on_edge_color, # floor (wobble on the edge)
+	0x09: floor_wobble_on_edge_color, # floor (wobble on the edge)
 	0x0A: ceiling_and_wall_color, # ceiling and wall?
 	0x0B: ceiling_and_wall_color,
 	0x0C: floor_and_wall_color, # floor and wall?
