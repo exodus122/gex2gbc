@@ -54,7 +54,6 @@ call_0a_4000:
     dw   data_MediaDimensionObjects
     dw   data_ChannelZObjects
 
-data_MediaDimensionObjects:
 INCLUDE "./maps/media_dimension/object_list_media_dimension.asm"
 
 data_OutOfToonObjects:

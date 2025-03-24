@@ -214,6 +214,7 @@ DEF Object_unk_8C                           EQU $8C
 DEF Object_unk_8D                           EQU $8D
 DEF Object_unk_8E                           EQU $8E
 DEF Object_MediaDimension_MovingPlatform    EQU $8F
+DEF ObjectListTerminator                    EQU $FF
 
 ; Levels
 DEF Level_MediaDimension                         EQU $00
