@@ -486,10 +486,10 @@ image_splash_01f_1_palette_ids.bin:
 
 SECTION "bank20", ROMX[$4000], BANK[$20]
 
-INCLUDE "bank21_audio1.asm"
-INCLUDE "bank22_audio2.asm"
-INCLUDE "bank23_audio3.asm"
-INCLUDE "bank24_audio4.asm"
+INCLUDE "audio_engine/bank21_audio1.asm"
+INCLUDE "audio_engine/bank22_audio2.asm"
+INCLUDE "audio_engine/bank23_audio3.asm"
+INCLUDE "audio_engine/bank24_audio4.asm"
 
 SECTION "bank25", ROMX[$4000], BANK[$25]
 map_circuit_central3.bin:
