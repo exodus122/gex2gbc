@@ -15,6 +15,7 @@ def extract_banks():
 
 def extract_sprites_vertical():
     banks = [0x4, 0x5, 0x6, 0x7, 0x11, 0x12, 0x14, 0x18, 0x19, 0x1a, 0x1b, 0x1c]
+    banks = [0x11, 0x12, 0x18, 0x19, 0x1a, 0x1b, 0x1c]
     
     for b in banks:
         bank = f"{b:0{3}x}"
@@ -25,12 +26,12 @@ def extract_sprites_vertical():
             next_chunk = 0x100
             width = 4
             
-            next_chunk = 0x2000
-            width = 0x80
+            #next_chunk = 0x2000
+            #width = 0x80
             
             if b == 0x14:
-                next_chunk = 0x1000
-                width = 0x80
+                next_chunk = 0x100
+                width = 0x8
             
             count = 0
             for data in iter(lambda: bf.read(next_chunk), ''):
@@ -249,7 +250,7 @@ def extract_bank03():
             
 
 #extract_banks()
-#extract_sprites_vertical()
-extract_special_tilesets_horizontal()
+extract_sprites_vertical()
+#extract_special_tilesets_horizontal()
 #extract_splash()
 #extract_bank03()

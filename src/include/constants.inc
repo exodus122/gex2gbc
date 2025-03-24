@@ -145,7 +145,7 @@ DEF Object_unk_47                           EQU $47
 DEF Object_PreHistory_Triceratops           EQU $48
 DEF Object_PreHistory_TriceratopsHorn       EQU $49
 DEF Object_unk_4A                           EQU $4A
-DEF Object_KungFuTheater_HangingAxe         EQU $4B
+DEF Object_KungFuTheater_HangingBlade       EQU $4B
 DEF Object_KungFuTheater_Cannon             EQU $4C
 DEF Object_KungFuTheater_CannonProjectile   EQU $4D
 DEF Object_unk_4E                           EQU $4E

@@ -11,27 +11,7 @@ INCLUDE "bank01_menus.asm"
 INCLUDE "bank02_object_routines.asm"
 INCLUDE "bank03_unknown.asm"
 
-SECTION "bank04", ROMX[$4000], BANK[$04]
-image_004_4000.bin:
-    INCBIN ".gfx/object_sprites/image_004_4000.bin"
-image_004_6000.bin:
-    INCBIN ".gfx/object_sprites/image_004_6000.bin"
-
-SECTION "bank05", ROMX[$4000], BANK[$05]
-image_005_4000.bin:
-    INCBIN ".gfx/object_sprites/image_005_4000.bin"
-image_005_6000.bin:
-    INCBIN ".gfx/object_sprites/image_005_6000.bin"
-
-SECTION "bank06", ROMX[$4000], BANK[$06]
-image_006_4000.bin:
-    INCBIN ".gfx/object_sprites/image_006_4000.bin"
-image_006_6000.bin:
-    INCBIN ".gfx/object_sprites/image_006_6000.bin"
-
-SECTION "bank07", ROMX[$4000], BANK[$07]
-image_007_4000.bin:
-    INCBIN ".gfx/object_sprites/image_007_4000.bin"
+INCLUDE "bank04_07_gex_sprites.asm"
 
 SECTION "bank08", ROMX[$4000], BANK[$08]
 image_title_screen_008_0.bin:
@@ -413,10 +393,46 @@ image_013_19_palette_ids.bin:
     INCBIN "gfx/special_tilesets/media_dimension/palette_ids/image_013_19_palette_ids.bin"
 
 SECTION "bank14", ROMX[$4000], BANK[$14]
-image_level_names_014_4000.bin:
-    INCBIN ".gfx/misc_sprites/image_level_names_014_4000.bin"
-image_level_names_014_5000.bin:
-    INCBIN ".gfx/misc_sprites/image_level_names_014_5000.bin"
+image_014_4000.bin:
+    INCBIN ".gfx/misc_sprites/level_names/image_014_4000.bin"
+image_014_4100.bin:
+    INCBIN ".gfx/misc_sprites/level_names/image_014_4100.bin"
+image_014_4200.bin:
+    INCBIN ".gfx/misc_sprites/level_names/image_014_4200.bin"
+image_014_4300.bin:
+    INCBIN ".gfx/misc_sprites/level_names/image_014_4300.bin"
+image_014_4400.bin:
+    INCBIN ".gfx/misc_sprites/level_names/image_014_4400.bin"
+image_014_4500.bin:
+    INCBIN ".gfx/misc_sprites/level_names/image_014_4500.bin"
+image_014_4600.bin:
+    INCBIN ".gfx/misc_sprites/level_names/image_014_4600.bin"
+image_014_4700.bin:
+    INCBIN ".gfx/misc_sprites/level_names/image_014_4700.bin"
+image_014_4800.bin:
+    INCBIN ".gfx/misc_sprites/level_names/image_014_4800.bin"
+image_014_4900.bin:
+    INCBIN ".gfx/misc_sprites/level_names/image_014_4900.bin"
+image_014_4a00.bin:
+    INCBIN ".gfx/misc_sprites/level_names/image_014_4a00.bin"
+image_014_4b00.bin:
+    INCBIN ".gfx/misc_sprites/level_names/image_014_4b00.bin"
+image_014_4c00.bin:
+    INCBIN ".gfx/misc_sprites/level_names/image_014_4c00.bin"
+image_014_4d00.bin:
+    INCBIN ".gfx/misc_sprites/level_names/image_014_4d00.bin"
+image_014_4e00.bin:
+    INCBIN ".gfx/misc_sprites/level_names/image_014_4e00.bin"
+image_014_4f00.bin:
+    INCBIN ".gfx/misc_sprites/level_names/image_014_4f00.bin"
+image_014_5000.bin:
+    INCBIN ".gfx/misc_sprites/level_names/image_014_5000.bin"
+image_014_5100.bin:
+    INCBIN ".gfx/misc_sprites/level_names/image_014_5100.bin"
+image_014_5200.bin:
+    INCBIN ".gfx/misc_sprites/level_names/image_014_5200.bin"
+image_014_5300.bin:
+    INCBIN ".gfx/misc_sprites/level_names/image_014_5300.bin"
 
 SECTION "bank15", ROMX[$4000], BANK[$15]
 
