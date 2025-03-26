@@ -141,7 +141,7 @@ DEF Object_PreHistory_FirePlant             EQU $43
 DEF Object_PreHistory_FirePlantProjectiles  EQU $44
 DEF Object_unk_45                           EQU $45
 DEF Object_unk_46                           EQU $46
-DEF Object_unk_47                           EQU $47
+DEF Object_PreHistory_Dinosaur              EQU $47
 DEF Object_PreHistory_Triceratops           EQU $48
 DEF Object_PreHistory_TriceratopsHorn       EQU $49
 DEF Object_unk_4A                           EQU $4A
@@ -192,12 +192,12 @@ DEF Object_unk_76                           EQU $76
 DEF Object_CircuitCentral_Capacitor         EQU $77
 DEF Object_CircuitCentral_PowerUp           EQU $78
 DEF Object_unk_79                           EQU $79
-DEF Object_unk_7A                           EQU $7A
-DEF Object_unk_7B                           EQU $7B
+DEF Object_CircuitCentral_LittleRobot       EQU $7A
+DEF Object_CircuitCentral_LittleRobotGear   EQU $7B
 DEF Object_CircuitCentral_ElectricBall      EQU $7C
 DEF Object_CircuitCentral_MovingPlatform    EQU $7D
 DEF Object_CircuitCentral_PoweredPlaform    EQU $7E
-DEF Object_unk_7F                           EQU $7F
+DEF Object_CircuitCentral_LoweringPlatform  EQU $7F
 DEF Object_CircuitCentral_WalkerRobot       EQU $80
 DEF Object_CircuitCentral_PoweredWalkway    EQU $81
 DEF Object_CircuitCentral_WalkwayActivator  EQU $82

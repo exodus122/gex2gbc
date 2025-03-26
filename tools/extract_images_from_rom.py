@@ -249,8 +249,33 @@ def extract_bank03():
                 next_chunk = chunk_sizes[count]
             
 
+def extract_bank03_new():
+    bank = "003"
+    bank_03_data = open('./banks/bank_'+bank+'.bin', 'rb').read()
+    os.system('mkdir -p banks/bank_'+bank+'/')
+    
+    # extract collectible sprites
+    start_collectible_addr = 0x69a5
+    levels = ["toon_tv", "scream_tv", "circuit_central", "kung_fu_theater", "prehistory_channel", "rezopolis"]
+    
+    for i in range(0, len(levels)):
+        size = 0x60
+        width = 3
+        level_name = levels[i]
+        start_addr = start_collectible_addr + i*size
+        addr_str = f"{start_addr:0{4}x}"
+        
+        data = bank_03_data[start_addr-0x4000:start_addr-0x4000+size]
+        
+        out = open('./banks/bank_'+bank+'/image_collectibles_'+level_name+'_'+bank+'_'+addr_str+".bin", "wb")
+        out.write(data)
+        out.close()
+        
+        os.system('rgbgfx --reverse '+str(width)+' --columns -o banks/bank_'+bank+'/image_collectibles_'+level_name+'_'+bank+'_'+addr_str+'.bin banks/bank_'+bank+'/image_collectibles_'+level_name+'_'+bank+'_'+addr_str+'.png')
+
 #extract_banks()
-extract_sprites_vertical()
+#extract_sprites_vertical()
 #extract_special_tilesets_horizontal()
 #extract_splash()
 #extract_bank03()
+extract_bank03_new()

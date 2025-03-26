@@ -87,7 +87,7 @@ call_02_41b7:
     set  6, [HL]                                       ;; 02:41c1 $cb $f6
     xor  A, A                                          ;; 02:41c3 $af
     ld   [wD75D], A                                    ;; 02:41c4 $ea $5d $d7
-    ld   [wD760], A                                    ;; 02:41c7 $ea $60 $d7
+    ld   [wD760_PlayerYVelocity], A                                    ;; 02:41c7 $ea $60 $d7
     xor  A, A                                          ;; 02:41ca $af
     ld   [wD75E], A                                    ;; 02:41cb $ea $5e $d7
     call call_02_4dd8                                  ;; 02:41ce $cd $d8 $4d
@@ -130,11 +130,11 @@ call_02_4204:
     ld   C, $15                                        ;; 02:4211 $0e $15
     jr   .jr_02_4227                                   ;; 02:4213 $18 $12
 .jr_02_4215:
-    ld   A, [wD75A]                                    ;; 02:4215 $fa $5a $d7
+    ld   A, [wD75A_CurrentInputs]                                    ;; 02:4215 $fa $5a $d7
     and  A, $30                                        ;; 02:4218 $e6 $30
     jr   Z, .jr_02_4227                                ;; 02:421a $28 $0b
     ld   C, $15                                        ;; 02:421c $0e $15
-    ld   A, [wD75A]                                    ;; 02:421e $fa $5a $d7
+    ld   A, [wD75A_CurrentInputs]                                    ;; 02:421e $fa $5a $d7
     and  A, $30                                        ;; 02:4221 $e6 $30
     jr   Z, .jr_02_4227                                ;; 02:4223 $28 $02
     ld   C, $16                                        ;; 02:4225 $0e $16
@@ -201,7 +201,7 @@ call_02_4275:
     jr   Z, .jr_02_429a                                ;; 02:427a $28 $1e
     ld   C, $2a                                        ;; 02:427c $0e $2a
     call call_02_4856                                  ;; 02:427e $cd $56 $48
-    ld   [wD760], A                                    ;; 02:4281 $ea $60 $d7
+    ld   [wD760_PlayerYVelocity], A                                    ;; 02:4281 $ea $60 $d7
     ld   [wD762], A                                    ;; 02:4284 $ea $62 $d7
     call call_02_4a3a                                  ;; 02:4287 $cd $3a $4a
     ld   C, $0c                                        ;; 02:428a $0e $0c
@@ -215,7 +215,7 @@ call_02_4275:
     ld   A, [wD762]                                    ;; 02:429a $fa $62 $d7
     and  A, A                                          ;; 02:429d $a7
     ret  NZ                                            ;; 02:429e $c0
-    ld   A, [wD75A]                                    ;; 02:429f $fa $5a $d7
+    ld   A, [wD75A_CurrentInputs]                                    ;; 02:429f $fa $5a $d7
     and  A, $02                                        ;; 02:42a2 $e6 $02
     ld   A, $0a                                        ;; 02:42a4 $3e $0a
     jp   NZ, call_02_4ccd                              ;; 02:42a6 $c2 $cd $4c
@@ -228,7 +228,7 @@ call_02_42ac:
 .jr_02_42b3:
     ld   C, $36                                        ;; 02:42b3 $0e $36
     call call_02_4856                                  ;; 02:42b5 $cd $56 $48
-    ld   [wD760], A                                    ;; 02:42b8 $ea $60 $d7
+    ld   [wD760_PlayerYVelocity], A                                    ;; 02:42b8 $ea $60 $d7
     ld   [wD762], A                                    ;; 02:42bb $ea $62 $d7
     call call_02_4a3a                                  ;; 02:42be $cd $3a $4a
     ld   C, $0d                                        ;; 02:42c1 $0e $0d
@@ -242,7 +242,7 @@ call_02_42ac:
     ld   A, [wD762]                                    ;; 02:42d1 $fa $62 $d7
     and  A, A                                          ;; 02:42d4 $a7
     ret  NZ                                            ;; 02:42d5 $c0
-    ld   A, [wD75A]                                    ;; 02:42d6 $fa $5a $d7
+    ld   A, [wD75A_CurrentInputs]                                    ;; 02:42d6 $fa $5a $d7
     and  A, $02                                        ;; 02:42d9 $e6 $02
     jr   NZ, .jr_02_42b3                               ;; 02:42db $20 $d6
     jp   call_02_489a                                    ;; 02:42dd $c3 $9a $48
@@ -281,7 +281,7 @@ call_02_42f7:
     bit  7, [HL]                                       ;; 02:4331 $cb $7e
     jr   Z, .jr_02_4349                                ;; 02:4333 $28 $14
     ld   C, $02                                        ;; 02:4335 $0e $02
-    ld   A, [wD75A]                                    ;; 02:4337 $fa $5a $d7
+    ld   A, [wD75A_CurrentInputs]                                    ;; 02:4337 $fa $5a $d7
     and  A, $30                                        ;; 02:433a $e6 $30
     jr   Z, .jr_02_4349                                ;; 02:433c $28 $0b
     ld   C, $05                                        ;; 02:433e $0e $05
@@ -387,7 +387,7 @@ call_02_4418:
     ld   A, [wD762]                                    ;; 02:442f $fa $62 $d7
     and  A, A                                          ;; 02:4432 $a7
     ret  NZ                                            ;; 02:4433 $c0
-    ld   A, [wD75A]                                    ;; 02:4434 $fa $5a $d7
+    ld   A, [wD75A_CurrentInputs]                                    ;; 02:4434 $fa $5a $d7
     and  A, $30                                        ;; 02:4437 $e6 $30
     ld   A, $04                                        ;; 02:4439 $3e $04
     jp   NZ, call_02_4ccd                              ;; 02:443b $c2 $cd $4c
@@ -426,7 +426,7 @@ call_02_44af:
     xor  A, A                                          ;; 02:44bb $af
     ld   [wD747], A                                    ;; 02:44bc $ea $47 $d7
     ld   [wD75E], A                                    ;; 02:44bf $ea $5e $d7
-    ld   [wD760], A                                    ;; 02:44c2 $ea $60 $d7
+    ld   [wD760_PlayerYVelocity], A                                    ;; 02:44c2 $ea $60 $d7
     ld   [wD761], A                                    ;; 02:44c5 $ea $61 $d7
     ld   A, [wD769]                                    ;; 02:44c8 $fa $69 $d7
     cp   A, $26                                        ;; 02:44cb $fe $26
@@ -485,13 +485,13 @@ call_02_44f9:
     ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 02:452c $21 $0f $d6
     set  0, [HL]                                       ;; 02:452f $cb $c6
 .jr_02_4531:
-    ld   A, [wD75A]                                    ;; 02:4531 $fa $5a $d7
+    ld   A, [wD75A_CurrentInputs]                                    ;; 02:4531 $fa $5a $d7
     and  A, $02                                        ;; 02:4534 $e6 $02
     jr   Z, .jr_02_453d                                ;; 02:4536 $28 $05
     ld   A, $17                                        ;; 02:4538 $3e $17
     call call_02_4ccd                                  ;; 02:453a $cd $cd $4c
 .jr_02_453d:
-    ld   A, [wD75A]                                    ;; 02:453d $fa $5a $d7
+    ld   A, [wD75A_CurrentInputs]                                    ;; 02:453d $fa $5a $d7
     and  A, $01                                        ;; 02:4540 $e6 $01
     jr   Z, .jr_02_454e                                ;; 02:4542 $28 $0a
     ld   A, $01                                        ;; 02:4544 $3e $01
@@ -591,7 +591,7 @@ call_02_4667:
     db   $00, $60, $04, $20, $00, $68                  ;; 02:4771 ??????
 
 call_02_4777:
-    ld   A, [wD75A]                                    ;; 02:4777 $fa $5a $d7
+    ld   A, [wD75A_CurrentInputs]                                    ;; 02:4777 $fa $5a $d7
     and  A, $f0                                        ;; 02:477a $e6 $f0
     jr   Z, .jr_02_478d                                ;; 02:477c $28 $0f
     ld   HL, .data_02_47a5                             ;; 02:477e $21 $a5 $47

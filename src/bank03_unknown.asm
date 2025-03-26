@@ -311,7 +311,7 @@ call_03_4915:
     ld   A, [wD746]                                    ;; 03:491d $fa $46 $d7
     cp   A, $ff                                        ;; 03:4920 $fe $ff
     jp   NZ, call_03_4ac4                                ;; 03:4922 $c2 $c4 $4a
-    ld   A, [wD760]                                    ;; 03:4925 $fa $60 $d7
+    ld   A, [wD760_PlayerYVelocity]                                    ;; 03:4925 $fa $60 $d7
     sub  A, $02                                        ;; 03:4928 $d6 $02
     bit  7, A                                          ;; 03:492a $cb $7f
     jr   Z, .jr_03_4934                                ;; 03:492c $28 $06
@@ -460,7 +460,7 @@ call_03_4915:
     ld   HL, wD585                                     ;; 03:4a09 $21 $85 $d5
     bit  7, [HL]                                       ;; 03:4a0c $cb $7e
     ret  NZ                                            ;; 03:4a0e $c0
-    ld   A, [wD760]                                    ;; 03:4a0f $fa $60 $d7
+    ld   A, [wD760_PlayerYVelocity]                                    ;; 03:4a0f $fa $60 $d7
     and  A, A                                          ;; 03:4a12 $a7
     jr   Z, .jr_03_4a19                                ;; 03:4a13 $28 $04
     bit  7, A                                          ;; 03:4a15 $cb $7f
@@ -537,7 +537,7 @@ call_03_4915:
 .jr_03_4a7c:
     call call_03_4ab3                                  ;; 03:4a7c $cd $b3 $4a
     ld   C, A                                          ;; 03:4a7f $4f
-    ld   A, [wD760]                                    ;; 03:4a80 $fa $60 $d7
+    ld   A, [wD760_PlayerYVelocity]                                    ;; 03:4a80 $fa $60 $d7
     swap A                                             ;; 03:4a83 $cb $37
     and  A, $0f                                        ;; 03:4a85 $e6 $0f
     add  A, $11                                        ;; 03:4a87 $c6 $11
@@ -562,7 +562,7 @@ call_03_4915:
     bit  1, [HL]                                       ;; 03:4aa3 $cb $4e
     ret  Z                                             ;; 03:4aa5 $c8
     xor  A, A                                          ;; 03:4aa6 $af
-    ld   [wD760], A                                    ;; 03:4aa7 $ea $60 $d7
+    ld   [wD760_PlayerYVelocity], A                                    ;; 03:4aa7 $ea $60 $d7
     ret                                                ;; 03:4aaa $c9
     db   $80, $40, $20, $10, $08, $04, $02, $01        ;; 03:4aab ........
 
@@ -600,7 +600,7 @@ call_03_4ac4:
     ld   A, [HL+]                                      ;; 03:4ae4 $2a
     ld   H, [HL]                                       ;; 03:4ae5 $66
     ld   L, A                                          ;; 03:4ae6 $6f
-    ld   A, [wD75A]                                    ;; 03:4ae7 $fa $5a $d7
+    ld   A, [wD75A_CurrentInputs]                                    ;; 03:4ae7 $fa $5a $d7
     and  A, [HL]                                       ;; 03:4aea $a6
     ret  Z                                             ;; 03:4aeb $c8
     inc  HL                                            ;; 03:4aec $23
@@ -617,9 +617,9 @@ call_03_4ac4:
     dec  B                                             ;; 03:4af7 $05
     jr   NZ, .jr_03_4af3                               ;; 03:4af8 $20 $f9
 .jr_03_4afa:
-    ld   A, [wD75A]                                    ;; 03:4afa $fa $5a $d7
+    ld   A, [wD75A_CurrentInputs]                                    ;; 03:4afa $fa $5a $d7
     and  A, $0f                                        ;; 03:4afd $e6 $0f
-    ld   [wD75A], A                                    ;; 03:4aff $ea $5a $d7
+    ld   [wD75A_CurrentInputs], A                                    ;; 03:4aff $ea $5a $d7
     ret                                                ;; 03:4b02 $c9
 .jr_03_4b03:
     inc  HL                                            ;; 03:4b03 $23
@@ -632,7 +632,7 @@ call_03_4ac4:
     pop  HL                                            ;; 03:4b0c $e1
     bit  6, B                                          ;; 03:4b0d $cb $70
     jr   Z, .jr_03_4b2b                                ;; 03:4b0f $28 $1a
-    ld   A, [wD75A]                                    ;; 03:4b11 $fa $5a $d7
+    ld   A, [wD75A_CurrentInputs]                                    ;; 03:4b11 $fa $5a $d7
     cp   A, $80                                        ;; 03:4b14 $fe $80
     jr   NZ, .jr_03_4afa                               ;; 03:4b16 $20 $e2
     ld   A, [wD746]                                    ;; 03:4b18 $fa $46 $d7
@@ -656,7 +656,7 @@ call_03_4ac4:
     ld   A, [wD746]                                    ;; 03:4b36 $fa $46 $d7
     cp   A, $02                                        ;; 03:4b39 $fe $02
     jr   C, .jr_03_4afa                                ;; 03:4b3b $38 $bd
-    ld   A, [wD75A]                                    ;; 03:4b3d $fa $5a $d7
+    ld   A, [wD75A_CurrentInputs]                                    ;; 03:4b3d $fa $5a $d7
     and  A, $40                                        ;; 03:4b40 $e6 $40
     jr   Z, .jr_03_4afa                                ;; 03:4b42 $28 $b6
     ld   A, $08                                        ;; 03:4b44 $3e $08
@@ -1192,7 +1192,7 @@ call_03_519b:
     cp   A, $0a                                        ;; 03:5217 $fe $0a
     jr   NZ, .jr_03_5229                               ;; 03:5219 $20 $0e
 .jr_03_521b:
-    ld   HL, wD760                                     ;; 03:521b $21 $60 $d7
+    ld   HL, wD760_PlayerYVelocity                                     ;; 03:521b $21 $60 $d7
     bit  7, [HL]                                       ;; 03:521e $cb $7e
     jr   Z, .jr_03_5229                                ;; 03:5220 $28 $07
     ld   [HL], $2a                                     ;; 03:5222 $36 $2a
@@ -1285,7 +1285,7 @@ data_03_52c5:
     ld   C, A                                          ;; 03:5324 $4f
     cp   A, $80                                        ;; 03:5325 $fe $80
     jr   NC, .jr_03_534d                               ;; 03:5327 $30 $24
-    ld   A, [wD760]                                    ;; 03:5329 $fa $60 $d7
+    ld   A, [wD760_PlayerYVelocity]                                    ;; 03:5329 $fa $60 $d7
     sra  A                                             ;; 03:532c $cb $2f
     sra  A                                             ;; 03:532e $cb $2f
     sra  A                                             ;; 03:5330 $cb $2f
@@ -1391,7 +1391,7 @@ data_03_536f:
     ld   C, A                                          ;; 03:53ca $4f
     cp   A, $80                                        ;; 03:53cb $fe $80
     jr   NC, .jr_03_5405                               ;; 03:53cd $30 $36
-    ld   A, [wD760]                                    ;; 03:53cf $fa $60 $d7
+    ld   A, [wD760_PlayerYVelocity]                                    ;; 03:53cf $fa $60 $d7
     sra  A                                             ;; 03:53d2 $cb $2f
     sra  A                                             ;; 03:53d4 $cb $2f
     sra  A                                             ;; 03:53d6 $cb $2f
@@ -1889,7 +1889,7 @@ entry_03_5ca8:
     pop  AF                                            ;; 03:5d29 $f1
     dec  A                                             ;; 03:5d2a $3d
     jr   NZ, .jr_03_5d16                               ;; 03:5d2b $20 $e9
-    ld   A, [wD742]                                    ;; 03:5d2d $fa $42 $d7
+    ld   A, [wD742_PlayerCurrentFly]                                    ;; 03:5d2d $fa $42 $d7
     and  A, A                                          ;; 03:5d30 $a7
     ret  Z                                             ;; 03:5d31 $c8
     ld   A, [wD212]                                    ;; 03:5d32 $fa $12 $d2
@@ -2056,16 +2056,17 @@ call_03_5f2b:
     ret                                                ;; 03:5f31 $c9
 
 call_03_5f32:
+; updates ? in object instances
     inc  E                                             ;; 03:5f32 $1c
     ld   A, C                                          ;; 03:5f33 $79
     add  A, $08                                        ;; 03:5f34 $c6 $08
     ld   C, A                                          ;; 03:5f36 $4f
-    ld   [DE], A                                       ;; 03:5f37 $12
+    ld   [DE], A                                       ;; 03:5f37 $12 ; updates object instance + 0x12
     inc  E                                             ;; 03:5f38 $1c
     ld   A, B                                          ;; 03:5f39 $78
     add  A, $10                                        ;; 03:5f3a $c6 $10
     ld   B, A                                          ;; 03:5f3c $47
-    ld   [DE], A                                       ;; 03:5f3d $12
+    ld   [DE], A                                       ;; 03:5f3d $12 ; updates object instance + 0x13
     ld   A, E                                          ;; 03:5f3e $7b
     xor  A, $19                                        ;; 03:5f3f $ee $19
     ld   E, A                                          ;; 03:5f41 $5f
@@ -2757,7 +2758,7 @@ call_03_6941:
     ld   L, [HL]                                       ;; 03:694c $6e
     ld   H, $00                                        ;; 03:694d $26 $00
     add  HL, HL                                        ;; 03:694f $29
-    ld   DE, .data_03_6967                             ;; 03:6950 $11 $67 $69
+    ld   DE, .data_image_collectibles_03_6967                             ;; 03:6950 $11 $67 $69
     add  HL, DE                                        ;; 03:6953 $19
     ld   E, [HL]                                       ;; 03:6954 $5e
     inc  HL                                            ;; 03:6955 $23
@@ -2770,20 +2771,51 @@ call_03_6941:
     add  HL, DE                                        ;; 03:6960 $19
     ld   DE, $87e0                                     ;; 03:6961 $11 $e0 $87
     jp   call_03_6efd                                  ;; 03:6964 $c3 $fd $6e
-.data_03_6967:
-    dw   .image_03_69a5                                         ;; 03:6967 wW
-    dw   .image_03_69a5                                         ;; 03:6969 wW
-    dw   $6a05                                         ;; 03:696b wW
-    db   $05, $6a, $65, $6a, $c5, $6a, $a5, $69        ;; 03:696d ????????
-    db   $25, $6b, $a5, $69, $25, $6b, $65, $6a        ;; 03:6975 ????????
-    db   $05, $6a, $a5, $69, $c5, $6a, $85, $6b        ;; 03:697d ????????
-    db   $a5, $69, $05, $6a, $a5, $69, $a5, $69        ;; 03:6985 ????????
-    db   $a5, $69, $a5, $69, $c5, $6a, $85, $6b        ;; 03:698d ????????
-    db   $65, $6a, $25, $6b, $05, $6a, $85, $6b        ;; 03:6995 ????????
-    db   $a5, $69, $a5, $69, $a5, $69, $a5, $69        ;; 03:699d ????????
+.data_image_collectibles_03_6967:
+    dw   .image_collectibles_toon_tv_003_69a5
+    dw   .image_collectibles_toon_tv_003_69a5
+    dw   .image_collectibles_scream_tv_003_6a05
+    dw   .image_collectibles_scream_tv_003_6a05
+    dw   .image_collectibles_circuit_central_003_6a65
+    dw   .image_collectibles_kung_fu_theater_003_6ac5
+    dw   .image_collectibles_toon_tv_003_69a5
+    dw   .image_collectibles_prehistory_channel_003_6b25
+    dw   .image_collectibles_toon_tv_003_69a5
+    dw   .image_collectibles_prehistory_channel_003_6b25
+    dw   .image_collectibles_circuit_central_003_6a65
+    dw   .image_collectibles_scream_tv_003_6a05
+    dw   .image_collectibles_toon_tv_003_69a5
+    dw   .image_collectibles_kung_fu_theater_003_6ac5
+    dw   .image_collectibles_rezopolis_003_6b85
+    dw   .image_collectibles_toon_tv_003_69a5
+    dw   .image_collectibles_scream_tv_003_6a05
+    dw   .image_collectibles_toon_tv_003_69a5
+    dw   .image_collectibles_toon_tv_003_69a5
+    dw   .image_collectibles_toon_tv_003_69a5
+    dw   .image_collectibles_toon_tv_003_69a5
+    dw   .image_collectibles_kung_fu_theater_003_6ac5
+    dw   .image_collectibles_rezopolis_003_6b85
+    dw   .image_collectibles_circuit_central_003_6a65
+    dw   .image_collectibles_prehistory_channel_003_6b25
+    dw   .image_collectibles_scream_tv_003_6a05
+    dw   .image_collectibles_rezopolis_003_6b85
+    dw   .image_collectibles_toon_tv_003_69a5
+    dw   .image_collectibles_toon_tv_003_69a5
+    dw   .image_collectibles_toon_tv_003_69a5
+    dw   .image_collectibles_toon_tv_003_69a5
 
-.image_03_69a5:
-    INCBIN ".gfx/misc_sprites/image_003_69a5.bin"
+.image_collectibles_toon_tv_003_69a5:
+    INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_toon_tv_003_69a5.bin"
+.image_collectibles_scream_tv_003_6a05:
+    INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_scream_tv_003_6a05.bin"
+.image_collectibles_circuit_central_003_6a65:
+    INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_circuit_central_003_6a65.bin"	
+.image_collectibles_kung_fu_theater_003_6ac5:
+    INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_kung_fu_theater_003_6ac5.bin"
+.image_collectibles_prehistory_channel_003_6b25:
+    INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_prehistory_channel_003_6b25.bin"
+.image_collectibles_rezopolis_003_6b85:
+    INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_rezopolis_003_6b85.bin"
 
 entry_03_6be5:
 call_03_6be5:
@@ -2794,7 +2826,7 @@ call_03_6be5:
     ld   L, [HL]                                       ;; 03:6bed $6e
     ld   H, $00                                        ;; 03:6bee $26 $00
     add  HL, HL                                        ;; 03:6bf0 $29
-    ld   DE, .data_03_6c1d                             ;; 03:6bf1 $11 $1d $6c
+    ld   DE, .data_03_6c1d_collectible_palettes                             ;; 03:6bf1 $11 $1d $6c
     add  HL, DE                                        ;; 03:6bf4 $19
     ld   E, [HL]                                       ;; 03:6bf5 $5e
     inc  HL                                            ;; 03:6bf6 $23
@@ -2831,35 +2863,50 @@ call_03_6be5:
     ld   A, [HL]                                       ;; 03:6c1a $7e
     ld   [DE], A                                       ;; 03:6c1b $12
     ret                                                ;; 03:6c1c $c9
-.data_03_6c1d:
-    dw   $6c5b                                         ;; 03:6c1d wW
-    dw   $6c5b                                         ;; 03:6c1f wW
-    dw   $6c73                                         ;; 03:6c21 wW
-    db   $73, $6c, $8b, $6c, $a3, $6c, $5b, $6c        ;; 03:6c23 ????????
-    db   $bb, $6c, $5b, $6c, $bb, $6c, $8b, $6c        ;; 03:6c2b ????????
-    db   $73, $6c, $5b, $6c, $a3, $6c, $d3, $6c        ;; 03:6c33 ????????
-    db   $5b, $6c, $73, $6c, $5b, $6c, $5b, $6c        ;; 03:6c3b ????????
-    db   $5b, $6c, $5b, $6c, $a3, $6c, $d3, $6c        ;; 03:6c43 ????????
-    db   $8b, $6c, $bb, $6c, $73, $6c, $d3, $6c        ;; 03:6c4b ????????
-    db   $5b, $6c, $5b, $6c, $5b, $6c, $5b, $6c        ;; 03:6c53 ????????
-    db   $00, $00, $00, $00, $9b, $01, $5b, $07        ;; 03:6c5b ........
-    db   $00, $00, $00, $00, $1f, $00, $ff, $7f        ;; 03:6c63 ????????
-    db   $00, $00, $00, $00, $1f, $00, $ff, $7f        ;; 03:6c6b ????????
-    db   $00, $00, $00, $00, $94, $3e, $ff, $7f        ;; 03:6c73 ........
-    db   $00, $00, $00, $00, $94, $3e, $ff, $7f        ;; 03:6c7b ????????
-    db   $00, $00, $00, $00, $94, $3e, $ff, $7f        ;; 03:6c83 ????????
-    db   $00, $00, $00, $00, $1f, $00, $5a, $6b        ;; 03:6c8b ????????
-    db   $00, $00, $00, $00, $1f, $00, $5a, $6b        ;; 03:6c93 ????????
-    db   $00, $00, $00, $00, $1f, $00, $5a, $6b        ;; 03:6c9b ????????
-    db   $00, $00, $00, $00, $73, $4e, $de, $7b        ;; 03:6ca3 ????????
-    db   $00, $00, $00, $00, $12, $71, $ff, $7f        ;; 03:6cab ????????
-    db   $00, $00, $00, $00, $73, $4e, $de, $7b        ;; 03:6cb3 ????????
-    db   $00, $00, $00, $00, $fb, $4a, $dc, $67        ;; 03:6cbb ????????
-    db   $00, $00, $00, $00, $73, $4e, $de, $7b        ;; 03:6cc3 ????????
-    db   $00, $00, $00, $00, $fb, $4a, $dc, $67        ;; 03:6ccb ????????
-    db   $00, $00, $00, $00, $b4, $01, $7f, $3f        ;; 03:6cd3 ????????
-    db   $00, $00, $6f, $00, $bf, $04, $ff, $31        ;; 03:6cdb ????????
-    db   $00, $00, $00, $00, $9c, $02, $7f, $03        ;; 03:6ce3 ????????
+.data_03_6c1d_collectible_palettes:
+    dw   .palette_toon_tv_collectibles
+    dw   .palette_toon_tv_collectibles
+    dw   .palette_scream_tv_collectibles
+    dw   .palette_scream_tv_collectibles
+	dw   .palette_circuit_central_collectibles
+	dw   .palette_kung_fu_theater_collectibles
+	dw   .palette_toon_tv_collectibles
+    dw   .palette_prehistory_channel_collectibles
+	dw   .palette_toon_tv_collectibles
+	dw   .palette_prehistory_channel_collectibles
+	dw   .palette_circuit_central_collectibles
+    dw   .palette_scream_tv_collectibles
+	dw   .palette_toon_tv_collectibles
+	dw   .palette_kung_fu_theater_collectibles
+	dw   .palette_rezopolis_collectibles
+    dw   .palette_toon_tv_collectibles
+	dw   .palette_scream_tv_collectibles
+	dw   .palette_toon_tv_collectibles
+	dw   .palette_toon_tv_collectibles
+    dw   .palette_toon_tv_collectibles
+	dw   .palette_toon_tv_collectibles
+	dw   .palette_kung_fu_theater_collectibles
+	dw   .palette_rezopolis_collectibles
+    dw   .palette_circuit_central_collectibles
+	dw   .palette_prehistory_channel_collectibles
+	dw   .palette_scream_tv_collectibles
+	dw   .palette_rezopolis_collectibles
+    dw   .palette_toon_tv_collectibles
+	dw   .palette_toon_tv_collectibles
+	dw   .palette_toon_tv_collectibles
+	dw   .palette_toon_tv_collectibles
+.palette_toon_tv_collectibles: ;; 03:6c5b
+    INCBIN "gfx/misc_sprites/collectibles/palettes/palette_toon_tv_collectibles.bin"
+.palette_scream_tv_collectibles: ;; 03:6c73
+    INCBIN "gfx/misc_sprites/collectibles/palettes/palette_scream_tv_collectibles.bin"
+.palette_circuit_central_collectibles: ;; 03:6c8b
+    INCBIN "gfx/misc_sprites/collectibles/palettes/palette_circuit_central_collectibles.bin"
+.palette_kung_fu_theater_collectibles: ;; 03:6ca3
+    INCBIN "gfx/misc_sprites/collectibles/palettes/palette_kung_fu_theater_collectibles.bin"
+.palette_prehistory_channel_collectibles: ;; 03:6cbb
+    INCBIN "gfx/misc_sprites/collectibles/palettes/palette_prehistory_channel_collectibles.bin"
+.palette_rezopolis_collectibles: ;; 03:6cd3
+    INCBIN "gfx/misc_sprites/collectibles/palettes/palette_rezopolis_collectibles.bin"
 
 entry_03_6ceb:
 call_03_6ceb:
@@ -2883,7 +2930,7 @@ entry_03_6d13:
 call_03_6d13:
     ld   HL, wD60E                                     ;; 03:6d13 $21 $0e $d6
     res  1, [HL]                                       ;; 03:6d16 $cb $8e
-    ld   HL, wD73E                                     ;; 03:6d18 $21 $3e $d7
+    ld   HL, wD73E_PlayerLivesHundreds                                     ;; 03:6d18 $21 $3e $d7
     ld   A, $0a                                        ;; 03:6d1b $3e $0a
     ld   [HL+], A                                      ;; 03:6d1d $22
     ld   [HL+], A                                      ;; 03:6d1e $22
@@ -2913,13 +2960,13 @@ call_03_6d13:
     inc  HL                                            ;; 03:6d41 $23
 .jr_03_6d42:
     ld   [HL], A                                       ;; 03:6d42 $77
-    ld   A, [wD73E]                                    ;; 03:6d43 $fa $3e $d7
+    ld   A, [wD73E_PlayerLivesHundreds]                                    ;; 03:6d43 $fa $3e $d7
     ld   DE, $8748                                     ;; 03:6d46 $11 $48 $87
     call call_03_6d88                                  ;; 03:6d49 $cd $88 $6d
-    ld   A, [wD73F]                                    ;; 03:6d4c $fa $3f $d7
+    ld   A, [wD73F_PlayerLivesTens]                                    ;; 03:6d4c $fa $3f $d7
     ld   DE, $8768                                     ;; 03:6d4f $11 $68 $87
     call call_03_6d88                                  ;; 03:6d52 $cd $88 $6d
-    ld   A, [wD740]                                    ;; 03:6d55 $fa $40 $d7
+    ld   A, [wD740_PlayerLivesOnes]                                    ;; 03:6d55 $fa $40 $d7
     ld   DE, $8788                                     ;; 03:6d58 $11 $88 $87
     call call_03_6d88                                  ;; 03:6d5b $cd $88 $6d
 

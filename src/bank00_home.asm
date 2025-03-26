@@ -216,8 +216,8 @@ call_00_0150_Init:
     jr   NZ, .jr_00_02a7                               ;; 00:02ab $20 $fa
     
     ld   [wD59D], A                                    ;; 00:02ad $ea $9d $d5
-	
-	; Switch to bank 1
+    
+    ; Switch to bank 1
     ld   A, Bank01                                        ;; 00:02b0 $3e $01
     ld   HL, entry_01_4349                              ;; 00:02b2 $21 $49 $43
     call call_00_1078_SwitchBankWrapper                    ;; 00:02b5 $cd $78 $10
@@ -304,7 +304,7 @@ call_00_0150_Init:
     call call_00_0562                                  ;; 00:036d $cd $62 $05
 .jp_00_0370:
     xor  A, A                                          ;; 00:0370 $af
-    ld   [wD742], A                                    ;; 00:0371 $ea $42 $d7
+    ld   [wD742_PlayerCurrentFly], A                                    ;; 00:0371 $ea $42 $d7
     ld   [wD750], A                                    ;; 00:0374 $ea $50 $d7
     ld   [wD751], A                                    ;; 00:0377 $ea $51 $d7
     ld   [wD752], A                                    ;; 00:037a $ea $52 $d7
@@ -657,7 +657,7 @@ call_00_0634:
 ;    db   $23, $72, $c9                                 ;; 00:0687 ???
 
 call_00_0647:
-    ld hl, $d742
+    ld hl, wD742_PlayerCurrentFly
     ld c, [hl]
     ld [hl], a
     push bc
@@ -734,7 +734,7 @@ call_00_06bf_GexTakesDamage:
 ; Deal damage to Gex
     call call_00_075b                                  ;; 00:06bf $cd $5b $07
     ret  NZ                                            ;; 00:06c2 $c0
-    ld   HL, wD742                                     ;; 00:06c3 $21 $42 $d7
+    ld   HL, wD742_PlayerCurrentFly                                     ;; 00:06c3 $21 $42 $d7
     ld   A, [HL]                                       ;; 00:06c6 $7e
     ld   [HL], $00                                     ;; 00:06c7 $36 $00
     and  A, A                                          ;; 00:06c9 $a7
@@ -1271,7 +1271,7 @@ call_00_0a54:
     push BC                                            ;; 00:0a55 $c5
     push DE                                            ;; 00:0a56 $d5
     push HL                                            ;; 00:0a57 $e5
-    call hFF80                                         ;; 00:0a58 $cd $80 $ff
+    call hFF80                                         ;; 00:0a58 $cd $80 $ff ; calls oam update code in hram
     call call_00_0ac1                                  ;; 00:0a5b $cd $c1 $0a
     ld   A, [wCCFD]                                    ;; 00:0a5e $fa $fd $cc
     bit  7, A                                          ;; 00:0a61 $cb $7f
@@ -3641,53 +3641,53 @@ data_LevelSpecialTilesetBanks: ; this table contains the special tileset bank nu
     db   $40, $13, $40, $13, $73, $0e
 data_00_1a2e_LevelSpecialTileIndices: ; one for each channel, some levels share the same one
     dw   special_tile_data_media_dimension
-	dw   special_tile_data_toon_tv
-	dw   special_tile_data_scream_tv
-	dw   special_tile_data_scream_tv        ;; 00:1a2e ??????..
-    dw   special_tile_data_circuit_central
-	dw   special_tile_data_kung_fu_theater
-	dw   special_tile_data_media_dimension
-	dw   special_tile_data_prehistory_channel       ;; 00:1a ....????
     dw   special_tile_data_toon_tv
-	dw   special_tile_data_prehistory_channel
-	dw   special_tile_data_circuit_central
-	dw   special_tile_data_scream_tv        ;; 00:1a3e ????????
-    dw   special_tile_data_media_dimension
-	dw   special_tile_data_kung_fu_theater
-	dw   special_tile_data_rezopolis
-	dw   special_tile_data_media_dimension        ;; 00:1a ????????
     dw   special_tile_data_scream_tv
-	dw   special_tile_data_media_dimension
-	dw   special_tile_data_media_dimension
-	dw   special_tile_data_media_dimension        ;; 00:1a4e ????????
+    dw   special_tile_data_scream_tv        ;; 00:1a2e ??????..
+    dw   special_tile_data_circuit_central
+    dw   special_tile_data_kung_fu_theater
     dw   special_tile_data_media_dimension
-	dw   special_tile_data_kung_fu_theater
-	dw   special_tile_data_rezopolis
-	dw   special_tile_data_circuit_central        ;; 00:1a ????????
+    dw   special_tile_data_prehistory_channel       ;; 00:1a ....????
+    dw   special_tile_data_toon_tv
     dw   special_tile_data_prehistory_channel
-	dw   special_tile_data_scream_tv
-	dw   special_tile_data_rezopolis
-	dw   special_tile_data_media_dimension        ;; 00:1a5e ????????
+    dw   special_tile_data_circuit_central
+    dw   special_tile_data_scream_tv        ;; 00:1a3e ????????
     dw   special_tile_data_media_dimension
-	dw   special_tile_data_media_dimension
-	dw   special_tile_data_channel_z
+    dw   special_tile_data_kung_fu_theater
+    dw   special_tile_data_rezopolis
+    dw   special_tile_data_media_dimension        ;; 00:1a ????????
+    dw   special_tile_data_scream_tv
+    dw   special_tile_data_media_dimension
+    dw   special_tile_data_media_dimension
+    dw   special_tile_data_media_dimension        ;; 00:1a4e ????????
+    dw   special_tile_data_media_dimension
+    dw   special_tile_data_kung_fu_theater
+    dw   special_tile_data_rezopolis
+    dw   special_tile_data_circuit_central        ;; 00:1a ????????
+    dw   special_tile_data_prehistory_channel
+    dw   special_tile_data_scream_tv
+    dw   special_tile_data_rezopolis
+    dw   special_tile_data_media_dimension        ;; 00:1a5e ????????
+    dw   special_tile_data_media_dimension
+    dw   special_tile_data_media_dimension
+    dw   special_tile_data_channel_z
 
 special_tile_data_media_dimension:
-	INCBIN "maps/media_dimension/special_tile_data_media_dimension.bin"
+    INCBIN "maps/media_dimension/special_tile_data_media_dimension.bin"
 special_tile_data_toon_tv:
-	INCBIN "maps/toon_tv/special_tile_data_toon_tv.bin"
+    INCBIN "maps/toon_tv/special_tile_data_toon_tv.bin"
 special_tile_data_scream_tv:
-	INCBIN "maps/scream_tv/special_tile_data_scream_tv.bin"
+    INCBIN "maps/scream_tv/special_tile_data_scream_tv.bin"
 special_tile_data_circuit_central:
-	INCBIN "maps/circuit_central/special_tile_data_circuit_central.bin"
+    INCBIN "maps/circuit_central/special_tile_data_circuit_central.bin"
 special_tile_data_kung_fu_theater:
-	INCBIN "maps/kung_fu_theater/special_tile_data_kung_fu_theater.bin"
+    INCBIN "maps/kung_fu_theater/special_tile_data_kung_fu_theater.bin"
 special_tile_data_prehistory_channel:
-	INCBIN "maps/prehistory_channel/special_tile_data_prehistory_channel.bin"
+    INCBIN "maps/prehistory_channel/special_tile_data_prehistory_channel.bin"
 special_tile_data_rezopolis:
-	INCBIN "maps/rezopolis/special_tile_data_rezopolis.bin"
+    INCBIN "maps/rezopolis/special_tile_data_rezopolis.bin"
 special_tile_data_channel_z:
-	INCBIN "maps/channel_z/special_tile_data_channel_z.bin"
+    INCBIN "maps/channel_z/special_tile_data_channel_z.bin"
 
 call_00_1e3c:
 ; this function loads the values that were obtained from bank special tile banks 34 and 35
@@ -4370,7 +4370,7 @@ call_00_2329:
     ld   [wD79E], A                                    ;; 00:2390 $ea $9e $d7
     ld   A, [HL+]                                      ;; 00:2393 $2a
 .jr_00_2394:
-    ld   [wD75A], A                                    ;; 00:2394 $ea $5a $d7
+    ld   [wD75A_CurrentInputs], A                                    ;; 00:2394 $ea $5a $d7
     ld   A, [HL+]                                      ;; 00:2397 $2a
     ld   [wD79B], A                                    ;; 00:2398 $ea $9b $d7
     ld   A, [HL+]                                      ;; 00:239b $2a
@@ -4792,7 +4792,7 @@ call_00_2329:
     db   $f0, $02, $ff                                 ;; 00:2dbc ???
 
 call_00_2dbf:
-    ld   A, [wD75A]                                    ;; 00:2dbf $fa $5a $d7
+    ld   A, [wD75A_CurrentInputs]                                    ;; 00:2dbf $fa $5a $d7
     and  A, A                                          ;; 00:2dc2 $a7
     jr   NZ, .jr_00_2dd1                               ;; 00:2dc3 $20 $0c
     ld   HL, wD79D                                     ;; 00:2dc5 $21 $9d $d7
@@ -4820,7 +4820,7 @@ call_00_2dbf:
     swap A                                             ;; 00:2de6 $cb $37
     and  A, $0f                                        ;; 00:2de8 $e6 $0f
     ld   C, A                                          ;; 00:2dea $4f
-    ld   HL, wD75A                                     ;; 00:2deb $21 $5a $d7
+    ld   HL, wD75A_CurrentInputs                                     ;; 00:2deb $21 $5a $d7
     bit  4, [HL]                                       ;; 00:2dee $cb $66
     jr   Z, .jr_00_2e01                                ;; 00:2df0 $28 $0f
     ld   A, [wD20E]                                    ;; 00:2df2 $fa $0e $d2

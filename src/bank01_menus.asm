@@ -2293,8 +2293,8 @@ call_01_4fa5:
     db   $00, $00                                    ;; 01:526f ??
 
 call_01_5271_ProcessPassword: ; handles setting save data from password
-	
-	; check if any of the boxes are blank. if so, it is an invalid password
+    
+    ; check if any of the boxes are blank. if so, it is an invalid password
     ld   HL, wD668_PasswordValues                      ;; 01:5271 $21 $68 $d6
     ld   B, $1c                                        ;; 01:5274 $06 $1c ; 1c is the number of password boxes (28)
 .jr_01_5276:
@@ -2303,8 +2303,8 @@ call_01_5271_ProcessPassword: ; handles setting save data from password
     jp   Z, .jp_01_531a                                ;; 01:5279 $ca $1a $53
     dec  B                                             ;; 01:527c $05
     jr   NZ, .jr_01_5276                               ;; 01:527d $20 $f7 
-	
-	; set these 11 bytes to 0
+    
+    ; set these 11 bytes to 0
     ld   HL, wD65C                                     ;; 01:527f $21 $5c $d6
     ld   B, $0b                                        ;; 01:5282 $06 $0b ; b = 11
     xor  A, A                                          ;; 01:5284 $af ; a = 0
@@ -2312,8 +2312,8 @@ call_01_5271_ProcessPassword: ; handles setting save data from password
     ld   [HL+], A                                      ;; 01:5285 $22
     dec  B                                             ;; 01:5286 $05
     jr   NZ, .jr_01_5285                               ;; 01:5287 $20 $fc
-	
-	; decode the password into wD65C array of 11 bytes
+    
+    ; decode the password into wD65C array of 11 bytes
     ld   HL, wD65C                                     ;; 01:5289 $21 $5c $d6
     ld   DE, wD668_PasswordValues                      ;; 01:528c $11 $68 $d6
     ld   A, $1c                                        ;; 01:528f $3e $1c ; 28
@@ -2344,8 +2344,8 @@ call_01_5271_ProcessPassword: ; handles setting save data from password
     pop  AF                                            ;; 01:52ae $f1
     dec  A                                             ;; 01:52af $3d
     jr   NZ, .jr_01_5293                               ;; 01:52b0 $20 $e1
-	
-	; add up all the values into a
+    
+    ; add up all the values into a
     ld   HL, wD65C                                     ;; 01:52b2 $21 $5c $d6
     ld   B, $09                                        ;; 01:52b5 $06 $09
     xor  A, A                                          ;; 01:52b7 $af
@@ -2354,23 +2354,23 @@ call_01_5271_ProcessPassword: ; handles setting save data from password
     inc  HL                                            ;; 01:52b9 $23
     dec  B                                             ;; 01:52ba $05
     jr   NZ, .jr_01_52b8                               ;; 01:52bb $20 $fb
-	
-	; invalid password if the sum of values is not equal to value in wD665
+    
+    ; invalid password if the sum of values is not equal to value in wD665
     ld   HL, wD665                                     ;; 01:52bd $21 $65 $d6
     cp   A, [HL]                                       ;; 01:52c0 $be
     jr   NZ, .jp_01_531a                               ;; 01:52c1 $20 $57
-	
-	; set lives to value in wD664
+    
+    ; set lives to value in wD664
     ld   A, [wD664]                                    ;; 01:52c3 $fa $64 $d6
     ld   [wD73D_LivesRemaining], A                                    ;; 01:52c6 $ea $3d $d7
-	
-	; set current level to 0
+    
+    ; set current level to 0
     ld   A, [wD624_CurrentLevelId]                                    ;; 01:52c9 $fa $24 $d6
     push AF                                            ;; 01:52cc $f5
     xor  A, A                                          ;; 01:52cd $af
     ld   [wD624_CurrentLevelId], A                                    ;; 01:52ce $ea $24 $d6
-	
-	; set remote bitfields
+    
+    ; set remote bitfields
     ld   HL, wD65C                                     ;; 01:52d1 $21 $5c $d6
     ld   C, $80                                        ;; 01:52d4 $0e $80
 .jr_01_52d6:
@@ -2413,12 +2413,12 @@ call_01_5271_ProcessPassword: ; handles setting save data from password
     ld   [wD624_CurrentLevelId], A                                    ;; 01:530c $ea $24 $d6
     cp   A, $1e                                        ;; 01:530f $fe $1e
     jr   NZ, .jr_01_52d6                               ;; 01:5311 $20 $c3
-	
-	; set current level to 0
+    
+    ; set current level to 0
     pop  AF                                            ;; 01:5313 $f1
     ld   [wD624_CurrentLevelId], A                                    ;; 01:5314 $ea $24 $d6
-	
-	
+    
+    
     ld   A, $30                                        ;; 01:5317 $3e $30
     ret                                                ;; 01:5319 $c9
 .jp_01_531a:

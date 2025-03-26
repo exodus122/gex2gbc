@@ -158,7 +158,7 @@ call_02_489a:
     ld   HL, wD759                                     ;; 02:489a $21 $59 $d7
     set  6, [HL]                                       ;; 02:489d $cb $f6
     ld   C, $02                                        ;; 02:489f $0e $02
-    ld   A, [wD75A]                                    ;; 02:48a1 $fa $5a $d7
+    ld   A, [wD75A_CurrentInputs]                                    ;; 02:48a1 $fa $5a $d7
     and  A, $30                                        ;; 02:48a4 $e6 $30
     jr   Z, .jr_02_48b3                                ;; 02:48a6 $28 $0b
     ld   C, $05                                        ;; 02:48a8 $0e $05
@@ -304,7 +304,7 @@ call_02_4939:
     bit  7, [HL]                                       ;; 02:4989 $cb $7e
     jr   Z, .jr_02_49a4                                ;; 02:498b $28 $17
     res  1, C                                          ;; 02:498d $cb $89
-    ld   A, [wD760]                                    ;; 02:498f $fa $60 $d7
+    ld   A, [wD760_PlayerYVelocity]                                    ;; 02:498f $fa $60 $d7
     bit  7, A                                          ;; 02:4992 $cb $7f
     jr   Z, .jr_02_49a4                                ;; 02:4994 $28 $0e
     bit  1, E                                          ;; 02:4996 $cb $4b
@@ -316,7 +316,7 @@ call_02_4939:
     jr   Z, .jr_02_49a4                                ;; 02:49a0 $28 $02
     set  1, C                                          ;; 02:49a2 $cb $c9
 .jr_02_49a4:
-    ld   HL, wD75A                                     ;; 02:49a4 $21 $5a $d7
+    ld   HL, wD75A_CurrentInputs                                     ;; 02:49a4 $21 $5a $d7
     ld   [HL], C                                       ;; 02:49a7 $71
     ld   HL, wD750                                     ;; 02:49a8 $21 $50 $d7
     ld   A, [HL]                                       ;; 02:49ab $7e
@@ -403,7 +403,7 @@ call_02_4a45:
     ld   A, [wD746]                                    ;; 02:4a45 $fa $46 $d7
     cp   A, $ff                                        ;; 02:4a48 $fe $ff
     ret  NZ                                            ;; 02:4a4a $c0
-    ld   A, [wD75A]                                    ;; 02:4a4b $fa $5a $d7
+    ld   A, [wD75A_CurrentInputs]                                    ;; 02:4a4b $fa $5a $d7
     and  A, $30                                        ;; 02:4a4e $e6 $30
     jr   Z, .jr_02_4a62                                ;; 02:4a50 $28 $10
     ld   C, $00                                        ;; 02:4a52 $0e $00
@@ -619,7 +619,7 @@ call_02_4b78:
     ld   A, [wD746]                                    ;; 02:4b78 $fa $46 $d7
     cp   A, $ff                                        ;; 02:4b7b $fe $ff
     ret  NZ                                            ;; 02:4b7d $c0
-    ld   A, [wD760]                                    ;; 02:4b7e $fa $60 $d7
+    ld   A, [wD760_PlayerYVelocity]                                    ;; 02:4b7e $fa $60 $d7
     bit  7, A                                          ;; 02:4b81 $cb $7f
     jr   NZ, .jr_02_4bbc                               ;; 02:4b83 $20 $37
     and  A, A                                          ;; 02:4b85 $a7
@@ -627,7 +627,7 @@ call_02_4b78:
     xor  A, A                                          ;; 02:4b88 $af
     ld   [wD763], A                                    ;; 02:4b89 $ea $63 $d7
 .jr_02_4b8c:
-    ld   A, [wD760]                                    ;; 02:4b8c $fa $60 $d7
+    ld   A, [wD760_PlayerYVelocity]                                    ;; 02:4b8c $fa $60 $d7
     sub  A, $02                                        ;; 02:4b8f $d6 $02
     bit  7, A                                          ;; 02:4b91 $cb $7f
     jr   Z, .jr_02_4ba4                                ;; 02:4b93 $28 $0f
@@ -640,7 +640,7 @@ call_02_4b78:
     ld   [HL], A                                       ;; 02:4ba1 $77
     ld   A, $c0                                        ;; 02:4ba2 $3e $c0
 .jr_02_4ba4:
-    ld   [wD760], A                                    ;; 02:4ba4 $ea $60 $d7
+    ld   [wD760_PlayerYVelocity], A                                    ;; 02:4ba4 $ea $60 $d7
     cpl                                                ;; 02:4ba7 $2f
     inc  A                                             ;; 02:4ba8 $3c
     swap A                                             ;; 02:4ba9 $cb $37
@@ -663,7 +663,7 @@ call_02_4b78:
     ld   HL, wD584                                     ;; 02:4bc9 $21 $84 $d5
     bit  7, [HL]                                       ;; 02:4bcc $cb $7e
     jr   NZ, .jr_02_4ba4                               ;; 02:4bce $20 $d4
-    ld   HL, wD760                                     ;; 02:4bd0 $21 $60 $d7
+    ld   HL, wD760_PlayerYVelocity                                     ;; 02:4bd0 $21 $60 $d7
     cp   A, [HL]                                       ;; 02:4bd3 $be
     jr   NC, .jr_02_4ba4                               ;; 02:4bd4 $30 $ce
     jr   .jr_02_4b8c                                   ;; 02:4bd6 $18 $b4
@@ -680,7 +680,7 @@ call_02_4b78:
     jr   .jr_02_4b8c                                   ;; 02:4beb $18 $9f
 .jr_02_4bed:
     xor  A, A                                          ;; 02:4bed $af
-    ld   [wD760], A                                    ;; 02:4bee $ea $60 $d7
+    ld   [wD760_PlayerYVelocity], A                                    ;; 02:4bee $ea $60 $d7
     ld   HL, wD763                                     ;; 02:4bf1 $21 $63 $d7
     ld   A, [HL]                                       ;; 02:4bf4 $7e
     ld   [HL], $00                                     ;; 02:4bf5 $36 $00
@@ -746,7 +746,7 @@ call_02_4c4f:
     cp   A, $23                                        ;; 02:4c65 $fe $23
     jp   Z, call_00_0696                                 ;; 02:4c67 $ca $96 $06
 .jr_02_4c6a:
-    ld   A, [wD75A]                                    ;; 02:4c6a $fa $5a $d7
+    ld   A, [wD75A_CurrentInputs]                                    ;; 02:4c6a $fa $5a $d7
     and  A, $40                                        ;; 02:4c6d $e6 $40
     jr   Z, .jr_02_4ca6                                ;; 02:4c6f $28 $35
     ld   A, [wD764]                                    ;; 02:4c71 $fa $64 $d7
@@ -786,7 +786,7 @@ call_02_4c4f:
     ld   L, A                                          ;; 02:4cb3 $6f
     or   A, H                                          ;; 02:4cb4 $b4
     ret  Z                                             ;; 02:4cb5 $c8
-    ld   A, [wD75A]                                    ;; 02:4cb6 $fa $5a $d7
+    ld   A, [wD75A_CurrentInputs]                                    ;; 02:4cb6 $fa $5a $d7
     ld   C, A                                          ;; 02:4cb9 $4f
 .jr_02_4cba:
     ld   A, [HL+]                                      ;; 02:4cba $2a
@@ -884,7 +884,7 @@ entry_02_6e17:
     ld   [wD75D], A                                    ;; 02:6e2e $ea $5d $d7
     ld   [wD75E], A                                    ;; 02:6e31 $ea $5e $d7
     ld   [wD75C], A                                    ;; 02:6e34 $ea $5c $d7
-    ld   [wD760], A                                    ;; 02:6e37 $ea $60 $d7
+    ld   [wD760_PlayerYVelocity], A                                    ;; 02:6e37 $ea $60 $d7
     ld   [wD761], A                                    ;; 02:6e3a $ea $61 $d7
     ld   [wD762], A                                    ;; 02:6e3d $ea $62 $d7
     ld   [wD763], A                                    ;; 02:6e40 $ea $63 $d7
@@ -927,7 +927,7 @@ entry_02_6e68:
 .jr_02_6e93:
     ld   [wD59D], A                                    ;; 02:6e93 $ea $9d $d5
     ld   A, Bank0a                                        ;; 02:6e96 $3e $0a
-    ld   HL, entry_0a_4000                              ;; 02:6e98 $21 $00 $40 ; FAKE, this is actualyl calling call_0a_4000
+    ld   HL, entry_0a_4000                              ;; 02:6e98 $21 $00 $40
     call call_00_1078_SwitchBankWrapper                                  ;; 02:6e9b $cd $78 $10
 .jr_02_6e9e:
     ld   [wD59D], A                                    ;; 02:6e9e $ea $9d $d5
@@ -1231,6 +1231,8 @@ call_02_70f1:
 call_02_7102:
 entry_02_7102:
 ; probably one of the main actor update functions, gets a jump table value from data_02_4000_ObjectJumpTables
+; updates the object instances at D200-D300
+; sets action id, action pointer, data_0c, unknown_pointer_04_05, and more?
     and  A, $1f                                        ;; 02:7102 $e6 $1f
     ld   C, A                                          ;; 02:7104 $4f
     ld   A, [wD300]                                    ;; 02:7105 $fa $00 $d3
@@ -1257,10 +1259,10 @@ entry_02_7102:
     ld   E, A                                          ;; 02:7125 $5f
     ld   D, $d2                                        ;; 02:7126 $16 $d2
     ld   A, [HL+]                                      ;; 02:7128 $2a
-    ld   [DE], A                                       ;; 02:7129 $12
+    ld   [DE], A                                       ;; 02:7129 $12 ; sets current action pointer in object instance
     inc  E                                             ;; 02:712a $1c
     ld   A, [HL+]                                      ;; 02:712b $2a
-    ld   [DE], A                                       ;; 02:712c $12
+    ld   [DE], A                                       ;; 02:712c $12 ; sets current action pointer in object instance
     inc  E                                             ;; 02:712d $1c
     ld   A, [HL+]                                      ;; 02:712e $2a
     ld   H, [HL]                                       ;; 02:712f $66

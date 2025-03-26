@@ -14,9 +14,9 @@ call_0a_4000:
     ld   DE, .data_0a_4019                             ;; 0a:4007 $11 $19 $40
     add  HL, DE                                        ;; 0a:400a $19
     ld   A, [HL+]                                      ;; 0a:400b $2a
-    ld   [wD336], A                                    ;; 0a:400c $ea $36 $d3
+    ld   [wD336_CurrentObjectToLoadPtr], A                                    ;; 0a:400c $ea $36 $d3
     ld   A, [HL+]                                      ;; 0a:400f $2a
-    ld   [wD337], A                                    ;; 0a:4010 $ea $37 $d3
+    ld   [wD337_CurrentObjectToLoadPtr], A                                    ;; 0a:4010 $ea $37 $d3
     ld   A, $01                                        ;; 0a:4013 $3e $01
     ld   [wD338], A                                    ;; 0a:4015 $ea $38 $d3
     ret                                                ;; 0a:4018 $c9
@@ -54,66 +54,67 @@ call_0a_4000:
     dw   data_MediaDimensionObjects
     dw   data_ChannelZObjects
 
+data_MediaDimensionObjects:                             ;; 0a:4057
 INCLUDE "./maps/media_dimension/object_list_media_dimension.asm"
 
-data_OutOfToonObjects:
+data_OutOfToonObjects:                             ;; 0a:4488
 INCLUDE "./maps/toon_tv/object_list_out_of_toon.asm"
 
-data_SmellraiserObjects:
+data_SmellraiserObjects:                             ;; 0a:48c9
 INCLUDE "./maps/scream_tv/object_list_smellraiser.asm"
 
-data_FrankensteinfeldObjects:
+data_FrankensteinfeldObjects:                             ;; 0a:4aba
 INCLUDE "./maps/scream_tv/object_list_frankensteinfeld.asm"
 
-data_wwwdotcomcomObjects:
+data_wwwdotcomcomObjects:                             ;; 0a:4ddb
 INCLUDE "./maps/circuit_central/object_list_wwwdotcomcom.asm"
 
-data_MaoTseTongueObjects:
+data_MaoTseTongueObjects:                             ;; 0a:51ec
 INCLUDE "./maps/kung_fu_theater/object_list_mao_tse_tongue.asm"
 
-data_Pangaea90210_Objects:
-INCLUDE "./maps/prehistory_channel/object_list_pangaea90210.asm"
+data_Pangaea90210_Objects:                             ;; 0a:54ed
+INCLUDE "./maps/prehistory_channel/object_list_pangaea_90210.asm"
 
-data_FineTooningObjects:
+data_FineTooningObjects:                             ;; 0a:57ee
 INCLUDE "./maps/toon_tv/object_list_fine_tooning.asm"
 
-data_ThisOldCaveObjects:
+data_ThisOldCaveObjects:                             ;; 0a:5c8f
 INCLUDE "./maps/prehistory_channel/object_list_this_old_cave.asm"
 
-data_HoneyIShrunkTheGeckoObjects:
+data_HoneyIShrunkTheGeckoObjects:                             ;; 0a:5e20
 INCLUDE "./maps/circuit_central/object_list_honey_i_shrunk_the_gecko.asm"
     
-data_PoltergexObjects:
+data_PoltergexObjects:                             ;; 0a:6331
 INCLUDE "./maps/scream_tv/object_list_poltergex.asm"
 
-data_SamuraiNightFeverObjects:
+data_SamuraiNightFeverObjects:                             ;; 0a:6692
 INCLUDE "./maps/kung_fu_theater/object_list_samurai_night_fever.asm"
 
-data_NoWeddingsAndAFuneralObjects:
+data_NoWeddingsAndAFuneralObjects:                             ;; 0a:6a43
 INCLUDE "./maps/rezopolis/object_list_no_weddings_and_a_funeral.asm"
 
-data_ThursdayThe12thObjects:
+data_ThursdayThe12thObjects:                             ;; 0a:6c84
 INCLUDE "./maps/scream_tv/object_list_thursday_the_12th.asm"
 
-data_LizardInAChinaShopObjects:
+data_LizardInAChinaShopObjects:                             ;; 0a:6d45
 INCLUDE "./maps/kung_fu_theater/object_list_lizard_in_a_china_shop.asm"
 
-data_BuggedOutObjects:
+data_BuggedOutObjects:                             ;; 0a:6dc6
 INCLUDE "./maps/rezopolis/object_list_bugged_out.asm"
 
-data_ChipsAndDipsObjects:
+data_ChipsAndDipsObjects:                             ;; 0a:6df7
 INCLUDE "./maps/circuit_central/object_list_chips_and_dips.asm"
 
-data_LavaDabbaDooObjects:
+data_LavaDabbaDooObjects:                             ;; 0a:6e78
 INCLUDE "./maps/prehistory_channel/object_list_lava_dabba_doo.asm"
 
-data_TexasChainsawManicureObjects:
+data_TexasChainsawManicureObjects:                             ;; 0a:7149
 INCLUDE "./maps/scream_tv/object_list_texas_chainsaw_manicure.asm"
     
-data_MazedAndConfusedObjects:
+data_MazedAndConfusedObjects:                             ;; 0a:734a
 INCLUDE "./maps/rezopolis/object_list_mazed_and_confused.asm"
 
-data_ChannelZObjects:
+data_ChannelZObjects:                             ;; 0a:751b
 INCLUDE "./maps/channel_z/object_list_channel_z.asm"
 
 data_0a_75fc:
@@ -283,7 +284,7 @@ entry_0a_7a7c:
     rlca                                               ;; 0a:7a91 $07
     rlca                                               ;; 0a:7a92 $07 so now a is the slot number, where slot 1 is dd20, and slot 3 is dd60
     ld   [wD339], A                                    ;; 0a:7a93 $ea $39 $d3
-    ld   HL, wD336                                     ;; 0a:7a96 $21 $36 $d3
+    ld   HL, wD336_CurrentObjectToLoadPtr                                     ;; 0a:7a96 $21 $36 $d3
     ld   E, [HL]                                       ;; 0a:7a99 $5e
     inc  HL                                            ;; 0a:7a9a $23
     ld   D, [HL]                                       ;; 0a:7a9b $56
@@ -294,9 +295,9 @@ entry_0a_7a7c:
     ld   HL, $10                                       ;; 0a:7aa5 $21 $10 $00
     add  HL, DE                                        ;; 0a:7aa8 $19
     ld   A, L                                          ;; 0a:7aa9 $7d
-    ld   [wD336], A                                    ;; 0a:7aaa $ea $36 $d3
+    ld   [wD336_CurrentObjectToLoadPtr], A                                    ;; 0a:7aaa $ea $36 $d3
     ld   A, H                                          ;; 0a:7aad $7c
-    ld   [wD337], A                                    ;; 0a:7aae $ea $37 $d3 ; load 2 bytes 0x10 after first
+    ld   [wD337_CurrentObjectToLoadPtr], A                                    ;; 0a:7aae $ea $37 $d3 ; load 2 bytes 0x10 after first
     ld   HL, wD338                                     ;; 0a:7ab1 $21 $38 $d3 
     ld   C, [HL]                                       ;; 0a:7ab4 $4e 
     inc  [HL]                                          ;; 0a:7ab5 $34
@@ -312,7 +313,7 @@ entry_0a_7a7c:
     or   A, $0e                                        ;; 0a:7ac5 $f6 $0e
     ld   L, A                                          ;; 0a:7ac7 $6f
     ld   A, [DE]                                       ;; 0a:7ac8 $1a
-    ld   [HL+], A                                      ;; 0a:7ac9 $22
+    ld   [HL+], A                                      ;; 0a:7ac9 $22 ; this is where the x and y coords of the object are read and written
     inc  DE                                            ;; 0a:7aca $13
     ld   A, [DE]                                       ;; 0a:7acb $1a
     ld   [HL+], A                                      ;; 0a:7acc $22
@@ -406,7 +407,7 @@ entry_0a_7a7c:
     xor  A, $1b                                        ;; 0a:7b40 $ee $1b
     ld   E, A                                          ;; 0a:7b42 $5f
     ld   A, $00                                        ;; 0a:7b43 $3e $00
-    ld   [DE], A                                       ;; 0a:7b45 $12
+    ld   [DE], A                                       ;; 0a:7b45 $12 ; sets instance+0x0D facing angle to 0 by default
     ld   HL, wD339                                     ;; 0a:7b46 $21 $39 $d3
     ld   L, [HL]                                       ;; 0a:7b49 $6e
     ld   H, $00                                        ;; 0a:7b4a $26 $00

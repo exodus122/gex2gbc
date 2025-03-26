@@ -8,7 +8,9 @@ wC000:
 wC001:
     ds 1023                                            ;; c001
 
-wC400:
+wC400_CollectibleCoordinates:
+; C400 to C500 stores the x position of each collectible in the current level
+; C500 to C600 stores the y position of each collectible in the current level
     ds 512                                             ;; c400
 
 wC600:
@@ -61,6 +63,28 @@ wD100_TilesToLoadBuffer:
 ; From D200 to D300 is the loaded objects space
 ; Each object takes up 0x20 of space, and there can be up to 8 objects. 
 ; Gex occupies the first slot. The first byte of each object is the id
+
+; Object Instance Struct
+; 0x00 object id
+; 0x01 current action id (index into action jump table)
+; 0x02-0x03 pointer to current action function
+; 0x04-0x05 ? pointer to some data in bank 2, whose value is set to 0x0C
+; 0x06 ? animation timer, how many frames to be in this animation?
+; 0x07 ? animation timer/index?, which frame of animation?
+; 0x08 sprite index (for example gex's 4 standing sprites are 0x14-0x17, and that's the index to those sprites in bank 4
+; 0x09 ? bitfield
+; 0x0A ? bitfield
+; 0x0B ? gets its value from table pointed to by 0x04-0x05
+; 0x0C ? unknown byte whose value comes from pointer in 0x04-0x05
+; 0x0D facing angle. right: 0x00, left: 0x20 
+; 0x0E-0x0F x position on map
+; 0x10-0x11 y position on map
+; 0x12 x position on screen
+; 0x13 y position on screen
+; 
+; 
+; 
+; 
 
 wD200:
     ds 1                                               ;; d200
@@ -146,10 +170,10 @@ wD32D:
 wD335:
     ds 1                                               ;; d335
 
-wD336:
+wD336_CurrentObjectToLoadPtr:
     ds 1                                               ;; d336
 
-wD337:
+wD337_CurrentObjectToLoadPtr:
     ds 1                                               ;; d337
 
 wD338:
@@ -788,19 +812,19 @@ wD73C:
 wD73D_LivesRemaining:
     ds 1                                               ;; d73d
 
-wD73E:
+wD73E_PlayerLivesHundreds: ; the hundreds unit of your lives
     ds 1                                               ;; d73e
 
-wD73F:
+wD73F_PlayerLivesTens: ; the tens unit of your lives
     ds 1                                               ;; d73f
 
-wD740:
+wD740_PlayerLivesOnes: ; the ones unit of your lives
     ds 1                                               ;; d740
 
 wD741_PlayerHealth:
     ds 1                                               ;; d741
 
-wD742:
+wD742_PlayerCurrentFly:
     ds 1                                               ;; d742
 
 wD743:
@@ -869,7 +893,9 @@ wD758:
 wD759:
     ds 1                                               ;; d759
 
-wD75A:
+wD75A_CurrentInputs:
+; button bits are only set for 1 frame. d-pad stays set while held
+; A = 01, B = 02, Select = 04, Start = 08, Right = 0x10, Left = 0x20, Up = 0x40, Down = 0x80
     ds 1                                               ;; d75a
 
 wD75B:
@@ -887,7 +913,8 @@ wD75E:
 wD75F:
     ds 1                                               ;; d75f
 
-wD760:
+wD760_PlayerYVelocity:
+; lock this to levitate
     ds 1                                               ;; d760
 
 wD761:
