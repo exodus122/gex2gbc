@@ -2809,7 +2809,7 @@ call_03_6941:
 .image_collectibles_scream_tv_003_6a05:
     INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_scream_tv_003_6a05.bin"
 .image_collectibles_circuit_central_003_6a65:
-    INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_circuit_central_003_6a65.bin"	
+    INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_circuit_central_003_6a65.bin"    
 .image_collectibles_kung_fu_theater_003_6ac5:
     INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_kung_fu_theater_003_6ac5.bin"
 .image_collectibles_prehistory_channel_003_6b25:
@@ -2868,33 +2868,33 @@ call_03_6be5:
     dw   .palette_toon_tv_collectibles
     dw   .palette_scream_tv_collectibles
     dw   .palette_scream_tv_collectibles
-	dw   .palette_circuit_central_collectibles
-	dw   .palette_kung_fu_theater_collectibles
-	dw   .palette_toon_tv_collectibles
-    dw   .palette_prehistory_channel_collectibles
-	dw   .palette_toon_tv_collectibles
-	dw   .palette_prehistory_channel_collectibles
-	dw   .palette_circuit_central_collectibles
-    dw   .palette_scream_tv_collectibles
-	dw   .palette_toon_tv_collectibles
-	dw   .palette_kung_fu_theater_collectibles
-	dw   .palette_rezopolis_collectibles
-    dw   .palette_toon_tv_collectibles
-	dw   .palette_scream_tv_collectibles
-	dw   .palette_toon_tv_collectibles
-	dw   .palette_toon_tv_collectibles
-    dw   .palette_toon_tv_collectibles
-	dw   .palette_toon_tv_collectibles
-	dw   .palette_kung_fu_theater_collectibles
-	dw   .palette_rezopolis_collectibles
     dw   .palette_circuit_central_collectibles
-	dw   .palette_prehistory_channel_collectibles
-	dw   .palette_scream_tv_collectibles
-	dw   .palette_rezopolis_collectibles
+    dw   .palette_kung_fu_theater_collectibles
     dw   .palette_toon_tv_collectibles
-	dw   .palette_toon_tv_collectibles
-	dw   .palette_toon_tv_collectibles
-	dw   .palette_toon_tv_collectibles
+    dw   .palette_prehistory_channel_collectibles
+    dw   .palette_toon_tv_collectibles
+    dw   .palette_prehistory_channel_collectibles
+    dw   .palette_circuit_central_collectibles
+    dw   .palette_scream_tv_collectibles
+    dw   .palette_toon_tv_collectibles
+    dw   .palette_kung_fu_theater_collectibles
+    dw   .palette_rezopolis_collectibles
+    dw   .palette_toon_tv_collectibles
+    dw   .palette_scream_tv_collectibles
+    dw   .palette_toon_tv_collectibles
+    dw   .palette_toon_tv_collectibles
+    dw   .palette_toon_tv_collectibles
+    dw   .palette_toon_tv_collectibles
+    dw   .palette_kung_fu_theater_collectibles
+    dw   .palette_rezopolis_collectibles
+    dw   .palette_circuit_central_collectibles
+    dw   .palette_prehistory_channel_collectibles
+    dw   .palette_scream_tv_collectibles
+    dw   .palette_rezopolis_collectibles
+    dw   .palette_toon_tv_collectibles
+    dw   .palette_toon_tv_collectibles
+    dw   .palette_toon_tv_collectibles
+    dw   .palette_toon_tv_collectibles
 .palette_toon_tv_collectibles: ;; 03:6c5b
     INCBIN "gfx/misc_sprites/collectibles/palettes/palette_toon_tv_collectibles.bin"
 .palette_scream_tv_collectibles: ;; 03:6c73
@@ -3862,463 +3862,381 @@ entry_03_7253:
     ret                                                ;; 03:72aa $c9
 
 data_03_72ab:
-    dw   data_03_72e8                                  ;; 03:72ab pP
-    dw   data_03_72e9                                  ;; 03:72ad pP
-    dw   data_03_734a                                  ;; 03:72af pP
-    db   $4a, $73, $bb, $73, $e8, $72, $e8, $72        ;; 03:72b1 ????????
-    db   $e8, $72, $e9, $72, $e8, $72, $bb, $73        ;; 03:72b9 ????????
-    db   $4a, $73, $e8, $72, $e8, $72, $1c, $74        ;; 03:72c1 ????????
-    db   $e8, $72, $4a, $73, $e8, $72, $e8, $72        ;; 03:72c9 ????????
-    db   $e8, $72, $e8, $72, $e8, $72, $1c, $74        ;; 03:72d1 ????????
-    db   $bb, $73, $e8, $72, $4a, $73, $1c, $74        ;; 03:72d9 ????????
-    db   $e8, $72, $e8, $72, $e8, $72, $e8             ;; 03:72e1 ???????
+    dw   data_03_72e8_media_dimension_moving_backgrounds                                  ;; 03:72ab pP
+    dw   data_03_72e9_toon_tv_moving_backgrounds                                  ;; 03:72ad pP
+    dw   data_03_734a_scream_tv_moving_backgrounds                                  ;; 03:72af pP
+    dw   data_03_734a_scream_tv_moving_backgrounds
+    dw   data_03_73bb_circuit_central_moving_backgrounds
+    dw   data_03_72e8_media_dimension_moving_backgrounds
+    dw   data_03_72e8_media_dimension_moving_backgrounds
+    dw   data_03_72e8_media_dimension_moving_backgrounds
+    dw   data_03_72e9_toon_tv_moving_backgrounds
+    dw   data_03_72e8_media_dimension_moving_backgrounds
+    dw   data_03_73bb_circuit_central_moving_backgrounds
+    dw   data_03_734a_scream_tv_moving_backgrounds
+    dw   data_03_72e8_media_dimension_moving_backgrounds
+    dw   data_03_72e8_media_dimension_moving_backgrounds
+    dw   data_03_741c_rezopolis_moving_backgrounds
+    dw   data_03_72e8_media_dimension_moving_backgrounds
+    dw   data_03_734a_scream_tv_moving_backgrounds
+    dw   data_03_72e8_media_dimension_moving_backgrounds
+    dw   data_03_72e8_media_dimension_moving_backgrounds
+    dw   data_03_72e8_media_dimension_moving_backgrounds
+    dw   data_03_72e8_media_dimension_moving_backgrounds
+    dw   data_03_72e8_media_dimension_moving_backgrounds
+    dw   data_03_741c_rezopolis_moving_backgrounds
+    dw   data_03_73bb_circuit_central_moving_backgrounds
+    dw   data_03_72e8_media_dimension_moving_backgrounds
+    dw   data_03_734a_scream_tv_moving_backgrounds
+    dw   data_03_741c_rezopolis_moving_backgrounds
+    dw   data_03_72e8_media_dimension_moving_backgrounds
+    dw   data_03_72e8_media_dimension_moving_backgrounds
+    dw   data_03_72e8_media_dimension_moving_backgrounds
+    db   $e8
 
-data_03_72e8:
+data_03_72e8_media_dimension_moving_backgrounds:
     db   $00                                           ;; 03:72e8 .
 
-data_03_72e9:
-    db   $0c, $04, $00                                 ;; 03:72e9 ...
+data_03_72e9_toon_tv_moving_backgrounds:
+    db   $0c
+    
+    db   $04, $00                                 ;; 03:72e9 ...
     dw   $8b30                                         ;; 03:72ec pP
-    db   $7d, $74, $00, $00, $02, $00                  ;; 03:72ee ..??..
+    dw   data_03_747d
+    db   $00, $00
+    
+    db   $02, $00                  ;; 03:72ee ..??..
     dw   $8a50                                         ;; 03:72f4 pP
-    db   $7d, $75, $00, $00, $04, $00                  ;; 03:72f6 ..??..
+    dw   data_03_757d
+    db   $00, $00
+    
+    db   $04, $00                  ;; 03:72f6 ..??..
     dw   $8c40                                         ;; 03:72fc pP
-    db   $fd, $75, $00, $00, $04, $00                  ;; 03:72fe ..??..
+    dw   data_03_75fd
+    db   $00, $00
+    
+    db   $04, $00                  ;; 03:72fe ..??..
     dw   $8b30                                         ;; 03:7304 pP
-    db   $bd, $74, $00, $00, $02, $00                  ;; 03:7306 ..??..
+    dw   data_03_74bd
+    db   $00, $00
+    
+    db   $02, $00                  ;; 03:7306 ..??..
     dw   $8a50                                         ;; 03:730c pP
-    db   $9d, $75, $00, $00, $04, $00                  ;; 03:730e ..??..
+    dw   data_03_759d
+    db   $00, $00
+    
+    db   $04, $00                  ;; 03:730e ..??..
     dw   $8c40                                         ;; 03:7314 pP
-    db   $3d, $76, $00, $00, $04, $00                  ;; 03:7316 ..??..
+    dw   data_03_763d
+    db   $00, $00
+    
+    db   $04, $00                  ;; 03:7316 ..??..
     dw   $8b30                                         ;; 03:731c pP
-    db   $fd, $74, $00, $00, $02, $00                  ;; 03:731e ..??..
+    dw   data_03_74fd
+    db   $00, $00
+    
+    db   $02, $00                  ;; 03:731e ..??..
     dw   $8a50                                         ;; 03:7324 pP
-    db   $bd, $75, $00, $00, $04, $00                  ;; 03:7326 ..??..
+    dw   data_03_75bd
+    db   $00, $00
+    
+    db   $04, $00                  ;; 03:7326 ..??..
     dw   $8c40                                         ;; 03:732c pP
-    db   $7d, $76, $00, $00, $04, $00                  ;; 03:732e ..??..
+    dw   data_03_767d
+    db   $00, $00
+    
+    db   $04, $00                  ;; 03:732e ..??..
     dw   $8b30                                         ;; 03:7334 pP
-    db   $3d, $75, $00, $00, $02, $00                  ;; 03:7336 ..??..
+    dw   data_03_753d
+    db   $00, $00
+    
+    db   $02, $00                  ;; 03:7336 ..??..
     dw   $8a50                                         ;; 03:733c pP
-    db   $dd, $75, $00, $00, $04, $00                  ;; 03:733e ..??..
+    dw   data_03_75dd
+    db   $00, $00
+    
+    db   $04, $00                  ;; 03:733e ..??..
     dw   $8c40                                         ;; 03:7344 pP
-    db   $bd, $76, $00, $00                            ;; 03:7346 ..??
+    dw   data_03_76bd
+    db   $00, $00                            ;; 03:7346 ..??
 
-data_03_734a:
-    db   $0e, $02, $00                                 ;; 03:734a ...
+data_03_734a_scream_tv_moving_backgrounds:
+    db   $0e
+    
+    db   $02, $00                                 ;; 03:734a ...
     dw   $97e0                                         ;; 03:734d pP
-    db   $7d, $78, $00, $00, $06, $00                  ;; 03:734f ..??..
+    dw   data_03_787d
+    db   $00, $00
+    
+    db   $06, $00                  ;; 03:734f ..??..
     dw   $96a0                                         ;; 03:7355 pP
-    db   $fd, $76, $00, $00, $04, $00                  ;; 03:7357 ..??..
+    dw   data_03_76fd
+    db   $00, $00
+    
+    db   $04, $00                  ;; 03:7357 ..??..
     dw   $8ac0                                         ;; 03:735d pP
-    db   $bd, $78, $00, $00, $04, $00                  ;; 03:735f ..??..
+    dw   data_03_78bd
+    db   $00, $00
+    
+    db   $04, $00                  ;; 03:735f ..??..
     dw   $8b00                                         ;; 03:7365 pP
-    db   $fd, $78, $00, $00, $06, $00                  ;; 03:7367 ..??..
+    dw   data_03_78fd
+    db   $00, $00
+    
+    db   $06, $00                  ;; 03:7367 ..??..
     dw   $96a0                                         ;; 03:736d pP
-    db   $5d, $77, $00, $00, $04, $00                  ;; 03:736f ..??..
+    dw   data_03_775d
+    db   $00, $00
+    
+    db   $04, $00                  ;; 03:736f ..??..
     dw   $8ac0                                         ;; 03:7375 pP
-    db   $3d, $79, $00, $00, $04, $00                  ;; 03:7377 ..??..
+    dw   data_03_793d
+    db   $00, $00
+    
+    db   $04, $00                  ;; 03:7377 ..??..
     dw   $8b00                                         ;; 03:737d pP
-    db   $7d, $79, $00, $00, $02, $00                  ;; 03:737f ..??..
+    dw   data_03_797d
+    db   $00, $00
+    
+    db   $02, $00                  ;; 03:737f ..??..
     dw   $97e0                                         ;; 03:7385 pP
-    db   $9d, $78, $00, $00, $06, $00                  ;; 03:7387 ..??..
+    dw   data_03_789d
+    db   $00, $00
+    
+    db   $06, $00                  ;; 03:7387 ..??..
     dw   $96a0                                         ;; 03:738d pP
-    db   $bd, $77, $00, $00, $04, $00                  ;; 03:738f ..??..
+    dw   data_03_77bd
+    db   $00, $00
+    
+    db   $04, $00                  ;; 03:738f ..??..
     dw   $8ac0                                         ;; 03:7395 pP
-    db   $bd, $79, $00, $00, $04, $00                  ;; 03:7397 ..??..
+    dw   data_03_79bd
+    db   $00, $00
+    
+    db   $04, $00                  ;; 03:7397 ..??..
     dw   $8b00                                         ;; 03:739d pP
-    db   $fd, $79, $00, $00, $06, $00                  ;; 03:739f ..??..
+    dw   data_03_79fd
+    db   $00, $00
+    
+    db   $06, $00                  ;; 03:739f ..??..
     dw   $96a0                                         ;; 03:73a5 pP
-    db   $1d, $78, $00, $00, $04, $00                  ;; 03:73a7 ..??..
+    dw   data_03_781d
+    db   $00, $00
+    
+    db   $04, $00                  ;; 03:73a7 ..??..
     dw   $8ac0                                         ;; 03:73ad pP
-    db   $3d, $7a, $00, $00, $04, $00                  ;; 03:73af ..??..
+    dw   data_03_7a3d
+    db   $00, $00
+    
+    db   $04, $00                  ;; 03:73af ..??..
     dw   $8b00                                         ;; 03:73b5 pP
-    db   $7d, $7a, $00, $00, $0c, $02, $81, $e0        ;; 03:73b7 ..??????
-    db   $91, $7d, $7b, $00, $00, $02, $82, $00        ;; 03:73bf ????????
-    db   $92, $7d, $7b, $00, $00, $02, $83, $20        ;; 03:73c7 ????????
-    db   $92, $7d, $7b, $00, $00, $02, $81, $e0        ;; 03:73cf ????????
-    db   $91, $9d, $7b, $00, $00, $02, $82, $00        ;; 03:73d7 ????????
-    db   $92, $9d, $7b, $00, $00, $02, $83, $20        ;; 03:73df ????????
-    db   $92, $9d, $7b, $00, $00, $02, $81, $e0        ;; 03:73e7 ????????
-    db   $91, $bd, $7b, $00, $00, $02, $82, $00        ;; 03:73ef ????????
-    db   $92, $bd, $7b, $00, $00, $02, $83, $20        ;; 03:73f7 ????????
-    db   $92, $bd, $7b, $00, $00, $02, $81, $e0        ;; 03:73ff ????????
-    db   $91, $dd, $7b, $00, $00, $02, $82, $00        ;; 03:7407 ????????
-    db   $92, $dd, $7b, $00, $00, $02, $83, $20        ;; 03:740f ????????
-    db   $92, $dd, $7b, $00, $00, $0c, $02, $00        ;; 03:7417 ????????
-    db   $b0, $8c, $bd, $7a, $00, $00, $01, $00        ;; 03:741f ????????
-    db   $00, $8e, $fd, $7a, $00, $00, $01, $00        ;; 03:7427 ????????
-    db   $00, $8f, $3d, $7b, $00, $00, $02, $00        ;; 03:742f ????????
-    db   $b0, $8c, $dd, $7a, $00, $00, $01, $00        ;; 03:7437 ????????
-    db   $00, $8e, $0d, $7b, $00, $00, $01, $00        ;; 03:743f ????????
-    db   $00, $8f, $4d, $7b, $00, $00, $02, $00        ;; 03:7447 ????????
-    db   $b0, $8c, $bd, $7a, $00, $00, $01, $00        ;; 03:744f ????????
-    db   $00, $8e, $1d, $7b, $00, $00, $01, $00        ;; 03:7457 ????????
-    db   $00, $8f, $5d, $7b, $00, $00, $02, $00        ;; 03:745f ????????
-    db   $b0, $8c, $dd, $7a, $00, $00, $01, $00        ;; 03:7467 ????????
-    db   $00, $8e, $2d, $7b, $00, $00, $01, $00        ;; 03:746f ????????
-    db   $00, $8f, $6d, $7b, $00, $00                  ;; 03:7477 ??????
-    dw   `02000020                                     ;; 03:747d $00 $42
-    dw   `00000020                                     ;; 03:747f $00 $02
-    dw   `00000000                                     ;; 03:7481 $00 $00
-    dw   `00002000                                     ;; 03:7483 $00 $08
-    dw   `00000000                                     ;; 03:7485 $00 $00
-    dw   `00002000                                     ;; 03:7487 $00 $08
-    dw   `00002000                                     ;; 03:7489 $00 $08
-    dw   `00200000                                     ;; 03:748b $00 $20
+    dw   data_03_7a7d
+    db   $00, $00
+data_03_73bb_circuit_central_moving_backgrounds:
+    db   $0c
+    
+    db   $02, $81, $e0        ;; 03:73bb ..??????
+    db   $91
+    dw   data_03_7b7d
+    db   $00, $00
+    
+    db   $02, $82, $00        ;; 03:73bf ????????
+    db   $92
+    dw   data_03_7b7d
+    db   $00, $00
+    
+    db   $02, $83, $20        ;; 03:73c7 ????????
+    db   $92
+    dw   data_03_7b7d
+    db   $00, $00
+    
+    db   $02, $81, $e0        ;; 03:73cf ????????
+    db   $91
+    dw   data_03_7b9d
+    db   $00, $00
+    
+    db   $02, $82, $00        ;; 03:73d7 ????????
+    db   $92
+    dw   data_03_7b9d
+    db   $00, $00
+    
+    db   $02, $83, $20        ;; 03:73df ????????
+    db   $92
+    dw   data_03_7b9d
+    db   $00, $00
+    
+    db   $02, $81, $e0        ;; 03:73e7 ????????
+    db   $91
+    dw   data_03_7bbd
+    db   $00, $00
+    
+    db   $02, $82, $00        ;; 03:73ef ????????
+    db   $92
+    dw   data_03_7bbd
+    db   $00, $00
+    
+    db   $02, $83, $20        ;; 03:73f7 ????????
+    db   $92
+    dw   data_03_7bbd
+    db   $00, $00
+    
+    db   $02, $81, $e0        ;; 03:73ff ????????
+    db   $91
+    dw   data_03_7bdd
+    db   $00, $00
+    
+    db   $02, $82, $00        ;; 03:7407 ????????
+    db   $92
+    dw   data_03_7bdd
+    db   $00, $00
+    
+    db   $02, $83, $20        ;; 03:740f ????????
+    db   $92
+    dw   data_03_7bdd
+    db   $00, $00
+data_03_741c_rezopolis_moving_backgrounds:
+    db   $0c
+    
+    db   $02, $00        ;; 03:7417 ????????
+    db   $b0, $8c
+    dw   data_03_7abd
+    db   $00
+    
+    db   $00, $01, $00        ;; 03:741f ????????
+    db   $00, $8e
+    dw   data_03_7afd
+    db   $00
+    
+    db   $00, $01, $00        ;; 03:7427 ????????
+    db   $00, $8f
+    dw   data_03_7b3d
+    db   $00
+    
+    db   $00, $02, $00        ;; 03:742f ????????
+    db   $b0, $8c
+    dw   data_03_7add
+    db   $00
+    
+    db   $00, $01, $00        ;; 03:7437 ????????
+    db   $00, $8e
+    dw   data_03_7b0d
+    db   $00
+    
+    db   $00, $01, $00        ;; 03:743f ????????
+    db   $00, $8f
+    dw   data_03_7b4d
+    db   $00
+    
+    db   $00, $02, $00        ;; 03:7447 ????????
+    db   $b0, $8c
+    dw   data_03_7abd
+    db   $00
+    
+    db   $00, $01, $00        ;; 03:744f ????????
+    db   $00, $8e
+    dw   data_03_7b1d
+    db   $00
+    
+    db   $00, $01, $00        ;; 03:7457 ????????
+    db   $00, $8f
+    dw   data_03_7b5d
+    db   $00
+    
+    db   $00, $02, $00        ;; 03:745f ????????
+    db   $b0, $8c
+    dw   data_03_7add
+    db   $00
+    
+    db   $00, $01, $00        ;; 03:7467 ????????
+    db   $00, $8e
+    dw   data_03_7b2d
+    db   $00
+    
+    db   $00, $01, $00        ;; 03:746f ????????
+    db   $00, $8f
+    dw   data_03_7b6d
+    db   $00, $00                  ;; 03:7477 ??????
 
-    dw   `00000000                                     ;; 03:748d $00 $00
-    dw   `00000000                                     ;; 03:748f $00 $00
-    dw   `00020000                                     ;; 03:7491 $00 $10
-    dw   `00000000                                     ;; 03:7493 $00 $00
-    dw   `00020002                                     ;; 03:7495 $00 $11
-    dw   `20020000                                     ;; 03:7497 $00 $90
-    dw   `20000200                                     ;; 03:7499 $00 $84
-    dw   `00000200                                     ;; 03:749b $00 $04
-
-    dw   `00000000                                     ;; 03:749d $00 $00
-    dw   `00200000                                     ;; 03:749f $00 $20
-    dw   `00200200                                     ;; 03:74a1 $00 $24
-    dw   `00200000                                     ;; 03:74a3 $00 $20
-    dw   `00000020                                     ;; 03:74a5 $00 $02
-    dw   `00000000                                     ;; 03:74a7 $00 $00
-    dw   `02000020                                     ;; 03:74a9 $00 $42
-    dw   `02000020                                     ;; 03:74ab $00 $42
-
-    dw   `00000002                                     ;; 03:74ad $00 $01
-    dw   `02000002                                     ;; 03:74af $00 $41
-    dw   `00002000                                     ;; 03:74b1 $00 $08
-    dw   `02002000                                     ;; 03:74b3 $00 $48
-    dw   `02002002                                     ;; 03:74b5 $00 $49
-    dw   `02000002                                     ;; 03:74b7 $00 $41
-    dw   `00000000                                     ;; 03:74b9 $00 $00
-    dw   `00002000                                     ;; 03:74bb $00 $08
-
-    dw   `00000020                                     ;; 03:74bd $00 $02
-    dw   `00000000                                     ;; 03:74bf $00 $00
-    dw   `02000020                                     ;; 03:74c1 $00 $42
-    dw   `02000020                                     ;; 03:74c3 $00 $42
-    dw   `02000020                                     ;; 03:74c5 $00 $42
-    dw   `00000020                                     ;; 03:74c7 $00 $02
-    dw   `00000000                                     ;; 03:74c9 $00 $00
-    dw   `00002000                                     ;; 03:74cb $00 $08
-
-    dw   `02002002                                     ;; 03:74cd $00 $49
-    dw   `02000002                                     ;; 03:74cf $00 $41
-    dw   `00000000                                     ;; 03:74d1 $00 $00
-    dw   `00002000                                     ;; 03:74d3 $00 $08
-    dw   `00000000                                     ;; 03:74d5 $00 $00
-    dw   `00000000                                     ;; 03:74d7 $00 $00
-    dw   `00020000                                     ;; 03:74d9 $00 $10
-    dw   `00000000                                     ;; 03:74db $00 $00
-
-    dw   `00000000                                     ;; 03:74dd $00 $00
-    dw   `00002000                                     ;; 03:74df $00 $08
-    dw   `00002000                                     ;; 03:74e1 $00 $08
-    dw   `00200000                                     ;; 03:74e3 $00 $20
-    dw   `00000000                                     ;; 03:74e5 $00 $00
-    dw   `00200000                                     ;; 03:74e7 $00 $20
-    dw   `00200200                                     ;; 03:74e9 $00 $24
-    dw   `00200000                                     ;; 03:74eb $00 $20
-
-    dw   `00020002                                     ;; 03:74ed $00 $11
-    dw   `20020000                                     ;; 03:74ef $00 $90
-    dw   `20000200                                     ;; 03:74f1 $00 $84
-    dw   `00000200                                     ;; 03:74f3 $00 $04
-    dw   `00000002                                     ;; 03:74f5 $00 $01
-    dw   `02000002                                     ;; 03:74f7 $00 $41
-    dw   `00002000                                     ;; 03:74f9 $00 $08
-    dw   `02002000                                     ;; 03:74fb $00 $48
-
-    dw   `00000000                                     ;; 03:74fd $00 $00
-    dw   `00200000                                     ;; 03:74ff $00 $20
-    dw   `00200200                                     ;; 03:7501 $00 $24
-    dw   `00200000                                     ;; 03:7503 $00 $20
-    dw   `00000020                                     ;; 03:7505 $00 $02
-    dw   `00000000                                     ;; 03:7507 $00 $00
-    dw   `02000020                                     ;; 03:7509 $00 $42
-    dw   `02000020                                     ;; 03:750b $00 $42
-
-    dw   `00000002                                     ;; 03:750d $00 $01
-    dw   `02000002                                     ;; 03:750f $00 $41
-    dw   `00002000                                     ;; 03:7511 $00 $08
-    dw   `02002000                                     ;; 03:7513 $00 $48
-    dw   `02002002                                     ;; 03:7515 $00 $49
-    dw   `02000002                                     ;; 03:7517 $00 $41
-    dw   `00000000                                     ;; 03:7519 $00 $00
-    dw   `00002000                                     ;; 03:751b $00 $08
-
-    dw   `02000020                                     ;; 03:751d $00 $42
-    dw   `00000020                                     ;; 03:751f $00 $02
-    dw   `00000000                                     ;; 03:7521 $00 $00
-    dw   `00002000                                     ;; 03:7523 $00 $08
-    dw   `00000000                                     ;; 03:7525 $00 $00
-    dw   `00002000                                     ;; 03:7527 $00 $08
-    dw   `00002000                                     ;; 03:7529 $00 $08
-    dw   `00200000                                     ;; 03:752b $00 $20
-
-    dw   `00000000                                     ;; 03:752d $00 $00
-    dw   `00000000                                     ;; 03:752f $00 $00
-    dw   `00020000                                     ;; 03:7531 $00 $10
-    dw   `00000000                                     ;; 03:7533 $00 $00
-    dw   `00020002                                     ;; 03:7535 $00 $11
-    dw   `20020000                                     ;; 03:7537 $00 $90
-    dw   `20000200                                     ;; 03:7539 $00 $84
-    dw   `00000200                                     ;; 03:753b $00 $04
-
-    dw   `00000000                                     ;; 03:753d $00 $00
-    dw   `00002000                                     ;; 03:753f $00 $08
-    dw   `00002000                                     ;; 03:7541 $00 $08
-    dw   `00200000                                     ;; 03:7543 $00 $20
-    dw   `00000000                                     ;; 03:7545 $00 $00
-    dw   `00200000                                     ;; 03:7547 $00 $20
-    dw   `00200200                                     ;; 03:7549 $00 $24
-    dw   `00200000                                     ;; 03:754b $00 $20
-
-    dw   `00020002                                     ;; 03:754d $00 $11
-    dw   `20020000                                     ;; 03:754f $00 $90
-    dw   `20000200                                     ;; 03:7551 $00 $84
-    dw   `00000200                                     ;; 03:7553 $00 $04
-    dw   `00000002                                     ;; 03:7555 $00 $01
-    dw   `02000002                                     ;; 03:7557 $00 $41
-    dw   `00002000                                     ;; 03:7559 $00 $08
-    dw   `02002000                                     ;; 03:755b $00 $48
-
-    dw   `00000020                                     ;; 03:755d $00 $02
-    dw   `00000000                                     ;; 03:755f $00 $00
-    dw   `02000020                                     ;; 03:7561 $00 $42
-    dw   `02000020                                     ;; 03:7563 $00 $42
-    dw   `02000020                                     ;; 03:7565 $00 $42
-    dw   `00000020                                     ;; 03:7567 $00 $02
-    dw   `00000000                                     ;; 03:7569 $00 $00
-    dw   `00002000                                     ;; 03:756b $00 $08
-
-    dw   `02002002                                     ;; 03:756d $00 $49
-    dw   `02000002                                     ;; 03:756f $00 $41
-    dw   `00000000                                     ;; 03:7571 $00 $00
-    dw   `00002000                                     ;; 03:7573 $00 $08
-    dw   `00000000                                     ;; 03:7575 $00 $00
-    dw   `00000000                                     ;; 03:7577 $00 $00
-    dw   `00020000                                     ;; 03:7579 $00 $10
-    dw   `00000000                                     ;; 03:757b $00 $00
-
-    dw   `00000000                                     ;; 03:757d $00 $00
-    dw   `10100000                                     ;; 03:757f $a0 $00
-    dw   `00110101                                     ;; 03:7581 $35 $00
-    dw   `00100000                                     ;; 03:7583 $20 $00
-    dw   `01011011                                     ;; 03:7585 $5b $00
-    dw   `00011010                                     ;; 03:7587 $1a $00
-    dw   `01100010                                     ;; 03:7589 $62 $00
-    dw   `01011011                                     ;; 03:758b $5b $00
-
-    dw   `00000101                                     ;; 03:758d $05 $00
-    dw   `01000001                                     ;; 03:758f $41 $00
-    dw   `00001000                                     ;; 03:7591 $08 $00
-    dw   `01101000                                     ;; 03:7593 $68 $00
-    dw   `01011001                                     ;; 03:7595 $59 $00
-    dw   `01000011                                     ;; 03:7597 $43 $00
-    dw   `10010010                                     ;; 03:7599 $92 $00
-    dw   `10111101                                     ;; 03:759b $bd $00
-
-    dw   `00000000                                     ;; 03:759d $00 $00
-    dw   `00000101                                     ;; 03:759f $05 $00
-    dw   `10101100                                     ;; 03:75a1 $ac $00
-    dw   `00000100                                     ;; 03:75a3 $04 $00
-    dw   `11011010                                     ;; 03:75a5 $da $00
-    dw   `01011000                                     ;; 03:75a7 $58 $00
-    dw   `01000110                                     ;; 03:75a9 $46 $00
-    dw   `11011010                                     ;; 03:75ab $da $00
-
-    dw   `10100000                                     ;; 03:75ad $a0 $00
-    dw   `10000010                                     ;; 03:75af $82 $00
-    dw   `00010000                                     ;; 03:75b1 $10 $00
-    dw   `00010110                                     ;; 03:75b3 $16 $00
-    dw   `10011010                                     ;; 03:75b5 $9a $00
-    dw   `11000010                                     ;; 03:75b7 $c2 $00
-    dw   `01001001                                     ;; 03:75b9 $49 $00
-    dw   `10111101                                     ;; 03:75bb $bd $00
-
-    dw   `00000101                                     ;; 03:75bd $05 $00
-    dw   `01000001                                     ;; 03:75bf $41 $00
-    dw   `00001000                                     ;; 03:75c1 $08 $00
-    dw   `01101000                                     ;; 03:75c3 $68 $00
-    dw   `01011001                                     ;; 03:75c5 $59 $00
-    dw   `01000011                                     ;; 03:75c7 $43 $00
-    dw   `10010010                                     ;; 03:75c9 $92 $00
-    dw   `10111101                                     ;; 03:75cb $bd $00
-
-    dw   `00000000                                     ;; 03:75cd $00 $00
-    dw   `10100000                                     ;; 03:75cf $a0 $00
-    dw   `00110101                                     ;; 03:75d1 $35 $00
-    dw   `00100000                                     ;; 03:75d3 $20 $00
-    dw   `01011011                                     ;; 03:75d5 $5b $00
-    dw   `00011010                                     ;; 03:75d7 $1a $00
-    dw   `01100010                                     ;; 03:75d9 $62 $00
-    dw   `01011011                                     ;; 03:75db $5b $00
-
-    dw   `10100000                                     ;; 03:75dd $a0 $00
-    dw   `10000010                                     ;; 03:75df $82 $00
-    dw   `00010000                                     ;; 03:75e1 $10 $00
-    dw   `00010110                                     ;; 03:75e3 $16 $00
-    dw   `10011010                                     ;; 03:75e5 $9a $00
-    dw   `11000010                                     ;; 03:75e7 $c2 $00
-    dw   `01001001                                     ;; 03:75e9 $49 $00
-    dw   `10111101                                     ;; 03:75eb $bd $00
-
-    dw   `00000000                                     ;; 03:75ed $00 $00
-    dw   `00000101                                     ;; 03:75ef $05 $00
-    dw   `10101100                                     ;; 03:75f1 $ac $00
-    dw   `00000100                                     ;; 03:75f3 $04 $00
-    dw   `11011010                                     ;; 03:75f5 $da $00
-    dw   `01011000                                     ;; 03:75f7 $58 $00
-    dw   `01000110                                     ;; 03:75f9 $46 $00
-    dw   `11011010                                     ;; 03:75fb $da $00
-
-    dw   `00000100                                     ;; 03:75fd $04 $00
-    dw   `10100000                                     ;; 03:75ff $a0 $00
-    dw   `00110101                                     ;; 03:7601 $35 $00
-    dw   `00100000                                     ;; 03:7603 $20 $00
-    dw   `01011011                                     ;; 03:7605 $5b $00
-    dw   `00011010                                     ;; 03:7607 $1a $00
-    dw   `01100010                                     ;; 03:7609 $62 $00
-    dw   `01011011                                     ;; 03:760b $5b $00
-
-    dw   `00000101                                     ;; 03:760d $05 $00
-    dw   `01000001                                     ;; 03:760f $41 $00
-    dw   `00001000                                     ;; 03:7611 $08 $00
-    dw   `01101000                                     ;; 03:7613 $68 $00
-    dw   `01011001                                     ;; 03:7615 $59 $00
-    dw   `01000011                                     ;; 03:7617 $43 $00
-    dw   `10010010                                     ;; 03:7619 $92 $00
-    dw   `10111101                                     ;; 03:761b $bd $00
-
-    dw   `11111111                                     ;; 03:761d $ff $00
-    dw   `11111011                                     ;; 03:761f $fb $00
-    dw   `11000111                                     ;; 03:7621 $c7 $00
-    dw   `01011001                                     ;; 03:7623 $59 $00
-    dw   `11101010                                     ;; 03:7625 $ea $00
-    dw   `00001000                                     ;; 03:7627 $08 $00
-    dw   `01000001                                     ;; 03:7629 $41 $00
-    dw   `00000101                                     ;; 03:762b $05 $00
-
-    dw   `11111111                                     ;; 03:762d $ff $00
-    dw   `01101111                                     ;; 03:762f $6f $00
-    dw   `10011110                                     ;; 03:7631 $9e $00
-    dw   `01011011                                     ;; 03:7633 $5b $00
-    dw   `00101000                                     ;; 03:7635 $28 $00
-    dw   `00110101                                     ;; 03:7637 $35 $00
-    dw   `10100000                                     ;; 03:7639 $a0 $00
-    dw   `00000100                                     ;; 03:763b $04 $00
-
-    dw   `00100000                                     ;; 03:763d $20 $00
-    dw   `00000101                                     ;; 03:763f $05 $00
-    dw   `10101100                                     ;; 03:7641 $ac $00
-    dw   `00000100                                     ;; 03:7643 $04 $00
-    dw   `11011010                                     ;; 03:7645 $da $00
-    dw   `01011000                                     ;; 03:7647 $58 $00
-    dw   `01000110                                     ;; 03:7649 $46 $00
-    dw   `11011010                                     ;; 03:764b $da $00
-
-    dw   `10100000                                     ;; 03:764d $a0 $00
-    dw   `10000010                                     ;; 03:764f $82 $00
-    dw   `00010000                                     ;; 03:7651 $10 $00
-    dw   `00010110                                     ;; 03:7653 $16 $00
-    dw   `10011010                                     ;; 03:7655 $9a $00
-    dw   `11000010                                     ;; 03:7657 $c2 $00
-    dw   `01001001                                     ;; 03:7659 $49 $00
-    dw   `10111101                                     ;; 03:765b $bd $00
-
-    dw   `11111111                                     ;; 03:765d $ff $00
-    dw   `11011111                                     ;; 03:765f $df $00
-    dw   `11100011                                     ;; 03:7661 $e3 $00
-    dw   `10011010                                     ;; 03:7663 $9a $00
-    dw   `01010111                                     ;; 03:7665 $57 $00
-    dw   `00010000                                     ;; 03:7667 $10 $00
-    dw   `10000010                                     ;; 03:7669 $82 $00
-    dw   `10100000                                     ;; 03:766b $a0 $00
-
-    dw   `11111111                                     ;; 03:766d $ff $00
-    dw   `11110110                                     ;; 03:766f $f6 $00
-    dw   `01111001                                     ;; 03:7671 $79 $00
-    dw   `11011010                                     ;; 03:7673 $da $00
-    dw   `00010100                                     ;; 03:7675 $14 $00
-    dw   `10101100                                     ;; 03:7677 $ac $00
-    dw   `00000101                                     ;; 03:7679 $05 $00
-    dw   `00100000                                     ;; 03:767b $20 $00
-
-    dw   `00000101                                     ;; 03:767d $05 $00
-    dw   `01000001                                     ;; 03:767f $41 $00
-    dw   `00001000                                     ;; 03:7681 $08 $00
-    dw   `01101000                                     ;; 03:7683 $68 $00
-    dw   `01011001                                     ;; 03:7685 $59 $00
-    dw   `01000011                                     ;; 03:7687 $43 $00
-    dw   `10010010                                     ;; 03:7689 $92 $00
-    dw   `10111101                                     ;; 03:768b $bd $00
-
-    dw   `00000100                                     ;; 03:768d $04 $00
-    dw   `10100000                                     ;; 03:768f $a0 $00
-    dw   `00110101                                     ;; 03:7691 $35 $00
-    dw   `00100000                                     ;; 03:7693 $20 $00
-    dw   `01011011                                     ;; 03:7695 $5b $00
-    dw   `00011010                                     ;; 03:7697 $1a $00
-    dw   `01100010                                     ;; 03:7699 $62 $00
-    dw   `01011011                                     ;; 03:769b $5b $00
-
-    dw   `11111111                                     ;; 03:769d $ff $00
-    dw   `01101111                                     ;; 03:769f $6f $00
-    dw   `10011110                                     ;; 03:76a1 $9e $00
-    dw   `01011011                                     ;; 03:76a3 $5b $00
-    dw   `00101000                                     ;; 03:76a5 $28 $00
-    dw   `00110101                                     ;; 03:76a7 $35 $00
-    dw   `10100000                                     ;; 03:76a9 $a0 $00
-    dw   `00000100                                     ;; 03:76ab $04 $00
-
-    dw   `11111111                                     ;; 03:76ad $ff $00
-    dw   `11111011                                     ;; 03:76af $fb $00
-    dw   `11000111                                     ;; 03:76b1 $c7 $00
-    dw   `01011001                                     ;; 03:76b3 $59 $00
-    dw   `11101010                                     ;; 03:76b5 $ea $00
-    dw   `00001000                                     ;; 03:76b7 $08 $00
-    dw   `01000001                                     ;; 03:76b9 $41 $00
-    dw   `00000101                                     ;; 03:76bb $05 $00
-
-    dw   `10100000                                     ;; 03:76bd $a0 $00
-    dw   `10000010                                     ;; 03:76bf $82 $00
-    dw   `00010000                                     ;; 03:76c1 $10 $00
-    dw   `00010110                                     ;; 03:76c3 $16 $00
-    dw   `10011010                                     ;; 03:76c5 $9a $00
-    dw   `11000010                                     ;; 03:76c7 $c2 $00
-    dw   `01001001                                     ;; 03:76c9 $49 $00
-    dw   `10111101                                     ;; 03:76cb $bd $00
-
-    dw   `00100000                                     ;; 03:76cd $20 $00
-    dw   `00000101                                     ;; 03:76cf $05 $00
-    dw   `10101100                                     ;; 03:76d1 $ac $00
-    dw   `00000100                                     ;; 03:76d3 $04 $00
-    dw   `11011010                                     ;; 03:76d5 $da $00
-    dw   `01011000                                     ;; 03:76d7 $58 $00
-    dw   `01000110                                     ;; 03:76d9 $46 $00
-    dw   `11011010                                     ;; 03:76db $da $00
-
-    dw   `11111111                                     ;; 03:76dd $ff $00
-    dw   `11110110                                     ;; 03:76df $f6 $00
-    dw   `01111001                                     ;; 03:76e1 $79 $00
-    dw   `11011010                                     ;; 03:76e3 $da $00
-    dw   `00010100                                     ;; 03:76e5 $14 $00
-    dw   `10101100                                     ;; 03:76e7 $ac $00
-    dw   `00000101                                     ;; 03:76e9 $05 $00
-    dw   `00100000                                     ;; 03:76eb $20 $00
-
-    dw   `11111111                                     ;; 03:76ed $ff $00
-    dw   `11011111                                     ;; 03:76ef $df $00
-    dw   `11100011                                     ;; 03:76f1 $e3 $00
-    dw   `10011010                                     ;; 03:76f3 $9a $00
-    dw   `01010111                                     ;; 03:76f5 $57 $00
-    dw   `00010000                                     ;; 03:76f7 $10 $00
-    dw   `10000010                                     ;; 03:76f9 $82 $00
-    dw   `10100000                                     ;; 03:76fb $a0 $00
-
-image_003_76fd.bin:
-    INCBIN ".gfx/misc_sprites/image_003_76fd.bin"
+data_03_747d:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_747d.bin"
+data_03_74bd:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_74bd.bin"
+data_03_74fd:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_74fd.bin"
+data_03_753d:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_753d.bin"
+data_03_757d:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_757d.bin"
+data_03_759d:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_759d.bin"
+data_03_75bd:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_75bd.bin"
+data_03_75dd:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_75dd.bin"
+data_03_75fd:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_75fd.bin"
+data_03_763d:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_763d.bin"
+data_03_767d:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_767d.bin"
+data_03_76bd:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_76bd.bin"
+data_03_76fd:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_76fd.bin"
+data_03_775d:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_775d.bin"
+data_03_77bd:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_77bd.bin"
+data_03_781d:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_781d.bin"
+data_03_787d:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_787d.bin"
+data_03_789d:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_789d.bin"
+data_03_78bd:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_78bd.bin"
+data_03_78fd:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_78fd.bin"
+data_03_793d:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_793d.bin"
+data_03_797d:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_797d.bin"
+data_03_79bd:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_79bd.bin"
+data_03_79fd:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_79fd.bin"
+data_03_7a3d:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_7a3d.bin"
+data_03_7a7d:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_7a7d.bin"
+data_03_7abd:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_7abd.bin"
+data_03_7add:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_7add.bin"
+data_03_7afd:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_7afd.bin"
+data_03_7b0d:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_7b0d.bin"
+data_03_7b1d:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_7b1d.bin"
+data_03_7b2d:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_7b2d.bin"
+data_03_7b3d:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_7b3d.bin"
+data_03_7b4d:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_7b4d.bin"
+data_03_7b5d:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_7b5d.bin"
+data_03_7b6d:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_7b6d.bin"
+data_03_7b7d:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_7b7d.bin"
+data_03_7b9d:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_7b9d.bin"
+data_03_7bbd:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_7bbd.bin"
+data_03_7bdd:
+    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_7bdd.bin"
 
 data_03_7bfd:
     db   $ff, $00, $00, $00, $00, $00, $00, $00        ;; 03:7bfd ????????

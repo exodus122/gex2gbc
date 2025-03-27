@@ -2,6 +2,9 @@
 
 SECTION "bank0b", ROMX[$4000], BANK[$0b]
 
+; This file handles loading collectibles in maps (and where they are in each level),
+; gex's spawns throughout the levels, and many palettes.
+
 entry_0b_4000:
     xor  A, A                                          ;; 0b:4000 $af
     ld   L, A                                          ;; 0b:4001 $6f
@@ -112,45 +115,45 @@ entry_0b_4000:
     dw   .data_40a0_media_dimension_collectible_coords
 
 .data_40a0_media_dimension_collectible_coords:
-	INCBIN "./maps/media_dimension/collectible_list_media_dimension.bin"
+    INCBIN "./maps/media_dimension/collectible_list_media_dimension.bin"
 .data_40a4_out_of_toon_collectible_coords:
-	INCBIN "./maps/toon_tv/collectible_list_out_of_toon.bin"
+    INCBIN "./maps/toon_tv/collectible_list_out_of_toon.bin"
 .data_41b8_smellraiser_collectible_coords:
-	INCBIN "./maps/scream_tv/collectible_list_smellraiser.bin"
+    INCBIN "./maps/scream_tv/collectible_list_smellraiser.bin"
 .data_4254_frankensteinfeld_collectible_coords:
-	INCBIN "./maps/scream_tv/collectible_list_frankensteinfeld.bin"
+    INCBIN "./maps/scream_tv/collectible_list_frankensteinfeld.bin"
 .data_430a_wwwdotcomcom_collectible_coords:
-	INCBIN "./maps/circuit_central/collectible_list_wwwdotcomcom.bin"
+    INCBIN "./maps/circuit_central/collectible_list_wwwdotcomcom.bin"
 .data_4400_mao_tse_tongue_collectible_coords:
-	INCBIN "./maps/kung_fu_theater/collectible_list_mao_tse_tongue.bin"
+    INCBIN "./maps/kung_fu_theater/collectible_list_mao_tse_tongue.bin"
 .data_44d0_pangaea_90210_collectible_coords:
-	INCBIN "./maps/prehistory_channel/collectible_list_pangaea_90210.bin"
+    INCBIN "./maps/prehistory_channel/collectible_list_pangaea_90210.bin"
 .data_45b4_fine_tooning_collectible_coords:
-	INCBIN "./maps/toon_tv/collectible_list_fine_tooning.bin"
+    INCBIN "./maps/toon_tv/collectible_list_fine_tooning.bin"
 .data_467a_this_old_cave_collectible_coords:
-	INCBIN "./maps/prehistory_channel/collectible_list_this_old_cave.bin"
+    INCBIN "./maps/prehistory_channel/collectible_list_this_old_cave.bin"
 .data_4778_honey_i_shrunk_the_gecko_collectible_coords:
-	INCBIN "./maps/circuit_central/collectible_list_honey_i_shrunk_the_gecko.bin"
+    INCBIN "./maps/circuit_central/collectible_list_honey_i_shrunk_the_gecko.bin"
 .data_48fe_poltergex_collectible_coords:
-	INCBIN "./maps/scream_tv/collectible_list_poltergex.bin"
+    INCBIN "./maps/scream_tv/collectible_list_poltergex.bin"
 .data_497a_samurai_night_fever_collectible_coords:
-	INCBIN "./maps/kung_fu_theater/collectible_list_samurai_night_fever.bin"
+    INCBIN "./maps/kung_fu_theater/collectible_list_samurai_night_fever.bin"
 .data_4a66_no_weddings_and_a_funeral_collectible_coords:
-	INCBIN "./maps/rezopolis/collectible_list_no_weddings_and_a_funeral.bin"
+    INCBIN "./maps/rezopolis/collectible_list_no_weddings_and_a_funeral.bin"
 .data_4b0e_thursday_the_12th_collectible_coords:
-	INCBIN "./maps/scream_tv/collectible_list_thursday_the_12th.bin"
+    INCBIN "./maps/scream_tv/collectible_list_thursday_the_12th.bin"
 .data_4b0e_lizard_in_a_china_shop_collectible_coords:
-	INCBIN "./maps/kung_fu_theater/collectible_list_lizard_in_a_china_shop.bin"
+    INCBIN "./maps/kung_fu_theater/collectible_list_lizard_in_a_china_shop.bin"
 .data_4bb4_bugged_out_collectible_coords:
-	INCBIN "./maps/rezopolis/collectible_list_bugged_out.bin"
+    INCBIN "./maps/rezopolis/collectible_list_bugged_out.bin"
 .data_4bb6_chips_and_dips_collectible_coords:
-	INCBIN "./maps/circuit_central/collectible_list_chips_and_dips.bin"
+    INCBIN "./maps/circuit_central/collectible_list_chips_and_dips.bin"
 .data_4c2c_lava_dabba_doo_collectible_coords:
-	INCBIN "./maps/prehistory_channel/collectible_list_lava_dabba_doo.bin"
+    INCBIN "./maps/prehistory_channel/collectible_list_lava_dabba_doo.bin"
 .data_4d3a_texas_chainsaw_manicure_collectible_coords:
-	INCBIN "./maps/scream_tv/collectible_list_texas_chainsaw_manicure.bin"
+    INCBIN "./maps/scream_tv/collectible_list_texas_chainsaw_manicure.bin"
 .data_4dee_mazed_and_confused_collectible_coords:
-	INCBIN "./maps/rezopolis/collectible_list_mazed_and_confused.bin"
+    INCBIN "./maps/rezopolis/collectible_list_mazed_and_confused.bin"
 
 entry_0b_4efe_SpawnPositionInMap:
     ld   HL, wD621                                     ;; 0b:4efe $21 $21 $d6
@@ -317,52 +320,58 @@ entry_0b_4efe_SpawnPositionInMap:
     ld   [wD211], A                                    ;; 0b:4fec $ea $11 $d2
     jp   call_00_13a6                                  ;; 0b:4fef $c3 $a6 $13
 .data_LevelDoorSpawns:
-    db   $30, $50
-	db   $51, $50
-	db   $66, $50
-	db   $97, $50        ;; 0b:4ff2 ????????
-    db   $e0, $50
-	db   $11, $51
-	db   $30, $50
-	db   $82, $51        ;; 0b:4ffa ????????
-    db   $9b, $51
-	db   $30, $50
-	db   $ac, $51
-	db   $ed, $51        ;; 0b:5002 ????????
-    db   $30, $50
-	db   $66, $52
-	db   $93, $52
-	db   $30, $50        ;; 0b:500a ????????
-    db   $d4, $52
-	db   $30, $50
-	db   $30, $50
-	db   $30, $50        ;; 0b:5012 ????????
-    db   $30, $50
-	db   $30, $50
-	db   $30, $50
-	db   $30, $50        ;; 0b:501a ????????
-    db   $89, $53
-	db   $c2, $53
-	db   $f3, $53
-	db   $30, $50        ;; 0b:5022 ????????
-    db   $30, $50
-	db   $30, $50
-	db   $fc, $53
-
-	db   $25, $0e        ;; 0b:502a ????????
+    dw   .data_0b_5030
+    dw   .data_0b_5051
+    dw   .data_0b_5066
+    dw   .data_0b_5097
+    dw   .data_0b_50e0
+    dw   .data_0b_5111
+    dw   .data_0b_5030
+    dw   .data_0b_5182
+    dw   .data_0b_519b
+    dw   .data_0b_5030
+    dw   .data_0b_51ac
+    dw   .data_0b_51ed
+    dw   .data_0b_5030
+    dw   .data_0b_5266
+    dw   .data_0b_5293
+    dw   .data_0b_5030
+    dw   .data_0b_52d4
+    dw   .data_0b_5030
+    dw   .data_0b_5030
+    dw   .data_0b_5030
+    dw   .data_0b_5030
+    dw   .data_0b_5030
+    dw   .data_0b_5030
+    dw   .data_0b_5030
+    dw   .data_0b_5389
+    dw   .data_0b_53c2
+    dw   .data_0b_53f3
+    dw   .data_0b_5030
+    dw   .data_0b_5030
+    dw   .data_0b_5030
+    dw   .data_0b_53fc
+.data_0b_5030:
+    db   $25, $0e                                      ;; 0b:5030 ????????
     db   $07, $17, $1b, $17, $07, $24, $2f, $17        ;; 0b:5032 ????????
     db   $07, $4d, $43, $17, $27, $3a, $07, $17        ;; 0b:503a ????????
     db   $25, $0e, $07, $24, $1b, $17, $07, $4d        ;; 0b:5042 ????????
-    db   $2f, $17, $27, $3a, $43, $17, $ff, $41        ;; 0b:504a ????????
+    db   $2f, $17, $27, $3a, $43, $17, $ff
+.data_0b_5051:
+    db   $41                                            ;; 0b:5051 ????????
     db   $03, $03, $28, $6a, $1d, $03, $3c, $49        ;; 0b:5052 ????????
     db   $36, $52, $3e, $03, $28, $41, $03, $03        ;; 0b:505a ????????
-    db   $3c, $6a, $1d, $ff, $19, $07, $23, $09        ;; 0b:5062 ????????
+    db   $3c, $6a, $1d, $ff
+.data_0b_5066:
+    db   $19, $07, $23, $09        ;; 0b:5066 ????????
     db   $34, $06, $3f, $06, $47, $02, $02, $12        ;; 0b:506a ????????
     db   $2d, $10, $37, $15, $3a, $0f, $02, $1b        ;; 0b:5072 ????????
     db   $3e, $0f, $28, $21, $23, $09, $19, $07        ;; 0b:507a ????????
     db   $3f, $06, $34, $06, $02, $12, $47, $02        ;; 0b:5082 ????????
     db   $37, $15, $2d, $10, $02, $1b, $3a, $0f        ;; 0b:508a ????????
-    db   $28, $21, $3e, $0f, $ff, $16, $33, $1d        ;; 0b:5092 ????????
+    db   $28, $21, $3e, $0f, $ff
+.data_0b_5097:
+    db   $16, $33, $1d        ;; 0b:5097 ????????
     db   $31, $23, $31, $2e, $30, $27, $31, $24        ;; 0b:509a ????????
     db   $62, $43, $2a, $4d, $2d, $4c, $32, $02        ;; 0b:50a2 ????????
     db   $42, $50, $2b, $0a, $3b, $1e, $41, $08        ;; 0b:50aa ????????
@@ -371,13 +380,17 @@ entry_0b_4efe_SpawnPositionInMap:
     db   $31, $24, $62, $27, $31, $4d, $2d, $43        ;; 0b:50c2 ????????
     db   $2a, $02, $42, $4c, $32, $0a, $3b, $50        ;; 0b:50ca ????????
     db   $2b, $08, $57, $1e, $41, $12, $3f, $71        ;; 0b:50d2 ????????
-    db   $28, $28, $3f, $76, $46, $ff, $0b, $06        ;; 0b:50da ????????
+    db   $28, $28, $3f, $76, $46, $ff
+.data_0b_50e0:
+    db   $0b, $06        ;; 0b:50da ????????
     db   $2b, $09, $13, $07, $1d, $21, $7c, $0a        ;; 0b:50e2 ????????
     db   $04, $42, $7c, $21, $1d, $2f, $65, $2f        ;; 0b:50ea ????????
     db   $1c, $43, $3d, $41, $46, $42, $2b, $09        ;; 0b:50f2 ????????
     db   $0b, $06, $1d, $21, $13, $07, $04, $42        ;; 0b:50fa ????????
     db   $7c, $0a, $1d, $2f, $7c, $21, $1c, $43        ;; 0b:5102 ????????
-    db   $65, $2f, $46, $42, $3d, $41, $ff, $09        ;; 0b:510a ????????
+    db   $65, $2f, $46, $42, $3d, $41, $ff
+.data_0b_5111:
+    db   $09        ;; 0b:5111 ????????
     db   $1d, $2b, $06, $40, $05, $09, $19, $16        ;; 0b:5112 ????????
     db   $19, $48, $05, $4d, $05, $40, $12, $52        ;; 0b:511a ????????
     db   $0e, $09, $15, $19, $15, $5f, $1f, $68        ;; 0b:5122 ????????
@@ -392,12 +405,17 @@ entry_0b_4efe_SpawnPositionInMap:
     db   $2c, $07, $2a, $28, $35, $19, $1d, $35        ;; 0b:516a ????????
     db   $28, $2c, $35, $39, $3a, $35, $22, $5e        ;; 0b:5172 ????????
     db   $35, $4b, $34, $5c, $45, $6a, $35, $ff        ;; 0b:517a ????????
+.data_0b_5182:
     db   $57, $03, $5a, $3b, $5a, $3b, $57, $03        ;; 0b:5182 ????????
     db   $7c, $03, $03, $37, $7b, $12, $03, $46        ;; 0b:518a ????????
     db   $03, $37, $7c, $03, $03, $46, $7b, $12        ;; 0b:5192 ????????
-    db   $ff, $17, $44, $4a, $7d, $4a, $7d, $17        ;; 0b:519a ????????
+    db   $ff
+.data_0b_519b:
+    db   $17, $44, $4a, $7d, $4a, $7d, $17        ;; 0b:519b ????????
     db   $44, $31, $4b, $3f, $65, $3f, $65, $31        ;; 0b:51a2 ????????
-    db   $4b, $ff, $04, $0e, $26, $1b, $36, $0e        ;; 0b:51aa ????????
+    db   $4b, $ff
+.data_0b_51ac:
+    db   $04, $0e, $26, $1b, $36, $0e        ;; 0b:51ac ????????
     db   $4f, $34, $4f, $2f, $41, $34, $43, $27        ;; 0b:51b2 ????????
     db   $64, $21, $47, $21, $0d, $6c, $58, $11        ;; 0b:51ba ????????
     db   $62, $13, $79, $25, $04, $41, $63, $41        ;; 0b:51c2 ????????
@@ -405,7 +423,9 @@ entry_0b_4efe_SpawnPositionInMap:
     db   $36, $0e, $41, $34, $4f, $2f, $64, $21        ;; 0b:51d2 ????????
     db   $43, $27, $0d, $6c, $47, $21, $62, $13        ;; 0b:51da ????????
     db   $58, $11, $04, $41, $79, $25, $69, $51        ;; 0b:51e2 ????????
-    db   $63, $41, $ff, $59, $35, $03, $4d, $09        ;; 0b:51ea ????????
+    db   $63, $41, $ff
+.data_0b_51ed:
+    db   $59, $35, $03, $4d, $09        ;; 0b:51ed ????????
     db   $49, $3c, $4c, $11, $4d, $02, $3f, $28        ;; 0b:51f2 ????????
     db   $3e, $4e, $47, $03, $3b, $46, $42, $46        ;; 0b:51fa ????????
     db   $3c, $37, $35, $54, $47, $31, $58, $56        ;; 0b:5202 ????????
@@ -420,13 +440,17 @@ entry_0b_4efe_SpawnPositionInMap:
     db   $53, $59, $29, $03, $54, $2a, $54, $16        ;; 0b:524a ????????
     db   $54, $47, $4a, $35, $3f, $55, $42, $35        ;; 0b:5252 ????????
     db   $3c, $57, $3c, $4c, $29, $02, $2d, $4c        ;; 0b:525a ????????
-    db   $35, $02, $31, $ff, $0b, $0c, $68, $22        ;; 0b:5262 ????????
+    db   $35, $02, $31, $ff
+.data_0b_5266:
+    db   $0b, $0c, $68, $22        ;; 0b:5266 ????????
     db   $69, $05, $09, $1e, $13, $0c, $07, $31        ;; 0b:526a ????????
     db   $17, $0c, $03, $48, $68, $22, $0b, $0c        ;; 0b:5272 ????????
     db   $09, $1e, $69, $05, $07, $31, $13, $0c        ;; 0b:527a ????????
     db   $03, $48, $17, $0c, $63, $11, $39, $0a        ;; 0b:5282 ????????
     db   $1a, $46, $31, $54, $31, $54, $1a, $46        ;; 0b:528a ????????
-    db   $ff, $14, $07, $1b, $07, $26, $07, $0b        ;; 0b:5292 ????????
+    db   $ff
+.data_0b_5293:
+    db   $14, $07, $1b, $07, $26, $07, $0b        ;; 0b:5293 ????????
     db   $28, $0b, $15, $06, $2f, $0e, $2f, $05        ;; 0b:529a ????????
     db   $5a, $29, $53, $05, $64, $1d, $64, $2c        ;; 0b:52a2 ????????
     db   $5e, $31, $51, $42, $56, $56, $52, $42        ;; 0b:52aa ????????
@@ -434,7 +458,9 @@ entry_0b_4efe_SpawnPositionInMap:
     db   $07, $06, $2f, $0b, $15, $05, $5a, $0e        ;; 0b:52ba ????????
     db   $2f, $05, $64, $29, $53, $2c, $5e, $1d        ;; 0b:52c2 ????????
     db   $64, $42, $56, $31, $51, $42, $60, $56        ;; 0b:52ca ????????
-    db   $52, $ff, $6a, $2e, $6d, $66, $6f, $2e        ;; 0b:52d2 ????????
+    db   $52, $ff
+.data_0b_52d4:
+    db   $6a, $2e, $6d, $66, $6f, $2e        ;; 0b:52d4 ????????
     db   $65, $34, $74, $2e, $6f, $2e, $65, $31        ;; 0b:52da ????????
     db   $65, $34, $6a, $31, $74, $31, $74, $31        ;; 0b:52e2 ????????
     db   $6a, $31, $65, $34, $74, $2e, $6f, $34        ;; 0b:52ea ????????
@@ -456,7 +482,9 @@ entry_0b_4efe_SpawnPositionInMap:
     db   $6a, $4e, $65, $55, $74, $55, $6a, $55        ;; 0b:536a ????????
     db   $65, $52, $6f, $55, $74, $55, $74, $55        ;; 0b:5372 ????????
     db   $6a, $55, $6d, $66, $6a, $2e, $65, $5c        ;; 0b:537a ????????
-    db   $74, $3a, $71, $5c, $6f, $34, $ff, $03        ;; 0b:5382 ????????
+    db   $74, $3a, $71, $5c, $6f, $34, $ff
+.data_0b_5389:
+    db   $03        ;; 0b:5389 ????????
     db   $0e, $02, $1f, $02, $1f, $03, $0e, $0b        ;; 0b:538a ????????
     db   $0e, $1b, $1f, $1b, $1f, $0b, $0e, $15        ;; 0b:5392 ????????
     db   $0f, $34, $14, $34, $14, $15, $0f, $57        ;; 0b:539a ????????
@@ -464,14 +492,20 @@ entry_0b_4efe_SpawnPositionInMap:
     db   $1d, $16, $2a, $16, $2a, $0e, $1d, $26        ;; 0b:53aa ????????
     db   $1f, $3b, $2e, $3b, $2e, $26, $1f, $27        ;; 0b:53b2 ????????
     db   $2e, $04, $35, $04, $35, $27, $2e, $ff        ;; 0b:53ba ????????
+.data_0b_53c2:
     db   $03, $03, $18, $0f, $25, $04, $2c, $0a        ;; 0b:53c2 ????????
     db   $3e, $04, $58, $09, $44, $03, $61, $07        ;; 0b:53ca ????????
     db   $51, $04, $02, $19, $02, $15, $1d, $1c        ;; 0b:53d2 ????????
     db   $18, $0f, $03, $03, $2c, $0a, $25, $04        ;; 0b:53da ????????
     db   $58, $09, $3e, $04, $61, $07, $44, $03        ;; 0b:53e2 ????????
     db   $02, $19, $51, $04, $1d, $1c, $02, $15        ;; 0b:53ea ????????
-    db   $ff, $1d, $2d, $5a, $0a, $5a, $0a, $1d        ;; 0b:53f2 ????????
-    db   $2d, $ff, $62, $7d, $70, $7d, $ff             ;; 0b:53fa ???????
+    db   $ff
+.data_0b_53f3:
+    db   $1d, $2d, $5a, $0a, $5a, $0a, $1d        ;; 0b:53f3 ????????
+    db   $2d, $ff
+.data_0b_53fc:
+    db   $62, $7d, $70, $7d, $ff             ;; 0b:53fc ???????
+
 .data_MediaDimensionSpawns:
     db   $25, $0d
     db   $05, $0b
@@ -572,13 +606,11 @@ call_0b_561b:
     inc  C                                             ;; 0b:561b $0c
     dec  C                                             ;; 0b:561c $0d
     jr   NZ, call_0b_5651                               ;; 0b:561d $20 $32
-
-
     ld   HL, wD624_CurrentLevelId                                     ;; 0b:561f $21 $24 $d6
     ld   L, [HL]                                       ;; 0b:5622 $6e
     ld   H, $00                                        ;; 0b:5623 $26 $00
     add  HL, HL                                        ;; 0b:5625 $29
-    ld   DE, data_0b_5665                             ;; 0b:5626 $11 $65 $56
+    ld   DE, data_0b_5665_level_palettes                             ;; 0b:5626 $11 $65 $56
     add  HL, DE                                        ;; 0b:5629 $19
     ld   A, [HL+]                                      ;; 0b:562a $2a
     ld   H, [HL]                                       ;; 0b:562b $66
@@ -610,25 +642,61 @@ call_0b_5651:
     ld   BC, $80                                       ;; 0b:565f $01 $80 $00
     jp   call_00_07b0_CopyBytes                                  ;; 0b:5662 $c3 $b0 $07
 
-data_0b_5665:
-    db   $0b, $5b, $4b, $5b, $8b, $5b, $8b, $5b        ;; 0b:5665 ......??
-    db   $cb, $5b, $0b, $5c, $0b, $5b, $8b, $5c        ;; 0b:566d ????????
-    db   $4b, $5b, $8b, $5c, $cb, $5b, $8b, $5b        ;; 0b:5675 ????????
-    db   $0b, $5b, $0b, $5c, $cb, $5c, $0b, $5b        ;; 0b:567d ????????
-    db   $8b, $5b, $0b, $5b, $0b, $5b, $0b, $5b        ;; 0b:5685 ????????
-    db   $0b, $5b, $4b, $5c, $cb, $5c, $cb, $5b        ;; 0b:568d ????????
-    db   $8b, $5c, $8b, $5b, $cb, $5c, $0b, $5b        ;; 0b:5695 ????????
-    db   $0b, $5b, $0b, $5b, $0b, $5d                  ;; 0b:569d ??????
+data_0b_5665_level_palettes:
+    dw   palette_media_dimension
+    dw   palette_toon_tv
+    dw   palette_scream_tv
+    dw   palette_scream_tv
+    dw   palette_circuit_central
+    dw   palette_kung_fu_theater
+    dw   palette_media_dimension
+    dw   palette_prehistory_channel
+    dw   palette_toon_tv
+    dw   palette_prehistory_channel
+    dw   palette_circuit_central
+    dw   palette_scream_tv
+    dw   palette_media_dimension
+    dw   palette_kung_fu_theater
+    dw   palette_rezopolis
+    dw   palette_media_dimension
+    dw   palette_scream_tv
+    dw   palette_media_dimension
+    dw   palette_media_dimension
+    dw   palette_media_dimension
+    dw   palette_media_dimension
+    dw   palette_kung_fu_theater2
+    dw   palette_rezopolis
+    dw   palette_circuit_central
+    dw   palette_prehistory_channel
+    dw   palette_scream_tv
+    dw   palette_rezopolis
+    dw   palette_media_dimension
+    dw   palette_media_dimension
+    dw   palette_media_dimension
+    dw   palette_channel_z
 data_0b_56a3:
-    db   $00, $00, $c3, $56, $03, $57, $43, $57        ;; 0b:56a3 ??....??
-    db   $c3, $57, $03, $58, $83, $5a, $4b, $da        ;; 0b:56ab ????....
-    db   $43, $58, $83, $58, $c3, $58, $03, $59        ;; 0b:56b3 ......??
-    db   $43, $59, $83, $59, $c3, $59, $03, $5a        ;; 0b:56bb ????????
-image_title_screen_008_1_palette.bin: ; Palette for actual title screen splash (start/password)
+    dw   $0000
+    dw   image_title_screen_008_1_palette
+    dw   image_title_screen_008_0_palette
+    dw   data_5743_Palette
+    dw   data_57c3_Palette
+    dw   image_great_job_00c_2_palette
+    dw   data_5a83_Palette
+    dw   $da4b
+    dw   image_splash_01f_1_palette
+    dw   image_crave_01f_0_palette
+    dw   image_david_01e_0_palette
+    dw   data_5903_Palette
+    dw   data_5943_Palette
+    dw   data_5983_Palette
+    dw   data_59c3_Palette
+    dw   data_5a03_Palette
+
+image_title_screen_008_1_palette: ; Palette for actual title screen splash (start/password) ; 56c3
     INCBIN "gfx/splash/palettes/image_title_screen_008_1_palette.bin"    
-image_title_screen_008_0_palette.bin: ; Palette for 4th title screen splash (big gex image)
+image_title_screen_008_0_palette: ; Palette for 4th title screen splash (big gex image) ; 5703
     INCBIN "gfx/splash/palettes/image_title_screen_008_0_palette.bin"    
-.data_5743_Palette: ; Palette for Password Entering Screen on title screen
+data_5743_Palette: ; Palette for Password Entering Screen on title screen ; 5743
     db   $00, $00, $4a, $29, $73, $52, $5a, $6b        ;; 0b:5743 ........
     db   $00, $00, $8c, $01, $c0, $02, $5a, $03        ;; 0b:574b ........
     db   $00, $00, $10, $42, $18, $63, $ff, $7f        ;; 0b:5753 ........
@@ -637,7 +705,7 @@ image_title_screen_008_0_palette.bin: ; Palette for 4th title screen splash (big
     db   $00, $00, $ef, $01, $f7, $02, $ff, $03        ;; 0b:576b ........
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:5773 ........
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:577b ........
-.data_5783_Palette: ; Palette for ???
+data_5783_Palette: ; Palette for ??? ; 5783
     db   $00, $00, $4a, $29, $73, $52, $5a, $6b        ;; 0b:5783 ????????
     db   $00, $00, $8c, $01, $c0, $02, $5a, $03        ;; 0b:578b ????????
     db   $00, $00, $10, $42, $18, $63, $ff, $7f        ;; 0b:5793 ????????
@@ -646,7 +714,7 @@ image_title_screen_008_0_palette.bin: ; Palette for 4th title screen splash (big
     db   $00, $00, $ef, $01, $f7, $02, $ff, $03        ;; 0b:57ab ????????
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:57b3 ????????
     db   $00, $00, $00, $00, $6b, $2d, $5a, $6b        ;; 0b:57bb ????????
-.data_57c3_Palette: ; Palette for ???
+data_57c3_Palette: ; Palette for ??? ; 57c3
     db   $e0, $01, $e0, $01, $e0, $01, $e0, $01        ;; 0b:57c3 ????????
     db   $00, $00, $8d, $00, $74, $01, $bc, $02        ;; 0b:57cb ????????
     db   $00, $00, $0c, $01, $36, $02, $00, $7c        ;; 0b:57d3 ????????
@@ -655,15 +723,15 @@ image_title_screen_008_0_palette.bin: ; Palette for 4th title screen splash (big
     db   $00, $00, $05, $25, $4e, $52, $12, $6f        ;; 0b:57eb ????????
     db   $00, $00, $8d, $00, $36, $02, $bc, $02        ;; 0b:57f3 ????????
     db   $00, $00, $3b, $04, $41, $69, $e0, $76        ;; 0b:57fb ????????
-image_great_job_00c_2_palette.bin: ; Palette for "Great Job! Thanks for Playing- The GEX Team"
+image_great_job_00c_2_palette: ; Palette for "Great Job! Thanks for Playing- The GEX Team" ; 5803
     INCBIN "gfx/splash/palettes/image_great_job_00c_2_palette.bin"
-image_splash_01f_1_palette.bin: ; Palette for first title screen splash (gex enter the gecko)
+image_splash_01f_1_palette: ; Palette for first title screen splash (gex enter the gecko) ; 5843
     INCBIN "gfx/splash/palettes/image_splash_01f_1_palette.bin"
-image_crave_01f_0_palette.bin: ; Palette for 2nd title screen splash (CRAVE entertainment)
+image_crave_01f_0_palette: ; Palette for 2nd title screen splash (CRAVE entertainment) ; 5883
     INCBIN "gfx/splash/palettes/image_crave_01f_0_palette.bin"
-image_david_01e_0_palette.bin: ; Palette for 3rd title screen splash (David A Palmer Productions)
+image_david_01e_0_palette: ; Palette for 3rd title screen splash (David A Palmer Productions) ; 58c3
     INCBIN "gfx/splash/palettes/image_david_01e_0_palette.bin"
-.data_5903_Palette: ; Palette for credits?
+data_5903_Palette: ; Palette for credits?
     db   $ff, $7f, $bf, $63, $f7, $4a, $00, $00        ;; 0b:5903 ........
     db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:590b ........
     db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:5913 ........
@@ -672,7 +740,7 @@ image_david_01e_0_palette.bin: ; Palette for 3rd title screen splash (David A Pa
     db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:592b ........
     db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:5933 ........
     db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:593b ........
-.data_5943_Palette: ; Palette for credits?
+data_5943_Palette: ; Palette for credits?
     db   $ff, $7f, $bf, $63, $f7, $4a, $00, $00        ;; 0b:5943 ????????
     db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:594b ????????
     db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:5953 ????????
@@ -681,7 +749,7 @@ image_david_01e_0_palette.bin: ; Palette for 3rd title screen splash (David A Pa
     db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:596b ????????
     db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:5973 ????????
     db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:597b ????????
-.data_5983_Palette: ; Palette for credits?
+data_5983_Palette: ; Palette for credits?
     db   $ff, $7f, $bf, $63, $f7, $4a, $00, $00        ;; 0b:5983 ????????
     db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:598b ????????
     db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:5993 ????????
@@ -690,7 +758,7 @@ image_david_01e_0_palette.bin: ; Palette for 3rd title screen splash (David A Pa
     db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:59ab ????????
     db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:59b3 ????????
     db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:59bb ????????
-.data_59c3_Palette: ; Palette for credits?
+data_59c3_Palette: ; Palette for credits?
     db   $ff, $7f, $bf, $63, $f7, $4a, $00, $00        ;; 0b:59c3 ????????
     db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:59cb ????????
     db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:59d3 ????????
@@ -699,7 +767,7 @@ image_david_01e_0_palette.bin: ; Palette for 3rd title screen splash (David A Pa
     db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:59eb ????????
     db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:59f3 ????????
     db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:59fb ????????
-; unknown palette. may be unused.
+data_5a03_Palette: ; unknown palette. may be unused.
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:5a03 ????????
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:5a0b ????????
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:5a13 ????????
@@ -717,7 +785,7 @@ image_david_01e_0_palette.bin: ; Palette for 3rd title screen splash (David A Pa
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:5a6b ????????
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:5a73 ????????
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:5a7b ????????
-.data_5a83_Palette: ; Palette for "Entering <level>" screen, also the 4 pause screens (main, exit to map, quit game, totals)
+data_5a83_Palette: ; Palette for "Entering <level>" screen, also the 4 pause screens (main, exit to map, quit game, totals)
     db   $00, $00, $00, $02, $00, $00, $e0, $03        ;; 0b:5a83 ........
     db   $00, $00, $8c, $01, $c0, $02, $5a, $03        ;; 0b:5a8b ........
     db   $00, $00, $10, $42, $18, $63, $ff, $7f        ;; 0b:5a93 ........
@@ -738,30 +806,23 @@ image_david_01e_0_palette.bin: ; Palette for 3rd title screen splash (David A Pa
 data_gex_object_palette2:
     db   $00, $00, $00, $00, $8a, $02, $fd, $03        ;; 0b:5b03 ........
 
-palette_media_dimension.bin:
+palette_media_dimension:
     INCBIN "gfx/tilesets/palettes/palette_media_dimension.bin"
-palette_toon_tv.bin:
+palette_toon_tv:
     INCBIN "gfx/tilesets/palettes/palette_toon_tv.bin"
-palette_scream_tv.bin:
+palette_scream_tv:
     INCBIN "gfx/tilesets/palettes/palette_scream_tv.bin"
-palette_circuit_central.bin:
+palette_circuit_central:
     INCBIN "gfx/tilesets/palettes/palette_circuit_central.bin"
-palette_kung_fu_theater.bin:
+palette_kung_fu_theater:
     INCBIN "gfx/tilesets/palettes/palette_kung_fu_theater.bin"
-palette_unknown:
-    db   $00, $00, $D1, $01, $CF, $45, $73, $5E, 
-    db   $00, $00, $A4, $45, $C4, $51, $05, $5A, 
-    db   $00, $00, $19, $00, $99, $26, $DF, $63, 
-    db   $00, $00, $D1, $01, $86, $6A, $97, $02, 
-    db   $00, $00, $19, $00, $86, $6A, $5E, $03, 
-    db   $00, $00, $19, $00, $7C, $02, $5E, $03, 
-    db   $00, $00, $80, $02, $86, $6A, $2C, $3B, 
-    db   $00, $00, $D1, $01, $A0, $55, $A7, $76
-palette_prehistory_channel.bin:
+palette_kung_fu_theater2:
+    INCBIN "gfx/tilesets/palettes/palette_kung_fu_theater2.bin"
+palette_prehistory_channel:
     INCBIN "gfx/tilesets/palettes/palette_prehistory_channel.bin"
-palette_rezopolis.bin:
+palette_rezopolis:
     INCBIN "gfx/tilesets/palettes/palette_rezopolis.bin"
-palette_channel_z.bin:
+palette_channel_z:
     INCBIN "gfx/tilesets/palettes/palette_channel_z.bin"
 
 entry_0b_5d4b:

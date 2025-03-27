@@ -2,7 +2,7 @@
 
 SECTION "bank02", ROMX[$4000], BANK[$02]
 
-; This file contains the routines for all objects.
+; This file updates all objects.
 ; Below is a table of jump tables, one for each object
 
 data_02_4000_ObjectJumpTables:

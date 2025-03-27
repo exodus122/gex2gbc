@@ -8,8 +8,8 @@ INCLUDE "memory.asm"
 
 INCLUDE "bank00_home.asm"
 INCLUDE "bank01_menus.asm"
-INCLUDE "bank02_object_routines.asm"
-INCLUDE "bank03_unknown.asm"
+INCLUDE "bank02_update_objects.asm"
+INCLUDE "bank03_misc.asm"
 
 INCLUDE "bank04_07_gex_sprites.asm"
 
@@ -32,7 +32,7 @@ image_009_4000.bin:
     INCBIN ".gfx/image_009_4000.bin"
 
 INCLUDE "bank0A_load_objects.asm"
-INCLUDE "bank0B_palettes.asm"
+INCLUDE "bank0B_collectibles_spawns_palettes.asm"
 
 SECTION "bank0c", ROMX[$4000], BANK[$0c]
 image_audio_menu_00c_0.bin:
