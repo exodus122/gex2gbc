@@ -152,7 +152,7 @@ data_02_4000_ObjectJumpTables:
     dw   data_02_51b3                                         ;; 02:411e wW
 
 data_02_4120:
-INCLUDE "player_object_routines.asm"
+INCLUDE "player_object_actions.asm"
 
 call_02_489a:
     ld   HL, wD759                                     ;; 02:489a $21 $59 $d7
@@ -868,7 +868,7 @@ call_02_4dd8:
     ld   A, $7d                                        ;; 02:4dd8 $3e $7d
     ret                                                ;; 02:4dda $c9
 
-INCLUDE "other_object_routines.asm"
+INCLUDE "other_object_actions.asm"
     
 entry_02_6e17:
     xor  A, A                                          ;; 02:6e17 $af

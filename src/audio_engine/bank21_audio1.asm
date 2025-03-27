@@ -8,9 +8,9 @@ SECTION "bank21", ROMX[$4000], BANK[$21]
 entry_21_4000:
     ld   HL, data_21_4460                              ;; 21:4000 $21 $60 $44
     ld   A, L                                          ;; 21:4003 $7d
-    ld   [wDFAE], A                                    ;; 21:4004 $ea $ae $df
+    ld   [wDFAE_AudioBankDataPointer], A                                    ;; 21:4004 $ea $ae $df
     ld   A, H                                          ;; 21:4007 $7c
-    ld   [wDFAF], A                                    ;; 21:4008 $ea $af $df
+    ld   [wDFAF_AudioBankDataPointer], A                                    ;; 21:4008 $ea $af $df
     xor  A, A                                          ;; 21:400b $af
     ld   [wDFC2], A                                    ;; 21:400c $ea $c2 $df
     ld   [wDFC1], A                                    ;; 21:400f $ea $c1 $df
@@ -81,9 +81,9 @@ call_21_4047:
     ld   [HL+], A                                      ;; 21:407c $22
     jr   .jr_21_4071                                   ;; 21:407d $18 $f2
 .jr_21_407f:
-    ld   A, [wDFAE]                                    ;; 21:407f $fa $ae $df
+    ld   A, [wDFAE_AudioBankDataPointer]                                    ;; 21:407f $fa $ae $df
     ld   E, A                                          ;; 21:4082 $5f
-    ld   A, [wDFAF]                                    ;; 21:4083 $fa $af $df
+    ld   A, [wDFAF_AudioBankDataPointer]                                    ;; 21:4083 $fa $af $df
     ld   D, A                                          ;; 21:4086 $57
     ld   A, [DE]                                       ;; 21:4087 $1a
     add  A, E                                          ;; 21:4088 $83
@@ -100,9 +100,9 @@ call_21_4092:
     ld   [wDFD0], A                                    ;; 21:4092 $ea $d0 $df
     ld   A, $02                                        ;; 21:4095 $3e $02
     ld   [wDFD1], A                                    ;; 21:4097 $ea $d1 $df
-    ld   A, [wDFAE]                                    ;; 21:409a $fa $ae $df
+    ld   A, [wDFAE_AudioBankDataPointer]                                    ;; 21:409a $fa $ae $df
     ld   E, A                                          ;; 21:409d $5f
-    ld   A, [wDFAF]                                    ;; 21:409e $fa $af $df
+    ld   A, [wDFAF_AudioBankDataPointer]                                    ;; 21:409e $fa $af $df
     ld   D, A                                          ;; 21:40a1 $57
     inc  DE                                            ;; 21:40a2 $13
     inc  DE                                            ;; 21:40a3 $13

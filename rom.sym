@@ -2345,8 +2345,8 @@
 00:dad9 wDAD9
 00:dada wDADA
 00:dadb wDADB
-00:dfae wDFAE
-00:dfaf wDFAF
+00:dfae wDFAE_AudioBankDataPointer
+00:dfaf wDFAF_AudioBankDataPointer
 00:dfb0 wDFB0
 00:dfb8 wDFB8
 00:dfb9 wDFB9

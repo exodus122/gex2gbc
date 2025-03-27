@@ -1149,12 +1149,17 @@ wDADA:
     ds 1                                               ;; dada
 
 wDADB:
-    ds 1235                                            ;; dadb
+    ds 2                                               ;; dadb
+	
+; DADD through DFAD seems be be unused memory
+	ds 1233
 
-wDFAE:
+; The rest of wram is used for audio-related memory
+
+wDFAE_AudioBankDataPointer: ; always 60 (as in 0x4460, which is where the audio data begins in all 4 audio banks)
     ds 1                                               ;; dfae
 
-wDFAF:
+wDFAF_AudioBankDataPointer: ; always 44 (as in 0x4460, which is where the audio data begins in all 4 audio banks)
     ds 1                                               ;; dfaf
 
 wDFB0:

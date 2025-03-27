@@ -6,6 +6,9 @@ import os
 
 '''
     
+    
+    
+    
  
 '''
 
@@ -30,96 +33,95 @@ unknown_color = "black"
 special_color = "silver"
 
 floor_color = "red"
-floor_sloped_color = "salmon"
-floor_wobble_on_edge_color = "magenta"
-wall_left_facing_color = "blue"
-wall_right_facing_color = "cyan"
-ceiling_color = "yellow"
-ceiling_and_wall_color = "green"
-floor_and_wall_color = "purple"
+floor_passable_color = "salmon"
+floor_passable_wobble_on_edge_color = "salmon" 
+ceiling_color = "red"
+ceiling_and_wall_color = "red"
+floor_and_wall_color = "red"
+wall_color = "blue"
 
-water_color = "navy"
+water_color = "cyan"
 lava_color = "orange"
 kill_color = "pink"
 door_color = "brown"
 climbable_background_color = "lime"
 climbable_wall_color = "lime"
 
-colors = {
-    0x00: wall_right_facing_color, # wall (right)
-	0x01: wall_left_facing_color, # wall (left)
-	0x02: floor_color, # floor
-	0x03: unknown_color,
-	0x04: wall_left_facing_color, # wall (right)
-	0x05: floor_color, # floor
-	0x06: wall_right_facing_color, # wall (left)
-	0x07: ceiling_color, # ceiling
-	0x08: floor_wobble_on_edge_color, # floor (wobble on the edge)
-	0x09: floor_wobble_on_edge_color, # floor (wobble on the edge)
-	0x0A: ceiling_and_wall_color, # ceiling and wall?
-	0x0B: ceiling_and_wall_color,
-	0x0C: floor_and_wall_color, # floor and wall?
-	0x0D: floor_and_wall_color, # floor and wall?
-	0x0E: ceiling_and_wall_color, # ceiling and wall?
-	0x0F: ceiling_and_wall_color, # ceiling and wall?
-	0x10: floor_sloped_color, # steep stairs
-	0x11: floor_sloped_color, # steep stairs
-	0x12: floor_sloped_color, # stairs
-	0x13: floor_sloped_color, # stairs
-	0x14: floor_sloped_color, # stairs
-	0x15: floor_sloped_color, # stairs
-	0x16: floor_sloped_color, # channel z door stairs
-	0x17: floor_sloped_color, # channel z door stairs
-	0x18: unknown_color,
-	0x19: unknown_color,
-	0x1A: unknown_color,
-	0x1B: unknown_color,
-	0x1C: floor_sloped_color, # toon tv rock slopes
-	0x1D: floor_sloped_color, # toon tv rock slopes
-	0x1E: floor_color,
-	0x1F: floor_color,
-	0x20: floor_color,
-	0x21: floor_color, # circuit central platform
-	0x22: door_color, # door
-	0x23: kill_color, # kill tile
-	0x24: lava_color, # lava
-	0x25: water_color, # water
-	0x26: climbable_background_color, # climbable background
-	0x27: unknown_color,
-	0x2A: unknown_color,
-	0x2C: climbable_wall_color, # climbale wall (left)
-	0x2D: climbable_wall_color, # climbable wall (right)
-	0x2E: unknown_color,
-	0x2F: nothing_color,
-	0x30: unknown_color,
-	0x31: unknown_color,
-	0x32: unknown_color,
-	0x33: unknown_color,
-	0xC1: special_color,
-	0xC2: special_color,
-	0xC3: special_color,
-	0xC4: special_color,
-	0xC5: special_color,
-	0xC6: special_color,
-	0xC7: special_color,
-	0xCD: special_color,
-	0xCE: special_color,
-	0xCF: special_color,
-	0xDF: special_color,
-	0xE9: special_color,
-	0xF0: special_color,
-	0xF1: special_color,
-	0xF5: special_color,
-	0xF6: special_color,
-	0xF7: special_color,
-	0xF8: special_color,
-	0xF9: special_color,
-	0xFA: special_color,
-	0xFB: special_color,
-	0xFC: special_color,
-	0xFD: special_color,
-	0xFE: special_color,
-	0xFF: special_color,
+surface_type_colors = {
+    0x00: wall_color, # wall (right) # this is only used in prehistory, channel z, and part of toon tv
+    0x01: wall_color, # wall (left) # this is only used in prehistory, channel z, and part of toon tv
+    0x02: floor_passable_color, # floor that you can pass through from below
+    0x03: unknown_color,
+    0x04: wall_color, # wall (left) # this is used everywhere else
+    0x05: floor_color, # floor that blocks you from passing from below
+    0x06: wall_color, # wall (right) # this is used everywhere else
+    0x07: ceiling_color, # ceiling (cannot pass through from above)
+    0x08: floor_passable_wobble_on_edge_color, # floor (wobble on the edge)
+    0x09: floor_passable_wobble_on_edge_color, # floor (wobble on the edge)
+    0x0A: ceiling_and_wall_color, # ceiling and wall?
+    0x0B: ceiling_and_wall_color,
+    0x0C: floor_and_wall_color, # floor and wall?
+    0x0D: floor_and_wall_color, # floor and wall?
+    0x0E: ceiling_and_wall_color, # ceiling and wall?
+    0x0F: ceiling_and_wall_color, # ceiling and wall?
+    0x10: floor_passable_color, # steep stairs
+    0x11: floor_passable_color, # steep stairs
+    0x12: floor_passable_color, # stairs
+    0x13: floor_passable_color, # stairs
+    0x14: floor_passable_color, # stairs
+    0x15: floor_passable_color, # stairs
+    0x16: floor_passable_color, # channel z door stairs
+    0x17: floor_passable_color, # channel z door stairs
+    0x18: floor_passable_color, # some rezopolis ceilings
+    0x19: floor_passable_color, # some rezopolis ceilings
+    0x1A: floor_passable_color, # some rezopolis ceilings
+    0x1B: floor_passable_color, # some rezopolis ceilings
+    0x1C: floor_passable_color, # toon tv rock slopes
+    0x1D: floor_passable_color, # toon tv rock slopes
+    0x1E: floor_passable_color, # circuit central machine you can jump on
+    0x1F: floor_passable_color, # circuit central machine you can jump on
+    0x20: floor_passable_color, # circuit central machine you can jump on
+    0x21: floor_passable_color, # circuit central machine you can jump on
+    0x22: door_color, # door
+    0x23: kill_color, # kill tile
+    0x24: lava_color, # lava
+    0x25: water_color, # water
+    0x26: climbable_background_color, # climbable background
+    0x27: nothing_color, # used for bottom of flowers in fine tooning? seems to have no effect on collision
+    0x2A: unknown_color, # used for many tvs, seems to have no effect on collision
+    0x2C: climbable_wall_color, # climbable wall (left)
+    0x2D: climbable_wall_color, # climbable wall (right)
+    0x2E: climbable_wall_color, # climbable ceiling
+    0x2F: nothing_color, # the main "nothing" surface
+    0x30: unknown_color, # top of climbable wall (left)
+    0x31: unknown_color, # top of climbable wall (right)
+    0x32: unknown_color, # botttom of climbable wall (left)
+    0x33: unknown_color, # botttom of climbable wall (right)
+    0xC1: special_color,
+    0xC2: special_color,
+    0xC3: special_color,
+    0xC4: special_color,
+    0xC5: special_color,
+    0xC6: special_color,
+    0xC7: special_color,
+    0xCD: special_color,
+    0xCE: special_color,
+    0xCF: special_color,
+    0xDF: special_color,
+    0xE9: special_color,
+    0xF0: special_color,
+    0xF1: special_color,
+    0xF5: special_color,
+    0xF6: special_color,
+    0xF7: special_color,
+    0xF8: special_color,
+    0xF9: special_color,
+    0xFA: special_color,
+    0xFB: special_color,
+    0xFC: special_color,
+    0xFD: special_color,
+    0xFE: special_color,
+    0xFF: special_color,
 }
 
 
@@ -129,6 +131,7 @@ create_blocksets = True
 create_maps = True
 
 show_kill_tiles = False
+draw_tile_ids = False
 draw_block_ids = False
 create_collision_blocksets = True
 create_collision_maps = True
@@ -282,7 +285,7 @@ for i in range(0, len(levels)):
         blockset_img = PIL.Image.new("RGB", (512, 512))
         draw2 = PIL.ImageDraw.Draw(blockset_img)
         
-        count = 0
+        block_counter = 0
         for y in range(0, 16):
             for x in range(0, 16):
                 #draw2.rectangle(((x*32,y*32), ((x+1)*32,(y+1)*32)), 0,3)
@@ -291,33 +294,31 @@ for i in range(0, len(levels)):
                 draw3 = PIL.ImageDraw.Draw(block_img)
                 
                 # add the regular tiles to the blockset
-                val = count
+                val = block_counter
+                tile_counter = 0
                 for inner_y in range(0, 4):
                     for inner_x in range(0, 4):
-                        #blockset_img.paste(tiles[blockset_data[count]], (x*32, y*32))
+                        #blockset_img.paste(tiles[blockset_data[block_counter]], (x*32, y*32))
                         
                         if create_collision_blocksets == True:
-                            draw3.rectangle(((inner_x*8, inner_y*8), ((inner_x+1)*8, (inner_y+1)*8)), colors[blockset_data[0x2000+val]])
+                            draw3.rectangle(((inner_x*8, inner_y*8), ((inner_x+1)*8, (inner_y+1)*8)), surface_type_colors[blockset_data[0x2000+val]])
+                            if draw_tile_ids == True and blockset_data[0x2000+val] != 0x2f:
+                                draw3.text((inner_x*8, inner_y*8), "%x" % blockset_data[0x2000+val], "magenta")
                         elif blockset_data[0x2000+val] == 0x23 and show_kill_tiles == True:
                             block_img.paste(kill_tile, (inner_x*8, inner_y*8))
                         else:
                             block_img.paste(tiles[blockset_data[val]], (inner_x*8, inner_y*8))
                         
                         val = val + 0x100
-                
-                #if count == 0x90 or count == 0x91 or count == 0x92:
-                #    kill_tile_img = PIL.Image.new("RGB", (32, 32), (255, 192, 203))
-                    #draw4 = PIL.ImageDraw.Draw(kill_tile_img)
-                    #draw4.rectangle(((x*32,y*32), ((x+1)*32,(y+1)*32)), (255,0,0),3)
-                #    block_img.paste(kill_tile_img, (0, 0))
+                        tile_counter = tile_counter + 1
                 
                 if draw_block_ids == True:
-                    draw3.text((0, 0), "0x%02X" % count, "magenta")
+                    draw3.text((0, 0), "0x%02X" % block_counter, "magenta")
                 
-                #block_img.save("./block_images/block"+str(count)+".png")
+                #block_img.save("./block_images/block"+str(block_counter)+".png")
                 blockset_img.paste(block_img, (x*32, y*32))
                 
-                count = count + 1
+                block_counter = block_counter + 1
         
         blockset_img.save(blockset_image_path+level_name+"_blockset.png")
         
@@ -351,7 +352,9 @@ for i in range(0, len(levels)):
                 for inner_y in range(0, 4):
                     for inner_x in range(0, 4):
                         if create_collision_blocksets == True:
-                            draw3.rectangle(((inner_x*8, inner_y*8), ((inner_x+1)*8, (inner_y+1)*8)), colors[blockset_data[0x2000+val]])
+                            draw3.rectangle(((inner_x*8, inner_y*8), ((inner_x+1)*8, (inner_y+1)*8)), surface_type_colors[blockset_data[0x2000+val]])
+                            if draw_tile_ids == True and blockset_data[0x2000+val] != 0x2f:
+                                draw3.text((inner_x*8, inner_y*8), "%x" % blockset_data[0x2000+val], "magenta")
                         else:
                             if special_tile_override != False and blockset_data[val] < 0x24:
                                 tile_to_paste = special_tiles[(0x24*(special_tileset_to_open-1))+blockset_data[val]]
