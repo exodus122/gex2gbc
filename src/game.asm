@@ -11,7 +11,27 @@ INCLUDE "bank01_menus.asm"
 INCLUDE "bank02_update_objects.asm"
 INCLUDE "bank03_misc.asm"
 
-INCLUDE "bank04_07_gex_sprites.asm"
+SECTION "bank04", ROMX[$4000], BANK[$04]
+image_004_4000.bin:
+    INCBIN ".gfx/object_sprites/image_004_4000.bin"
+image_004_6000.bin:
+    INCBIN ".gfx/object_sprites/image_004_6000.bin"
+
+SECTION "bank05", ROMX[$4000], BANK[$05]
+image_005_4000.bin:
+    INCBIN ".gfx/object_sprites/image_005_4000.bin"
+image_005_6000.bin:
+    INCBIN ".gfx/object_sprites/image_005_6000.bin"
+
+SECTION "bank06", ROMX[$4000], BANK[$06]
+image_006_4000.bin:
+    INCBIN ".gfx/object_sprites/image_006_4000.bin"
+image_006_6000.bin:
+    INCBIN ".gfx/object_sprites/image_006_6000.bin"
+
+SECTION "bank07", ROMX[$4000], BANK[$07]
+image_007_4000.bin:
+    INCBIN ".gfx/object_sprites/image_007_4000.bin"
 
 SECTION "bank08", ROMX[$4000], BANK[$08]
 image_title_screen_008_0.bin:
