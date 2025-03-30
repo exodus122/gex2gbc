@@ -522,7 +522,7 @@ data_02_51b3:
 call_02_51b7:
     call call_00_3b8d                                  ;; 02:51b7 $cd $8d $3b
     push AF                                            ;; 02:51ba $f5
-    ld   [wD59D], A                                    ;; 02:51bb $ea $9d $d5
+    ld   [wD59D_BankSwitch], A                                    ;; 02:51bb $ea $9d $d5
     ld   A, Bank03                                        ;; 02:51be $3e $03
     ld   HL, entry_03_6584                              ;; 02:51c0 $21 $84 $65
     call call_00_1078_SwitchBankWrapper                                  ;; 02:51c3 $cd $78 $10
@@ -642,7 +642,7 @@ call_02_526a:
 call_02_52ab:
     call call_00_3b8d                                  ;; 02:52ab $cd $8d $3b
     jr   Z, .jr_02_52bc                                ;; 02:52ae $28 $0c
-    ld   [wD59D], A                                    ;; 02:52b0 $ea $9d $d5
+    ld   [wD59D_BankSwitch], A                                    ;; 02:52b0 $ea $9d $d5
     ld   A, Bank03                                        ;; 02:52b3 $3e $03
     ld   HL, entry_03_65f9                              ;; 02:52b5 $21 $f9 $65
     call call_00_1078_SwitchBankWrapper                                  ;; 02:52b8 $cd $78 $10
@@ -1108,7 +1108,7 @@ call_02_592d:
     ret  NZ                                            ;; 02:595b $c0
     ld   [HL], $3c                                     ;; 02:595c $36 $3c
     ld   C, $03                                        ;; 02:595e $0e $03
-    ld   [wD59D], A                                    ;; 02:5960 $ea $9d $d5
+    ld   [wD59D_BankSwitch], A                                    ;; 02:5960 $ea $9d $d5
     ld   A, Bank0a                                        ;; 02:5963 $3e $0a
     ld   HL, entry_0a_7b9a                              ;; 02:5965 $21 $9a $7b
     call call_00_1078_SwitchBankWrapper                                  ;; 02:5968 $cd $78 $10
@@ -1167,7 +1167,7 @@ call_02_5a28:
     ld   [HL], $02                                     ;; 02:5a3f $36 $02
 .jr_02_5a41:
     ld   C, $08                                        ;; 02:5a41 $0e $08
-    ld   [wD59D], A                                    ;; 02:5a43 $ea $9d $d5
+    ld   [wD59D_BankSwitch], A                                    ;; 02:5a43 $ea $9d $d5
     ld   A, Bank0a                                        ;; 02:5a46 $3e $0a
     ld   HL, entry_0a_7b9a                              ;; 02:5a48 $21 $9a $7b
     call call_00_1078_SwitchBankWrapper                                  ;; 02:5a4b $cd $78 $10

@@ -997,7 +997,7 @@ call_03_4c76:
     ld   A, $77                                        ;; 03:4e6c $3e $77
     ld   [wD750], A                                    ;; 03:4e6e $ea $50 $d7
     ld   A, $19                                        ;; 03:4e71 $3e $19
-    ld   [wD59D], A                                    ;; 03:4e73 $ea $9d $d5
+    ld   [wD59D_BankSwitch], A                                    ;; 03:4e73 $ea $9d $d5
     ld   A, Bank02                                        ;; 03:4e76 $3e $02
     ld   HL, entry_02_4ccd                             ;; 03:4e78 $21 $cd $4c
     call call_00_1078_SwitchBankWrapper                                  ;; 03:4e7b $cd $78 $10

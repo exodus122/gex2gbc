@@ -344,7 +344,7 @@ entry_0a_7a7c:
     ld   [HL+], A                                      ;; 0a:7aea $22
     inc  DE                                            ;; 0a:7aeb $13
     push DE                                            ;; 0a:7aec $d5
-    ld   [wD59D], A                                    ;; 0a:7aed $ea $9d $d5
+    ld   [wD59D_BankSwitch], A                                    ;; 0a:7aed $ea $9d $d5
     ld   A, Bank00                                        ;; 0a:7af0 $3e $00
     ld   HL, call_00_350c                              ;; 0a:7af2 $21 $0c $35
     call call_00_1078_SwitchBankWrapper                                  ;; 0a:7af5 $cd $78 $10
@@ -419,7 +419,7 @@ entry_0a_7a7c:
     ld   H, $d0                                        ;; 0a:7b55 $26 $d0
     ld   [HL], $01                                     ;; 0a:7b57 $36 $01
     xor  A, A                                          ;; 0a:7b59 $af
-    ld   [wD59D], A                                    ;; 0a:7b5a $ea $9d $d5
+    ld   [wD59D_BankSwitch], A                                    ;; 0a:7b5a $ea $9d $d5
     ld   A, Bank02                                        ;; 0a:7b5d $3e $02
     ld   HL, entry_02_7102                             ;; 0a:7b5f $21 $02 $71
     call call_00_1078_SwitchBankWrapper                                  ;; 0a:7b62 $cd $78 $10
@@ -439,7 +439,7 @@ entry_0a_7a7c:
     push HL                                            ;; 0a:7b78 $e5
     and  A, A                                          ;; 0a:7b79 $a7
     jr   Z, .jr_0a_7b87                                ;; 0a:7b7a $28 $0b
-    ld   [wD59D], A                                    ;; 0a:7b7c $ea $9d $d5
+    ld   [wD59D_BankSwitch], A                                    ;; 0a:7b7c $ea $9d $d5
     ld   A, Bank02                                        ;; 0a:7b7f $3e $02
     ld   HL, entry_02_7211                             ;; 0a:7b81 $21 $11 $72
     call call_00_1078_SwitchBankWrapper                                  ;; 0a:7b84 $cd $78 $10
@@ -449,7 +449,7 @@ entry_0a_7a7c:
     and  A, A                                          ;; 0a:7b8b $a7
     ret  Z                                             ;; 0a:7b8c $c8
     ld   C, [HL]                                       ;; 0a:7b8d $4e
-    ld   [wD59D], A                                    ;; 0a:7b8e $ea $9d $d5
+    ld   [wD59D_BankSwitch], A                                    ;; 0a:7b8e $ea $9d $d5
     ld   A, Bank0b                                        ;; 0a:7b91 $3e $0b
     ld   HL, entry_0b_5f57                             ;; 0a:7b93 $21 $57 $5f
     call call_00_1078_SwitchBankWrapper                                  ;; 0a:7b96 $cd $78 $10
@@ -588,7 +588,7 @@ entry_0a_7b9a:
     push HL                                            ;; 0a:7c34 $e5
     and  A, A                                          ;; 0a:7c35 $a7
     jr   Z, .jr_0a_7c43                                ;; 0a:7c36 $28 $0b
-    ld   [wD59D], A                                    ;; 0a:7c38 $ea $9d $d5
+    ld   [wD59D_BankSwitch], A                                    ;; 0a:7c38 $ea $9d $d5
     ld   A, Bank02                                        ;; 0a:7c3b $3e $02
     ld   HL, entry_02_7211                             ;; 0a:7c3d $21 $11 $72
     call call_00_1078_SwitchBankWrapper                                  ;; 0a:7c40 $cd $78 $10
@@ -598,14 +598,14 @@ entry_0a_7b9a:
     and  A, A                                          ;; 0a:7c47 $a7
     jr   Z, .jr_0a_7c56                                ;; 0a:7c48 $28 $0c
     ld   C, [HL]                                       ;; 0a:7c4a $4e
-    ld   [wD59D], A                                    ;; 0a:7c4b $ea $9d $d5
+    ld   [wD59D_BankSwitch], A                                    ;; 0a:7c4b $ea $9d $d5
     ld   A, Bank0b                                        ;; 0a:7c4e $3e $0b
     ld   HL, entry_0b_5f57                             ;; 0a:7c50 $21 $57 $5f
     call call_00_1078_SwitchBankWrapper                                  ;; 0a:7c53 $cd $78 $10
 .jr_0a_7c56:
     call call_00_34d8                                  ;; 0a:7c56 $cd $d8 $34
     xor  A, A                                          ;; 0a:7c59 $af
-    ld   [wD59D], A                                    ;; 0a:7c5a $ea $9d $d5
+    ld   [wD59D_BankSwitch], A                                    ;; 0a:7c5a $ea $9d $d5
     ld   A, Bank02                                        ;; 0a:7c5d $3e $02
     ld   HL, entry_02_7102                             ;; 0a:7c5f $21 $02 $71
     call call_00_1078_SwitchBankWrapper                                  ;; 0a:7c62 $cd $78 $10

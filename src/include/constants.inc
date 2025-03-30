@@ -70,6 +70,16 @@ DEF Bank3d      EQU $3d
 DEF Bank3e      EQU $3e
 DEF Bank3f      EQU $3f
 
+; Inputs
+DEF Input_A        EQU $01
+DEF Input_B        EQU $02
+DEF Input_Select   EQU $04
+DEF Input_Start    EQU $08
+DEF Input_Right    EQU $10
+DEF Input_Left     EQU $20
+DEF Input_Up       EQU $40
+DEF Input_Down     EQU $80
+
 ; Objects
 DEF Object_Gex                              EQU $00
 DEF Object_CollectibleSpawn                 EQU $01

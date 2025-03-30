@@ -613,135 +613,135 @@ data_24_4460:
 audio_bank24.bin:
     INCBIN "audio/bank_24/audio_bank24.bin"
 
-audio_24_44e4:
-    INCBIN "./audio/bank_24/audio_24_44e4.bin"
-audio_24_44fc:
-    INCBIN "./audio/bank_24/audio_24_44fc.bin"
-audio_24_451e:
-    INCBIN "./audio/bank_24/audio_24_451e.bin"
-audio_24_453c:
-    INCBIN "./audio/bank_24/audio_24_453c.bin"
-audio_24_4582:
-    INCBIN "./audio/bank_24/audio_24_4582.bin"
-audio_24_45ee:
-    INCBIN "./audio/bank_24/audio_24_45ee.bin"
-audio_24_4600:
-    INCBIN "./audio/bank_24/audio_24_4600.bin"
-audio_24_4640:
-    INCBIN "./audio/bank_24/audio_24_4640.bin"
-audio_24_4652:
-    INCBIN "./audio/bank_24/audio_24_4652.bin"
-audio_24_4664:
-    INCBIN "./audio/bank_24/audio_24_4664.bin"
-audio_24_467e:
-    INCBIN "./audio/bank_24/audio_24_467e.bin"
-audio_24_4696:
-    INCBIN "./audio/bank_24/audio_24_4696.bin"
-audio_24_46b4:
-    INCBIN "./audio/bank_24/audio_24_46b4.bin"
-audio_24_46e2:
-    INCBIN "./audio/bank_24/audio_24_46e2.bin"
-audio_24_4744:
-    INCBIN "./audio/bank_24/audio_24_4744.bin"
-audio_24_478c:
-    INCBIN "./audio/bank_24/audio_24_478c.bin"
-audio_24_47e8:
-    INCBIN "./audio/bank_24/audio_24_47e8.bin"
-audio_24_4838:
-    INCBIN "./audio/bank_24/audio_24_4838.bin"
-audio_24_49ea:
-    INCBIN "./audio/bank_24/audio_24_49ea.bin"
-audio_24_4a02:
-    INCBIN "./audio/bank_24/audio_24_4a02.bin"
-audio_24_4a62:
-    INCBIN "./audio/bank_24/audio_24_4a62.bin"
-audio_24_4a94:
-    INCBIN "./audio/bank_24/audio_24_4a94.bin"
-audio_24_4ac6:
-    INCBIN "./audio/bank_24/audio_24_4ac6.bin"
-audio_24_4ade:
-    INCBIN "./audio/bank_24/audio_24_4ade.bin"
-audio_24_4afa:
-    INCBIN "./audio/bank_24/audio_24_4afa.bin"
-audio_24_4b10:
-    INCBIN "./audio/bank_24/audio_24_4b10.bin"
-audio_24_4b22:
-    INCBIN "./audio/bank_24/audio_24_4b22.bin"
-audio_24_4b3c:
-    INCBIN "./audio/bank_24/audio_24_4b3c.bin"
-audio_24_4b56:
-    INCBIN "./audio/bank_24/audio_24_4b56.bin"
-audio_24_4b64:
-    INCBIN "./audio/bank_24/audio_24_4b64.bin"
-audio_24_4b7e:
-    INCBIN "./audio/bank_24/audio_24_4b7e.bin"
-audio_24_4bdc:
-    INCBIN "./audio/bank_24/audio_24_4bdc.bin"
-audio_24_4bf4:
-    INCBIN "./audio/bank_24/audio_24_4bf4.bin"
-audio_24_4c3c:
-    INCBIN "./audio/bank_24/audio_24_4c3c.bin"
-audio_24_4c54:
-    INCBIN "./audio/bank_24/audio_24_4c54.bin"
-audio_24_4c9c:
-    INCBIN "./audio/bank_24/audio_24_4c9c.bin"
-audio_24_4ce4:
-    INCBIN "./audio/bank_24/audio_24_4ce4.bin"
-audio_24_4d00:
-    INCBIN "./audio/bank_24/audio_24_4d00.bin"
-audio_24_4d0e:
-    INCBIN "./audio/bank_24/audio_24_4d0e.bin"
-audio_24_4d3a:
-    INCBIN "./audio/bank_24/audio_24_4d3a.bin"
-audio_24_4da0:
-    INCBIN "./audio/bank_24/audio_24_4da0.bin"
-audio_24_4dc2:
-    INCBIN "./audio/bank_24/audio_24_4dc2.bin"
-audio_24_4e0a:
-    INCBIN "./audio/bank_24/audio_24_4e0a.bin"
-audio_24_4e22:
-    INCBIN "./audio/bank_24/audio_24_4e22.bin"
-audio_24_4e66:
-    INCBIN "./audio/bank_24/audio_24_4e66.bin"
-audio_24_4e92:
-    INCBIN "./audio/bank_24/audio_24_4e92.bin"
-audio_24_4ee8:
-    INCBIN "./audio/bank_24/audio_24_4ee8.bin"
-audio_24_4efe:
-    INCBIN "./audio/bank_24/audio_24_4efe.bin"
-audio_24_4f16:
-    INCBIN "./audio/bank_24/audio_24_4f16.bin"
-audio_24_4f30:
-    INCBIN "./audio/bank_24/audio_24_4f30.bin"
-audio_24_4f48:
-    INCBIN "./audio/bank_24/audio_24_4f48.bin"
-audio_24_4f54:
-    INCBIN "./audio/bank_24/audio_24_4f54.bin"
-audio_24_4f72:
-    INCBIN "./audio/bank_24/audio_24_4f72.bin"
-audio_24_4fa0:
-    INCBIN "./audio/bank_24/audio_24_4fa0.bin"
-audio_24_4fb8:
-    INCBIN "./audio/bank_24/audio_24_4fb8.bin"
-audio_24_4fd4:
-    INCBIN "./audio/bank_24/audio_24_4fd4.bin"
-audio_24_5006:
-    INCBIN "./audio/bank_24/audio_24_5006.bin"
-audio_24_5024:
-    INCBIN "./audio/bank_24/audio_24_5024.bin"
-audio_24_503c:
-    INCBIN "./audio/bank_24/audio_24_503c.bin"
-audio_24_5054:
-    INCBIN "./audio/bank_24/audio_24_5054.bin"
-audio_24_506c:
-    INCBIN "./audio/bank_24/audio_24_506c.bin"
-audio_24_5086:
-    INCBIN "./audio/bank_24/audio_24_5086.bin"
-audio_24_50a0:
-    INCBIN "./audio/bank_24/audio_24_50a0.bin"
+audio_24_44e6:
+    INCBIN "./audio/bank_24/audio_24_44e6.bin"
+audio_24_44fe:
+    INCBIN "./audio/bank_24/audio_24_44fe.bin"
+audio_24_4520:
+    INCBIN "./audio/bank_24/audio_24_4520.bin"
+audio_24_453e:
+    INCBIN "./audio/bank_24/audio_24_453e.bin"
+audio_24_4584:
+    INCBIN "./audio/bank_24/audio_24_4584.bin"
+audio_24_45f0:
+    INCBIN "./audio/bank_24/audio_24_45f0.bin"
+audio_24_4602:
+    INCBIN "./audio/bank_24/audio_24_4602.bin"
+audio_24_4642:
+    INCBIN "./audio/bank_24/audio_24_4642.bin"
+audio_24_4654:
+    INCBIN "./audio/bank_24/audio_24_4654.bin"
+audio_24_4666:
+    INCBIN "./audio/bank_24/audio_24_4666.bin"
+audio_24_4680:
+    INCBIN "./audio/bank_24/audio_24_4680.bin"
+audio_24_4698:
+    INCBIN "./audio/bank_24/audio_24_4698.bin"
+audio_24_46b6:
+    INCBIN "./audio/bank_24/audio_24_46b6.bin"
+audio_24_46e4:
+    INCBIN "./audio/bank_24/audio_24_46e4.bin"
+audio_24_4746:
+    INCBIN "./audio/bank_24/audio_24_4746.bin"
+audio_24_478e:
+    INCBIN "./audio/bank_24/audio_24_478e.bin"
+audio_24_47ea:
+    INCBIN "./audio/bank_24/audio_24_47ea.bin"
+audio_24_483a:
+    INCBIN "./audio/bank_24/audio_24_483a.bin"
+audio_24_49ec:
+    INCBIN "./audio/bank_24/audio_24_49ec.bin"
+audio_24_4a04:
+    INCBIN "./audio/bank_24/audio_24_4a04.bin"
+audio_24_4a64:
+    INCBIN "./audio/bank_24/audio_24_4a64.bin"
+audio_24_4a96:
+    INCBIN "./audio/bank_24/audio_24_4a96.bin"
+audio_24_4ac8:
+    INCBIN "./audio/bank_24/audio_24_4ac8.bin"
+audio_24_4ae0:
+    INCBIN "./audio/bank_24/audio_24_4ae0.bin"
+audio_24_4afc:
+    INCBIN "./audio/bank_24/audio_24_4afc.bin"
+audio_24_4b12:
+    INCBIN "./audio/bank_24/audio_24_4b12.bin"
+audio_24_4b24:
+    INCBIN "./audio/bank_24/audio_24_4b24.bin"
+audio_24_4b3e:
+    INCBIN "./audio/bank_24/audio_24_4b3e.bin"
+audio_24_4b58:
+    INCBIN "./audio/bank_24/audio_24_4b58.bin"
+audio_24_4b66:
+    INCBIN "./audio/bank_24/audio_24_4b66.bin"
+audio_24_4b80:
+    INCBIN "./audio/bank_24/audio_24_4b80.bin"
+audio_24_4bde:
+    INCBIN "./audio/bank_24/audio_24_4bde.bin"
+audio_24_4bf6:
+    INCBIN "./audio/bank_24/audio_24_4bf6.bin"
+audio_24_4c3e:
+    INCBIN "./audio/bank_24/audio_24_4c3e.bin"
+audio_24_4c56:
+    INCBIN "./audio/bank_24/audio_24_4c56.bin"
+audio_24_4c9e:
+    INCBIN "./audio/bank_24/audio_24_4c9e.bin"
+audio_24_4ce6:
+    INCBIN "./audio/bank_24/audio_24_4ce6.bin"
+audio_24_4d02:
+    INCBIN "./audio/bank_24/audio_24_4d02.bin"
+audio_24_4d10:
+    INCBIN "./audio/bank_24/audio_24_4d10.bin"
+audio_24_4d3c:
+    INCBIN "./audio/bank_24/audio_24_4d3c.bin"
+audio_24_4da2:
+    INCBIN "./audio/bank_24/audio_24_4da2.bin"
+audio_24_4dc4:
+    INCBIN "./audio/bank_24/audio_24_4dc4.bin"
+audio_24_4e0c:
+    INCBIN "./audio/bank_24/audio_24_4e0c.bin"
+audio_24_4e24:
+    INCBIN "./audio/bank_24/audio_24_4e24.bin"
+audio_24_4e68:
+    INCBIN "./audio/bank_24/audio_24_4e68.bin"
+audio_24_4e94:
+    INCBIN "./audio/bank_24/audio_24_4e94.bin"
+audio_24_4eea:
+    INCBIN "./audio/bank_24/audio_24_4eea.bin"
+audio_24_4f00:
+    INCBIN "./audio/bank_24/audio_24_4f00.bin"
+audio_24_4f18:
+    INCBIN "./audio/bank_24/audio_24_4f18.bin"
+audio_24_4f32:
+    INCBIN "./audio/bank_24/audio_24_4f32.bin"
+audio_24_4f4a:
+    INCBIN "./audio/bank_24/audio_24_4f4a.bin"
+audio_24_4f56:
+    INCBIN "./audio/bank_24/audio_24_4f56.bin"
+audio_24_4f74:
+    INCBIN "./audio/bank_24/audio_24_4f74.bin"
+audio_24_4fa2:
+    INCBIN "./audio/bank_24/audio_24_4fa2.bin"
+audio_24_4fba:
+    INCBIN "./audio/bank_24/audio_24_4fba.bin"
+audio_24_4fd6:
+    INCBIN "./audio/bank_24/audio_24_4fd6.bin"
+audio_24_5008:
+    INCBIN "./audio/bank_24/audio_24_5008.bin"
+audio_24_5026:
+    INCBIN "./audio/bank_24/audio_24_5026.bin"
+audio_24_503e:
+    INCBIN "./audio/bank_24/audio_24_503e.bin"
+audio_24_5056:
+    INCBIN "./audio/bank_24/audio_24_5056.bin"
+audio_24_506e:
+    INCBIN "./audio/bank_24/audio_24_506e.bin"
+audio_24_5088:
+    INCBIN "./audio/bank_24/audio_24_5088.bin"
 audio_24_50a2:
     INCBIN "./audio/bank_24/audio_24_50a2.bin"
 audio_24_50a4:
     INCBIN "./audio/bank_24/audio_24_50a4.bin"
 audio_24_50a6:
     INCBIN "./audio/bank_24/audio_24_50a6.bin"
+audio_24_50a8:
+    INCBIN "./audio/bank_24/audio_24_50a8.bin"

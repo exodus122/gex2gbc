@@ -42,7 +42,7 @@ for bank in banks:
     out2 = open('./banks/audio/bank_'+bank_str+'/text.txt', "w")
     for i in range(0, len(audio_pointers)-1):
         audio = audio_data[audio_pointers[i]+2:audio_pointers[i+1]+2]
-        addr_str = "{:04x}".format(0x4460+audio_pointers[i])
+        addr_str = "{:04x}".format(0x4460+audio_pointers[i]+2)
         
         already_known_addr = ""
         

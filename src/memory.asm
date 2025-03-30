@@ -186,7 +186,55 @@ wD33A:
     ds 1                                               ;; d33a
 
 wD33B:
-    ds 585                                             ;; d33b
+    ds 1                                             ;; d33b
+
+wD33C:
+	ds 33
+
+wD35D:
+	ds 33
+
+wD37E:
+	ds 33
+
+wD39F:
+	ds 33
+
+wD3C0:
+	ds 33
+
+wD3E1:
+	ds 33
+
+wD402:
+	ds 33
+
+wD423:
+	ds 33
+
+wD444:
+	ds 40
+
+wD46C:
+	ds 40
+
+wD494:
+	ds 40
+
+wD4BC:
+	ds 40
+
+wD4E4:
+	ds 40
+
+wD50C:
+	ds 40
+
+wD534:
+	ds 40
+
+wD55C:
+	ds 40
 
 wD584:
     ds 1                                               ;; d584
@@ -216,7 +264,7 @@ wD59A_PreviousBankNumber:
 wD59C_CurrentROMBank:
     ds 1                                               ;; d59c
 
-wD59D:
+wD59D_BankSwitch:
     ds 1                                               ;; d59d
 
 wD59E:
@@ -1025,13 +1073,13 @@ wD786:
 wD787:
     ds 1                                               ;; d787
 
-wD788:
+wD788_CurrentAudioBank:
     ds 1                                               ;; d788
 
-wD789:
+wD789: ; audio related
     ds 1                                               ;; d789
 
-wD78A:
+wD78A_MusicId: ; multiplied by 4 and used as index into .data_00_1244_MusicList
     ds 1                                               ;; d78a
 
 wD78B:
@@ -1153,9 +1201,9 @@ wDADA:
 
 wDADB:
     ds 2                                               ;; dadb
-	
+    
 ; DADD through DFAD seems be be unused memory
-	ds 1233
+    ds 1233
 
 ; The rest of wram is used for audio-related memory
 

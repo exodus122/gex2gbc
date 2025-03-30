@@ -623,7 +623,7 @@ call_0b_561b:
     ld   DE, wDA0B_Obj_Palettes                                     ;; 0b:563c $11 $0b $da
     ld   BC, $08                                       ;; 0b:563f $01 $08 $00
     call call_00_07b0_CopyBytes                                  ;; 0b:5642 $cd $b0 $07
-    ld   [wD59D], A                                    ;; 0b:5645 $ea $9d $d5
+    ld   [wD59D_BankSwitch], A                                    ;; 0b:5645 $ea $9d $d5
     ld   A, Bank03                                        ;; 0b:5648 $3e $03
     ld   HL, entry_03_6be5                                     ;; 0b:564a $21 $e5 $6b
     call call_00_1078_SwitchBankWrapper                                  ;; 0b:564d $cd $78 $10
