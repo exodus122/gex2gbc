@@ -290,7 +290,55 @@ def extract_bank03_new():
         os.system('rgbgfx --reverse '+str(width)+' --columns -o banks/bank_'+bank+'/image_'+bank+'_'+addr_str+'.bin banks/bank_'+bank+'/image_'+bank+'_'+addr_str+'.png')
         
         out2 = open('./banks/bank_'+bank+'/text.txt', "a")
-        out2.write('data_'+bank2+'_'+addr_str+':\n    INCBIN \".gfx/misc_sprites/moving_backgrounds/image_'+bank+'_'+addr_str+'.bin\"\n')
+        out2.write('data_'+bank2+'_'+addr_str+':\n    INCBIN \".gfx/moving_tiles/image_'+bank+'_'+addr_str+'.bin\"\n')
+        out2.close()
+
+def extract_bank_01():
+    bank = "001"
+    bank2 = "01"
+    bank_01_data = open('./banks/bank_'+bank+'.bin', 'rb').read()
+    os.system('mkdir -p banks/bank_'+bank+'/')
+    
+    # extract menu images
+    addrs = [0x66a7, 0x689f, 0x6add, 0x71e9, 0x7c4d, 0x7cc5, 0x7d3d, 0x7db5, 0x7e2d, 0x7ea5]
+    sizes = [0x1f8,  0x23E,  0x70C,  0x300,  0x60,   0x60,   0x60,   0x60,   0x60,   0x60]
+    widths = [1,     1,      1,      24,     3,      3,      3,      3,      3,      3]
+    
+    for i in range(0, len(addrs)):
+        addr = addrs[i]
+        addr_str = f"{addr:0{4}x}"
+        
+        data = bank_01_data[addr-0x4000:addr-0x4000+sizes[i]]
+        #width = int((addrs[i+1] - addr) / 0x10)
+        width = widths[i]
+        out = open('./banks/bank_'+bank+'/image_'+bank+'_'+addr_str+'.bin', "wb")
+        out.write(data)
+        out.close()
+        
+        os.system('rgbgfx --reverse '+str(width)+' --columns -o banks/bank_'+bank+'/image_'+bank+'_'+addr_str+'.bin banks/bank_'+bank+'/image_'+bank+'_'+addr_str+'.png')
+        
+        out2 = open('./banks/bank_'+bank+'/text.txt', "a")
+        out2.write('data_'+bank2+'_'+addr_str+':\n    INCBIN \".gfx/misc_sprites/menus/image_'+bank+'_'+addr_str+'.bin\"\n')
+        out2.close()
+        
+    addrs = [0x7500, 0x7543, 0x7586, 0x7709, 0x7b8c, 0x7bcf]
+    sizes = [0x40,   0x40,   0x180,  0x480,  0x40,   0x40]
+    widths = [2,     2,      12,      18,      2,      2]
+    
+    for i in range(0, len(addrs)):
+        addr = addrs[i]
+        addr_str = f"{addr:0{4}x}"
+        
+        data = bank_01_data[addr-0x4000:addr-0x4000+sizes[i]]
+        width = widths[i]
+        out = open('./banks/bank_'+bank+'/image_'+bank+'_'+addr_str+'.bin', "wb")
+        out.write(data)
+        out.close()
+        
+        os.system('rgbgfx --reverse '+str(width)+' -o banks/bank_'+bank+'/image_'+bank+'_'+addr_str+'.bin banks/bank_'+bank+'/image_'+bank+'_'+addr_str+'.png')
+        
+        out2 = open('./banks/bank_'+bank+'/text.txt', "a")
+        out2.write('data_'+bank2+'_'+addr_str+':\n    INCBIN \".gfx/menus/image_'+bank+'_'+addr_str+'.bin\"\n')
         out2.close()
 
 #extract_banks()
@@ -298,4 +346,5 @@ def extract_bank03_new():
 #extract_special_tilesets_horizontal()
 #extract_splash()
 #extract_bank03()
-extract_bank03_new()
+#extract_bank03_new()
+extract_bank_01()

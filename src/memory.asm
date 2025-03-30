@@ -1098,7 +1098,10 @@ wDA4B:
     ds 48                                              ;; da4b
 
 wDA7B:
-    ds 80                                              ;; da7b
+    ds 48                                              ;; da7b
+
+wDAAB:
+    ds 32                                              ;; daab
 
 wDACB:
     ds 1                                               ;; dacb

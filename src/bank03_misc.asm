@@ -3862,42 +3862,42 @@ entry_03_7253:
     ret                                                ;; 03:72aa $c9
 
 data_03_72ab:
-    dw   data_03_72e8_media_dimension_moving_backgrounds                                  ;; 03:72ab pP
-    dw   data_03_72e9_toon_tv_moving_backgrounds                                  ;; 03:72ad pP
-    dw   data_03_734a_scream_tv_moving_backgrounds                                  ;; 03:72af pP
-    dw   data_03_734a_scream_tv_moving_backgrounds
-    dw   data_03_73bb_circuit_central_moving_backgrounds
-    dw   data_03_72e8_media_dimension_moving_backgrounds
-    dw   data_03_72e8_media_dimension_moving_backgrounds
-    dw   data_03_72e8_media_dimension_moving_backgrounds
-    dw   data_03_72e9_toon_tv_moving_backgrounds
-    dw   data_03_72e8_media_dimension_moving_backgrounds
-    dw   data_03_73bb_circuit_central_moving_backgrounds
-    dw   data_03_734a_scream_tv_moving_backgrounds
-    dw   data_03_72e8_media_dimension_moving_backgrounds
-    dw   data_03_72e8_media_dimension_moving_backgrounds
-    dw   data_03_741c_rezopolis_moving_backgrounds
-    dw   data_03_72e8_media_dimension_moving_backgrounds
-    dw   data_03_734a_scream_tv_moving_backgrounds
-    dw   data_03_72e8_media_dimension_moving_backgrounds
-    dw   data_03_72e8_media_dimension_moving_backgrounds
-    dw   data_03_72e8_media_dimension_moving_backgrounds
-    dw   data_03_72e8_media_dimension_moving_backgrounds
-    dw   data_03_72e8_media_dimension_moving_backgrounds
-    dw   data_03_741c_rezopolis_moving_backgrounds
-    dw   data_03_73bb_circuit_central_moving_backgrounds
-    dw   data_03_72e8_media_dimension_moving_backgrounds
-    dw   data_03_734a_scream_tv_moving_backgrounds
-    dw   data_03_741c_rezopolis_moving_backgrounds
-    dw   data_03_72e8_media_dimension_moving_backgrounds
-    dw   data_03_72e8_media_dimension_moving_backgrounds
-    dw   data_03_72e8_media_dimension_moving_backgrounds
+    dw   data_03_72e8_media_dimension_moving_tiles                                  ;; 03:72ab pP
+    dw   data_03_72e9_toon_tv_moving_tiles                                  ;; 03:72ad pP
+    dw   data_03_734a_scream_tv_moving_tiles                                  ;; 03:72af pP
+    dw   data_03_734a_scream_tv_moving_tiles
+    dw   data_03_73bb_circuit_central_moving_tiles
+    dw   data_03_72e8_media_dimension_moving_tiles
+    dw   data_03_72e8_media_dimension_moving_tiles
+    dw   data_03_72e8_media_dimension_moving_tiles
+    dw   data_03_72e9_toon_tv_moving_tiles
+    dw   data_03_72e8_media_dimension_moving_tiles
+    dw   data_03_73bb_circuit_central_moving_tiles
+    dw   data_03_734a_scream_tv_moving_tiles
+    dw   data_03_72e8_media_dimension_moving_tiles
+    dw   data_03_72e8_media_dimension_moving_tiles
+    dw   data_03_741c_rezopolis_moving_tiles
+    dw   data_03_72e8_media_dimension_moving_tiles
+    dw   data_03_734a_scream_tv_moving_tiles
+    dw   data_03_72e8_media_dimension_moving_tiles
+    dw   data_03_72e8_media_dimension_moving_tiles
+    dw   data_03_72e8_media_dimension_moving_tiles
+    dw   data_03_72e8_media_dimension_moving_tiles
+    dw   data_03_72e8_media_dimension_moving_tiles
+    dw   data_03_741c_rezopolis_moving_tiles
+    dw   data_03_73bb_circuit_central_moving_tiles
+    dw   data_03_72e8_media_dimension_moving_tiles
+    dw   data_03_734a_scream_tv_moving_tiles
+    dw   data_03_741c_rezopolis_moving_tiles
+    dw   data_03_72e8_media_dimension_moving_tiles
+    dw   data_03_72e8_media_dimension_moving_tiles
+    dw   data_03_72e8_media_dimension_moving_tiles
     db   $e8
 
-data_03_72e8_media_dimension_moving_backgrounds:
+data_03_72e8_media_dimension_moving_tiles:
     db   $00                                           ;; 03:72e8 .
 
-data_03_72e9_toon_tv_moving_backgrounds:
+data_03_72e9_toon_tv_moving_tiles:
     db   $0c
     
     db   $04, $00                                 ;; 03:72e9 ...
@@ -3960,7 +3960,7 @@ data_03_72e9_toon_tv_moving_backgrounds:
     dw   data_03_76bd
     db   $00, $00                            ;; 03:7346 ..??
 
-data_03_734a_scream_tv_moving_backgrounds:
+data_03_734a_scream_tv_moving_tiles:
     db   $0e
     
     db   $02, $00                                 ;; 03:734a ...
@@ -4032,7 +4032,7 @@ data_03_734a_scream_tv_moving_backgrounds:
     dw   $8b00                                         ;; 03:73b5 pP
     dw   data_03_7a7d
     db   $00, $00
-data_03_73bb_circuit_central_moving_backgrounds:
+data_03_73bb_circuit_central_moving_tiles:
     db   $0c
     
     db   $02, $81, $e0        ;; 03:73bb ..??????
@@ -4094,7 +4094,7 @@ data_03_73bb_circuit_central_moving_backgrounds:
     db   $92
     dw   data_03_7bdd
     db   $00, $00
-data_03_741c_rezopolis_moving_backgrounds:
+data_03_741c_rezopolis_moving_tiles:
     db   $0c
     
     db   $02, $00        ;; 03:7417 ????????
@@ -4158,85 +4158,85 @@ data_03_741c_rezopolis_moving_backgrounds:
     db   $00, $00                  ;; 03:7477 ??????
 
 data_03_747d:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_747d.bin"
+    INCBIN ".gfx/moving_tiles/image_003_747d.bin"
 data_03_74bd:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_74bd.bin"
+    INCBIN ".gfx/moving_tiles/image_003_74bd.bin"
 data_03_74fd:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_74fd.bin"
+    INCBIN ".gfx/moving_tiles/image_003_74fd.bin"
 data_03_753d:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_753d.bin"
+    INCBIN ".gfx/moving_tiles/image_003_753d.bin"
 data_03_757d:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_757d.bin"
+    INCBIN ".gfx/moving_tiles/image_003_757d.bin"
 data_03_759d:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_759d.bin"
+    INCBIN ".gfx/moving_tiles/image_003_759d.bin"
 data_03_75bd:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_75bd.bin"
+    INCBIN ".gfx/moving_tiles/image_003_75bd.bin"
 data_03_75dd:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_75dd.bin"
+    INCBIN ".gfx/moving_tiles/image_003_75dd.bin"
 data_03_75fd:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_75fd.bin"
+    INCBIN ".gfx/moving_tiles/image_003_75fd.bin"
 data_03_763d:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_763d.bin"
+    INCBIN ".gfx/moving_tiles/image_003_763d.bin"
 data_03_767d:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_767d.bin"
+    INCBIN ".gfx/moving_tiles/image_003_767d.bin"
 data_03_76bd:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_76bd.bin"
+    INCBIN ".gfx/moving_tiles/image_003_76bd.bin"
 data_03_76fd:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_76fd.bin"
+    INCBIN ".gfx/moving_tiles/image_003_76fd.bin"
 data_03_775d:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_775d.bin"
+    INCBIN ".gfx/moving_tiles/image_003_775d.bin"
 data_03_77bd:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_77bd.bin"
+    INCBIN ".gfx/moving_tiles/image_003_77bd.bin"
 data_03_781d:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_781d.bin"
+    INCBIN ".gfx/moving_tiles/image_003_781d.bin"
 data_03_787d:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_787d.bin"
+    INCBIN ".gfx/moving_tiles/image_003_787d.bin"
 data_03_789d:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_789d.bin"
+    INCBIN ".gfx/moving_tiles/image_003_789d.bin"
 data_03_78bd:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_78bd.bin"
+    INCBIN ".gfx/moving_tiles/image_003_78bd.bin"
 data_03_78fd:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_78fd.bin"
+    INCBIN ".gfx/moving_tiles/image_003_78fd.bin"
 data_03_793d:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_793d.bin"
+    INCBIN ".gfx/moving_tiles/image_003_793d.bin"
 data_03_797d:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_797d.bin"
+    INCBIN ".gfx/moving_tiles/image_003_797d.bin"
 data_03_79bd:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_79bd.bin"
+    INCBIN ".gfx/moving_tiles/image_003_79bd.bin"
 data_03_79fd:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_79fd.bin"
+    INCBIN ".gfx/moving_tiles/image_003_79fd.bin"
 data_03_7a3d:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_7a3d.bin"
+    INCBIN ".gfx/moving_tiles/image_003_7a3d.bin"
 data_03_7a7d:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_7a7d.bin"
+    INCBIN ".gfx/moving_tiles/image_003_7a7d.bin"
 data_03_7abd:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_7abd.bin"
+    INCBIN ".gfx/moving_tiles/image_003_7abd.bin"
 data_03_7add:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_7add.bin"
+    INCBIN ".gfx/moving_tiles/image_003_7add.bin"
 data_03_7afd:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_7afd.bin"
+    INCBIN ".gfx/moving_tiles/image_003_7afd.bin"
 data_03_7b0d:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_7b0d.bin"
+    INCBIN ".gfx/moving_tiles/image_003_7b0d.bin"
 data_03_7b1d:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_7b1d.bin"
+    INCBIN ".gfx/moving_tiles/image_003_7b1d.bin"
 data_03_7b2d:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_7b2d.bin"
+    INCBIN ".gfx/moving_tiles/image_003_7b2d.bin"
 data_03_7b3d:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_7b3d.bin"
+    INCBIN ".gfx/moving_tiles/image_003_7b3d.bin"
 data_03_7b4d:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_7b4d.bin"
+    INCBIN ".gfx/moving_tiles/image_003_7b4d.bin"
 data_03_7b5d:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_7b5d.bin"
+    INCBIN ".gfx/moving_tiles/image_003_7b5d.bin"
 data_03_7b6d:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_7b6d.bin"
+    INCBIN ".gfx/moving_tiles/image_003_7b6d.bin"
 data_03_7b7d:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_7b7d.bin"
+    INCBIN ".gfx/moving_tiles/image_003_7b7d.bin"
 data_03_7b9d:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_7b9d.bin"
+    INCBIN ".gfx/moving_tiles/image_003_7b9d.bin"
 data_03_7bbd:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_7bbd.bin"
+    INCBIN ".gfx/moving_tiles/image_003_7bbd.bin"
 data_03_7bdd:
-    INCBIN ".gfx/misc_sprites/moving_backgrounds/image_003_7bdd.bin"
+    INCBIN ".gfx/moving_tiles/image_003_7bdd.bin"
 
 data_03_7bfd:
     db   $ff, $00, $00, $00, $00, $00, $00, $00        ;; 03:7bfd ????????
