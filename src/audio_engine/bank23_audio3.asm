@@ -611,4 +611,153 @@ data_23_43ce:
     
 data_23_4460:
 audio_bank23.bin:
-    INCBIN "audio/audio_bank23.bin"
+    INCBIN "audio/bank_23/audio_bank23.bin"
+
+audio_23_44f4:
+    INCBIN "./audio/bank_23/audio_23_44f4.bin"
+audio_23_47de:
+    INCBIN "./audio/bank_23/audio_23_47de.bin"
+audio_23_4a18:
+    INCBIN "./audio/bank_23/audio_23_4a18.bin"
+audio_23_4e81:
+    INCBIN "./audio/bank_23/audio_23_4e81.bin"
+audio_23_54c9:
+    INCBIN "./audio/bank_23/audio_23_54c9.bin"
+audio_23_5adb:
+    INCBIN "./audio/bank_23/audio_23_5adb.bin"
+audio_23_6105:
+    INCBIN "./audio/bank_23/audio_23_6105.bin"
+audio_23_631a:
+    INCBIN "./audio/bank_23/audio_23_631a.bin"
+audio_23_65be:
+    INCBIN "./audio/bank_23/audio_23_65be.bin"
+audio_23_65d0:
+    INCBIN "./audio/bank_23/audio_23_65d0.bin"
+audio_23_65ec:
+    INCBIN "./audio/bank_23/audio_23_65ec.bin"
+audio_23_6614:
+    INCBIN "./audio/bank_23/audio_23_6614.bin"
+audio_23_6654:
+    INCBIN "./audio/bank_23/audio_23_6654.bin"
+audio_23_66ba:
+    INCBIN "./audio/bank_23/audio_23_66ba.bin"
+audio_23_66c6:
+    INCBIN "./audio/bank_23/audio_23_66c6.bin"
+audio_23_6700:
+    INCBIN "./audio/bank_23/audio_23_6700.bin"
+audio_23_6f23:
+    INCBIN "./audio/bank_21/audio_21_6f23.bin"
+audio_23_6718:
+    INCBIN "./audio/bank_23/audio_23_6718.bin"
+audio_23_672c:
+    INCBIN "./audio/bank_23/audio_23_672c.bin"
+audio_23_673e:
+    INCBIN "./audio/bank_23/audio_23_673e.bin"
+audio_23_675e:
+    INCBIN "./audio/bank_23/audio_23_675e.bin"
+audio_23_6786:
+    INCBIN "./audio/bank_23/audio_23_6786.bin"
+audio_23_67e2:
+    INCBIN "./audio/bank_23/audio_23_67e2.bin"
+audio_23_67f8:
+    INCBIN "./audio/bank_23/audio_23_67f8.bin"
+audio_23_684e:
+    INCBIN "./audio/bank_23/audio_23_684e.bin"
+audio_23_6898:
+    INCBIN "./audio/bank_23/audio_23_6898.bin"
+audio_23_6a44:
+    INCBIN "./audio/bank_23/audio_23_6a44.bin"
+audio_23_6a66:
+    INCBIN "./audio/bank_23/audio_23_6a66.bin"
+audio_23_6aba:
+    INCBIN "./audio/bank_23/audio_23_6aba.bin"
+audio_23_6ae6:
+    INCBIN "./audio/bank_23/audio_23_6ae6.bin"
+audio_23_6b12:
+    INCBIN "./audio/bank_23/audio_23_6b12.bin"
+audio_23_6b24:
+    INCBIN "./audio/bank_23/audio_23_6b24.bin"
+audio_23_6b3a:
+    INCBIN "./audio/bank_23/audio_23_6b3a.bin"
+audio_23_6b4a:
+    INCBIN "./audio/bank_23/audio_23_6b4a.bin"
+audio_23_6b56:
+    INCBIN "./audio/bank_23/audio_23_6b56.bin"
+audio_23_6b6a:
+    INCBIN "./audio/bank_23/audio_23_6b6a.bin"
+audio_23_6b7e:
+    INCBIN "./audio/bank_23/audio_23_6b7e.bin"
+audio_23_6b86:
+    INCBIN "./audio/bank_23/audio_23_6b86.bin"
+audio_23_6b9a:
+    INCBIN "./audio/bank_23/audio_23_6b9a.bin"
+audio_23_6bcc:
+    INCBIN "./audio/bank_23/audio_23_6bcc.bin"
+audio_23_6bda:
+    INCBIN "./audio/bank_23/audio_23_6bda.bin"
+audio_23_6c1c:
+    INCBIN "./audio/bank_23/audio_23_6c1c.bin"
+audio_23_6c2a:
+    INCBIN "./audio/bank_23/audio_23_6c2a.bin"
+audio_23_6c64:
+    INCBIN "./audio/bank_23/audio_23_6c64.bin"
+audio_23_6c72:
+    INCBIN "./audio/bank_23/audio_23_6c72.bin"
+audio_23_6c88:
+    INCBIN "./audio/bank_23/audio_23_6c88.bin"
+audio_23_6c8e:
+    INCBIN "./audio/bank_23/audio_23_6c8e.bin"
+audio_23_6cb4:
+    INCBIN "./audio/bank_23/audio_23_6cb4.bin"
+audio_23_6cc4:
+    INCBIN "./audio/bank_23/audio_23_6cc4.bin"
+audio_23_6cca:
+    INCBIN "./audio/bank_23/audio_23_6cca.bin"
+audio_23_6cd8:
+    INCBIN "./audio/bank_23/audio_23_6cd8.bin"
+audio_23_6ce8:
+    INCBIN "./audio/bank_23/audio_23_6ce8.bin"
+audio_23_6d26:
+    INCBIN "./audio/bank_23/audio_23_6d26.bin"
+audio_23_6d4c:
+    INCBIN "./audio/bank_23/audio_23_6d4c.bin"
+audio_23_6d5c:
+    INCBIN "./audio/bank_23/audio_23_6d5c.bin"
+audio_23_6da2:
+    INCBIN "./audio/bank_23/audio_23_6da2.bin"
+audio_23_6dcc:
+    INCBIN "./audio/bank_23/audio_23_6dcc.bin"
+audio_23_75f7:
+    INCBIN "./audio/bank_21/audio_21_75f7.bin"
+audio_23_760b:
+    INCBIN "./audio/bank_21/audio_21_760b.bin"
+audio_23_6dfe:
+    INCBIN "./audio/bank_23/audio_23_6dfe.bin"
+audio_23_6e30:
+    INCBIN "./audio/bank_23/audio_23_6e30.bin"
+audio_23_6e58:
+    INCBIN "./audio/bank_23/audio_23_6e58.bin"
+audio_23_6e8a:
+    INCBIN "./audio/bank_23/audio_23_6e8a.bin"
+audio_23_6ea0:
+    INCBIN "./audio/bank_23/audio_23_6ea0.bin"
+audio_23_6ecc:
+    INCBIN "./audio/bank_23/audio_23_6ecc.bin"
+audio_23_6eda:
+    INCBIN "./audio/bank_23/audio_23_6eda.bin"
+audio_23_6f04:
+    INCBIN "./audio/bank_23/audio_23_6f04.bin"
+audio_23_6f12:
+    INCBIN "./audio/bank_23/audio_23_6f12.bin"
+audio_23_6f68:
+    INCBIN "./audio/bank_23/audio_23_6f68.bin"
+audio_23_6f7c:
+    INCBIN "./audio/bank_23/audio_23_6f7c.bin"
+audio_23_6f90:
+    INCBIN "./audio/bank_23/audio_23_6f90.bin"
+audio_23_6f92:
+    INCBIN "./audio/bank_23/audio_23_6f92.bin"
+audio_23_6f94:
+    INCBIN "./audio/bank_23/audio_23_6f94.bin"
+audio_23_6f96:
+    INCBIN "./audio/bank_23/audio_23_6f96.bin"

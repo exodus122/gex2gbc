@@ -611,4 +611,161 @@ data_21_43ce:
 
 data_21_4460:
 audio_bank21.bin:
-    INCBIN "audio/audio_bank21.bin"
+    INCBIN "audio/bank_21/audio_bank21.bin"
+
+audio_21_44fc:
+    INCBIN "./audio/bank_21/audio_21_44fc.bin"
+audio_21_4740:
+    INCBIN "./audio/bank_21/audio_21_4740.bin"
+audio_21_4964:
+    INCBIN "./audio/bank_21/audio_21_4964.bin"
+audio_21_49e1:
+    INCBIN "./audio/bank_21/audio_21_49e1.bin"
+audio_21_49f5:
+    INCBIN "./audio/bank_21/audio_21_49f5.bin"
+audio_21_4c87:
+    INCBIN "./audio/bank_21/audio_21_4c87.bin"
+audio_21_4f03:
+    INCBIN "./audio/bank_21/audio_21_4f03.bin"
+audio_21_53a0:
+    INCBIN "./audio/bank_21/audio_21_53a0.bin"
+audio_21_5840:
+    INCBIN "./audio/bank_21/audio_21_5840.bin"
+audio_21_5f46:
+    INCBIN "./audio/bank_21/audio_21_5f46.bin"
+audio_21_62c2:
+    INCBIN "./audio/bank_21/audio_21_62c2.bin"
+audio_21_6483:
+    INCBIN "./audio/bank_21/audio_21_6483.bin"
+audio_21_6dd5:
+    INCBIN "./audio/bank_21/audio_21_6dd5.bin"
+audio_21_6de7:
+    INCBIN "./audio/bank_21/audio_21_6de7.bin"
+audio_21_6e03:
+    INCBIN "./audio/bank_21/audio_21_6e03.bin"
+audio_21_6e2b:
+    INCBIN "./audio/bank_21/audio_21_6e2b.bin"
+audio_21_6e6b:
+    INCBIN "./audio/bank_21/audio_21_6e6b.bin"
+audio_21_6ed1:
+    INCBIN "./audio/bank_21/audio_21_6ed1.bin"
+audio_21_6edd:
+    INCBIN "./audio/bank_21/audio_21_6edd.bin"
+audio_21_6f17:
+    INCBIN "./audio/bank_21/audio_21_6f17.bin"
+audio_21_6f23:
+    INCBIN "./audio/bank_21/audio_21_6f23.bin"
+audio_21_6f2f:
+    INCBIN "./audio/bank_21/audio_21_6f2f.bin"
+audio_21_6f43:
+    INCBIN "./audio/bank_21/audio_21_6f43.bin"
+audio_21_6f55:
+    INCBIN "./audio/bank_21/audio_21_6f55.bin"
+audio_21_6f75:
+    INCBIN "./audio/bank_21/audio_21_6f75.bin"
+audio_21_6f9d:
+    INCBIN "./audio/bank_21/audio_21_6f9d.bin"
+audio_21_6ff9:
+    INCBIN "./audio/bank_21/audio_21_6ff9.bin"
+audio_21_700f:
+    INCBIN "./audio/bank_21/audio_21_700f.bin"
+audio_21_7065:
+    INCBIN "./audio/bank_21/audio_21_7065.bin"
+audio_21_70af:
+    INCBIN "./audio/bank_21/audio_21_70af.bin"
+audio_21_725b:
+    INCBIN "./audio/bank_21/audio_21_725b.bin"
+audio_21_727d:
+    INCBIN "./audio/bank_21/audio_21_727d.bin"
+audio_21_72d1:
+    INCBIN "./audio/bank_21/audio_21_72d1.bin"
+audio_21_72fd:
+    INCBIN "./audio/bank_21/audio_21_72fd.bin"
+audio_21_7329:
+    INCBIN "./audio/bank_21/audio_21_7329.bin"
+audio_21_733b:
+    INCBIN "./audio/bank_21/audio_21_733b.bin"
+audio_21_7351:
+    INCBIN "./audio/bank_21/audio_21_7351.bin"
+audio_21_7361:
+    INCBIN "./audio/bank_21/audio_21_7361.bin"
+audio_21_736d:
+    INCBIN "./audio/bank_21/audio_21_736d.bin"
+audio_21_7381:
+    INCBIN "./audio/bank_21/audio_21_7381.bin"
+audio_21_7395:
+    INCBIN "./audio/bank_21/audio_21_7395.bin"
+audio_21_739d:
+    INCBIN "./audio/bank_21/audio_21_739d.bin"
+audio_21_73b1:
+    INCBIN "./audio/bank_21/audio_21_73b1.bin"
+audio_21_73e3:
+    INCBIN "./audio/bank_21/audio_21_73e3.bin"
+audio_21_73f1:
+    INCBIN "./audio/bank_21/audio_21_73f1.bin"
+audio_21_7433:
+    INCBIN "./audio/bank_21/audio_21_7433.bin"
+audio_21_7441:
+    INCBIN "./audio/bank_21/audio_21_7441.bin"
+audio_21_747b:
+    INCBIN "./audio/bank_21/audio_21_747b.bin"
+audio_21_7489:
+    INCBIN "./audio/bank_21/audio_21_7489.bin"
+audio_21_749f:
+    INCBIN "./audio/bank_21/audio_21_749f.bin"
+audio_21_74a5:
+    INCBIN "./audio/bank_21/audio_21_74a5.bin"
+audio_21_74cb:
+    INCBIN "./audio/bank_21/audio_21_74cb.bin"
+audio_21_74db:
+    INCBIN "./audio/bank_21/audio_21_74db.bin"
+audio_21_74e1:
+    INCBIN "./audio/bank_21/audio_21_74e1.bin"
+audio_21_74ef:
+    INCBIN "./audio/bank_21/audio_21_74ef.bin"
+audio_21_74ff:
+    INCBIN "./audio/bank_21/audio_21_74ff.bin"
+audio_21_753d:
+    INCBIN "./audio/bank_21/audio_21_753d.bin"
+audio_21_7563:
+    INCBIN "./audio/bank_21/audio_21_7563.bin"
+audio_21_7573:
+    INCBIN "./audio/bank_21/audio_21_7573.bin"
+audio_21_75b9:
+    INCBIN "./audio/bank_21/audio_21_75b9.bin"
+audio_21_75e3:
+    INCBIN "./audio/bank_21/audio_21_75e3.bin"
+audio_21_75f7:
+    INCBIN "./audio/bank_21/audio_21_75f7.bin"
+audio_21_760b:
+    INCBIN "./audio/bank_21/audio_21_760b.bin"
+audio_21_7615:
+    INCBIN "./audio/bank_21/audio_21_7615.bin"
+audio_21_7647:
+    INCBIN "./audio/bank_21/audio_21_7647.bin"
+audio_21_766f:
+    INCBIN "./audio/bank_21/audio_21_766f.bin"
+audio_21_76a1:
+    INCBIN "./audio/bank_21/audio_21_76a1.bin"
+audio_21_76b7:
+    INCBIN "./audio/bank_21/audio_21_76b7.bin"
+audio_21_76e3:
+    INCBIN "./audio/bank_21/audio_21_76e3.bin"
+audio_21_76f1:
+    INCBIN "./audio/bank_21/audio_21_76f1.bin"
+audio_21_771b:
+    INCBIN "./audio/bank_21/audio_21_771b.bin"
+audio_21_7729:
+    INCBIN "./audio/bank_21/audio_21_7729.bin"
+audio_21_777f:
+    INCBIN "./audio/bank_21/audio_21_777f.bin"
+audio_21_7793:
+    INCBIN "./audio/bank_21/audio_21_7793.bin"
+audio_21_77a7:
+    INCBIN "./audio/bank_21/audio_21_77a7.bin"
+audio_21_77a9:
+    INCBIN "./audio/bank_21/audio_21_77a9.bin"
+audio_21_77ab:
+    INCBIN "./audio/bank_21/audio_21_77ab.bin"
+audio_21_77ad:
+    INCBIN "./audio/bank_21/audio_21_77ad.bin"
