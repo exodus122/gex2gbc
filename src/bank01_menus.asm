@@ -4,8 +4,8 @@ SECTION "bank01", ROMX[$4000], BANK[$01]
 
 ; This file handles various menus in the game
 
-entry_01_4000: ; this is the primary menu updating function
-call_01_4000:
+entry_01_4000_LoadMenu: ; this is the primary menu updating function
+call_01_4000_LoadMenu:
     ld   HL, wD6DD                                     ;; 01:4000 $21 $dd $d6
     ld   [HL], $00                                     ;; 01:4003 $36 $00
 .jp_01_4005:
@@ -30,12 +30,12 @@ call_01_4000:
     jr   Z, .jr_01_402e                                ;; 01:402a $28 $02
     ld   A, $01                                        ;; 01:402c $3e $01
 .jr_01_402e:
-    ld   [wD6DF_MenuSelectedColumn], A                                    ;; 01:402e $ea $df $d6
+    ld   [wD6DF_MenuSelectedColumn], A                 ;; 01:402e $ea $df $d6
     ld   HL, wD68A                                     ;; 01:4031 $21 $8a $d6
     ld   A, [HL+]                                      ;; 01:4034 $2a
     ld   H, [HL]                                       ;; 01:4035 $66
     ld   L, A                                          ;; 01:4036 $6f
-    call call_01_446f                                  ;; 01:4037 $cd $6f $44
+    call call_01_446f_LoadMenuGraphics                 ;; 01:4037 $cd $6f $44
 .jp_01_403a:
     ld   A, $ff                                        ;; 01:403a $3e $ff
     ld   [wD619], A                                    ;; 01:403c $ea $19 $d6
@@ -290,7 +290,7 @@ call_01_4000:
     call call_00_10eb                                  ;; 01:421e $cd $eb $10
     ld   A, [wD6DD]                                    ;; 01:4221 $fa $dd $d6
     and  A, A                                          ;; 01:4224 $a7
-    jp   NZ, call_01_4000                              ;; 01:4225 $c2 $00 $40
+    jp   NZ, call_01_4000_LoadMenu                              ;; 01:4225 $c2 $00 $40
     ret                                                ;; 01:4228 $c9
 .jr_01_4229:
     call call_01_4291                                  ;; 01:4229 $cd $91 $42
@@ -299,8 +299,8 @@ call_01_4000:
     ret                                                ;; 01:422e $c9
 .jr_01_422f:
     call call_01_4f87                                  ;; 01:422f $cd $87 $4f
-    ld   A, $0f                                        ;; 01:4232 $3e $0f
-    call call_01_4000                                  ;; 01:4234 $cd $00 $40
+    ld   A, MenuType_EnterPassword                                        ;; 01:4232 $3e $0f
+    call call_01_4000_LoadMenu                                  ;; 01:4234 $cd $00 $40
     cp   A, $00                                        ;; 01:4237 $fe $00
     jr   Z, .jr_01_422c                                ;; 01:4239 $28 $f1
 .jr_01_423b:
@@ -308,15 +308,15 @@ call_01_4000:
     cp   A, $30                                        ;; 01:423e $fe $30
     ret  Z                                             ;; 01:4240 $c8
     call call_01_4f87                                  ;; 01:4241 $cd $87 $4f
-    ld   A, $15                                        ;; 01:4244 $3e $15
-    call call_01_4000                                  ;; 01:4246 $cd $00 $40
+    ld   A, MenuType_EnteredInvalidPassword                                        ;; 01:4244 $3e $15
+    call call_01_4000_LoadMenu                                  ;; 01:4246 $cd $00 $40
     cp   A, $00                                        ;; 01:4249 $fe $00
     jr   Z, .jr_01_422c                                ;; 01:424b $28 $df
     jr   .jr_01_423b                                   ;; 01:424d $18 $ec
 .jr_01_424f:
     call call_01_4fa5                                  ;; 01:424f $cd $a5 $4f
-    ld   A, $06                                        ;; 01:4252 $3e $06
-    jp   call_01_4000                                  ;; 01:4254 $c3 $00 $40
+    ld   A, MenuType_ViewPassword                                        ;; 01:4252 $3e $06
+    jp   call_01_4000_LoadMenu                                  ;; 01:4254 $c3 $00 $40
 .jr_01_4257:
     ld   A, [wD624_CurrentLevelId]                                    ;; 01:4257 $fa $24 $d6
     and  A, A                                          ;; 01:425a $a7
@@ -341,8 +341,8 @@ call_01_4265:
     db   $01, $01, $01, $00, $00, $00, $01             ;; 01:428a ......?
 
 call_01_4291:
-    ld   A, $11                                        ;; 01:4291 $3e $11
-    call call_01_4000                                  ;; 01:4293 $cd $00 $40
+    ld   A, MenuType_AudioOptionsUnused                ;; 01:4291 $3e $11
+    call call_01_4000_LoadMenu                         ;; 01:4293 $cd $00 $40
     ret                                                ;; 01:4296 $c9
 
 entry_01_4297:
@@ -363,12 +363,12 @@ entry_01_4297:
     ld   A, $08                                        ;; 01:42ad $3e $08
     ld   HL, wD626                                     ;; 01:42af $21 $26 $d6
     add  A, [HL]                                       ;; 01:42b2 $86
-    call call_01_4000                                  ;; 01:42b3 $cd $00 $40
+    call call_01_4000_LoadMenu                                  ;; 01:42b3 $cd $00 $40
     ld   A, [wD6E0_MenuSelectedRow]                                    ;; 01:42b6 $fa $e0 $d6
     ld   [wD627_CurrentMission], A                                    ;; 01:42b9 $ea $27 $d6
     ret                                                ;; 01:42bc $c9
 
-entry_01_42bd:
+entry_01_42bd_EnterTV:
     ld   A, [wD621]                                    ;; 01:42bd $fa $21 $d6
     and  A, $fb                                        ;; 01:42c0 $e6 $fb
     ld   [wD621], A                                    ;; 01:42c2 $ea $21 $d6
@@ -384,8 +384,8 @@ entry_01_42bd:
     ld   A, [wD621]                                    ;; 01:42d8 $fa $21 $d6
     and  A, $ef                                        ;; 01:42db $e6 $ef
     ld   [wD621], A                                    ;; 01:42dd $ea $21 $d6
-    ld   A, $1b                                        ;; 01:42e0 $3e $1b
-    call call_01_4000                                  ;; 01:42e2 $cd $00 $40
+    ld   A, MenuType_TimeUp                                        ;; 01:42e0 $3e $1b
+    call call_01_4000_LoadMenu                                  ;; 01:42e2 $cd $00 $40
     jr   .jr_01_4319                                   ;; 01:42e5 $18 $32
 .jr_01_42e7:
     call call_00_2e43                                  ;; 01:42e7 $cd $43 $2e
@@ -411,15 +411,15 @@ entry_01_42bd:
     ld   A, [wD624_CurrentLevelId]                                    ;; 01:4308 $fa $24 $d6
     cp   A, $1e                                        ;; 01:430b $fe $1e
     jr   NZ, .jr_01_4314                               ;; 01:430d $20 $05
-    call call_01_43c7                                  ;; 01:430f $cd $c7 $43
+    call call_01_43c7_LoadCreditsMenus                                  ;; 01:430f $cd $c7 $43
     jr   .jr_01_4319                                   ;; 01:4312 $18 $05
 .jr_01_4314:
-    ld   A, $0e                                        ;; 01:4314 $3e $0e
-    call call_01_4000                                  ;; 01:4316 $cd $00 $40
+    ld   A, MenuType_Congratulations                                        ;; 01:4314 $3e $0e
+    call call_01_4000_LoadMenu                                  ;; 01:4316 $cd $00 $40
 .jr_01_4319:
     call call_01_4349                                  ;; 01:4319 $cd $49 $43
-    ld   A, $05                                        ;; 01:431c $3e $05
-    call call_01_4000                                  ;; 01:431e $cd $00 $40
+    ld   A, MenuType_ViewTotals                                        ;; 01:431c $3e $05
+    call call_01_4000_LoadMenu                                  ;; 01:431e $cd $00 $40
     xor  A, A                                          ;; 01:4321 $af
     ld   [wD624_CurrentLevelId], A                                    ;; 01:4322 $ea $24 $d6
     ld   A, $14                                        ;; 01:4325 $3e $14
@@ -507,25 +507,25 @@ call_01_4349:
 .data_01_43b6:
     db   $1f, $1b, $19, $03, $01, $20, $00
 
-entry_01_43bd:    
-    ld a, $0c
-    call call_01_4000
-    ld a, $04
-    jp call_01_4000                                        ;; 01:43c6 ?
+entry_01_43bd_LoadGameOverMenu:    
+    ld a, MenuType_GameOver
+    call call_01_4000_LoadMenu
+    ld a, MenuType_GameOverTotals
+    jp call_01_4000_LoadMenu                                        ;; 01:43c6 ?
 
-call_01_43c7:
-    ld   A, $07                                        ;; 01:43c7 $3e $07
+call_01_43c7_LoadCreditsMenus:
+    ld   A, MenuType_TitleOptions                                        ;; 01:43c7 $3e $07
     call call_00_120c_SetupMusic                                  ;; 01:43c9 $cd $0c $12
-    ld   A, $12                                        ;; 01:43cc $3e $12
-    call call_01_4000                                  ;; 01:43ce $cd $00 $40
-    ld   A, $17                                        ;; 01:43d1 $3e $17
-    call call_01_4000                                  ;; 01:43d3 $cd $00 $40
-    ld   A, $18                                        ;; 01:43d6 $3e $18
-    call call_01_4000                                  ;; 01:43d8 $cd $00 $40
-    ld   A, $19                                        ;; 01:43db $3e $19
-    call call_01_4000                                  ;; 01:43dd $cd $00 $40
-    ld   A, $1a                                        ;; 01:43e0 $3e $1a
-    call call_01_4000                                  ;; 01:43e2 $cd $00 $40
+    ld   A, MenuType_CreditsGreatJob                                        ;; 01:43cc $3e $12
+    call call_01_4000_LoadMenu                                  ;; 01:43ce $cd $00 $40
+    ld   A, MenuType_Credits1                                        ;; 01:43d1 $3e $17
+    call call_01_4000_LoadMenu                                  ;; 01:43d3 $cd $00 $40
+    ld   A, MenuType_Credits2                                        ;; 01:43d6 $3e $18
+    call call_01_4000_LoadMenu                                  ;; 01:43d8 $cd $00 $40
+    ld   A, MenuType_Credits3                                        ;; 01:43db $3e $19
+    call call_01_4000_LoadMenu                                  ;; 01:43dd $cd $00 $40
+    ld   A, MenuType_Credits4                                        ;; 01:43e0 $3e $1a
+    call call_01_4000_LoadMenu                                  ;; 01:43e2 $cd $00 $40
     ret                                                ;; 01:43e5 $c9
 
 call_01_43e6:
@@ -540,27 +540,28 @@ call_01_43e6:
     ld   L, A                                          ;; 01:43f3 $6f
     jp   HL                                            ;; 01:43f4 $e9
 .data_01_43f5:
-    dw   .data_01_442d                                 ;; 01:43f5 pP
-    dw   .data_01_442d                                 ;; 01:43f7 pP
-    dw   .data_01_442d                                 ;; 01:43f9 pP
-    dw   .data_01_442d                                 ;; 01:43fb pP
-    db   $46, $44                                      ;; 01:43fd ??
-    dw   .data_01_4446                                 ;; 01:43ff pP
-    db   $6e, $44                                      ;; 01:4401 ??
-    dw   .data_01_444c                                 ;; 01:4403 pP
-    dw   .data_01_446e                                 ;; 01:4405 pP
-    db   $6e, $44, $6e, $44                            ;; 01:4407 ????
-    dw   .data_01_446e                                 ;; 01:440b pP
-    db   $6e, $44, $6e, $44, $6e, $44, $6e, $44        ;; 01:440d ????????
-    dw   .data_01_446e                                 ;; 01:4415 pP
-    db   $5d, $44, $6e, $44                            ;; 01:4417 ????
-    dw   .data_01_446e                                 ;; 01:441b pP
-    dw   .data_01_446e                                 ;; 01:441d pP
-    db   $6e, $44                                      ;; 01:441f ??
-    dw   .data_01_446e                                 ;; 01:4421 pP
-    db   $6e, $44, $6e, $44, $6e, $44, $6e, $44        ;; 01:4423 ????????
-    db   $6e, $44                                      ;; 01:442b ??
-.data_01_442d:
+    dw   .jp_01_442d                                 ;; 01:43f5 pP
+    dw   .jp_01_442d                                 ;; 01:43f7 pP
+    dw   .jp_01_442d                                 ;; 01:43f9 pP
+    dw   .jp_01_442d                                 ;; 01:43fb pP
+    dw   .jp_01_4446                                      ;; 01:43fd ??
+    dw   .jp_01_4446                                 ;; 01:43ff pP
+    dw   .jp_01_446e                                      ;; 01:4401 ??
+    dw   .jp_01_444c                                 ;; 01:4403 pP
+    dw   .jp_01_446e                                 ;; 01:4405 pP
+    dw   .jp_01_446e, .jp_01_446e                            ;; 01:4407 ????
+    dw   .jp_01_446e                                 ;; 01:440b pP
+    dw   .jp_01_446e, .jp_01_446e, .jp_01_446e, .jp_01_446e        ;; 01:440d ????????
+    dw   .jp_01_446e                                 ;; 01:4415 pP
+    dw   .jp_01_445d, .jp_01_446e                            ;; 01:4417 ????
+    dw   .jp_01_446e                                 ;; 01:441b pP
+    dw   .jp_01_446e                                 ;; 01:441d pP
+    dw   .jp_01_446e                                      ;; 01:441f ??
+    dw   .jp_01_446e                                 ;; 01:4421 pP
+    dw   .jp_01_446e, .jp_01_446e, .jp_01_446e, .jp_01_446e        ;; 01:4423 ????????
+    dw   .jp_01_446e                                      ;; 01:442b ??
+
+.jp_01_442d:
     ld   C, $4e                                        ;; 01:442d $0e $4e
     ld   B, $08                                        ;; 01:442f $06 $08
 .jr_01_4431:
@@ -578,11 +579,13 @@ call_01_43e6:
     ld   HL, wD6EC                                     ;; 01:4441 $21 $ec $d6
     ld   [HL], B                                       ;; 01:4444 $70
     ret                                                ;; 01:4445 $c9
-.data_01_4446:
+
+.jp_01_4446:
     ld   C, $16                                        ;; 01:4446 $0e $16
     ld   B, $08                                        ;; 01:4448 $06 $08
     jr   .jr_01_4431                                   ;; 01:444a $18 $e5
-.data_01_444c:
+
+.jp_01_444c:
     ld   HL, wD6E0_MenuSelectedRow                                     ;; 01:444c $21 $e0 $d6
     ld   L, [HL]                                       ;; 01:444f $6e
     ld   H, $00                                        ;; 01:4450 $26 $00
@@ -593,13 +596,17 @@ call_01_43e6:
     ld   H, [HL]                                       ;; 01:4458 $66
     ld   L, A                                          ;; 01:4459 $6f
     jp   call_01_4d0a                                  ;; 01:445a $c3 $0a $4d
+
+.jp_01_445d:
     db   $21, $e0, $d6, $6e, $26, $00, $29, $11        ;; 01:445d ????????
     db   $13, $0e, $19, $2a, $66, $6f, $c3, $0a        ;; 01:4465 ????????
     db   $4d                                           ;; 01:446d ?
-.data_01_446e:
+
+.jp_01_446e:
     ret                                                ;; 01:446e $c9
 
-call_01_446f:
+call_01_446f_LoadMenuGraphics:
+; Load tiles, palettes, and bg map for the menu
     push HL                                            ;; 01:446f $e5
     ld   A, $ff                                        ;; 01:4470 $3e $ff
     ld   [wD6C1], A                                    ;; 01:4472 $ea $c1 $d6

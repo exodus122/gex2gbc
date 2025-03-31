@@ -30,6 +30,8 @@ isrJoypad:
 
 SECTION "entry", ROM0[$0100]
 
+; for list of entry functions, search: "entry_[_0-9A-Za-z]*:"
+
 entry:
     nop                                                ;; 00:0100 $00
     jp   call_00_0150_Init                                   ;; 00:0101 $c3 $50 $01
@@ -95,7 +97,7 @@ call_00_0150_Init:
     ld   BC, $0a                                       ;; 00:01b2 $01 $0a $00
     call call_00_07b0_CopyBytes                                  ;; 00:01b5 $cd $b0 $07
     call call_00_0e87                                  ;; 00:01b8 $cd $87 $0e
-    ld   HL, wD59A_PreviousBankNumber                                     ;; 00:01bb $21 $9a $d5
+    ld   HL, wD59A                                     ;; 00:01bb $21 $9a $d5
     ld   DE, wD58A                                     ;; 00:01be $11 $8a $d5
     ld   A, $01                                        ;; 00:01c1 $3e $01
     ld   [HL], E                                       ;; 00:01c3 $73
@@ -143,36 +145,35 @@ call_00_0150_Init:
     ld   HL, entry_01_4f87                              ;; 00:021a $21 $87 $4f
     call call_00_1078_SwitchBankWrapper                    ;; 00:021d $cd $78 $10
 .jp_00_0220:
-; Main loop starts here
-    ld   A, $14                                        ;; 00:0220 $3e $14
+    ld   A, MenuType_TitleSplash                                        ;; 00:0220 $3e $14
     ld   [wD59D_BankSwitch], A                                    ;; 00:0222 $ea $9d $d5
     ld   A, Bank01                                        ;; 00:0225 $3e $01
-    ld   HL, entry_01_4000                              ;; 00:0227 $21 $00 $40
+    ld   HL, entry_01_4000_LoadMenu                              ;; 00:0227 $21 $00 $40
     call call_00_1078_SwitchBankWrapper                                  ;; 00:022a $cd $78 $10
-    ld   A, $13                                        ;; 00:022d $3e $13
+    ld   A, MenuType_TitleCrave                                        ;; 00:022d $3e $13
     ld   [wD59D_BankSwitch], A                                    ;; 00:022f $ea $9d $d5
     ld   A, Bank01                                        ;; 00:0232 $3e $01
-    ld   HL, entry_01_4000                              ;; 00:0234 $21 $00 $40
+    ld   HL, entry_01_4000_LoadMenu                              ;; 00:0234 $21 $00 $40
     call call_00_1078_SwitchBankWrapper                                  ;; 00:0237 $cd $78 $10
-    ld   A, $16                                        ;; 00:023a $3e $16
+    ld   A, MenuType_TitleDavid                                        ;; 00:023a $3e $16
     ld   [wD59D_BankSwitch], A                                    ;; 00:023c $ea $9d $d5
     ld   A, Bank01                                        ;; 00:023f $3e $01
-    ld   HL, entry_01_4000                              ;; 00:0241 $21 $00 $40
+    ld   HL, entry_01_4000_LoadMenu                              ;; 00:0241 $21 $00 $40
     call call_00_1078_SwitchBankWrapper                                  ;; 00:0244 $cd $78 $10
-    ld   A, $10                                        ;; 00:0247 $3e $10
+    ld   A, MenuType_TitleScreen                                        ;; 00:0247 $3e $10
     ld   [wD59D_BankSwitch], A                                    ;; 00:0249 $ea $9d $d5
     ld   A, Bank01                                        ;; 00:024c $3e $01
-    ld   HL, entry_01_4000                              ;; 00:024e $21 $00 $40
+    ld   HL, entry_01_4000_LoadMenu                              ;; 00:024e $21 $00 $40
     call call_00_1078_SwitchBankWrapper                                  ;; 00:0251 $cd $78 $10
 .jp_00_0254:
-    ld   A, $07                                        ;; 00:0254 $3e $07
+    ld   A, Music_MediaDimension                                        ;; 00:0254 $3e $07
     call call_00_120c_SetupMusic                                  ;; 00:0256 $cd $0c $12
     xor  A, A                                          ;; 00:0259 $af
     ld   [wD61E], A                                    ;; 00:025a $ea $1e $d6
-    ld   A, $07                                        ;; 00:025d $3e $07
+    ld   A, MenuType_TitleOptions                                        ;; 00:025d $3e $07
     ld   [wD59D_BankSwitch], A                                    ;; 00:025f $ea $9d $d5
     ld   A, Bank01                                        ;; 00:0262 $3e $01
-    ld   HL, entry_01_4000                              ;; 00:0264 $21 $00 $40
+    ld   HL, entry_01_4000_LoadMenu                              ;; 00:0264 $21 $00 $40
     call call_00_1078_SwitchBankWrapper                                  ;; 00:0267 $cd $78 $10
     cp   A, $30                                        ;; 00:026a $fe $30
     jr   Z, .jr_00_02b8                                ;; 00:026c $28 $4a
@@ -236,7 +237,7 @@ call_00_0150_Init:
     ld   A, $08                                        ;; 00:02cc $3e $08
     ld   [wD59D_BankSwitch], A                                    ;; 00:02ce $ea $9d $d5
     ld   A, Bank01                                        ;; 00:02d1 $3e $01
-    ld   HL, entry_01_4000                              ;; 00:02d3 $21 $00 $40
+    ld   HL, entry_01_4000_LoadMenu                              ;; 00:02d3 $21 $00 $40
     call call_00_1078_SwitchBankWrapper                                  ;; 00:02d6 $cd $78 $10
     xor  A, A                                          ;; 00:02d9 $af
     ld   [wD621], A                                    ;; 00:02da $ea $21 $d6
@@ -255,10 +256,10 @@ call_00_0150_Init:
     jr   Z, .jr_00_0306                                ;; 00:02f9 $28 $0b
     ld   [wD59D_BankSwitch], A                                    ;; 00:02fb $ea $9d $d5
     ld   A, Bank01                                        ;; 00:02fe $3e $01
-    ld   HL, entry_01_42bd                                     ;; 00:0300 $21 $bd $42
+    ld   HL, entry_01_42bd_EnterTV                                     ;; 00:0300 $21 $bd $42
     call call_00_1078_SwitchBankWrapper                                  ;; 00:0303 $cd $78 $10
 .jr_00_0306:
-    call call_00_11e0_SetupLevelMusic                                  ;; 00:0306 $cd $e0 $11
+    call call_00_11e0_SetupMusicForLevel                                  ;; 00:0306 $cd $e0 $11
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:0309 $fa $24 $d6
     and  A, A                                          ;; 00:030c $a7
     jr   Z, .jr_00_0350                                ;; 00:030d $28 $41
@@ -396,7 +397,7 @@ call_00_0150_Init:
     jp   NZ, .jp_00_0370                               ;; 00:0452 $c2 $70 $03
     ld   [wD59D_BankSwitch], A                                    ;; 00:0455 $ea $9d $d5
     ld   A, Bank01                                        ;; 00:0458 $3e $01
-    ld   HL, entry_01_43bd                                     ;; 00:045a $21 $bd $43
+    ld   HL, entry_01_43bd_LoadGameOverMenu                                     ;; 00:045a $21 $bd $43
     call call_00_1078_SwitchBankWrapper                                  ;; 00:045d $cd $78 $10
     cp   A, $80                                        ;; 00:0460 $fe $80
     jp   Z, .jp_00_029d                                ;; 00:0462 $ca $9d $02
@@ -420,7 +421,7 @@ call_00_0150_Init:
 .jr_00_0486:
     ld   [wD59D_BankSwitch], A                                    ;; 00:0486 $ea $9d $d5
     ld   A, Bank01                                        ;; 00:0489 $3e $01
-    ld   HL, entry_01_4000                              ;; 00:048b $21 $00 $40
+    ld   HL, entry_01_4000_LoadMenu                              ;; 00:048b $21 $00 $40
     call call_00_1078_SwitchBankWrapper                                  ;; 00:048e $cd $78 $10
     cp   A, $60                                        ;; 00:0491 $fe $60
     jp   NZ, .jp_00_0417                               ;; 00:0493 $c2 $17 $04
@@ -528,7 +529,7 @@ call_00_0562:
     ld   HL, wD624_CurrentLevelId                                     ;; 00:0562 $21 $24 $d6
     ld   L, [HL]                                       ;; 00:0565 $6e
     ld   H, $00                                        ;; 00:0566 $26 $00
-    ld   DE, $579                                      ;; 00:0568 $11 $79 $05
+    ld   DE, .data_00_0579                                      ;; 00:0568 $11 $79 $05
     add  HL, DE                                        ;; 00:056b $19
     ld   A, [HL]                                       ;; 00:056c $7e
     ld   [wD649_CollectibleAmount], A                                    ;; 00:056d $ea $49 $d6
@@ -538,6 +539,7 @@ call_00_0562:
     ret  Z                                             ;; 00:0575 $c8
     ld   [HL], $01                                     ;; 00:0576 $36 $01
     ret                                                ;; 00:0578 $c9
+.data_00_0579:
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:0579 .ww?????
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:0581 ????????
     db   $32, $00, $00, $00, $00, $1f, $32, $32        ;; 00:0589 ????????
@@ -661,7 +663,7 @@ call_00_0647:
     ld c, [hl]
     ld [hl], a
     push bc
-    ld [$d59d], a
+    ld [wD59D_BankSwitch], a
     ld a, Bank0b
     ld hl, $5f1b
     call call_00_1078_SwitchBankWrapper
@@ -683,7 +685,7 @@ call_00_0647:
     ld [$d753], a
     ld [$d754], a
     ld de, $0708
-    ld hl, $d755
+    ld hl, wD755
     ld [hl], e
     inc hl
     ld [hl], d
@@ -694,7 +696,7 @@ jr_00_067a:
     ld [$d755], a
     ld [$d756], a
     ld de, $0708
-    ld hl, $d753
+    ld hl, wD753
     ld [hl], e
     inc hl
     ld [hl], d
@@ -891,13 +893,13 @@ call_00_07b9:
 ;    db   $a3, $10                                      ;; 00:084b ??
 
 call_00_07c3:
-    ld a, [$d6a5]
+    ld a, [wD6A5]
     call call_00_1089_SwitchBank
-    ld hl, $d6ad
+    ld hl, wD6AD
     ld c, [hl]
     inc hl
     ld b, [hl]
-    ld hl, $d6a6
+    ld hl, wD6A6
     ld l, [hl]
     ld h, $00
     add hl, hl
@@ -908,19 +910,19 @@ call_00_07c3:
     add hl, de
     ld e, l
     ld d, h
-    ld hl, $d6ab
+    ld hl, wD6AB
     ld a, [hl+]
     ld h, [hl]
     ld l, a
     call call_00_07b0_CopyBytes
-    ld a, [$d6a6]
-    ld [$d6af], a
-    ld hl, $d6a9
+    ld a, [wD6A6]
+    ld [wD6AF], a
+    ld hl, wD6A9
     ld a, [hl+]
     ld h, [hl]
     ld l, a
     ld de, $9800
-    ld a, [$d6a8]
+    ld a, [wD6A8]
     ld b, a
 
 jr_00_07fb:
@@ -941,10 +943,10 @@ jr_00_0800:
     push de
     push bc
     ld c, [hl]
-    ld hl, $d6a7
+    ld hl, wD6A7
     ld e, [hl]
     ld d, $00
-    ld hl, $d6a8
+    ld hl, wD6A8
     ld b, [hl]
     ld hl, $0000
 
@@ -955,7 +957,7 @@ jr_00_081b:
 
     ld e, l
     ld d, h
-    ld hl, $d6a9
+    ld hl, wD6A9
     ld a, [hl+]
     ld h, [hl]
     ld l, a
@@ -1371,7 +1373,7 @@ call_00_0ac1:
     jp   NZ, entry_03_6d13                              ;; 00:0b19 $c2 $13 $6d
     bit  2, A                                          ;; 00:0b1c $cb $57
     jp   NZ, entry_03_6ceb                                ;; 00:0b1e $c2 $eb $6c
-    jp   entry_03_7253                                    ;; 00:0b21 $c3 $53 $72
+    jp   entry_03_7253_UpdateMovingTiles                                    ;; 00:0b21 $c3 $53 $72
 .jp_00_0b24:
     ld   A, [wD72E]                                    ;; 00:0b24 $fa $2e $d7
     ld   [MBC1RomBank], A                                    ;; 00:0b27 $ea $01 $20
@@ -1844,7 +1846,7 @@ call_00_0f01:
     ld   [wD60F_BitmapOfThingsToLoad], A                                    ;; 00:0f0d $ea $0f $d6
     ld   [wD77B], A                                    ;; 00:0f10 $ea $7b $d7
     ld   [wD72F], A                                    ;; 00:0f13 $ea $2f $d7
-    ld   [wD611], A                                    ;; 00:0f16 $ea $11 $d6
+    ld   [wD611_MovingTilesId], A                                    ;; 00:0f16 $ea $11 $d6
     ld   [wD6E2], A                                    ;; 00:0f19 $ea $e2 $d6
     ld   [wDAD9], A                                    ;; 00:0f1c $ea $d9 $da
     ld   [wD71E], A                                    ;; 00:0f1f $ea $1e $d7
@@ -2071,7 +2073,7 @@ call_00_1078_SwitchBankWrapper:
     ret                                                ;; 00:1088 $c9
 
 call_00_1089_SwitchBank:
-    ld   HL, wD59A_PreviousBankNumber                                     ;; 00:1089 $21 $9a $d5
+    ld   HL, wD59A                                     ;; 00:1089 $21 $9a $d5
     ld   E, [HL]                                       ;; 00:108c $5e
     inc  HL                                            ;; 00:108d $23
     ld   D, [HL]                                       ;; 00:108e $56
@@ -2089,7 +2091,7 @@ call_00_1089_SwitchBank:
     ret                                                ;; 00:10a2 $c9
 
 call_00_10a3_SwitchBank2:
-    ld   HL, wD59A_PreviousBankNumber                                     ;; 00:10a3 $21 $9a $d5
+    ld   HL, wD59A                                     ;; 00:10a3 $21 $9a $d5
     ld   E, [HL]                                       ;; 00:10a6 $5e
     inc  HL                                            ;; 00:10a7 $23
     ld   D, [HL]                                       ;; 00:10a8 $56
@@ -2264,20 +2266,24 @@ call_00_113e:
     db   $01, $38, $01, $39, $01, $3a, $01, $3b        ;; 00:11d4 ????????
     db   $01, $3c, $01, $3d                            ;; 00:11dc ????
 
-call_00_11e0_SetupLevelMusic:
+call_00_11e0_SetupMusicForLevel:
     ld   HL, wD624_CurrentLevelId                                     ;; 00:11e0 $21 $24 $d6
     ld   L, [HL]                                       ;; 00:11e3 $6e
     ld   H, $00                                        ;; 00:11e4 $26 $00
-    ld   DE, .data_00_11ed                                     ;; 00:11e6 $11 $ed $11
+    ld   DE, .data_00_11ed_LevelSongs                                     ;; 00:11e6 $11 $ed $11
     add  HL, DE                                        ;; 00:11e9 $19
     ld   A, [HL]                                       ;; 00:11ea $7e
     jr   call_00_120c_SetupMusic                                  ;; 00:11eb $18 $1f
-.data_00_11ed:
+.data_00_11ed_LevelSongs:
 ; this determines which song to use for each level
-    db   $07, $06, $05, $05, $01, $00, $07, $02        ;; 00:11ed www?????
-    db   $06, $02, $01, $05, $07, $00, $03, $07        ;; 00:11f5 ????????
-    db   $05, $07, $07, $07, $07, $00, $03, $01        ;; 00:11fd ????????
-    db   $02, $05, $03, $07, $07, $07, $03             ;; 00:1205 ???????
+    db   Music_MediaDimension, Music_ToonTV, Music_ScreamTV, Music_ScreamTV
+	db   Music_CircuitCentral, Music_KungFuTheater, Music_MediaDimension, Music_PrehistoryChannel        ;; 00:11ed www?????
+    db   Music_ToonTV, Music_PrehistoryChannel, Music_CircuitCentral, Music_ScreamTV
+	db   Music_MediaDimension, Music_KungFuTheater, Music_Rezopolis, Music_MediaDimension        ;; 00:11f5 ????????
+    db   Music_ScreamTV, Music_MediaDimension, Music_MediaDimension, Music_MediaDimension
+	db   Music_MediaDimension, Music_KungFuTheater, Music_Rezopolis, Music_CircuitCentral        ;; 00:11fd ????????
+    db   Music_PrehistoryChannel, Music_ScreamTV, Music_Rezopolis, Music_MediaDimension
+	db   Music_MediaDimension, Music_MediaDimension, Music_Rezopolis             ;; 00:1205 ???????
 
 call_00_120c_SetupMusic:
     push AF                                            ;; 00:120c $f5
@@ -2571,7 +2577,7 @@ call_00_1419_WriteTilesToVRAM: ; this function writes to the tiles part of vram 
     call call_00_1078_SwitchBankWrapper                                  ;; 00:1446 $cd $78 $10
     ld   [wD59D_BankSwitch], A                                    ;; 00:1449 $ea $9d $d5
     ld   A, Bank03                                        ;; 00:144c $3e $03
-    ld   HL, entry_03_723c                                     ;; 00:144e $21 $3c $72
+    ld   HL, entry_03_723c_SetupMovingTiles                                     ;; 00:144e $21 $3c $72
     call call_00_1078_SwitchBankWrapper                                  ;; 00:1451 $cd $78 $10
     ret                                                ;; 00:1454 $c9
 

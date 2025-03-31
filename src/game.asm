@@ -3,13 +3,13 @@
 INCLUDE "include/hardware.inc"
 INCLUDE "include/macros.inc"
 INCLUDE "include/charmaps.inc"
-INCLUDE "include/constants.inc"
+INCLUDE "include/constants.asm"
 INCLUDE "memory.asm"
 
 INCLUDE "bank00_home.asm"
 INCLUDE "bank01_menus.asm"
 INCLUDE "bank02_update_objects.asm"
-INCLUDE "bank03_misc.asm"
+INCLUDE "bank03_graphics.asm"
 
 SECTION "bank04", ROMX[$4000], BANK[$04]
 image_004_4000.bin:

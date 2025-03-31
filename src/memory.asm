@@ -257,7 +257,7 @@ wD589:
 wD58A:
     ds 16                                              ;; d58a
 
-wD59A_PreviousBankNumber:
+wD59A:
 ; used to switch back to previous bank after loaded asset from a new bank (or ran code?)
     ds 2                                               ;; d59a
 
@@ -315,10 +315,10 @@ wD60F_BitmapOfThingsToLoad:
 wD610:
     ds 1                                               ;; d610
 
-wD611:
+wD611_MovingTilesId:
     ds 1                                               ;; d611
 
-wD612:
+wD612_MovingTilesId:
     ds 1                                               ;; d612
 
 wD613:
@@ -492,6 +492,7 @@ wD688:
 wD689:
     ds 1                                               ;; d689
 
+; start data related to current menu (8 bytes from data_01_5574 for a particular menu type)
 wD68A:
     ds 2                                               ;; d68a
 
@@ -512,6 +513,8 @@ wD690:
 
 wD691:
     ds 1                                               ;; d691
+
+; end data related to current menu
 
 wD692:
     ds 1                                               ;; d692
@@ -562,7 +565,31 @@ wD6A3:
     ds 1                                               ;; d6a3
 
 wD6A4:
-    ds 12                                              ;; d6a4
+    ds 1                                              ;; d6a4
+
+wD6A5:
+	ds 1
+
+wD6A6:
+	ds 1
+	
+wD6A7:
+	ds 1
+	
+wD6A8:
+	ds 1
+	
+wD6A9:
+	ds 2
+	
+wD6AB:
+	ds 2
+	
+wD6AD:
+	ds 2
+	
+wD6AF:
+	ds 1
 
 wD6B0:
     ds 1                                               ;; d6b0
@@ -648,10 +675,10 @@ wD6DA:
 wD6DB:
     ds 1                                               ;; d6db
 
-wD6DC:
+wD6DC: ; menu related
     ds 1                                               ;; d6dc
 
-wD6DD:
+wD6DD: ; menu related
     ds 1                                               ;; d6dd
 
 wD6DE_MenuType: 

@@ -80,6 +80,79 @@ DEF Input_Left     EQU $20
 DEF Input_Up       EQU $40
 DEF Input_Down     EQU $80
 
+; Menu Types
+DEF MenuType_PausedInMediaDimension   EQU $00
+DEF MenuType_ExitGame                 EQU $01
+DEF MenuType_PausedInLevel            EQU $02
+DEF MenuType_ExitToMap                EQU $03
+DEF MenuType_GameOverTotals           EQU $04
+DEF MenuType_ViewTotals               EQU $05
+DEF MenuType_ViewPassword             EQU $06
+DEF MenuType_TitleOptions             EQU $07
+DEF MenuType_EnteringMediaDimension   EQU $08
+DEF MenuType_MissionSelect1Option     EQU $09
+DEF MenuType_MissionSelect2Options    EQU $0A
+DEF MenuType_MissionSelect3Options    EQU $0B
+DEF MenuType_GameOver                 EQU $0C
+DEF MenuType_BlackScreen              EQU $0D
+DEF MenuType_Congratulations          EQU $0E
+DEF MenuType_EnterPassword            EQU $0F
+DEF MenuType_TitleScreen              EQU $10
+DEF MenuType_AudioOptionsUnused       EQU $11
+DEF MenuType_CreditsGreatJob          EQU $12
+DEF MenuType_TitleCrave               EQU $13
+DEF MenuType_TitleSplash              EQU $14
+DEF MenuType_EnteredInvalidPassword   EQU $15
+DEF MenuType_TitleDavid               EQU $16
+DEF MenuType_Credits1                 EQU $17
+DEF MenuType_Credits2                 EQU $18
+DEF MenuType_Credits3                 EQU $19
+DEF MenuType_Credits4                 EQU $1A
+DEF MenuType_TimeUp                   EQU $1B
+
+; Music
+DEF Music_KungFuTheater               EQU $00
+DEF Music_CircuitCentral              EQU $01
+DEF Music_PrehistoryChannel           EQU $02
+DEF Music_Rezopolis                   EQU $03
+DEF Music_unk_04                      EQU $04
+DEF Music_ScreamTV                    EQU $05
+DEF Music_ToonTV                      EQU $06
+DEF Music_MediaDimension              EQU $07
+
+; Levels
+DEF Level_MediaDimension                         EQU $00
+DEF Level_ToonTV_OutOfToon                       EQU $01
+DEF Level_ScreamTV_Smellraiser                   EQU $02
+DEF Level_ScreamTV_Frankensteinfeld              EQU $03
+DEF Level_CircuitCentral_wwwdotcomcom            EQU $04
+DEF Level_KungFuTheater_MaoTseTongue             EQU $05
+DEF Level_unused_04                              EQU $06
+DEF Level_PreHistoryChannel_Pangaea90210         EQU $07
+DEF Level_ToonTV_FineTooning                     EQU $08
+DEF Level_PreHistoryChannel_ThisOldCave          EQU $09
+DEF Level_CircuitCentral_HoneyIShrunkTheGecko    EQU $0A
+DEF Level_ScreamTV_Poltergex                     EQU $0B
+DEF Level_unused_0C                              EQU $0C
+DEF Level_KungFuTheater_SamuraiNightFever        EQU $0D
+DEF Level_Rezopolis_NoWeddingsAndAFuneral        EQU $0E
+DEF Level_unused_0F                              EQU $0F
+DEF Level_ScreamTV_ThursdayThe12th               EQU $10
+DEF Level_unused_11                              EQU $11
+DEF Level_unused_12                              EQU $12
+DEF Level_unused_13                              EQU $13
+DEF Level_unused_14                              EQU $14
+DEF Level_KungFuTheater_LizardInAChinaShop       EQU $15
+DEF Level_Rezopolis_BuggedOut                    EQU $16
+DEF Level_CircuitCentral_ChipsAndDips            EQU $17
+DEF Level_PreHistoryChannel_LavaDabbaDoo         EQU $18
+DEF Level_ScreamTV_TexasChainsawManicure         EQU $19
+DEF Level_Rezopolis_MazedAndConfused             EQU $1A
+DEF Level_unused_1B                              EQU $1B
+DEF Level_unused_1C                              EQU $1C
+DEF Level_unused_1D                              EQU $1D
+DEF Level_BossTV_ChannelZ                        EQU $1E
+
 ; Objects
 DEF Object_Gex                              EQU $00
 DEF Object_CollectibleSpawn                 EQU $01
@@ -225,36 +298,3 @@ DEF Object_unk_8D                           EQU $8D
 DEF Object_unk_8E                           EQU $8E
 DEF Object_MediaDimension_MovingPlatform    EQU $8F
 DEF ObjectListTerminator                    EQU $FF
-
-; Levels
-DEF Level_MediaDimension                         EQU $00
-DEF Level_ToonTV_OutOfToon                       EQU $01
-DEF Level_ScreamTV_Smellraiser                   EQU $02
-DEF Level_ScreamTV_Frankensteinfeld              EQU $03
-DEF Level_CircuitCentral_wwwdotcomcom            EQU $04
-DEF Level_KungFuTheater_MaoTseTongue             EQU $05
-DEF Level_unused_04                              EQU $06
-DEF Level_PreHistoryChannel_Pangaea90210         EQU $07
-DEF Level_ToonTV_FineTooning                     EQU $08
-DEF Level_PreHistoryChannel_ThisOldCave          EQU $09
-DEF Level_CircuitCentral_HoneyIShrunkTheGecko    EQU $0A
-DEF Level_ScreamTV_Poltergex                     EQU $0B
-DEF Level_unused_0C                              EQU $0C
-DEF Level_KungFuTheater_SamuraiNightFever        EQU $0D
-DEF Level_Rezopolis_NoWeddingsAndAFuneral        EQU $0E
-DEF Level_unused_0F                              EQU $0F
-DEF Level_ScreamTV_ThursdayThe12th               EQU $10
-DEF Level_unused_11                              EQU $11
-DEF Level_unused_12                              EQU $12
-DEF Level_unused_13                              EQU $13
-DEF Level_unused_14                              EQU $14
-DEF Level_KungFuTheater_LizardInAChinaShop       EQU $15
-DEF Level_Rezopolis_BuggedOut                    EQU $16
-DEF Level_CircuitCentral_ChipsAndDips            EQU $17
-DEF Level_PreHistoryChannel_LavaDabbaDoo         EQU $18
-DEF Level_ScreamTV_TexasChainsawManicure         EQU $19
-DEF Level_Rezopolis_MazedAndConfused             EQU $1A
-DEF Level_unused_1B                              EQU $1B
-DEF Level_unused_1C                              EQU $1C
-DEF Level_unused_1D                              EQU $1D
-DEF Level_BossTV_ChannelZ                        EQU $1E
