@@ -266,7 +266,7 @@ call_00_0150_Init:
     call call_00_0562                                  ;; 00:030f $cd $62 $05
     ld   [wD59D_BankSwitch], A                                    ;; 00:0312 $ea $9d $d5
     ld   A, Bank01                                        ;; 00:0315 $3e $01
-    ld   HL, entry_01_4297                                     ;; 00:0317 $21 $97 $42
+    ld   HL, entry_01_4297_LoadMissionSelectMenu                                     ;; 00:0317 $21 $97 $42
     call call_00_1078_SwitchBankWrapper                                  ;; 00:031a $cd $78 $10
     ld   [wD59D_BankSwitch], A                                    ;; 00:031d $ea $9d $d5
     ld   A, Bank0b                                        ;; 00:0320 $3e $0b
@@ -2277,13 +2277,13 @@ call_00_11e0_SetupMusicForLevel:
 .data_00_11ed_LevelSongs:
 ; this determines which song to use for each level
     db   Music_MediaDimension, Music_ToonTV, Music_ScreamTV, Music_ScreamTV
-	db   Music_CircuitCentral, Music_KungFuTheater, Music_MediaDimension, Music_PrehistoryChannel        ;; 00:11ed www?????
+    db   Music_CircuitCentral, Music_KungFuTheater, Music_MediaDimension, Music_PrehistoryChannel        ;; 00:11ed www?????
     db   Music_ToonTV, Music_PrehistoryChannel, Music_CircuitCentral, Music_ScreamTV
-	db   Music_MediaDimension, Music_KungFuTheater, Music_Rezopolis, Music_MediaDimension        ;; 00:11f5 ????????
+    db   Music_MediaDimension, Music_KungFuTheater, Music_Rezopolis, Music_MediaDimension        ;; 00:11f5 ????????
     db   Music_ScreamTV, Music_MediaDimension, Music_MediaDimension, Music_MediaDimension
-	db   Music_MediaDimension, Music_KungFuTheater, Music_Rezopolis, Music_CircuitCentral        ;; 00:11fd ????????
+    db   Music_MediaDimension, Music_KungFuTheater, Music_Rezopolis, Music_CircuitCentral        ;; 00:11fd ????????
     db   Music_PrehistoryChannel, Music_ScreamTV, Music_Rezopolis, Music_MediaDimension
-	db   Music_MediaDimension, Music_MediaDimension, Music_Rezopolis             ;; 00:1205 ???????
+    db   Music_MediaDimension, Music_MediaDimension, Music_Rezopolis             ;; 00:1205 ???????
 
 call_00_120c_SetupMusic:
     push AF                                            ;; 00:120c $f5
@@ -2324,13 +2324,13 @@ call_00_120c_SetupMusic:
 .data_00_1244_MusicList:
 ; this is the list of songs (first byte is bank number)
     db   Bank21, $04, $0f, $00
-	db   Bank21, $00, $0f, $00        ;; 00:1244 ????????
+    db   Bank21, $00, $0f, $00        ;; 00:1244 ????????
     db   Bank21, $08, $0f, $00
-	db   Bank22, $08, $0f, $00        ;; 00:124c ????????
+    db   Bank22, $08, $0f, $00        ;; 00:124c ????????
     db   Bank22, $04, $0f, $00
-	db   Bank22, $00, $0f, $00        ;; 00:1254 ????...?
+    db   Bank22, $00, $0f, $00        ;; 00:1254 ????...?
     db   Bank23, $04, $0f, $00
-	db   Bank23, $00, $0f, $00        ;; 00:125c ...?...?
+    db   Bank23, $00, $0f, $00        ;; 00:125c ...?...?
 
 call_00_1264_LoadMap:
     call call_00_0ede                                  ;; 00:1264 $cd $de $0e
@@ -2463,7 +2463,7 @@ call_00_12e4:
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:1366 ????????
     db   $01, $01, $03, $00, $00, $00, $00
 .data_00_1375:
-	db   $06        ;; 00:136e ???????.
+    db   $06        ;; 00:136e ???????.
     db   $00, $25, $0d, $7c, $01, $7d, $01, $8c        ;; 00:1376 ????????
     db   $01, $8d, $01, $09, $01, $1b, $16, $78        ;; 00:137e ???.????
     db   $01, $79, $01, $88, $01, $89, $01, $12        ;; 00:1386 ???????.
@@ -4877,21 +4877,21 @@ call_00_2dbf:
     ret                                                ;; 00:2e39 $c9
 
 call_00_2e3a:
-    call call_00_2eb0_GetMapDataAddr                                  ;; 00:2e3a $cd $b0 $2e
+    call call_00_2eb0_GetLevelDataAddr                                  ;; 00:2e3a $cd $b0 $2e
     ld   DE, $00                                       ;; 00:2e3d $11 $00 $00
     add  HL, DE                                        ;; 00:2e40 $19
     ld   A, [HL]                                       ;; 00:2e41 $7e
     ret                                                ;; 00:2e42 $c9
 
 call_00_2e43:
-    call call_00_2eb0_GetMapDataAddr                                  ;; 00:2e43 $cd $b0 $2e
+    call call_00_2eb0_GetLevelDataAddr                                  ;; 00:2e43 $cd $b0 $2e
     ld   DE, $01                                       ;; 00:2e46 $11 $01 $00
     add  HL, DE                                        ;; 00:2e49 $19
     ld   A, [HL]                                       ;; 00:2e4a $7e
     ret                                                ;; 00:2e4b $c9
 
 call_00_2e4c:
-    call call_00_2eb0_GetMapDataAddr                                  ;; 00:2e4c $cd $b0 $2e
+    call call_00_2eb0_GetLevelDataAddr                                  ;; 00:2e4c $cd $b0 $2e
     ld   DE, $02                                       ;; 00:2e4f $11 $02 $00
     add  HL, DE                                        ;; 00:2e52 $19
     ld   E, [HL]                                       ;; 00:2e53 $5e
@@ -4906,40 +4906,40 @@ call_00_2e4c:
     ret                                                ;; 00:2e5e $c9
 
 call_00_2e5f:
-    call call_00_2eb0_GetMapDataAddr                                  ;; 00:2e5f $cd $b0 $2e
+    call call_00_2eb0_GetLevelDataAddr                                  ;; 00:2e5f $cd $b0 $2e
     ld   DE, $02                                       ;; 00:2e62 $11 $02 $00
     add  HL, DE                                        ;; 00:2e65 $19
     ld   E, [HL]                                       ;; 00:2e66 $5e
     inc  HL                                            ;; 00:2e67 $23
-    ld   D, [HL]                                       ;; 00:2e68 $56
+    ld   D, [HL]                                       ;; 00:2e68 $56 ; DE is now 0x2-0x3 in the level data
     ld   HL, $02                                       ;; 00:2e69 $21 $02 $00
-    add  HL, DE                                        ;; 00:2e6c $19
+    add  HL, DE                                        ;; 00:2e6c $19 ; HL is 2 + DE
     add  A, A                                          ;; 00:2e6d $87
     ld   E, A                                          ;; 00:2e6e $5f
     ld   D, $00                                        ;; 00:2e6f $16 $00
-    add  HL, DE                                        ;; 00:2e71 $19
+    add  HL, DE                                        ;; 00:2e71 $19 ; HL is 2 + 0x2-0x3 in the level data + A*2
     ld   E, [HL]                                       ;; 00:2e72 $5e
     inc  HL                                            ;; 00:2e73 $23
     ld   H, [HL]                                       ;; 00:2e74 $66
-    ld   L, E                                          ;; 00:2e75 $6b
+    ld   L, E                                          ;; 00:2e75 $6b ; HL is value in [2 + 0x2-0x3 in the level data + A*2]
     ret                                                ;; 00:2e76 $c9
 
 call_00_2eb0_GetCurrentMapBankNumber:
-    call call_00_2eb0_GetMapDataAddr                                  ;; 00:2e77 $cd $b0 $2e
+    call call_00_2eb0_GetLevelDataAddr                                  ;; 00:2e77 $cd $b0 $2e
     ld   DE, $04                                       ;; 00:2e7a $11 $04 $00
     add  HL, DE                                        ;; 00:2e7d $19
     ld   A, [HL]                                       ;; 00:2e7e $7e
     ret                                                ;; 00:2e7f $c9
 
 call_00_2eb0_GetCurrentSpecialTileBank:
-    call call_00_2eb0_GetMapDataAddr                                  ;; 00:2e80 $cd $b0 $2e
+    call call_00_2eb0_GetLevelDataAddr                                  ;; 00:2e80 $cd $b0 $2e
     ld   DE, $05                                       ;; 00:2e83 $11 $05 $00
     add  HL, DE                                        ;; 00:2e86 $19
     ld   A, [HL]                                       ;; 00:2e87 $7e
     ret                                                ;; 00:2e88 $c9
 
 call_00_2eb0_GetCurrentBlocksetBank:
-    call call_00_2eb0_GetMapDataAddr                                  ;; 00:2e89 $cd $b0 $2e
+    call call_00_2eb0_GetLevelDataAddr                                  ;; 00:2e89 $cd $b0 $2e
     ld   DE, $06                                       ;; 00:2e8c $11 $06 $00
     add  HL, DE                                        ;; 00:2e8f $19
     ld   A, [HL]                                       ;; 00:2e90 $7e
@@ -4947,21 +4947,21 @@ call_00_2eb0_GetCurrentBlocksetBank:
     ret                                                ;; 00:2e92 $c9
 
 call_00_2e93:
-    call call_00_2eb0_GetMapDataAddr                                  ;; 00:2e93 $cd $b0 $2e
+    call call_00_2eb0_GetLevelDataAddr                                  ;; 00:2e93 $cd $b0 $2e
     ld   DE, $08                                       ;; 00:2e96 $11 $08 $00
     add  HL, DE                                        ;; 00:2e99 $19
     ld   A, [HL]                                       ;; 00:2e9a $7e
     ret                                                ;; 00:2e9b $c9
 
 call_00_2eb0_GetCurrentBgTilesetBank:
-    call call_00_2eb0_GetMapDataAddr                                  ;; 00:2e9c $cd $b0 $2e
+    call call_00_2eb0_GetLevelDataAddr                                  ;; 00:2e9c $cd $b0 $2e
     ld   DE, $09                                       ;; 00:2e9f $11 $09 $00
     add  HL, DE                                        ;; 00:2ea2 $19
     ld   A, [HL]                                       ;; 00:2ea3 $7e
     ret                                                ;; 00:2ea4 $c9
 
 call_00_2ea5:
-    call call_00_2eb0_GetMapDataAddr                                  ;; 00:2ea5 $cd $b0 $2e
+    call call_00_2eb0_GetLevelDataAddr                                  ;; 00:2ea5 $cd $b0 $2e
     ld   DE, $0a                                       ;; 00:2ea8 $11 $0a $00
     add  HL, DE                                        ;; 00:2eab $19
     ld   E, [HL]                                       ;; 00:2eac $5e
@@ -4969,7 +4969,7 @@ call_00_2ea5:
     ld   D, [HL]                                       ;; 00:2eae $56
     ret                                                ;; 00:2eaf $c9
 
-call_00_2eb0_GetMapDataAddr:
+call_00_2eb0_GetLevelDataAddr:
     ld   HL, wD624_CurrentLevelId                                     ;; 00:2eb0 $21 $24 $d6
     ld   L, [HL]                                       ;; 00:2eb3 $6e
     ld   H, $00                                        ;; 00:2eb4 $26 $00
@@ -4977,20 +4977,20 @@ call_00_2eb0_GetMapDataAddr:
     add  HL, HL                                        ;; 00:2eb7 $29
     add  HL, HL                                        ;; 00:2eb8 $29
     add  HL, HL                                        ;; 00:2eb9 $29
-    ld   DE, data_MapData                                     ;; 00:2eba $11 $bf $2e
+    ld   DE, .data_LevelData                                     ;; 00:2eba $11 $bf $2e
     add  HL, DE                                        ;; 00:2ebd $19
-    ret                                                ;; 00:2ebe $c9
+    ret                                                ;; 00:2ebe $c9 ; HL is now the pointer to the level data
 
-data_MapData:
+.data_LevelData:
 ; List of which banks to use for each of the 31 maps. 0x10 bytes each
 ; 0x0
 ; 0x1
-; 0x2-0x3 is 
+; 0x2-0x3 is a pointer to the level's text (level name, mission names)
 ; 0x4 is map bank number
 ; 0x5 is map special tile data bank
-; 0x6 is blockset data bank
+; 0x6 is blockset/collision data bank
 ; 0x7
-; 0x8
+; 0x8 is the bit to use in the blockset/collision data bank
 ; 0x9 is tileset bank
 ; 0xa
 ; 0xb
@@ -4999,36 +4999,37 @@ data_MapData:
 ; 0xe
 ; 0xf
     db   $00, $06                                      ;; 00:2ebf ?w
-    dw   $5f88                                         ;; 00:2ec1 wW
+    dw   data_01_5f88                                         ;; 00:2ec1 wW
     db   $30, $34, $38, $00, $04, $36, $00, $40        ;; 00:2ec3 ...?....
     db   $00, $00, $00, $00
     
     db   $07, $00                  ;; 00:2ecb ????ww
-    dw   $5fa7                                         ;; 00:2ed1 wW
+    dw   data_01_5fa7                                         ;; 00:2ed1 wW
     db   $31, $34, $39, $00, $08, $36, $00, $50        ;; 00:2ed3 ...?....
     db   $00, $00, $00, $00
     
     db   $06, $00                  ;; 00:2edb ????ww
-    dw   $6007                                         ;; 00:2ee1 wW
+    dw   data_01_6007                                         ;; 00:2ee1 wW
     db   $32, $34, $3a, $00, $02, $36, $00, $60        ;; 00:2ee3 ...?....
     db   $00, $00, $00, $00
     
     db   $06, $00                  ;; 00:2eeb ?????w
-    dw   $606a                                         ;; 00:2ef1 wW
+    dw   data_01_606a                                         ;; 00:2ef1 wW
     db   $33, $34, $3a, $00, $01, $36, $00, $60        ;; 00:2ef3 ????????
     db   $00, $00, $00, $00
     
     db   $01, $01                  ;; 00:2efb ?????w
-    dw   $60ca                                         ;; 00:2f01 wW
+    dw   data_01_60ca                                         ;; 00:2f01 wW
     db   $25, $35, $3b, $00, $02, $36, $00, $70        ;; 00:2f03 ????????
     db   $00, $00, $00, $00
     
     db   $02, $01                  ;; 00:2f0b ?????w
-    dw   $611b                                         ;; 00:2f11 wW
+    dw   data_01_611b                                         ;; 00:2f11 wW
     db   $2d, $34, $3c, $00, $80, $37, $00, $40        ;; 00:2f13 ????????
     db   $00, $00, $00, $00
     
-    db   $05, $06, $5f, $61        ;; 00:2f1b ?????w??
+    db   $05, $06
+    dw   data_01_615f        ;; 00:2f1b ?????w??
     db   $32, $34, $38, $00, $00, $36, $00, $40        ;; 00:2f23 ????????
     db   $00, $00, $00, $00
     

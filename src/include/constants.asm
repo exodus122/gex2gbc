@@ -298,3 +298,35 @@ DEF Object_unk_8D                           EQU $8D
 DEF Object_unk_8E                           EQU $8E
 DEF Object_MediaDimension_MovingPlatform    EQU $8F
 DEF ObjectListTerminator                    EQU $FF
+
+; Text
+DEF _Space            EQU $20
+DEF _Dash             EQU $2d
+DEF _Period           EQU $2e
+DEF _A                EQU $41
+DEF _B                EQU $42
+DEF _C                EQU $43
+DEF _D                EQU $44
+DEF _E                EQU $45
+DEF _F                EQU $46
+DEF _G                EQU $47
+DEF _H                EQU $48
+DEF _I                EQU $49
+DEF _J                EQU $4A
+DEF _K                EQU $4B
+DEF _L                EQU $4C
+DEF _M                EQU $4D
+DEF _N                EQU $4E
+DEF _O                EQU $4F
+DEF _P                EQU $50
+DEF _Q                EQU $51
+DEF _R                EQU $52
+DEF _S                EQU $53
+DEF _T                EQU $54
+DEF _U                EQU $55
+DEF _V                EQU $56
+DEF _W                EQU $57
+DEF _X                EQU $58
+DEF _Y                EQU $59
+DEF _Z                EQU $5A
+DEF TextTerminator    EQU $80
