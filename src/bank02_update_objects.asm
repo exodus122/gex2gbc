@@ -248,30 +248,30 @@ data_02_491a:
     db   $18, $00, $00, $00, $00, $00, $00, $00        ;; 02:492a ????????
     db   $00, $18, $00, $00, $00, $00, $00             ;; 02:4932 ???????
 
-call_02_4939:
+call_02_4939_PlayDemoInputs:
     ld   A, [wD61E]                                    ;; 02:4939 $fa $1e $d6
     and  A, A                                          ;; 02:493c $a7
     jr   Z, .jr_02_4965                                ;; 02:493d $28 $26
-    ld   HL, wD61F                                     ;; 02:493f $21 $1f $d6
+    ld   HL, wD61F_DemoInputsCounter                                     ;; 02:493f $21 $1f $d6
     dec  [HL]                                          ;; 02:4942 $35
     jr   NZ, .jr_02_495c                               ;; 02:4943 $20 $17
-    ld   HL, wD61B                                     ;; 02:4945 $21 $1b $d6
+    ld   HL, wD61B_DemoInputsPointer                                     ;; 02:4945 $21 $1b $d6
     ld   E, [HL]                                       ;; 02:4948 $5e
     inc  HL                                            ;; 02:4949 $23
     ld   D, [HL]                                       ;; 02:494a $56
     ld   A, [DE]                                       ;; 02:494b $1a
     cp   A, $ff                                        ;; 02:494c $fe $ff
     jr   Z, .jr_02_4961                                ;; 02:494e $28 $11
-    ld   [wD61F], A                                    ;; 02:4950 $ea $1f $d6
+    ld   [wD61F_DemoInputsCounter], A                                    ;; 02:4950 $ea $1f $d6
     inc  DE                                            ;; 02:4953 $13
     ld   A, [DE]                                       ;; 02:4954 $1a
-    ld   [wD620], A                                    ;; 02:4955 $ea $20 $d6
+    ld   [wD620_DemoInputs], A                         ;; 02:4955 $ea $20 $d6
     inc  DE                                            ;; 02:4958 $13
     ld   [HL], D                                       ;; 02:4959 $72
     dec  HL                                            ;; 02:495a $2b
     ld   [HL], E                                       ;; 02:495b $73
 .jr_02_495c:
-    ld   A, [wD620]                                    ;; 02:495c $fa $20 $d6
+    ld   A, [wD620_DemoInputs]                                    ;; 02:495c $fa $20 $d6
     jr   .jr_02_4968                                   ;; 02:495f $18 $07
 .jr_02_4961:
     ld   [wD61E], A                                    ;; 02:4961 $ea $1e $d6
@@ -350,7 +350,7 @@ call_02_4939:
     ld   A, [HL+]                                      ;; 02:49e9 $2a
     ld   H, [HL]                                       ;; 02:49ea $66
     ld   L, A                                          ;; 02:49eb $6f
-    call call_00_10bd_CallAltBankFunc                                  ;; 02:49ec $cd $bd $10
+    call call_00_10bd_CallFuncInHL                                  ;; 02:49ec $cd $bd $10
     call call_02_4a77                                  ;; 02:49ef $cd $77 $4a
     xor  A, A                                          ;; 02:49f2 $af
     ld   [wD758], A                                    ;; 02:49f3 $ea $58 $d7
@@ -966,7 +966,7 @@ entry_02_6eba:
     ld   A, [HL+]                                      ;; 02:6ed7 $2a
     ld   H, [HL]                                       ;; 02:6ed8 $66
     ld   L, A                                          ;; 02:6ed9 $6f
-    call call_00_10bd_CallAltBankFunc                                  ;; 02:6eda $cd $bd $10
+    call call_00_10bd_CallFuncInHL                                  ;; 02:6eda $cd $bd $10
     ld   H, $d2                                        ;; 02:6edd $26 $d2
     ld   A, [wD74D]                                    ;; 02:6edf $fa $4d $d7
     and  A, $e0                                        ;; 02:6ee2 $e6 $e0
@@ -989,11 +989,11 @@ entry_02_6eba:
     ld   A, [HL+]                                      ;; 02:6f01 $2a
     ld   H, [HL]                                       ;; 02:6f02 $66
     ld   L, A                                          ;; 02:6f03 $6f
-    call call_00_10bd_CallAltBankFunc                                  ;; 02:6f04 $cd $bd $10
+    call call_00_10bd_CallFuncInHL                                  ;; 02:6f04 $cd $bd $10
 .jr_02_6f07:
     ld   A, $00                                        ;; 02:6f07 $3e $00
     ld   [wD300], A                                    ;; 02:6f09 $ea $00 $d3
-    call call_02_4939                                  ;; 02:6f0c $cd $39 $49
+    call call_02_4939_PlayDemoInputs                                  ;; 02:6f0c $cd $39 $49
 .jr_02_6f0f:
     ld   A, $20                                        ;; 02:6f0f $3e $20
 .jr_02_6f11:
@@ -1017,7 +1017,7 @@ entry_02_6eba:
     ld   A, [HL+]                                      ;; 02:6f32 $2a
     ld   H, [HL]                                       ;; 02:6f33 $66
     ld   L, A                                          ;; 02:6f34 $6f
-    call call_00_10bd_CallAltBankFunc                                  ;; 02:6f35 $cd $bd $10
+    call call_00_10bd_CallFuncInHL                                  ;; 02:6f35 $cd $bd $10
 .jr_02_6f38:
     ld   H, $d2                                        ;; 02:6f38 $26 $d2
     ld   A, [wD300]                                    ;; 02:6f3a $fa $00 $d3

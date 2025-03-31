@@ -2982,11 +2982,11 @@ entry_03_66ae:
     jp   call_03_6ceb                                    ;; 03:66de $c3 $eb $6c
 
 .image_03_66e1:
-    INCBIN ".gfx/misc_sprites/image_003_66e1.bin"
+    INCBIN "./.gfx/misc_sprites/image_003_66e1.bin"
 .image_demo_mode_03_6821:
-    INCBIN ".gfx/misc_sprites/image_demo_mode_003_6821.bin"
+    INCBIN "./.gfx/misc_sprites/image_demo_mode_003_6821.bin"
 .image_colon_03_6921:
-    INCBIN ".gfx/misc_sprites/image_colon_003_6921.bin"
+    INCBIN "./.gfx/misc_sprites/image_colon_003_6921.bin"
 
 entry_03_6941:
 call_03_6941:
@@ -3044,17 +3044,17 @@ call_03_6941:
     dw   .image_collectibles_toon_tv_003_69a5
 
 .image_collectibles_toon_tv_003_69a5:
-    INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_toon_tv_003_69a5.bin"
+    INCBIN "./.gfx/misc_sprites/collectibles/image_collectibles_toon_tv_003_69a5.bin"
 .image_collectibles_scream_tv_003_6a05:
-    INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_scream_tv_003_6a05.bin"
+    INCBIN "./.gfx/misc_sprites/collectibles/image_collectibles_scream_tv_003_6a05.bin"
 .image_collectibles_circuit_central_003_6a65:
-    INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_circuit_central_003_6a65.bin"    
+    INCBIN "./.gfx/misc_sprites/collectibles/image_collectibles_circuit_central_003_6a65.bin"    
 .image_collectibles_kung_fu_theater_003_6ac5:
-    INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_kung_fu_theater_003_6ac5.bin"
+    INCBIN "./.gfx/misc_sprites/collectibles/image_collectibles_kung_fu_theater_003_6ac5.bin"
 .image_collectibles_prehistory_channel_003_6b25:
-    INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_prehistory_channel_003_6b25.bin"
+    INCBIN "./.gfx/misc_sprites/collectibles/image_collectibles_prehistory_channel_003_6b25.bin"
 .image_collectibles_rezopolis_003_6b85:
-    INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_rezopolis_003_6b85.bin"
+    INCBIN "./.gfx/misc_sprites/collectibles/image_collectibles_rezopolis_003_6b85.bin"
 
 entry_03_6be5:
 call_03_6be5:
@@ -3135,17 +3135,17 @@ call_03_6be5:
     dw   .palette_toon_tv_collectibles
     dw   .palette_toon_tv_collectibles
 .palette_toon_tv_collectibles: ;; 03:6c5b
-    INCBIN "gfx/misc_sprites/collectibles/palettes/palette_toon_tv_collectibles.bin"
+    INCBIN "./gfx/misc_sprites/collectibles/palettes/palette_toon_tv_collectibles.bin"
 .palette_scream_tv_collectibles: ;; 03:6c73
-    INCBIN "gfx/misc_sprites/collectibles/palettes/palette_scream_tv_collectibles.bin"
+    INCBIN "./gfx/misc_sprites/collectibles/palettes/palette_scream_tv_collectibles.bin"
 .palette_circuit_central_collectibles: ;; 03:6c8b
-    INCBIN "gfx/misc_sprites/collectibles/palettes/palette_circuit_central_collectibles.bin"
+    INCBIN "./gfx/misc_sprites/collectibles/palettes/palette_circuit_central_collectibles.bin"
 .palette_kung_fu_theater_collectibles: ;; 03:6ca3
-    INCBIN "gfx/misc_sprites/collectibles/palettes/palette_kung_fu_theater_collectibles.bin"
+    INCBIN "./gfx/misc_sprites/collectibles/palettes/palette_kung_fu_theater_collectibles.bin"
 .palette_prehistory_channel_collectibles: ;; 03:6cbb
-    INCBIN "gfx/misc_sprites/collectibles/palettes/palette_prehistory_channel_collectibles.bin"
+    INCBIN "./gfx/misc_sprites/collectibles/palettes/palette_prehistory_channel_collectibles.bin"
 .palette_rezopolis_collectibles: ;; 03:6cd3
-    INCBIN "gfx/misc_sprites/collectibles/palettes/palette_rezopolis_collectibles.bin"
+    INCBIN "./gfx/misc_sprites/collectibles/palettes/palette_rezopolis_collectibles.bin"
 
 entry_03_6ceb:
 call_03_6ceb:
@@ -3247,9 +3247,9 @@ call_03_6d88:
     jp   call_03_6f2d                                  ;; 03:6d9a $c3 $2d $6f
 
 .numbers_003_6d9d:
-    INCBIN ".gfx/misc_sprites/numbers_003_6d9d.bin"
+    INCBIN "./.gfx/misc_sprites/numbers_003_6d9d.bin"
 .numbers_003_6e4d:
-    INCBIN ".gfx/misc_sprites/numbers_003_6e4d.bin"
+    INCBIN "./.gfx/misc_sprites/numbers_003_6e4d.bin"
 
 INCLUDE "./bank03_graphics/update_vram.asm"
 

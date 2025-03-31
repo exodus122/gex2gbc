@@ -89,7 +89,7 @@ DEF MenuType_GameOverTotals           EQU $04
 DEF MenuType_ViewTotals               EQU $05
 DEF MenuType_ViewPassword             EQU $06
 DEF MenuType_TitleOptions             EQU $07
-DEF MenuType_EnteringMediaDimension   EQU $08
+DEF MenuType_EnteringLevelName        EQU $08
 DEF MenuType_MissionSelect1Option     EQU $09
 DEF MenuType_MissionSelect2Options    EQU $0A
 DEF MenuType_MissionSelect3Options    EQU $0B
@@ -301,8 +301,20 @@ DEF ObjectListTerminator                    EQU $FF
 
 ; Text
 DEF _Space            EQU $20
+DEF _ExclamationPoint EQU $21
+DEF _Apostrophe       EQU $27
 DEF _Dash             EQU $2d
 DEF _Period           EQU $2e
+DEF _0                EQU $30
+DEF _1                EQU $31
+DEF _2                EQU $32
+DEF _3                EQU $33
+DEF _4                EQU $34
+DEF _5                EQU $35
+DEF _6                EQU $36
+DEF _7                EQU $37
+DEF _8                EQU $38
+DEF _9                EQU $39
 DEF _A                EQU $41
 DEF _B                EQU $42
 DEF _C                EQU $43

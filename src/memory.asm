@@ -330,19 +330,23 @@ wD614:
 wD617:
     ds 1                                               ;; d617
 
-wD618:
+wD618_CheckpointSpawnId:
     ds 1                                               ;; d618
 
-wD619:
+wD619_TitleScreenCounter:
+; frame count used for starting demo
     ds 1                                               ;; d619
 
-wD61A:
+wD61A_TitleScreenCounter:
+; frame count used for starting demo
     ds 1                                               ;; d61a
 
-wD61B:
+wD61B_DemoInputsPointer:
+; pointer to current demo mode inputs
     ds 1                                               ;; d61b
 
-wD61C:
+wD61C_DemoInputsPointer:
+; pointer to current demo mode inputs
     ds 1                                               ;; d61c
 
 wD61D:
@@ -351,10 +355,12 @@ wD61D:
 wD61E:
     ds 1                                               ;; d61e
 
-wD61F:
+wD61F_DemoInputsCounter:
+; counter of how many frames to input the demo inputs
     ds 1                                               ;; d61f
 
-wD620:
+wD620_DemoInputs:
+; demo inputs that are being played currently
     ds 1                                               ;; d620
 
 wD621:

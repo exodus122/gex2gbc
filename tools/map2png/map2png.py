@@ -146,11 +146,11 @@ for i in range(0, len(levels)):
     blockset_override_data_file = "../../maps/blockset_override_data_bank"+str(levels[i][2])+".bin"
     special_tile_data_file = "../../maps/"+level_name+"/special_tile_data_"+level_name+".bin"
     
-    tileset_file = "../../.gfx/tilesets/tileset_"+level_name+".bin"
-    palette_ids_file = "../../gfx/tilesets/palette_ids/palette_ids_"+level_name+".bin"
-    palette_file = "../../gfx/tilesets/palettes/palette_"+level_name+".bin"
-    special_tileset_folder = "../../.gfx/special_tilesets/"+level_name+"/"
-    special_tileset_palette_ids_folder = "../../gfx/special_tilesets/"+level_name+"/palette_ids/"
+    tileset_file = "../.././gfx/tilesets/tileset_"+level_name+".bin"
+    palette_ids_file = "../.../gfx/tilesets/palette_ids/palette_ids_"+level_name+".bin"
+    palette_file = "../.../gfx/tilesets/palettes/palette_"+level_name+".bin"
+    special_tileset_folder = "../.././gfx/special_tilesets/"+level_name+"/"
+    special_tileset_palette_ids_folder = "../.../gfx/special_tilesets/"+level_name+"/palette_ids/"
     
     palette_data = open(palette_file, "rb").read()
     palette_ids = open(palette_ids_file, "rb").read()
@@ -180,7 +180,7 @@ for i in range(0, len(levels)):
                 f.write(temp_palette_data)
                 f.close()
                 
-                os.system('rgbgfx --reverse 1 -p '+"./temp.bin"+' --columns -o ./tile_bins/'+level_name+'/tile_'+f"{count:0{2}x}"+'.bin ./tile_bins/'+level_name+'/tile_'+f"{count:0{2}x}"+'.png')
+                os.system('rg./gfx --reverse 1 -p '+"./temp.bin"+' --columns -o ./tile_bins/'+level_name+'/tile_'+f"{count:0{2}x}"+'.bin ./tile_bins/'+level_name+'/tile_'+f"{count:0{2}x}"+'.png')
                 
                 count = count + 1
         
@@ -240,7 +240,7 @@ for i in range(0, len(levels)):
                             q = q + 1
                         
                         if television != -1:
-                            palette_file2 = "../../gfx/special_tilesets/"+level_name+"/palettes/"+media_dimension_tv_order[q]+"_television_palette.bin"
+                            palette_file2 = "../.../gfx/special_tilesets/"+level_name+"/palettes/"+media_dimension_tv_order[q]+"_television_palette.bin"
                             if media_dimension_tv_order[q] == "circuit_central":
                                 temp_palette_data = open(palette_file2, "rb").read()[8:]
                             else:
@@ -250,7 +250,7 @@ for i in range(0, len(levels)):
                     f.write(temp_palette_data)
                     f.close()
                     
-                    os.system('rgbgfx --reverse 1 -p '+"./temp.bin"+' --columns -o ./special_tile_bins/'+level_name+'/'+filename2+'/tile_'+f"{count:0{2}x}"+'.bin ./special_tile_bins/'+level_name+'/'+filename2+'/tile_'+f"{count:0{2}x}"+'.png')
+                    os.system('rg./gfx --reverse 1 -p '+"./temp.bin"+' --columns -o ./special_tile_bins/'+level_name+'/'+filename2+'/tile_'+f"{count:0{2}x}"+'.bin ./special_tile_bins/'+level_name+'/'+filename2+'/tile_'+f"{count:0{2}x}"+'.png')
                     
                     count = count + 1
             

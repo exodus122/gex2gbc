@@ -4,8 +4,8 @@ SECTION "bank01", ROMX[$4000], BANK[$01]
 
 ; This file handles various menus in the game
 
-entry_01_4000_LoadMenu: ; this is the primary menu updating function
-call_01_4000_LoadMenu:
+entry_01_4000_MenuLoad: ; this is the primary menu loading and updating function
+call_01_4000_MenuLoad:
     ld   HL, wD6DD                                     ;; 01:4000 $21 $dd $d6
     ld   [HL], $00                                     ;; 01:4003 $36 $00
 .jp_01_4005:
@@ -15,7 +15,7 @@ call_01_4000_LoadMenu:
     add  HL, HL                                        ;; 01:400b $29
     add  HL, HL                                        ;; 01:400c $29
     add  HL, HL                                        ;; 01:400d $29
-    ld   DE, data_01_5574                              ;; 01:400e $11 $74 $55
+    ld   DE, data_01_5574_MenuTypeData                              ;; 01:400e $11 $74 $55
     add  HL, DE                                        ;; 01:4011 $19
     ld   DE, wD68A                                     ;; 01:4012 $11 $8a $d6
     ld   BC, $08                                       ;; 01:4015 $01 $08 $00
@@ -38,25 +38,26 @@ call_01_4000_LoadMenu:
     call call_01_446f_LoadMenuGraphics                 ;; 01:4037 $cd $6f $44
 .jp_01_403a:
     ld   A, $ff                                        ;; 01:403a $3e $ff
-    ld   [wD619], A                                    ;; 01:403c $ea $19 $d6
+    ld   [wD619_TitleScreenCounter], A                                    ;; 01:403c $ea $19 $d6
     ld   [wD6D6], A                                    ;; 01:403f $ea $d6 $d6
     ld   A, $05                                        ;; 01:4042 $3e $05
-    ld   [wD61A], A                                    ;; 01:4044 $ea $1a $d6
+    ld   [wD61A_TitleScreenCounter], A                                    ;; 01:4044 $ea $1a $d6
     call call_01_4e94                                  ;; 01:4047 $cd $94 $4e
     ld   A, [wD6DE_MenuType]                                    ;; 01:404a $fa $de $d6
     cp   A, $14                                        ;; 01:404d $fe $14
-    jr   NZ, .jp_01_405c                               ;; 01:404f $20 $0b
+    jr   NZ, .jr_01_405c_MenuUpdate                               ;; 01:404f $20 $0b
     ld   B, $b4                                        ;; 01:4051 $06 $b4
 .jr_01_4053:
     push BC                                            ;; 01:4053 $c5
-    call call_00_0ab4                                  ;; 01:4054 $cd $b4 $0a
+    call call_00_0ab4_UpdateVRAMTiles                                  ;; 01:4054 $cd $b4 $0a
     pop  BC                                            ;; 01:4057 $c1
     dec  B                                             ;; 01:4058 $05
     jr   NZ, .jr_01_4053                               ;; 01:4059 $20 $f8
     ret                                                ;; 01:405b $c9
-.jp_01_405c:
+
+.jr_01_405c_MenuUpdate: ; start of the menu update loop
     call call_01_4d72                                  ;; 01:405c $cd $72 $4d
-    call call_00_0ab4                                  ;; 01:405f $cd $b4 $0a
+    call call_00_0ab4_UpdateVRAMTiles                                  ;; 01:405f $cd $b4 $0a
     ld   HL, wD6D6                                     ;; 01:4062 $21 $d6 $d6
     dec  [HL]                                          ;; 01:4065 $35
     call call_01_4d25                                  ;; 01:4066 $cd $25 $4d
@@ -70,11 +71,11 @@ call_01_4000_LoadMenu:
     ld   A, [wD61E]                                    ;; 01:4076 $fa $1e $d6
     and  A, A                                          ;; 01:4079 $a7
     jr   Z, .jr_01_408f                                ;; 01:407a $28 $13
-    ld   A, [wD619]                                    ;; 01:407c $fa $19 $d6
+    ld   A, [wD619_TitleScreenCounter]                                    ;; 01:407c $fa $19 $d6
     and  A, A                                          ;; 01:407f $a7
     jr   Z, .jr_01_408c                                ;; 01:4080 $28 $0a
 .jr_01_4082:
-    ld   HL, wD619                                     ;; 01:4082 $21 $19 $d6
+    ld   HL, wD619_TitleScreenCounter                                     ;; 01:4082 $21 $19 $d6
     dec  [HL]                                          ;; 01:4085 $35
     jr   NZ, .jr_01_408f                               ;; 01:4086 $20 $07
     inc  HL                                            ;; 01:4088 $23
@@ -110,7 +111,7 @@ call_01_4000_LoadMenu:
     jr   Z, .jr_01_40cd                                ;; 01:40c0 $28 $0b
     ld   A, C                                          ;; 01:40c2 $79
     cp   A, $20                                        ;; 01:40c3 $fe $20
-    jr   Z, .jp_01_405c                                ;; 01:40c5 $28 $95
+    jr   Z, .jr_01_405c_MenuUpdate                                ;; 01:40c5 $28 $95
     ld   [HL], C                                       ;; 01:40c7 $71
     call call_01_4ecf                                  ;; 01:40c8 $cd $cf $4e
     jr   .jp_01_4132                                   ;; 01:40cb $18 $65
@@ -120,7 +121,7 @@ call_01_4000_LoadMenu:
 .jr_01_40d0:
     ld   A, [wD68D]                                    ;; 01:40d0 $fa $8d $d6
     and  A, A                                          ;; 01:40d3 $a7
-    jp   Z, .jp_01_405c                                ;; 01:40d4 $ca $5c $40
+    jp   Z, .jr_01_405c_MenuUpdate                                ;; 01:40d4 $ca $5c $40
     call call_00_10fb_PressingRight                                  ;; 01:40d7 $cd $fb $10
     jr   Z, .jr_01_40f2                                ;; 01:40da $28 $16
     ld   HL, wD6DF_MenuSelectedColumn                                     ;; 01:40dc $21 $df $d6
@@ -162,7 +163,7 @@ call_01_4000_LoadMenu:
     jp   .jp_01_403a                                   ;; 01:411c $c3 $3a $40
 .jr_01_411f:
     call call_00_1101_PressingUp                                  ;; 01:411f $cd $01 $11
-    jp   Z, .jp_01_405c                                ;; 01:4122 $ca $5c $40
+    jp   Z, .jr_01_405c_MenuUpdate                                ;; 01:4122 $ca $5c $40
     ld   HL, wD6E0_MenuSelectedRow                                     ;; 01:4125 $21 $e0 $d6
     dec  [HL]                                          ;; 01:4128 $35
     bit  7, [HL]                                       ;; 01:4129 $cb $7e
@@ -242,7 +243,7 @@ call_01_4000_LoadMenu:
     jr   NZ, .jr_01_41f1                               ;; 01:41b8 $20 $37
     ld   A, [wD68C]                                    ;; 01:41ba $fa $8c $d6
     and  A, $40                                        ;; 01:41bd $e6 $40
-    jp   NZ, .jp_01_405c                               ;; 01:41bf $c2 $5c $40
+    jp   NZ, .jr_01_405c_MenuUpdate                               ;; 01:41bf $c2 $5c $40
     call call_00_1123_PressingA                                  ;; 01:41c2 $cd $23 $11
     jr   NZ, .jp_01_421e                               ;; 01:41c5 $20 $57
     ld   A, [wD68C]                                    ;; 01:41c7 $fa $8c $d6
@@ -256,7 +257,7 @@ call_01_4000_LoadMenu:
     ld   A, [wD68C]                                    ;; 01:41db $fa $8c $d6
     and  A, $20                                        ;; 01:41de $e6 $20
     call NZ, call_00_110d_PressingStart                              ;; 01:41e0 $c4 $0d $11
-    jp   Z, .jp_01_405c                                ;; 01:41e3 $ca $5c $40
+    jp   Z, .jr_01_405c_MenuUpdate                                ;; 01:41e3 $ca $5c $40
     ld   A, [wD6DE_MenuType]                                    ;; 01:41e6 $fa $de $d6
     ld   [wD6DD], A                                    ;; 01:41e9 $ea $dd $d6
     ld   A, $00                                        ;; 01:41ec $3e $00
@@ -290,33 +291,33 @@ call_01_4000_LoadMenu:
     call call_00_10eb                                  ;; 01:421e $cd $eb $10
     ld   A, [wD6DD]                                    ;; 01:4221 $fa $dd $d6
     and  A, A                                          ;; 01:4224 $a7
-    jp   NZ, call_01_4000_LoadMenu                              ;; 01:4225 $c2 $00 $40
+    jp   NZ, call_01_4000_MenuLoad                              ;; 01:4225 $c2 $00 $40
     ret                                                ;; 01:4228 $c9
 .jr_01_4229:
-    call call_01_4291                                  ;; 01:4229 $cd $91 $42
+    call call_01_4291_LoadAudioOptionsMenu                                  ;; 01:4229 $cd $91 $42
 .jr_01_422c:
     ld   A, $00                                        ;; 01:422c $3e $00
     ret                                                ;; 01:422e $c9
 .jr_01_422f:
-    call call_01_4f87                                  ;; 01:422f $cd $87 $4f
+    call call_01_4f87_LoadEnterPasswordMenu                                  ;; 01:422f $cd $87 $4f
     ld   A, MenuType_EnterPassword                                        ;; 01:4232 $3e $0f
-    call call_01_4000_LoadMenu                                  ;; 01:4234 $cd $00 $40
+    call call_01_4000_MenuLoad                                  ;; 01:4234 $cd $00 $40
     cp   A, $00                                        ;; 01:4237 $fe $00
     jr   Z, .jr_01_422c                                ;; 01:4239 $28 $f1
 .jr_01_423b:
     call call_01_5271_ProcessPassword                                  ;; 01:423b $cd $71 $52
     cp   A, $30                                        ;; 01:423e $fe $30
     ret  Z                                             ;; 01:4240 $c8
-    call call_01_4f87                                  ;; 01:4241 $cd $87 $4f
+    call call_01_4f87_LoadEnterPasswordMenu                                  ;; 01:4241 $cd $87 $4f
     ld   A, MenuType_EnteredInvalidPassword                                        ;; 01:4244 $3e $15
-    call call_01_4000_LoadMenu                                  ;; 01:4246 $cd $00 $40
+    call call_01_4000_MenuLoad                                  ;; 01:4246 $cd $00 $40
     cp   A, $00                                        ;; 01:4249 $fe $00
     jr   Z, .jr_01_422c                                ;; 01:424b $28 $df
     jr   .jr_01_423b                                   ;; 01:424d $18 $ec
 .jr_01_424f:
-    call call_01_4fa5                                  ;; 01:424f $cd $a5 $4f
+    call call_01_4fa5_SetupPassword                                  ;; 01:424f $cd $a5 $4f
     ld   A, MenuType_ViewPassword                                        ;; 01:4252 $3e $06
-    jp   call_01_4000_LoadMenu                                  ;; 01:4254 $c3 $00 $40
+    jp   call_01_4000_MenuLoad                                  ;; 01:4254 $c3 $00 $40
 .jr_01_4257:
     ld   A, [wD624_CurrentLevelId]                                    ;; 01:4257 $fa $24 $d6
     and  A, A                                          ;; 01:425a $a7
@@ -340,9 +341,9 @@ call_01_4265:
     db   $01, $00, $00, $00, $00, $01, $01, $01        ;; 01:4282 ........
     db   $01, $01, $01, $00, $00, $00, $01             ;; 01:428a ......?
 
-call_01_4291:
+call_01_4291_LoadAudioOptionsMenu:
     ld   A, MenuType_AudioOptionsUnused                ;; 01:4291 $3e $11
-    call call_01_4000_LoadMenu                         ;; 01:4293 $cd $00 $40
+    call call_01_4000_MenuLoad                         ;; 01:4293 $cd $00 $40
     ret                                                ;; 01:4296 $c9
 
 entry_01_4297_LoadMissionSelectMenu:
@@ -363,7 +364,7 @@ entry_01_4297_LoadMissionSelectMenu:
     ld   A, $08                                        ;; 01:42ad $3e $08
     ld   HL, wD626                                     ;; 01:42af $21 $26 $d6
     add  A, [HL]                                       ;; 01:42b2 $86
-    call call_01_4000_LoadMenu                                  ;; 01:42b3 $cd $00 $40
+    call call_01_4000_MenuLoad                                  ;; 01:42b3 $cd $00 $40
     ld   A, [wD6E0_MenuSelectedRow]                                    ;; 01:42b6 $fa $e0 $d6
     ld   [wD627_CurrentMission], A                                    ;; 01:42b9 $ea $27 $d6
     ret                                                ;; 01:42bc $c9
@@ -385,7 +386,7 @@ entry_01_42bd_EnterTV:
     and  A, $ef                                        ;; 01:42db $e6 $ef
     ld   [wD621], A                                    ;; 01:42dd $ea $21 $d6
     ld   A, MenuType_TimeUp                                        ;; 01:42e0 $3e $1b
-    call call_01_4000_LoadMenu                                  ;; 01:42e2 $cd $00 $40
+    call call_01_4000_MenuLoad                                  ;; 01:42e2 $cd $00 $40
     jr   .jr_01_4319                                   ;; 01:42e5 $18 $32
 .jr_01_42e7:
     call call_00_2e43                                  ;; 01:42e7 $cd $43 $2e
@@ -415,11 +416,11 @@ entry_01_42bd_EnterTV:
     jr   .jr_01_4319                                   ;; 01:4312 $18 $05
 .jr_01_4314:
     ld   A, MenuType_Congratulations                                        ;; 01:4314 $3e $0e
-    call call_01_4000_LoadMenu                                  ;; 01:4316 $cd $00 $40
+    call call_01_4000_MenuLoad                                  ;; 01:4316 $cd $00 $40
 .jr_01_4319:
-    call call_01_4349                                  ;; 01:4319 $cd $49 $43
+    call call_01_4349_LoadEnteringMenu                                  ;; 01:4319 $cd $49 $43
     ld   A, MenuType_ViewTotals                                        ;; 01:431c $3e $05
-    call call_01_4000_LoadMenu                                  ;; 01:431e $cd $00 $40
+    call call_01_4000_MenuLoad                                  ;; 01:431e $cd $00 $40
     xor  A, A                                          ;; 01:4321 $af
     ld   [wD624_CurrentLevelId], A                                    ;; 01:4322 $ea $24 $d6
     ld   A, $14                                        ;; 01:4325 $3e $14
@@ -436,8 +437,8 @@ entry_01_42bd_EnterTV:
     db   $00, $01, $02, $00, $01, $00, $00, $20        ;; 01:433f ????????
     db   $00, $00                                      ;; 01:4347 ??
 
-entry_01_4349:
-call_01_4349:
+entry_01_4349_LoadEnteringMenu:
+call_01_4349_LoadEnteringMenu:
     ld   HL, wD652                                     ;; 01:4349 $21 $52 $d6
     ld   B, $0a                                        ;; 01:434c $06 $0a
     xor  A, A                                          ;; 01:434e $af
@@ -509,23 +510,23 @@ call_01_4349:
 
 entry_01_43bd_LoadGameOverMenu:    
     ld a, MenuType_GameOver
-    call call_01_4000_LoadMenu
+    call call_01_4000_MenuLoad
     ld a, MenuType_GameOverTotals
-    jp call_01_4000_LoadMenu                                        ;; 01:43c6 ?
+    jp call_01_4000_MenuLoad                                        ;; 01:43c6 ?
 
 call_01_43c7_LoadCreditsMenus:
     ld   A, MenuType_TitleOptions                                        ;; 01:43c7 $3e $07
     call call_00_120c_SetupMusic                                  ;; 01:43c9 $cd $0c $12
     ld   A, MenuType_CreditsGreatJob                                        ;; 01:43cc $3e $12
-    call call_01_4000_LoadMenu                                  ;; 01:43ce $cd $00 $40
+    call call_01_4000_MenuLoad                                  ;; 01:43ce $cd $00 $40
     ld   A, MenuType_Credits1                                        ;; 01:43d1 $3e $17
-    call call_01_4000_LoadMenu                                  ;; 01:43d3 $cd $00 $40
+    call call_01_4000_MenuLoad                                  ;; 01:43d3 $cd $00 $40
     ld   A, MenuType_Credits2                                        ;; 01:43d6 $3e $18
-    call call_01_4000_LoadMenu                                  ;; 01:43d8 $cd $00 $40
+    call call_01_4000_MenuLoad                                  ;; 01:43d8 $cd $00 $40
     ld   A, MenuType_Credits3                                        ;; 01:43db $3e $19
-    call call_01_4000_LoadMenu                                  ;; 01:43dd $cd $00 $40
+    call call_01_4000_MenuLoad                                  ;; 01:43dd $cd $00 $40
     ld   A, MenuType_Credits4                                        ;; 01:43e0 $3e $1a
-    call call_01_4000_LoadMenu                                  ;; 01:43e2 $cd $00 $40
+    call call_01_4000_MenuLoad                                  ;; 01:43e2 $cd $00 $40
     ret                                                ;; 01:43e5 $c9
 
 call_01_43e6:
@@ -650,7 +651,7 @@ call_01_446f_LoadMenuGraphics:
     call call_00_0bae                                  ;; 01:44c4 $cd $ae $0b
     ld   A, $d7                                        ;; 01:44c7 $3e $d7
     call call_00_0f56                                  ;; 01:44c9 $cd $56 $0f
-    jp   call_00_0ab4                                  ;; 01:44cc $c3 $b4 $0a
+    jp   call_00_0ab4_UpdateVRAMTiles                                  ;; 01:44cc $c3 $b4 $0a
 
 call_01_44cf:
     ld   A, L                                          ;; 01:44cf $7d
@@ -719,7 +720,7 @@ call_01_44e6:
     jr   C, .jr_01_4548                                ;; 01:453d $38 $09
     ld   DE, .data_01_4633                             ;; 01:453f $11 $33 $46
     call call_00_07b9                                  ;; 01:4542 $cd $b9 $07
-    call call_00_10bd_CallAltBankFunc                                  ;; 01:4545 $cd $bd $10
+    call call_00_10bd_CallFuncInHL                                  ;; 01:4545 $cd $bd $10
 .jr_01_4548:
     ld   A, [wD69E]                                    ;; 01:4548 $fa $9e $d6
     and  A, $02                                        ;; 01:454b $e6 $02
@@ -2029,7 +2030,7 @@ call_01_4e78:
 call_01_4e94:
     call call_01_4d72                                  ;; 01:4e94 $cd $72 $4d
     call call_01_4d25                                  ;; 01:4e97 $cd $25 $4d
-    call call_00_0ab4                                  ;; 01:4e9a $cd $b4 $0a
+    call call_00_0ab4_UpdateVRAMTiles                                  ;; 01:4e9a $cd $b4 $0a
     ld   HL, wD6D6                                     ;; 01:4e9d $21 $d6 $d6
     dec  [HL]                                          ;; 01:4ea0 $35
     ld   A, [wD68C]                                    ;; 01:4ea1 $fa $8c $d6
@@ -2153,8 +2154,8 @@ call_01_4f41:
     db   $10, $11, $12, $13, $14, $15, $16, $17        ;; 01:4f7c wwwwwwww
     db   $18, $19, $1a                                 ;; 01:4f84 www
 
-entry_01_4f87:
-call_01_4f87:
+entry_01_4f87_LoadEnterPasswordMenu:
+call_01_4f87_LoadEnterPasswordMenu:
     ld   HL, wD667_PasswordExitButton                                     ;; 01:4f87 $21 $67 $d6
     ld   DE, wD668_PasswordValues                                     ;; 01:4f8a $11 $68 $d6
     ld   BC, $1d                                       ;; 01:4f8d $01 $1d $00
@@ -2168,7 +2169,7 @@ call_01_4f87:
     ld   [wD685], A                                    ;; 01:4fa1 $ea $85 $d6
     ret                                                ;; 01:4fa4 $c9
 
-call_01_4fa5:
+call_01_4fa5_SetupPassword:
     ld   HL, wD667_PasswordExitButton                                     ;; 01:4fa5 $21 $67 $d6
     ld   DE, wD668_PasswordValues                                     ;; 01:4fa8 $11 $68 $d6
     ld   BC, $1d                                       ;; 01:4fab $01 $1d $00
@@ -2217,7 +2218,7 @@ call_01_4fa5:
     dec  B                                             ;; 01:4feb $05
     jr   NZ, .jr_01_4fe7                               ;; 01:4fec $20 $f9
     ret                                                ;; 01:4fee $c9
-.data_01_4fef: ; this is used to decode the password into a bitmap
+.data_01_4fef: ; this is used to encode the password to and from the bitmap
     dw   $d652, $0080, $d668, $0004        ;; 01:4fef ????????
     dw   $d652, $0040, $d668, $0002        ;; 01:4ff7 ????????
     dw   $d652, $0020, $d668, $0001        ;; 01:4fff ????????
@@ -2511,7 +2512,7 @@ data_01_5324:
     db   $0e, $ae, $05, $00, $00, $02, $02, $10        ;; 01:5567 ????????
     db   $0e, $b2, $05, $00, $00                       ;; 01:556f ?????
 
-data_01_5574:
+data_01_5574_MenuTypeData:
     dw   data_01_5692                                  ;; 01:5574 pP
     db   $90, $02, $00, $00, $00, $00                  ;; 01:5576 ......
     dw   data_01_56ab                                  ;; 01:557c pP
@@ -2944,77 +2945,46 @@ data_01_5c99:
 data_01_5cb9:
     db   $00, $40, $00, $6d, $00, $70, $00, $6a        ;; 01:5cb9 ????????
     db   $00, $76, $00, $40, $00, $40, $00, $67        ;; 01:5cc1 ????....
-    db   $00, $79, $00, $40, $00, $73, $53, $54        ;; 01:5cc9 ??????..
-    db   $41, $52, $54, $80, $53, $4f, $55, $4e        ;; 01:5cd1 ....????
-    db   $44, $80, $50, $41, $53, $53, $57, $4f        ;; 01:5cd9 ??......
-    db   $52, $44, $80, $50, $41, $55, $53, $45        ;; 01:5ce1 ........
-    db   $44, $80, $52, $45, $53, $55, $4d, $45        ;; 01:5ce9 ........
-    db   $80, $51, $55, $49, $54, $80, $45, $58        ;; 01:5cf1 ........
-    db   $49, $54, $80, $51, $55, $49, $54, $20        ;; 01:5cf9 ........
-    db   $47, $41, $4d, $45, $80, $45, $58, $49        ;; 01:5d01 ........
-    db   $54, $20, $54, $4f, $20, $4d, $41, $50        ;; 01:5d09 ........
-    db   $80, $4e, $4f, $20, $57, $41, $59, $21        ;; 01:5d11 ........
-    db   $80, $4f, $4b, $41, $59, $80, $54, $49        ;; 01:5d19 ......??
-    db   $4d, $45, $20, $55, $50, $21, $80, $47        ;; 01:5d21 ????????
-    db   $41, $4d, $45, $20, $4f, $56, $45, $52        ;; 01:5d29 ????????
-    db   $80, $52, $45, $53, $55, $4d, $45, $20        ;; 01:5d31 ?.......
-    db   $50, $4c, $41, $59, $80, $53, $45, $45        ;; 01:5d39 ........
-    db   $20, $50, $41, $53, $53, $57, $4f, $52        ;; 01:5d41 ........
-    db   $44, $80                                      ;; 01:5d49 ..
+    db   $00, $79, $00, $40, $00, $73
+
+
+    db   "START", TextTerminator                       ;; 01:5ccf ????....
+    db   "SOUND", TextTerminator
+    db   "PASSWORD", TextTerminator
+    db   "PAUSED", TextTerminator
+    db   "RESUME", TextTerminator
+    db   "QUIT", TextTerminator
+    db   "EXIT", TextTerminator
+    db   "QUIT GAME", TextTerminator
+    db   "EXIT TO MAP", TextTerminator
+    db   "NO WAY!", TextTerminator
+    db   "OKAY", TextTerminator
+    db   "TIME UP!", TextTerminator
+    db   "GAME OVER", TextTerminator
+    db   "RESUME PLAY", TextTerminator
+    db   "SEE PASSWORD", TextTerminator
 
 data_01_5d4b:
-    db   $47, $41, $4d, $45, $20, $53, $54, $41        ;; 01:5d4b ........
-    db   $54, $53, $80, $45, $4e, $54, $45, $52        ;; 01:5d53 ........
-    db   $49, $4e, $47, $2e, $2e, $2e, $80, $58        ;; 01:5d5b ........
-    db   $80, $43, $4f, $4e, $47, $52, $41, $54        ;; 01:5d63 .???????
-    db   $55, $4c, $41, $54, $49, $4f, $4e, $53        ;; 01:5d6b ????????
-    db   $21, $80, $52, $45, $57, $41, $52, $44        ;; 01:5d73 ????????
-    db   $80, $48, $49, $44, $44, $45, $4e, $80        ;; 01:5d7b ????????
-    db   $50, $52, $45, $53, $53, $20, $42, $20        ;; 01:5d83 ????????
-    db   $54, $4f, $20, $43, $4f, $4e, $54, $49        ;; 01:5d8b ????????
-    db   $4e, $55, $45, $80, $30, $20, $4f, $46        ;; 01:5d93 ????????
-    db   $20, $33, $20, $52, $45, $44, $20, $52        ;; 01:5d9b ????????
-    db   $45, $4d, $4f, $54, $45, $53, $20, $46        ;; 01:5da3 ????????
-    db   $4f, $55, $4e, $44, $80, $31, $20, $4f        ;; 01:5dab ????????
-    db   $46, $20, $33, $20, $52, $45, $44, $20        ;; 01:5db3 ????????
-    db   $52, $45, $4d, $4f, $54, $45, $53, $20        ;; 01:5dbb ????????
-    db   $46, $4f, $55, $4e, $44, $80, $32, $20        ;; 01:5dc3 ????????
-    db   $4f, $46, $20, $33, $20, $52, $45, $44        ;; 01:5dcb ????????
-    db   $20, $52, $45, $4d, $4f, $54, $45, $53        ;; 01:5dd3 ????????
-    db   $20, $46, $4f, $55, $4e, $44, $80, $33        ;; 01:5ddb ????????
-    db   $20, $4f, $46, $20, $33, $20, $52, $45        ;; 01:5de3 ????????
-    db   $44, $20, $52, $45, $4d, $4f, $54, $45        ;; 01:5deb ????????
-    db   $53, $20, $46, $4f, $55, $4e, $44, $80        ;; 01:5df3 ????????
-    db   $30, $20, $4f, $46, $20, $32, $20, $52        ;; 01:5dfb ????????
-    db   $45, $44, $20, $52, $45, $4d, $4f, $54        ;; 01:5e03 ????????
-    db   $45, $53, $20, $46, $4f, $55, $4e, $44        ;; 01:5e0b ????????
-    db   $80, $31, $20, $4f, $46, $20, $32, $20        ;; 01:5e13 ????????
-    db   $52, $45, $44, $20, $52, $45, $4d, $4f        ;; 01:5e1b ????????
-    db   $54, $45, $53, $20, $46, $4f, $55, $4e        ;; 01:5e23 ????????
-    db   $44, $80, $32, $20, $4f, $46, $20, $32        ;; 01:5e2b ????????
-    db   $20, $52, $45, $44, $20, $52, $45, $4d        ;; 01:5e33 ????????
-    db   $4f, $54, $45, $53, $20, $46, $4f, $55        ;; 01:5e3b ????????
-    db   $4e, $44, $80, $30, $20, $4f, $46, $20        ;; 01:5e43 ????????
-    db   $31, $20, $52, $45, $44, $20, $52, $45        ;; 01:5e4b ????????
-    db   $4d, $4f, $54, $45, $53, $20, $46, $4f        ;; 01:5e53 ????????
-    db   $55, $4e, $44, $80, $31, $20, $4f, $46        ;; 01:5e5b ????????
-    db   $20, $31, $20, $52, $45, $44, $20, $52        ;; 01:5e63 ????????
-    db   $45, $4d, $4f, $54, $45, $53, $20, $46        ;; 01:5e6b ????????
-    db   $4f, $55, $4e, $44, $80, $30, $20, $4f        ;; 01:5e73 ????????
-    db   $46, $20, $31, $20, $47, $4f, $4c, $44        ;; 01:5e7b ????????
-    db   $20, $52, $45, $4d, $4f, $54, $45, $53        ;; 01:5e83 ????????
-    db   $20, $46, $4f, $55, $4e, $44, $80, $31        ;; 01:5e8b ????????
-    db   $20, $4f, $46, $20, $31, $20, $47, $4f        ;; 01:5e93 ????????
-    db   $4c, $44, $20, $52, $45, $4d, $4f, $54        ;; 01:5e9b ????????
-    db   $45, $53, $20, $46, $4f, $55, $4e, $44        ;; 01:5ea3 ????????
-    db   $80, $43, $48, $4f, $4f, $53, $45, $20        ;; 01:5eab ?.......
-    db   $41, $20, $48, $49, $4e, $54, $20, $54        ;; 01:5eb3 ........
-    db   $48, $45, $4e, $20, $50, $52, $45, $53        ;; 01:5ebb ........
-    db   $53, $20, $42, $20, $54, $4f, $20, $43        ;; 01:5ec3 ........
-    db   $4f, $4e, $54, $49, $4e, $55, $45, $80        ;; 01:5ecb ........
-    db   $50, $52, $45, $53, $53, $20, $42, $20        ;; 01:5ed3 ????????
-    db   $54, $4f, $20, $43, $4f, $4e, $54, $49        ;; 01:5edb ????????
-    db   $4e, $55, $45, $80                            ;; 01:5ee3 ????
+    db   "GAME STATS", TextTerminator
+    db   "ENTERING...", TextTerminator
+    db   "X", TextTerminator
+    db   "CONGRATULATIONS!", TextTerminator
+    db   "REWARD", TextTerminator
+    db   "HIDDEN", TextTerminator
+    db   "PRESS B TO CONTINUE", TextTerminator
+    db   "0 OF 3 RED REMOTES FOUND", TextTerminator
+    db   "1 OF 3 RED REMOTES FOUND", TextTerminator
+    db   "2 OF 3 RED REMOTES FOUND", TextTerminator
+    db   "3 OF 3 RED REMOTES FOUND", TextTerminator
+    db   "0 OF 2 RED REMOTES FOUND", TextTerminator
+    db   "1 OF 2 RED REMOTES FOUND", TextTerminator
+    db   "2 OF 2 RED REMOTES FOUND", TextTerminator
+    db   "0 OF 1 RED REMOTES FOUND", TextTerminator
+    db   "1 OF 1 RED REMOTES FOUND", TextTerminator
+    db   "0 OF 1 GOLD REMOTES FOUND", TextTerminator
+    db   "1 OF 1 GOLD REMOTES FOUND", TextTerminator
+    db   "CHOOSE A HINT THEN PRESS B TO CONTINUE", TextTerminator
+    db   "PRESS B TO CONTINUE", TextTerminator
 
 data_01_5ee7:
     dw   data_01_5efd
@@ -3146,244 +3116,276 @@ data_01_615f:
     dw   .data_01_6167, .data_01_6168, .data_01_6169, .data_01_616a
 
 .data_01_6167:
-	db   TextTerminator
+    db   TextTerminator
 .data_01_6168:
     db   TextTerminator
 .data_01_6169:
     db   TextTerminator
 .data_01_616a:
-	db   TextTerminator
-	
-	db   $73, $61, $81, $61, $99        ;; 01:6168 ???..???
-    db   $61, $ab, $61, $50
+    db   TextTerminator
     
-    db   $41, $4e, $47, $41        ;; 01:6170 ???.....
-    db   $45, $41, $20, $39, $30, $32, $31, $30        ;; 01:6178 ........
-    db   $80, $41, $53, $53, $41, $55, $4c, $54        ;; 01:6180 .???????
-    db   $20, $54, $48, $45, $20, $4c, $41, $56        ;; 01:6188 ????????
-    db   $41, $20, $49, $53, $4c, $41, $4e, $44        ;; 01:6190 ????????
-    db   $80, $43, $4c, $49, $4d, $42, $20, $54        ;; 01:6198 ????????
-    db   $48, $45, $20, $56, $4f, $4c, $43, $41        ;; 01:61a0 ????????
-    db   $4e, $4f, $80, $80
+    dw   .data_01_6173, .data_01_6181, .data_01_6199, .data_01_61ab
+.data_01_6173:
+    db   "PANGAEA 90210", TextTerminator
+.data_01_6181:
+    db   "ASSAULT THE LAVA ISLAND", TextTerminator
+.data_01_6199:
+    db   "CLIMB THE VOLCANO", TextTerminator
+.data_01_61ab:
+    db   TextTerminator
     
-    db   $b4, $61, $c1, $61        ;; 01:61a8 ????..??
-    db   $d0, $61, $e1, $61
+    dw   .data_01_61b4, .data_01_61c1, .data_01_61d0, .data_01_61e1
     
-    db   $46, $49, $4e, $45        ;; 01:61b0 ????....
-    db   $20, $54, $4f, $4f, $4e, $49, $4e, $47        ;; 01:61b8 ........
-    db   $80, $43, $4c, $49, $4d, $42, $20, $54        ;; 01:61c0 .???????
-    db   $48, $45, $20, $54, $52, $45, $45, $80        ;; 01:61c8 ????????
-    db   $53, $54, $4f, $52, $4d, $20, $54, $48        ;; 01:61d0 ????????
-    db   $45, $20, $43, $41, $53, $54, $4c, $45        ;; 01:61d8 ????????
-    db   $80, $80
+.data_01_61b4:
+    db   "FINE TOONING", TextTerminator
+.data_01_61c1:
+    db   "CLIMB THE TREE", TextTerminator
+.data_01_61d0:
+    db   "STORM THE CASTLE", TextTerminator
+.data_01_61e1:
+    db   TextTerminator
     
-    db   $ea, $61, $f8, $61, $0f, $62        ;; 01:61e0 ??..????
-    db   $24, $62
+    dw   .data_01_61ea, .data_01_61f8, .data_01_620f, .data_01_6224
     
-    db   $54, $48, $49, $53, $20, $4f        ;; 01:61e8 ??......
-    db   $4c, $44, $20, $43, $41, $56, $45, $80        ;; 01:61f0 ........
-    db   $57, $41, $54, $43, $48, $20, $46, $4f        ;; 01:61f8 ????????
-    db   $52, $20, $46, $41, $4c, $4c, $49, $4e        ;; 01:6200 ????????
-    db   $47, $20, $4c, $41, $56, $41, $80, $52        ;; 01:6208 ????????
-    db   $49, $44, $45, $20, $54, $48, $45, $20        ;; 01:6210 ????????
-    db   $53, $54, $45, $41, $4d, $20, $56, $45        ;; 01:6218 ????????
-    db   $4e, $54, $53, $80, $42, $4f, $55, $4e        ;; 01:6220 ????????
-    db   $43, $45, $20, $55, $50, $20, $4f, $56        ;; 01:6228 ????????
-    db   $45, $52, $20, $54, $48, $45, $20, $43        ;; 01:6230 ????????
-    db   $48, $41, $53, $4d, $80
+.data_01_61ea:
+    db   "THIS OLD CAVE", TextTerminator
+.data_01_61f8:
+    db   "WATCH FOR FALLING LAVA", TextTerminator
+.data_01_620f:
+    db   "RIDE THE STEAM VENTS", TextTerminator
+.data_01_6224:
+    db   "BOUNCE UP OVER THE CHASM", TextTerminator
     
-    db   $45, $62, $5e        ;; 01:6238 ?????..?
-    db   $62, $70, $62, $83, $62
+    dw   .data_01_6245, .data_01_625e, .data_01_6270, .data_01_6283
     
-    db   $48, $4f, $4e        ;; 01:6240 ?????...
-    db   $45, $59, $20, $49, $20, $53, $48, $52        ;; 01:6248 ........
-    db   $55, $4e, $4b, $20, $54, $48, $45, $20        ;; 01:6250 ........
-    db   $47, $45, $43, $4b, $4f, $80, $43, $48        ;; 01:6258 ......??
-    db   $41, $52, $47, $45, $20, $54, $4f, $20        ;; 01:6260 ????????
-    db   $54, $48, $45, $20, $54, $4f, $50, $80        ;; 01:6268 ????????
-    db   $46, $49, $4e, $44, $20, $54, $48, $45        ;; 01:6270 ????????
-    db   $20, $49, $2e, $4f, $20, $54, $4f, $57        ;; 01:6278 ????????
-    db   $45, $52, $80, $43, $48, $41, $52, $47        ;; 01:6280 ????????
-    db   $45, $20, $54, $48, $45, $20, $41, $2e        ;; 01:6288 ????????
-    db   $43, $2e, $54, $2e, $20, $53, $54, $45        ;; 01:6290 ????????
-    db   $50, $53, $80
+.data_01_6245:
+    db   "HONEY I SHRUNK THE GECKO", TextTerminator
+.data_01_625e:
+    db   "CHARGE TO THE TOP", TextTerminator
+.data_01_6270:
+    db   "FIND THE I.O TOWER", TextTerminator
+.data_01_6283:
+    db   "CHARGE THE A.C.T. STEPS", TextTerminator
     
-    db   $a3, $62, $ad, $62, $c4        ;; 01:6298 ???..???
-    db   $62, $e0, $62
+    dw   .data_01_62a3, .data_01_62ad, .data_01_62c4, .data_01_62e0
     
-    db   $50, $4f, $4c, $54, $45        ;; 01:62a0 ???.....
-    db   $52, $47, $45, $58, $80, $41, $53, $43        ;; 01:62a8 .....???
-    db   $45, $4e, $44, $20, $54, $48, $45, $20        ;; 01:62b0 ????????
-    db   $47, $48, $4f, $53, $54, $20, $54, $4f        ;; 01:62b8 ????????
-    db   $57, $45, $52, $80, $52, $45, $41, $43        ;; 01:62c0 ????????
-    db   $48, $20, $54, $48, $45, $20, $54, $4f        ;; 01:62c8 ????????
-    db   $50, $20, $4f, $46, $20, $54, $48, $45        ;; 01:62d0 ????????
-    db   $20, $4d, $4f, $52, $47, $55, $45, $80        ;; 01:62d8 ????????
-    db   $53, $4d, $41, $53, $48, $20, $45, $49        ;; 01:62e0 ????????
-    db   $47, $48, $54, $20, $42, $4c, $4f, $4f        ;; 01:62e8 ????????
-    db   $44, $20, $43, $4f, $4f, $4c, $45, $52        ;; 01:62f0 ????????
-    db   $53, $80
+.data_01_62a3:
+    db   "POLTERGEX", TextTerminator
+.data_01_62ad:
+    db   "ASCEND THE GHOST TOWER", TextTerminator
+.data_01_62c4:
+    db   "REACH THE TOP OF THE MORGUE", TextTerminator
+.data_01_62e0:
+    db   "SMASH EIGHT BLOOD COOLERS", TextTerminator
     
-    db   $02, $63, $03, $63, $04, $63        ;; 01:62f8 ????????
-    db   $05, $63, $80, $80, $80, $80, $0e, $63        ;; 01:6300 ??????..
-    db   $22, $63, $3c, $63, $58, $63
+    dw   .data_01_6302, .data_01_6303, .data_01_6304, .data_01_6305
     
-    db   $53, $41        ;; 01:6308 ??????..
-    db   $4d, $55, $52, $41, $49, $20, $4e, $49        ;; 01:6310 ........
-    db   $47, $48, $54, $20, $46, $45, $56, $45        ;; 01:6318 ........
-    db   $52, $80, $4e, $41, $56, $49, $47, $41        ;; 01:6320 ..??????
-    db   $54, $45, $20, $54, $48, $45, $20, $50        ;; 01:6328 ????????
-    db   $4f, $57, $45, $52, $20, $54, $4f, $57        ;; 01:6330 ????????
-    db   $45, $52, $53, $80, $52, $49, $44, $45        ;; 01:6338 ????????
-    db   $20, $54, $48, $45, $20, $46, $4c, $4f        ;; 01:6340 ????????
-    db   $41, $54, $49, $4e, $47, $20, $50, $4c        ;; 01:6348 ????????
-    db   $41, $54, $46, $4f, $52, $4d, $53, $80        ;; 01:6350 ????????
-    db   $43, $4c, $49, $4d, $42, $20, $54, $48        ;; 01:6358 ????????
-    db   $45, $20, $54, $4f, $57, $45, $52, $49        ;; 01:6360 ????????
-    db   $4e, $47, $20, $54, $45, $4d, $50, $4c        ;; 01:6368 ????????
-    db   $45, $80
+.data_01_6302:
+    db   TextTerminator
+.data_01_6303:
+    db   TextTerminator
+.data_01_6304:
+    db   TextTerminator
+.data_01_6305:
+    db   TextTerminator
     
-    db   $7a, $63, $94, $63, $b2, $63        ;; 01:6370 ??..????
-    db   $b3, $63
+    dw   .data_01_630e, .data_01_6322, .data_01_633c, .data_01_6358
     
-    db   $4e, $4f, $20, $57, $45, $44        ;; 01:6378 ??......
-    db   $44, $49, $4e, $47, $53, $20, $41, $4e        ;; 01:6380 ........
-    db   $44, $20, $41, $20, $46, $55, $4e, $45        ;; 01:6388 ........
-    db   $52, $41, $4c, $80, $50, $45, $4e, $45        ;; 01:6390 ....????
-    db   $54, $52, $41, $54, $45, $20, $52, $45        ;; 01:6398 ????????
-    db   $5a, $27, $53, $20, $49, $4e, $4e, $45        ;; 01:63a0 ????????
-    db   $52, $20, $53, $41, $4e, $43, $54, $55        ;; 01:63a8 ????????
-    db   $4d, $80, $80, $80
+.data_01_630e:
+    db   "SAMURAI NIGHT FEVER", TextTerminator
+.data_01_6322:
+    db   "NAVIGATE THE POWER TOWERS", TextTerminator
+.data_01_633c:
+    db   "RIDE THE FLOATING PLATFORMS", TextTerminator
+.data_01_6358:
+    db   "CLIMB THE TOWERING TEMPLE", TextTerminator
     
-    db   $bc, $63, $bd, $63        ;; 01:63b0 ????????
-    db   $be, $63, $bf, $63, $80, $80, $80, $80        ;; 01:63b8 ????????
-    db   $c8, $63, $da, $63, $fb, $63, $fc, $63        ;; 01:63c0 ..??????
+    dw   .data_01_637a, .data_01_6394, .data_01_63b2, .data_01_63b3
     
-    db   $54, $48, $55, $52, $53, $44, $41, $59        ;; 01:63c8 ........
-    db   $20, $54, $48, $45, $20, $31, $32, $54        ;; 01:63d0 ........
-    db   $48, $80, $46, $49, $4e, $44, $20, $54        ;; 01:63d8 ..??????
-    db   $48, $45, $20, $49, $54, $45, $4d, $53        ;; 01:63e0 ????????
-    db   $20, $49, $4e, $20, $54, $48, $45, $20        ;; 01:63e8 ????????
-    db   $47, $49, $56, $45, $4e, $20, $54, $49        ;; 01:63f0 ????????
-    db   $4d, $45, $80, $80, $80
+.data_01_637a:
+    db   "NO WEDDINGS AND A FUNERAL", TextTerminator
+.data_01_6394:
+    db   "PENETRATE REZ'S INNER SANCTUM", TextTerminator
+.data_01_63b2:
+    db   TextTerminator
+.data_01_63b3:
+    db   TextTerminator
     
-    db   $05, $64, $06        ;; 01:63f8 ????????
-    db   $64, $07, $64, $08, $64
+    dw   .data_01_63bc, .data_01_63bd, .data_01_63be, .data_01_63bf
+
+.data_01_63bc:    
+    db   TextTerminator
+.data_01_63bd:
+    db   TextTerminator
+.data_01_63be:
+    db   TextTerminator
+.data_01_63bf:
+    db   TextTerminator
     
-    db   $80, $80, $80        ;; 01:6400 ????????
-    db   $80
+    dw   .data_01_63c8, .data_01_63da, .data_01_63fb, .data_01_63fc
+
+.data_01_63c8:
+    db   "THURSDAY THE 12TH", TextTerminator
+.data_01_63da:
+    db   "FIND THE ITEMS IN THE GIVEN TIME", TextTerminator
+.data_01_63fb:
+    db   TextTerminator
+.data_01_63fc:
+    db   TextTerminator
     
-    db   $11, $64, $12, $64, $13, $64, $14        ;; 01:6408 ????????
-    db   $64
+    dw   .data_01_6405, .data_01_6406, .data_01_6407, .data_01_6408
     
-    db   $80, $80, $80, $80
+.data_01_6405:
+    db   TextTerminator
+.data_01_6406:
+    db   TextTerminator
+.data_01_6407:
+    db   TextTerminator
+.data_01_6408:
+    db   TextTerminator
     
-    db   $1d, $64, $1e        ;; 01:6410 ????????
-    db   $64, $1f, $64, $20, $64
+    dw   .data_01_6411, .data_01_6412, .data_01_6413, .data_01_6414
     
-    db   $80, $80, $80        ;; 01:6418 ????????
-    db   $80
+.data_01_6411:
+    db   TextTerminator
+.data_01_6412:
+    db   TextTerminator
+.data_01_6413:
+    db   TextTerminator
+.data_01_6414:
+    db   TextTerminator
     
-    db   $29, $64, $2a, $64, $2b, $64, $2c        ;; 01:6420 ????????
-    db   $64
+    dw   .data_01_641d, .data_01_641e, .data_01_641f, .data_01_6420
     
-    db   $80, $80, $80, $80
+.data_01_641d:
+    db   TextTerminator
+.data_01_641e:
+    db   TextTerminator
+.data_01_641f:
+    db   TextTerminator
+.data_01_6420:
+    db   TextTerminator
     
-    db   $35, $64, $4c        ;; 01:6428 ?????..?
-    db   $64, $6d, $64, $6e, $64
+    dw   .data_01_6429, .data_01_642a, .data_01_642b, .data_01_642c
     
-    db   $4c, $49, $5a        ;; 01:6430 ?????...
-    db   $41, $52, $44, $20, $49, $4e, $20, $41        ;; 01:6438 ........
-    db   $20, $43, $48, $49, $4e, $41, $20, $53        ;; 01:6440 ........
-    db   $48, $4f, $50, $80, $46, $49, $4e, $44        ;; 01:6448 ....????
-    db   $20, $54, $48, $45, $20, $49, $54, $45        ;; 01:6450 ????????
-    db   $4d, $53, $20, $49, $4e, $20, $54, $48        ;; 01:6458 ????????
-    db   $45, $20, $47, $49, $56, $45, $4e, $20        ;; 01:6460 ????????
-    db   $54, $49, $4d, $45, $80, $80, $80
+.data_01_6429:
+    db   TextTerminator
+.data_01_642a:
+    db   TextTerminator
+.data_01_642b:
+    db   TextTerminator
+.data_01_642c:
+    db   TextTerminator
     
-    db   $77        ;; 01:6468 ???????.
-    db   $64, $82, $64, $a3, $64, $a4, $64
+    dw   .data_01_6435, .data_01_644c, .data_01_646d, .data_01_646e
     
-    db   $42        ;; 01:6470 .??????.
-    db   $55, $47, $47, $45, $44, $20, $4f, $55        ;; 01:6478 ........
-    db   $54, $80, $46, $49, $4e, $44, $20, $54        ;; 01:6480 ..??????
-    db   $48, $45, $20, $49, $54, $45, $4d, $53        ;; 01:6488 ????????
-    db   $20, $49, $4e, $20, $54, $48, $45, $20        ;; 01:6490 ????????
-    db   $47, $49, $56, $45, $4e, $20, $54, $49        ;; 01:6498 ????????
-    db   $4d, $45, $80, $80, $80
+.data_01_6435:
+    db   "LIZARD IN A CHINA SHOP", TextTerminator
+.data_01_644c:
+    db   "FIND THE ITEMS IN THE GIVEN TIME", TextTerminator
+.data_01_646d:
+    db   TextTerminator
+.data_01_646e:
+    db   TextTerminator
     
-    db   $ad, $64, $bc        ;; 01:64a0 ?????..?
-    db   $64, $dd, $64, $de, $64
+    dw   .data_01_6477, .data_01_6482, .data_01_64a3, .data_01_64a4
     
-    db   $43, $48, $49        ;; 01:64a8 ?????...
-    db   $50, $53, $20, $41, $4e, $44, $20, $44        ;; 01:64b0 ........
-    db   $49, $50, $53, $80, $46, $49, $4e, $44        ;; 01:64b8 ....????
-    db   $20, $54, $48, $45, $20, $49, $54, $45        ;; 01:64c0 ????????
-    db   $4d, $53, $20, $49, $4e, $20, $54, $48        ;; 01:64c8 ????????
-    db   $45, $20, $47, $49, $56, $45, $4e, $20        ;; 01:64d0 ????????
-    db   $54, $49, $4d, $45, $80, $80, $80
+.data_01_6477:
+    db   "BUGGED OUT", TextTerminator
+.data_01_6482:
+    db   "FIND THE ITEMS IN THE GIVEN TIME", TextTerminator
+.data_01_64a3:
+    db   TextTerminator
+.data_01_64a4:
+    db   TextTerminator
     
-    db   $e7        ;; 01:64d8 ???????.
-    db   $64, $f5, $64, $10, $65, $11, $65
+    dw   .data_01_64ad, .data_01_64bc, .data_01_64dd, .data_01_64de
     
-    db   $4c        ;; 01:64e0 .??????.
-    db   $41, $56, $41, $20, $44, $41, $42, $41        ;; 01:64e8 ........
-    db   $20, $44, $4f, $4f, $80, $4e, $41, $56        ;; 01:64f0 .....???
-    db   $49, $47, $41, $54, $45, $20, $54, $48        ;; 01:64f8 ????????
-    db   $45, $20, $52, $49, $56, $45, $52, $20        ;; 01:6500 ????????
-    db   $4f, $46, $20, $46, $49, $52, $45, $80        ;; 01:6508 ????????
-    db   $80, $80
+.data_01_64ad:
+    db   "CHIPS AND DIPS", TextTerminator
+.data_01_64bc:
+    db   "FIND THE ITEMS IN THE GIVEN TIME", TextTerminator
+.data_01_64dd:
+    db   TextTerminator
+.data_01_64de:
+    db   TextTerminator
     
-    db   $1a, $65, $32, $65, $4e, $65        ;; 01:6510 ??..????
-    db   $4f, $65
+    dw   .data_01_64e7, .data_01_64f5, .data_01_6510, .data_01_6511
     
-    db   $54, $45, $58, $41, $53, $20        ;; 01:6518 ??......
-    db   $43, $48, $41, $49, $4e, $53, $41, $57        ;; 01:6520 ........
-    db   $20, $4d, $41, $4e, $49, $43, $55, $52        ;; 01:6528 ........
-    db   $45, $80, $52, $49, $44, $45, $20, $54        ;; 01:6530 ..??????
-    db   $48, $45, $20, $46, $4c, $4f, $41, $54        ;; 01:6538 ????????
-    db   $49, $4e, $47, $20, $46, $55, $52, $4e        ;; 01:6540 ????????
-    db   $49, $54, $55, $52, $45, $80, $80, $80        ;; 01:6548 ????????
+.data_01_64e7:
+    db   "LAVA DABA DOO", TextTerminator
+.data_01_64f5:
+    db   "NAVIGATE THE RIVER OF FIRE", TextTerminator
+.data_01_6510:
+    db   TextTerminator
+.data_01_6511:
+    db   TextTerminator
     
-    db   $58, $65, $6b, $65, $80, $65, $a6, $65        ;; 01:6550 ..??????
+    dw   .data_01_651a, .data_01_6532, .data_01_654e, .data_01_654f
     
-    db   $4d, $41, $5a, $45, $44, $20, $41, $4e        ;; 01:6558 ........
-    db   $44, $20, $43, $4f, $4e, $46, $55, $53        ;; 01:6560 ........
-    db   $45, $44, $80, $50, $41, $53, $53, $20        ;; 01:6568 ...?????
-    db   $54, $48, $45, $20, $54, $2e, $56, $2e        ;; 01:6570 ????????
-    db   $20, $46, $4f, $52, $45, $53, $54, $80        ;; 01:6578 ????????
-    db   $43, $52, $4f, $53, $53, $20, $54, $48        ;; 01:6580 ????????
-    db   $45, $20, $42, $4c, $55, $45, $20, $42        ;; 01:6588 ????????
-    db   $45, $41, $4d, $53, $20, $54, $4f, $20        ;; 01:6590 ????????
-    db   $54, $48, $45, $20, $52, $45, $5a, $20        ;; 01:6598 ????????
-    db   $54, $4f, $57, $45, $52, $80, $80
+.data_01_651a:
+    db   "TEXAS CHAINSAW MANICURE", TextTerminator
+.data_01_6532:
+    db   "RIDE THE FLOATING FURNITURE", TextTerminator
+.data_01_654e:
+    db   TextTerminator
+.data_01_654f:
+    db   TextTerminator
     
-    db   $af        ;; 01:65a0 ????????
-    db   $65, $b0, $65, $b1, $65, $b2, $65
+    dw   .data_01_6558, .data_01_656b, .data_01_6580, .data_01_65a6
     
-    db   $80        ;; 01:65a8 ????????
-    db   $80, $80, $80
+.data_01_6558:
+    db   "MAZED AND CONFUSED", TextTerminator
+.data_01_656b:
+    db   "PASS THE T.V. FOREST", TextTerminator
+.data_01_6580:
+    db   "CROSS THE BLUE BEAMS TO THE REZ TOWER", TextTerminator
+.data_01_65a6:
+    db   TextTerminator
     
-    db   $bb, $65, $bc, $65, $bd        ;; 01:65b0 ????????
-    db   $65, $be, $65
+    dw   .data_01_65af, .data_01_65b0, .data_01_65b1, .data_01_65b2
     
-    db   $80, $80, $80, $80
+.data_01_65af:
+    db   TextTerminator
+.data_01_65b0:
+    db   TextTerminator
+.data_01_65b1:
+    db   TextTerminator
+.data_01_65b2:
+    db   TextTerminator
     
-    db   $c7        ;; 01:65b8 ????????
-    db   $65, $c8, $65, $c9, $65, $ca, $65
+    dw   .data_01_65bb, .data_01_65bc, .data_01_65bd, .data_01_65be
     
-    db   $80        ;; 01:65c0 ????????
-    db   $80, $80, $80
+.data_01_65bb:
+    db   TextTerminator
+.data_01_65bc:
+    db   TextTerminator
+.data_01_65bd:
+    db   TextTerminator
+.data_01_65be:
+    db   TextTerminator
     
-    db   $d3, $65, $dd, $65, $fc        ;; 01:65c8 ????????
-    db   $65, $fd, $65
+    dw   .data_01_65c7, .data_01_65c8, .data_01_65c9, .data_01_65ca
     
-    db   $43, $48, $41, $4e, $4e        ;; 01:65d0 ????????
-    db   $45, $4c, $20, $5a, $80, $44, $45, $46        ;; 01:65d8 ????????
-    db   $45, $41, $54, $20, $52, $45, $5a, $20        ;; 01:65e0 ????????
-    db   $49, $4e, $20, $54, $48, $45, $20, $46        ;; 01:65e8 ????????
-    db   $49, $4e, $41, $4c, $20, $42, $41, $54        ;; 01:65f0 ????????
-    db   $54, $4c, $45, $80, $80, $80                  ;; 01:65f8 ??????
+.data_01_65c7:
+    db   TextTerminator
+.data_01_65c8:
+    db   TextTerminator
+.data_01_65c9:
+    db   TextTerminator
+.data_01_65ca:
+    db   TextTerminator
+    
+    dw   .data_01_65d3, .data_01_65dd, .data_01_65fc, .data_01_65fd,
+    
+.data_01_65d3:
+    db   "CHANNEL Z", TextTerminator
+.data_01_65dd:
+    db   "DEFEAT REZ IN THE FINAL BATTLE", TextTerminator
+.data_01_65fc:
+    db   TextTerminator
+.data_01_65fd:
+    db   TextTerminator
 
 data_01_65fe:
     dw   data_01_66a7_font                                  ;; 01:65fe pP
@@ -3428,16 +3430,16 @@ data_01_669c:
     db   $10, $10, $10, $10, $10                       ;; 01:66a2 ?????
 
 data_01_66a7_font:
-    INCBIN "./gfx/menus/image_001_66a7_font.bin"
+    INCBIN "./gfx/menu_sprites/image_001_66a7_font.bin"
 
 data_01_689f_font:
-    INCBIN "./gfx/menus/image_001_689f_font.bin"
+    INCBIN "./gfx/menu_sprites/image_001_689f_font.bin"
 
 data_01_6add_font:
-    INCBIN "./gfx/menus/image_001_6add_font.bin"
+    INCBIN "./gfx/menu_sprites/image_001_6add_font.bin"
 
 data_01_71e9:
-    INCBIN ".gfx/misc_sprites/menus/image_001_71e9.bin"
+    INCBIN "./.gfx/misc_sprites/menus/image_001_71e9.bin"
 
 data_01_74e9:
     dw   data_01_74fd, data_01_7540                            ;; 01:74e9 ....
@@ -3446,22 +3448,22 @@ data_01_74ed:
     dw   data_01_7bcc, data_01_7583, data_01_7706, data_00_3c72        ;; 01:74f5 ......??
 data_01_74fd:
     db   $02, $02, $00                                 ;; 01:74fd ...
-    INCBIN ".gfx/menus/image_001_7500.bin"
+    INCBIN "./.gfx/menu_sprites/image_001_7500.bin"
 data_01_7540:
     db   $02, $02, $00                                 ;; 01:7540 ...
-    INCBIN ".gfx/menus/image_001_7543.bin"
+    INCBIN "./.gfx/menu_sprites/image_001_7543.bin"
 data_01_7583:
     db   $0c, $02, $00                                 ;; 01:7583 ...
-    INCBIN ".gfx/menus/image_001_7586.bin"
+    INCBIN "./.gfx/menu_sprites/image_001_7586.bin"
 data_01_7706:
     db   $12, $04, $00                                 ;; 01:7706 ...
-    INCBIN ".gfx/menus/image_001_7709.bin"
+    INCBIN "./.gfx/menu_sprites/image_001_7709.bin"
 data_01_7b89:
     db   $02, $02, $00                                 ;; 01:7b89 ...
-    INCBIN ".gfx/menus/image_001_7b8c.bin"
+    INCBIN "./.gfx/menu_sprites/image_001_7b8c.bin"
 data_01_7bcc:
     db   $02, $02, $00                                 ;; 01:7bcc ...
-    INCBIN ".gfx/menus/image_001_7bcf.bin"
+    INCBIN "./.gfx/menu_sprites/image_001_7bcf.bin"
 
 data_01_7c0f_collectible_images:
     dw   data_01_7c4d, data_01_7c4d, data_01_7cc5, data_01_7cc5        ;; 01:7c0f ????????
@@ -3475,42 +3477,42 @@ data_01_7c0f_collectible_images:
 
 
 data_01_7c4d:
-    INCBIN ".gfx/misc_sprites/menus/image_001_7c4d.bin"
+    INCBIN "./.gfx/misc_sprites/menus/image_001_7c4d.bin"
     db   $00, $00        ;; 01:7ca7 ????????
     db   $00, $00, $9b, $01, $5b, $07, $00, $00        ;; 01:7caf ????????
     db   $00, $00, $1f, $00, $ff, $7f, $00, $00        ;; 01:7cb7 ????????
     db   $00, $00, $1f, $00, $ff, $7f
 
 data_01_7cc5:
-    INCBIN ".gfx/misc_sprites/menus/image_001_7cc5.bin"
+    INCBIN "./.gfx/misc_sprites/menus/image_001_7cc5.bin"
     db   $00, $00        ;; 01:7d1f ????????
     db   $00, $00, $94, $3e, $ff, $7f, $00, $00        ;; 01:7d27 ????????
     db   $00, $00, $94, $3e, $ff, $7f, $00, $00        ;; 01:7d2f ????????
     db   $00, $00, $94, $3e, $ff, $7f
 
 data_01_7d3d:
-    INCBIN ".gfx/misc_sprites/menus/image_001_7d3d.bin"
+    INCBIN "./.gfx/misc_sprites/menus/image_001_7d3d.bin"
     db   $00, $00        ;; 01:7d97 ????????
     db   $00, $00, $1f, $00, $5a, $6b, $00, $00        ;; 01:7d9f ????????
     db   $00, $00, $1f, $00, $5a, $6b, $00, $00        ;; 01:7da7 ????????
     db   $00, $00, $1f, $00, $5a, $6b
 
 data_01_7db5:
-    INCBIN ".gfx/misc_sprites/menus/image_001_7db5.bin"
+    INCBIN "./.gfx/misc_sprites/menus/image_001_7db5.bin"
     db   $00, $00        ;; 01:7e0f ????????
     db   $00, $00, $73, $4e, $de, $7b, $00, $00        ;; 01:7e17 ????????
     db   $00, $00, $12, $71, $ff, $7f, $00, $00        ;; 01:7e1f ????????
     db   $00, $00, $73, $4e, $de, $7b
 
 data_01_7e2d:
-    INCBIN ".gfx/misc_sprites/menus/image_001_7e2d.bin"
+    INCBIN "./.gfx/misc_sprites/menus/image_001_7e2d.bin"
     db   $00, $00        ;; 01:7e87 ????????
     db   $00, $00, $fb, $4a, $dc, $67, $00, $00        ;; 01:7e8f ????????
     db   $00, $00, $73, $4e, $de, $7b, $00, $00        ;; 01:7e97 ????????
     db   $00, $00, $fb, $4a, $dc, $67
 
 data_01_7ea5:
-    INCBIN ".gfx/misc_sprites/menus/image_001_7ea5.bin"
+    INCBIN "./.gfx/misc_sprites/menus/image_001_7ea5.bin"
     db   $00, $00        ;; 01:7eff ????????
     db   $00, $00, $b4, $01, $7f, $3f, $00, $00        ;; 01:7f07 ????????
     db   $6f, $00, $bf, $04, $ff, $31, $00, $00        ;; 01:7f0f ????????
