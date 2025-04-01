@@ -162,7 +162,7 @@ call_02_489a:
     and  A, $30                                        ;; 02:48a4 $e6 $30
     jr   Z, .jr_02_48b3                                ;; 02:48a6 $28 $0b
     ld   C, $05                                        ;; 02:48a8 $0e $05
-    ld   A, [wD75E]                                    ;; 02:48aa $fa $5e $d7
+    ld   A, [wD75E_PlayerXSpeed]                                    ;; 02:48aa $fa $5e $d7
     cp   A, $02                                        ;; 02:48ad $fe $02
     jr   NC, .jr_02_48b3                               ;; 02:48af $30 $02
     ld   C, $04                                        ;; 02:48b1 $0e $04
@@ -422,7 +422,7 @@ call_02_4a45:
     ret                                                ;; 02:4a66 $c9
 .jr_02_4a67:
     ld   A, [wD75D]                                    ;; 02:4a67 $fa $5d $d7
-    ld   HL, wD75E                                     ;; 02:4a6a $21 $5e $d7
+    ld   HL, wD75E_PlayerXSpeed                                     ;; 02:4a6a $21 $5e $d7
     cp   A, [HL]                                       ;; 02:4a6d $be
     jr   C, .jr_02_4a72                                ;; 02:4a6e $38 $02
     ld   A, [HL]                                       ;; 02:4a70 $7e
@@ -882,7 +882,7 @@ entry_02_6e17:
     xor  A, A                                          ;; 02:6e2a $af
     ld   [wD74C], A                                    ;; 02:6e2b $ea $4c $d7
     ld   [wD75D], A                                    ;; 02:6e2e $ea $5d $d7
-    ld   [wD75E], A                                    ;; 02:6e31 $ea $5e $d7
+    ld   [wD75E_PlayerXSpeed], A                                    ;; 02:6e31 $ea $5e $d7
     ld   [wD75C], A                                    ;; 02:6e34 $ea $5c $d7
     ld   [wD760_PlayerYVelocity], A                                    ;; 02:6e37 $ea $60 $d7
     ld   [wD761], A                                    ;; 02:6e3a $ea $61 $d7

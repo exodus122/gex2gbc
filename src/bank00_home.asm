@@ -837,7 +837,7 @@ call_00_075b:
 
     db   $08, $04, $0d, $07
 data_00_0771:
-	db   $79, $07, $7c, $07        ;; 00:076d ????????
+    db   $79, $07, $7c, $07        ;; 00:076d ????????
     db   $7f, $07, $9e, $07, $64, $10, $ff, $64        ;; 00:0775 ????????
     db   $10, $ff, $30, $10, $08, $11, $40, $10        ;; 00:077d ????????
     db   $08, $11, $a4, $10, $40, $00, $60, $10        ;; 00:0785 ????????
@@ -2625,14 +2625,14 @@ call_00_1472:
     add  HL, HL                                        ;; 00:1493 $29
     add  HL, HL                                        ;; 00:1494 $29 ; HL = 8 * HL
     ld   A, H                                          ;; 00:1495 $7c
-    ld   [wD77A], A                                    ;; 00:1496 $ea $7a $d7 ; [wD77A] = the upper byte of the 8x value
+    ld   [wD77A_RelatedToYPosition], A                                    ;; 00:1496 $ea $7a $d7 ; [wD77A_RelatedToYPosition] = the upper byte of the 8x value
     ld   L, E                                          ;; 00:1499 $6b
     ld   H, D                                          ;; 00:149a $62 ; HL = [wD6ED_XPositionInMap]
     add  HL, HL                                        ;; 00:149b $29
     add  HL, HL                                        ;; 00:149c $29
     add  HL, HL                                        ;; 00:149d $29 ; HL = 8 * HL
     ld   A, H                                          ;; 00:149e $7c
-    ld   [wD779], A                                    ;; 00:149f $ea $79 $d7 ; [wD779] = the upper byte of the 8x value
+    ld   [wD779_RelatedToXPosition], A                                    ;; 00:149f $ea $79 $d7 ; [wD779_RelatedToXPosition] = the upper byte of the 8x value
     ld   A, C                                          ;; 00:14a2 $79
     and  A, $f8                                        ;; 00:14a3 $e6 $f8
     ld   L, A                                          ;; 00:14a5 $6f
@@ -2823,14 +2823,14 @@ call_00_157a:
     add  HL, HL                                        ;; 00:159b $29
     add  HL, HL                                        ;; 00:159c $29
     ld   A, H                                          ;; 00:159d $7c
-    ld   [wD77A], A                                    ;; 00:159e $ea $7a $d7
+    ld   [wD77A_RelatedToYPosition], A                                    ;; 00:159e $ea $7a $d7
     ld   L, E                                          ;; 00:15a1 $6b
     ld   H, D                                          ;; 00:15a2 $62
     add  HL, HL                                        ;; 00:15a3 $29
     add  HL, HL                                        ;; 00:15a4 $29
     add  HL, HL                                        ;; 00:15a5 $29
     ld   A, H                                          ;; 00:15a6 $7c
-    ld   [wD779], A                                    ;; 00:15a7 $ea $79 $d7
+    ld   [wD779_RelatedToXPosition], A                                    ;; 00:15a7 $ea $79 $d7
     ld   A, C                                          ;; 00:15aa $79
     and  A, $e0                                        ;; 00:15ab $e6 $e0
     ld   L, A                                          ;; 00:15ad $6f
@@ -3439,9 +3439,9 @@ call_00_18a7:
     dec  A                                             ;; 00:18b0 $3d
     ld   E, A                                          ;; 00:18b1 $5f
     ld   D, $ce                                        ;; 00:18b2 $16 $ce
-    ld   A, [wD779]                                    ;; 00:18b4 $fa $79 $d7
+    ld   A, [wD779_RelatedToXPosition]                                    ;; 00:18b4 $fa $79 $d7
     ld   C, A                                          ;; 00:18b7 $4f
-    ld   A, [wD77A]                                    ;; 00:18b8 $fa $7a $d7
+    ld   A, [wD77A_RelatedToYPosition]                                    ;; 00:18b8 $fa $7a $d7
     ld   B, A                                          ;; 00:18bb $47
     push HL                                            ;; 00:18bc $e5
 .jr_00_18bd:
@@ -3485,9 +3485,9 @@ call_00_18e4:
     dec  A                                             ;; 00:18ed $3d
     ld   E, A                                          ;; 00:18ee $5f
     ld   D, $cd                                        ;; 00:18ef $16 $cd
-    ld   A, [wD779]                                    ;; 00:18f1 $fa $79 $d7
+    ld   A, [wD779_RelatedToXPosition]                                    ;; 00:18f1 $fa $79 $d7
     ld   C, A                                          ;; 00:18f4 $4f
-    ld   A, [wD77A]                                    ;; 00:18f5 $fa $7a $d7
+    ld   A, [wD77A_RelatedToYPosition]                                    ;; 00:18f5 $fa $7a $d7
     ld   B, A                                          ;; 00:18f8 $47
     push HL                                            ;; 00:18f9 $e5
 .jr_00_18fa:

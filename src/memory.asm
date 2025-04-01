@@ -110,14 +110,14 @@ wD20A:
 wD20D:
     ds 1                                               ;; d20d
 
-; wD20E and wD20F control gex's x coordinate position (can lock wD20F to sometimes fall through floors)
+; wD20E and wD20F control gex's x coordinate position (can freeze wD20F to sometimes fall through floors)
 wD20E:
     ds 1                                               ;; d20e
 
 wD20F:
     ds 1                                               ;; d20f
 
-; wD210 and wD211 control gex's y coordinate position (can lock both to hover at fixed height)
+; wD210 and wD211 control gex's y coordinate position (can freeze both to hover at fixed height)
 ; can also set to 0000 to warp to top of map for example
 wD210:
     ds 1                                               ;; d210
@@ -499,7 +499,7 @@ wD689:
     ds 1                                               ;; d689
 
 ; start data related to current menu (8 bytes from data_01_5574 for a particular menu type)
-wD68A:
+wD68A_MenuTypeDataPointer:
     ds 2                                               ;; d68a
 
 wD68C:
@@ -710,16 +710,16 @@ wD6E3:
 wD6E4:
     ds 1                                               ;; d6e4
 
-wD6E5: ; Entering Password value?
+wD6E5_PasswordArrowSprites:
     ds 1                                               ;; d6e5
 
-wD6E6: ; Entering Password value?
+wD6E6_PasswordArrowSprites:
     ds 1                                               ;; d6e6
 
-wD6E7: ; Entering Password value?
+wD6E7_PasswordArrowSprites:
     ds 1                                               ;; d6e7
 
-wD6E8: ; Entering Password value?
+wD6E8_PasswordArrowSprites:
     ds 1                                               ;; d6e8
 
 wD6E9:
@@ -988,14 +988,17 @@ wD75C:
 wD75D:
     ds 1                                               ;; d75d
 
-wD75E:
+wD75E_PlayerXSpeed:
+; how fast gex runs (1 = walk, 2 = run)
+; can freeze to change how fast you run, but doesn't make you move by itself
     ds 1                                               ;; d75e
 
 wD75F:
     ds 1                                               ;; d75f
 
 wD760_PlayerYVelocity:
-; lock this to levitate
+; signed byte (positive = up, negative = down)
+; can freeze this to levitate
     ds 1                                               ;; d760
 
 wD761:
@@ -1061,10 +1064,10 @@ wD775:
 wD778:
     ds 1                                               ;; d778
 
-wD779:
+wD779_RelatedToXPosition:
     ds 1                                               ;; d779
 
-wD77A:
+wD77A_RelatedToYPosition:
     ds 1                                               ;; d77a
 
 wD77B:

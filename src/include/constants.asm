@@ -156,16 +156,16 @@ DEF Level_BossTV_ChannelZ                        EQU $1E
 ; Objects
 DEF Object_Gex                              EQU $00
 DEF Object_CollectibleSpawn                 EQU $01
-DEF Object_unk_02                           EQU $02
+DEF Object_unk_02                           EQU $02 ; not in level object lists. may be unused
 DEF Object_TVButton                         EQU $03
 DEF Object_RedRemote                        EQU $04
-DEF Object_HiddenRemote                     EQU $05
-DEF Object_unk_06                           EQU $06
+DEF Object_SilverRemote                     EQU $05 ; hidden remote
+DEF Object_GoldRemote                       EQU $06
 DEF Object_EnemyDefeated                    EQU $07
-DEF Object_unk_08                           EQU $08
+DEF Object_unk_08                           EQU $08 ; not in level object lists. may be unused
 DEF Object_ScreamTV_FallingPlatform         EQU $09
 DEF Object_ScreamTV_MovingPlatform          EQU $0A
-DEF Object_unk_0B                           EQU $0B
+DEF Object_ScreamTV_PushBlock               EQU $0B ; in poltergex, push the block to cause platform to appear
 DEF Object_ScreamTV_Pumpkin                 EQU $0C
 DEF Object_ScreamTV_Frankie                 EQU $0D
 DEF Object_ScreamTV_HeadGhost               EQU $0E
@@ -177,14 +177,14 @@ DEF Object_ScreamTV_ZombieHead              EQU $13
 DEF Object_ScreamTV_FallingAxe              EQU $14
 DEF Object_ScreamTV_Lantern                 EQU $15
 DEF Object_ScreamTV_Bat                     EQU $16
-DEF Object_unk_17                           EQU $17
+DEF Object_ScreamTV_OrangeMovingPlatform    EQU $17
 DEF Object_ScreamTV_DoorOpening             EQU $18
 DEF Object_ScreamTV_Ghost                   EQU $19
 DEF Object_ScreamTV_ClimbWallSunEnemy       EQU $1A
 DEF Object_ScreamTV_VanishingPlatform       EQU $1B
-DEF Object_unk_1C                           EQU $1C
+DEF Object_ScreamTV_MonaLisaElevator        EQU $1C
 DEF Object_ToonTV_HardHeadAreaObject        EQU $1D
-DEF Object_ToonTV_StaticBearTrap            EQU $1E
+DEF Object_ToonTV_StationaryBearTrap        EQU $1E
 DEF Object_ToonTV_MovingBearTrap            EQU $1F
 DEF Object_ToonTV_Bumblebee                 EQU $20
 DEF Object_ToonTV_FallingBowlingBall        EQU $21
@@ -194,84 +194,84 @@ DEF Object_ToonTV_Shark                     EQU $24
 DEF Object_ToonTV_Flower                    EQU $25
 DEF Object_ToonTV_Hunter                    EQU $26
 DEF Object_ToonTV_Mushroom                  EQU $27
-DEF Object_unk_28                           EQU $28
+DEF Object_unk_28                           EQU $28 ; not in level object lists. may be unused
 DEF Object_ToonTV_Lizard                    EQU $29
 DEF Object_ToonTV_HappyFace                 EQU $2A
 DEF Object_ToonTV_VanishingBlock            EQU $2B
 DEF Object_ToonTV_MovingBlock               EQU $2C
 DEF Object_ToonTV_MovingLogPlatform         EQU $2D
-DEF Object_ToonTV_StaticLogPlatform         EQU $2E
+DEF Object_ToonTV_StationaryLogPlatform     EQU $2E
 DEF Object_ToonTV_FlowerHammerAttack        EQU $2F
 DEF Object_ToonTV_HunterBullet              EQU $30
 DEF Object_ToonTV_Rocket                    EQU $31
-DEF Object_unk_32                           EQU $32
+DEF Object_PreHistory_FastDinosaur          EQU $32 ; in pangaea 90210 above the happy face on map
 DEF Object_PreHistory_Dragonfly             EQU $33
 DEF Object_PreHistory_Egg                   EQU $34
-DEF Object_unk_35                           EQU $35
-DEF Object_unk_36                           EQU $36
+DEF Object_unk_35                           EQU $35 ; not in level object lists. may be unused
+DEF Object_unk_36                           EQU $36 ; not in level object lists. may be unused
 DEF Object_PreHistory_FallingLava           EQU $37
 DEF Object_PreHistory_LavaRaft              EQU $38
 DEF Object_PreHistory_MovingPlatform        EQU $39
-DEF Object_unk_3A                           EQU $3A
-DEF Object_unk_3B                           EQU $3B
+DEF Object_unk_3A                           EQU $3A ; not in level object lists. may be unused
+DEF Object_unk_3B                           EQU $3B ; not in level object lists. may be unused
 DEF Object_PreHistory_Pterosaur             EQU $3C
-DEF Object_unk_3D                           EQU $3D
+DEF Object_unk_3D                           EQU $3D ; not in level object lists. may be unused
 DEF Object_PreHistory_FallingBoulder        EQU $3E
-DEF Object_unk_40                           EQU $40
-DEF Object_unk_41                           EQU $41
-DEF Object_unk_42                           EQU $42
+DEF Object_PreHistory_BeetleHorizontal      EQU $40 ; lava dabba doo on the climbable background
+DEF Object_PreHistory_BeetleVertical        EQU $41
+DEF Object_PreHistory_Ant                   EQU $42 ; lava dabba doo at the beginning
 DEF Object_PreHistory_FirePlant             EQU $43
 DEF Object_PreHistory_FirePlantProjectiles  EQU $44
-DEF Object_unk_45                           EQU $45
-DEF Object_unk_46                           EQU $46
+DEF Object_PreHistory_Geyser                EQU $45
+DEF Object_unk_46                           EQU $46 ; not in level object lists. may be unused
 DEF Object_PreHistory_Dinosaur              EQU $47
 DEF Object_PreHistory_Triceratops           EQU $48
 DEF Object_PreHistory_TriceratopsHorn       EQU $49
-DEF Object_unk_4A                           EQU $4A
+DEF Object_unk_4A                           EQU $4A ; not in level object lists. may be unused
 DEF Object_KungFuTheater_HangingBlade       EQU $4B
 DEF Object_KungFuTheater_Cannon             EQU $4C
 DEF Object_KungFuTheater_CannonProjectile   EQU $4D
-DEF Object_unk_4E                           EQU $4E
+DEF Object_KungFuTheater_Dragonfly          EQU $4E
 DEF Object_KungFuTheater_DragonBodySegment  EQU $4F
 DEF Object_KungFuTheater_DragonHead         EQU $50
-DEF Object_unk_51                           EQU $51
+DEF Object_unk_51                           EQU $51 ; not in level object lists. may be unused
 DEF Object_KungFuTheater_DragonProjectile   EQU $52
-DEF Object_unk_53                           EQU $53
-DEF Object_KungFuTheater_Ninja              EQU $54
+DEF Object_KungFuTheater_WalkingNinja       EQU $53
+DEF Object_KungFuTheater_JumpingNinja       EQU $54
 DEF Object_KungFuTheater_SamuraiBody        EQU $55
 DEF Object_KungFuTheater_SamuraiHead        EQU $56
 DEF Object_KungFuTheater_Lizard             EQU $57
-DEF Object_KungFuTheater_NinjaProjectile    EQU $58
-DEF Object_unk_59                           EQU $59
+DEF Object_KungFuTheater_NinjaProjectile    EQU $58 ; jumping ninja throws projectiles, but not walking ninja
+DEF Object_KungFuTheater_SpikyLog           EQU $59
 DEF Object_KungFuTheater_TallJar            EQU $5A
 DEF Object_KungFuTheater_Jar                EQU $5B
-DEF Object_unk_5C                           EQU $5C
-DEF Object_unk_5D                           EQU $5D
-DEF Object_unk_5E                           EQU $5E
+DEF Object_unk_5C                           EQU $5C ; not in level object lists. may be unused
+DEF Object_unk_5D                           EQU $5D ; not in level object lists. may be unused
+DEF Object_KungFuTheater_VanishingPlatform  EQU $5E
 DEF Object_KungFuTheater_MovingPlatform     EQU $5F
-DEF Object_unk_60                           EQU $60
-DEF Object_unk_61                           EQU $61
-DEF Object_unk_62                           EQU $62
-DEF Object_unk_63                           EQU $63
-DEF Object_unk_64                           EQU $64
-DEF Object_unk_65                           EQU $65
-DEF Object_unk_66                           EQU $66
-DEF Object_unk_67                           EQU $67
-DEF Object_unk_68                           EQU $68
-DEF Object_unk_69                           EQU $69
-DEF Object_unk_6A                           EQU $6A
-DEF Object_unk_6B                           EQU $6B
-DEF Object_unk_6C                           EQU $6C
-DEF Object_unk_6D                           EQU $6D
-DEF Object_unk_6E                           EQU $6E
-DEF Object_unk_6F                           EQU $6F
-DEF Object_unk_70                           EQU $70
-DEF Object_unk_71                           EQU $71
-DEF Object_unk_72                           EQU $72
-DEF Object_unk_73                           EQU $73
-DEF Object_unk_74                           EQU $74
-DEF Object_unk_75                           EQU $75
-DEF Object_unk_76                           EQU $76
+DEF Object_unk_60                           EQU $60 ; not in level object lists. may be unused
+DEF Object_KungFuTheater_MovingRaft         EQU $61
+DEF Object_KungFuTheater_StationaryRaft     EQU $62
+DEF Object_unk_63                           EQU $63 ; not in level object lists. may be unused
+DEF Object_unk_64                           EQU $64 ; not in level object lists. may be unused
+DEF Object_Rezopolis_unk_65                 EQU $65 ; no weddings
+DEF Object_Rezopolis_unk_66                 EQU $66 ; no weddings
+DEF Object_Rezopolis_unk_67                 EQU $67 ; no weddings
+DEF Object_Rezopolis_unk_68                 EQU $68 ; no weddings
+DEF Object_Rezopolis_unk_69                 EQU $69 ; no weddings and mazed
+DEF Object_Rezopolis_unk_6A                 EQU $6A ; no weddings and bugged
+DEF Object_unk_6B                           EQU $6B ; not in level object lists. may be unused
+DEF Object_unk_6C                           EQU $6C ; not in level object lists. may be unused
+DEF Object_unk_6D                           EQU $6D ; not in level object lists. may be unused
+DEF Object_Rezopolis_unk_6E                 EQU $6E ; no weddings and mazed
+DEF Object_unk_6F                           EQU $6F ; not in level object lists. may be unused
+DEF Object_unk_70                           EQU $70 ; not in level object lists. may be unused
+DEF Object_Rezopolis_unk_71                 EQU $71 ; no weddings and mazed
+DEF Object_Rezopolis_unk_72                 EQU $72 ; no weddings and mazed
+DEF Object_Rezopolis_unk_73                 EQU $73 ; no weddings and mazed
+DEF Object_unk_74                           EQU $74 ; not in level object lists. may be unused
+DEF Object_Rezopolis_unk_75                 EQU $75 ; bugged out
+DEF Object_CircuitCentral_unk_76            EQU $76 ; honey i shrunk
 DEF Object_CircuitCentral_Capacitor         EQU $77
 DEF Object_CircuitCentral_PowerUp           EQU $78
 DEF Object_unk_79                           EQU $79

@@ -17,7 +17,7 @@ call_01_4000_MenuLoad:
     add  HL, HL                                        ;; 01:400d $29
     ld   DE, data_01_5574_MenuTypeData                              ;; 01:400e $11 $74 $55
     add  HL, DE                                        ;; 01:4011 $19
-    ld   DE, wD68A                                     ;; 01:4012 $11 $8a $d6
+    ld   DE, wD68A_MenuTypeDataPointer                                     ;; 01:4012 $11 $8a $d6
     ld   BC, $08                                       ;; 01:4015 $01 $08 $00
     call call_00_07b0_CopyBytes                                  ;; 01:4018 $cd $b0 $07
     xor  A, A                                          ;; 01:401b $af
@@ -31,7 +31,7 @@ call_01_4000_MenuLoad:
     ld   A, $01                                        ;; 01:402c $3e $01
 .jr_01_402e:
     ld   [wD6DF_MenuSelectedColumn], A                 ;; 01:402e $ea $df $d6
-    ld   HL, wD68A                                     ;; 01:4031 $21 $8a $d6
+    ld   HL, wD68A_MenuTypeDataPointer                                     ;; 01:4031 $21 $8a $d6
     ld   A, [HL+]                                      ;; 01:4034 $2a
     ld   H, [HL]                                       ;; 01:4035 $66
     ld   L, A                                          ;; 01:4036 $6f
@@ -2087,9 +2087,9 @@ call_01_4ecf:
     ld   DE, data_01_71e9                              ;; 01:4ef3 $11 $e9 $71
     add  HL, DE                                        ;; 01:4ef6 $19
     ld   A, L                                          ;; 01:4ef7 $7d
-    ld   [wD6E5], A                                    ;; 01:4ef8 $ea $e5 $d6
+    ld   [wD6E5_PasswordArrowSprites], A                                    ;; 01:4ef8 $ea $e5 $d6
     ld   A, H                                          ;; 01:4efb $7c
-    ld   [wD6E6], A                                    ;; 01:4efc $ea $e6 $d6
+    ld   [wD6E6_PasswordArrowSprites], A                                    ;; 01:4efc $ea $e6 $d6
     call call_01_4f30                                  ;; 01:4eff $cd $30 $4f
     ld   L, A                                          ;; 01:4f02 $6f
     ld   H, $00                                        ;; 01:4f03 $26 $00
@@ -2100,9 +2100,9 @@ call_01_4ecf:
     ld   DE, $8000                                     ;; 01:4f09 $11 $00 $80
     add  HL, DE                                        ;; 01:4f0c $19
     ld   A, L                                          ;; 01:4f0d $7d
-    ld   [wD6E7], A                                    ;; 01:4f0e $ea $e7 $d6
+    ld   [wD6E7_PasswordArrowSprites], A                                    ;; 01:4f0e $ea $e7 $d6
     ld   A, H                                          ;; 01:4f11 $7c
-    ld   [wD6E8], A                                    ;; 01:4f12 $ea $e8 $d6
+    ld   [wD6E8_PasswordArrowSprites], A                                    ;; 01:4f12 $ea $e8 $d6
     ld   HL, wD6E2                                     ;; 01:4f15 $21 $e2 $d6
     jp   call_01_4d0a                                  ;; 01:4f18 $c3 $0a $4d
 

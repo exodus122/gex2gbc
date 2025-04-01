@@ -45,7 +45,7 @@ for level in levels:
     for i in range(0, len(object_data)-1, 0x10):
         objectId, xPosition, yPosition, unk05, unk06, unk07, unk08, un09, unk0a, unk0b, unk0c, unk0d, unk0e, unk0f = struct.unpack('<BHHBBBBBBBBBBB',object_data[i:i+0x10])
         
-        object_string = "    db   ${:02x}\n    dw   ${:04x}, ${:04x}\n    db   ${:02x}, ${:02x}, ${:02x}\n    db   ${:02x}, ${:02x}, ${:02x}, ${:02x}, ${:02x}, ${:02x}, ${:02x}, ${:02x}\n\n".format(objectId, xPosition, yPosition, unk05, unk06, unk07, unk08, un09, unk0a, unk0b, unk0c, unk0d, unk0e, unk0f)
+        object_string = "    db   Object_{:02x}\n    dw   ${:04x}, ${:04x}\n    db   ${:02x}, ${:02x}, ${:02x}\n    db   ${:02x}, ${:02x}, ${:02x}, ${:02x}, ${:02x}, ${:02x}, ${:02x}, ${:02x}\n\n".format(objectId, xPosition, yPosition, unk05, unk06, unk07, unk08, un09, unk0a, unk0b, unk0c, unk0d, unk0e, unk0f)
         
         out.write(object_string)
     
