@@ -34,10 +34,12 @@ special_color = "silver"
 
 floor_color = "red"
 floor_passable_color = "salmon"
+stairs_color = "magenta"
 floor_passable_wobble_on_edge_color = "salmon" 
-ceiling_color = "red"
-ceiling_and_wall_color = "red"
-floor_and_wall_color = "red"
+ceiling_color = "yellow"
+ceiling_and_wall_color = "purple"
+ceiling_and_wall_color2 = "orange"
+floor_and_wall_color = "green"
 wall_color = "blue"
 
 water_color = "cyan"
@@ -53,7 +55,7 @@ surface_type_colors = {
     0x02: floor_passable_color, # floor that you can pass through from below
     0x03: unknown_color,
     0x04: wall_color, # wall (left) # this is used everywhere else
-    0x05: floor_color, # floor that blocks you from passing from below
+    0x05: floor_color, # floor that blocks you from passing from below, far left and right side act like stairs to try pushing you back on top
     0x06: wall_color, # wall (right) # this is used everywhere else
     0x07: ceiling_color, # ceiling (cannot pass through from above)
     0x08: floor_passable_wobble_on_edge_color, # floor (wobble on the edge)
@@ -62,26 +64,26 @@ surface_type_colors = {
     0x0B: ceiling_and_wall_color,
     0x0C: floor_and_wall_color, # floor and wall?
     0x0D: floor_and_wall_color, # floor and wall?
-    0x0E: ceiling_and_wall_color, # ceiling and wall?
-    0x0F: ceiling_and_wall_color, # ceiling and wall?
-    0x10: floor_passable_color, # steep stairs
-    0x11: floor_passable_color, # steep stairs
-    0x12: floor_passable_color, # stairs
-    0x13: floor_passable_color, # stairs
-    0x14: floor_passable_color, # stairs
-    0x15: floor_passable_color, # stairs
-    0x16: floor_passable_color, # channel z door stairs
-    0x17: floor_passable_color, # channel z door stairs
-    0x18: floor_passable_color, # some rezopolis ceilings
-    0x19: floor_passable_color, # some rezopolis ceilings
-    0x1A: floor_passable_color, # some rezopolis ceilings
-    0x1B: floor_passable_color, # some rezopolis ceilings
-    0x1C: floor_passable_color, # toon tv rock slopes
-    0x1D: floor_passable_color, # toon tv rock slopes
-    0x1E: floor_passable_color, # circuit central machine you can jump on
-    0x1F: floor_passable_color, # circuit central machine you can jump on
-    0x20: floor_passable_color, # circuit central machine you can jump on
-    0x21: floor_passable_color, # circuit central machine you can jump on
+    0x0E: ceiling_and_wall_color2, # ceiling and wall?
+    0x0F: ceiling_and_wall_color2, # ceiling and wall?
+    0x10: stairs_color, # steep stairs
+    0x11: stairs_color, # steep stairs
+    0x12: stairs_color, # stairs
+    0x13: stairs_color, # stairs
+    0x14: stairs_color, # stairs
+    0x15: stairs_color, # stairs
+    0x16: stairs_color, # channel z door stairs
+    0x17: stairs_color, # channel z door stairs
+    0x18: stairs_color, # some rezopolis ceilings
+    0x19: stairs_color, # some rezopolis ceilings
+    0x1A: stairs_color, # some rezopolis ceilings
+    0x1B: stairs_color, # some rezopolis ceilings
+    0x1C: stairs_color, # toon tv rock slopes
+    0x1D: stairs_color, # toon tv rock slopes
+    0x1E: stairs_color, # circuit central machine you can jump on
+    0x1F: stairs_color, # circuit central machine you can jump on
+    0x20: stairs_color, # circuit central machine you can jump on
+    0x21: stairs_color, # circuit central machine you can jump on
     0x22: door_color, # door
     0x23: kill_color, # kill tile
     0x24: lava_color, # lava
@@ -147,10 +149,10 @@ for i in range(0, len(levels)):
     special_tile_data_file = "../../maps/"+level_name+"/special_tile_data_"+level_name+".bin"
     
     tileset_file = "../.././gfx/tilesets/tileset_"+level_name+".bin"
-    palette_ids_file = "../.../gfx/tilesets/palette_ids/palette_ids_"+level_name+".bin"
-    palette_file = "../.../gfx/tilesets/palettes/palette_"+level_name+".bin"
+    palette_ids_file = "../../gfx/tilesets/palette_ids/palette_ids_"+level_name+".bin"
+    palette_file = "../../gfx/tilesets/palettes/palette_"+level_name+".bin"
     special_tileset_folder = "../.././gfx/special_tilesets/"+level_name+"/"
-    special_tileset_palette_ids_folder = "../.../gfx/special_tilesets/"+level_name+"/palette_ids/"
+    special_tileset_palette_ids_folder = "../../gfx/special_tilesets/"+level_name+"/palette_ids/"
     
     palette_data = open(palette_file, "rb").read()
     palette_ids = open(palette_ids_file, "rb").read()
@@ -240,7 +242,7 @@ for i in range(0, len(levels)):
                             q = q + 1
                         
                         if television != -1:
-                            palette_file2 = "../.../gfx/special_tilesets/"+level_name+"/palettes/"+media_dimension_tv_order[q]+"_television_palette.bin"
+                            palette_file2 = "../../gfx/special_tilesets/"+level_name+"/palettes/"+media_dimension_tv_order[q]+"_television_palette.bin"
                             if media_dimension_tv_order[q] == "circuit_central":
                                 temp_palette_data = open(palette_file2, "rb").read()[8:]
                             else:
@@ -272,7 +274,7 @@ for i in range(0, len(levels)):
         kill_tile = PIL.Image.new("RGB", (8, 8), (255, 192, 203))
     
         if create_collision_blocksets == True:
-            blockset_image_path = "./blockset_images/collision_only/"
+            blockset_image_path = "./blockset_images/collision_detailed/"
         elif show_kill_tiles == True:
             blockset_image_path = "./blockset_images/with_kill_tiles/"
         else:
@@ -280,7 +282,7 @@ for i in range(0, len(levels)):
         
         os.system('mkdir -p blockset_images')
         os.system('mkdir -p blockset_images/with_kill_tiles')
-        os.system('mkdir -p blockset_images/collision_only')
+        os.system('mkdir -p blockset_images/collision_detailed')
         
         blockset_img = PIL.Image.new("RGB", (512, 512))
         draw2 = PIL.ImageDraw.Draw(blockset_img)
@@ -385,7 +387,7 @@ for i in range(0, len(levels)):
     # create the level's map from the blocksets
     if create_maps:
         if create_collision_maps:
-            map_image_path = "./map_images/collision_only/"
+            map_image_path = "./map_images/collision_detailed/"
         elif show_kill_tiles == True:
             map_image_path = "./map_images/with_kill_tiles/"
         else:
@@ -425,7 +427,7 @@ for i in range(0, len(levels)):
         
         os.system('mkdir -p map_images')
         os.system('mkdir -p map_images/with_kill_tiles/')
-        os.system('mkdir -p map_images/collision_only/')
+        os.system('mkdir -p map_images/collision_detailed/')
         img.save(map_image_path+level_name+channel_map_number+"_map.png")
     
     print("completed: "+level_name)

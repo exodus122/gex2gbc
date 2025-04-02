@@ -68,7 +68,7 @@ call_01_4000_MenuLoad:
     ld   A, C                                          ;; 01:4071 $79
     and  A, $04                                        ;; 01:4072 $e6 $04
     jr   Z, .jr_01_408f                                ;; 01:4074 $28 $19
-    ld   A, [wD61E]                                    ;; 01:4076 $fa $1e $d6
+    ld   A, [wD61E_DemoModeEnabled]                                    ;; 01:4076 $fa $1e $d6
     and  A, A                                          ;; 01:4079 $a7
     jr   Z, .jr_01_408f                                ;; 01:407a $28 $13
     ld   A, [wD619_TitleScreenCounter]                                    ;; 01:407c $fa $19 $d6
@@ -833,11 +833,11 @@ call_01_44e6:
     jr   NZ, .jr_01_45fe                               ;; 01:45f0 $20 $0c
     call call_01_4e5a                                  ;; 01:45f2 $cd $5a $4e
     call call_01_4e49                                  ;; 01:45f5 $cd $49 $4e
-    ld   HL, wC000                                     ;; 01:45f8 $21 $00 $c0
+    ld   HL, wC000_BgMapTileIds                                     ;; 01:45f8 $21 $00 $c0
     jp   call_00_07b0_CopyBytes                                  ;; 01:45fb $c3 $b0 $07
 .jr_01_45fe:
     call call_01_4e49                                  ;; 01:45fe $cd $49 $4e
-    ld   HL, wC000                                     ;; 01:4601 $21 $00 $c0
+    ld   HL, wC000_BgMapTileIds                                     ;; 01:4601 $21 $00 $c0
     ld   A, [wD692]                                    ;; 01:4604 $fa $92 $d6
     ld   C, A                                          ;; 01:4607 $4f
     ld   A, [wD693]                                    ;; 01:4608 $fa $93 $d6
@@ -921,7 +921,7 @@ call_01_466b:
     push HL                                            ;; 01:469b $e5
     call call_01_4e5a                                  ;; 01:469c $cd $5a $4e
     pop  HL                                            ;; 01:469f $e1
-    ld   DE, wC000                                     ;; 01:46a0 $11 $00 $c0
+    ld   DE, wC000_BgMapTileIds                                     ;; 01:46a0 $11 $00 $c0
     ld   A, $13                                        ;; 01:46a3 $3e $13
     jp   call_00_07a1                                    ;; 01:46a5 $c3 $a1 $07
 .data_01_46a8:
@@ -1308,7 +1308,7 @@ call_01_49d7:
     push hl
     call call_01_4e5a
     pop hl
-    ld de, wC000
+    ld de, wC000_BgMapTileIds
     call call_00_07b0_CopyBytes
     ld de, wDAAB
     ld bc, $0018
@@ -1424,7 +1424,7 @@ call_01_4ae7:
     dec  C                                             ;; 01:4b23 $0d
     jr   NZ, .jr_01_4b22                               ;; 01:4b24 $20 $fc
 .jr_01_4b26:
-    ld   DE, wC000                                     ;; 01:4b26 $11 $00 $c0
+    ld   DE, wC000_BgMapTileIds                                     ;; 01:4b26 $11 $00 $c0
     add  HL, DE                                        ;; 01:4b29 $19
     ld   A, [wD6A3]                                    ;; 01:4b2a $fa $a3 $d6
 .jr_01_4b2d:
@@ -1521,7 +1521,7 @@ call_01_4ae7:
 call_01_4bb7:
     call call_01_4e5a                                  ;; 01:4bb7 $cd $5a $4e
     ld   B, A                                          ;; 01:4bba $47
-    ld   HL, wC000                                     ;; 01:4bbb $21 $00 $c0
+    ld   HL, wC000_BgMapTileIds                                     ;; 01:4bbb $21 $00 $c0
     xor  A, A                                          ;; 01:4bbe $af
 .jr_01_4bbf:
     ld   [HL+], A                                      ;; 01:4bbf $22
@@ -2021,7 +2021,7 @@ call_01_4e78:
     push HL                                            ;; 01:4e86 $e5
     call call_01_4e5a                                  ;; 01:4e87 $cd $5a $4e
     pop  HL                                            ;; 01:4e8a $e1
-    ld   DE, wC000                                     ;; 01:4e8b $11 $00 $c0
+    ld   DE, wC000_BgMapTileIds                                     ;; 01:4e8b $11 $00 $c0
     ld   A, [HL+]                                      ;; 01:4e8e $2a
     and  A, A                                          ;; 01:4e8f $a7
     jp   Z, call_00_07b0_CopyBytes                               ;; 01:4e90 $ca $b0 $07
@@ -3123,7 +3123,8 @@ data_01_615f:
     db   TextTerminator
 .data_01_616a:
     db   TextTerminator
-    
+
+data_01_616b:
     dw   .data_01_6173, .data_01_6181, .data_01_6199, .data_01_61ab
 .data_01_6173:
     db   "PANGAEA 90210", TextTerminator
@@ -3133,7 +3134,8 @@ data_01_615f:
     db   "CLIMB THE VOLCANO", TextTerminator
 .data_01_61ab:
     db   TextTerminator
-    
+
+data_01_61ac:    
     dw   .data_01_61b4, .data_01_61c1, .data_01_61d0, .data_01_61e1
     
 .data_01_61b4:
@@ -3144,7 +3146,8 @@ data_01_615f:
     db   "STORM THE CASTLE", TextTerminator
 .data_01_61e1:
     db   TextTerminator
-    
+
+data_01_61e2:    
     dw   .data_01_61ea, .data_01_61f8, .data_01_620f, .data_01_6224
     
 .data_01_61ea:
@@ -3155,7 +3158,8 @@ data_01_615f:
     db   "RIDE THE STEAM VENTS", TextTerminator
 .data_01_6224:
     db   "BOUNCE UP OVER THE CHASM", TextTerminator
-    
+
+data_01_623d:    
     dw   .data_01_6245, .data_01_625e, .data_01_6270, .data_01_6283
     
 .data_01_6245:
@@ -3166,7 +3170,8 @@ data_01_615f:
     db   "FIND THE I.O TOWER", TextTerminator
 .data_01_6283:
     db   "CHARGE THE A.C.T. STEPS", TextTerminator
-    
+
+data_01_629b:    
     dw   .data_01_62a3, .data_01_62ad, .data_01_62c4, .data_01_62e0
     
 .data_01_62a3:
@@ -3177,7 +3182,8 @@ data_01_615f:
     db   "REACH THE TOP OF THE MORGUE", TextTerminator
 .data_01_62e0:
     db   "SMASH EIGHT BLOOD COOLERS", TextTerminator
-    
+
+data_01_62fa:    
     dw   .data_01_6302, .data_01_6303, .data_01_6304, .data_01_6305
     
 .data_01_6302:
@@ -3188,7 +3194,8 @@ data_01_615f:
     db   TextTerminator
 .data_01_6305:
     db   TextTerminator
-    
+
+data_01_6306:    
     dw   .data_01_630e, .data_01_6322, .data_01_633c, .data_01_6358
     
 .data_01_630e:
@@ -3199,7 +3206,8 @@ data_01_615f:
     db   "RIDE THE FLOATING PLATFORMS", TextTerminator
 .data_01_6358:
     db   "CLIMB THE TOWERING TEMPLE", TextTerminator
-    
+
+data_01_6372:    
     dw   .data_01_637a, .data_01_6394, .data_01_63b2, .data_01_63b3
     
 .data_01_637a:
@@ -3210,7 +3218,8 @@ data_01_615f:
     db   TextTerminator
 .data_01_63b3:
     db   TextTerminator
-    
+
+data_01_63b4:    
     dw   .data_01_63bc, .data_01_63bd, .data_01_63be, .data_01_63bf
 
 .data_01_63bc:    
@@ -3221,7 +3230,8 @@ data_01_615f:
     db   TextTerminator
 .data_01_63bf:
     db   TextTerminator
-    
+
+data_01_63c0:    
     dw   .data_01_63c8, .data_01_63da, .data_01_63fb, .data_01_63fc
 
 .data_01_63c8:
@@ -3232,7 +3242,8 @@ data_01_615f:
     db   TextTerminator
 .data_01_63fc:
     db   TextTerminator
-    
+
+data_01_63fd:    
     dw   .data_01_6405, .data_01_6406, .data_01_6407, .data_01_6408
     
 .data_01_6405:
@@ -3243,7 +3254,8 @@ data_01_615f:
     db   TextTerminator
 .data_01_6408:
     db   TextTerminator
-    
+
+data_01_6409:    
     dw   .data_01_6411, .data_01_6412, .data_01_6413, .data_01_6414
     
 .data_01_6411:
@@ -3254,7 +3266,8 @@ data_01_615f:
     db   TextTerminator
 .data_01_6414:
     db   TextTerminator
-    
+
+data_01_6415:    
     dw   .data_01_641d, .data_01_641e, .data_01_641f, .data_01_6420
     
 .data_01_641d:
@@ -3265,7 +3278,8 @@ data_01_615f:
     db   TextTerminator
 .data_01_6420:
     db   TextTerminator
-    
+
+data_01_6421:    
     dw   .data_01_6429, .data_01_642a, .data_01_642b, .data_01_642c
     
 .data_01_6429:
@@ -3276,7 +3290,8 @@ data_01_615f:
     db   TextTerminator
 .data_01_642c:
     db   TextTerminator
-    
+
+data_01_642d:    
     dw   .data_01_6435, .data_01_644c, .data_01_646d, .data_01_646e
     
 .data_01_6435:
@@ -3287,7 +3302,8 @@ data_01_615f:
     db   TextTerminator
 .data_01_646e:
     db   TextTerminator
-    
+
+data_01_646f:    
     dw   .data_01_6477, .data_01_6482, .data_01_64a3, .data_01_64a4
     
 .data_01_6477:
@@ -3298,7 +3314,8 @@ data_01_615f:
     db   TextTerminator
 .data_01_64a4:
     db   TextTerminator
-    
+
+data_01_64a5:    
     dw   .data_01_64ad, .data_01_64bc, .data_01_64dd, .data_01_64de
     
 .data_01_64ad:
@@ -3309,7 +3326,8 @@ data_01_615f:
     db   TextTerminator
 .data_01_64de:
     db   TextTerminator
-    
+
+data_01_64df:    
     dw   .data_01_64e7, .data_01_64f5, .data_01_6510, .data_01_6511
     
 .data_01_64e7:
@@ -3320,7 +3338,8 @@ data_01_615f:
     db   TextTerminator
 .data_01_6511:
     db   TextTerminator
-    
+
+data_01_6512:    
     dw   .data_01_651a, .data_01_6532, .data_01_654e, .data_01_654f
     
 .data_01_651a:
@@ -3331,7 +3350,8 @@ data_01_615f:
     db   TextTerminator
 .data_01_654f:
     db   TextTerminator
-    
+
+data_01_6550:    
     dw   .data_01_6558, .data_01_656b, .data_01_6580, .data_01_65a6
     
 .data_01_6558:
@@ -3342,7 +3362,8 @@ data_01_615f:
     db   "CROSS THE BLUE BEAMS TO THE REZ TOWER", TextTerminator
 .data_01_65a6:
     db   TextTerminator
-    
+
+data_01_65a7:    
     dw   .data_01_65af, .data_01_65b0, .data_01_65b1, .data_01_65b2
     
 .data_01_65af:
@@ -3353,7 +3374,8 @@ data_01_615f:
     db   TextTerminator
 .data_01_65b2:
     db   TextTerminator
-    
+
+data_01_65b3:    
     dw   .data_01_65bb, .data_01_65bc, .data_01_65bd, .data_01_65be
     
 .data_01_65bb:
@@ -3364,7 +3386,8 @@ data_01_615f:
     db   TextTerminator
 .data_01_65be:
     db   TextTerminator
-    
+
+data_01_65bf:    
     dw   .data_01_65c7, .data_01_65c8, .data_01_65c9, .data_01_65ca
     
 .data_01_65c7:
@@ -3375,7 +3398,8 @@ data_01_615f:
     db   TextTerminator
 .data_01_65ca:
     db   TextTerminator
-    
+
+data_01_65cb:    
     dw   .data_01_65d3, .data_01_65dd, .data_01_65fc, .data_01_65fd,
     
 .data_01_65d3:

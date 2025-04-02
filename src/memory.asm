@@ -2,21 +2,21 @@
 
 SECTION "wram0", WRAM0[$c000]
 
-wC000:
-    ds 1                                               ;; c000
-
-wC001:
-    ds 1023                                            ;; c001
+wC000_BgMapTileIds:
+; tiles currently loaded (for current 32x32 tile bg map)
+    ds 1024                                               ;; c000
 
 wC400_CollectibleCoordinates:
 ; C400 to C500 stores the x position of each collectible in the current level
 ; C500 to C600 stores the y position of each collectible in the current level
     ds 512                                             ;; c400
 
-wC600:
-    ds 1536                                            ;; c600
+wC600_CollectibleRelated:
+    ds 512                                            ;; c600
 
-;C800 to CC00 looks like collision data for the current screen
+wC800_CurrentCollisionData:
+;C800 to CC00 is the collision data currently loaded (for current 32x32 tile bg map)
+    ds 1024
 
 wCC00:
     ds 1                                               ;; cc00
@@ -49,7 +49,9 @@ wCCFE:
     ds 1                                               ;; ccfe
 
 wCCFF:
-    ds 513                                             ;; ccff
+    ds 1                                             ;; ccff
+
+ds 512 ; CD00-CF00 unused?
 
 wCF00_SpecialTilePaletteIds:
     ds 256                                             ;; cf00
@@ -352,11 +354,11 @@ wD61C_DemoInputsPointer:
 wD61D:
     ds 1                                               ;; d61d
 
-wD61E:
+wD61E_DemoModeEnabled:
     ds 1                                               ;; d61e
 
-wD61F_DemoInputsCounter:
-; counter of how many frames to input the demo inputs
+wD61F_DemoRelatedCounter:
+; counter of how many frames to input the demo inputs?
     ds 1                                               ;; d61f
 
 wD620_DemoInputs:

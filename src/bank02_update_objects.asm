@@ -248,11 +248,11 @@ data_02_491a:
     db   $18, $00, $00, $00, $00, $00, $00, $00        ;; 02:492a ????????
     db   $00, $18, $00, $00, $00, $00, $00             ;; 02:4932 ???????
 
-call_02_4939_PlayDemoInputs:
-    ld   A, [wD61E]                                    ;; 02:4939 $fa $1e $d6
+call_02_4939_UpdatePlayerMovement:
+    ld   A, [wD61E_DemoModeEnabled]                                    ;; 02:4939 $fa $1e $d6
     and  A, A                                          ;; 02:493c $a7
     jr   Z, .jr_02_4965                                ;; 02:493d $28 $26
-    ld   HL, wD61F_DemoInputsCounter                                     ;; 02:493f $21 $1f $d6
+    ld   HL, wD61F_DemoRelatedCounter                                     ;; 02:493f $21 $1f $d6
     dec  [HL]                                          ;; 02:4942 $35
     jr   NZ, .jr_02_495c                               ;; 02:4943 $20 $17
     ld   HL, wD61B_DemoInputsPointer                                     ;; 02:4945 $21 $1b $d6
@@ -262,7 +262,7 @@ call_02_4939_PlayDemoInputs:
     ld   A, [DE]                                       ;; 02:494b $1a
     cp   A, $ff                                        ;; 02:494c $fe $ff
     jr   Z, .jr_02_4961                                ;; 02:494e $28 $11
-    ld   [wD61F_DemoInputsCounter], A                                    ;; 02:4950 $ea $1f $d6
+    ld   [wD61F_DemoRelatedCounter], A                                    ;; 02:4950 $ea $1f $d6
     inc  DE                                            ;; 02:4953 $13
     ld   A, [DE]                                       ;; 02:4954 $1a
     ld   [wD620_DemoInputs], A                         ;; 02:4955 $ea $20 $d6
@@ -274,7 +274,7 @@ call_02_4939_PlayDemoInputs:
     ld   A, [wD620_DemoInputs]                                    ;; 02:495c $fa $20 $d6
     jr   .jr_02_4968                                   ;; 02:495f $18 $07
 .jr_02_4961:
-    ld   [wD61E], A                                    ;; 02:4961 $ea $1e $d6
+    ld   [wD61E_DemoModeEnabled], A                                    ;; 02:4961 $ea $1e $d6
     ret                                                ;; 02:4964 $c9
 .jr_02_4965:
     ld   A, [wD59F_CurrentInputs]                                    ;; 02:4965 $fa $9f $d5
@@ -327,7 +327,7 @@ call_02_4939_PlayDemoInputs:
     call call_02_4a45                                  ;; 02:49b0 $cd $45 $4a
     ld   [wD59D_BankSwitch], A                                    ;; 02:49b3 $ea $9d $d5
     ld   A, Bank03                                        ;; 02:49b6 $3e $03
-    ld   HL, entry_03_4900                              ;; 02:49b8 $21 $00 $49
+    ld   HL, entry_03_4900_ProcessCollisionEntry                              ;; 02:49b8 $21 $00 $49
     call call_00_1078_SwitchBankWrapper                                  ;; 02:49bb $cd $78 $10
     call call_02_4b78                                  ;; 02:49be $cd $78 $4b
     ld   [wD59D_BankSwitch], A                                    ;; 02:49c1 $ea $9d $d5
@@ -993,7 +993,7 @@ entry_02_6eba:
 .jr_02_6f07:
     ld   A, $00                                        ;; 02:6f07 $3e $00
     ld   [wD300], A                                    ;; 02:6f09 $ea $00 $d3
-    call call_02_4939_PlayDemoInputs                                  ;; 02:6f0c $cd $39 $49
+    call call_02_4939_UpdatePlayerMovement                                  ;; 02:6f0c $cd $39 $49
 .jr_02_6f0f:
     ld   A, $20                                        ;; 02:6f0f $3e $20
 .jr_02_6f11:

@@ -254,27 +254,27 @@ DEF Object_KungFuTheater_MovingRaft         EQU $61
 DEF Object_KungFuTheater_StationaryRaft     EQU $62
 DEF Object_unk_63                           EQU $63 ; not in level object lists. may be unused
 DEF Object_unk_64                           EQU $64 ; not in level object lists. may be unused
-DEF Object_Rezopolis_unk_65                 EQU $65 ; no weddings
-DEF Object_Rezopolis_unk_66                 EQU $66 ; no weddings
-DEF Object_Rezopolis_unk_67                 EQU $67 ; no weddings
-DEF Object_Rezopolis_unk_68                 EQU $68 ; no weddings
-DEF Object_Rezopolis_unk_69                 EQU $69 ; no weddings and mazed
-DEF Object_Rezopolis_unk_6A                 EQU $6A ; no weddings and bugged
+DEF Object_Rezopolis_SpecialMovingPlatform  EQU $65 ; at the start of no weddings
+DEF Object_Rezopolis_MovingPlatform         EQU $66 ; small, yellow, and black
+DEF Object_Rezopolis_RedPlatform            EQU $67 ; no weddings
+DEF Object_Rezopolis_ActivatedRedPlatform   EQU $68 ; no weddings
+DEF Object_Rezopolis_TailspinPlatform       EQU $69
+DEF Object_Rezopolis_TailspinGear           EQU $6A
 DEF Object_unk_6B                           EQU $6B ; not in level object lists. may be unused
 DEF Object_unk_6C                           EQU $6C ; not in level object lists. may be unused
 DEF Object_unk_6D                           EQU $6D ; not in level object lists. may be unused
-DEF Object_Rezopolis_unk_6E                 EQU $6E ; no weddings and mazed
+DEF Object_Rezopolis_GreenMonster           EQU $6E
 DEF Object_unk_6F                           EQU $6F ; not in level object lists. may be unused
 DEF Object_unk_70                           EQU $70 ; not in level object lists. may be unused
-DEF Object_Rezopolis_unk_71                 EQU $71 ; no weddings and mazed
-DEF Object_Rezopolis_unk_72                 EQU $72 ; no weddings and mazed
-DEF Object_Rezopolis_unk_73                 EQU $73 ; no weddings and mazed
-DEF Object_unk_74                           EQU $74 ; not in level object lists. may be unused
-DEF Object_Rezopolis_unk_75                 EQU $75 ; bugged out
-DEF Object_CircuitCentral_unk_76            EQU $76 ; honey i shrunk
+DEF Object_Rezopolis_Pincer                 EQU $71
+DEF Object_Rezopolis_Flamethrower           EQU $72
+DEF Object_Rezopolis_UFO                    EQU $73
+DEF Object_Rezopolis_Ant                    EQU $74 ; bugged out, spawned by hitting the gear
+DEF Object_Rezopolis_AntSpawner             EQU $75 ; bugged out
+DEF Object_CircuitCentral_Ant               EQU $76
 DEF Object_CircuitCentral_Capacitor         EQU $77
 DEF Object_CircuitCentral_PowerUp           EQU $78
-DEF Object_unk_79                           EQU $79
+DEF Object_unk_79                           EQU $79 ; not in level object lists. may be unused
 DEF Object_CircuitCentral_LittleRobot       EQU $7A
 DEF Object_CircuitCentral_LittleRobotGear   EQU $7B
 DEF Object_CircuitCentral_ElectricBall      EQU $7C
@@ -284,18 +284,18 @@ DEF Object_CircuitCentral_LoweringPlatform  EQU $7F
 DEF Object_CircuitCentral_WalkerRobot       EQU $80
 DEF Object_CircuitCentral_PoweredWalkway    EQU $81
 DEF Object_CircuitCentral_WalkwayActivator  EQU $82
-DEF Object_unk_83                           EQU $83
-DEF Object_unk_84                           EQU $84
-DEF Object_unk_85                           EQU $85
-DEF Object_unk_86                           EQU $86
-DEF Object_unk_87                           EQU $87
-DEF Object_unk_88                           EQU $88
-DEF Object_unk_89                           EQU $89
-DEF Object_unk_8A                           EQU $8A
-DEF Object_unk_8B                           EQU $8B
-DEF Object_unk_8C                           EQU $8C
-DEF Object_unk_8D                           EQU $8D
-DEF Object_unk_8E                           EQU $8E
+DEF Object_ChannelZ_ArcedGunProjectile      EQU $83
+DEF Object_ChannelZ_ArcedGunProjectile2     EQU $84
+DEF Object_ChannelZ_GunProjectile           EQU $85
+DEF Object_ChannelZ_Rez                     EQU $86
+DEF Object_unk_87                           EQU $87 ; not in level object lists. may be unused
+DEF Object_unk_88                           EQU $88 ; not in level object lists. may be unused
+DEF Object_ChannelZ_RezFollowingFire        EQU $89
+DEF Object_ChannelZ_GunProjectileExplosion  EQU $8A
+DEF Object_unk_8B                           EQU $8B ; not in level object lists. may be unused
+DEF Object_ChannelZ_FinalBattleButton       EQU $8C
+DEF Object_unk_8D                           EQU $8D ; not in level object lists. may be unused
+DEF Object_unk_8E                           EQU $8E ; not in level object lists. may be unused
 DEF Object_MediaDimension_MovingPlatform    EQU $8F
 DEF ObjectListTerminator                    EQU $FF
 

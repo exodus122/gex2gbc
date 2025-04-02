@@ -39,7 +39,7 @@ entry_0b_4000:
     inc  E                                             ;; 0b:4026 $1c
     and  A, A                                          ;; 0b:4027 $a7
     jr   NZ, .jr_0b_4020                               ;; 0b:4028 $20 $f6
-    ld   DE, wC600                                     ;; 0b:402a $11 $00 $c6
+    ld   DE, wC600_CollectibleRelated                                     ;; 0b:402a $11 $00 $c6
 .jr_0b_402d:
     ld   HL, wC400_CollectibleCoordinates                                     ;; 0b:402d $21 $00 $c4
 .jr_0b_4030:
