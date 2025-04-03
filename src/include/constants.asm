@@ -333,8 +333,8 @@ DEF PlayerAction_Climb                       EQU $1D ; climbing wall or backgrou
 DEF PlayerAction_unk_1e                      EQU $1E
 DEF PlayerAction_unk_1f                      EQU $1F ; disables collision updating?
 
-; Object collision types
-DEF ObjectColType_Intangible                 EQU $00
+; Object collision types (0x24 types?)
+DEF ObjectColType_None                       EQU $00
 DEF ObjectColType_Intangible2                EQU $01
 DEF ObjectColType_Fly                        EQU $02
 DEF ObjectColType_PushWallAndFloor           EQU $03 ; wall that causes a push animation from gex. also can stand on. (tv button)
@@ -342,7 +342,7 @@ DEF ObjectColType_Wall                       EQU $04 ; no push animation
 DEF ObjectColType_Floor                      EQU $05 ; floor, but no walls
 DEF ObjectColType_Damage                     EQU $06 ; deals damage, no walls or floor - (enemy dies in one hit)
 DEF ObjectColType_CollectibleItem            EQU $07
-DEF ObjectColType_RemoteWarp                 EQU $08 ; acts like a gold remote? teleports you and gives a remote. but it gives 2nd silver remote
+DEF ObjectColType_TVSwitchWarp               EQU $08 ; teleports you and gives a remote. how does it determine which remote? (in media, enters toon town
 DEF ObjectColType_PushStuck                  EQU $09 ; ; stuck to pushing it. also messes up collision if walk on ramp nearby?
 DEF ObjectColType_Intangible3                EQU $0A
 DEF ObjectColType_Damage2                    EQU $0B ; deals damage, no walls or floor, INVINCIBLE?

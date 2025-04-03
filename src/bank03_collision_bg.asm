@@ -307,9 +307,9 @@ call_03_4915_ProcessCollision:
     jr   Z, .jr_03_491d                                ;; 03:4919 $28 $02
     set  7, [HL]                                       ;; 03:491b $cb $fe ; set 0x80
 .jr_03_491d:
-    ld   A, [wD746]                                    ;; 03:491d $fa $46 $d7
+    ld   A, [wD746_PlayerClimbingState]                                    ;; 03:491d $fa $46 $d7
     cp   A, $ff                                        ;; 03:4920 $fe $ff
-    jp   NZ, call_03_4ac4                                ;; 03:4922 $c2 $c4 $4a
+    jp   NZ, call_03_4ac4_ProcessClimbCollision        ; 03:4922 $c2 $c4 $4a ; if climb state byte is not ff, run alternate collision func
     ld   A, [wD760_PlayerYVelocity]                                    ;; 03:4925 $fa $60 $d7
     sub  A, $02                                        ;; 03:4928 $d6 $02
     bit  7, A                                          ;; 03:492a $cb $7f
@@ -455,7 +455,7 @@ call_03_4915_ProcessCollision:
     jr   .jp_03_4a05                                   ;; 03:4a03 $18 $00
 .jp_03_4a05:
     xor  A, A                                          ;; 03:4a05 $af
-    ld   [wD761], A                                    ;; 03:4a06 $ea $61 $d7
+    ld   [wD761_PlayerFallingFlag], A                                    ;; 03:4a06 $ea $61 $d7
     ld   HL, wD585_CollisionFlags                                     ;; 03:4a09 $21 $85 $d5
     bit  7, [HL]                                       ;; 03:4a0c $cb $7e
     ret  NZ                                            ;; 03:4a0e $c0
@@ -531,7 +531,7 @@ call_03_4915_ProcessCollision:
     swap A                                             ;; 03:4a74 $cb $37
     cpl                                                ;; 03:4a76 $2f
     inc  A                                             ;; 03:4a77 $3c
-    ld   [wD761], A                                    ;; 03:4a78 $ea $61 $d7
+    ld   [wD761_PlayerFallingFlag], A                                    ;; 03:4a78 $ea $61 $d7
     ret                                                ;; 03:4a7b $c9
 .jr_03_4a7c:
     call call_03_4ab3                                  ;; 03:4a7c $cd $b3 $4a
@@ -577,13 +577,13 @@ call_03_4ab3:
     add  A, [HL]                                       ;; 03:4ac2 $86
     ret                                                ;; 03:4ac3 $c9
 
-call_03_4ac4:
+call_03_4ac4_ProcessClimbCollision:
     ld   HL, wD585_CollisionFlags                                     ;; 03:4ac4 $21 $85 $d5
     set  7, [HL]                                       ;; 03:4ac7 $cb $fe
-    ld   A, [wD746]                                    ;; 03:4ac9 $fa $46 $d7
+    ld   A, [wD746_PlayerClimbingState]                                    ;; 03:4ac9 $fa $46 $d7
     cp   A, $06                                        ;; 03:4acc $fe $06
     ret  NC                                            ;; 03:4ace $d0
-    ld   HL, wD746                                     ;; 03:4acf $21 $46 $d7
+    ld   HL, wD746_PlayerClimbingState                                     ;; 03:4acf $21 $46 $d7
     ld   A, [HL]                                       ;; 03:4ad2 $7e
     add  A, A                                          ;; 03:4ad3 $87
     ld   HL, wD20D_PlayerFacingAngle                                     ;; 03:4ad4 $21 $0d $d2
@@ -634,13 +634,13 @@ call_03_4ac4:
     ld   A, [wD75A_CurrentInputs]                                    ;; 03:4b11 $fa $5a $d7
     cp   A, $80                                        ;; 03:4b14 $fe $80
     jr   NZ, .jr_03_4afa                               ;; 03:4b16 $20 $e2
-    ld   A, [wD746]                                    ;; 03:4b18 $fa $46 $d7
+    ld   A, [wD746_PlayerClimbingState]                                    ;; 03:4b18 $fa $46 $d7
     cp   A, $02                                        ;; 03:4b1b $fe $02
     ld   A, $06                                        ;; 03:4b1d $3e $06
     jr   C, .jr_03_4b23                                ;; 03:4b1f $38 $02
     ld   A, $07                                        ;; 03:4b21 $3e $07
 .jr_03_4b23:
-    ld   [wD746], A                                    ;; 03:4b23 $ea $46 $d7
+    ld   [wD746_PlayerClimbingState], A                                    ;; 03:4b23 $ea $46 $d7
     xor  A, A                                          ;; 03:4b26 $af
     ld   [wD747], A                                    ;; 03:4b27 $ea $47 $d7
     ret                                                ;; 03:4b2a $c9
@@ -652,17 +652,17 @@ call_03_4ac4:
     call call_03_4c5a                                  ;; 03:4b2f $cd $5a $4c
     bit  7, B                                          ;; 03:4b32 $cb $78
     jr   NZ, .jr_03_4b4a                               ;; 03:4b34 $20 $14
-    ld   A, [wD746]                                    ;; 03:4b36 $fa $46 $d7
+    ld   A, [wD746_PlayerClimbingState]                                    ;; 03:4b36 $fa $46 $d7
     cp   A, $02                                        ;; 03:4b39 $fe $02
     jr   C, .jr_03_4afa                                ;; 03:4b3b $38 $bd
     ld   A, [wD75A_CurrentInputs]                                    ;; 03:4b3d $fa $5a $d7
     and  A, $40                                        ;; 03:4b40 $e6 $40
     jr   Z, .jr_03_4afa                                ;; 03:4b42 $28 $b6
     ld   A, $08                                        ;; 03:4b44 $3e $08
-    ld   [wD746], A                                    ;; 03:4b46 $ea $46 $d7
+    ld   [wD746_PlayerClimbingState], A                                    ;; 03:4b46 $ea $46 $d7
     ret                                                ;; 03:4b49 $c9
 .jr_03_4b4a:
-    ld   A, [wD746]                                    ;; 03:4b4a $fa $46 $d7
+    ld   A, [wD746_PlayerClimbingState]                                    ;; 03:4b4a $fa $46 $d7
     cp   A, $02                                        ;; 03:4b4d $fe $02
     ret  C                                             ;; 03:4b4f $d8
     ld   A, C                                          ;; 03:4b50 $79
@@ -673,7 +673,7 @@ call_03_4ac4:
     sub  A, $30                                        ;; 03:4b57 $d6 $30
     ld   [wD749], A                                    ;; 03:4b59 $ea $49 $d7
     ld   A, $09                                        ;; 03:4b5c $3e $09
-    ld   [wD746], A                                    ;; 03:4b5e $ea $46 $d7
+    ld   [wD746_PlayerClimbingState], A                                    ;; 03:4b5e $ea $46 $d7
     xor  A, A                                          ;; 03:4b61 $af
     ld   [wD747], A                                    ;; 03:4b62 $ea $47 $d7
     ret                                                ;; 03:4b65 $c9
@@ -752,16 +752,16 @@ entry_03_4c0a:
     or   A, L                                          ;; 03:4c1c $b5
     ld   L, A                                          ;; 03:4c1d $6f
     ld   A, [HL]                                       ;; 03:4c1e $7e
-    ld   [wD764], A                                    ;; 03:4c1f $ea $64 $d7
+    ld   [wD764_TileTypeBehindGexsBody], A                                    ;; 03:4c1f $ea $64 $d7
     ld   DE, $20                                       ;; 03:4c22 $11 $20 $00
     add  HL, DE                                        ;; 03:4c25 $19
     res  2, H                                          ;; 03:4c26 $cb $94
     ld   A, [HL]                                       ;; 03:4c28 $7e
-    ld   [wD765], A                                    ;; 03:4c29 $ea $65 $d7
+    ld   [wD765_TileTypeBehindGexsBody], A                                    ;; 03:4c29 $ea $65 $d7
     add  HL, DE                                        ;; 03:4c2c $19
     res  2, H                                          ;; 03:4c2d $cb $94
     ld   A, [HL]                                       ;; 03:4c2f $7e ; load tile collision type from wC800_CurrentCollisionData
-    ld   [wD767], A                                    ;; 03:4c30 $ea $67 $d7
+    ld   [wD767_FloorTileType], A                                    ;; 03:4c30 $ea $67 $d7
     ld   C, $09                                        ;; 03:4c33 $0e $09
     ld   A, [wD20D_PlayerFacingAngle]                                    ;; 03:4c35 $fa $0d $d2
     cp   A, $00                                        ;; 03:4c38 $fe $00
@@ -784,7 +784,7 @@ entry_03_4c0a:
     or   A, L                                          ;; 03:4c53 $b5
     ld   L, A                                          ;; 03:4c54 $6f
     ld   A, [HL]                                       ;; 03:4c55 $7e
-    ld   [wD766], A                                    ;; 03:4c56 $ea $66 $d7
+    ld   [wD766_TileTypeBehindGexsFace], A                                    ;; 03:4c56 $ea $66 $d7
     ret                                                ;; 03:4c59 $c9
 
 call_03_4c5a:

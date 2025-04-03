@@ -2626,7 +2626,7 @@ call_00_1472:
     add  HL, HL                                        ;; 00:1493 $29
     add  HL, HL                                        ;; 00:1494 $29 ; HL = 8 * HL
     ld   A, H                                          ;; 00:1495 $7c
-    ld   [wD77A_RelatedToYPosition], A                                    ;; 00:1496 $ea $7a $d7 ; [wD77A_RelatedToYPosition] = the upper byte of the 8x value
+    ld   [wD77A_PlayerYPositionBlock], A                                    ;; 00:1496 $ea $7a $d7 ; [wD77A_PlayerYPositionBlock] = the upper byte of the 8x value
     ld   L, E                                          ;; 00:1499 $6b
     ld   H, D                                          ;; 00:149a $62 ; HL = [wD6ED_XPositionInMap]
     add  HL, HL                                        ;; 00:149b $29
@@ -2824,7 +2824,7 @@ call_00_157a:
     add  HL, HL                                        ;; 00:159b $29
     add  HL, HL                                        ;; 00:159c $29
     ld   A, H                                          ;; 00:159d $7c
-    ld   [wD77A_RelatedToYPosition], A                                    ;; 00:159e $ea $7a $d7
+    ld   [wD77A_PlayerYPositionBlock], A                                    ;; 00:159e $ea $7a $d7
     ld   L, E                                          ;; 00:15a1 $6b
     ld   H, D                                          ;; 00:15a2 $62
     add  HL, HL                                        ;; 00:15a3 $29
@@ -3442,7 +3442,7 @@ call_00_18a7:
     ld   D, $ce                                        ;; 00:18b2 $16 $ce
     ld   A, [wD779_RelatedToXPosition]                                    ;; 00:18b4 $fa $79 $d7
     ld   C, A                                          ;; 00:18b7 $4f
-    ld   A, [wD77A_RelatedToYPosition]                                    ;; 00:18b8 $fa $7a $d7
+    ld   A, [wD77A_PlayerYPositionBlock]                                    ;; 00:18b8 $fa $7a $d7
     ld   B, A                                          ;; 00:18bb $47
     push HL                                            ;; 00:18bc $e5
 .jr_00_18bd:
@@ -3488,7 +3488,7 @@ call_00_18e4:
     ld   D, $cd                                        ;; 00:18ef $16 $cd
     ld   A, [wD779_RelatedToXPosition]                                    ;; 00:18f1 $fa $79 $d7
     ld   C, A                                          ;; 00:18f4 $4f
-    ld   A, [wD77A_RelatedToYPosition]                                    ;; 00:18f5 $fa $7a $d7
+    ld   A, [wD77A_PlayerYPositionBlock]                                    ;; 00:18f5 $fa $7a $d7
     ld   B, A                                          ;; 00:18f8 $47
     push HL                                            ;; 00:18f9 $e5
 .jr_00_18fa:
@@ -3914,11 +3914,11 @@ call_00_1f46:
     ld   A, [wD77B]                                    ;; 00:1f4b $fa $7b $d7
     and  A, A                                          ;; 00:1f4e $a7
     ret  NZ                                            ;; 00:1f4f $c0
-    ld   A, [wD76B]                                    ;; 00:1f50 $fa $6b $d7
+    ld   A, [wD76B_TailSpinningFlagMaybe]                                    ;; 00:1f50 $fa $6b $d7
     and  A, A                                          ;; 00:1f53 $a7
     ret  Z                                             ;; 00:1f54 $c8
     xor  A, A                                          ;; 00:1f55 $af
-    ld   [wD76B], A                                    ;; 00:1f56 $ea $6b $d7
+    ld   [wD76B_TailSpinningFlagMaybe], A                                    ;; 00:1f56 $ea $6b $d7
     ld   HL, wD20E_PlayerXPosition                                     ;; 00:1f59 $21 $0e $d2
     ld   A, [HL+]                                      ;; 00:1f5c $2a
     ld   H, [HL]                                       ;; 00:1f5d $66

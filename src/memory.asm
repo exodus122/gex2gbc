@@ -937,7 +937,15 @@ wD744:
 wD745:
     ds 1                                               ;; d745
 
-wD746:
+wD746_PlayerClimbingState:
+; 0 = climbing background
+; 1 = climbing background and tail spinning
+; 2 = climbing wall
+; 6 = climbing background - dropping down to floor
+; 7 = ?
+; 8 = ?
+; 9 = ?
+; FF = default (run normal collision func)
     ds 1                                               ;; d746
 
 wD747:
@@ -1023,34 +1031,38 @@ wD760_PlayerYVelocity:
 ; can freeze this to levitate
     ds 1                                               ;; d760
 
-wD761:
+wD761_PlayerFallingFlag:
+; set to c0 when gex is falling, 0 otherwise?
     ds 1                                               ;; d761
 
-wD762:
+wD762_PlayerInitialYVelocity:
+; y velocity when first entered the air (2a = jump, 36 = double jump). also set to 1 if fall off ledge
     ds 1                                               ;; d762
 
-wD763:
+wD763_PlayerMovementFlags:
     ds 1                                               ;; d763
 
-wD764:
+wD764_TileTypeBehindGexsBody:
     ds 1                                               ;; d764
 
-wD765:
+wD765_TileTypeBehindGexsBody:
     ds 1                                               ;; d765
 
-wD766:
+wD766_TileTypeBehindGexsFace: ; also set to 22 in front of doors?
     ds 1                                               ;; d766
 
-wD767:
-    ds 2                                               ;; d767
+wD767_FloorTileType:
+    ds 1                                               ;; d767
+
+    ds 1
 
 wD769:
     ds 1                                               ;; d769
 
-wD76A:
+wD76A_PlayerXPositionBlock:
     ds 1                                               ;; d76a
 
-wD76B:
+wD76B_TailSpinningFlagMaybe:
     ds 1                                               ;; d76b
 
 wD76C:
@@ -1089,7 +1101,7 @@ wD778:
 wD779_RelatedToXPosition:
     ds 1                                               ;; d779
 
-wD77A_RelatedToYPosition:
+wD77A_PlayerYPositionBlock:
     ds 1                                               ;; d77a
 
 wD77B:
@@ -1260,10 +1272,10 @@ wDADA:
 wDADB:
     ds 2                                               ;; dadb
     
-; DADD through DFAD seems be be unused memory
+; DADD through DFAD might be be unused memory?
     ds 1233
 
-; The rest of wram is used for audio-related memory
+; The rest of wram is used for audio-related purposes
 
 wDFAE_AudioBankDataPointer: ; always 60 (as in 0x4460, which is where the audio data begins in all 4 audio banks)
     ds 1                                               ;; dfae

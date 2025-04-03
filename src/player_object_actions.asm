@@ -97,7 +97,7 @@ call_02_41b7:
 .jr_02_41d7:
     ld   [wD75B_IdleTimer], A                                    ;; 02:41d7 $ea $5b $d7
 .jr_02_41da:
-    ld   A, [wD767]                                    ;; 02:41da $fa $67 $d7
+    ld   A, [wD767_FloorTileType]                                    ;; 02:41da $fa $67 $d7
     cp   A, $08                                        ;; 02:41dd $fe $08
     jr   Z, .jr_02_41ee                                ;; 02:41df $28 $0d
     cp   A, $09                                        ;; 02:41e1 $fe $09
@@ -202,7 +202,7 @@ call_02_4275:
     ld   C, $2a                                        ;; 02:427c $0e $2a
     call call_02_4856                                  ;; 02:427e $cd $56 $48
     ld   [wD760_PlayerYVelocity], A                                    ;; 02:4281 $ea $60 $d7
-    ld   [wD762], A                                    ;; 02:4284 $ea $62 $d7
+    ld   [wD762_PlayerInitialYVelocity], A                                    ;; 02:4284 $ea $62 $d7
     call call_02_4a3a                                  ;; 02:4287 $cd $3a $4a
     ld   C, $0c                                        ;; 02:428a $0e $0c
     call call_00_112f                                  ;; 02:428c $cd $2f $11
@@ -212,7 +212,7 @@ call_02_4275:
     ld   A, $01                                        ;; 02:4295 $3e $01
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:4297 $ea $5e $d7
 .jr_02_429a:
-    ld   A, [wD762]                                    ;; 02:429a $fa $62 $d7
+    ld   A, [wD762_PlayerInitialYVelocity]                                    ;; 02:429a $fa $62 $d7
     and  A, A                                          ;; 02:429d $a7
     ret  NZ                                            ;; 02:429e $c0
     ld   A, [wD75A_CurrentInputs]                                    ;; 02:429f $fa $5a $d7
@@ -229,7 +229,7 @@ call_02_42ac:
     ld   C, $36                                        ;; 02:42b3 $0e $36
     call call_02_4856                                  ;; 02:42b5 $cd $56 $48
     ld   [wD760_PlayerYVelocity], A                                    ;; 02:42b8 $ea $60 $d7
-    ld   [wD762], A                                    ;; 02:42bb $ea $62 $d7
+    ld   [wD762_PlayerInitialYVelocity], A                                    ;; 02:42bb $ea $62 $d7
     call call_02_4a3a                                  ;; 02:42be $cd $3a $4a
     ld   C, $0d                                        ;; 02:42c1 $0e $0d
     call call_00_112f                                  ;; 02:42c3 $cd $2f $11
@@ -239,7 +239,7 @@ call_02_42ac:
     ld   A, $01                                        ;; 02:42cc $3e $01
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:42ce $ea $5e $d7
 .jr_02_42d1:
-    ld   A, [wD762]                                    ;; 02:42d1 $fa $62 $d7
+    ld   A, [wD762_PlayerInitialYVelocity]                                    ;; 02:42d1 $fa $62 $d7
     and  A, A                                          ;; 02:42d4 $a7
     ret  NZ                                            ;; 02:42d5 $c0
     ld   A, [wD75A_CurrentInputs]                                    ;; 02:42d6 $fa $5a $d7
@@ -257,14 +257,14 @@ call_02_42f7:
     ld   HL, wD759                                     ;; 02:42fe $21 $59 $d7
     set  0, [HL]                                       ;; 02:4301 $cb $c6
     ld   A, $01                                        ;; 02:4303 $3e $01
-    ld   [wD76B], A                                    ;; 02:4305 $ea $6b $d7
+    ld   [wD76B_TailSpinningFlagMaybe], A                                    ;; 02:4305 $ea $6b $d7
     ld   A, [wD75E_PlayerXSpeed]                                    ;; 02:4308 $fa $5e $d7
     and  A, A                                          ;; 02:430b $a7
     jr   NZ, .jr_02_4313                               ;; 02:430c $20 $05
     ld   A, $01                                        ;; 02:430e $3e $01
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:4310 $ea $5e $d7
 .jr_02_4313:
-    ld   A, [wD764]                                    ;; 02:4313 $fa $64 $d7
+    ld   A, [wD764_TileTypeBehindGexsBody]                                    ;; 02:4313 $fa $64 $d7
     cpl                                                ;; 02:4316 $2f
     ld   C, A                                          ;; 02:4317 $4f
     cp   A, $40                                        ;; 02:4318 $fe $40
@@ -273,7 +273,7 @@ call_02_42f7:
     and  A, $04                                        ;; 02:4320 $e6 $04
     ret  Z                                             ;; 02:4322 $c8
     xor  A, A                                          ;; 02:4323 $af
-    ld   [wD76B], A                                    ;; 02:4324 $ea $6b $d7
+    ld   [wD76B_TailSpinningFlagMaybe], A                                    ;; 02:4324 $ea $6b $d7
     ld   HL, wD759                                     ;; 02:4327 $21 $59 $d7
     set  6, [HL]                                       ;; 02:432a $cb $f6
     ld   C, $17                                        ;; 02:432c $0e $17
@@ -377,14 +377,14 @@ call_02_4418:
     and  A, $20                                        ;; 02:441b $e6 $20
     jr   Z, .jr_02_442f                                ;; 02:441d $28 $10
     ld   A, $01                                        ;; 02:441f $3e $01
-    ld   [wD762], A                                    ;; 02:4421 $ea $62 $d7
+    ld   [wD762_PlayerInitialYVelocity], A                                    ;; 02:4421 $ea $62 $d7
     ld   A, [wD75E_PlayerXSpeed]                                    ;; 02:4424 $fa $5e $d7
     and  A, A                                          ;; 02:4427 $a7
     jr   NZ, .jr_02_442f                               ;; 02:4428 $20 $05
     ld   A, $01                                        ;; 02:442a $3e $01
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:442c $ea $5e $d7
 .jr_02_442f:
-    ld   A, [wD762]                                    ;; 02:442f $fa $62 $d7
+    ld   A, [wD762_PlayerInitialYVelocity]                                    ;; 02:442f $fa $62 $d7
     and  A, A                                          ;; 02:4432 $a7
     ret  NZ                                            ;; 02:4433 $c0
     ld   A, [wD75A_CurrentInputs]                                    ;; 02:4434 $fa $5a $d7
@@ -427,16 +427,16 @@ call_02_44af:
     ld   [wD747], A                                    ;; 02:44bc $ea $47 $d7
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:44bf $ea $5e $d7
     ld   [wD760_PlayerYVelocity], A                                    ;; 02:44c2 $ea $60 $d7
-    ld   [wD761], A                                    ;; 02:44c5 $ea $61 $d7
+    ld   [wD761_PlayerFallingFlag], A                                    ;; 02:44c5 $ea $61 $d7
     ld   A, [wD769]                                    ;; 02:44c8 $fa $69 $d7
     cp   A, $26                                        ;; 02:44cb $fe $26
     ld   A, $00                                        ;; 02:44cd $3e $00
     jr   Z, .jr_02_44d3                                ;; 02:44cf $28 $02
     ld   A, $02                                        ;; 02:44d1 $3e $02
 .jr_02_44d3:
-    ld   [wD746], A                                    ;; 02:44d3 $ea $46 $d7
+    ld   [wD746_PlayerClimbingState], A                                    ;; 02:44d3 $ea $46 $d7
 .jr_02_44d6:
-    ld   HL, wD746                                     ;; 02:44d6 $21 $46 $d7
+    ld   HL, wD746_PlayerClimbingState                                     ;; 02:44d6 $21 $46 $d7
     ld   L, [HL]                                       ;; 02:44d9 $6e
     ld   H, $00                                        ;; 02:44da $26 $00
     add  HL, HL                                        ;; 02:44dc $29
@@ -495,7 +495,7 @@ call_02_44f9:
     and  A, $01                                        ;; 02:4540 $e6 $01
     jr   Z, .jr_02_454e                                ;; 02:4542 $28 $0a
     ld   A, $01                                        ;; 02:4544 $3e $01
-    ld   [wD746], A                                    ;; 02:4546 $ea $46 $d7
+    ld   [wD746_PlayerClimbingState], A                                    ;; 02:4546 $ea $46 $d7
     xor  A, A                                          ;; 02:4549 $af
     ld   [wD747], A                                    ;; 02:454a $ea $47 $d7
     ret                                                ;; 02:454d $c9
@@ -661,7 +661,7 @@ call_02_4856:
     ld   A, [wD758]                                    ;; 02:4856 $fa $58 $d7
     and  A, A                                          ;; 02:4859 $a7
     ret  NZ                                            ;; 02:485a $c0
-    ld   A, [wD765]                                    ;; 02:485b $fa $65 $d7
+    ld   A, [wD765_TileTypeBehindGexsBody]                                    ;; 02:485b $fa $65 $d7
     cp   A, $f0                                        ;; 02:485e $fe $f0
     jr   Z, .jr_02_4876                                ;; 02:4860 $28 $14
     cp   A, $f1                                        ;; 02:4862 $fe $f1
