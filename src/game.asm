@@ -8,7 +8,7 @@ INCLUDE "memory.asm"
 
 INCLUDE "bank00_home.asm"
 INCLUDE "bank01_menus.asm"
-INCLUDE "bank02_update_objects.asm"
+INCLUDE "bank02_object_update.asm"
 
 SECTION "bank03", ROMX[$4000], BANK[$03]
 INCLUDE "bank03_collision_bg.asm"
@@ -56,7 +56,11 @@ image_009_4000.bin:
     INCBIN "./.gfx/image_009_4000.bin"
 
 INCLUDE "bank0A_load_objects.asm"
-INCLUDE "bank0B_collectibles_spawns_palettes.asm"
+
+SECTION "bank0b", ROMX[$4000], BANK[$0b]
+INCLUDE "bank0B_load_collectibles.asm"
+INCLUDE "bank0B_player_spawns.asm"
+INCLUDE "bank0B_palettes.asm"
 
 SECTION "bank0c", ROMX[$4000], BANK[$0c]
 image_audio_menu_00c_0.bin:

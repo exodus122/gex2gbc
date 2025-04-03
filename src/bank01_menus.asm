@@ -640,10 +640,10 @@ call_01_446f_LoadMenuGraphics:
     ld   A, [HL+]                                      ;; 01:44aa $2a
     ld   [wD6E1], A                                    ;; 01:44ab $ea $e1 $d6
     ld   C, [HL]                                       ;; 01:44ae $4e
-    ld   [wD59D_BankSwitch], A                                    ;; 01:44af $ea $9d $d5
+    ld   [wD59D_ReturnBank], A                                    ;; 01:44af $ea $9d $d5
     ld   A, Bank0b                                        ;; 01:44b2 $3e $0b
     ld   HL, entry_0b_5537                              ;; 01:44b4 $21 $37 $55
-    call call_00_1078_SwitchBankWrapper                                  ;; 01:44b7 $cd $78 $10
+    call call_00_1078_CallAltBankFunc                                  ;; 01:44b7 $cd $78 $10
     ld   A, $ff                                        ;; 01:44ba $3e $ff
     ld   [wD6EB], A                                    ;; 01:44bc $ea $eb $d6
     call call_01_43e6                                  ;; 01:44bf $cd $e6 $43
@@ -905,10 +905,10 @@ call_01_466b:
     ld   DE, wDA4B                                     ;; 01:466e $11 $4b $da
     ld   BC, $80                                       ;; 01:4671 $01 $80 $00
     call call_00_07b0_CopyBytes                                  ;; 01:4674 $cd $b0 $07
-    ld   [wD59D_BankSwitch], A                                    ;; 01:4677 $ea $9d $d5
+    ld   [wD59D_ReturnBank], A                                    ;; 01:4677 $ea $9d $d5
     ld   A, Bank0b                                        ;; 01:467a $3e $0b
     ld   HL, entry_0b_5d4b                              ;; 01:467c $21 $4b $5d
-    call call_00_1078_SwitchBankWrapper                                  ;; 01:467f $cd $78 $10
+    call call_00_1078_CallAltBankFunc                                  ;; 01:467f $cd $78 $10
     call call_00_2e3a                                  ;; 01:4682 $cd $3a $2e
     ld   DE, data_01_5cb9                              ;; 01:4685 $11 $b9 $5c
     call call_00_07b9                                  ;; 01:4688 $cd $b9 $07

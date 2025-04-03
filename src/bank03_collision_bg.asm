@@ -737,7 +737,7 @@ call_03_4bd4:
 .data_03_4c02:
     db   $80, $40, $20, $10, $08, $04, $02, $01        ;; 03:4c02 ????????
 
-entry_03_4c0a:
+entry_03_4c0a_UpdateTilesTouchingPlayer:
     ld   A, [wD210_PlayerYPosition]                                    ;; 03:4c0a $fa $10 $d2
     and  A, $f8                                        ;; 03:4c0d $e6 $f8
     ld   L, A                                          ;; 03:4c0f $6f
@@ -757,11 +757,11 @@ entry_03_4c0a:
     add  HL, DE                                        ;; 03:4c25 $19
     res  2, H                                          ;; 03:4c26 $cb $94
     ld   A, [HL]                                       ;; 03:4c28 $7e
-    ld   [wD765_TileTypeBehindGexsBody], A                                    ;; 03:4c29 $ea $65 $d7
+    ld   [wD765_TileTypeBehindGexsBody], A             ;; 03:4c29 $ea $65 $d7
     add  HL, DE                                        ;; 03:4c2c $19
     res  2, H                                          ;; 03:4c2d $cb $94
     ld   A, [HL]                                       ;; 03:4c2f $7e ; load tile collision type from wC800_CurrentCollisionData
-    ld   [wD767_FloorTileType], A                                    ;; 03:4c30 $ea $67 $d7
+    ld   [wD767_FloorTileType], A                      ;; 03:4c30 $ea $67 $d7
     ld   C, $09                                        ;; 03:4c33 $0e $09
     ld   A, [wD20D_PlayerFacingAngle]                                    ;; 03:4c35 $fa $0d $d2
     cp   A, $00                                        ;; 03:4c38 $fe $00

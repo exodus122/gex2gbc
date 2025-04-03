@@ -1,4 +1,5 @@
-; Gex action jump table?
+; Player action jump table
+data_02_4120:
     dw   call_02_41a0                                 ;; 02:4120 pP
     db   $5c, $75                                      ;; 02:4122 ..
     dw   call_02_41ad                                 ;; 02:4124 pP
@@ -619,9 +620,9 @@ call_02_4777:
     ld   C, A                                          ;; 02:4799 $4f
     ld   A, [HL+]                                      ;; 02:479a $2a
     ld   B, A                                          ;; 02:479b $47
-    call call_02_4c19                                  ;; 02:479c $cd $19 $4c
+    call call_02_4c19_UpdatePlayerYPosition                                  ;; 02:479c $cd $19 $4c
     pop  BC                                            ;; 02:479f $c1
-    call call_02_4c0a                                  ;; 02:47a0 $cd $0a $4c
+    call call_02_4c0a_UpdatePlayerXPosition                                  ;; 02:47a0 $cd $0a $4c
     pop  AF                                            ;; 02:47a3 $f1
     ret                                                ;; 02:47a4 $c9
 .data_02_47a5:

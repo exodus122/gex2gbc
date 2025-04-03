@@ -284,7 +284,8 @@ wD59A:
 wD59C_CurrentROMBank:
     ds 1                                               ;; d59c
 
-wD59D_BankSwitch:
+wD59D_ReturnBank:
+; bank to return to after the upcoming bank switch
     ds 1                                               ;; d59d
 
 wD59E:
@@ -941,6 +942,7 @@ wD746_PlayerClimbingState:
 ; 0 = climbing background
 ; 1 = climbing background and tail spinning
 ; 2 = climbing wall
+; 3 = climbing wall and tail spinning
 ; 6 = climbing background - dropping down to floor
 ; 7 = ?
 ; 8 = ?

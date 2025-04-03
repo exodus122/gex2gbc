@@ -1,4 +1,4 @@
-; more jump tables
+; Object Action jump tables (one for each object)
 data_02_4ddb:
     dw   call_02_51b7                                 ;; 02:4ddb pP
     db   $ce, $7c                                      ;; 02:4ddd ..
@@ -522,10 +522,10 @@ data_02_51b3:
 call_02_51b7:
     call call_00_3b8d                                  ;; 02:51b7 $cd $8d $3b
     push AF                                            ;; 02:51ba $f5
-    ld   [wD59D_BankSwitch], A                                    ;; 02:51bb $ea $9d $d5
+    ld   [wD59D_ReturnBank], A                                    ;; 02:51bb $ea $9d $d5
     ld   A, Bank03                                        ;; 02:51be $3e $03
     ld   HL, entry_03_6584                              ;; 02:51c0 $21 $84 $65
-    call call_00_1078_SwitchBankWrapper                                  ;; 02:51c3 $cd $78 $10
+    call call_00_1078_CallAltBankFunc                                  ;; 02:51c3 $cd $78 $10
     jr   NZ, .jr_02_51cc                               ;; 02:51c6 $20 $04
     pop  AF                                            ;; 02:51c8 $f1
     jp   call_00_3931                                    ;; 02:51c9 $c3 $31 $39
@@ -583,7 +583,7 @@ call_02_51ea:
     ld   BC, $05                                       ;; 02:5221 $01 $05 $00
     call call_00_37d8                                  ;; 02:5224 $cd $d8 $37
     ld   A, $01                                        ;; 02:5227 $3e $01
-    call call_02_7102                                  ;; 02:5229 $cd $02 $71
+    call call_02_7102_SetObjectAction                                  ;; 02:5229 $cd $02 $71
     ld   A, [wD624_CurrentLevelId]                                    ;; 02:522c $fa $24 $d6
     and  A, A                                          ;; 02:522f $a7
     jr   NZ, .jr_02_524d                               ;; 02:5230 $20 $1b
@@ -616,7 +616,7 @@ call_02_5253:
     ld   A, [wD59E]                                    ;; 02:5261 $fa $9e $d5
     and  A, A                                          ;; 02:5264 $a7
     ld   A, $01                                        ;; 02:5265 $3e $01
-    call NZ, call_02_7102                              ;; 02:5267 $c4 $02 $71
+    call NZ, call_02_7102_SetObjectAction                              ;; 02:5267 $c4 $02 $71
 call_02_526a:
     call call_00_38c1                                  ;; 02:526a $cd $c1 $38
     ld   E, A                                          ;; 02:526d $5f
@@ -642,10 +642,10 @@ call_02_526a:
 call_02_52ab:
     call call_00_3b8d                                  ;; 02:52ab $cd $8d $3b
     jr   Z, .jr_02_52bc                                ;; 02:52ae $28 $0c
-    ld   [wD59D_BankSwitch], A                                    ;; 02:52b0 $ea $9d $d5
+    ld   [wD59D_ReturnBank], A                                    ;; 02:52b0 $ea $9d $d5
     ld   A, Bank03                                        ;; 02:52b3 $3e $03
     ld   HL, entry_03_65f9                              ;; 02:52b5 $21 $f9 $65
-    call call_00_1078_SwitchBankWrapper                                  ;; 02:52b8 $cd $78 $10
+    call call_00_1078_CallAltBankFunc                                  ;; 02:52b8 $cd $78 $10
     ret  NZ                                            ;; 02:52bb $c0
 .jr_02_52bc:
     ld   C, $01                                        ;; 02:52bc $0e $01
@@ -671,7 +671,7 @@ call_02_52ab:
     ld   C, $02                                        ;; 02:52de $0e $02
     call call_00_3a23                                  ;; 02:52e0 $cd $23 $3a
     xor  A, A                                          ;; 02:52e3 $af
-    jp   call_02_7102                                  ;; 02:52e4 $c3 $02 $71
+    jp   call_02_7102_SetObjectAction                                  ;; 02:52e4 $c3 $02 $71
     db   $c9, $cd, $f5, $34, $cb, $46, $20, $10        ;; 02:52e7 ????????
     db   $cb, $4e, $20, $30, $cb, $40, $c8, $cb        ;; 02:52ef ????????
     db   $c6, $2c, $3e, $64, $22, $2a, $77, $c9        ;; 02:52f7 ????????
@@ -722,7 +722,7 @@ call_02_538b:
     ld   C, $28                                        ;; 02:538f $0e $28
     call call_00_335a                                  ;; 02:5391 $cd $5a $33
     ld   A, $01                                        ;; 02:5394 $3e $01
-    jp   call_02_7102                                  ;; 02:5396 $c3 $02 $71
+    jp   call_02_7102_SetObjectAction                                  ;; 02:5396 $c3 $02 $71
 call_02_5399:
     call call_00_30af                                  ;; 02:5399 $cd $af $30
     call call_00_3154                                  ;; 02:539c $cd $54 $31
@@ -730,7 +730,7 @@ call_02_5399:
     ld   C, $24                                        ;; 02:53a0 $0e $24
     call call_00_112f                                  ;; 02:53a2 $cd $2f $11
     ld   A, $00                                        ;; 02:53a5 $3e $00
-    jp   call_02_7102                                  ;; 02:53a7 $c3 $02 $71
+    jp   call_02_7102_SetObjectAction                                  ;; 02:53a7 $c3 $02 $71
     db   $c3, $64, $33, $cd, $ea, $34, $28, $11        ;; 02:53aa ????????
     db   $7d, $ee, $10, $6f, $0e, $00, $cb, $46        ;; 02:53b2 ????????
     db   $28, $02, $0e, $20, $7d, $ee, $14, $6f        ;; 02:53ba ????????
@@ -915,7 +915,7 @@ call_02_56dc:
     ld   DE, .data_02_576a                             ;; 02:5750 $11 $6a $57
     add  HL, DE                                        ;; 02:5753 $19
     ld   A, [HL]                                       ;; 02:5754 $7e
-    call call_02_7102                                  ;; 02:5755 $cd $02 $71
+    call call_02_7102_SetObjectAction                                  ;; 02:5755 $cd $02 $71
     ld   C, $19                                        ;; 02:5758 $0e $19
     call call_00_112f                                  ;; 02:575a $cd $2f $11
     ret                                                ;; 02:575d $c9
@@ -995,7 +995,7 @@ call_02_576e:
     or   A, $20                                        ;; 02:57db $f6 $20
     ld   [HL], A                                       ;; 02:57dd $77
     ld   A, $00                                        ;; 02:57de $3e $00
-    jp   call_02_7102                                  ;; 02:57e0 $c3 $02 $71
+    jp   call_02_7102_SetObjectAction                                  ;; 02:57e0 $c3 $02 $71
 .data_02_57e3:
     db   $00, $01, $11, $11, $55, $55, $55, $ff        ;; 02:57e3 ........
 .data_02_57eb:
@@ -1021,7 +1021,7 @@ call_02_5843:
     ld   C, $1d                                        ;; 02:5854 $0e $1d
     call call_00_112f                                  ;; 02:5856 $cd $2f $11
     ld   A, $01                                        ;; 02:5859 $3e $01
-    jp   call_02_7102                                  ;; 02:585b $c3 $02 $71
+    jp   call_02_7102_SetObjectAction                                  ;; 02:585b $c3 $02 $71
     db   $0e, $20, $cd, $e1, $32, $cd, $f7, $36        ;; 02:585e ????????
     db   $0e, $40, $cd, $59, $38, $d8, $3e, $00        ;; 02:5866 ????????
     db   $c3, $02, $71, $cd, $af, $30, $26, $d2        ;; 02:586e ????????
@@ -1047,7 +1047,7 @@ call_02_58d3:
     ld   C, A                                          ;; 02:58df $4f
     call call_00_3802                                  ;; 02:58e0 $cd $02 $38
     ld   A, $01                                        ;; 02:58e3 $3e $01
-    jp   call_02_7102                                  ;; 02:58e5 $c3 $02 $71
+    jp   call_02_7102_SetObjectAction                                  ;; 02:58e5 $c3 $02 $71
 call_02_58e8:
     call call_00_3843                                  ;; 02:58e8 $cd $43 $38
     ret  Z                                             ;; 02:58eb $c8
@@ -1056,7 +1056,7 @@ call_02_58e8:
     ld   C, $34                                        ;; 02:58f0 $0e $34
     call call_00_335a                                  ;; 02:58f2 $cd $5a $33
     ld   A, $02                                        ;; 02:58f5 $3e $02
-    jp   call_02_7102                                  ;; 02:58f7 $c3 $02 $71
+    jp   call_02_7102_SetObjectAction                                  ;; 02:58f7 $c3 $02 $71
 call_02_58fa:
     call call_00_30af                                  ;; 02:58fa $cd $af $30
     call call_00_3154                                  ;; 02:58fd $cd $54 $31
@@ -1064,7 +1064,7 @@ call_02_58fa:
     ld   C, $24                                        ;; 02:5901 $0e $24
     call call_00_112f                                  ;; 02:5903 $cd $2f $11
     ld   A, $00                                        ;; 02:5906 $3e $00
-    jp   call_02_7102                                  ;; 02:5908 $c3 $02 $71
+    jp   call_02_7102_SetObjectAction                                  ;; 02:5908 $c3 $02 $71
     db   $cd, $af, $30, $cd, $54, $31, $d8, $0e        ;; 02:590b ????????
     db   $1a, $cd, $2f, $11, $0e, $40, $c3, $5a        ;; 02:5913 ????????
     db   $33                                           ;; 02:591b ?
@@ -1090,7 +1090,7 @@ call_02_592d:
     ld   A, $00                                        ;; 02:5942 $3e $00
 .jr_02_5944:
     push AF                                            ;; 02:5944 $f5
-    call call_02_7102                                  ;; 02:5945 $cd $02 $71
+    call call_02_7102_SetObjectAction                                  ;; 02:5945 $cd $02 $71
     ld   H, $d2                                        ;; 02:5948 $26 $d2
     ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:594a $fa $00 $d3
     or   A, $18                                        ;; 02:594d $f6 $18
@@ -1108,10 +1108,10 @@ call_02_592d:
     ret  NZ                                            ;; 02:595b $c0
     ld   [HL], $3c                                     ;; 02:595c $36 $3c
     ld   C, $03                                        ;; 02:595e $0e $03
-    ld   [wD59D_BankSwitch], A                                    ;; 02:5960 $ea $9d $d5
+    ld   [wD59D_ReturnBank], A                                    ;; 02:5960 $ea $9d $d5
     ld   A, Bank0a                                        ;; 02:5963 $3e $0a
     ld   HL, entry_0a_7b9a                              ;; 02:5965 $21 $9a $7b
-    call call_00_1078_SwitchBankWrapper                                  ;; 02:5968 $cd $78 $10
+    call call_00_1078_CallAltBankFunc                                  ;; 02:5968 $cd $78 $10
     ret                                                ;; 02:596b $c9
 call_02_596c:
     call call_00_3843                                  ;; 02:596c $cd $43 $38
@@ -1119,14 +1119,14 @@ call_02_596c:
     ld   C, $1c                                        ;; 02:5970 $0e $1c
     call call_00_112f                                  ;; 02:5972 $cd $2f $11
     ld   A, $01                                        ;; 02:5975 $3e $01
-    jp   call_02_7102                                  ;; 02:5977 $c3 $02 $71
+    jp   call_02_7102_SetObjectAction                                  ;; 02:5977 $c3 $02 $71
 call_02_597a:
     call call_00_30af                                  ;; 02:597a $cd $af $30
     call call_00_30af                                  ;; 02:597d $cd $af $30
     ld   BC, $0c                                       ;; 02:5980 $01 $0c $00
     call call_00_316e                                  ;; 02:5983 $cd $6e $31
     ld   A, $02                                        ;; 02:5986 $3e $02
-    jp   NC, call_02_7102                              ;; 02:5988 $d2 $02 $71
+    jp   NC, call_02_7102_SetObjectAction                              ;; 02:5988 $d2 $02 $71
     ret                                                ;; 02:598b $c9
 call_02_598c:
     call call_00_3843                                  ;; 02:598c $cd $43 $38
@@ -1167,10 +1167,10 @@ call_02_5a28:
     ld   [HL], $02                                     ;; 02:5a3f $36 $02
 .jr_02_5a41:
     ld   C, $08                                        ;; 02:5a41 $0e $08
-    ld   [wD59D_BankSwitch], A                                    ;; 02:5a43 $ea $9d $d5
+    ld   [wD59D_ReturnBank], A                                    ;; 02:5a43 $ea $9d $d5
     ld   A, Bank0a                                        ;; 02:5a46 $3e $0a
     ld   HL, entry_0a_7b9a                              ;; 02:5a48 $21 $9a $7b
-    call call_00_1078_SwitchBankWrapper                                  ;; 02:5a4b $cd $78 $10
+    call call_00_1078_CallAltBankFunc                                  ;; 02:5a4b $cd $78 $10
     call call_00_3985                                  ;; 02:5a4e $cd $85 $39
     ld   H, $d2                                        ;; 02:5a51 $26 $d2
     ld   A, $20                                        ;; 02:5a53 $3e $20
@@ -1209,7 +1209,7 @@ call_02_5a8c:
     ld   C, $28                                        ;; 02:5a90 $0e $28
     call call_00_335a                                  ;; 02:5a92 $cd $5a $33
     ld   A, $01                                        ;; 02:5a95 $3e $01
-    jp   call_02_7102                                  ;; 02:5a97 $c3 $02 $71
+    jp   call_02_7102_SetObjectAction                                  ;; 02:5a97 $c3 $02 $71
 call_02_5a9a:
     call call_00_30af                                  ;; 02:5a9a $cd $af $30
     call call_00_3154                                  ;; 02:5a9d $cd $54 $31
@@ -1217,7 +1217,7 @@ call_02_5a9a:
     ld   C, $24                                        ;; 02:5aa1 $0e $24
     call call_00_112f                                  ;; 02:5aa3 $cd $2f $11
     ld   A, $00                                        ;; 02:5aa6 $3e $00
-    jp   call_02_7102                                  ;; 02:5aa8 $c3 $02 $71
+    jp   call_02_7102_SetObjectAction                                  ;; 02:5aa8 $c3 $02 $71
     db   $cd, $ea, $34, $28, $07, $7d, $ee, $10        ;; 02:5aab ????????
     db   $6f, $3a, $2d, $77, $26, $d2, $fa, $00        ;; 02:5ab3 ????????
     db   $d3, $f6, $17, $6f, $cb, $46, $28, $0f        ;; 02:5abb ????????

@@ -148,7 +148,7 @@
 00:105a call_00_104a.jr_00_105a
 00:1069 call_00_104a.jr_00_1069
 00:106a call_00_104a.jr_00_106a
-00:1078 call_00_1078_SwitchBankWrapper
+00:1078 call_00_1078_CallAltBankFunc
 00:1089 call_00_1089_SwitchBank
 00:10a3 call_00_10a3_SwitchBank2
 00:10bd call_00_10bd_CallFuncInHL
@@ -968,8 +968,8 @@
 02:4be6 call_02_4b78.jr_02_4be6
 02:4bed call_02_4b78.jr_02_4bed
 02:4c00 call_02_4b78.jr_02_4c00
-02:4c0a call_02_4c0a
-02:4c19 call_02_4c19
+02:4c0a call_02_4c0a_UpdatePlayerXPosition
+02:4c19 call_02_4c19_UpdatePlayerYPosition
 02:4c28 call_02_4c28
 02:4c3f call_02_4c28.jr_02_4c3f
 02:4c4f call_02_4c4f
@@ -1097,8 +1097,8 @@
 02:703c jp_02_7030.jr_02_703c
 02:7061 jp_02_7030.data_02_7061
 02:70f1 call_02_70f1
-02:7102 entry_02_7102
-02:7102 call_02_7102
+02:7102 entry_02_7102_SetObjectAction
+02:7102 call_02_7102_SetObjectAction
 02:715a entry_02_715a
 02:715a call_02_715a
 02:7164 call_02_7164
@@ -1158,8 +1158,8 @@
 03:4bc6 call_03_4ac4_ProcessClimbCollision.data_03_4bc6
 03:4bd4 call_03_4bd4
 03:4c02 call_03_4bd4.data_03_4c02
-03:4c0a entry_03_4c0a
-03:4c3e entry_03_4c0a.jr_03_4c3e
+03:4c0a entry_03_4c0a_UpdateTilesTouchingPlayer
+03:4c3e entry_03_4c0a_UpdateTilesTouchingPlayer.jr_03_4c3e
 03:4c5a call_03_4c5a
 03:4c76 call_03_4c76
 03:4c9b call_03_4c76.data_03_4c9b_ObjectCollisionJumpTable
@@ -2429,7 +2429,7 @@
 00:d58a wD58A
 00:d59a wD59A
 00:d59c wD59C_CurrentROMBank
-00:d59d wD59D_BankSwitch
+00:d59d wD59D_ReturnBank
 00:d59e wD59E
 00:d59f wD59F_CurrentInputs
 00:d5a0 wD5A0
