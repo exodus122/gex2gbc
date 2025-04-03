@@ -11,7 +11,8 @@ INCLUDE "bank01_menus.asm"
 INCLUDE "bank02_update_objects.asm"
 
 SECTION "bank03", ROMX[$4000], BANK[$03]
-INCLUDE "bank03_collision.asm"
+INCLUDE "bank03_collision_bg.asm"
+INCLUDE "bank03_collision_object.asm"
 INCLUDE "bank03_graphics.asm"
 
 SECTION "bank04", ROMX[$4000], BANK[$04]

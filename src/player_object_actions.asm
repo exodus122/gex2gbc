@@ -86,7 +86,7 @@ call_02_41b7:
     ld   HL, wD759                                     ;; 02:41be $21 $59 $d7
     set  6, [HL]                                       ;; 02:41c1 $cb $f6
     xor  A, A                                          ;; 02:41c3 $af
-    ld   [wD75D], A                                    ;; 02:41c4 $ea $5d $d7
+    ld   [wD75D_PlayerXSpeedPrev], A                                    ;; 02:41c4 $ea $5d $d7
     ld   [wD760_PlayerYVelocity], A                                    ;; 02:41c7 $ea $60 $d7
     xor  A, A                                          ;; 02:41ca $af
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:41cb $ea $5e $d7
@@ -95,26 +95,26 @@ call_02_41b7:
     jr   NC, .jr_02_41d7                               ;; 02:41d3 $30 $02
     ld   A, $32                                        ;; 02:41d5 $3e $32
 .jr_02_41d7:
-    ld   [wD75B], A                                    ;; 02:41d7 $ea $5b $d7
+    ld   [wD75B_IdleTimer], A                                    ;; 02:41d7 $ea $5b $d7
 .jr_02_41da:
     ld   A, [wD767]                                    ;; 02:41da $fa $67 $d7
     cp   A, $08                                        ;; 02:41dd $fe $08
     jr   Z, .jr_02_41ee                                ;; 02:41df $28 $0d
     cp   A, $09                                        ;; 02:41e1 $fe $09
     jr   NZ, .jr_02_41fa                               ;; 02:41e3 $20 $15
-    ld   A, [wD20D]                                    ;; 02:41e5 $fa $0d $d2
+    ld   A, [wD20D_PlayerFacingAngle]                                    ;; 02:41e5 $fa $0d $d2
     cp   A, $00                                        ;; 02:41e8 $fe $00
     jr   NZ, .jr_02_41fa                               ;; 02:41ea $20 $0e
     jr   .jr_02_41f5                                   ;; 02:41ec $18 $07
 .jr_02_41ee:
-    ld   A, [wD20D]                                    ;; 02:41ee $fa $0d $d2
+    ld   A, [wD20D_PlayerFacingAngle]                                    ;; 02:41ee $fa $0d $d2
     cp   A, $20                                        ;; 02:41f1 $fe $20
     jr   NZ, .jr_02_41fa                               ;; 02:41f3 $20 $05
 .jr_02_41f5:
     ld   A, $07                                        ;; 02:41f5 $3e $07
     jp   call_02_4ccd                                  ;; 02:41f7 $c3 $cd $4c
 .jr_02_41fa:
-    ld   HL, wD75B                                     ;; 02:41fa $21 $5b $d7
+    ld   HL, wD75B_IdleTimer                                     ;; 02:41fa $21 $5b $d7
     dec  [HL]                                          ;; 02:41fd $35
     ret  NZ                                            ;; 02:41fe $c0
     ld   A, $03                                        ;; 02:41ff $3e $03
@@ -124,7 +124,7 @@ call_02_4204:
     ld   A, [wD74E]                                    ;; 02:4204 $fa $4e $d7
     and  A, A                                          ;; 02:4207 $a7
     jr   NZ, .jr_02_4215                               ;; 02:4208 $20 $0b
-    ld   HL, wD585                                     ;; 02:420a $21 $85 $d5
+    ld   HL, wD585_CollisionFlags                                     ;; 02:420a $21 $85 $d5
     bit  6, [HL]                                       ;; 02:420d $cb $76
     jr   Z, .jr_02_4227                                ;; 02:420f $28 $16
     ld   C, $15                                        ;; 02:4211 $0e $15
@@ -277,7 +277,7 @@ call_02_42f7:
     ld   HL, wD759                                     ;; 02:4327 $21 $59 $d7
     set  6, [HL]                                       ;; 02:432a $cb $f6
     ld   C, $17                                        ;; 02:432c $0e $17
-    ld   HL, wD585                                     ;; 02:432e $21 $85 $d5
+    ld   HL, wD585_CollisionFlags                                     ;; 02:432e $21 $85 $d5
     bit  7, [HL]                                       ;; 02:4331 $cb $7e
     jr   Z, .jr_02_4349                                ;; 02:4333 $28 $14
     ld   C, $02                                        ;; 02:4335 $0e $02
@@ -464,7 +464,7 @@ call_02_44f9:
     add  HL, DE                                        ;; 02:4509 $19
     ld   A, [HL]                                       ;; 02:450a $7e
     and  A, $20                                        ;; 02:450b $e6 $20
-    ld   [wD20D], A                                    ;; 02:450d $ea $0d $d2
+    ld   [wD20D_PlayerFacingAngle], A                                    ;; 02:450d $ea $0d $d2
     ld   A, [HL]                                       ;; 02:4510 $7e
     and  A, $40                                        ;; 02:4511 $e6 $40
     ld   [wD74B], A                                    ;; 02:4513 $ea $4b $d7
@@ -478,7 +478,7 @@ call_02_44f9:
     rrca                                               ;; 02:4521 $0f
     and  A, $07                                        ;; 02:4522 $e6 $07
     add  A, C                                          ;; 02:4524 $81
-    ld   HL, wD208                                     ;; 02:4525 $21 $08 $d2
+    ld   HL, wD208_PlayerSpriteIndex                                     ;; 02:4525 $21 $08 $d2
     cp   A, [HL]                                       ;; 02:4528 $be
     jr   Z, .jr_02_4531                                ;; 02:4529 $28 $06
     ld   [HL], A                                       ;; 02:452b $77
@@ -641,7 +641,7 @@ call_02_4777:
     db   $01, $00                                      ;; 02:480d ??
 
 call_02_480f:
-    ld   HL, wD208                                     ;; 02:480f $21 $08 $d2
+    ld   HL, wD208_PlayerSpriteIndex                                     ;; 02:480f $21 $08 $d2
     cp   A, [HL]                                       ;; 02:4812 $be
     ret  Z                                             ;; 02:4813 $c8
     ld   [HL], A                                       ;; 02:4814 $77

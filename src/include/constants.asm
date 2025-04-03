@@ -299,46 +299,108 @@ DEF Object_unk_8E                           EQU $8E ; not in level object lists.
 DEF Object_MediaDimension_MovingPlatform    EQU $8F
 DEF ObjectListTerminator                    EQU $FF
 
+; Player Action Ids
+DEF PlayerAction_SpawnInLevel                EQU $00
+DEF PlayerAction_unk_01                      EQU $01
+DEF PlayerAction_Stand                       EQU $02
+DEF PlayerAction_IdleTongueFlick             EQU $03
+DEF PlayerAction_Walk                        EQU $04
+DEF PlayerAction_Run                         EQU $05
+DEF PlayerAction_unk_06                      EQU $06
+DEF PlayerAction_unk_07                      EQU $07
+DEF PlayerAction_Crouch                      EQU $08
+DEF PlayerAction_Jump                        EQU $09
+DEF PlayerAction_DoubleJump                  EQU $0A
+DEF PlayerAction_unk_0b                      EQU $0B
+DEF PlayerAction_KarateKick                  EQU $0C
+DEF PlayerAction_Tailspin                    EQU $0D
+DEF PlayerAction_ManualTongueFlick           EQU $0E
+DEF PlayerAction_Damaged                     EQU $0F
+DEF PlayerAction_Dying                       EQU $10
+DEF PlayerAction_Dead                        EQU $11
+DEF PlayerAction_EnterTV                     EQU $12
+DEF PlayerAction_unk_13                      EQU $13
+DEF PlayerAction_ExitTV                      EQU $14
+DEF PlayerAction_PushBgWall                  EQU $15
+DEF PlayerAction_PushObjectWall              EQU $16 ; such as tv button
+DEF PlayerAction_Freefall                    EQU $17
+DEF PlayerAction_unk_18                      EQU $18
+DEF PlayerAction_Collapse                    EQU $19 ; set when crushed by certain enemies (flower hammer, hard head area), and also set if fall large distance
+DEF PlayerAction_EnterDoor                   EQU $1A
+DEF PlayerAction_unk_1b                      EQU $1B
+DEF PlayerAction_unk_1c                      EQU $1C
+DEF PlayerAction_Climb                       EQU $1D ; climbing wall or background
+DEF PlayerAction_unk_1e                      EQU $1E
+DEF PlayerAction_unk_1f                      EQU $1F ; disables collision updating?
+
+; Object collision types
+DEF ObjectColType_Intangible                 EQU $00
+DEF ObjectColType_Intangible2                EQU $01
+DEF ObjectColType_Fly                        EQU $02
+DEF ObjectColType_PushWallAndFloor           EQU $03 ; wall that causes a push animation from gex. also can stand on. (tv button)
+DEF ObjectColType_Wall                       EQU $04 ; no push animation
+DEF ObjectColType_Floor                      EQU $05 ; floor, but no walls
+DEF ObjectColType_Damage                     EQU $06 ; deals damage, no walls or floor - (enemy dies in one hit)
+DEF ObjectColType_CollectibleItem            EQU $07
+DEF ObjectColType_RemoteWarp                 EQU $08 ; acts like a gold remote? teleports you and gives a remote. but it gives 2nd silver remote
+DEF ObjectColType_PushStuck                  EQU $09 ; ; stuck to pushing it. also messes up collision if walk on ramp nearby?
+DEF ObjectColType_Intangible3                EQU $0A
+DEF ObjectColType_Damage2                    EQU $0B ; deals damage, no walls or floor, INVINCIBLE?
+DEF ObjectColType_DamageAndDisappear         EQU $0C ; damages gex then disappears
+DEF ObjectColType_Damage3                    EQU $0D ; deals damage, no walls or floor, INVINCIBLE?
+DEF ObjectColType_Damage4                    EQU $0E ; deals damage, no walls or floor
+DEF ObjectColType_Intangible4                EQU $0F
+DEF ObjectColType_Damage5                    EQU $10 ; deals damage, no walls or floor
+DEF ObjectColType_Intangible5                EQU $11
+DEF ObjectColType_Intangible6                EQU $12
+DEF ObjectColType_Intangible7                EQU $13
+DEF ObjectColType_Intangible8                EQU $14
+DEF ObjectColType_Damage6                    EQU $15 ; deals damage, no walls or floor
+DEF ObjectColType_Damage7                    EQU $16 ; deals damage, no walls or floor
+DEF ObjectColType_HighJumpBoost              EQU $17 ; very high jump
+DEF ObjectColType_Damage8                    EQU $18 ; deals damage, no walls or floor
+DEF ObjectColType_StationaryFlag             EQU $80
+
 ; Text
-DEF _Space            EQU $20
-DEF _ExclamationPoint EQU $21
-DEF _Apostrophe       EQU $27
-DEF _Dash             EQU $2d
-DEF _Period           EQU $2e
-DEF _0                EQU $30
-DEF _1                EQU $31
-DEF _2                EQU $32
-DEF _3                EQU $33
-DEF _4                EQU $34
-DEF _5                EQU $35
-DEF _6                EQU $36
-DEF _7                EQU $37
-DEF _8                EQU $38
-DEF _9                EQU $39
-DEF _A                EQU $41
-DEF _B                EQU $42
-DEF _C                EQU $43
-DEF _D                EQU $44
-DEF _E                EQU $45
-DEF _F                EQU $46
-DEF _G                EQU $47
-DEF _H                EQU $48
-DEF _I                EQU $49
-DEF _J                EQU $4A
-DEF _K                EQU $4B
-DEF _L                EQU $4C
-DEF _M                EQU $4D
-DEF _N                EQU $4E
-DEF _O                EQU $4F
-DEF _P                EQU $50
-DEF _Q                EQU $51
-DEF _R                EQU $52
-DEF _S                EQU $53
-DEF _T                EQU $54
-DEF _U                EQU $55
-DEF _V                EQU $56
-DEF _W                EQU $57
-DEF _X                EQU $58
-DEF _Y                EQU $59
-DEF _Z                EQU $5A
-DEF TextTerminator    EQU $80
+DEF Text_Space            EQU $20
+DEF Text_ExclamationPoint EQU $21
+DEF Text_Apostrophe       EQU $27
+DEF Text_Dash             EQU $2d
+DEF Text_Period           EQU $2e
+DEF Text_0                EQU $30
+DEF Text_1                EQU $31
+DEF Text_2                EQU $32
+DEF Text_3                EQU $33
+DEF Text_4                EQU $34
+DEF Text_5                EQU $35
+DEF Text_6                EQU $36
+DEF Text_7                EQU $37
+DEF Text_8                EQU $38
+DEF Text_9                EQU $39
+DEF Text_A                EQU $41
+DEF Text_B                EQU $42
+DEF Text_C                EQU $43
+DEF Text_D                EQU $44
+DEF Text_E                EQU $45
+DEF Text_F                EQU $46
+DEF Text_G                EQU $47
+DEF Text_H                EQU $48
+DEF Text_I                EQU $49
+DEF Text_J                EQU $4A
+DEF Text_K                EQU $4B
+DEF Text_L                EQU $4C
+DEF Text_M                EQU $4D
+DEF Text_N                EQU $4E
+DEF Text_O                EQU $4F
+DEF Text_P                EQU $50
+DEF Text_Q                EQU $51
+DEF Text_R                EQU $52
+DEF Text_S                EQU $53
+DEF Text_T                EQU $54
+DEF Text_U                EQU $55
+DEF Text_V                EQU $56
+DEF Text_W                EQU $57
+DEF Text_X                EQU $58
+DEF Text_Y                EQU $59
+DEF Text_Z                EQU $5A
+DEF TextTerminator        EQU $80

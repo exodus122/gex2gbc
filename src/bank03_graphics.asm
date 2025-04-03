@@ -350,7 +350,7 @@ call_03_5b5b:
 
 entry_03_5ca8:
     ld   A, [wD586]                                    ;; 03:5ca8 $fa $86 $d5
-    ld   HL, wD20D                                     ;; 03:5cab $21 $0d $d2
+    ld   HL, wD20D_PlayerFacingAngle                                     ;; 03:5cab $21 $0d $d2
     bit  5, [HL]                                       ;; 03:5cae $cb $6e
     jr   Z, .jr_03_5cb4                                ;; 03:5cb0 $28 $02
     add  A, $02                                        ;; 03:5cb2 $c6 $02
@@ -364,19 +364,19 @@ entry_03_5ca8:
     call call_00_07b9                                  ;; 03:5cc0 $cd $b9 $07
     ld   A, [wD6ED_XPositionInMap]                                    ;; 03:5cc3 $fa $ed $d6
     ld   C, A                                          ;; 03:5cc6 $4f
-    ld   A, [wD20E]                                    ;; 03:5cc7 $fa $0e $d2
+    ld   A, [wD20E_PlayerXPosition]                                    ;; 03:5cc7 $fa $0e $d2
     sub  A, C                                          ;; 03:5cca $91
     add  A, $08                                        ;; 03:5ccb $c6 $08
     ld   C, A                                          ;; 03:5ccd $4f
-    ld   [wD212], A                                    ;; 03:5cce $ea $12 $d2
+    ld   [wD212_PlayerScreenXPosition], A                                    ;; 03:5cce $ea $12 $d2
     ld   A, [wD6EF_YPositionInMap]                                    ;; 03:5cd1 $fa $ef $d6
     ld   B, A                                          ;; 03:5cd4 $47
-    ld   A, [wD210]                                    ;; 03:5cd5 $fa $10 $d2
+    ld   A, [wD210_PlayerYPosition]                                    ;; 03:5cd5 $fa $10 $d2
     sub  A, B                                          ;; 03:5cd8 $90
     add  A, $10                                        ;; 03:5cd9 $c6 $10
     ld   B, A                                          ;; 03:5cdb $47
-    ld   [wD213], A                                    ;; 03:5cdc $ea $13 $d2
-    ld   A, [wD201]                                    ;; 03:5cdf $fa $01 $d2
+    ld   [wD213_PlayerScreenYPosition], A                                    ;; 03:5cdc $ea $13 $d2
+    ld   A, [wD201_PlayerObject_ActionId]                                    ;; 03:5cdf $fa $01 $d2
     and  A, $1f                                        ;; 03:5ce2 $e6 $1f
     cp   A, $11                                        ;; 03:5ce4 $fe $11
     jr   Z, .jr_03_5d11                                ;; 03:5ce6 $28 $29
@@ -427,9 +427,9 @@ entry_03_5ca8:
     ld   A, [wD742_PlayerCurrentFly]                                    ;; 03:5d2d $fa $42 $d7
     and  A, A                                          ;; 03:5d30 $a7
     ret  Z                                             ;; 03:5d31 $c8
-    ld   A, [wD212]                                    ;; 03:5d32 $fa $12 $d2
+    ld   A, [wD212_PlayerScreenXPosition]                                    ;; 03:5d32 $fa $12 $d2
     ld   [wD76C], A                                    ;; 03:5d35 $ea $6c $d7
-    ld   A, [wD213]                                    ;; 03:5d38 $fa $13 $d2
+    ld   A, [wD213_PlayerScreenYPosition]                                    ;; 03:5d38 $fa $13 $d2
     sub  A, $20                                        ;; 03:5d3b $d6 $20
     ld   [wD76D], A                                    ;; 03:5d3d $ea $6d $d7
     ld   HL, wD739                                     ;; 03:5d40 $21 $39 $d7
@@ -510,7 +510,7 @@ entry_03_5ca8:
     db   $fa, $fa, $fc, $f8, $fe, $fa, $00, $fc        ;; 03:5eb7 ????????
     
 entry_03_5ebf:
-    ld   A, [wD300]                                    ;; 03:5ebf $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 03:5ebf $fa $00 $d3
     rlca                                               ;; 03:5ec2 $07
     rlca                                               ;; 03:5ec3 $07
     rlca                                               ;; 03:5ec4 $07
@@ -521,14 +521,14 @@ entry_03_5ebf:
     add  HL, DE                                        ;; 03:5ecd $19
     ld   E, [HL]                                       ;; 03:5ece $5e
     ld   H, $d2                                        ;; 03:5ecf $26 $d2
-    ld   A, [wD300]                                    ;; 03:5ed1 $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 03:5ed1 $fa $00 $d3
     or   A, $0d                                        ;; 03:5ed4 $f6 $0d
     ld   L, A                                          ;; 03:5ed6 $6f
     ld   A, [HL]                                       ;; 03:5ed7 $7e
     or   A, E                                          ;; 03:5ed8 $b3
     ld   [wD335], A                                    ;; 03:5ed9 $ea $35 $d3
     ld   D, $d2                                        ;; 03:5edc $16 $d2
-    ld   A, [wD300]                                    ;; 03:5ede $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 03:5ede $fa $00 $d3
     or   A, $0a                                        ;; 03:5ee1 $f6 $0a
     ld   E, A                                          ;; 03:5ee3 $5f
     ld   A, [DE]                                       ;; 03:5ee4 $1a
@@ -695,7 +695,7 @@ call_03_5f32:
     jp   call_03_4c76                                    ;; 03:5fc8 $c3 $76 $4c
 .jr_03_5fcb:
     ld   D, $d2                                        ;; 03:5fcb $16 $d2
-    ld   A, [wD300]                                    ;; 03:5fcd $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 03:5fcd $fa $00 $d3
     or   A, $0d                                        ;; 03:5fd0 $f6 $0d
     ld   E, A                                          ;; 03:5fd2 $5f
     ld   A, [DE]                                       ;; 03:5fd3 $1a
@@ -763,7 +763,7 @@ call_03_5f32:
 .jp_03_602e:
     push BC                                            ;; 03:602e $c5
     ld   D, $d2                                        ;; 03:602f $16 $d2
-    ld   A, [wD300]                                    ;; 03:6031 $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 03:6031 $fa $00 $d3
     or   A, $08                                        ;; 03:6034 $f6 $08
     ld   E, A                                          ;; 03:6036 $5f
     ld   A, [DE]                                       ;; 03:6037 $1a
@@ -1089,12 +1089,12 @@ call_03_6499:
     ld   A, [wD743]                                    ;; 03:64fd $fa $43 $d7
     and  A, A                                          ;; 03:6500 $a7
     jr   Z, .jr_03_6524                                ;; 03:6501 $28 $21
-    ld   A, [wD212]                                    ;; 03:6503 $fa $12 $d2
+    ld   A, [wD212_PlayerScreenXPosition]                                    ;; 03:6503 $fa $12 $d2
     sub  A, C                                          ;; 03:6506 $91
     add  A, $05                                        ;; 03:6507 $c6 $05
     cp   A, $12                                        ;; 03:6509 $fe $12
     jr   NC, .jr_03_6524                               ;; 03:650b $30 $17
-    ld   A, [wD213]                                    ;; 03:650d $fa $13 $d2
+    ld   A, [wD213_PlayerScreenYPosition]                                    ;; 03:650d $fa $13 $d2
     sub  A, B                                          ;; 03:6510 $90
     add  A, $0a                                        ;; 03:6511 $c6 $0a
     cp   A, $24                                        ;; 03:6513 $fe $24

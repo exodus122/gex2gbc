@@ -196,7 +196,7 @@ call_02_48b7:
     jr   NZ, .jr_02_48cd                               ;; 02:48d6 $20 $f5
 .jr_02_48d8:
     ld   A, L                                          ;; 02:48d8 $7d
-    ld   [wD300], A                                    ;; 02:48d9 $ea $00 $d3
+    ld   [wD300_CurrentObjectAddr], A                                    ;; 02:48d9 $ea $00 $d3
     or   A, $00                                        ;; 02:48dc $f6 $00
     ld   L, A                                          ;; 02:48de $6f
     ld   H, $d2                                        ;; 02:48df $26 $d2
@@ -212,7 +212,7 @@ call_02_48b7:
     ld   A, L                                          ;; 02:48ee $7d
     xor  A, $03                                        ;; 02:48ef $ee $03
     ld   L, A                                          ;; 02:48f1 $6f
-    ld   DE, wD20E                                     ;; 02:48f2 $11 $0e $d2
+    ld   DE, wD20E_PlayerXPosition                                     ;; 02:48f2 $11 $0e $d2
     ld   A, [DE]                                       ;; 02:48f5 $1a
     add  A, $0f                                        ;; 02:48f6 $c6 $0f
     ld   C, A                                          ;; 02:48f8 $4f
@@ -239,7 +239,7 @@ data_02_4900:
     call call_02_7102                                  ;; 02:490f $cd $02 $71
     call call_00_34d8                                  ;; 02:4912 $cd $d8 $34
     xor  A, A                                          ;; 02:4915 $af
-    ld   [wD300], A                                    ;; 02:4916 $ea $00 $d3
+    ld   [wD300_CurrentObjectAddr], A                                    ;; 02:4916 $ea $00 $d3
     ret                                                ;; 02:4919 $c9
 
 data_02_491a:
@@ -248,7 +248,7 @@ data_02_491a:
     db   $18, $00, $00, $00, $00, $00, $00, $00        ;; 02:492a ????????
     db   $00, $18, $00, $00, $00, $00, $00             ;; 02:4932 ???????
 
-call_02_4939_UpdatePlayerMovement:
+call_02_4939_PlayerUpdate:
     ld   A, [wD61E_DemoModeEnabled]                                    ;; 02:4939 $fa $1e $d6
     and  A, A                                          ;; 02:493c $a7
     jr   Z, .jr_02_4965                                ;; 02:493d $28 $26
@@ -327,7 +327,7 @@ call_02_4939_UpdatePlayerMovement:
     call call_02_4a45                                  ;; 02:49b0 $cd $45 $4a
     ld   [wD59D_BankSwitch], A                                    ;; 02:49b3 $ea $9d $d5
     ld   A, Bank03                                        ;; 02:49b6 $3e $03
-    ld   HL, entry_03_4900_ProcessCollisionEntry                              ;; 02:49b8 $21 $00 $49
+    ld   HL, entry_03_4900_UpdateCollision                              ;; 02:49b8 $21 $00 $49
     call call_00_1078_SwitchBankWrapper                                  ;; 02:49bb $cd $78 $10
     call call_02_4b78                                  ;; 02:49be $cd $78 $4b
     ld   [wD59D_BankSwitch], A                                    ;; 02:49c1 $ea $9d $d5
@@ -346,7 +346,7 @@ call_02_4939_UpdatePlayerMovement:
     ld   A, $00                                        ;; 02:49e1 $3e $00
     ld   [wD74B], A                                    ;; 02:49e3 $ea $4b $d7
 .jr_02_49e6:
-    ld   HL, wD202                                     ;; 02:49e6 $21 $02 $d2
+    ld   HL, wD202_PlayerObject_ActionFunc                                     ;; 02:49e6 $21 $02 $d2
     ld   A, [HL+]                                      ;; 02:49e9 $2a
     ld   H, [HL]                                       ;; 02:49ea $66
     ld   L, A                                          ;; 02:49eb $6f
@@ -354,7 +354,7 @@ call_02_4939_UpdatePlayerMovement:
     call call_02_4a77                                  ;; 02:49ef $cd $77 $4a
     xor  A, A                                          ;; 02:49f2 $af
     ld   [wD758], A                                    ;; 02:49f3 $ea $58 $d7
-    ld   HL, wD20E                                     ;; 02:49f6 $21 $0e $d2
+    ld   HL, wD20E_PlayerXPosition                                     ;; 02:49f6 $21 $0e $d2
     ld   A, [HL+]                                      ;; 02:49f9 $2a
     ld   H, [HL]                                       ;; 02:49fa $66
     ld   L, A                                          ;; 02:49fb $6f
@@ -411,17 +411,17 @@ call_02_4a45:
     jr   NZ, .jr_02_4a5a                               ;; 02:4a56 $20 $02
     ld   C, $20                                        ;; 02:4a58 $0e $20
 .jr_02_4a5a:
-    ld   HL, wD20D                                     ;; 02:4a5a $21 $0d $d2
+    ld   HL, wD20D_PlayerFacingAngle                                     ;; 02:4a5a $21 $0d $d2
     ld   A, [HL]                                       ;; 02:4a5d $7e
     ld   [HL], C                                       ;; 02:4a5e $71
     cp   A, C                                          ;; 02:4a5f $b9
     jr   Z, .jr_02_4a67                                ;; 02:4a60 $28 $05
 .jr_02_4a62:
     xor  A, A                                          ;; 02:4a62 $af
-    ld   [wD75D], A                                    ;; 02:4a63 $ea $5d $d7
+    ld   [wD75D_PlayerXSpeedPrev], A                                    ;; 02:4a63 $ea $5d $d7
     ret                                                ;; 02:4a66 $c9
 .jr_02_4a67:
-    ld   A, [wD75D]                                    ;; 02:4a67 $fa $5d $d7
+    ld   A, [wD75D_PlayerXSpeedPrev]                                    ;; 02:4a67 $fa $5d $d7
     ld   HL, wD75E_PlayerXSpeed                                     ;; 02:4a6a $21 $5e $d7
     cp   A, [HL]                                       ;; 02:4a6d $be
     jr   C, .jr_02_4a72                                ;; 02:4a6e $38 $02
@@ -429,15 +429,15 @@ call_02_4a45:
     dec  A                                             ;; 02:4a71 $3d
 .jr_02_4a72:
     inc  A                                             ;; 02:4a72 $3c
-    ld   [wD75D], A                                    ;; 02:4a73 $ea $5d $d7
+    ld   [wD75D_PlayerXSpeedPrev], A                                    ;; 02:4a73 $ea $5d $d7
     ret                                                ;; 02:4a76 $c9
 
 call_02_4a77:
     ld   A, [wD746]                                    ;; 02:4a77 $fa $46 $d7
     cp   A, $ff                                        ;; 02:4a7a $fe $ff
     ret  NZ                                            ;; 02:4a7c $c0
-    ld   A, [wD75D]                                    ;; 02:4a7d $fa $5d $d7
-    ld   HL, wD20D                                     ;; 02:4a80 $21 $0d $d2
+    ld   A, [wD75D_PlayerXSpeedPrev]                                    ;; 02:4a7d $fa $5d $d7
+    ld   HL, wD20D_PlayerFacingAngle                                     ;; 02:4a80 $21 $0d $d2
     bit  5, [HL]                                       ;; 02:4a83 $cb $6e
     jr   Z, .jr_02_4a89                                ;; 02:4a85 $28 $02
     cpl                                                ;; 02:4a87 $2f
@@ -447,7 +447,7 @@ call_02_4a77:
     add  A, [HL]                                       ;; 02:4a8c $86
     ret  Z                                             ;; 02:4a8d $c8
     push AF                                            ;; 02:4a8e $f5
-    ld   A, [wD585]                                    ;; 02:4a8f $fa $85 $d5
+    ld   A, [wD585_CollisionFlags]                                    ;; 02:4a8f $fa $85 $d5
     and  A, $0f                                        ;; 02:4a92 $e6 $0f
     jr   Z, .jr_02_4a9e                                ;; 02:4a94 $28 $08
     cpl                                                ;; 02:4a96 $2f
@@ -472,7 +472,7 @@ call_02_4a77:
     and  A, A                                          ;; 02:4ab3 $a7
     ret  NZ                                            ;; 02:4ab4 $c0
 .jr_02_4ab5:
-    ld   HL, wD20E                                     ;; 02:4ab5 $21 $0e $d2
+    ld   HL, wD20E_PlayerXPosition                                     ;; 02:4ab5 $21 $0e $d2
     ld   A, [HL]                                       ;; 02:4ab8 $7e
     sub  A, C                                          ;; 02:4ab9 $91
     ld   [HL+], A                                      ;; 02:4aba $22
@@ -489,7 +489,7 @@ call_02_4a77:
     ld   A, L                                          ;; 02:4ac9 $7d
     xor  A, $04                                        ;; 02:4aca $ee $04
     ld   L, A                                          ;; 02:4acc $6f
-    ld   A, [wD212]                                    ;; 02:4acd $fa $12 $d2
+    ld   A, [wD212_PlayerScreenXPosition]                                    ;; 02:4acd $fa $12 $d2
     cp   A, [HL]                                       ;; 02:4ad0 $be
     jr   C, .jr_02_4ab5                                ;; 02:4ad1 $38 $e2
     ld   A, L                                          ;; 02:4ad3 $7d
@@ -501,14 +501,14 @@ call_02_4a77:
     ld   L, A                                          ;; 02:4adb $6f
     ld   A, [HL+]                                      ;; 02:4adc $2a
     add  A, D                                          ;; 02:4add $82
-    ld   [wD20E], A                                    ;; 02:4ade $ea $0e $d2
+    ld   [wD20E_PlayerXPosition], A                                    ;; 02:4ade $ea $0e $d2
     ld   A, [HL]                                       ;; 02:4ae1 $7e
     adc  A, $00                                        ;; 02:4ae2 $ce $00
-    ld   [wD20F], A                                    ;; 02:4ae4 $ea $0f $d2
+    ld   [wD20F_PlayerXPosition], A                                    ;; 02:4ae4 $ea $0f $d2
     ret                                                ;; 02:4ae7 $c9
 .jr_02_4ae8:
     push HL                                            ;; 02:4ae8 $e5
-    ld   HL, wD20E                                     ;; 02:4ae9 $21 $0e $d2
+    ld   HL, wD20E_PlayerXPosition                                     ;; 02:4ae9 $21 $0e $d2
     ld   A, [HL]                                       ;; 02:4aec $7e
     sub  A, C                                          ;; 02:4aed $91
     ld   [HL+], A                                      ;; 02:4aee $22
@@ -521,7 +521,7 @@ call_02_4a77:
     ld   A, L                                          ;; 02:4af6 $7d
     xor  A, $04                                        ;; 02:4af7 $ee $04
     ld   L, A                                          ;; 02:4af9 $6f
-    ld   A, [wD212]                                    ;; 02:4afa $fa $12 $d2
+    ld   A, [wD212_PlayerScreenXPosition]                                    ;; 02:4afa $fa $12 $d2
     cp   A, [HL]                                       ;; 02:4afd $be
     ret  C                                             ;; 02:4afe $d8
     ld   A, L                                          ;; 02:4aff $7d
@@ -546,7 +546,7 @@ call_02_4a77:
     and  A, A                                          ;; 02:4b19 $a7
     ret  NZ                                            ;; 02:4b1a $c0
 .jr_02_4b1b:
-    ld   HL, wD20E                                     ;; 02:4b1b $21 $0e $d2
+    ld   HL, wD20E_PlayerXPosition                                     ;; 02:4b1b $21 $0e $d2
     ld   A, [HL]                                       ;; 02:4b1e $7e
     add  A, C                                          ;; 02:4b1f $81
     ld   [HL+], A                                      ;; 02:4b20 $22
@@ -563,7 +563,7 @@ call_02_4a77:
     ld   A, L                                          ;; 02:4b2f $7d
     xor  A, $04                                        ;; 02:4b30 $ee $04
     ld   L, A                                          ;; 02:4b32 $6f
-    ld   A, [wD212]                                    ;; 02:4b33 $fa $12 $d2
+    ld   A, [wD212_PlayerScreenXPosition]                                    ;; 02:4b33 $fa $12 $d2
     cp   A, [HL]                                       ;; 02:4b36 $be
     jr   NC, .jr_02_4b1b                               ;; 02:4b37 $30 $e2
     ld   A, L                                          ;; 02:4b39 $7d
@@ -576,14 +576,14 @@ call_02_4a77:
     ld   L, A                                          ;; 02:4b42 $6f
     ld   A, [HL+]                                      ;; 02:4b43 $2a
     sub  A, D                                          ;; 02:4b44 $92
-    ld   [wD20E], A                                    ;; 02:4b45 $ea $0e $d2
+    ld   [wD20E_PlayerXPosition], A                                    ;; 02:4b45 $ea $0e $d2
     ld   A, [HL]                                       ;; 02:4b48 $7e
     sbc  A, $00                                        ;; 02:4b49 $de $00
-    ld   [wD20F], A                                    ;; 02:4b4b $ea $0f $d2
+    ld   [wD20F_PlayerXPosition], A                                    ;; 02:4b4b $ea $0f $d2
     ret                                                ;; 02:4b4e $c9
 .jr_02_4b4f:
     push HL                                            ;; 02:4b4f $e5
-    ld   HL, wD20E                                     ;; 02:4b50 $21 $0e $d2
+    ld   HL, wD20E_PlayerXPosition                                     ;; 02:4b50 $21 $0e $d2
     ld   A, [HL]                                       ;; 02:4b53 $7e
     add  A, C                                          ;; 02:4b54 $81
     ld   [HL+], A                                      ;; 02:4b55 $22
@@ -596,7 +596,7 @@ call_02_4a77:
     ld   A, L                                          ;; 02:4b5d $7d
     xor  A, $04                                        ;; 02:4b5e $ee $04
     ld   L, A                                          ;; 02:4b60 $6f
-    ld   A, [wD212]                                    ;; 02:4b61 $fa $12 $d2
+    ld   A, [wD212_PlayerScreenXPosition]                                    ;; 02:4b61 $fa $12 $d2
     cp   A, [HL]                                       ;; 02:4b64 $be
     ret  NC                                            ;; 02:4b65 $d0
     ld   A, L                                          ;; 02:4b66 $7d
@@ -654,13 +654,13 @@ call_02_4b78:
     dec  B                                             ;; 02:4bb8 $05
     jp   call_02_4c19                                  ;; 02:4bb9 $c3 $19 $4c
 .jr_02_4bbc:
-    ld   A, [wD585]                                    ;; 02:4bbc $fa $85 $d5
+    ld   A, [wD585_CollisionFlags]                                    ;; 02:4bbc $fa $85 $d5
     and  A, $80                                        ;; 02:4bbf $e6 $80
     jr   Z, .jr_02_4bd8                                ;; 02:4bc1 $28 $15
     ld   A, [wD761]                                    ;; 02:4bc3 $fa $61 $d7
     and  A, A                                          ;; 02:4bc6 $a7
     jr   Z, .jr_02_4bed                                ;; 02:4bc7 $28 $24
-    ld   HL, wD584                                     ;; 02:4bc9 $21 $84 $d5
+    ld   HL, wD584_CollisionFlagsPrev                                     ;; 02:4bc9 $21 $84 $d5
     bit  7, [HL]                                       ;; 02:4bcc $cb $7e
     jr   NZ, .jr_02_4ba4                               ;; 02:4bce $20 $d4
     ld   HL, wD760_PlayerYVelocity                                     ;; 02:4bd0 $21 $60 $d7
@@ -668,7 +668,7 @@ call_02_4b78:
     jr   NC, .jr_02_4ba4                               ;; 02:4bd4 $30 $ce
     jr   .jr_02_4b8c                                   ;; 02:4bd6 $18 $b4
 .jr_02_4bd8:
-    ld   A, [wD584]                                    ;; 02:4bd8 $fa $84 $d5
+    ld   A, [wD584_CollisionFlagsPrev]                                    ;; 02:4bd8 $fa $84 $d5
     and  A, $80                                        ;; 02:4bdb $e6 $80
     jr   NZ, .jr_02_4be6                               ;; 02:4bdd $20 $07
     ld   A, [wD763]                                    ;; 02:4bdf $fa $63 $d7
@@ -696,21 +696,21 @@ call_02_4b78:
     jp   call_02_4ccd                                  ;; 02:4c07 $c3 $cd $4c
 
 call_02_4c0a:
-    ld   A, [wD20E]                                    ;; 02:4c0a $fa $0e $d2
+    ld   A, [wD20E_PlayerXPosition]                                    ;; 02:4c0a $fa $0e $d2
     add  A, C                                          ;; 02:4c0d $81
-    ld   [wD20E], A                                    ;; 02:4c0e $ea $0e $d2
-    ld   A, [wD20F]                                    ;; 02:4c11 $fa $0f $d2
+    ld   [wD20E_PlayerXPosition], A                                    ;; 02:4c0e $ea $0e $d2
+    ld   A, [wD20F_PlayerXPosition]                                    ;; 02:4c11 $fa $0f $d2
     adc  A, B                                          ;; 02:4c14 $88
-    ld   [wD20F], A                                    ;; 02:4c15 $ea $0f $d2
+    ld   [wD20F_PlayerXPosition], A                                    ;; 02:4c15 $ea $0f $d2
     ret                                                ;; 02:4c18 $c9
 
 call_02_4c19:
-    ld   A, [wD210]                                    ;; 02:4c19 $fa $10 $d2
+    ld   A, [wD210_PlayerYPosition]                                    ;; 02:4c19 $fa $10 $d2
     add  A, C                                          ;; 02:4c1c $81
-    ld   [wD210], A                                    ;; 02:4c1d $ea $10 $d2
-    ld   A, [wD211]                                    ;; 02:4c20 $fa $11 $d2
+    ld   [wD210_PlayerYPosition], A                                    ;; 02:4c1d $ea $10 $d2
+    ld   A, [wD211_PlayerYPosition]                                    ;; 02:4c20 $fa $11 $d2
     adc  A, B                                          ;; 02:4c23 $88
-    ld   [wD211], A                                    ;; 02:4c24 $ea $11 $d2
+    ld   [wD211_PlayerYPosition], A                                    ;; 02:4c24 $ea $11 $d2
     ret                                                ;; 02:4c27 $c9
 
 call_02_4c28:
@@ -734,7 +734,7 @@ call_02_4c28:
     ret                                                ;; 02:4c4e $c9
 
 call_02_4c4f:
-    ld   A, [wD201]                                    ;; 02:4c4f $fa $01 $d2
+    ld   A, [wD201_PlayerObject_ActionId]                                    ;; 02:4c4f $fa $01 $d2
     cp   A, $10                                        ;; 02:4c52 $fe $10
     jr   Z, .jr_02_4c6a                                ;; 02:4c54 $28 $14
     cp   A, $11                                        ;; 02:4c56 $fe $11
@@ -763,19 +763,19 @@ call_02_4c4f:
     jr   Z, .jr_02_4c9b                                ;; 02:4c8c $28 $0d
     cp   A, $2d                                        ;; 02:4c8e $fe $2d
     jr   NZ, .jr_02_4ca6                               ;; 02:4c90 $20 $14
-    ld   A, [wD20D]                                    ;; 02:4c92 $fa $0d $d2
+    ld   A, [wD20D_PlayerFacingAngle]                                    ;; 02:4c92 $fa $0d $d2
     cp   A, $00                                        ;; 02:4c95 $fe $00
     jr   NZ, .jr_02_4ca6                               ;; 02:4c97 $20 $0d
     jr   .jr_02_4ca2                                   ;; 02:4c99 $18 $07
 .jr_02_4c9b:
-    ld   A, [wD20D]                                    ;; 02:4c9b $fa $0d $d2
+    ld   A, [wD20D_PlayerFacingAngle]                                    ;; 02:4c9b $fa $0d $d2
     cp   A, $20                                        ;; 02:4c9e $fe $20
     jr   NZ, .jr_02_4ca6                               ;; 02:4ca0 $20 $04
 .jr_02_4ca2:
     ld   A, $1d                                        ;; 02:4ca2 $3e $1d
     jr   call_02_4ccd                                  ;; 02:4ca4 $18 $27
 .jr_02_4ca6:
-    ld   HL, wD201                                     ;; 02:4ca6 $21 $01 $d2
+    ld   HL, wD201_PlayerObject_ActionId                                     ;; 02:4ca6 $21 $01 $d2
     ld   L, [HL]                                       ;; 02:4ca9 $6e
     ld   H, $00                                        ;; 02:4caa $26 $00
     add  HL, HL                                        ;; 02:4cac $29
@@ -807,7 +807,7 @@ call_02_4c4f:
 
 entry_02_4ccd:
 call_02_4ccd:
-    ld   HL, wD201                                     ;; 02:4ccd $21 $01 $d2
+    ld   HL, wD201_PlayerObject_ActionId                                     ;; 02:4ccd $21 $01 $d2
     cp   A, [HL]                                       ;; 02:4cd0 $be
     ret  Z                                             ;; 02:4cd1 $c8
     ld   L, A                                          ;; 02:4cd2 $6f
@@ -819,7 +819,7 @@ call_02_4ccd:
     ld   HL, wD745                                     ;; 02:4cdd $21 $45 $d7
     bit  7, [HL]                                       ;; 02:4ce0 $cb $7e
     jr   Z, .jr_02_4ce7                                ;; 02:4ce2 $28 $03
-    ld   HL, wD201                                     ;; 02:4ce4 $21 $01 $d2
+    ld   HL, wD201_PlayerObject_ActionId                                     ;; 02:4ce4 $21 $01 $d2
 .jr_02_4ce7:
     ld   L, [HL]                                       ;; 02:4ce7 $6e
     ld   H, $00                                        ;; 02:4ce8 $26 $00
@@ -870,18 +870,18 @@ call_02_4dd8:
 
 INCLUDE "other_object_actions.asm"
     
-entry_02_6e17:
+entry_02_6e17_PlayerInit:
     xor  A, A                                          ;; 02:6e17 $af
-    ld   [wD300], A                                    ;; 02:6e18 $ea $00 $d3
+    ld   [wD300_CurrentObjectAddr], A                                    ;; 02:6e18 $ea $00 $d3
     ld   A, $00                                        ;; 02:6e1b $3e $00
-    ld   [wD200], A                                    ;; 02:6e1d $ea $00 $d2
+    ld   [wD200_PlayerObject_Id], A                                    ;; 02:6e1d $ea $00 $d2
     ld   A, [wD744]                                    ;; 02:6e20 $fa $44 $d7
     call call_02_7102                                  ;; 02:6e23 $cd $02 $71
     xor  A, A                                          ;; 02:6e26 $af
     ld   [wD621], A                                    ;; 02:6e27 $ea $21 $d6
     xor  A, A                                          ;; 02:6e2a $af
     ld   [wD74C], A                                    ;; 02:6e2b $ea $4c $d7
-    ld   [wD75D], A                                    ;; 02:6e2e $ea $5d $d7
+    ld   [wD75D_PlayerXSpeedPrev], A                                    ;; 02:6e2e $ea $5d $d7
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:6e31 $ea $5e $d7
     ld   [wD75C], A                                    ;; 02:6e34 $ea $5c $d7
     ld   [wD760_PlayerYVelocity], A                                    ;; 02:6e37 $ea $60 $d7
@@ -890,8 +890,8 @@ entry_02_6e17:
     ld   [wD763], A                                    ;; 02:6e40 $ea $63 $d7
     ld   [wD759], A                                    ;; 02:6e43 $ea $59 $d7
     ld   [wD758], A                                    ;; 02:6e46 $ea $58 $d7
-    ld   [wD585], A                                    ;; 02:6e49 $ea $85 $d5
-    ld   [wD584], A                                    ;; 02:6e4c $ea $84 $d5
+    ld   [wD585_CollisionFlags], A                                    ;; 02:6e49 $ea $85 $d5
+    ld   [wD584_CollisionFlagsPrev], A                                    ;; 02:6e4c $ea $84 $d5
     ld   A, $ff                                        ;; 02:6e4f $3e $ff
     ld   [wD745], A                                    ;; 02:6e51 $ea $45 $d7
     ld   [wD746], A                                    ;; 02:6e54 $ea $46 $d7
@@ -901,7 +901,7 @@ entry_02_6e17:
     ld   A, $00                                        ;; 02:6e5e $3e $00
     ld   [wD74B], A                                    ;; 02:6e60 $ea $4b $d7
     ld   A, $00                                        ;; 02:6e63 $3e $00
-    ld   [wD20D], A                                    ;; 02:6e65 $ea $0d $d2
+    ld   [wD20D_PlayerFacingAngle], A                                    ;; 02:6e65 $ea $0d $d2
 
 entry_02_6e68:
     xor  A, A                                          ;; 02:6e68 $af
@@ -941,14 +941,14 @@ entry_02_6e68:
 
 entry_02_6eb1:
     xor  A, A                                          ;; 02:6eb1 $af
-    ld   HL, wD000                                     ;; 02:6eb2 $21 $00 $d0
+    ld   HL, wD000_ObjectFlags                                     ;; 02:6eb2 $21 $00 $d0
 .jr_02_6eb5:
     ld   [HL], A                                       ;; 02:6eb5 $77
     inc  L                                             ;; 02:6eb6 $2c
     jr   NZ, .jr_02_6eb5                               ;; 02:6eb7 $20 $fc
     ret                                                ;; 02:6eb9 $c9
 
-entry_02_6eba:
+entry_02_6eba_UpdateObjects:
     xor  A, A                                          ;; 02:6eba $af
     ld   [wD75C], A                                    ;; 02:6ebb $ea $5c $d7
     ld   A, $20                                        ;; 02:6ebe $3e $20
@@ -959,7 +959,7 @@ entry_02_6eba:
     ld   A, [wD74D]                                    ;; 02:6ec9 $fa $4d $d7
     and  A, A                                          ;; 02:6ecc $a7
     jr   Z, .jr_02_6ef3                                ;; 02:6ecd $28 $24
-    ld   [wD300], A                                    ;; 02:6ecf $ea $00 $d3
+    ld   [wD300_CurrentObjectAddr], A                                    ;; 02:6ecf $ea $00 $d3
     or   A, $02                                        ;; 02:6ed2 $f6 $02
     ld   L, A                                          ;; 02:6ed4 $6f
     ld   H, $d2                                        ;; 02:6ed5 $26 $d2
@@ -974,15 +974,15 @@ entry_02_6eba:
     ld   L, A                                          ;; 02:6ee6 $6f
     ld   A, [HL+]                                      ;; 02:6ee7 $2a
     sub  A, $10                                        ;; 02:6ee8 $d6 $10
-    ld   [wD210], A                                    ;; 02:6eea $ea $10 $d2
+    ld   [wD210_PlayerYPosition], A                                    ;; 02:6eea $ea $10 $d2
     ld   A, [HL]                                       ;; 02:6eed $7e
     sbc  A, $00                                        ;; 02:6eee $de $00
-    ld   [wD211], A                                    ;; 02:6ef0 $ea $11 $d2
+    ld   [wD211_PlayerYPosition], A                                    ;; 02:6ef0 $ea $11 $d2
 .jr_02_6ef3:
     ld   A, [wD74F]                                    ;; 02:6ef3 $fa $4f $d7
     and  A, A                                          ;; 02:6ef6 $a7
     jr   Z, .jr_02_6f07                                ;; 02:6ef7 $28 $0e
-    ld   [wD300], A                                    ;; 02:6ef9 $ea $00 $d3
+    ld   [wD300_CurrentObjectAddr], A                                    ;; 02:6ef9 $ea $00 $d3
     or   A, $02                                        ;; 02:6efc $f6 $02
     ld   L, A                                          ;; 02:6efe $6f
     ld   H, $d2                                        ;; 02:6eff $26 $d2
@@ -992,19 +992,19 @@ entry_02_6eba:
     call call_00_10bd_CallFuncInHL                                  ;; 02:6f04 $cd $bd $10
 .jr_02_6f07:
     ld   A, $00                                        ;; 02:6f07 $3e $00
-    ld   [wD300], A                                    ;; 02:6f09 $ea $00 $d3
-    call call_02_4939_UpdatePlayerMovement                                  ;; 02:6f0c $cd $39 $49
+    ld   [wD300_CurrentObjectAddr], A                                    ;; 02:6f09 $ea $00 $d3
+    call call_02_4939_PlayerUpdate                                  ;; 02:6f0c $cd $39 $49
 .jr_02_6f0f:
     ld   A, $20                                        ;; 02:6f0f $3e $20
 .jr_02_6f11:
-    ld   [wD300], A                                    ;; 02:6f11 $ea $00 $d3
+    ld   [wD300_CurrentObjectAddr], A                                    ;; 02:6f11 $ea $00 $d3
     or   A, $00                                        ;; 02:6f14 $f6 $00
     ld   L, A                                          ;; 02:6f16 $6f
     ld   H, $d2                                        ;; 02:6f17 $26 $d2
     ld   A, [HL]                                       ;; 02:6f19 $7e
     cp   A, $ff                                        ;; 02:6f1a $fe $ff
     jr   Z, .jr_02_6f5c                                ;; 02:6f1c $28 $3e
-    ld   A, [wD300]                                    ;; 02:6f1e $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:6f1e $fa $00 $d3
     ld   HL, wD74D                                     ;; 02:6f21 $21 $4d $d7
     cp   A, [HL]                                       ;; 02:6f24 $be
     jr   Z, .jr_02_6f38                                ;; 02:6f25 $28 $11
@@ -1020,7 +1020,7 @@ entry_02_6eba:
     call call_00_10bd_CallFuncInHL                                  ;; 02:6f35 $cd $bd $10
 .jr_02_6f38:
     ld   H, $d2                                        ;; 02:6f38 $26 $d2
-    ld   A, [wD300]                                    ;; 02:6f3a $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:6f3a $fa $00 $d3
     or   A, $00                                        ;; 02:6f3d $f6 $00
     ld   L, A                                          ;; 02:6f3f $6f
     ld   A, [HL]                                       ;; 02:6f40 $7e
@@ -1038,7 +1038,7 @@ entry_02_6eba:
     ld   HL, entry_03_5ebf                              ;; 02:6f56 $21 $bf $5e
     call call_00_1078_SwitchBankWrapper                                  ;; 02:6f59 $cd $78 $10
 .jr_02_6f5c:
-    ld   A, [wD300]                                    ;; 02:6f5c $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:6f5c $fa $00 $d3
     add  A, $20                                        ;; 02:6f5f $c6 $20
     jr   NZ, .jr_02_6f11                               ;; 02:6f61 $20 $ae
     call call_00_1138                                  ;; 02:6f63 $cd $38 $11
@@ -1060,7 +1060,7 @@ entry_02_6f80:
     and  A, A                                          ;; 02:6f88 $a7
     jr   Z, .jr_02_6fa0                                ;; 02:6f89 $28 $15
     ld   A, $00                                        ;; 02:6f8b $3e $00
-    ld   [wD300], A                                    ;; 02:6f8d $ea $00 $d3
+    ld   [wD300_CurrentObjectAddr], A                                    ;; 02:6f8d $ea $00 $d3
     ld   [wD59D_BankSwitch], A                                    ;; 02:6f90 $ea $9d $d5
     ld   A, Bank03                                        ;; 02:6f93 $3e $03
     ld   HL, entry_03_5ca8                              ;; 02:6f95 $21 $a8 $5c
@@ -1070,7 +1070,7 @@ entry_02_6f80:
 .jr_02_6fa0:
     ld   A, $20                                        ;; 02:6fa0 $3e $20
 .jr_02_6fa2:
-    ld   [wD300], A                                    ;; 02:6fa2 $ea $00 $d3
+    ld   [wD300_CurrentObjectAddr], A                                    ;; 02:6fa2 $ea $00 $d3
     or   A, $00                                        ;; 02:6fa5 $f6 $00
     ld   L, A                                          ;; 02:6fa7 $6f
     ld   H, $d2                                        ;; 02:6fa8 $26 $d2
@@ -1090,7 +1090,7 @@ entry_02_6f80:
     ld   HL, entry_03_5ebf                              ;; 02:6fc1 $21 $bf $5e
     call call_00_1078_SwitchBankWrapper                                  ;; 02:6fc4 $cd $78 $10
 .jr_02_6fc7:
-    ld   A, [wD300]                                    ;; 02:6fc7 $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:6fc7 $fa $00 $d3
     add  A, $20                                        ;; 02:6fca $c6 $20
     jr   NZ, .jr_02_6fa2                               ;; 02:6fcc $20 $d4
     ld   [wD59D_BankSwitch], A                                    ;; 02:6fce $ea $9d $d5
@@ -1101,7 +1101,7 @@ entry_02_6f80:
 
 call_02_6fda:
     ld   H, $d2                                        ;; 02:6fda $26 $d2
-    ld   A, [wD300]                                    ;; 02:6fdc $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:6fdc $fa $00 $d3
     ld   C, A                                          ;; 02:6fdf $4f
     or   A, $0a                                        ;; 02:6fe0 $f6 $0a
     ld   L, A                                          ;; 02:6fe2 $6f
@@ -1168,7 +1168,7 @@ call_02_6fda:
     ld   [HL], B                                       ;; 02:702f $70
 
 jp_02_7030:
-    ld   A, [wD300]                                    ;; 02:7030 $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:7030 $fa $00 $d3
     and  A, A                                          ;; 02:7033 $a7
     jr   NZ, .jr_02_703c                               ;; 02:7034 $20 $06
     ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 02:7036 $21 $0f $d6
@@ -1218,7 +1218,7 @@ jp_02_7030:
     db   $00, $00, $00, $00, $00, $1b, $00, $00        ;; 02:70e9 ????????
 
 call_02_70f1:
-    ld   A, [wD300]                                    ;; 02:70f1 $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:70f1 $fa $00 $d3
     or   A, $09                                        ;; 02:70f4 $f6 $09
     ld   L, A                                          ;; 02:70f6 $6f
     ld   H, $d2                                        ;; 02:70f7 $26 $d2
@@ -1235,7 +1235,7 @@ entry_02_7102:
 ; sets action id, action pointer, data_0c, unknown_pointer_04_05, and more?
     and  A, $1f                                        ;; 02:7102 $e6 $1f
     ld   C, A                                          ;; 02:7104 $4f
-    ld   A, [wD300]                                    ;; 02:7105 $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:7105 $fa $00 $d3
     or   A, $01                                        ;; 02:7108 $f6 $01
     ld   L, A                                          ;; 02:710a $6f
     ld   H, $d2                                        ;; 02:710b $26 $d2
@@ -1254,7 +1254,7 @@ entry_02_7102:
     add  HL, HL                                        ;; 02:711d $29
     add  HL, HL                                        ;; 02:711e $29
     add  HL, DE                                        ;; 02:711f $19
-    ld   A, [wD300]                                    ;; 02:7120 $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:7120 $fa $00 $d3
     or   A, $02                                        ;; 02:7123 $f6 $02
     ld   E, A                                          ;; 02:7125 $5f
     ld   D, $d2                                        ;; 02:7126 $16 $d2
@@ -1267,7 +1267,7 @@ entry_02_7102:
     ld   A, [HL+]                                      ;; 02:712e $2a
     ld   H, [HL]                                       ;; 02:712f $66
     ld   L, A                                          ;; 02:7130 $6f
-    ld   A, [wD300]                                    ;; 02:7131 $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:7131 $fa $00 $d3
     or   A, $09                                        ;; 02:7134 $f6 $09
     ld   C, A                                          ;; 02:7136 $4f
     ld   B, $d2                                        ;; 02:7137 $06 $d2
@@ -1383,11 +1383,11 @@ call_02_7196:
     ret                                                ;; 02:71c7 $c9
     
 entry_02_71c8:
-    ld   A, [wD300]                                    ;; 02:71c8 $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:71c8 $fa $00 $d3
     push AF                                            ;; 02:71cb $f5
     ld   A, $20                                        ;; 02:71cc $3e $20
 .jr_02_71ce:
-    ld   [wD300], A                                    ;; 02:71ce $ea $00 $d3
+    ld   [wD300_CurrentObjectAddr], A                                    ;; 02:71ce $ea $00 $d3
     ld   L, A                                          ;; 02:71d1 $6f
     ld   H, $d2                                        ;; 02:71d2 $26 $d2
     ld   A, [HL]                                       ;; 02:71d4 $7e
@@ -1412,7 +1412,7 @@ entry_02_71c8:
     ld   HL, entry_0b_5f57                              ;; 02:71f4 $21 $57 $5f
     call call_00_1078_SwitchBankWrapper                                  ;; 02:71f7 $cd $78 $10
 .jr_02_71fa:
-    ld   A, [wD300]                                    ;; 02:71fa $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:71fa $fa $00 $d3
     add  A, $20                                        ;; 02:71fd $c6 $20
     jr   NZ, .jr_02_71ce                               ;; 02:71ff $20 $cd
     ld   [wD59D_BankSwitch], A                                    ;; 02:7201 $ea $9d $d5
@@ -1420,7 +1420,7 @@ entry_02_71c8:
     ld   HL, entry_03_5f1b                              ;; 02:7206 $21 $1b $5f
     call call_00_1078_SwitchBankWrapper                                  ;; 02:7209 $cd $78 $10
     pop  AF                                            ;; 02:720c $f1
-    ld   [wD300], A                                    ;; 02:720d $ea $00 $d3
+    ld   [wD300_CurrentObjectAddr], A                                    ;; 02:720d $ea $00 $d3
     ret                                                ;; 02:7210 $c9
 
 call_02_7211:

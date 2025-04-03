@@ -403,7 +403,7 @@ entry_01_42bd_EnterTV:
     ld   HL, wD624_CurrentLevelId                                     ;; 01:42f8 $21 $24 $d6
     ld   L, [HL]                                       ;; 01:42fb $6e
     ld   H, $00                                        ;; 01:42fc $26 $00
-    ld   DE, wD629_RemoteProgressBitfields                                     ;; 01:42fe $11 $29 $d6
+    ld   DE, wD629_RemoteProgressFlags                                     ;; 01:42fe $11 $29 $d6
     add  HL, DE                                        ;; 01:4301 $19
     ld   A, [wD64C]                                    ;; 01:4302 $fa $4c $d6
     or   A, C                                          ;; 01:4305 $b1
@@ -463,7 +463,7 @@ call_01_4349_LoadEnteringMenu:
     ld   HL, wD624_CurrentLevelId                                     ;; 01:436c $21 $24 $d6
     ld   L, [HL]                                       ;; 01:436f $6e
     ld   H, $00                                        ;; 01:4370 $26 $00
-    ld   DE, wD629_RemoteProgressBitfields                                     ;; 01:4372 $11 $29 $d6
+    ld   DE, wD629_RemoteProgressFlags                                     ;; 01:4372 $11 $29 $d6
     add  HL, DE                                        ;; 01:4375 $19
     ld   E, [HL]                                       ;; 01:4376 $5e
     ld   D, A                                          ;; 01:4377 $57
@@ -1084,7 +1084,7 @@ call_01_47f6:
     db   $48, $d6, $fe, $02, $fa, $49, $d6, $d0        ;; 01:4848 ????????
     db   $af, $c9                                      ;; 01:4850 ??
 .jr_01_4852:
-    ld   HL, wD629_RemoteProgressBitfields                                     ;; 01:4852 $21 $29 $d6
+    ld   HL, wD629_RemoteProgressFlags                                     ;; 01:4852 $21 $29 $d6
     ld   B, $1e                                        ;; 01:4855 $06 $1e
     ld   E, $00                                        ;; 01:4857 $1e $00
 .jr_01_4859:
@@ -1127,7 +1127,7 @@ call_01_4879:
     ld   [wD624_CurrentLevelId], A                                    ;; 01:48a0 $ea $24 $d6
     ld   L, A                                          ;; 01:48a3 $6f
     ld   H, $00                                        ;; 01:48a4 $26 $00
-    ld   DE, wD629_RemoteProgressBitfields                                     ;; 01:48a6 $11 $29 $d6
+    ld   DE, wD629_RemoteProgressFlags                                     ;; 01:48a6 $11 $29 $d6
     add  HL, DE                                        ;; 01:48a9 $19
     ld   C, [HL]                                       ;; 01:48aa $4e
     ld   HL, wD5AA                                     ;; 01:48ab $21 $aa $d5
@@ -1232,7 +1232,7 @@ call_01_4969:
     ld hl, wD624_CurrentLevelId
     ld l, [hl]
     ld h, $00
-    ld de, wD629_RemoteProgressBitfields
+    ld de, wD629_RemoteProgressFlags
     add hl, de
     ld c, [hl]
     pop af
@@ -2056,7 +2056,7 @@ call_01_4eb1:
 .jr_01_4ec1:
     ld   HL, wD624_CurrentLevelId                                     ;; 01:4ec1 $21 $24 $d6
     ld   E, [HL]                                       ;; 01:4ec4 $5e
-    ld   HL, wD629_RemoteProgressBitfields                                     ;; 01:4ec5 $21 $29 $d6
+    ld   HL, wD629_RemoteProgressFlags                                     ;; 01:4ec5 $21 $29 $d6
     add  HL, DE                                        ;; 01:4ec8 $19
     ld   A, B                                          ;; 01:4ec9 $78
     and  A, [HL]                                       ;; 01:4eca $a6
@@ -2413,7 +2413,7 @@ call_01_5271_ProcessPassword: ; handles setting save data from password
     ld   HL, wD624_CurrentLevelId                                     ;; 01:52fc $21 $24 $d6
     ld   L, [HL]                                       ;; 01:52ff $6e
     ld   H, $00                                        ;; 01:5300 $26 $00
-    ld   DE, wD629_RemoteProgressBitfields                                     ;; 01:5302 $11 $29 $d6
+    ld   DE, wD629_RemoteProgressFlags                                     ;; 01:5302 $11 $29 $d6
     add  HL, DE                                        ;; 01:5305 $19
     ld   [HL], A                                       ;; 01:5306 $77
     pop  HL                                            ;; 01:5307 $e1

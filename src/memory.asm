@@ -9,6 +9,7 @@ wC000_BgMapTileIds:
 wC400_CollectibleCoordinates:
 ; C400 to C500 stores the x position of each collectible in the current level
 ; C500 to C600 stores the y position of each collectible in the current level
+; C500 to C600 also gets set to FF when you get the collectible
     ds 512                                             ;; c400
 
 wC600_CollectibleRelated:
@@ -51,16 +52,27 @@ wCCFE:
 wCCFF:
     ds 1                                             ;; ccff
 
-ds 512 ; CD00-CF00 unused?
+wCD00_BgTileFlags:
+; updated when hit a checkpoint in a level, or a blood cooler
+; or hidden smellraiser switch, etc.
+    ds 256
+
+wCE00_BgTileFlags:
+; updated when hit a checkpoint in a level, or a blood cooler
+; or hidden smellraiser switch, etc.
+    ds 256
 
 wCF00_SpecialTilePaletteIds:
     ds 256                                             ;; cf00
 
-wD000:
+wD000_ObjectFlags:
+;; FF = killed enemy
+;; 01 = active
     ds 256                                             ;; d000
 
 wD100_TilesToLoadBuffer:
     ds 256                                             ;; d100
+
 
 ; From D200 to D300 is the loaded objects space
 ; Each object takes up 0x20 of space, and there can be up to 8 objects. 
@@ -83,24 +95,26 @@ wD100_TilesToLoadBuffer:
 ; 0x10-0x11 y position on map
 ; 0x12 x position on screen
 ; 0x13 y position on screen
-; 
-; 
+; 0x14-0x15 is ? 
+; 0x16 is index into bank 3 graphics jump table
 ; 
 ; 
 
-wD200:
+wD200_PlayerObject_Id:
     ds 1                                               ;; d200
 
-wD201:
+wD201_PlayerObject_ActionId:
     ds 1                                               ;; d201
 
-wD202:
-    ds 5                                               ;; d202
+wD202_PlayerObject_ActionFunc:
+    ds 2                                               ;; d202
+
+    ds 3
 
 wD207:
     ds 1                                               ;; d207
 
-wD208:
+wD208_PlayerSpriteIndex:
     ds 1                                               ;; d208
 
 wD209:
@@ -109,34 +123,37 @@ wD209:
 wD20A:
     ds 3                                               ;; d20a
 
-wD20D:
+wD20D_PlayerFacingAngle:
     ds 1                                               ;; d20d
 
-; wD20E and wD20F control gex's x coordinate position (can freeze wD20F to sometimes fall through floors)
-wD20E:
+; wD20E_PlayerXPosition and wD20F_PlayerXPosition_PlayerXPosition control gex's x coordinate position (can freeze wD20F_PlayerXPosition_PlayerXPosition to sometimes fall through floors)
+wD20E_PlayerXPosition:
     ds 1                                               ;; d20e
 
-wD20F:
+wD20F_PlayerXPosition:
     ds 1                                               ;; d20f
 
-; wD210 and wD211 control gex's y coordinate position (can freeze both to hover at fixed height)
+; wD210_PlayerYPosition and wD211_PlayerYPosition control gex's y coordinate position (can freeze both to hover at fixed height)
 ; can also set to 0000 to warp to top of map for example
-wD210:
+wD210_PlayerYPosition:
     ds 1                                               ;; d210
 
-wD211:
+wD211_PlayerYPosition:
     ds 1                                               ;; d211
 
-wD212:
+wD212_PlayerScreenXPosition:
     ds 1                                               ;; d212
 
-wD213:
-    ds 13                                              ;; d213
+wD213_PlayerScreenYPosition:
+    ds 1
+
+    ds 12                                              ;; d213
 
 wD220_OtherLoadedObjects:
     ds 224                                             ;; d220
 
-wD300:
+wD300_CurrentObjectAddr:
+; addr of object currently being updated (normally set to first available slot)
     ds 1                                               ;; d300
 
 wD301:
@@ -191,57 +208,58 @@ wD33B:
     ds 1                                             ;; d33b
 
 wD33C:
-	ds 33
+    ds 33
 
 wD35D:
-	ds 33
+    ds 33
 
 wD37E:
-	ds 33
+    ds 33
 
 wD39F:
-	ds 33
+    ds 33
 
 wD3C0:
-	ds 33
+    ds 33
 
 wD3E1:
-	ds 33
+    ds 33
 
 wD402:
-	ds 33
+    ds 33
 
 wD423:
-	ds 33
+    ds 33
 
 wD444:
-	ds 40
+    ds 40
 
 wD46C:
-	ds 40
+    ds 40
 
 wD494:
-	ds 40
+    ds 40
 
 wD4BC:
-	ds 40
+    ds 40
 
 wD4E4:
-	ds 40
+    ds 40
 
 wD50C:
-	ds 40
+    ds 40
 
 wD534:
-	ds 40
+    ds 40
 
 wD55C:
-	ds 40
+    ds 40
 
-wD584:
+wD584_CollisionFlagsPrev:
+; copy of the value that wD585_CollisionFlags had at the start of the frame
     ds 1                                               ;; d584
 
-wD585:
+wD585_CollisionFlags:
     ds 1                                               ;; d585
 
 wD586:
@@ -393,7 +411,7 @@ wD628_MediaDimensionRespawnPoint:
 ; also where you go if you quit current level
     ds 1                                               ;; d628
 
-wD629_RemoteProgressBitfields: 
+wD629_RemoteProgressFlags: 
     ds 30                                              ;; d629
 ; D62A : out of toon obtained remotes bitfield (1F = all)
 ; D62B : smellraiser obtained remotes bitfield (1F = all)
@@ -576,28 +594,28 @@ wD6A4:
     ds 1                                              ;; d6a4
 
 wD6A5:
-	ds 1
+    ds 1
 
 wD6A6:
-	ds 1
-	
+    ds 1
+    
 wD6A7:
-	ds 1
-	
+    ds 1
+    
 wD6A8:
-	ds 1
-	
+    ds 1
+    
 wD6A9:
-	ds 2
-	
+    ds 2
+    
 wD6AB:
-	ds 2
-	
+    ds 2
+    
 wD6AD:
-	ds 2
-	
+    ds 2
+    
 wD6AF:
-	ds 1
+    ds 1
 
 wD6B0:
     ds 1                                               ;; d6b0
@@ -981,13 +999,15 @@ wD75A_CurrentInputs:
 ; A = 01, B = 02, Select = 04, Start = 08, Right = 0x10, Left = 0x20, Up = 0x40, Down = 0x80
     ds 1                                               ;; d75a
 
-wD75B:
+wD75B_IdleTimer:
+; counter used to determine if gex has been idle long enough to do the tongue flick
     ds 1                                               ;; d75b
 
 wD75C:
     ds 1                                               ;; d75c
 
-wD75D:
+wD75D_PlayerXSpeedPrev:
+; (1 = walk, 2 = run)
     ds 1                                               ;; d75d
 
 wD75E_PlayerXSpeed:
@@ -995,7 +1015,7 @@ wD75E_PlayerXSpeed:
 ; can freeze to change how fast you run, but doesn't make you move by itself
     ds 1                                               ;; d75e
 
-wD75F:
+wD75F_PlayerYVelocityRelated:
     ds 1                                               ;; d75f
 
 wD760_PlayerYVelocity:

@@ -31,6 +31,7 @@ isrJoypad:
 SECTION "entry", ROM0[$0100]
 
 ; for list of entry functions, search: "entry_[_0-9A-Za-z]*:"
+; for list of call/entry functions, search: "(call|entry)_[_0-9A-Za-z]*:"
 
 entry:
     nop                                                ;; 00:0100 $00
@@ -208,7 +209,7 @@ call_00_0150_Init:
     ld   [wD73D_LivesRemaining], A                     ;; 00:029f $ea $3d $d7
     
     ; Set Remote Progress bitfields to 0
-    ld   HL, wD629_RemoteProgressBitfields                                     ;; 00:02a2 $21 $29 $d6
+    ld   HL, wD629_RemoteProgressFlags                                     ;; 00:02a2 $21 $29 $d6
     ld   B, $1e                                        ;; 00:02a5 $06 $1e
 .jr_00_02a7:
     ld   [HL], $00                                     ;; 00:02a7 $36 $00
@@ -287,7 +288,7 @@ call_00_0150_Init:
     add  A, $0a                                        ;; 00:0348 $c6 $0a
     ld   C, A                                          ;; 00:034a $4f
     ld   B, $01                                        ;; 00:034b $06 $01
-    call call_00_2329                                  ;; 00:034d $cd $29 $23
+    call call_00_2329_UpdateMain                                  ;; 00:034d $cd $29 $23
 .jr_00_0350:
     xor  A, A                                          ;; 00:0350 $af
     ld   [wD618_CheckpointSpawnId], A                                    ;; 00:0351 $ea $18 $d6
@@ -297,7 +298,7 @@ call_00_0150_Init:
     ld   HL, wD624_CurrentLevelId                                     ;; 00:035d $21 $24 $d6
     ld   L, [HL]                                       ;; 00:0360 $6e
     ld   H, $00                                        ;; 00:0361 $26 $00
-    ld   DE, wD629_RemoteProgressBitfields                                     ;; 00:0363 $11 $29 $d6
+    ld   DE, wD629_RemoteProgressFlags                                     ;; 00:0363 $11 $29 $d6
     add  HL, DE                                        ;; 00:0366 $19
     ld   A, [HL]                                       ;; 00:0367 $7e
     and  A, $18                                        ;; 00:0368 $e6 $18
@@ -364,7 +365,7 @@ call_00_0150_Init:
     call call_00_1264_LoadMap                                  ;; 00:0404 $cd $64 $12
     ld   [wD59D_BankSwitch], A                                    ;; 00:0407 $ea $9d $d5
     ld   A, Bank02                                        ;; 00:040a $3e $02
-    ld   HL, entry_02_6e17                                     ;; 00:040c $21 $17 $6e
+    ld   HL, entry_02_6e17_PlayerInit                                     ;; 00:040c $21 $17 $6e
     call call_00_1078_SwitchBankWrapper                                  ;; 00:040f $cd $78 $10
     call call_00_0521                                  ;; 00:0412 $cd $21 $05
     jr   .jp_00_0428                                   ;; 00:0415 $18 $11
@@ -464,7 +465,7 @@ call_00_0150_Init:
 .jr_00_04e0:
     ld   [wD59D_BankSwitch], A                                    ;; 00:04e0 $ea $9d $d5
     ld   A, Bank02                                        ;; 00:04e3 $3e $02
-    ld   HL, entry_02_6eba                                     ;; 00:04e5 $21 $ba $6e
+    ld   HL, entry_02_6eba_UpdateObjects                                     ;; 00:04e5 $21 $ba $6e
     call call_00_1078_SwitchBankWrapper                                  ;; 00:04e8 $cd $78 $10
     call call_00_1455                                  ;; 00:04eb $cd $55 $14
     call call_00_2305                                  ;; 00:04ee $cd $05 $23
@@ -745,7 +746,7 @@ call_00_06bf_GexTakesDamage:
     dec  [HL]                                          ;; 00:06cf $35
     jr   Z, call_00_0696                                 ;; 00:06d0 $28 $c4
 .jr_00_06d2:
-    ld   A, [wD201]                                    ;; 00:06d2 $fa $01 $d2
+    ld   A, [wD201_PlayerObject_ActionId]                                    ;; 00:06d2 $fa $01 $d2
     and  A, $1f                                        ;; 00:06d5 $e6 $1f
     cp   A, $1c                                        ;; 00:06d7 $fe $1c
     jp   Z, call_00_0629                                 ;; 00:06d9 $ca $29 $06
@@ -1121,13 +1122,13 @@ call_00_08fc: ; this reads special tileset information from other banks and writ
     jr   NZ, .jr_00_0954                               ;; 00:091b $20 $37
     ret                                                ;; 00:091d $c9
 .jr_00_091e:
-    ld   A, [wD208]                                    ;; 00:091e $fa $08 $d2
+    ld   A, [wD208_PlayerSpriteIndex]                                    ;; 00:091e $fa $08 $d2
     rlca                                               ;; 00:0921 $07
     rlca                                               ;; 00:0922 $07
     and  A, $03                                        ;; 00:0923 $e6 $03
     add  A, $04                                        ;; 00:0925 $c6 $04
     call call_00_1089_SwitchBank                                  ;; 00:0927 $cd $89 $10
-    ld   A, [wD208]                                    ;; 00:092a $fa $08 $d2
+    ld   A, [wD208_PlayerSpriteIndex]                                    ;; 00:092a $fa $08 $d2
     and  A, $3f                                        ;; 00:092d $e6 $3f
     add  A, $40                                        ;; 00:092f $c6 $40
     jr   .jr_00_095e                                   ;; 00:0931 $18 $2b
@@ -1176,13 +1177,13 @@ call_00_0971:
 
 call_00_098f:
     res  0, [HL]                                       ;; 00:098f $cb $86
-    ld   A, [wD208]                                    ;; 00:0991 $fa $08 $d2
+    ld   A, [wD208_PlayerSpriteIndex]                                    ;; 00:0991 $fa $08 $d2
     rlca                                               ;; 00:0994 $07
     rlca                                               ;; 00:0995 $07
     and  A, $03                                        ;; 00:0996 $e6 $03
     add  A, $04                                        ;; 00:0998 $c6 $04
     call call_00_1089_SwitchBank                                  ;; 00:099a $cd $89 $10
-    ld   A, [wD208]                                    ;; 00:099d $fa $08 $d2
+    ld   A, [wD208_PlayerSpriteIndex]                                    ;; 00:099d $fa $08 $d2
     and  A, $3f                                        ;; 00:09a0 $e6 $3f
     add  A, $40                                        ;; 00:09a2 $c6 $40
     ld   H, A                                          ;; 00:09a4 $67
@@ -2454,7 +2455,7 @@ call_00_12e4:
     ld   A, $02                                        ;; 00:1344 $3e $02
     ld   [wD784], A                                    ;; 00:1346 $ea $84 $d7
     ld   [wD785], A                                    ;; 00:1349 $ea $85 $d7
-    call call_00_1ec9                                  ;; 00:134c $cd $c9 $1e
+    call call_00_1ec9_UpdateBgTileFlags                                  ;; 00:134c $cd $c9 $1e
 .jr_00_134f:
     pop  HL                                            ;; 00:134f $e1
     ld   DE, $0c                                       ;; 00:1350 $11 $0c $00
@@ -2475,7 +2476,7 @@ call_00_12e4:
     db   $01, $59, $01, $68, $01, $69, $01, $ff        ;; 00:139e ???????.
 
 call_00_13a6:
-    ld   HL, wD20E                                     ;; 00:13a6 $21 $0e $d2
+    ld   HL, wD20E_PlayerXPosition                                     ;; 00:13a6 $21 $0e $d2
     ld   A, [HL+]                                      ;; 00:13a9 $2a
     sub  A, $50                                        ;; 00:13aa $d6 $50
     ld   E, A                                          ;; 00:13ac $5f
@@ -2511,7 +2512,7 @@ call_00_13a6:
     ld   [wD329], A                                    ;; 00:13d7 $ea $29 $d3
     add  A, $05                                        ;; 00:13da $c6 $05
     ld   [wD32A], A                                    ;; 00:13dc $ea $2a $d3
-    ld   HL, wD210                                     ;; 00:13df $21 $10 $d2
+    ld   HL, wD210_PlayerYPosition                                     ;; 00:13df $21 $10 $d2
     ld   A, [HL+]                                      ;; 00:13e2 $2a
     sub  A, $48                                        ;; 00:13e3 $d6 $48
     ld   E, A                                          ;; 00:13e5 $5f
@@ -3782,7 +3783,7 @@ call_00_1e5b:
     ld   [wD781], A                                    ;; 00:1e8f $ea $81 $d7
     ld   HL, wD77C                                     ;; 00:1e92 $21 $7c $d7
     bit  1, [HL]                                       ;; 00:1e95 $cb $4e
-    call NZ, call_00_1ec9                              ;; 00:1e97 $c4 $c9 $1e
+    call NZ, call_00_1ec9_UpdateBgTileFlags                              ;; 00:1e97 $c4 $c9 $1e
     ld   HL, wD77C                                     ;; 00:1e9a $21 $7c $d7
     bit  2, [HL]                                       ;; 00:1e9d $cb $56
     call NZ, call_00_1f05                              ;; 00:1e9f $c4 $05 $1f
@@ -3810,7 +3811,7 @@ call_00_1e5b:
     jr   NZ, .jr_00_1e6f                               ;; 00:1ec6 $20 $a7
     ret                                                ;; 00:1ec8 $c9
 
-call_00_1ec9:
+call_00_1ec9_UpdateBgTileFlags:
     ld   HL, wD782                                     ;; 00:1ec9 $21 $82 $d7
     ld   C, [HL]                                       ;; 00:1ecc $4e
     ld   HL, wD783                                     ;; 00:1ecd $21 $83 $d7
@@ -3829,7 +3830,7 @@ call_00_1ec9:
     ld   A, [wD784]                                    ;; 00:1ee2 $fa $84 $d7
 .jr_00_1ee5:
     push AF                                            ;; 00:1ee5 $f5
-    ld   [HL], B                                       ;; 00:1ee6 $70
+    ld   [HL], B                                       ;; 00:1ee6 $70 ; updated CE00 bgtile flags
     set  7, L                                          ;; 00:1ee7 $cb $fd
     ld   A, [DE]                                       ;; 00:1ee9 $1a
     ld   [HL], A                                       ;; 00:1eea $77
@@ -3839,7 +3840,7 @@ call_00_1ec9:
     ld   [HL], A                                       ;; 00:1eee $77
     inc  DE                                            ;; 00:1eef $13
     res  7, L                                          ;; 00:1ef0 $cb $bd
-    ld   [HL], C                                       ;; 00:1ef2 $71
+    ld   [HL], C                                       ;; 00:1ef2 $71 ; updated CD00 bgtile flags
     inc  H                                             ;; 00:1ef3 $24
     inc  L                                             ;; 00:1ef4 $2c
     inc  C                                             ;; 00:1ef5 $0c
@@ -3918,7 +3919,7 @@ call_00_1f46:
     ret  Z                                             ;; 00:1f54 $c8
     xor  A, A                                          ;; 00:1f55 $af
     ld   [wD76B], A                                    ;; 00:1f56 $ea $6b $d7
-    ld   HL, wD20E                                     ;; 00:1f59 $21 $0e $d2
+    ld   HL, wD20E_PlayerXPosition                                     ;; 00:1f59 $21 $0e $d2
     ld   A, [HL+]                                      ;; 00:1f5c $2a
     ld   H, [HL]                                       ;; 00:1f5d $66
     ld   L, A                                          ;; 00:1f5e $6f
@@ -3927,7 +3928,7 @@ call_00_1f46:
     add  HL, HL                                        ;; 00:1f61 $29
     ld   A, H                                          ;; 00:1f62 $7c
     ld   [wD782], A                                    ;; 00:1f63 $ea $82 $d7
-    ld   HL, wD210                                     ;; 00:1f66 $21 $10 $d2
+    ld   HL, wD210_PlayerYPosition                                     ;; 00:1f66 $21 $10 $d2
     ld   A, [HL+]                                      ;; 00:1f69 $2a
     ld   H, [HL]                                       ;; 00:1f6a $66
     ld   L, A                                          ;; 00:1f6b $6f
@@ -3977,7 +3978,7 @@ call_00_1f80:
     add  A, A                                          ;; 00:1fa7 $87
     add  A, A                                          ;; 00:1fa8 $87
     add  A, A                                          ;; 00:1fa9 $87
-    ld   HL, wD210                                     ;; 00:1faa $21 $10 $d2
+    ld   HL, wD210_PlayerYPosition                                     ;; 00:1faa $21 $10 $d2
     add  A, [HL]                                       ;; 00:1fad $86
     and  A, $e0                                        ;; 00:1fae $e6 $e0
     ld   L, A                                          ;; 00:1fb0 $6f
@@ -3991,7 +3992,7 @@ call_00_1f80:
     add  A, A                                          ;; 00:1fb9 $87
     add  A, A                                          ;; 00:1fba $87
     ld   C, A                                          ;; 00:1fbb $4f
-    ld   A, [wD20E]                                    ;; 00:1fbc $fa $0e $d2
+    ld   A, [wD20E_PlayerXPosition]                                    ;; 00:1fbc $fa $0e $d2
     add  A, C                                          ;; 00:1fbf $81
     rrca                                               ;; 00:1fc0 $0f
     rrca                                               ;; 00:1fc1 $0f
@@ -4002,7 +4003,7 @@ call_00_1f80:
     ld   A, H                                          ;; 00:1fc9 $7c
     add  A, $c0                                        ;; 00:1fca $c6 $c0
     ld   [wD77F], A                                    ;; 00:1fcc $ea $7f $d7
-    ld   HL, wD20E                                     ;; 00:1fcf $21 $0e $d2
+    ld   HL, wD20E_PlayerXPosition                                     ;; 00:1fcf $21 $0e $d2
     ld   A, [HL+]                                      ;; 00:1fd2 $2a
     ld   H, [HL]                                       ;; 00:1fd3 $66
     ld   L, A                                          ;; 00:1fd4 $6f
@@ -4012,7 +4013,7 @@ call_00_1f80:
     ld   A, H                                          ;; 00:1fd8 $7c
     add  A, E                                          ;; 00:1fd9 $83
     ld   [wD782], A                                    ;; 00:1fda $ea $82 $d7
-    ld   HL, wD210                                     ;; 00:1fdd $21 $10 $d2
+    ld   HL, wD210_PlayerYPosition                                     ;; 00:1fdd $21 $10 $d2
     ld   A, [HL+]                                      ;; 00:1fe0 $2a
     ld   H, [HL]                                       ;; 00:1fe1 $66
     ld   L, A                                          ;; 00:1fe2 $6f
@@ -4318,7 +4319,7 @@ call_00_2305:
     ret  NZ                                            ;; 00:2326 $c0
     ld   [HL], $01                                     ;; 00:2327 $36 $01
 
-call_00_2329:
+call_00_2329_UpdateMain:
     ld   A, B                                          ;; 00:2329 $78
     ld   [wD775], A                                    ;; 00:232a $ea $75 $d7
     ld   B, $00                                        ;; 00:232d $06 $00
@@ -4346,7 +4347,7 @@ call_00_2329:
     push DE                                            ;; 00:234d $d5
     call call_00_3628                                  ;; 00:234e $cd $28 $36
     pop  DE                                            ;; 00:2351 $d1
-    ld   HL, wD20E                                     ;; 00:2352 $21 $0e $d2
+    ld   HL, wD20E_PlayerXPosition                                     ;; 00:2352 $21 $0e $d2
     ld   C, [HL]                                       ;; 00:2355 $4e
     ld   A, [DE]                                       ;; 00:2356 $1a
     ld   [HL+], A                                      ;; 00:2357 $22
@@ -4416,7 +4417,7 @@ call_00_2329:
     call call_00_1078_SwitchBankWrapper                                  ;; 00:23bf $cd $78 $10
     ld   [wD59D_BankSwitch], A                                    ;; 00:23c2 $ea $9d $d5
     ld   A, Bank02                                        ;; 00:23c5 $3e $02
-    ld   HL, entry_02_6eba                                     ;; 00:23c7 $21 $ba $6e
+    ld   HL, entry_02_6eba_UpdateObjects                                     ;; 00:23c7 $21 $ba $6e
     call call_00_1078_SwitchBankWrapper                                  ;; 00:23ca $cd $78 $10
     call call_00_1455                                  ;; 00:23cd $cd $55 $14
     call call_00_08fc                                  ;; 00:23d0 $cd $fc $08
@@ -4454,7 +4455,7 @@ call_00_2329:
     call call_00_1e5b                                  ;; 00:2401 $cd $5b $1e
     ld   [wD59D_BankSwitch], A                                    ;; 00:2404 $ea $9d $d5
     ld   A, Bank02                                        ;; 00:2407 $3e $02
-    ld   HL, entry_02_6eba                                     ;; 00:2409 $21 $ba $6e
+    ld   HL, entry_02_6eba_UpdateObjects                                     ;; 00:2409 $21 $ba $6e
     call call_00_1078_SwitchBankWrapper                                  ;; 00:240c $cd $78 $10
     call call_00_08fc                                  ;; 00:240f $cd $fc $08
     ld   A, [wD77D]                                    ;; 00:2412 $fa $7d $d7
@@ -4470,7 +4471,7 @@ call_00_2329:
     call call_00_0ab4_UpdateVRAMTiles                                  ;; 00:2421 $cd $b4 $0a
     ld   [wD59D_BankSwitch], A                                    ;; 00:2424 $ea $9d $d5
     ld   A, Bank02                                        ;; 00:2427 $3e $02
-    ld   HL, entry_02_6eba                                     ;; 00:2429 $21 $ba $6e
+    ld   HL, entry_02_6eba_UpdateObjects                                     ;; 00:2429 $21 $ba $6e
     call call_00_1078_SwitchBankWrapper                                  ;; 00:242c $cd $78 $10
     call call_00_08fc                                  ;; 00:242f $cd $fc $08
     ld   A, [wD775]                                    ;; 00:2432 $fa $75 $d7
@@ -4489,7 +4490,7 @@ call_00_2329:
     ld   A, $01                                        ;; 00:2445 $3e $01
     ld   [wD743], A                                    ;; 00:2447 $ea $43 $d7
     call call_00_3675                                  ;; 00:244a $cd $75 $36
-    ld   HL, wD211                                     ;; 00:244d $21 $11 $d2
+    ld   HL, wD211_PlayerYPosition                                     ;; 00:244d $21 $11 $d2
     pop  BC                                            ;; 00:2450 $c1
     ld   [HL], B                                       ;; 00:2451 $70
     dec  HL                                            ;; 00:2452 $2b
@@ -4844,39 +4845,39 @@ call_00_2dbf:
     ld   HL, wD75A_CurrentInputs                                     ;; 00:2deb $21 $5a $d7
     bit  4, [HL]                                       ;; 00:2dee $cb $66
     jr   Z, .jr_00_2e01                                ;; 00:2df0 $28 $0f
-    ld   A, [wD20E]                                    ;; 00:2df2 $fa $0e $d2
+    ld   A, [wD20E_PlayerXPosition]                                    ;; 00:2df2 $fa $0e $d2
     add  A, C                                          ;; 00:2df5 $81
-    ld   [wD20E], A                                    ;; 00:2df6 $ea $0e $d2
-    ld   A, [wD20F]                                    ;; 00:2df9 $fa $0f $d2
+    ld   [wD20E_PlayerXPosition], A                                    ;; 00:2df6 $ea $0e $d2
+    ld   A, [wD20F_PlayerXPosition]                                    ;; 00:2df9 $fa $0f $d2
     adc  A, $00                                        ;; 00:2dfc $ce $00
-    ld   [wD20F], A                                    ;; 00:2dfe $ea $0f $d2
+    ld   [wD20F_PlayerXPosition], A                                    ;; 00:2dfe $ea $0f $d2
 .jr_00_2e01:
     bit  5, [HL]                                       ;; 00:2e01 $cb $6e
     jr   Z, .jr_00_2e14                                ;; 00:2e03 $28 $0f
-    ld   A, [wD20E]                                    ;; 00:2e05 $fa $0e $d2
+    ld   A, [wD20E_PlayerXPosition]                                    ;; 00:2e05 $fa $0e $d2
     sub  A, C                                          ;; 00:2e08 $91
-    ld   [wD20E], A                                    ;; 00:2e09 $ea $0e $d2
-    ld   A, [wD20F]                                    ;; 00:2e0c $fa $0f $d2
+    ld   [wD20E_PlayerXPosition], A                                    ;; 00:2e09 $ea $0e $d2
+    ld   A, [wD20F_PlayerXPosition]                                    ;; 00:2e0c $fa $0f $d2
     sbc  A, $00                                        ;; 00:2e0f $de $00
-    ld   [wD20F], A                                    ;; 00:2e11 $ea $0f $d2
+    ld   [wD20F_PlayerXPosition], A                                    ;; 00:2e11 $ea $0f $d2
 .jr_00_2e14:
     bit  7, [HL]                                       ;; 00:2e14 $cb $7e
     jr   Z, .jr_00_2e27                                ;; 00:2e16 $28 $0f
-    ld   A, [wD210]                                    ;; 00:2e18 $fa $10 $d2
+    ld   A, [wD210_PlayerYPosition]                                    ;; 00:2e18 $fa $10 $d2
     add  A, C                                          ;; 00:2e1b $81
-    ld   [wD210], A                                    ;; 00:2e1c $ea $10 $d2
-    ld   A, [wD211]                                    ;; 00:2e1f $fa $11 $d2
+    ld   [wD210_PlayerYPosition], A                                    ;; 00:2e1c $ea $10 $d2
+    ld   A, [wD211_PlayerYPosition]                                    ;; 00:2e1f $fa $11 $d2
     adc  A, $00                                        ;; 00:2e22 $ce $00
-    ld   [wD211], A                                    ;; 00:2e24 $ea $11 $d2
+    ld   [wD211_PlayerYPosition], A                                    ;; 00:2e24 $ea $11 $d2
 .jr_00_2e27:
     bit  6, [HL]                                       ;; 00:2e27 $cb $76
     ret  Z                                             ;; 00:2e29 $c8
-    ld   A, [wD210]                                    ;; 00:2e2a $fa $10 $d2
+    ld   A, [wD210_PlayerYPosition]                                    ;; 00:2e2a $fa $10 $d2
     sub  A, C                                          ;; 00:2e2d $91
-    ld   [wD210], A                                    ;; 00:2e2e $ea $10 $d2
-    ld   A, [wD211]                                    ;; 00:2e31 $fa $11 $d2
+    ld   [wD210_PlayerYPosition], A                                    ;; 00:2e2e $ea $10 $d2
+    ld   A, [wD211_PlayerYPosition]                                    ;; 00:2e31 $fa $11 $d2
     sbc  A, $00                                        ;; 00:2e34 $de $00
-    ld   [wD211], A                                    ;; 00:2e36 $ea $11 $d2
+    ld   [wD211_PlayerYPosition], A                                    ;; 00:2e36 $ea $11 $d2
     ret                                                ;; 00:2e39 $c9
 
 call_00_2e3a:
@@ -5062,7 +5063,7 @@ call_00_2eb0_GetLevelDataAddr:
     db   $00, $00, $00, $00
     
     db   $05, $06
-	dw   data_01_62fa                     ;; 00:2f7b ?????w??
+    dw   data_01_62fa                     ;; 00:2f7b ?????w??
     db   $32, $34, $38, $00, $00, $36, $00, $40        ;; 00:2f83 ????????
     db   $00, $00, $00, $00
     
@@ -5077,7 +5078,7 @@ call_00_2eb0_GetLevelDataAddr:
     db   $00, $00, $00, $00
     
     db   $08, $06
-	dw   data_01_63b4        ;; 00:2fab ?????w??
+    dw   data_01_63b4        ;; 00:2fab ?????w??
     db   $32, $34, $38, $00, $00, $36, $00, $40        ;; 00:2fb3 ????????
     db   $00, $00, $00, $00
     
@@ -5158,7 +5159,7 @@ call_00_2eb0_GetLevelDataAddr:
 
 call_00_30af:
     ld   H, $d2                                        ;; 00:30af $26 $d2
-    ld   A, [wD300]                                    ;; 00:30b1 $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:30b1 $fa $00 $d3
     or   A, $1e                                        ;; 00:30b4 $f6 $1e
     ld   L, A                                          ;; 00:30b6 $6f
     ld   A, [HL]                                       ;; 00:30b7 $7e
@@ -5301,7 +5302,7 @@ call_00_3137:
 call_00_3154:
     call call_00_34ba                                  ;; 00:3154 $cd $ba $34
     ld   H, $d2                                        ;; 00:3157 $26 $d2
-    ld   A, [wD300]                                    ;; 00:3159 $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:3159 $fa $00 $d3
     or   A, $10                                        ;; 00:315c $f6 $10
     ld   L, A                                          ;; 00:315e $6f
     ld   A, [HL+]                                      ;; 00:315f $2a
@@ -5327,7 +5328,7 @@ call_00_316e:
     ld   E, L                                          ;; 00:3174 $5d
     ld   D, H                                          ;; 00:3175 $54
     ld   H, $d2                                        ;; 00:3176 $26 $d2
-    ld   A, [wD300]                                    ;; 00:3178 $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:3178 $fa $00 $d3
     or   A, $10                                        ;; 00:317b $f6 $10
     ld   L, A                                          ;; 00:317d $6f
     ld   A, [HL+]                                      ;; 00:317e $2a
@@ -5347,7 +5348,7 @@ call_00_316e:
 
 call_00_318d:
     ld   H, $d2                                        ;; 00:318d $26 $d2
-    ld   A, [wD300]                                    ;; 00:318f $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:318f $fa $00 $d3
     or   A, $17                                        ;; 00:3192 $f6 $17
     ld   L, A                                          ;; 00:3194 $6f
     bit  3, [HL]                                       ;; 00:3195 $cb $5e
@@ -5361,7 +5362,7 @@ call_00_318d:
     jr   NZ, .jr_00_31de                               ;; 00:31a2 $20 $3a
     call call_00_347e                                  ;; 00:31a4 $cd $7e $34
     ld   H, $d2                                        ;; 00:31a7 $26 $d2
-    ld   A, [wD300]                                    ;; 00:31a9 $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:31a9 $fa $00 $d3
     or   A, $0e                                        ;; 00:31ac $f6 $0e
     ld   L, A                                          ;; 00:31ae $6f
     ld   A, [HL+]                                      ;; 00:31af $2a
@@ -5407,7 +5408,7 @@ call_00_318d:
 .jr_00_31de:
     call call_00_3460                                  ;; 00:31de $cd $60 $34
     ld   H, $d2                                        ;; 00:31e1 $26 $d2
-    ld   A, [wD300]                                    ;; 00:31e3 $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:31e3 $fa $00 $d3
     or   A, $0e                                        ;; 00:31e6 $f6 $0e
     ld   L, A                                          ;; 00:31e8 $6f
     ld   A, [HL+]                                      ;; 00:31e9 $2a
@@ -5436,7 +5437,7 @@ call_00_318d:
     jr   NZ, .jr_00_322a                               ;; 00:3204 $20 $24
     call call_00_34ba                                  ;; 00:3206 $cd $ba $34
     ld   H, $d2                                        ;; 00:3209 $26 $d2
-    ld   A, [wD300]                                    ;; 00:320b $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:320b $fa $00 $d3
     or   A, $10                                        ;; 00:320e $f6 $10
     ld   L, A                                          ;; 00:3210 $6f
     ld   A, [HL+]                                      ;; 00:3211 $2a
@@ -5463,7 +5464,7 @@ call_00_318d:
 .jr_00_322a:
     call call_00_349c                                  ;; 00:322a $cd $9c $34
     ld   H, $d2                                        ;; 00:322d $26 $d2
-    ld   A, [wD300]                                    ;; 00:322f $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:322f $fa $00 $d3
     or   A, $10                                        ;; 00:3232 $f6 $10
     ld   L, A                                          ;; 00:3234 $6f
     ld   A, [HL+]                                      ;; 00:3235 $2a
@@ -5510,7 +5511,7 @@ call_00_318d:
 
 call_00_32e1:
     ld   H, $d2                                        ;; 00:32e1 $26 $d2
-    ld   A, [wD300]                                    ;; 00:32e3 $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:32e3 $fa $00 $d3
     or   A, $1c                                        ;; 00:32e6 $f6 $1c
     ld   L, A                                          ;; 00:32e8 $6f
     ld   A, [HL]                                       ;; 00:32e9 $7e
@@ -5538,7 +5539,7 @@ call_00_32e1:
 
 call_00_335a:
     ld   H, $d2                                        ;; 00:335a $26 $d2
-    ld   A, [wD300]                                    ;; 00:335c $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:335c $fa $00 $d3
     or   A, $1e                                        ;; 00:335f $f6 $1e
     ld   L, A                                          ;; 00:3361 $6f
     ld   [HL], C                                       ;; 00:3362 $71
@@ -5577,7 +5578,7 @@ call_00_335a:
     db   $47, $c3, $c9, $37                            ;; 00:345c ????
 
 call_00_3460:
-    ld   A, [wD300]                                    ;; 00:3460 $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:3460 $fa $00 $d3
     rrca                                               ;; 00:3463 $0f
     rrca                                               ;; 00:3464 $0f
     rrca                                               ;; 00:3465 $0f
@@ -5600,7 +5601,7 @@ call_00_3460:
     ret                                                ;; 00:347d $c9
 
 call_00_347e:
-    ld   A, [wD300]                                    ;; 00:347e $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:347e $fa $00 $d3
     rrca                                               ;; 00:3481 $0f
     rrca                                               ;; 00:3482 $0f
     rrca                                               ;; 00:3483 $0f
@@ -5623,7 +5624,7 @@ call_00_347e:
     ret                                                ;; 00:349b $c9
 
 call_00_349c:
-    ld   A, [wD300]                                    ;; 00:349c $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:349c $fa $00 $d3
     rrca                                               ;; 00:349f $0f
     rrca                                               ;; 00:34a0 $0f
     rrca                                               ;; 00:34a1 $0f
@@ -5646,7 +5647,7 @@ call_00_349c:
     ret                                                ;; 00:34b9 $c9
 
 call_00_34ba:
-    ld   A, [wD300]                                    ;; 00:34ba $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:34ba $fa $00 $d3
     rrca                                               ;; 00:34bd $0f
     rrca                                               ;; 00:34be $0f
     rrca                                               ;; 00:34bf $0f
@@ -5669,7 +5670,7 @@ call_00_34ba:
     ret                                                ;; 00:34d7 $c9
 
 call_00_34d8:
-    ld   A, [wD300]                                    ;; 00:34d8 $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:34d8 $fa $00 $d3
     rlca                                               ;; 00:34db $07
     rlca                                               ;; 00:34dc $07
     rlca                                               ;; 00:34dd $07
@@ -5683,7 +5684,7 @@ call_00_34d8:
 
 call_00_34ea:
     ld   H, $d2                                        ;; 00:34ea $26 $d2
-    ld   A, [wD300]                                    ;; 00:34ec $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:34ec $fa $00 $d3
     or   A, $09                                        ;; 00:34ef $f6 $09
     ld   L, A                                          ;; 00:34f1 $6f
     bit  5, [HL]                                       ;; 00:34f2 $cb $6e
@@ -5691,7 +5692,7 @@ call_00_34ea:
 
 call_00_34f5:
     ld   H, $d2                                        ;; 00:34f5 $26 $d2
-    ld   A, [wD300]                                    ;; 00:34f7 $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:34f7 $fa $00 $d3
     or   A, $17                                        ;; 00:34fa $f6 $17
     ld   L, A                                          ;; 00:34fc $6f
     ld   A, [wD74D]                                    ;; 00:34fd $fa $4d $d7
@@ -5707,7 +5708,7 @@ call_00_34f5:
     ret                                                ;; 00:350b $c9
 
 call_00_350c:
-    ld   A, [wD300]                                    ;; 00:350c $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:350c $fa $00 $d3
     rrca                                               ;; 00:350f $0f
     rrca                                               ;; 00:3510 $0f
     rrca                                               ;; 00:3511 $0f
@@ -5745,7 +5746,7 @@ call_00_350c:
 
 call_00_3559:
     ld   H, $d2                                        ;; 00:3559 $26 $d2
-    ld   A, [wD300]                                    ;; 00:355b $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:355b $fa $00 $d3
     or   A, $1c                                        ;; 00:355e $f6 $1c
     ld   L, A                                          ;; 00:3560 $6f
     ld   A, [HL+]                                      ;; 00:3561 $2a
@@ -5792,7 +5793,7 @@ call_00_3559:
     db   $d8, $37, $c1, $c3, $c9, $37                  ;; 00:35cf ??????
 .jp_00_35d5:
     ld   H, $d2                                        ;; 00:35d5 $26 $d2
-    ld   A, [wD300]                                    ;; 00:35d7 $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:35d7 $fa $00 $d3
     or   A, $0e                                        ;; 00:35da $f6 $0e
     ld   L, A                                          ;; 00:35dc $6f
     ld   A, [HL]                                       ;; 00:35dd $7e
@@ -5816,10 +5817,10 @@ call_00_3559:
     cp   A, [HL]                                       ;; 00:35f6 $be
     ret  NZ                                            ;; 00:35f7 $c0
     ld   H, $d2                                        ;; 00:35f8 $26 $d2
-    ld   A, [wD300]                                    ;; 00:35fa $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:35fa $fa $00 $d3
     or   A, $12                                        ;; 00:35fd $f6 $12
     ld   L, A                                          ;; 00:35ff $6f
-    ld   A, [wD212]                                    ;; 00:3600 $fa $12 $d2
+    ld   A, [wD212_PlayerScreenXPosition]                                    ;; 00:3600 $fa $12 $d2
     cp   A, [HL]                                       ;; 00:3603 $be
     jr   C, .jr_00_3616                                ;; 00:3604 $38 $10
     ld   A, L                                          ;; 00:3606 $7d
@@ -5827,10 +5828,10 @@ call_00_3559:
     ld   L, A                                          ;; 00:3609 $6f
     ld   A, E                                          ;; 00:360a $7b
     add  A, [HL]                                       ;; 00:360b $86
-    ld   [wD20E], A                                    ;; 00:360c $ea $0e $d2
+    ld   [wD20E_PlayerXPosition], A                                    ;; 00:360c $ea $0e $d2
     ld   A, D                                          ;; 00:360f $7a
     adc  A, $00                                        ;; 00:3610 $ce $00
-    ld   [wD20F], A                                    ;; 00:3612 $ea $0f $d2
+    ld   [wD20F_PlayerXPosition], A                                    ;; 00:3612 $ea $0f $d2
     ret                                                ;; 00:3615 $c9
 .jr_00_3616:
     ld   A, L                                          ;; 00:3616 $7d
@@ -5840,10 +5841,10 @@ call_00_3559:
     inc  C                                             ;; 00:361b $0c
     ld   A, E                                          ;; 00:361c $7b
     sub  A, C                                          ;; 00:361d $91
-    ld   [wD20E], A                                    ;; 00:361e $ea $0e $d2
+    ld   [wD20E_PlayerXPosition], A                                    ;; 00:361e $ea $0e $d2
     ld   A, D                                          ;; 00:3621 $7a
     sbc  A, $00                                        ;; 00:3622 $de $00
-    ld   [wD20F], A                                    ;; 00:3624 $ea $0f $d2
+    ld   [wD20F_PlayerXPosition], A                                    ;; 00:3624 $ea $0f $d2
     ret                                                ;; 00:3627 $c9
 
 call_00_3628:
@@ -5857,11 +5858,11 @@ call_00_3628:
     ld   [wD9CA], A                                    ;; 00:363d $ea $ca $d9
     ld   A, $a0                                        ;; 00:3640 $3e $a0
     ld   [wD688], A                                    ;; 00:3642 $ea $88 $d6
-    ld   HL, wD000                                     ;; 00:3645 $21 $00 $d0
+    ld   HL, wD000_ObjectFlags                                     ;; 00:3645 $21 $00 $d0
     ld   DE, wD79F                                     ;; 00:3648 $11 $9f $d7
     ld   BC, $100                                      ;; 00:364b $01 $00 $01
     call call_00_07b0_CopyBytes                                  ;; 00:364e $cd $b0 $07
-    ld   HL, wD200                                     ;; 00:3651 $21 $00 $d2
+    ld   HL, wD200_PlayerObject_Id                                     ;; 00:3651 $21 $00 $d2
     ld   DE, wD89F                                     ;; 00:3654 $11 $9f $d8
     ld   BC, $100                                      ;; 00:3657 $01 $00 $01
     call call_00_07b0_CopyBytes                                  ;; 00:365a $cd $b0 $07
@@ -5884,11 +5885,11 @@ call_00_3675:
     ld   A, [wD9CA]                                    ;; 00:3687 $fa $ca $d9
     ld   [wD688], A                                    ;; 00:368a $ea $88 $d6
     ld   HL, wD79F                                     ;; 00:368d $21 $9f $d7
-    ld   DE, wD000                                     ;; 00:3690 $11 $00 $d0
+    ld   DE, wD000_ObjectFlags                                     ;; 00:3690 $11 $00 $d0
     ld   BC, $100                                      ;; 00:3693 $01 $00 $01
     call call_00_07b0_CopyBytes                                  ;; 00:3696 $cd $b0 $07
     ld   HL, wD89F                                     ;; 00:3699 $21 $9f $d8
-    ld   DE, wD200                                     ;; 00:369c $11 $00 $d2
+    ld   DE, wD200_PlayerObject_Id                                     ;; 00:369c $11 $00 $d2
     ld   BC, $100                                      ;; 00:369f $01 $00 $01
     call call_00_07b0_CopyBytes                                  ;; 00:36a2 $cd $b0 $07
     ld   HL, wD99F                                     ;; 00:36a5 $21 $9f $d9
@@ -5902,13 +5903,13 @@ call_00_3675:
 
 call_00_36bd:
     ld   H, $d2                                        ;; 00:36bd $26 $d2
-    ld   A, [wD300]                                    ;; 00:36bf $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:36bf $fa $00 $d3
     or   A, $0e                                        ;; 00:36c2 $f6 $0e
     ld   L, A                                          ;; 00:36c4 $6f
-    ld   A, [wD20E]                                    ;; 00:36c5 $fa $0e $d2
+    ld   A, [wD20E_PlayerXPosition]                                    ;; 00:36c5 $fa $0e $d2
     sub  A, [HL]                                       ;; 00:36c8 $96
     inc  HL                                            ;; 00:36c9 $23
-    ld   A, [wD20F]                                    ;; 00:36ca $fa $0f $d2
+    ld   A, [wD20F_PlayerXPosition]                                    ;; 00:36ca $fa $0f $d2
     sbc  A, [HL]                                       ;; 00:36cd $9e
     ld   C, $20                                        ;; 00:36ce $0e $20
     jr   C, .jr_00_36d4                                ;; 00:36d0 $38 $02
@@ -5926,7 +5927,7 @@ call_00_36bd:
 
 call_00_36f7:
     ld   H, $d2                                        ;; 00:36f7 $26 $d2
-    ld   A, [wD300]                                    ;; 00:36f9 $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:36f9 $fa $00 $d3
     or   A, $0d                                        ;; 00:36fc $f6 $0d
     ld   L, A                                          ;; 00:36fe $6f
     ld   C, [HL]                                       ;; 00:36ff $4e
@@ -5969,7 +5970,7 @@ call_00_36f7:
     add  HL, HL                                        ;; 00:372f $29
     add  HL, HL                                        ;; 00:3730 $29
     ld   D, H                                          ;; 00:3731 $54
-    ld   A, [wD300]                                    ;; 00:3732 $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:3732 $fa $00 $d3
     rrca                                               ;; 00:3735 $0f
     rrca                                               ;; 00:3736 $0f
     rrca                                               ;; 00:3737 $0f
@@ -5995,7 +5996,7 @@ call_00_36f7:
     ret                                                ;; 00:3753 $c9
 .jr_00_3754:
     ld   H, $d2                                        ;; 00:3754 $26 $d2
-    ld   A, [wD300]                                    ;; 00:3756 $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:3756 $fa $00 $d3
     or   A, $0d                                        ;; 00:3759 $f6 $0d
     ld   L, A                                          ;; 00:375b $6f
     ld   A, [HL]                                       ;; 00:375c $7e
@@ -6020,7 +6021,7 @@ call_00_36f7:
 
 call_00_37d8:
     ld   H, $d2                                        ;; 00:37d8 $26 $d2
-    ld   A, [wD300]                                    ;; 00:37da $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:37da $fa $00 $d3
     or   A, $10                                        ;; 00:37dd $f6 $10
     ld   L, A                                          ;; 00:37df $6f
     ld   A, [HL]                                       ;; 00:37e0 $7e
@@ -6032,7 +6033,7 @@ call_00_37d8:
     ret                                                ;; 00:37e6 $c9
 
 call_00_37e7:
-    ld   A, [wD300]                                    ;; 00:37e7 $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:37e7 $fa $00 $d3
     rlca                                               ;; 00:37ea $07
     rlca                                               ;; 00:37eb $07
     rlca                                               ;; 00:37ec $07
@@ -6048,7 +6049,7 @@ call_00_37e7:
 
 call_00_3802:
     ld   H, $d2                                        ;; 00:3802 $26 $d2
-    ld   A, [wD300]                                    ;; 00:3804 $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:3804 $fa $00 $d3
     or   A, $18                                        ;; 00:3807 $f6 $18
     ld   L, A                                          ;; 00:3809 $6f
     ld   [HL], C                                       ;; 00:380a $71
@@ -6058,7 +6059,7 @@ call_00_3802:
 
 call_00_3817:
     ld   H, $d2                                        ;; 00:3817 $26 $d2
-    ld   A, [wD300]                                    ;; 00:3819 $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:3819 $fa $00 $d3
     or   A, $18                                        ;; 00:381c $f6 $18
     ld   L, A                                          ;; 00:381e $6f
     ld   A, [HL]                                       ;; 00:381f $7e
@@ -6074,7 +6075,7 @@ call_00_3817:
 
 call_00_3843:
     ld   H, $d2                                        ;; 00:3843 $26 $d2
-    ld   A, [wD300]                                    ;; 00:3845 $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:3845 $fa $00 $d3
     or   A, $0a                                        ;; 00:3848 $f6 $0a
     ld   L, A                                          ;; 00:384a $6f
     bit  2, [HL]                                       ;; 00:384b $cb $56
@@ -6084,14 +6085,14 @@ call_00_3843:
 
 call_00_3859:
     ld   H, $d2                                        ;; 00:3859 $26 $d2
-    ld   A, [wD300]                                    ;; 00:385b $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:385b $fa $00 $d3
     or   A, $0e                                        ;; 00:385e $f6 $0e
     ld   L, A                                          ;; 00:3860 $6f
-    ld   A, [wD20E]                                    ;; 00:3861 $fa $0e $d2
+    ld   A, [wD20E_PlayerXPosition]                                    ;; 00:3861 $fa $0e $d2
     sub  A, [HL]                                       ;; 00:3864 $96
     ld   E, A                                          ;; 00:3865 $5f
     inc  HL                                            ;; 00:3866 $23
-    ld   A, [wD20F]                                    ;; 00:3867 $fa $0f $d2
+    ld   A, [wD20F_PlayerXPosition]                                    ;; 00:3867 $fa $0f $d2
     sbc  A, [HL]                                       ;; 00:386a $9e
     ld   D, A                                          ;; 00:386b $57
     ld   L, C                                          ;; 00:386c $69
@@ -6108,7 +6109,7 @@ call_00_3878:
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:3878 $fa $24 $d6
     and  A, A                                          ;; 00:387b $a7
     jr   Z, jr_00_3899                                 ;; 00:387c $28 $1b
-    ld   A, [wD300]                                    ;; 00:387e $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:387e $fa $00 $d3
     rlca                                               ;; 00:3881 $07
     rlca                                               ;; 00:3882 $07
     rlca                                               ;; 00:3883 $07
@@ -6129,7 +6130,7 @@ call_00_3878:
 
 jr_00_3899:
     ld   H, $d2                                        ;; 00:3899 $26 $d2
-    ld   A, [wD300]                                    ;; 00:389b $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:389b $fa $00 $d3
     or   A, $19                                        ;; 00:389e $f6 $19
     ld   L, A                                          ;; 00:38a0 $6f
     ld   A, [wD64F]                                    ;; 00:38a1 $fa $4f $d6
@@ -6157,7 +6158,7 @@ call_00_38c1:
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:38c1 $fa $24 $d6
     and  A, A                                          ;; 00:38c4 $a7
     jr   Z, jr_00_3899                                 ;; 00:38c5 $28 $d2
-    ld   A, [wD300]                                    ;; 00:38c7 $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:38c7 $fa $00 $d3
     rlca                                               ;; 00:38ca $07
     rlca                                               ;; 00:38cb $07
     rlca                                               ;; 00:38cc $07
@@ -6176,7 +6177,7 @@ call_00_38c1:
     ld   HL, wD624_CurrentLevelId                                     ;; 00:38e0 $21 $24 $d6
     ld   L, [HL]                                       ;; 00:38e3 $6e
     ld   H, $00                                        ;; 00:38e4 $26 $00
-    ld   DE, wD629_RemoteProgressBitfields                                     ;; 00:38e6 $11 $29 $d6
+    ld   DE, wD629_RemoteProgressFlags                                     ;; 00:38e6 $11 $29 $d6
     add  HL, DE                                        ;; 00:38e9 $19
     and  A, [HL]                                       ;; 00:38ea $a6
     ld   E, A                                          ;; 00:38eb $5f
@@ -6184,26 +6185,26 @@ call_00_38c1:
     db   $01, $02, $04                                 ;; 00:38ed .?.
 
 call_00_38f0:
-    ld   A, [wD300]                                    ;; 00:38f0 $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:38f0 $fa $00 $d3
     push AF                                            ;; 00:38f3 $f5
     ld   A, $20                                        ;; 00:38f4 $3e $20
 .jr_00_38f6:
-    ld   [wD300], A                                    ;; 00:38f6 $ea $00 $d3
+    ld   [wD300_CurrentObjectAddr], A                                    ;; 00:38f6 $ea $00 $d3
     or   A, $00                                        ;; 00:38f9 $f6 $00
     ld   L, A                                          ;; 00:38fb $6f
     ld   H, $d2                                        ;; 00:38fc $26 $d2
     ld   A, [HL]                                       ;; 00:38fe $7e
     cp   A, $ff                                        ;; 00:38ff $fe $ff
     call NZ, call_00_3910                              ;; 00:3901 $c4 $10 $39
-    ld   A, [wD300]                                    ;; 00:3904 $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:3904 $fa $00 $d3
     add  A, $20                                        ;; 00:3907 $c6 $20
     jr   NZ, .jr_00_38f6                               ;; 00:3909 $20 $eb
     pop  AF                                            ;; 00:390b $f1
-    ld   [wD300], A                                    ;; 00:390c $ea $00 $d3
+    ld   [wD300_CurrentObjectAddr], A                                    ;; 00:390c $ea $00 $d3
     ret                                                ;; 00:390f $c9
 
 call_00_3910:
-    ld   A, [wD300]                                    ;; 00:3910 $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:3910 $fa $00 $d3
     or   A, $00                                        ;; 00:3913 $f6 $00
     ld   L, A                                          ;; 00:3915 $6f
     ld   H, $d2                                        ;; 00:3916 $26 $d2
@@ -6227,14 +6228,14 @@ call_00_3910:
 
 call_00_3931:
     ld   H, $d2                                        ;; 00:3931 $26 $d2
-    ld   A, [wD300]                                    ;; 00:3933 $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:3933 $fa $00 $d3
     or   A, $00                                        ;; 00:3936 $f6 $00
     ld   L, A                                          ;; 00:3938 $6f
     ld   [HL], $ff                                     ;; 00:3939 $36 $ff
     ret                                                ;; 00:393b $c9
 
 call_00_393c:
-    ld   A, [wD300]                                    ;; 00:393c $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:393c $fa $00 $d3
     rlca                                               ;; 00:393f $07
     rlca                                               ;; 00:3940 $07
     rlca                                               ;; 00:3941 $07
@@ -6259,7 +6260,7 @@ call_00_3985:
     ld   C, $01                                        ;; 00:3985 $0e $01
     call call_00_37e7                                  ;; 00:3987 $cd $e7 $37
     ld   H, $d2                                        ;; 00:398a $26 $d2
-    ld   A, [wD300]                                    ;; 00:398c $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:398c $fa $00 $d3
     or   A, $16                                        ;; 00:398f $f6 $16
     ld   L, A                                          ;; 00:3991 $6f
     ld   [HL], $00                                     ;; 00:3992 $36 $00
@@ -6293,7 +6294,7 @@ data_00_39c0:
     dw   wD402, wD534, wD423, wD55C
 
 call_00_39e0:
-    ld   A, [wD300]                                    ;; 00:39e0 $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:39e0 $fa $00 $d3
     rlca                                               ;; 00:39e3 $07
     rlca                                               ;; 00:39e4 $07
     rlca                                               ;; 00:39e5 $07
@@ -6310,7 +6311,7 @@ call_00_39e0:
     ret                                                ;; 00:39f4 $c9
 
 call_00_39f5:
-    ld   A, [wD300]                                    ;; 00:39f5 $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:39f5 $fa $00 $d3
     rlca                                               ;; 00:39f8 $07
     rlca                                               ;; 00:39f9 $07
     rlca                                               ;; 00:39fa $07
@@ -6327,7 +6328,7 @@ call_00_39f5:
     ret                                                ;; 00:3a09 $c9
 
 call_00_3a0a:
-    ld   A, [wD300]                                    ;; 00:3a0a $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:3a0a $fa $00 $d3
     rlca                                               ;; 00:3a0d $07
     rlca                                               ;; 00:3a0e $07
     rlca                                               ;; 00:3a0f $07
@@ -6356,7 +6357,7 @@ call_00_3a23:
     ld   E, [HL]                                       ;; 00:3a2b $5e
     inc  HL                                            ;; 00:3a2c $23
     ld   D, [HL]                                       ;; 00:3a2d $56
-    ld   A, [wD300]                                    ;; 00:3a2e $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:3a2e $fa $00 $d3
     rlca                                               ;; 00:3a31 $07
     rlca                                               ;; 00:3a32 $07
     rlca                                               ;; 00:3a33 $07
@@ -6396,7 +6397,7 @@ call_00_3a23:
     dec  B                                             ;; 00:3a59 $05
     jr   NZ, .jr_00_3a4a                               ;; 00:3a5a $20 $ee
     ld   H, $d2                                        ;; 00:3a5c $26 $d2
-    ld   A, [wD300]                                    ;; 00:3a5e $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:3a5e $fa $00 $d3
     or   A, $0a                                        ;; 00:3a61 $f6 $0a
     ld   L, A                                          ;; 00:3a63 $6f
     set  0, [HL]                                       ;; 00:3a64 $cb $c6
@@ -6444,7 +6445,7 @@ call_00_3a23:
     db   $0c, $06, $ff, $81, $18, $0c, $03, $ff        ;; 00:3b85 ????????
 
 call_00_3b8d:
-    ld   A, [wD300]                                    ;; 00:3b8d $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:3b8d $fa $00 $d3
     rlca                                               ;; 00:3b90 $07
     rlca                                               ;; 00:3b91 $07
     rlca                                               ;; 00:3b92 $07
@@ -6524,7 +6525,7 @@ call_00_3bf4:
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:3bf4 $fa $24 $d6
     and  A, A                                          ;; 00:3bf7 $a7
     ret  NZ                                            ;; 00:3bf8 $c0
-    ld   A, [wD300]                                    ;; 00:3bf9 $fa $00 $d3
+    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:3bf9 $fa $00 $d3
     rlca                                               ;; 00:3bfc $07
     rlca                                               ;; 00:3bfd $07
     rlca                                               ;; 00:3bfe $07
@@ -6564,7 +6565,7 @@ call_00_3c3f:
 
 call_00_3c54:
     push HL                                            ;; 00:3c54 $e5
-    ld   HL, wD629_RemoteProgressBitfields                                     ;; 00:3c55 $21 $29 $d6
+    ld   HL, wD629_RemoteProgressFlags                                     ;; 00:3c55 $21 $29 $d6
     ld   B, $1e                                        ;; 00:3c58 $06 $1e
     ld   E, $00                                        ;; 00:3c5a $1e $00
 .jr_00_3c5c:
