@@ -53,7 +53,8 @@ image_filler_008_3.bin:
 
 SECTION "bank09", ROMX[$4000], BANK[$09]
 image_009_4000.bin:
-    INCBIN "./.gfx/image_009_4000.bin"
+    INCBIN "./.gfx/special_tilesets/image_009_4000.bin"
+    INCBIN "./gfx/special_tilesets/image_009_4000_data.bin"
 
 INCLUDE "bank0A_load_objects.asm"
 

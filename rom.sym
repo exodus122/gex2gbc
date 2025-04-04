@@ -62,7 +62,7 @@
 00:075b call_00_075b
 00:0771 data_00_0771
 00:07a1 call_00_07a1
-00:07b0 call_00_07b0_CopyBytes
+00:07b0 call_00_07b0_CopyBCBytesFromHLToDE
 00:07b9 call_00_07b9
 00:07c3 call_00_07c3
 00:07fb jr_00_07fb
@@ -2518,7 +2518,7 @@
 00:d6a1 wD6A1
 00:d6a3 wD6A3
 00:d6a4 wD6A4
-00:d6a5 wD6A5
+00:d6a5 wD6A5_PasswordTilesBank
 00:d6a6 wD6A6
 00:d6a7 wD6A7
 00:d6a8 wD6A8

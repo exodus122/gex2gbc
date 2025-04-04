@@ -19,7 +19,7 @@ call_01_4000_MenuLoad:
     add  HL, DE                                        ;; 01:4011 $19
     ld   DE, wD68A_MenuTypeDataPointer                                     ;; 01:4012 $11 $8a $d6
     ld   BC, $08                                       ;; 01:4015 $01 $08 $00
-    call call_00_07b0_CopyBytes                                  ;; 01:4018 $cd $b0 $07
+    call call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 01:4018 $cd $b0 $07
     xor  A, A                                          ;; 01:401b $af
     ld   [wD6E0_MenuSelectedRow], A                                    ;; 01:401c $ea $e0 $d6
     ld   A, [wD68C]                                    ;; 01:401f $fa $8c $d6
@@ -690,7 +690,7 @@ call_01_44e6:
     add  HL, DE                                        ;; 01:44fd $19
     ld   DE, wD692                                     ;; 01:44fe $11 $92 $d6
     ld   BC, $06                                       ;; 01:4501 $01 $06 $00
-    call call_00_07b0_CopyBytes                                  ;; 01:4504 $cd $b0 $07
+    call call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 01:4504 $cd $b0 $07
 .jr_01_4507:
     ld   HL, wD6B3                                     ;; 01:4507 $21 $b3 $d6
     ld   A, [HL+]                                      ;; 01:450a $2a
@@ -698,7 +698,7 @@ call_01_44e6:
     ld   L, A                                          ;; 01:450c $6f
     ld   DE, wD698                                     ;; 01:450d $11 $98 $d6
     ld   BC, $07                                       ;; 01:4510 $01 $07 $00
-    call call_00_07b0_CopyBytes                                  ;; 01:4513 $cd $b0 $07
+    call call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 01:4513 $cd $b0 $07
     ld   A, L                                          ;; 01:4516 $7d
     ld   [wD6B3], A                                    ;; 01:4517 $ea $b3 $d6
     ld   A, H                                          ;; 01:451a $7c
@@ -834,7 +834,7 @@ call_01_44e6:
     call call_01_4e5a                                  ;; 01:45f2 $cd $5a $4e
     call call_01_4e49                                  ;; 01:45f5 $cd $49 $4e
     ld   HL, wC000_BgMapTileIds                                     ;; 01:45f8 $21 $00 $c0
-    jp   call_00_07b0_CopyBytes                                  ;; 01:45fb $c3 $b0 $07
+    jp   call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 01:45fb $c3 $b0 $07
 .jr_01_45fe:
     call call_01_4e49                                  ;; 01:45fe $cd $49 $4e
     ld   HL, wC000_BgMapTileIds                                     ;; 01:4601 $21 $00 $c0
@@ -849,7 +849,7 @@ call_01_44e6:
     push BC                                            ;; 01:460e $c5
     push HL                                            ;; 01:460f $e5
     ld   BC, $10                                       ;; 01:4610 $01 $10 $00
-    call call_00_07b0_CopyBytes                                  ;; 01:4613 $cd $b0 $07
+    call call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 01:4613 $cd $b0 $07
     pop  HL                                            ;; 01:4616 $e1
     ld   A, [wD692]                                    ;; 01:4617 $fa $92 $d6
     swap A                                             ;; 01:461a $cb $37
@@ -904,7 +904,7 @@ call_01_466b:
     ld   HL, .data_01_46a8                             ;; 01:466b $21 $a8 $46
     ld   DE, wDA4B                                     ;; 01:466e $11 $4b $da
     ld   BC, $80                                       ;; 01:4671 $01 $80 $00
-    call call_00_07b0_CopyBytes                                  ;; 01:4674 $cd $b0 $07
+    call call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 01:4674 $cd $b0 $07
     ld   [wD59D_ReturnBank], A                                    ;; 01:4677 $ea $9d $d5
     ld   A, Bank0b                                        ;; 01:467a $3e $0b
     ld   HL, entry_0b_5d4b                              ;; 01:467c $21 $4b $5d
@@ -1019,9 +1019,9 @@ call_01_47a4:
     ld a, [$d69b]
     ld de, $47b9
     call call_00_07b9
-    ld de, $d6a5
+    ld de, wD6A5_PasswordTilesBank
     ld bc, $000a
-    call call_00_07b0_CopyBytes
+    call call_00_07b0_CopyBCBytesFromHLToDE
     jp call_00_07c3
     
     db   $bb, $47, $09, $b6, $14, $12, $d0, $42,       ;; 01:47b4 ????????
@@ -1203,7 +1203,7 @@ call_01_491d:
     call call_00_07b9                                  ;; 01:4923 $cd $b9 $07
     ld   DE, wD6B0                                     ;; 01:4926 $11 $b0 $d6
     ld   BC, $03                                       ;; 01:4929 $01 $03 $00
-    call call_00_07b0_CopyBytes                                  ;; 01:492c $cd $b0 $07
+    call call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 01:492c $cd $b0 $07
     jp   call_00_084d                                    ;; 01:492f $c3 $4d $08
 
 .data_01_4932:
@@ -1295,7 +1295,7 @@ call_01_49d7:
     ld hl, data_01_4a0f
     ld de, wDA4B
     ld bc, $0080
-    call call_00_07b0_CopyBytes
+    call call_00_07b0_CopyBCBytesFromHLToDE
     ld a, [wD624_CurrentLevelId]
     ld de, data_01_7c0f_collectible_images
     call call_00_07b9
@@ -1309,10 +1309,10 @@ call_01_49d7:
     call call_01_4e5a
     pop hl
     ld de, wC000_BgMapTileIds
-    call call_00_07b0_CopyBytes
+    call call_00_07b0_CopyBCBytesFromHLToDE
     ld de, wDAAB
     ld bc, $0018
-    jp call_00_07b0_CopyBytes
+    jp call_00_07b0_CopyBCBytesFromHLToDE
     
 data_01_4a0f:
     db   $00, $00, $00                                 
@@ -1344,7 +1344,7 @@ call_01_4a8f:
     add  HL, DE                                        ;; 01:4a9b $19
     ld   DE, wD69F                                     ;; 01:4a9c $11 $9f $d6
     ld   BC, $06                                       ;; 01:4a9f $01 $06 $00
-    call call_00_07b0_CopyBytes                                  ;; 01:4aa2 $cd $b0 $07
+    call call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 01:4aa2 $cd $b0 $07
     call call_01_4bd3                                  ;; 01:4aa5 $cd $d3 $4b
 .jr_01_4aa8:
     ld   HL, wD69B                                     ;; 01:4aa8 $21 $9b $d6
@@ -2024,7 +2024,7 @@ call_01_4e78:
     ld   DE, wC000_BgMapTileIds                                     ;; 01:4e8b $11 $00 $c0
     ld   A, [HL+]                                      ;; 01:4e8e $2a
     and  A, A                                          ;; 01:4e8f $a7
-    jp   Z, call_00_07b0_CopyBytes                               ;; 01:4e90 $ca $b0 $07
+    jp   Z, call_00_07b0_CopyBCBytesFromHLToDE                               ;; 01:4e90 $ca $b0 $07
     ret                                                ;; 01:4e93 $c9
 
 call_01_4e94:
@@ -2160,7 +2160,7 @@ call_01_4f87_LoadEnterPasswordMenu:
     ld   DE, wD668_PasswordValues                                     ;; 01:4f8a $11 $68 $d6
     ld   BC, $1d                                       ;; 01:4f8d $01 $1d $00
     ld   [HL], $20                                     ;; 01:4f90 $36 $20
-    call call_00_07b0_CopyBytes                                  ;; 01:4f92 $cd $b0 $07
+    call call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 01:4f92 $cd $b0 $07
     ld   A, $49                                        ;; 01:4f95 $3e $49
     ld   [wD667_PasswordExitButton], A                                    ;; 01:4f97 $ea $67 $d6
     ld   A, $4a                                        ;; 01:4f9a $3e $4a
@@ -2174,7 +2174,7 @@ call_01_4fa5_SetupPassword:
     ld   DE, wD668_PasswordValues                                     ;; 01:4fa8 $11 $68 $d6
     ld   BC, $1d                                       ;; 01:4fab $01 $1d $00
     ld   [HL], $00                                     ;; 01:4fae $36 $00
-    call call_00_07b0_CopyBytes                                  ;; 01:4fb0 $cd $b0 $07
+    call call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 01:4fb0 $cd $b0 $07
     ld   A, $49                                        ;; 01:4fb3 $3e $49
     ld   [wD667_PasswordExitButton], A                                    ;; 01:4fb5 $ea $67 $d6
     ld   A, $4a                                        ;; 01:4fb8 $3e $4a

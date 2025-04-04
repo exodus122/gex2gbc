@@ -1501,7 +1501,7 @@ entry_03_66ae:
     ld   HL, .image_03_66e1                             ;; 03:66ae $21 $e1 $66
     ld   DE, $8600                                     ;; 03:66b1 $11 $00 $86
     ld   BC, $140                                      ;; 03:66b4 $01 $40 $01
-    call call_00_07b0_CopyBytes                                  ;; 03:66b7 $cd $b0 $07
+    call call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 03:66b7 $cd $b0 $07
     call call_03_6d13                                  ;; 03:66ba $cd $13 $6d
     call call_03_6941                                  ;; 03:66bd $cd $41 $69
     ld   HL, .image_demo_mode_03_6821                             ;; 03:66c0 $21 $21 $68
@@ -1509,7 +1509,7 @@ entry_03_66ae:
     ld   BC, $100                                      ;; 03:66c6 $01 $00 $01
     ld   A, [wD61E_DemoModeEnabled]                                    ;; 03:66c9 $fa $1e $d6
     and  A, A                                          ;; 03:66cc $a7
-    jp   NZ, call_00_07b0_CopyBytes                              ;; 03:66cd $c2 $b0 $07
+    jp   NZ, call_00_07b0_CopyBCBytesFromHLToDE                              ;; 03:66cd $c2 $b0 $07
     ld   A, [wD623]                                    ;; 03:66d0 $fa $23 $d6
     and  A, A                                          ;; 03:66d3 $a7
     ret  Z                                             ;; 03:66d4 $c8

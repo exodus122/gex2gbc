@@ -41,7 +41,7 @@ def extract_sprites_vertical():
                 out.write(data)
                 out.close()
                 
-                os.system('rg./gfx --reverse '+str(width)+' --columns -o banks/bank_'+bank+'/image_'+bank+'_'+addr_str+'.bin banks/bank_'+bank+'/image_'+bank+'_'+addr_str+'.png')
+                os.system('rgbgfx --reverse '+str(width)+' --columns -o banks/bank_'+bank+'/image_'+bank+'_'+addr_str+'.bin banks/bank_'+bank+'/image_'+bank+'_'+addr_str+'.png')
                 
                 out2 = open('./banks/bank_'+bank+'/text.txt', "a")
                 out2.write('image_'+bank+'_'+addr_str+'.bin:\n    INCBIN \"./gfx/image_'+bank+'_'+addr_str+'.bin\"\n\n')
@@ -55,6 +55,7 @@ def extract_special_tilesets_horizontal():
     
     banks = [0x9, 0xd, 0xe, 0xf, 0x10, 0x13, 0x1d, 0x1e, 0x1f, 0x26, 0x36, 0x37, 0x3d]
     banks = [0xd, 0xe, 0xf, 0x10, 0x13]
+    banks = [0x9]
     
     chunk_counter = 0
     for b in banks:
@@ -72,9 +73,6 @@ def extract_special_tilesets_horizontal():
                 next_chunk = 0x1000
                 width = 16
                 
-            if b == 0x9:
-                next_chunk = 0x500
-                width = 8
                 
             if b == 0x10:
                 next_chunk = 0x2600
@@ -90,9 +88,12 @@ def extract_special_tilesets_horizontal():
                 
             if b == 0xd or b == 0xe or b == 0xf or b == 0x10 or b == 0x13:
                 next_chunk = 0x240
-                width = 0x6
             elif b != 0xc:
-                continue
+                width = 0x6
+            
+            if b == 0x9:
+                next_chunk = 0x2d0
+                width = 5
             
             os.system('mkdir -p banks/bank_'+bank+'/')
             count = 0
@@ -120,7 +121,7 @@ def extract_special_tilesets_horizontal():
                 out.close()
                 
                 if (b != 0xd and b != 0xe and b != 0xf and b != 0x10 and b != 0x13) or count % 2 == 0:
-                    os.system('rg./gfx --reverse '+str(width)+' -o banks/bank_'+bank+'/image_'+bank+'_'+f"{count2:02d}"+'.bin banks/bank_'+bank+'/image_'+bank+'_'+f"{count2:02d}"+'.png')
+                    os.system('rgbgfx --reverse '+str(width)+' -o banks/bank_'+bank+'/image_'+bank+'_'+f"{count2:02d}"+'.bin banks/bank_'+bank+'/image_'+bank+'_'+f"{count2:02d}"+'.png')
                 
                 out2 = open('./banks/bank_'+bank+'/text.txt', "a")
                 if count % 2 == 0:
@@ -195,7 +196,7 @@ def extract_splash():
                 if (b == 0xc and (chunk_counter == 1 or chunk_counter == 4)) or (b == 0x8 and (chunk_counter == 1 or chunk_counter == 3)) or ((b == 0x1d or b == 0x1e or b == 0x1f) and (chunk_counter == 1 or chunk_counter == 3)):
                     dummy = 0
                 else:
-                    os.system('rg./gfx --reverse '+str(width)+' -o banks/bank_'+bank+'/image_'+bank+'_'+str(count2)+'.bin banks/bank_'+bank+'/image_'+bank+'_'+str(count2)+'.png')
+                    os.system('rgbgfx --reverse '+str(width)+' -o banks/bank_'+bank+'/image_'+bank+'_'+str(count2)+'.bin banks/bank_'+bank+'/image_'+bank+'_'+str(count2)+'.png')
                 
                 
                 if (b == 0xc and (chunk_counter == 1 or chunk_counter == 2)) or (b == 0x8 and (chunk_counter == 1 or chunk_counter == 3 or chunk_counter == 4)) or ((b == 0x1d or b == 0x1e or b == 0x1f) and (chunk_counter == 1 or chunk_counter == 3)):
@@ -240,7 +241,7 @@ def extract_bank03():
                 out.close()
                 
                 if chunk_widths[count] != 999:
-                    os.system('rg./gfx --reverse '+str(width)+' --columns -o banks/bank_'+bank+'/image_'+bank+'_'+str(addr2)+'.bin banks/bank_'+bank+'/image_'+bank+'_'+str(addr2)+'.png')
+                    os.system('rgbgfx --reverse '+str(width)+' --columns -o banks/bank_'+bank+'/image_'+bank+'_'+str(addr2)+'.bin banks/bank_'+bank+'/image_'+bank+'_'+str(addr2)+'.png')
                 
                 count = count + 1
                 if count == len(chunk_sizes):
@@ -271,7 +272,7 @@ def extract_bank03_new():
         out.write(data)
         out.close()
         
-        os.system('rg./gfx --reverse '+str(width)+' --columns -o banks/bank_'+bank+'/image_collectibles_'+level_name+'_'+bank+'_'+addr_str+'.bin banks/bank_'+bank+'/image_collectibles_'+level_name+'_'+bank+'_'+addr_str+'.png')
+        os.system('rgbgfx --reverse '+str(width)+' --columns -o banks/bank_'+bank+'/image_collectibles_'+level_name+'_'+bank+'_'+addr_str+'.bin banks/bank_'+bank+'/image_collectibles_'+level_name+'_'+bank+'_'+addr_str+'.png')
     
     # extract moving backgrounds
     addrs = [0x747D, 0x74BD, 0x74FD, 0x753D, 0x757D, 0x759D, 0x75BD, 0x75DD, 0x75FD, 0x763D, 0x767D, 0x76BD, 0x76FD, 0x775D, 0x77BD, 0x781D, 0x787D, 0x789D, 0x78BD, 0x78FD, 0x793D, 0x797D, 0x79BD, 0x79FD, 0x7A3D, 0x7A7D, 0x7ABD, 0x7ADD, 0x7AFD, 0x7B0D, 0x7B1D, 0x7B2D, 0x7B3D, 0x7B4D, 0x7B5D, 0x7B6D, 0x7B7D, 0x7B9D, 0x7BBD, 0x7BDD, 0x7BFD]
@@ -286,7 +287,7 @@ def extract_bank03_new():
         out.write(data)
         out.close()
         
-        os.system('rg./gfx --reverse '+str(width)+' --columns -o banks/bank_'+bank+'/image_'+bank+'_'+addr_str+'.bin banks/bank_'+bank+'/image_'+bank+'_'+addr_str+'.png')
+        os.system('rgbgfx --reverse '+str(width)+' --columns -o banks/bank_'+bank+'/image_'+bank+'_'+addr_str+'.bin banks/bank_'+bank+'/image_'+bank+'_'+addr_str+'.png')
         
         out2 = open('./banks/bank_'+bank+'/text.txt', "a")
         out2.write('data_'+bank2+'_'+addr_str+':\n    INCBIN \"./gfx/moving_tiles/image_'+bank+'_'+addr_str+'.bin\"\n')
@@ -314,7 +315,7 @@ def extract_bank_01():
         out.write(data)
         out.close()
         
-        os.system('rg./gfx --reverse '+str(width)+' --columns -o banks/bank_'+bank+'/image_'+bank+'_'+addr_str+'.bin banks/bank_'+bank+'/image_'+bank+'_'+addr_str+'.png')
+        os.system('rgbgfx --reverse '+str(width)+' --columns -o banks/bank_'+bank+'/image_'+bank+'_'+addr_str+'.bin banks/bank_'+bank+'/image_'+bank+'_'+addr_str+'.png')
         
         out2 = open('./banks/bank_'+bank+'/text.txt', "a")
         out2.write('data_'+bank2+'_'+addr_str+':\n    INCBIN \"./gfx/misc_sprites/menus/image_'+bank+'_'+addr_str+'.bin\"\n')
@@ -334,10 +335,38 @@ def extract_bank_01():
         out.write(data)
         out.close()
         
-        os.system('rg./gfx --reverse '+str(width)+' -o banks/bank_'+bank+'/image_'+bank+'_'+addr_str+'.bin banks/bank_'+bank+'/image_'+bank+'_'+addr_str+'.png')
+        os.system('rgbgfx --reverse '+str(width)+' -o banks/bank_'+bank+'/image_'+bank+'_'+addr_str+'.bin banks/bank_'+bank+'/image_'+bank+'_'+addr_str+'.png')
         
         out2 = open('./banks/bank_'+bank+'/text.txt', "a")
         out2.write('data_'+bank2+'_'+addr_str+':\n    INCBIN \"./gfx/menu_sprites/image_'+bank+'_'+addr_str+'.bin\"\n')
+        out2.close()
+
+def extract_bank_09():
+    bank = "009"
+    bank2 = "09"
+    bank_data = open('./banks/bank_'+bank+'.bin', 'rb').read()
+    os.system('mkdir -p banks/bank_'+bank+'/')
+    
+    # extract menu images
+    addrs = [0x4000]
+    sizes = [0x2d0]
+    widths = [9]
+    
+    for i in range(0, len(addrs)):
+        addr = addrs[i]
+        addr_str = f"{addr:0{4}x}"
+        
+        data = bank_data[addr-0x4000:addr-0x4000+sizes[i]]
+        #width = int((addrs[i+1] - addr) / 0x10)
+        width = widths[i]
+        out = open('./banks/bank_'+bank+'/image_'+bank+'_'+addr_str+'.bin', "wb")
+        out.write(data)
+        out.close()
+        
+        os.system('rgbgfx --reverse '+str(width)+' -o banks/bank_'+bank+'/image_'+bank+'_'+addr_str+'.bin banks/bank_'+bank+'/image_'+bank+'_'+addr_str+'.png')
+        
+        out2 = open('./banks/bank_'+bank+'/text.txt', "a")
+        out2.write('data_'+bank2+'_'+addr_str+':\n    INCBIN \"./gfx/misc_sprites/menus/image_'+bank+'_'+addr_str+'.bin\"\n')
         out2.close()
 
 #extract_banks()
@@ -346,4 +375,5 @@ def extract_bank_01():
 #extract_splash()
 #extract_bank03()
 #extract_bank03_new()
-extract_bank_01()
+#extract_bank_01()
+extract_bank_09()

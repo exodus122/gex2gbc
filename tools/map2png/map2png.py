@@ -9,6 +9,7 @@ import os
     
     
     
+    
  
 '''
 
@@ -137,6 +138,64 @@ draw_tile_ids = False
 draw_block_ids = False
 create_collision_blocksets = True
 create_collision_maps = True
+
+bg_collision_override = True
+
+
+bg_collision_tiles = []
+if bg_collision_override:
+    os.system('mkdir -p tileset_images')
+    collision_tileset_data = open("../../data/bg_collision_data.bin", "rb").read()
+    
+    tileset_img = PIL.Image.new("RGB", (128, 128))
+    draw2 = PIL.ImageDraw.Draw(tileset_img)
+    
+    tile_counter = 0
+    for y in range(0, 16):
+        for x in range(0, 16):
+            tile_img =  PIL.Image.new("RGB", (8, 8), "white")
+            draw3 = PIL.ImageDraw.Draw(tile_img)
+            
+            color = "black"
+            flags = collision_tileset_data[0x800 + tile_counter]
+            if flags & 0x03 == 0x3: # wall and ceiling flag?
+                color = "red"
+            elif flags & 0x02 == 0x2: # ceiling flag?
+                color = "orange"
+            elif flags & 0x01 == 0x1: # wall flag?
+                color = "blue"
+            
+            row_count = 0
+            while row_count < 8:
+                data = collision_tileset_data[row_count*0x100 + tile_counter]
+                if data & 0x80:
+                    draw3.point((0,row_count), color)
+                if data & 0x40:
+                    draw3.point((1,row_count), color)
+                if data & 0x20:
+                    draw3.point((2,row_count), color)
+                if data & 0x10:
+                    draw3.point((3,row_count), color)
+                if data & 0x08:
+                    draw3.point((4,row_count), color)
+                if data & 0x04:
+                    draw3.point((5,row_count), color)
+                if data & 0x02:
+                    draw3.point((6,row_count), color)
+                if data & 0x01:
+                    draw3.point((7,row_count), color);
+                
+                row_count = row_count + 1
+            
+            bg_collision_tiles.append(tile_img)
+            tileset_img.paste(tile_img, (x*8, y*8))
+            
+            #draw2.rectangle(((x*8, y*8), ((x+1)*8, (y+1)*8)), None, "pink")
+            
+            tile_counter = tile_counter + 1
+    
+    tileset_img.save("./tileset_images/bg_collision_tileset.png")
+
 
 
 for i in range(0, len(levels)):
@@ -267,22 +326,24 @@ for i in range(0, len(levels)):
                     count = count + 1
             new_tileset_img.save('./special_tileset_images/'+level_name+'/'+filename2+'_tileset.png')
     
-    
     # create the level's blockset from the tileset
     blockset_data = open(blockset_data_file, "rb").read()
     if create_blocksets:
         kill_tile = PIL.Image.new("RGB", (8, 8), (255, 192, 203))
-    
-        if create_collision_blocksets == True:
-            blockset_image_path = "./blockset_images/collision_detailed/"
-        elif show_kill_tiles == True:
-            blockset_image_path = "./blockset_images/with_kill_tiles/"
-        else:
-            blockset_image_path = "./blockset_images/"
         
         os.system('mkdir -p blockset_images')
-        os.system('mkdir -p blockset_images/with_kill_tiles')
-        os.system('mkdir -p blockset_images/collision_detailed')
+        
+        if bg_collision_override == True:
+            blockset_image_path = "./blockset_images/collision_bg/"
+            os.system('mkdir -p blockset_images/collision_bg')
+        elif create_collision_blocksets == True:
+            blockset_image_path = "./blockset_images/collision_detailed/"
+            os.system('mkdir -p blockset_images/collision_detailed')
+        elif show_kill_tiles == True:
+            blockset_image_path = "./blockset_images/with_kill_tiles/"
+            os.system('mkdir -p blockset_images/with_kill_tiles')
+        else:
+            blockset_image_path = "./blockset_images/"
         
         blockset_img = PIL.Image.new("RGB", (512, 512))
         draw2 = PIL.ImageDraw.Draw(blockset_img)
@@ -302,7 +363,9 @@ for i in range(0, len(levels)):
                     for inner_x in range(0, 4):
                         #blockset_img.paste(tiles[blockset_data[block_counter]], (x*32, y*32))
                         
-                        if create_collision_blocksets == True:
+                        if bg_collision_override == True:
+                            block_img.paste(bg_collision_tiles[blockset_data[0x2000+val]], (inner_x*8, inner_y*8))
+                        elif create_collision_blocksets == True:
                             draw3.rectangle(((inner_x*8, inner_y*8), ((inner_x+1)*8, (inner_y+1)*8)), surface_type_colors[blockset_data[0x2000+val]])
                             if draw_tile_ids == True and blockset_data[0x2000+val] != 0x2f:
                                 draw3.text((inner_x*8, inner_y*8), "%x" % blockset_data[0x2000+val], "magenta")
@@ -353,7 +416,9 @@ for i in range(0, len(levels)):
                 val = count
                 for inner_y in range(0, 4):
                     for inner_x in range(0, 4):
-                        if create_collision_blocksets == True:
+                        if bg_collision_override == True:
+                            block_img.paste(bg_collision_tiles[blockset_data[0x2000+val]], (inner_x*8, inner_y*8))
+                        elif create_collision_blocksets == True:
                             draw3.rectangle(((inner_x*8, inner_y*8), ((inner_x+1)*8, (inner_y+1)*8)), surface_type_colors[blockset_data[0x2000+val]])
                             if draw_tile_ids == True and blockset_data[0x2000+val] != 0x2f:
                                 draw3.text((inner_x*8, inner_y*8), "%x" % blockset_data[0x2000+val], "magenta")
@@ -386,10 +451,18 @@ for i in range(0, len(levels)):
     
     # create the level's map from the blocksets
     if create_maps:
-        if create_collision_maps:
+        
+        os.system('mkdir -p map_images')
+        
+        if bg_collision_override:
+            map_image_path = "./map_images/bg_collision/"
+            os.system('mkdir -p map_images/bg_collision/')
+        elif create_collision_maps:
             map_image_path = "./map_images/collision_detailed/"
+            os.system('mkdir -p map_images/collision_detailed/')
         elif show_kill_tiles == True:
             map_image_path = "./map_images/with_kill_tiles/"
+            os.system('mkdir -p map_images/with_kill_tiles/')
         else:
             map_image_path = "./map_images/"
         
@@ -425,9 +498,6 @@ for i in range(0, len(levels)):
                 
                 count = count+1
         
-        os.system('mkdir -p map_images')
-        os.system('mkdir -p map_images/with_kill_tiles/')
-        os.system('mkdir -p map_images/collision_detailed/')
         img.save(map_image_path+level_name+channel_map_number+"_map.png")
     
     print("completed: "+level_name)

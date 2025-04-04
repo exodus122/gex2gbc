@@ -594,7 +594,7 @@ wD6A3:
 wD6A4:
     ds 1                                              ;; d6a4
 
-wD6A5:
+wD6A5_PasswordTilesBank:
     ds 1
 
 wD6A6:
