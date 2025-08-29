@@ -667,6 +667,7 @@ call_02_51b7:
     ret  Z                                             ;; 02:51e6 $c8
     set  3, [HL]                                       ;; 02:51e7 $cb $de
     ret                                                ;; 02:51e9 $c9
+
 call_02_51ea:
     call call_00_3878                                  ;; 02:51ea $cd $78 $38
     ld   E, A                                          ;; 02:51ed $5f
@@ -725,6 +726,7 @@ call_02_51ea:
     jp   call_02_4ccd                                  ;; 02:524f $c3 $cd $4c
 call_02_5252:
     ret                                                ;; 02:5252 $c9
+
 call_02_5253:
     call call_00_34ea                                  ;; 02:5253 $cd $ea $34
     call NZ, call_00_3bf4                              ;; 02:5256 $c4 $f4 $3b

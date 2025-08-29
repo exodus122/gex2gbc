@@ -6,150 +6,150 @@ SECTION "bank02", ROMX[$4000], BANK[$02]
 ; Below is a list of jump tables, one for each object, starting with Player
 
 data_02_4000_ObjectJumpTables:
-    dw   data_02_4120                                      ;; 02:4000 w.
-    dw   data_02_4ddb                                         ;; 02:4002 wW
-    dw   data_02_4dff                                      ;; 02:4004 ??
-    dw   data_02_4ddf                                         ;; 02:4006 wW
-    dw   data_02_4de7                                         ;; 02:4008 wW
-    dw   data_02_4def
-    dw   data_02_4df7                            ;; 02:400a ????
-    dw   data_02_4e03                                         ;; 02:400e wW
-    dw   data_02_4e07 
-    dw   data_02_4e0b                            ;; 02:4010 ????
-    dw   data_02_4e0f                                         ;; 02:4014 wW
-    dw   data_02_4e13                                      ;; 02:4016 ??
-    dw   data_02_4e17                                         ;; 02:4018 wW
-    dw   data_02_4e1f
-    dw   data_02_4e23
-    dw   data_02_4e2b
-    dw   data_02_4e2f       ;; 02:401a ????????
-    dw   data_02_4e3b 
-    dw   data_02_4e43 
-    dw   data_02_4e4f 
-    dw   data_02_4e5b        ;; 02:4022 ????????
-    dw   data_02_4e6b 
-    dw   data_02_4e73 
-    dw   data_02_4e77 
-    dw   data_02_4e7b        ;; 02:402a ????????
-    dw   data_02_4e83 
-    dw   data_02_4e93 
-    dw   data_02_4e97 
-    dw   data_02_4ea3       ;; 02:4032 ????????
-    dw   data_02_4ea7                                         ;; 02:403a wW
-    dw   data_02_4eb3
-    dw   data_02_4ebb                            ;; 02:403c ????
-    dw   data_02_4ec3                                         ;; 02:4040 wW
-    dw   data_02_4ecb                                      ;; 02:4042 ??
-    dw   data_02_4ecf                                         ;; 02:4044 wW
-    dw   data_02_4edb                                      ;; 02:4046 ??
-    dw   data_02_4edf                                         ;; 02:4048 wW
-    dw   data_02_4ee3                                         ;; 02:404a wW
-    dw   data_02_4eef                                      ;; 02:404c ??
-    dw   data_02_4f07                                         ;; 02:404e wW
-    dw   data_02_4f0b                                         ;; 02:4050 wW
-    dw   data_02_4f0f                                      ;; 02:4052 ??
-    dw   data_02_4f13                                         ;; 02:4054 wW
-    dw   data_02_4f1b
-    dw   data_02_4f27                            ;; 02:4056 ????
-    dw   data_02_4f2f                                         ;; 02:405a wW
-    dw   data_02_4f33                                         ;; 02:405c wW
-    dw   data_02_4f37                                         ;; 02:405e wW
-    dw   data_02_4f43 
-    dw   data_02_4f4b 
-    dw   data_02_4f57 
-    dw   data_02_4f5b        ;; 02:4060 ????????
-    dw   data_02_4f5f 
-    dw   data_02_4f6b 
-    dw   data_02_4f73 
-    dw   data_02_4f77        ;; 02:4068 ????????
-    dw   data_02_4f7f 
-    dw   data_02_4f87 
-    dw   data_02_4f8b 
-    dw   data_02_4f8f        ;; 02:4070 ????????
-    dw   data_02_4f93 
-    dw   data_02_4f97 
-    dw   data_02_4f9b 
-    dw   data_02_4fab        ;; 02:4078 ????????
-    dw   data_02_4faf 
-    dw   data_02_4fb3 
-    dw   data_02_4fb7 
-    dw   data_02_4fbb        ;; 02:4080 ????????
-    dw   data_02_4fc7 
-    dw   data_02_4fcf 
-    dw   data_02_4fd7 
-    dw   data_02_4fdb        ;; 02:4088 ????????
-    dw   data_02_4fdf 
-    dw   data_02_4fe3 
-    dw   data_02_4fe7 
-    dw   data_02_4feb        ;; 02:4090 ????????
-    dw   data_02_4fef 
-    dw   data_02_4ff3 
-    dw   data_02_4ffb 
-    dw   data_02_4fff        ;; 02:4098 ????????
-    dw   data_02_5003 
-    dw   data_02_5007 
-    dw   data_02_500b 
-    dw   data_02_5013        ;; 02:40a0 ????????
-    dw   data_02_501f 
-    dw   data_02_502f 
-    dw   data_02_5037 
-    dw   data_02_5043        ;; 02:40a8 ????????
-    dw   data_02_5047 
-    dw   data_02_504f 
-    dw   data_02_5053 
-    dw   data_02_505b        ;; 02:40b0 ????????
-    dw   data_02_5063 
-    dw   data_02_5067 
-    dw   data_02_506b 
-    dw   data_02_5077        ;; 02:40b8 ????????
-    dw   data_02_507b 
-    dw   data_02_507f 
-    dw   data_02_5083 
-    dw   data_02_5087        ;; 02:40c0 ????????
-    dw   data_02_508b 
-    dw   data_02_508f 
-    dw   data_02_5093 
-    dw   data_02_5097        ;; 02:40c8 ????????
-    dw   data_02_509b 
-    dw   data_02_509f 
-    dw   data_02_50a3 
-    dw   data_02_50b7        ;; 02:40d0 ????????
-    dw   data_02_50bb 
-    dw   data_02_50bf 
-    dw   data_02_50c3 
-    dw   data_02_50cf        ;; 02:40d8 ????????
-    dw   data_02_50d3 
-    dw   data_02_50d7 
-    dw   data_02_50db 
-    dw   data_02_50e3        ;; 02:40e0 ????????
-    dw   data_02_50eb 
-    dw   data_02_50ef 
-    dw   data_02_50f3 
-    dw   data_02_50f7        ;; 02:40e8 ????????
-    dw   data_02_50ff 
-    dw   data_02_5107 
-    dw   data_02_510b 
-    dw   data_02_5113        ;; 02:40f0 ????????
-    dw   data_02_5117 
-    dw   data_02_511f 
-    dw   data_02_5123 
-    dw   data_02_512f        ;; 02:40f8 ????????
-    dw   data_02_5133 
-    dw   data_02_5137 
-    dw   data_02_513b 
-    dw   data_02_513f        ;; 02:4100 ????????
-    dw   data_02_5147 
-    dw   data_02_5157 
-    dw   data_02_515f 
-    dw   data_02_518b        ;; 02:4108 ????????
-    dw   data_02_518f 
-    dw   data_02_5193 
-    dw   data_02_5197 
-    dw   data_02_519b        ;; 02:4110 ????????
-    dw   data_02_51a3 
-    dw   data_02_51ab 
-    dw   data_02_51af                  ;; 02:4118 ??????
-    dw   data_02_51b3                                         ;; 02:411e wW
+dw   data_02_4120        ;; Object_Gex
+dw   data_02_4ddb        ;; Object_CollectibleSpawn
+dw   data_02_4dff        ;; Object_unk_02
+dw   data_02_4ddf        ;; Object_TVButton
+dw   data_02_4de7        ;; Object_RedRemote
+dw   data_02_4def        ;; Object_SilverRemote
+dw   data_02_4df7        ;; Object_GoldRemote
+dw   data_02_4e03        ;; Object_EnemyDefeated
+dw   data_02_4e07        ;; Object_unk_08
+dw   data_02_4e0b        ;; Object_ScreamTV_FallingPlatform
+dw   data_02_4e0f        ;; Object_ScreamTV_MovingPlatform
+dw   data_02_4e13        ;; Object_ScreamTV_PushBlock
+dw   data_02_4e17        ;; Object_ScreamTV_Pumpkin
+dw   data_02_4e1f        ;; Object_ScreamTV_Frankie
+dw   data_02_4e23        ;; Object_ScreamTV_HeadGhost
+dw   data_02_4e2b        ;; Object_ScreamTV_HeadGhostHead
+dw   data_02_4e2f        ;; Object_ScreamTV_FloatingSkull
+dw   data_02_4e3b        ;; Object_ScreamTV_FloatingSkullProjectile
+dw   data_02_4e43        ;; Object_ScreamTV_Zombie
+dw   data_02_4e4f        ;; Object_ScreamTV_ZombieHead
+dw   data_02_4e5b        ;; Object_ScreamTV_FallingAxe
+dw   data_02_4e6b        ;; Object_ScreamTV_Lantern
+dw   data_02_4e73        ;; Object_ScreamTV_Bat
+dw   data_02_4e77        ;; Object_ScreamTV_OrangeMovingPlatform
+dw   data_02_4e7b        ;; Object_ScreamTV_DoorOpening
+dw   data_02_4e83        ;; Object_ScreamTV_Ghost
+dw   data_02_4e93        ;; Object_ScreamTV_ClimbWallSunEnemy
+dw   data_02_4e97        ;; Object_ScreamTV_VanishingPlatform
+dw   data_02_4ea3        ;; Object_ScreamTV_MonaLisaElevator
+dw   data_02_4ea7        ;; Object_ToonTV_HardHeadAreaObject
+dw   data_02_4eb3        ;; Object_ToonTV_StationaryBearTrap
+dw   data_02_4ebb        ;; Object_ToonTV_MovingBearTrap
+dw   data_02_4ec3        ;; Object_ToonTV_Bumblebee
+dw   data_02_4ecb        ;; Object_ToonTV_FallingBowlingBall
+dw   data_02_4ecf        ;; Object_ToonTV_Cactus
+dw   data_02_4edb        ;; Object_ToonTV_Domino
+dw   data_02_4edf        ;; Object_ToonTV_Shark
+dw   data_02_4ee3        ;; Object_ToonTV_Flower
+dw   data_02_4eef        ;; Object_ToonTV_Hunter
+dw   data_02_4f07        ;; Object_ToonTV_Mushroom
+dw   data_02_4f0b        ;; Object_unk_28
+dw   data_02_4f0f        ;; Object_ToonTV_Lizard
+dw   data_02_4f13        ;; Object_ToonTV_HappyFace
+dw   data_02_4f1b        ;; Object_ToonTV_VanishingBlock
+dw   data_02_4f27        ;; Object_ToonTV_MovingBlock
+dw   data_02_4f2f        ;; Object_ToonTV_MovingLogPlatform
+dw   data_02_4f33        ;; Object_ToonTV_StationaryLogPlatform
+dw   data_02_4f37        ;; Object_ToonTV_FlowerHammerAttack
+dw   data_02_4f43        ;; Object_ToonTV_HunterBullet
+dw   data_02_4f4b        ;; Object_ToonTV_Rocket
+dw   data_02_4f57        ;; Object_PreHistory_FastDinosaur
+dw   data_02_4f5b        ;; Object_PreHistory_Dragonfly
+dw   data_02_4f5f        ;; Object_PreHistory_Egg
+dw   data_02_4f6b        ;; Object_unk_35
+dw   data_02_4f73        ;; Object_unk_36
+dw   data_02_4f77        ;; Object_PreHistory_FallingLava
+dw   data_02_4f7f        ;; Object_PreHistory_LavaRaft
+dw   data_02_4f87        ;; Object_PreHistory_MovingPlatform
+dw   data_02_4f8b        ;; Object_unk_3A
+dw   data_02_4f8f        ;; Object_unk_3B
+dw   data_02_4f93        ;; Object_PreHistory_Pterosaur
+dw   data_02_4f97        ;; Object_unk_3D
+dw   data_02_4f9b        ;; Object_PreHistory_FallingBoulder
+dw   data_02_4fab        ;; Object_unk_3F
+dw   data_02_4faf        ;; Object_PreHistory_BeetleHorizontal
+dw   data_02_4fb3        ;; Object_PreHistory_BeetleVertical
+dw   data_02_4fb7        ;; Object_PreHistory_Ant
+dw   data_02_4fbb        ;; Object_PreHistory_FirePlant
+dw   data_02_4fc7        ;; Object_PreHistory_FirePlantProjectiles
+dw   data_02_4fcf        ;; Object_PreHistory_Geyser
+dw   data_02_4fd7        ;; Object_unk_46
+dw   data_02_4fdb        ;; Object_PreHistory_Dinosaur
+dw   data_02_4fdf        ;; Object_PreHistory_Triceratops
+dw   data_02_4fe3        ;; Object_PreHistory_TriceratopsHorn
+dw   data_02_4fe7        ;; Object_unk_4A
+dw   data_02_4feb        ;; Object_KungFuTheater_HangingBlade
+dw   data_02_4fef        ;; Object_KungFuTheater_Cannon
+dw   data_02_4ff3        ;; Object_KungFuTheater_CannonProjectile
+dw   data_02_4ffb        ;; Object_KungFuTheater_Dragonfly
+dw   data_02_4fff        ;; Object_KungFuTheater_DragonBodySegment
+dw   data_02_5003        ;; Object_KungFuTheater_DragonHead
+dw   data_02_5007        ;; Object_unk_51
+dw   data_02_500b        ;; Object_KungFuTheater_DragonProjectile
+dw   data_02_5013        ;; Object_KungFuTheater_WalkingNinja
+dw   data_02_501f        ;; Object_KungFuTheater_JumpingNinja
+dw   data_02_502f        ;; Object_KungFuTheater_SamuraiBody
+dw   data_02_5037        ;; Object_KungFuTheater_SamuraiHead
+dw   data_02_5043        ;; Object_KungFuTheater_Lizard
+dw   data_02_5047        ;; Object_KungFuTheater_NinjaProjectile
+dw   data_02_504f        ;; Object_KungFuTheater_SpikyLog
+dw   data_02_5053        ;; Object_KungFuTheater_TallJar
+dw   data_02_505b        ;; Object_KungFuTheater_Jar
+dw   data_02_5063        ;; Object_unk_5C
+dw   data_02_5067        ;; Object_unk_5D
+dw   data_02_506b        ;; Object_KungFuTheater_VanishingPlatform
+dw   data_02_5077        ;; Object_KungFuTheater_MovingPlatform
+dw   data_02_507b        ;; Object_unk_60
+dw   data_02_507f        ;; Object_KungFuTheater_MovingRaft
+dw   data_02_5083        ;; Object_KungFuTheater_StationaryRaft
+dw   data_02_5087        ;; Object_unk_63
+dw   data_02_508b        ;; Object_unk_64
+dw   data_02_508f        ;; Object_Rezopolis_SpecialMovingPlatform
+dw   data_02_5093        ;; Object_Rezopolis_MovingPlatform
+dw   data_02_5097        ;; Object_Rezopolis_RedPlatform
+dw   data_02_509b        ;; Object_Rezopolis_ActivatedRedPlatform
+dw   data_02_509f        ;; Object_Rezopolis_TailspinPlatform
+dw   data_02_50a3        ;; Object_Rezopolis_TailspinGear
+dw   data_02_50b7        ;; Object_unk_6B
+dw   data_02_50bb        ;; Object_unk_6C
+dw   data_02_50bf        ;; Object_unk_6D
+dw   data_02_50c3        ;; Object_Rezopolis_GreenMonster
+dw   data_02_50cf        ;; Object_unk_6F
+dw   data_02_50d3        ;; Object_unk_70
+dw   data_02_50d7        ;; Object_Rezopolis_Pincer
+dw   data_02_50db        ;; Object_Rezopolis_Flamethrower
+dw   data_02_50e3        ;; Object_Rezopolis_UFO
+dw   data_02_50eb        ;; Object_Rezopolis_Ant
+dw   data_02_50ef        ;; Object_Rezopolis_AntSpawner
+dw   data_02_50f3        ;; Object_CircuitCentral_Ant
+dw   data_02_50f7        ;; Object_CircuitCentral_Capacitor
+dw   data_02_50ff        ;; Object_CircuitCentral_PowerUp
+dw   data_02_5107        ;; Object_unk_79
+dw   data_02_510b        ;; Object_CircuitCentral_LittleRobot
+dw   data_02_5113        ;; Object_CircuitCentral_LittleRobotGear
+dw   data_02_5117        ;; Object_CircuitCentral_ElectricBall
+dw   data_02_511f        ;; Object_CircuitCentral_MovingPlatform
+dw   data_02_5123        ;; Object_CircuitCentral_PoweredPlaform
+dw   data_02_512f        ;; Object_CircuitCentral_LoweringPlatform
+dw   data_02_5133        ;; Object_CircuitCentral_WalkerRobot
+dw   data_02_5137        ;; Object_CircuitCentral_PoweredWalkway
+dw   data_02_513b        ;; Object_CircuitCentral_WalkwayActivator
+dw   data_02_513f        ;; Object_ChannelZ_ArcedGunProjectile
+dw   data_02_5147        ;; Object_ChannelZ_ArcedGunProjectile2
+dw   data_02_5157        ;; Object_ChannelZ_GunProjectile
+dw   data_02_515f        ;; Object_ChannelZ_Rez
+dw   data_02_518b        ;; Object_unk_87
+dw   data_02_518f        ;; Object_unk_88
+dw   data_02_5193        ;; Object_ChannelZ_RezFollowingFire
+dw   data_02_5197        ;; Object_ChannelZ_GunProjectileExplosion
+dw   data_02_519b        ;; Object_unk_8B
+dw   data_02_51a3        ;; Object_ChannelZ_FinalBattleButton
+dw   data_02_51ab        ;; Object_unk_8D
+dw   data_02_51af        ;; Object_unk_8E
+dw   data_02_51b3        ;; Object_MediaDimension_MovingPlatform
 
 INCLUDE "bank02_player_update.asm"
 

@@ -217,6 +217,7 @@ DEF Object_unk_3B                           EQU $3B ; not in level object lists.
 DEF Object_PreHistory_Pterosaur             EQU $3C
 DEF Object_unk_3D                           EQU $3D ; not in level object lists. may be unused
 DEF Object_PreHistory_FallingBoulder        EQU $3E
+DEF Object_unk_3F                           EQU $3F ; not in level object lists. may be unused
 DEF Object_PreHistory_BeetleHorizontal      EQU $40 ; lava dabba doo on the climbable background
 DEF Object_PreHistory_BeetleVertical        EQU $41
 DEF Object_PreHistory_Ant                   EQU $42 ; lava dabba doo at the beginning

@@ -342,6 +342,33 @@ def extract_bank_01():
         out2.write('data_'+bank2+'_'+addr_str+':\n    INCBIN \"./gfx/menu_sprites/image_'+bank+'_'+addr_str+'.bin\"\n')
         out2.close()
 
+def extract_bank_00():
+    bank = "000"
+    bank2 = "00"
+    bank_00_data = open('./banks/bank_'+bank+'.bin', 'rb').read()
+    os.system('mkdir -p banks/bank_'+bank+'/')
+    
+    # menu sprites
+    addrs = [0x3c75]
+    sizes = [0x388]
+    widths = [2]
+    
+    for i in range(0, len(addrs)):
+        addr = addrs[i]
+        addr_str = f"{addr:0{4}x}"
+        
+        data = bank_00_data[addr-0x4000:addr-0x4000+sizes[i]]
+        width = widths[i]
+        out = open('./banks/bank_'+bank+'/image_'+bank+'_'+addr_str+'.bin', "wb")
+        out.write(data)
+        out.close()
+        
+        os.system('rgbgfx --reverse '+str(width)+' --columns -o banks/bank_'+bank+'/image_'+bank+'_'+addr_str+'.bin banks/bank_'+bank+'/image_'+bank+'_'+addr_str+'.png')
+        
+        out2 = open('./banks/bank_'+bank+'/text.txt', "a")
+        out2.write('data_'+bank2+'_'+addr_str+':\n    INCBIN \"./.gfx/menu_sprites2/image_'+bank+'_'+addr_str+'.bin\"\n')
+        out2.close()
+
 def extract_bank_09():
     bank = "009"
     bank2 = "09"
@@ -377,4 +404,5 @@ def extract_bank_09():
 #extract_bank03()
 #extract_bank03_new()
 #extract_bank_09()
-extract_bank_01()
+#extract_bank_01()
+extract_bank_00()
