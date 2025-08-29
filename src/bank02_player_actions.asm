@@ -1,28 +1,28 @@
 ; Player action jump table
 data_02_4120:
-    dw   call_02_41a0                                 ;; 02:4120 pP
+    dw   call_02_41a0_PlayerAction_Idle                                 ;; 02:4120 pP
     db   $5c, $75                                      ;; 02:4122 ..
-    dw   call_02_41ad                                 ;; 02:4124 pP
+    dw   call_02_41ad_PlayerAction_LevelInit                                 ;; 02:4124 pP
     db   $6d, $75                                      ;; 02:4126 ..
     dw   call_02_41b7                                 ;; 02:4128 pP
     db   $73, $75                                      ;; 02:412a ..
-    dw   call_02_422b                                  ;; 02:412c pP
+    dw   call_02_422b_PlayerAction_None                                  ;; 02:412c pP
     db   $7c, $75                                      ;; 02:412e ..
-    dw   call_02_422c                                  ;; 02:4130 pP
+    dw   call_02_422c_PlayerAction_StartWalk                                  ;; 02:4130 pP
     db   $82, $75                                      ;; 02:4132 ..
-    dw   call_02_4248                                  ;; 02:4134 pP
+    dw   call_02_4248_PlayerAction_Walk                                  ;; 02:4134 pP
     db   $8f, $75                                      ;; 02:4136 ..
-    dw   call_02_425a                                  ;; 02:4138 pP
+    dw   call_02_425a_PlayerAction_SkidDecel                                  ;; 02:4138 pP
     db   $9c, $75
-    dw   call_02_426b
+    dw   call_02_426b_PlayerAction_StopQuick
     db   $a4, $75                          
-    dw   call_02_4270                                  ;; 02:4140 pP
+    dw   call_02_4270_PlayerAction_StandStill                                  ;; 02:4140 pP
     db   $ad, $75                                      ;; 02:4142 ..
-    dw   call_02_4275                                  ;; 02:4144 pP
+    dw   call_02_4275_PlayerAction_Jump                                  ;; 02:4144 pP
     db   $b3, $75                                      ;; 02:4146 ..
-    dw   call_02_42ac                                  ;; 02:4148 pP
+    dw   call_02_42ac_PlayerAction_DoubleJump                                  ;; 02:4148 pP
     db   $bb, $75
-    dw   $42e0
+    dw   call_02_42e0_PlayerAction_None
     db   $c1, $75
     dw   $42e1
     db   $c7, $75                                      ;; 02:4152 ??
@@ -65,7 +65,7 @@ data_02_4120:
     dw   $4828        ;; 02:4196 ..??????
     db   $84, $76                                      ;; 02:419e ??
     
-call_02_41a0:
+call_02_41a0_PlayerAction_Idle:
     ld   A, [wD209]                                    ;; 02:41a0 $fa $09 $d2
     and  A, $20                                        ;; 02:41a3 $e6 $20
     jr   Z, .jr_02_41ac                                ;; 02:41a5 $28 $05
@@ -74,7 +74,7 @@ call_02_41a0:
 .jr_02_41ac:
     ret                                                ;; 02:41ac $c9
     
-call_02_41ad:
+call_02_41ad_PlayerAction_LevelInit:
     ld   A, [wD624_CurrentLevelId]                                    ;; 02:41ad $fa $24 $d6
     and  A, A                                          ;; 02:41b0 $a7
     call NZ, call_00_0634                              ;; 02:41b1 $c4 $34 $06
@@ -143,10 +143,10 @@ call_02_4204:
     ld   A, C                                          ;; 02:4227 $79
     jp   call_02_4ccd                                  ;; 02:4228 $c3 $cd $4c
 
-call_02_422b:
+call_02_422b_PlayerAction_None:
     ret                                                ;; 02:422b $c9
 
-call_02_422c:
+call_02_422c_PlayerAction_StartWalk:
     ld   A, [wD209]                                    ;; 02:422c $fa $09 $d2
     and  A, $20                                        ;; 02:422f $e6 $20
     jr   Z, .jr_02_4238                                ;; 02:4231 $28 $05
@@ -161,7 +161,7 @@ call_02_422c:
     call NZ, call_02_4ccd                              ;; 02:4244 $c4 $cd $4c
     ret                                                ;; 02:4247 $c9
 
-call_02_4248:
+call_02_4248_PlayerAction_Walk:
     ld   A, [wD209]                                    ;; 02:4248 $fa $09 $d2
     and  A, $20                                        ;; 02:424b $e6 $20
     jr   Z, .jr_02_4254                                ;; 02:424d $28 $05
@@ -172,7 +172,7 @@ call_02_4248:
     call call_02_4204                                  ;; 02:4256 $cd $04 $42
     ret                                                ;; 02:4259 $c9
 
-call_02_425a:
+call_02_425a_PlayerAction_SkidDecel:
     ld   A, [wD207]                                    ;; 02:425a $fa $07 $d2
     inc  A                                             ;; 02:425d $3c
     srl  A                                             ;; 02:425e $cb $3f
@@ -185,18 +185,18 @@ call_02_425a:
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:4267 $ea $5e $d7
     ret                                                ;; 02:426a $c9
 
-call_02_426b:
+call_02_426b_PlayerAction_StopQuick:
 ;    db   $af, $ea, $5e, $d7, $c9                       ;; 02:426b ?????
     xor a
     ld [$d75e], a
     ret
 
-call_02_4270:
+call_02_4270_PlayerAction_StandStill:
     xor  A, A                                          ;; 02:4270 $af
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:4271 $ea $5e $d7
     ret                                                ;; 02:4274 $c9
 
-call_02_4275:
+call_02_4275_PlayerAction_Jump:
     ld   A, [wD209]                                    ;; 02:4275 $fa $09 $d2
     and  A, $20                                        ;; 02:4278 $e6 $20
     jr   Z, .jr_02_429a                                ;; 02:427a $28 $1e
@@ -222,7 +222,7 @@ call_02_4275:
     jp   NZ, call_02_4ccd                              ;; 02:42a6 $c2 $cd $4c
     jp   call_02_489a                                    ;; 02:42a9 $c3 $9a $48
 
-call_02_42ac:
+call_02_42ac_PlayerAction_DoubleJump:
     ld   A, [wD209]                                    ;; 02:42ac $fa $09 $d2
     and  A, $20                                        ;; 02:42af $e6 $20
     jr   Z, .jr_02_42d1                                ;; 02:42b1 $28 $1e
@@ -247,7 +247,10 @@ call_02_42ac:
     and  A, $02                                        ;; 02:42d9 $e6 $02
     jr   NZ, .jr_02_42b3                               ;; 02:42db $20 $d6
     jp   call_02_489a                                    ;; 02:42dd $c3 $9a $48
-    db   $c9, $fa, $09, $d2, $e6, $20, $28, $05        ;; 02:42e0 ????????
+call_02_42e0_PlayerAction_None:                             ;; 02:42e0
+    ret
+
+    db   $fa, $09, $d2, $e6, $20, $28, $05        ;; 02:42e0 ????????
     db   $3e, $30, $ea, $4c, $d7, $21, $4c, $d7        ;; 02:42e8 ????????
     db   $35, $c0, $3e, $02, $c3, $cd, $4c             ;; 02:42f0 ???????
 

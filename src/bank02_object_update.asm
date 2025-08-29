@@ -3,7 +3,7 @@
 SECTION "bank02", ROMX[$4000], BANK[$02]
 
 ; This file updates all objects.
-; Below is a table of jump tables, one for each object
+; Below is a list of jump tables, one for each object, starting with Player
 
 data_02_4000_ObjectJumpTables:
     dw   data_02_4120                                      ;; 02:4000 w.
@@ -31,127 +31,125 @@ data_02_4000_ObjectJumpTables:
     dw   data_02_4e73 
     dw   data_02_4e77 
     dw   data_02_4e7b        ;; 02:402a ????????
-    dw   $4e83 
-    dw   $4e93 
-    dw   $4e97 
-    dw   $4ea3       ;; 02:4032 ????????
-    dw   $4ea7                                         ;; 02:403a wW
-    dw   $4eb3
-    dw   $4ebb                            ;; 02:403c ????
-    dw   $4ec3                                         ;; 02:4040 wW
-    dw   $4ecb                                      ;; 02:4042 ??
-    dw   $4ecf                                         ;; 02:4044 wW
-    dw   $4edb                                      ;; 02:4046 ??
-    dw   $4edf                                         ;; 02:4048 wW
-    dw   $4ee3                                         ;; 02:404a wW
-    dw   $4eef                                      ;; 02:404c ??
-    dw   $4f07                                         ;; 02:404e wW
-    dw   $4f0b                                         ;; 02:4050 wW
-    dw   $4f0f                                      ;; 02:4052 ??
-    dw   $4f13                                         ;; 02:4054 wW
-    dw   $4f1b
-    dw   $4f27                            ;; 02:4056 ????
-    dw   $4f2f                                         ;; 02:405a wW
-    dw   $4f33                                         ;; 02:405c wW
-    dw   $4f37                                         ;; 02:405e wW
-    dw   $4f43 
-    dw   $4f4b 
-    dw   $4f57 
-    dw   $4f5b        ;; 02:4060 ????????
-    dw   $4f5f 
-    dw   $4f6b 
-    dw   $4f73 
-    dw   $4f77        ;; 02:4068 ????????
-    dw   $4f7f 
-    dw   $4f87 
-    dw   $4f8b 
-    dw   $4f8f        ;; 02:4070 ????????
-    dw   $4f93 
-    dw   $4f97 
-    dw   $4f9b 
-    dw   $4fab        ;; 02:4078 ????????
-    dw   $4faf 
-    dw   $4fb3 
-    dw   $4fb7 
-    dw   $4fbb        ;; 02:4080 ????????
-    dw   $4fc7 
-    dw   $4fcf 
-    dw   $4fd7 
-    dw   $4fdb        ;; 02:4088 ????????
-    dw   $4fdf 
-    dw   $4fe3 
-    dw   $4fe7 
-    dw   $4feb        ;; 02:4090 ????????
-    dw   $4fef 
-    dw   $4ff3 
-    dw   $4ffb 
-    dw   $4fff        ;; 02:4098 ????????
-    dw   $5003 
-    dw   $5007 
-    dw   $500b 
-    dw   $5013        ;; 02:40a0 ????????
-    dw   $501f 
-    dw   $502f 
-    dw   $5037 
-    dw   $5043        ;; 02:40a8 ????????
-    dw   $5047 
-    dw   $504f 
-    dw   $5053 
-    dw   $505b        ;; 02:40b0 ????????
-    dw   $5063 
-    dw   $5067 
-    dw   $506b 
-    dw   $5077        ;; 02:40b8 ????????
-    dw   $507b 
-    dw   $507f 
-    dw   $5083 
-    dw   $5087        ;; 02:40c0 ????????
-    dw   $508b 
-    dw   $508f 
-    dw   $5093 
-    dw   $5097        ;; 02:40c8 ????????
-    dw   $509b 
-    dw   $509f 
-    dw   $50a3 
-    dw   $50b7        ;; 02:40d0 ????????
-    dw   $50bb 
-    dw   $50bf 
-    dw   $50c3 
-    dw   $50cf        ;; 02:40d8 ????????
-    dw   $50d3 
-    dw   $50d7 
-    dw   $50db 
-    dw   $50e3        ;; 02:40e0 ????????
-    dw   $50eb 
-    dw   $50ef 
-    dw   $50f3 
-    dw   $50f7        ;; 02:40e8 ????????
-    dw   $50ff 
-    dw   $5107 
-    dw   $510b 
-    dw   $5113        ;; 02:40f0 ????????
-    dw   $5117 
-    dw   $511f 
-    dw   $5123 
-    dw   $512f        ;; 02:40f8 ????????
-    dw   $5133 
-    dw   $5137 
-    dw   $513b 
-    dw   $513f        ;; 02:4100 ????????
-    dw   $5147 
-    dw   $5157 
-    dw   $515f 
-    dw   $518b        ;; 02:4108 ????????
-    dw   $518f 
-    dw   $5193 
-    dw   $5197 
-    dw   $519b        ;; 02:4110 ????????
-    dw   $51a3 
-    dw   $51ab 
-    dw   $51af                  ;; 02:4118 ??????
+    dw   data_02_4e83 
+    dw   data_02_4e93 
+    dw   data_02_4e97 
+    dw   data_02_4ea3       ;; 02:4032 ????????
+    dw   data_02_4ea7                                         ;; 02:403a wW
+    dw   data_02_4eb3
+    dw   data_02_4ebb                            ;; 02:403c ????
+    dw   data_02_4ec3                                         ;; 02:4040 wW
+    dw   data_02_4ecb                                      ;; 02:4042 ??
+    dw   data_02_4ecf                                         ;; 02:4044 wW
+    dw   data_02_4edb                                      ;; 02:4046 ??
+    dw   data_02_4edf                                         ;; 02:4048 wW
+    dw   data_02_4ee3                                         ;; 02:404a wW
+    dw   data_02_4eef                                      ;; 02:404c ??
+    dw   data_02_4f07                                         ;; 02:404e wW
+    dw   data_02_4f0b                                         ;; 02:4050 wW
+    dw   data_02_4f0f                                      ;; 02:4052 ??
+    dw   data_02_4f13                                         ;; 02:4054 wW
+    dw   data_02_4f1b
+    dw   data_02_4f27                            ;; 02:4056 ????
+    dw   data_02_4f2f                                         ;; 02:405a wW
+    dw   data_02_4f33                                         ;; 02:405c wW
+    dw   data_02_4f37                                         ;; 02:405e wW
+    dw   data_02_4f43 
+    dw   data_02_4f4b 
+    dw   data_02_4f57 
+    dw   data_02_4f5b        ;; 02:4060 ????????
+    dw   data_02_4f5f 
+    dw   data_02_4f6b 
+    dw   data_02_4f73 
+    dw   data_02_4f77        ;; 02:4068 ????????
+    dw   data_02_4f7f 
+    dw   data_02_4f87 
+    dw   data_02_4f8b 
+    dw   data_02_4f8f        ;; 02:4070 ????????
+    dw   data_02_4f93 
+    dw   data_02_4f97 
+    dw   data_02_4f9b 
+    dw   data_02_4fab        ;; 02:4078 ????????
+    dw   data_02_4faf 
+    dw   data_02_4fb3 
+    dw   data_02_4fb7 
+    dw   data_02_4fbb        ;; 02:4080 ????????
+    dw   data_02_4fc7 
+    dw   data_02_4fcf 
+    dw   data_02_4fd7 
+    dw   data_02_4fdb        ;; 02:4088 ????????
+    dw   data_02_4fdf 
+    dw   data_02_4fe3 
+    dw   data_02_4fe7 
+    dw   data_02_4feb        ;; 02:4090 ????????
+    dw   data_02_4fef 
+    dw   data_02_4ff3 
+    dw   data_02_4ffb 
+    dw   data_02_4fff        ;; 02:4098 ????????
+    dw   data_02_5003 
+    dw   data_02_5007 
+    dw   data_02_500b 
+    dw   data_02_5013        ;; 02:40a0 ????????
+    dw   data_02_501f 
+    dw   data_02_502f 
+    dw   data_02_5037 
+    dw   data_02_5043        ;; 02:40a8 ????????
+    dw   data_02_5047 
+    dw   data_02_504f 
+    dw   data_02_5053 
+    dw   data_02_505b        ;; 02:40b0 ????????
+    dw   data_02_5063 
+    dw   data_02_5067 
+    dw   data_02_506b 
+    dw   data_02_5077        ;; 02:40b8 ????????
+    dw   data_02_507b 
+    dw   data_02_507f 
+    dw   data_02_5083 
+    dw   data_02_5087        ;; 02:40c0 ????????
+    dw   data_02_508b 
+    dw   data_02_508f 
+    dw   data_02_5093 
+    dw   data_02_5097        ;; 02:40c8 ????????
+    dw   data_02_509b 
+    dw   data_02_509f 
+    dw   data_02_50a3 
+    dw   data_02_50b7        ;; 02:40d0 ????????
+    dw   data_02_50bb 
+    dw   data_02_50bf 
+    dw   data_02_50c3 
+    dw   data_02_50cf        ;; 02:40d8 ????????
+    dw   data_02_50d3 
+    dw   data_02_50d7 
+    dw   data_02_50db 
+    dw   data_02_50e3        ;; 02:40e0 ????????
+    dw   data_02_50eb 
+    dw   data_02_50ef 
+    dw   data_02_50f3 
+    dw   data_02_50f7        ;; 02:40e8 ????????
+    dw   data_02_50ff 
+    dw   data_02_5107 
+    dw   data_02_510b 
+    dw   data_02_5113        ;; 02:40f0 ????????
+    dw   data_02_5117 
+    dw   data_02_511f 
+    dw   data_02_5123 
+    dw   data_02_512f        ;; 02:40f8 ????????
+    dw   data_02_5133 
+    dw   data_02_5137 
+    dw   data_02_513b 
+    dw   data_02_513f        ;; 02:4100 ????????
+    dw   data_02_5147 
+    dw   data_02_5157 
+    dw   data_02_515f 
+    dw   data_02_518b        ;; 02:4108 ????????
+    dw   data_02_518f 
+    dw   data_02_5193 
+    dw   data_02_5197 
+    dw   data_02_519b        ;; 02:4110 ????????
+    dw   data_02_51a3 
+    dw   data_02_51ab 
+    dw   data_02_51af                  ;; 02:4118 ??????
     dw   data_02_51b3                                         ;; 02:411e wW
-
-INCLUDE "bank02_player_actions.asm"
 
 INCLUDE "bank02_player_update.asm"
 

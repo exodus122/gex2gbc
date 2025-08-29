@@ -320,7 +320,8 @@ def extract_bank_01():
         out2 = open('./banks/bank_'+bank+'/text.txt', "a")
         out2.write('data_'+bank2+'_'+addr_str+':\n    INCBIN \"./gfx/misc_sprites/menus/image_'+bank+'_'+addr_str+'.bin\"\n')
         out2.close()
-        
+    
+    # menu sprites
     addrs = [0x7500, 0x7543, 0x7586, 0x7709, 0x7b8c, 0x7bcf]
     sizes = [0x40,   0x40,   0x180,  0x480,  0x40,   0x40]
     widths = [2,     2,      12,      18,      2,      2]
@@ -375,5 +376,5 @@ def extract_bank_09():
 #extract_splash()
 #extract_bank03()
 #extract_bank03_new()
-#extract_bank_01()
-extract_bank_09()
+#extract_bank_09()
+extract_bank_01()
