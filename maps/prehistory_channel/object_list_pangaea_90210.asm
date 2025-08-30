@@ -1,239 +1,239 @@
-    db   $03
+    db   Object_TVButton
     dw   $06a0, $0778
     db   $36, $34, $3c
     db   $3a, $00, $00, $00, $00, $00, $00, $00
 
-    db   $04
+    db   Object_RedRemote
     dw   $06a0, $0740
     db   $36, $34, $3b
     db   $39, $00, $00, $00, $00, $00, $00, $00
 
-    db   $03
+    db   Object_TVButton
     dw   $0940, $0478
     db   $4b, $49, $24
     db   $22, $00, $00, $00, $00, $00, $00, $00
 
-    db   $04
+    db   Object_RedRemote
     dw   $0940, $0440
     db   $4b, $49, $23
     db   $21, $00, $00, $00, $00, $00, $00, $00
 
-    db   $37
+    db   Object_PreHistory_FallingLava
     dw   $0cd0, $0050
     db   $6d, $65, $0b
     db   $01, $00, $00, $00, $00, $00, $00, $00
 
-    db   $37
+    db   Object_PreHistory_FallingLava
     dw   $0d30, $0050
     db   $6d, $65, $0b
     db   $01, $00, $00, $00, $00, $00, $00, $00
 
-    db   $37
+    db   Object_PreHistory_FallingLava
     dw   $0d90, $0050
     db   $6d, $65, $06
     db   $01, $00, $00, $00, $00, $00, $00, $00
 
-    db   $34
+    db   Object_PreHistory_Egg
     dw   $0f70, $0070
     db   $7c, $79, $04
     db   $02, $00, $00, $00, $00, $00, $00, $00
 
-    db   $43
+    db   Object_PreHistory_FirePlant
     dw   $0b70, $00b8
     db   $5c, $5a, $06
     db   $04, $00, $00, $00, $00, $00, $00, $00
 
-    db   $34
+    db   Object_PreHistory_Egg
     dw   $0c70, $0150
     db   $65, $61, $0b
     db   $09, $00, $00, $00, $00, $00, $00, $00
 
-    db   $34
+    db   Object_PreHistory_Egg
     dw   $0d50, $0150
     db   $6c, $69, $0b
     db   $09, $00, $00, $00, $00, $00, $00, $00
 
-    db   $3c
+    db   Object_PreHistory_Pterosaur
     dw   $0310, $0170
     db   $1a, $15, $0c
     db   $0a, $00, $00, $00, $00, $00, $00, $00
 
-    db   $3c
+    db   Object_PreHistory_Pterosaur
     dw   $09d0, $01d0
     db   $4f, $4b, $0f
     db   $0d, $00, $00, $00, $00, $00, $00, $00
 
-    db   $39
+    db   Object_PreHistory_MovingPlatform
     dw   $0e70, $01c0
     db   $74, $72, $13
     db   $0d, $02, $ff, $10, $00, $00, $00, $00
 
-    db   $34
+    db   Object_PreHistory_Egg
     dw   $0850, $01f0
     db   $43, $41, $10
     db   $0e, $00, $00, $00, $00, $00, $00, $00
 
-    db   $3e
+    db   Object_PreHistory_FallingBoulder
     dw   $05a0, $0230
     db   $31, $28, $12
     db   $10, $20, $00, $00, $00, $00, $00, $00
 
-    db   $38
+    db   Object_PreHistory_LavaRaft
     dw   $08d0, $0204
     db   $4c, $44, $11
     db   $0f, $a0, $ff, $10, $00, $00, $00, $00
 
-    db   $34
+    db   Object_PreHistory_Egg
     dw   $03f0, $0230
     db   $21, $1d, $12
     db   $10, $00, $00, $00, $00, $00, $00, $00
 
-    db   $43
+    db   Object_PreHistory_FirePlant
     dw   $0750, $0238
     db   $3b, $39, $12
     db   $10, $00, $00, $00, $00, $00, $00, $00
 
-    db   $39
+    db   Object_PreHistory_MovingPlatform
     dw   $0af0, $0220
     db   $58, $56, $15
     db   $10, $02, $ff, $10, $00, $00, $00, $00
 
-    db   $34
+    db   Object_PreHistory_Egg
     dw   $0d30, $0250
     db   $6b, $67, $13
     db   $11, $00, $00, $00, $00, $00, $00, $00
 
-    db   $39
+    db   Object_PreHistory_MovingPlatform
     dw   $0eb0, $0240
     db   $76, $74, $13
     db   $0d, $52, $ff, $10, $00, $00, $00, $00
 
-    db   $43
+    db   Object_PreHistory_FirePlant
     dw   $0f70, $0258
     db   $7c, $7a, $13
     db   $11, $00, $00, $00, $00, $00, $00, $00
 
-    db   $33
+    db   Object_PreHistory_Dragonfly
     dw   $0110, $0270
     db   $09, $04, $14
     db   $12, $00, $00, $00, $00, $00, $00, $00
 
-    db   $43
+    db   Object_PreHistory_FirePlant
     dw   $01d0, $0278
     db   $0f, $0d, $14
     db   $12, $00, $00, $00, $00, $00, $00, $00
 
-    db   $39
+    db   Object_PreHistory_MovingPlatform
     dw   $0b30, $0280
     db   $5a, $58, $15
     db   $10, $02, $ff, $10, $00, $00, $00, $00
 
-    db   $3c
+    db   Object_PreHistory_Pterosaur
     dw   $0a70, $0550
     db   $55, $51, $2b
     db   $29, $00, $00, $00, $00, $00, $00, $00
 
-    db   $3c
+    db   Object_PreHistory_Pterosaur
     dw   $0bb0, $0550
     db   $5f, $5b, $2b
     db   $29, $00, $00, $00, $00, $00, $00, $00
 
-    db   $38
+    db   Object_PreHistory_LavaRaft
     dw   $0a10, $0584
     db   $63, $4e, $2d
     db   $2b, $a0, $ff, $10, $00, $00, $00, $00
 
-    db   $48
+    db   Object_PreHistory_Triceratops
     dw   $08d0, $05b0
     db   $49, $44, $2e
     db   $2c, $00, $00, $00, $00, $00, $00, $00
 
-    db   $3e
+    db   Object_PreHistory_FallingBoulder
     dw   $00d0, $06f0
     db   $07, $05, $38
     db   $36, $00, $00, $00, $00, $00, $00, $00
 
-    db   $43
+    db   Object_PreHistory_FirePlant
     dw   $07d0, $05f8
     db   $3f, $3d, $30
     db   $2e, $00, $00, $00, $00, $00, $00, $00
 
-    db   $3e
+    db   Object_PreHistory_FallingBoulder
     dw   $0430, $06d0
     db   $22, $20, $37
     db   $35, $00, $00, $00, $00, $00, $00, $00
 
-    db   $3e
+    db   Object_PreHistory_FallingBoulder
     dw   $03d0, $06f0
     db   $1f, $1d, $38
     db   $36, $00, $00, $00, $00, $00, $00, $00
 
-    db   $39
+    db   Object_PreHistory_MovingPlatform
     dw   $05b0, $0640
     db   $2e, $2c, $35
     db   $31, $02, $ff, $10, $00, $00, $00, $00
 
-    db   $39
+    db   Object_PreHistory_MovingPlatform
     dw   $05f0, $0680
     db   $30, $2e, $35
     db   $31, $02, $ff, $10, $00, $00, $00, $00
 
-    db   $43
+    db   Object_PreHistory_FirePlant
     dw   $01d0, $06f8
     db   $0f, $0d, $38
     db   $36, $00, $00, $00, $00, $00, $00, $00
 
-    db   $05
+    db   Object_SilverRemote
     dw   $02d0, $0770
     db   $17, $15, $3c
     db   $3a, $00, $00, $00, $00, $00, $00, $00
 
-    db   $48
+    db   Object_PreHistory_Triceratops
     dw   $0b10, $0770
     db   $5c, $54, $3c
     db   $3a, $00, $00, $00, $00, $00, $00, $00
 
-    db   $38
+    db   Object_PreHistory_LavaRaft
     dw   $0290, $0784
     db   $1b, $0f, $3d
     db   $3b, $a0, $ff, $10, $00, $00, $00, $00
 
-    db   $39
+    db   Object_PreHistory_MovingPlatform
     dw   $0970, $07a0
     db   $4f, $49, $3e
     db   $3c, $a0, $ff, $10, $00, $00, $00, $00
 
-    db   $3c
+    db   Object_PreHistory_Pterosaur
     dw   $04b0, $07f0
     db   $27, $22, $40
     db   $3e, $00, $00, $00, $00, $00, $00, $00
 
-    db   $47
+    db   Object_PreHistory_Dinosaur
     dw   $07d0, $0810
     db   $40, $3c, $41
     db   $3f, $00, $00, $00, $00, $00, $00, $00
 
-    db   $38
+    db   Object_PreHistory_LavaRaft
     dw   $0470, $0824
     db   $24, $20, $42
     db   $40, $a0, $ff, $10, $00, $00, $00, $00
 
-    db   $38
+    db   Object_PreHistory_LavaRaft
     dw   $04f0, $0824
     db   $2a, $26, $42
     db   $40, $a0, $ff, $10, $00, $00, $00, $00
 
-    db   $38
+    db   Object_PreHistory_LavaRaft
     dw   $0690, $0824
     db   $38, $30, $42
     db   $40, $a0, $ff, $10, $00, $00, $00, $00
 
-    db   $33
+    db   Object_PreHistory_Dragonfly
     dw   $00b0, $0870
     db   $09, $03, $44
     db   $42, $00, $00, $00, $00, $00, $00, $00
 
-    db   $32
+    db   Object_PreHistory_FastDinosaur
     dw   $0290, $08d0
     db   $17, $0f, $47
     db   $45, $00, $00, $00, $00, $00, $00, $00

@@ -1,324 +1,324 @@
-    db   $03
+    db   Object_TVButton
     dw   $02c0, $03f8
     db   $17, $15, $20
     db   $1e, $00, $00, $00, $00, $00, $00, $00
 
-    db   $04
+    db   Object_RedRemote
     dw   $02c0, $03c0
     db   $17, $15, $1f
     db   $1d, $00, $00, $00, $00, $00, $00, $00
 
-    db   $03
+    db   Object_TVButton
     dw   $0f40, $0778
     db   $7b, $79, $3c
     db   $3a, $00, $00, $00, $00, $00, $00, $00
 
-    db   $04
+    db   Object_RedRemote
     dw   $0f40, $0740
     db   $7b, $79, $3b
     db   $39, $00, $00, $00, $00, $00, $00, $00
 
-    db   $7e
+    db   Object_CircuitCentral_PoweredPlaform
     dw   $0930, $0180
     db   $4a, $48, $0d
     db   $06, $5a, $ff, $10, $00, $00, $00, $00
 
-    db   $77
+    db   Object_CircuitCentral_Capacitor
     dw   $0e30, $0150
     db   $72, $70, $0b
     db   $07, $00, $00, $00, $00, $00, $00, $00
 
-    db   $77
+    db   Object_CircuitCentral_Capacitor
     dw   $0eb0, $0170
     db   $76, $74, $0c
     db   $08, $00, $00, $00, $00, $00, $00, $00
 
-    db   $05
+    db   Object_SilverRemote
     dw   $0090, $03d0
     db   $05, $03, $1f
     db   $1d, $00, $00, $00, $00, $00, $00, $00
 
-    db   $80
+    db   Object_CircuitCentral_WalkerRobot
     dw   $0170, $03f0
     db   $0e, $09, $20
     db   $1e, $00, $00, $00, $00, $00, $00, $00
 
-    db   $77
+    db   Object_CircuitCentral_Capacitor
     dw   $04b0, $0450
     db   $26, $24, $23
     db   $1f, $00, $00, $00, $00, $00, $00, $00
 
-    db   $77
+    db   Object_CircuitCentral_Capacitor
     dw   $0eb0, $0450
     db   $76, $74, $23
     db   $1f, $00, $00, $00, $00, $00, $00, $00
 
-    db   $77
+    db   Object_CircuitCentral_Capacitor
     dw   $0530, $0610
     db   $2a, $28, $31
     db   $2d, $00, $00, $00, $00, $00, $00, $00
 
-    db   $77
+    db   Object_CircuitCentral_Capacitor
     dw   $0b90, $0610
     db   $5d, $5b, $31
     db   $2d, $00, $00, $00, $00, $00, $00, $00
 
-    db   $77
+    db   Object_CircuitCentral_Capacitor
     dw   $0c10, $0610
     db   $61, $5f, $31
     db   $2d, $00, $00, $00, $00, $00, $00, $00
 
-    db   $7e
+    db   Object_CircuitCentral_PoweredPlaform
     dw   $0e70, $0780
     db   $78, $72, $3d
     db   $3b, $08, $ff, $10, $00, $00, $00, $00
 
-    db   $7e
+    db   Object_CircuitCentral_PoweredPlaform
     dw   $0ad0, $0800
     db   $57, $55, $41
     db   $3d, $5a, $ff, $10, $00, $00, $00, $00
 
-    db   $77
+    db   Object_CircuitCentral_Capacitor
     dw   $06f0, $0850
     db   $38, $36, $43
     db   $3f, $00, $00, $00, $00, $00, $00, $00
 
-    db   $77
+    db   Object_CircuitCentral_Capacitor
     dw   $0770, $0850
     db   $3c, $3a, $43
     db   $3f, $00, $00, $00, $00, $00, $00, $00
 
-    db   $80
+    db   Object_CircuitCentral_WalkerRobot
     dw   $0bd0, $0850
     db   $61, $59, $43
     db   $41, $00, $00, $00, $00, $00, $00, $00
 
-    db   $77
+    db   Object_CircuitCentral_Capacitor
     dw   $0450, $0870
     db   $23, $21, $44
     db   $40, $00, $00, $00, $00, $00, $00, $00
 
-    db   $7e
+    db   Object_CircuitCentral_PoweredPlaform
     dw   $0950, $0860
     db   $4b, $49, $44
     db   $3f, $5a, $ff, $10, $00, $00, $00, $00
 
-    db   $77
+    db   Object_CircuitCentral_Capacitor
     dw   $0410, $0890
     db   $21, $1f, $45
     db   $41, $00, $00, $00, $00, $00, $00, $00
 
-    db   $7d
+    db   Object_CircuitCentral_MovingPlatform
     dw   $04b0, $0890
     db   $32, $24, $45
     db   $3c, $00, $00, $00, $00, $00, $00, $00
 
-    db   $81
+    db   Object_CircuitCentral_PoweredWalkway
     dw   $0250, $01f0
     db   $13, $11, $10
     db   $0e, $01, $00, $00, $00, $00, $00, $00
 
-    db   $81
+    db   Object_CircuitCentral_PoweredWalkway
     dw   $0350, $01f0
     db   $1b, $19, $10
     db   $0e, $01, $00, $00, $00, $00, $00, $00
 
-    db   $82
+    db   Object_CircuitCentral_WalkwayActivator
     dw   $0af0, $0210
     db   $19, $13, $11
     db   $0e, $01, $00, $00, $00, $00, $00, $00
 
-    db   $81
+    db   Object_CircuitCentral_PoweredWalkway
     dw   $0990, $07f0
     db   $4d, $4b, $40
     db   $3e, $01, $00, $00, $00, $00, $00, $00
 
-    db   $81
+    db   Object_CircuitCentral_PoweredWalkway
     dw   $0a90, $07f0
     db   $55, $53, $40
     db   $3e, $01, $00, $00, $00, $00, $00, $00
 
-    db   $82
+    db   Object_CircuitCentral_WalkwayActivator
     dw   $0af0, $0810
     db   $53, $4d, $41
     db   $3e, $01, $00, $00, $00, $00, $00, $00
 
-    db   $81
+    db   Object_CircuitCentral_PoweredWalkway
     dw   $0950, $05f0
     db   $4b, $49, $30
     db   $2e, $01, $00, $00, $00, $00, $00, $00
 
-    db   $81
+    db   Object_CircuitCentral_PoweredWalkway
     dw   $0a50, $05f0
     db   $53, $51, $30
     db   $2e, $01, $00, $00, $00, $00, $00, $00
 
-    db   $82
+    db   Object_CircuitCentral_WalkwayActivator
     dw   $0af0, $0610
     db   $51, $4b, $31
     db   $2e, $01, $00, $00, $00, $00, $00, $00
 
-    db   $81
+    db   Object_CircuitCentral_PoweredWalkway
     dw   $02f0, $0190
     db   $18, $16, $0d
     db   $0b, $02, $00, $00, $00, $00, $00, $00
 
-    db   $81
+    db   Object_CircuitCentral_PoweredWalkway
     dw   $03f0, $0190
     db   $20, $1e, $0d
     db   $0b, $02, $00, $00, $00, $00, $00, $00
 
-    db   $82
+    db   Object_CircuitCentral_WalkwayActivator
     dw   $0af0, $01b0
     db   $1e, $18, $0e
     db   $0b, $02, $00, $00, $00, $00, $00, $00
 
-    db   $81
+    db   Object_CircuitCentral_PoweredWalkway
     dw   $0b10, $07b0
     db   $59, $57, $3e
     db   $3c, $02, $00, $00, $00, $00, $00, $00
 
-    db   $81
+    db   Object_CircuitCentral_PoweredWalkway
     dw   $0c10, $07b0
     db   $61, $5f, $3e
     db   $3c, $02, $00, $00, $00, $00, $00, $00
 
-    db   $82
+    db   Object_CircuitCentral_WalkwayActivator
     dw   $0af0, $07d0
     db   $5f, $59, $3f
     db   $3c, $02, $00, $00, $00, $00, $00, $00
 
-    db   $81
+    db   Object_CircuitCentral_PoweredWalkway
     dw   $07f0, $05f0
     db   $40, $3e, $30
     db   $2e, $02, $00, $00, $00, $00, $00, $00
 
-    db   $81
+    db   Object_CircuitCentral_PoweredWalkway
     dw   $08f0, $05f0
     db   $48, $46, $30
     db   $2e, $02, $00, $00, $00, $00, $00, $00
 
-    db   $82
+    db   Object_CircuitCentral_WalkwayActivator
     dw   $0af0, $0610
     db   $46, $40, $31
     db   $2e, $02, $00, $00, $00, $00, $00, $00
 
-    db   $81
+    db   Object_CircuitCentral_PoweredWalkway
     dw   $02b0, $00f0
     db   $16, $14, $08
     db   $06, $03, $00, $00, $00, $00, $00, $00
 
-    db   $81
+    db   Object_CircuitCentral_PoweredWalkway
     dw   $03b0, $00f0
     db   $1e, $1c, $08
     db   $06, $03, $00, $00, $00, $00, $00, $00
 
-    db   $82
+    db   Object_CircuitCentral_WalkwayActivator
     dw   $0af0, $0110
     db   $1c, $16, $09
     db   $06, $03, $00, $00, $00, $00, $00, $00
 
-    db   $81
+    db   Object_CircuitCentral_PoweredWalkway
     dw   $0cd0, $0770
     db   $67, $65, $3c
     db   $3a, $03, $00, $00, $00, $00, $00, $00
 
-    db   $81
+    db   Object_CircuitCentral_PoweredWalkway
     dw   $0e30, $0770
     db   $72, $70, $3c
     db   $3a, $03, $00, $00, $00, $00, $00, $00
 
-    db   $82
+    db   Object_CircuitCentral_WalkwayActivator
     dw   $0af0, $0790
     db   $70, $67, $3d
     db   $3a, $03, $00, $00, $00, $00, $00, $00
 
-    db   $81
+    db   Object_CircuitCentral_PoweredWalkway
     dw   $0690, $05f0
     db   $35, $33, $30
     db   $2e, $03, $00, $00, $00, $00, $00, $00
 
-    db   $81
+    db   Object_CircuitCentral_PoweredWalkway
     dw   $0790, $05f0
     db   $3d, $3b, $30
     db   $2e, $03, $00, $00, $00, $00, $00, $00
 
-    db   $82
+    db   Object_CircuitCentral_WalkwayActivator
     dw   $0af0, $0610
     db   $3b, $35, $31
     db   $2e, $03, $00, $00, $00, $00, $00, $00
 
-    db   $78
+    db   Object_CircuitCentral_PowerUp
     dw   $0670, $0150
     db   $34, $32, $0b
     db   $09, $08, $07, $00, $00, $00, $00, $00
 
-    db   $78
+    db   Object_CircuitCentral_PowerUp
     dw   $02d0, $0290
     db   $17, $15, $15
     db   $13, $60, $09, $00, $00, $00, $00, $00
 
-    db   $78
+    db   Object_CircuitCentral_PowerUp
     dw   $0630, $05f0
     db   $32, $30, $30
     db   $2e, $b0, $04, $00, $00, $00, $00, $00
 
-    db   $78
+    db   Object_CircuitCentral_PowerUp
     dw   $0ab0, $05f0
     db   $56, $54, $30
     db   $2e, $b0, $04, $00, $00, $00, $00, $00
 
-    db   $78
+    db   Object_CircuitCentral_PowerUp
     dw   $0230, $0690
     db   $12, $10, $35
     db   $33, $b0, $04, $00, $00, $00, $00, $00
 
-    db   $78
+    db   Object_CircuitCentral_PowerUp
     dw   $0c70, $0790
     db   $64, $62, $3d
     db   $3b, $58, $02, $00, $00, $00, $00, $00
 
-    db   $78
+    db   Object_CircuitCentral_PowerUp
     dw   $0170, $0830
     db   $0c, $0a, $42
     db   $40, $d0, $02, $00, $00, $00, $00, $00
 
-    db   $78
+    db   Object_CircuitCentral_PowerUp
     dw   $0c70, $0830
     db   $64, $62, $42
     db   $40, $b0, $04, $00, $00, $00, $00, $00
 
-    db   $78
+    db   Object_CircuitCentral_PowerUp
     dw   $05b0, $08d0
     db   $2e, $2c, $47
     db   $45, $2c, $01, $00, $00, $00, $00, $00
 
-    db   $7c
+    db   Object_CircuitCentral_ElectricBall
     dw   $07e8, $00d7
     db   $47, $3e, $08
     db   $05, $00, $00, $00, $00, $00, $00, $00
 
-    db   $7c
+    db   Object_CircuitCentral_ElectricBall
     dw   $0768, $0137
     db   $47, $3a, $0c
     db   $08, $01, $00, $00, $00, $00, $00, $00
 
-    db   $7c
+    db   Object_CircuitCentral_ElectricBall
     dw   $0c88, $0137
     db   $6e, $63, $0b
     db   $08, $02, $00, $00, $00, $00, $00, $00
 
-    db   $7c
+    db   Object_CircuitCentral_ElectricBall
     dw   $0988, $00f7
     db   $61, $4b, $0b
     db   $06, $03, $00, $00, $00, $00, $00, $00
 
-    db   $7c
+    db   Object_CircuitCentral_ElectricBall
     dw   $05a8, $0437
     db   $45, $2c, $24
     db   $20, $04, $00, $00, $00, $00, $00, $00
 
-    db   $7c
+    db   Object_CircuitCentral_ElectricBall
     dw   $08e8, $0437
     db   $6e, $46, $22
     db   $20, $05, $00, $00, $00, $00, $00, $00

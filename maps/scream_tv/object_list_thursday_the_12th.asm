@@ -1,59 +1,59 @@
-    db   $09
+    db   Object_ScreamTV_FallingPlatform
     dw   $0e00, $09e0
     db   $71, $6f, $53
     db   $4e, $38, $00, $00, $00, $00, $00, $00
 
-    db   $09
+    db   Object_ScreamTV_FallingPlatform
     dw   $0e00, $0980
     db   $71, $6f, $4f
     db   $4b, $28, $00, $00, $00, $00, $00, $00
 
-    db   $09
+    db   Object_ScreamTV_FallingPlatform
     dw   $0d50, $0840
     db   $6b, $69, $46
     db   $41, $38, $00, $00, $00, $00, $00, $00
 
-    db   $09
+    db   Object_ScreamTV_FallingPlatform
     dw   $0cc0, $07e0
     db   $67, $65, $42
     db   $3e, $28, $00, $00, $00, $00, $00, $00
 
-    db   $09
+    db   Object_ScreamTV_FallingPlatform
     dw   $0d08, $07e0
     db   $69, $67, $42
     db   $3e, $28, $00, $00, $00, $00, $00, $00
 
-    db   $09
+    db   Object_ScreamTV_FallingPlatform
     dw   $0e40, $07e0
     db   $72, $71, $42
     db   $3e, $28, $00, $00, $00, $00, $00, $00
 
-    db   $09
+    db   Object_ScreamTV_FallingPlatform
     dw   $0e00, $0760
     db   $71, $6f, $3f
     db   $3a, $38, $00, $00, $00, $00, $00, $00
 
-    db   $09
+    db   Object_ScreamTV_FallingPlatform
     dw   $0ea0, $0700
     db   $76, $74, $3b
     db   $37, $28, $00, $00, $00, $00, $00, $00
 
-    db   $09
+    db   Object_ScreamTV_FallingPlatform
     dw   $0d60, $0700
     db   $6c, $6a, $3b
     db   $37, $28, $00, $00, $00, $00, $00, $00
 
-    db   $09
+    db   Object_ScreamTV_FallingPlatform
     dw   $0d60, $0640
     db   $6c, $6a, $35
     db   $31, $28, $00, $00, $00, $00, $00, $00
 
-    db   $09
+    db   Object_ScreamTV_FallingPlatform
     dw   $0df8, $0640
     db   $70, $6e, $35
     db   $31, $28, $00, $00, $00, $00, $00, $00
 
-    db   $06
+    db   Object_GoldRemote
     dw   $0ea0, $0c80
     db   $76, $74, $65
     db   $63, $00, $00, $00, $00, $00, $00, $00

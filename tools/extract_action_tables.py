@@ -156,7 +156,7 @@ jump_table_list_data = bank002_data[0x0000:0x089a]
 
 # get the data at each of those
 
-out = open('./object_actions.asm', "w")
+out = open('./banks/object_actions.asm', "w")
 
 data_list_pointers = []
 
@@ -194,7 +194,7 @@ out.close()
 data_list_pointers.sort()
 #print(data_list_pointers)
 
-out2 = open('./action_data.asm', "w")
+out2 = open('./banks/action_data.asm', "w")
 
 ptr_count = 0
 while ptr_count < len(data_list_pointers):

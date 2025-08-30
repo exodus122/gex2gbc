@@ -1,239 +1,239 @@
-    db   $03
+    db   Object_TVButton
     dw   $05a0, $0498
     db   $2e, $2c, $25
     db   $23, $00, $00, $00, $00, $00, $00, $00
 
-    db   $04
+    db   Object_RedRemote
     dw   $05a0, $0460
     db   $2e, $2c, $24
     db   $22, $00, $00, $00, $00, $00, $00, $00
 
-    db   $03
+    db   Object_TVButton
     dw   $0d00, $07d8
     db   $69, $67, $3f
     db   $3d, $00, $00, $00, $00, $00, $00, $00
 
-    db   $04
+    db   Object_RedRemote
     dw   $0d00, $07a0
     db   $69, $67, $3e
     db   $3c, $00, $00, $00, $00, $00, $00, $00
 
-    db   $54
+    db   Object_KungFuTheater_JumpingNinja
     dw   $0290, $06d0
     db   $19, $10, $37
     db   $35, $04, $00, $00, $00, $00, $00, $00
 
-    db   $54
+    db   Object_KungFuTheater_JumpingNinja
     dw   $0c50, $06b0
     db   $68, $57, $36
     db   $34, $04, $00, $00, $00, $00, $00, $00
 
-    db   $5f
+    db   Object_KungFuTheater_MovingPlatform
     dw   $0770, $00c0
     db   $3e, $39, $07
     db   $05, $a0, $ff, $10, $00, $00, $00, $00
 
-    db   $5f
+    db   Object_KungFuTheater_MovingPlatform
     dw   $0610, $00c0
     db   $31, $2f, $08
     db   $04, $52, $ff, $10, $00, $00, $00, $00
 
-    db   $5a
+    db   Object_KungFuTheater_TallJar
     dw   $0e10, $01b0
     db   $71, $6f, $0e
     db   $0c, $00, $00, $00, $00, $00, $00, $00
 
-    db   $5f
+    db   Object_KungFuTheater_MovingPlatform
     dw   $0210, $01e0
     db   $15, $0e, $10
     db   $0e, $a0, $ff, $10, $00, $00, $00, $00
 
-    db   $05
+    db   Object_SilverRemote
     dw   $0140, $0230
     db   $0b, $09, $12
     db   $10, $00, $00, $00, $00, $00, $00, $00
 
-    db   $5a
+    db   Object_KungFuTheater_TallJar
     dw   $08b0, $0250
     db   $46, $44, $13
     db   $11, $00, $00, $00, $00, $00, $00, $00
 
-    db   $55
+    db   Object_KungFuTheater_SamuraiBody
     dw   $0bb0, $0250
     db   $60, $5c, $13
     db   $11, $00, $00, $00, $00, $00, $00, $00
 
-    db   $5b
+    db   Object_KungFuTheater_Jar
     dw   $0110, $02b0
     db   $09, $07, $16
     db   $14, $00, $00, $00, $00, $00, $00, $00
 
-    db   $5b
+    db   Object_KungFuTheater_Jar
     dw   $0370, $02b0
     db   $1c, $1a, $16
     db   $14, $00, $00, $00, $00, $00, $00, $00
 
-    db   $5a
+    db   Object_KungFuTheater_TallJar
     dw   $0c60, $02d0
     db   $64, $62, $17
     db   $15, $00, $00, $00, $00, $00, $00, $00
 
-    db   $57
+    db   Object_KungFuTheater_Lizard
     dw   $0d10, $0398
     db   $6a, $67, $1d
     db   $1b, $00, $00, $00, $00, $00, $00, $00
 
-    db   $5b
+    db   Object_KungFuTheater_Jar
     dw   $0070, $03b0
     db   $04, $02, $1e
     db   $1c, $00, $00, $00, $00, $00, $00, $00
 
-    db   $5b
+    db   Object_KungFuTheater_Jar
     dw   $02f0, $03b0
     db   $18, $16, $1e
     db   $1c, $00, $00, $00, $00, $00, $00, $00
 
-    db   $5b
+    db   Object_KungFuTheater_Jar
     dw   $03d0, $03b0
     db   $1f, $1d, $1e
     db   $1c, $00, $00, $00, $00, $00, $00, $00
 
-    db   $57
+    db   Object_KungFuTheater_Lizard
     dw   $0d30, $03d8
     db   $6b, $68, $1f
     db   $1d, $00, $00, $00, $00, $00, $00, $00
 
-    db   $57
+    db   Object_KungFuTheater_Lizard
     dw   $0c50, $03f8
     db   $65, $60, $20
     db   $1e, $00, $00, $00, $00, $00, $00, $00
 
-    db   $4b
+    db   Object_KungFuTheater_HangingBlade
     dw   $0870, $0430
     db   $44, $42, $23
     db   $1c, $00, $00, $00, $00, $00, $00, $00
 
-    db   $4b
+    db   Object_KungFuTheater_HangingBlade
     dw   $0930, $0430
     db   $4a, $48, $23
     db   $1c, $00, $00, $00, $00, $00, $00, $00
 
-    db   $5f
+    db   Object_KungFuTheater_MovingPlatform
     dw   $0710, $0460
     db   $3a, $37, $24
     db   $22, $a0, $ff, $10, $00, $00, $00, $00
 
-    db   $5b
+    db   Object_KungFuTheater_Jar
     dw   $0570, $0490
     db   $2c, $2a, $25
     db   $23, $00, $00, $00, $00, $00, $00, $00
 
-    db   $4c
+    db   Object_KungFuTheater_Cannon
     dw   $0234, $04f4
     db   $12, $10, $28
     db   $26, $00, $00, $00, $00, $00, $00, $00
 
-    db   $50
+    db   Object_KungFuTheater_DragonHead
     dw   $01d0, $04f0
     db   $15, $0d, $2b
     db   $23, $00, $00, $00, $00, $00, $00, $00
 
-    db   $4f
+    db   Object_KungFuTheater_DragonBodySegment
     dw   $01d0, $04f0
     db   $15, $0d, $2b
     db   $23, $37, $03, $01, $00, $00, $00, $00
 
-    db   $4f
+    db   Object_KungFuTheater_DragonBodySegment
     dw   $01d0, $04f0
     db   $15, $0d, $2b
     db   $23, $1e, $03, $02, $00, $00, $00, $00
 
-    db   $4f
+    db   Object_KungFuTheater_DragonBodySegment
     dw   $01d0, $04f0
     db   $15, $0d, $2b
     db   $23, $05, $03, $03, $00, $00, $00, $00
 
-    db   $5a
+    db   Object_KungFuTheater_TallJar
     dw   $0840, $04d0
     db   $43, $41, $27
     db   $25, $00, $00, $00, $00, $00, $00, $00
 
-    db   $5a
+    db   Object_KungFuTheater_TallJar
     dw   $0920, $04d0
     db   $4a, $48, $27
     db   $25, $00, $00, $00, $00, $00, $00, $00
 
-    db   $5b
+    db   Object_KungFuTheater_Jar
     dw   $0510, $0530
     db   $29, $27, $2a
     db   $28, $00, $00, $00, $00, $00, $00, $00
 
-    db   $5b
+    db   Object_KungFuTheater_Jar
     dw   $05d0, $0570
     db   $2f, $2d, $2c
     db   $2a, $00, $00, $00, $00, $00, $00, $00
 
-    db   $5b
+    db   Object_KungFuTheater_Jar
     dw   $0bb0, $05f0
     db   $5e, $5c, $30
     db   $2e, $00, $00, $00, $00, $00, $00, $00
 
-    db   $5b
+    db   Object_KungFuTheater_Jar
     dw   $0c30, $0600
     db   $62, $60, $31
     db   $2f, $00, $00, $00, $00, $00, $00, $00
 
-    db   $5a
+    db   Object_KungFuTheater_TallJar
     dw   $0760, $0670
     db   $3c, $3a, $34
     db   $32, $00, $00, $00, $00, $00, $00, $00
 
-    db   $5a
+    db   Object_KungFuTheater_TallJar
     dw   $09b0, $0690
     db   $4e, $4c, $35
     db   $33, $00, $00, $00, $00, $00, $00, $00
 
-    db   $5a
+    db   Object_KungFuTheater_TallJar
     dw   $00d0, $06b0
     db   $07, $05, $36
     db   $34, $00, $00, $00, $00, $00, $00, $00
 
-    db   $5f
+    db   Object_KungFuTheater_MovingPlatform
     dw   $03d0, $06a0
     db   $1f, $1d, $36
     db   $33, $52, $00, $10, $00, $00, $00, $00
 
-    db   $5a
+    db   Object_KungFuTheater_TallJar
     dw   $04f0, $06b0
     db   $28, $26, $36
     db   $34, $00, $00, $00, $00, $00, $00, $00
 
-    db   $5a
+    db   Object_KungFuTheater_TallJar
     dw   $05d0, $06b0
     db   $2f, $2d, $36
     db   $34, $00, $00, $00, $00, $00, $00, $00
 
-    db   $5f
+    db   Object_KungFuTheater_MovingPlatform
     dw   $0870, $0770
     db   $44, $42, $3e
     db   $39, $52, $01, $10, $00, $00, $00, $00
 
-    db   $5f
+    db   Object_KungFuTheater_MovingPlatform
     dw   $0b50, $0820
     db   $5b, $58, $42
     db   $40, $a0, $ff, $10, $00, $00, $00, $00
 
-    db   $5f
+    db   Object_KungFuTheater_MovingPlatform
     dw   $0c10, $0810
     db   $61, $5f, $42
     db   $3f, $52, $ff, $10, $00, $00, $00, $00
 
-    db   $5f
+    db   Object_KungFuTheater_MovingPlatform
     dw   $0c90, $0800
     db   $65, $62, $41
     db   $3f, $a0, $ff, $10, $00, $00, $00, $00
 
-    db   $5f
+    db   Object_KungFuTheater_MovingPlatform
     dw   $0b90, $0830
     db   $5d, $5a, $42
     db   $40, $a0, $ff, $10, $00, $00, $00, $00

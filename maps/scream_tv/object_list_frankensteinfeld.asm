@@ -1,249 +1,249 @@
-    db   $03
+    db   Object_TVButton
     dw   $03c0, $0758
     db   $1f, $1d, $3b
     db   $39, $00, $00, $00, $00, $00, $00, $00
 
-    db   $04
+    db   Object_RedRemote
     dw   $03c0, $0720
     db   $1f, $1d, $3a
     db   $38, $00, $00, $00, $00, $00, $00, $00
 
-    db   $03
+    db   Object_TVButton
     dw   $0340, $07b8
     db   $1b, $19, $3e
     db   $3c, $00, $00, $00, $00, $00, $00, $00
 
-    db   $04
+    db   Object_RedRemote
     dw   $0340, $0780
     db   $1b, $19, $3d
     db   $3b, $00, $00, $00, $00, $00, $00, $00
 
-    db   $03
+    db   Object_TVButton
     dw   $0440, $07b8
     db   $23, $21, $3e
     db   $3c, $00, $00, $00, $00, $00, $00, $00
 
-    db   $04
+    db   Object_RedRemote
     dw   $0440, $0780
     db   $23, $21, $3d
     db   $3b, $00, $00, $00, $00, $00, $00, $00
 
-    db   $1b
+    db   Object_ScreamTV_VanishingPlatform
     dw   $0690, $0620
     db   $35, $33, $32
     db   $30, $00, $00, $00, $00, $00, $00, $00
 
-    db   $09
+    db   Object_ScreamTV_FallingPlatform
     dw   $07b0, $0620
     db   $3e, $3c, $34
     db   $30, $28, $00, $00, $00, $00, $00, $00
 
-    db   $09
+    db   Object_ScreamTV_FallingPlatform
     dw   $0830, $0620
     db   $42, $40, $34
     db   $30, $28, $00, $00, $00, $00, $00, $00
 
-    db   $12
+    db   Object_ScreamTV_Zombie
     dw   $0e30, $0630
     db   $74, $6f, $32
     db   $30, $00, $00, $00, $00, $00, $00, $00
 
-    db   $05
+    db   Object_SilverRemote
     dw   $0670, $0670
     db   $34, $32, $34
     db   $32, $00, $00, $00, $00, $00, $00, $00
 
-    db   $14
+    db   Object_ScreamTV_FallingAxe
     dw   $0cde, $0654
     db   $6a, $66, $34
     db   $31, $00, $00, $00, $00, $00, $00, $00
 
-    db   $14
+    db   Object_ScreamTV_FallingAxe
     dw   $0d1e, $0654
     db   $6a, $66, $34
     db   $31, $3c, $00, $00, $00, $00, $00, $00
 
-    db   $0c
+    db   Object_ScreamTV_Pumpkin
     dw   $08b0, $0670
     db   $46, $44, $34
     db   $31, $00, $00, $00, $00, $00, $00, $00
 
-    db   $17
+    db   Object_ScreamTV_OrangeMovingPlatform
     dw   $0090, $0740
     db   $06, $03, $3b
     db   $39, $00, $08, $00, $00, $00, $00, $00
 
-    db   $17
+    db   Object_ScreamTV_OrangeMovingPlatform
     dw   $00b0, $0780
     db   $06, $03, $3d
     db   $3b, $a0, $08, $00, $00, $00, $00, $00
 
-    db   $1a
+    db   Object_ScreamTV_ClimbWallSunEnemy
     dw   $0490, $07b0
     db   $25, $23, $3f
     db   $3b, $02, $20, $00, $00, $00, $00, $00
 
-    db   $17
+    db   Object_ScreamTV_OrangeMovingPlatform
     dw   $0090, $07c0
     db   $06, $03, $3f
     db   $3d, $00, $08, $00, $00, $00, $00, $00
 
-    db   $1a
+    db   Object_ScreamTV_ClimbWallSunEnemy
     dw   $04f0, $07d0
     db   $28, $26, $40
     db   $3c, $02, $20, $00, $00, $00, $00, $00
 
-    db   $1a
+    db   Object_ScreamTV_ClimbWallSunEnemy
     dw   $0df0, $0830
     db   $70, $6e, $44
     db   $3e, $02, $20, $00, $00, $00, $00, $00
 
-    db   $1a
+    db   Object_ScreamTV_ClimbWallSunEnemy
     dw   $0eb0, $0870
     db   $78, $72, $44
     db   $42, $00, $20, $00, $00, $00, $00, $00
 
-    db   $1a
+    db   Object_ScreamTV_ClimbWallSunEnemy
     dw   $0c50, $08b0
     db   $63, $61, $47
     db   $43, $02, $20, $00, $00, $00, $00, $00
 
-    db   $1a
+    db   Object_ScreamTV_ClimbWallSunEnemy
     dw   $0d10, $08b0
     db   $69, $67, $48
     db   $42, $02, $20, $00, $00, $00, $00, $00
 
-    db   $1a
+    db   Object_ScreamTV_ClimbWallSunEnemy
     dw   $0e30, $08d0
     db   $76, $6e, $47
     db   $45, $00, $20, $00, $00, $00, $00, $00
 
-    db   $1a
+    db   Object_ScreamTV_ClimbWallSunEnemy
     dw   $0d90, $0910
     db   $6e, $6a, $49
     db   $47, $00, $20, $00, $00, $00, $00, $00
 
-    db   $1a
+    db   Object_ScreamTV_ClimbWallSunEnemy
     dw   $0c10, $0950
     db   $61, $5f, $4f
     db   $47, $02, $20, $00, $00, $00, $00, $00
 
-    db   $1a
+    db   Object_ScreamTV_ClimbWallSunEnemy
     dw   $0d10, $0950
     db   $6c, $65, $4b
     db   $49, $00, $20, $00, $00, $00, $00, $00
 
-    db   $1a
+    db   Object_ScreamTV_ClimbWallSunEnemy
     dw   $0e10, $0970
     db   $74, $6c, $4c
     db   $4a, $00, $20, $00, $00, $00, $00, $00
 
-    db   $1a
+    db   Object_ScreamTV_ClimbWallSunEnemy
     dw   $0cd0, $09b0
     db   $68, $64, $4e
     db   $4c, $00, $20, $00, $00, $00, $00, $00
 
-    db   $09
+    db   Object_ScreamTV_FallingPlatform
     dw   $07f0, $0a40
     db   $40, $3e, $56
     db   $51, $38, $00, $00, $00, $00, $00, $00
 
-    db   $0d
+    db   Object_ScreamTV_Frankie
     dw   $08b0, $0a50
     db   $4a, $42, $53
     db   $51, $03, $01, $00, $00, $00, $00, $00
 
-    db   $16
+    db   Object_ScreamTV_Bat
     dw   $0ab0, $0a50
     db   $57, $53, $53
     db   $51, $00, $00, $00, $00, $00, $00, $00
 
-    db   $0e
+    db   Object_ScreamTV_HeadGhost
     dw   $0578, $0a70
     db   $2d, $2b, $54
     db   $52, $01, $00, $00, $00, $00, $00, $00
 
-    db   $09
+    db   Object_ScreamTV_FallingPlatform
     dw   $07b0, $0a60
     db   $3e, $3c, $57
     db   $52, $38, $00, $00, $00, $00, $00, $00
 
-    db   $1b
+    db   Object_ScreamTV_VanishingPlatform
     dw   $0ab0, $0a60
     db   $56, $54, $54
     db   $52, $00, $00, $00, $00, $00, $00, $00
 
-    db   $1b
+    db   Object_ScreamTV_VanishingPlatform
     dw   $06b0, $0a80
     db   $36, $34, $55
     db   $53, $00, $00, $00, $00, $00, $00, $00
 
-    db   $09
+    db   Object_ScreamTV_FallingPlatform
     dw   $0770, $0a80
     db   $3c, $3a, $58
     db   $53, $38, $00, $00, $00, $00, $00, $00
 
-    db   $1a
+    db   Object_ScreamTV_ClimbWallSunEnemy
     dw   $0d30, $0a90
     db   $6d, $62, $55
     db   $53, $00, $20, $00, $00, $00, $00, $00
 
-    db   $14
+    db   Object_ScreamTV_FallingAxe
     dw   $017e, $0ad4
     db   $0f, $0b, $58
     db   $55, $00, $00, $00, $00, $00, $00, $00
 
-    db   $14
+    db   Object_ScreamTV_FallingAxe
     dw   $01be, $0ad4
     db   $0f, $0b, $58
     db   $55, $1e, $00, $00, $00, $00, $00, $00
 
-    db   $14
+    db   Object_ScreamTV_FallingAxe
     dw   $023e, $0ad4
     db   $14, $0f, $58
     db   $55, $00, $00, $00, $00, $00, $00, $00
 
-    db   $14
+    db   Object_ScreamTV_FallingAxe
     dw   $02be, $0ad4
     db   $17, $15, $58
     db   $55, $00, $00, $00, $00, $00, $00, $00
 
-    db   $14
+    db   Object_ScreamTV_FallingAxe
     dw   $02fe, $0ad4
     db   $19, $17, $58
     db   $55, $3c, $00, $00, $00, $00, $00, $00
 
-    db   $0c
+    db   Object_ScreamTV_Pumpkin
     dw   $0450, $0af0
     db   $23, $21, $58
     db   $55, $00, $00, $00, $00, $00, $00, $00
 
-    db   $1a
+    db   Object_ScreamTV_ClimbWallSunEnemy
     dw   $0b50, $0af0
     db   $5b, $59, $5b
     db   $55, $02, $20, $00, $00, $00, $00, $00
 
-    db   $14
+    db   Object_ScreamTV_FallingAxe
     dw   $067e, $0b14
     db   $35, $33, $5a
     db   $57, $00, $00, $00, $00, $00, $00, $00
 
-    db   $0e
+    db   Object_ScreamTV_HeadGhost
     dw   $0828, $0b50
     db   $42, $40, $5b
     db   $59, $00, $00, $00, $00, $00, $00, $00
 
-    db   $1b
+    db   Object_ScreamTV_VanishingPlatform
     dw   $09b0, $0b60
     db   $4e, $4c, $5c
     db   $5a, $00, $00, $00, $00, $00, $00, $00
 
-    db   $0d
+    db   Object_ScreamTV_Frankie
     dw   $0670, $0bf0
     db   $35, $30, $60
     db   $5e, $03, $01, $00, $00, $00, $00, $00
 
-    db   $1b
+    db   Object_ScreamTV_VanishingPlatform
     dw   $05d0, $0c00
     db   $2f, $2d, $61
     db   $5f, $00, $00, $00, $00, $00, $00, $00

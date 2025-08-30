@@ -1787,7 +1787,3 @@ call_03_6d88:
     INCBIN "./.gfx/misc_sprites/numbers_003_6d9d.bin"
 .numbers_003_6e4d:
     INCBIN "./.gfx/misc_sprites/numbers_003_6e4d.bin"
-
-INCLUDE "./bank03_update_vram.asm"
-
-INCLUDE "./bank03_moving_tiles.asm"

@@ -1,69 +1,69 @@
-    db   $86
+    db   Object_ChannelZ_Rez
     dw   $0090, $0f90
     db   $63, $02, $7e
     db   $78, $21, $00, $00, $00, $00, $00, $00
 
-    db   $89
+    db   Object_ChannelZ_RezFollowingFire
     dw   $0088, $0fa8
     db   $63, $02, $7e
     db   $78, $00, $00, $00, $00, $00, $00, $00
 
-    db   $85
+    db   Object_ChannelZ_GunProjectile
     dw   $020c, $0f30
     db   $11, $0f, $7c
     db   $78, $1f, $00, $00, $00, $00, $00, $00
 
-    db   $85
+    db   Object_ChannelZ_GunProjectile
     dw   $048c, $0f30
     db   $25, $23, $7d
     db   $78, $1f, $00, $00, $00, $00, $00, $00
 
-    db   $85
+    db   Object_ChannelZ_GunProjectile
     dw   $068c, $0f30
     db   $35, $33, $7f
     db   $78, $1f, $00, $00, $00, $00, $00, $00
 
-    db   $85
+    db   Object_ChannelZ_GunProjectile
     dw   $06cc, $0f30
     db   $37, $35, $7f
     db   $78, $1f, $00, $00, $00, $00, $00, $00
 
-    db   $85
+    db   Object_ChannelZ_GunProjectile
     dw   $014c, $0fb0
     db   $0b, $09, $7e
     db   $75, $1f, $01, $00, $00, $00, $00, $00
 
-    db   $85
+    db   Object_ChannelZ_GunProjectile
     dw   $05cc, $0fb0
     db   $2f, $2d, $7e
     db   $77, $1f, $01, $00, $00, $00, $00, $00
 
-    db   $83
+    db   Object_ChannelZ_ArcedGunProjectile
     dw   $050c, $0fb0
     db   $2d, $23, $7e
     db   $7c, $1f, $01, $00, $00, $00, $00, $00
 
-    db   $84
+    db   Object_ChannelZ_ArcedGunProjectile2
     dw   $08cc, $0fb0
     db   $47, $45, $7e
     db   $7c, $1f, $01, $00, $00, $00, $00, $00
 
-    db   $84
+    db   Object_ChannelZ_ArcedGunProjectile2
     dw   $09ac, $0fb0
     db   $4e, $4c, $7e
     db   $7c, $1f, $01, $00, $00, $00, $00, $00
 
-    db   $86
+    db   Object_ChannelZ_Rez
     dw   $0eb4, $0fa0
     db   $7a, $70, $7e
     db   $78, $21, $00, $00, $00, $00, $00, $00
 
-    db   $8c
+    db   Object_ChannelZ_FinalBattleButton
     dw   $0e68, $0f38
     db   $7a, $70, $7d
     db   $78, $01, $00, $00, $00, $00, $00, $00
 
-    db   $8c
+    db   Object_ChannelZ_FinalBattleButton
     dw   $0f00, $0f38
     db   $7a, $70, $7d
     db   $78, $02, $00, $00, $00, $00, $00, $00
