@@ -1,641 +1,394 @@
 ; Object Action jump tables (one for each object)
-data_02_4ddb:
-    dw   call_02_51b7                                 ;; 02:4ddb pP
-    db   $ce, $7c                                      ;; 02:4ddd ..
-data_02_4ddf:
-    dw   call_02_51ea                                 ;; 02:4ddf pP
-    db   $45, $79                                      ;; 02:4de1 ..
-    dw   call_02_5252                                 ;; 02:4de3 pP
-    db   $4b, $79                                      ;; 02:4de5 ..
-data_02_4de7:
-    dw   call_02_5253                                 ;; 02:4de7 pP
-    db   $90, $76                                      ;; 02:4de9 ..
-    dw   call_02_526a                                 ;; 02:4deb pP
-    db   $9d, $76
-data_02_4def:
-    dw   $5284
-    db   $9d, $76
-    dw   $528d        ;; 02:4ded ..??????
-    db   $9d, $76
-data_02_4df7:
-    dw   $528e
-    db   $a8, $76
-    dw   $5297        ;; 02:4df5 ????????
-    db   $9d, $76 
-data_02_4dff:    
-    dw   $52aa
-    db   $8a, $76                  ;; 02:4dfd ??????
-data_02_4e03:
-    dw   call_02_52ab                                 ;; 02:4e03 pP
-    db   $d4, $7c
-data_02_4e07:
-    dw   $52e7
-    db   $b5, $76
-data_02_4e0b:
-    dw   $52e8        ;; 02:4e05 ..??????
-    db   $63, $79                                      ;; 02:4e0d ??
-data_02_4e0f:
-    dw   call_02_5348                                 ;; 02:4e0f pP
-    db   $69, $79
-data_02_4e13:
-    db   $73, $53
-    db   $6f, $79                  ;; 02:4e11 ..????
-data_02_4e17:
-    dw   call_02_538b                                 ;; 02:4e17 pP
-    db   $b5, $76                                      ;; 02:4e19 ..
-    dw   call_02_5399                                 ;; 02:4e1b pP
-    db   $bf, $76
-data_02_4e1f:
-    db   $aa, $53
-    db   $c7, $76
-data_02_4e23:
-    db   $ad, $53        ;; 02:4e1d ..??????
-    db   $20, $79
-    db   $d9, $53
-    db   $2d, $79
-data_02_4e2b:
-    db   $e2, $53        ;; 02:4e25 ????????
-    db   $33, $79
-data_02_4e2f:
-    db   $34, $54
-    db   $d0, $76
-    db   $40, $54        ;; 02:4e2d ????????
-    db   $d9, $76
-    db   $5b, $54
-    db   $df, $76
-data_02_4e3b:
-    db   $64, $54        ;; 02:4e35 ????????
-    db   $0f, $7b
-    db   $6e, $54
-    db   $e6, $7c
-data_02_4e43:
-    db   $80, $54        ;; 02:4e3d ????????
-    db   $e5, $76
-    db   $80, $54
-    db   $ee, $76
-    db   $b4, $54        ;; 02:4e45 ????????
-    db   $f7, $76
-data_02_4e4f:
-    db   $c6, $54
-    db   $8a, $76
-    db   $df, $54        ;; 02:4e4d ????????
-    db   $8a, $76
-    db   $fc, $54
-    db   $8a, $76
-data_02_4e5b:
-    db   $ff, $54        ;; 02:4e55 ????????
-    db   $39, $79
-    db   $13, $55
-    db   $39, $79
-    db   $2c, $55        ;; 02:4e5d ????????
-    db   $3f, $79
-    db   $35, $55
-    db   $39, $79
-data_02_4e6b:
-    db   $44, $55        ;; 02:4e65 ????????
-    db   $51, $79
-    db   $51, $55
-    db   $57, $79
-data_02_4e73:
-    db   $7c, $55        ;; 02:4e6d ????????
-    db   $fd, $76
-data_02_4e77:
-    db   $89, $55
-    db   $75, $79
-data_02_4e7b:
-    db   $9b, $55        ;; 02:4e75 ????????
-    db   $06, $77
-    db   $9c, $55
-    db   $0f, $77
-data_02_4e83:
-    db   $a3, $55        ;; 02:4e7d ????????
-    db   $18, $77
-    db   $e8, $55
-    db   $22, $77
-    db   $f1, $55        ;; 02:4e85 ????????
-    db   $2c, $77
-    db   $12, $56
-    db   $33, $77
-data_02_4e93:
-    db   $28, $56        ;; 02:4e8d ????????
-    db   $5d, $79
-data_02_4e97:
-    db   $3a, $56
-    db   $7b, $79
-    db   $52, $56        ;; 02:4e95 ????????
-    db   $7b, $79
-    db   $a1, $56
-    db   $81, $79
-data_02_4ea3:
-    db   $af, $56        ;; 02:4e9d ????????
-    db   $87, $79                                      ;; 02:4ea5 ??
-data_02_4ea7:
-    dw   call_02_56dc                                 ;; 02:4ea7 pP
-    db   $8d, $79                                      ;; 02:4ea9 ..
-    dw   call_02_576e                                 ;; 02:4eab pP
-    db   $93, $79                                      ;; 02:4ead ..
-    dw   call_02_576e                                 ;; 02:4eaf pP
-    db   $99, $79
-data_02_4eb3:	
-    db   $f3, $57
-    db   $a6, $79
-    db   $03, $58        ;; 02:4eb1 ..??????
-    db   $ac, $79
-data_02_4ebb:
-    db   $12, $58
-    db   $b3, $79
-    db   $30, $58        ;; 02:4eb9 ????????
-    db   $b9, $79                                      ;; 02:4ec1 ??
-data_02_4ec3:
-    dw   call_02_5843                                 ;; 02:4ec3 pP
-    db   $9f, $79
-    db   $5e, $58
-    db   $9f, $79
-data_02_4ecb:
-    db   $71, $58        ;; 02:4ec5 ..??????
-    db   $c5, $79                                      ;; 02:4ecd ??
-data_02_4ecf:
-    dw   call_02_58d3                                 ;; 02:4ecf pP
-    db   $d6, $79                                      ;; 02:4ed1 ..
-    dw   call_02_58e8                                 ;; 02:4ed3 pP
-    db   $dc, $79                                      ;; 02:4ed5 ..
-    dw   call_02_58fa                                 ;; 02:4ed7 pP
-    db   $e3, $79
-data_02_4edb:
-    db   $0b, $59
-    db   $e9, $79                  ;; 02:4ed9 ..????
-data_02_4edf:
-    dw   call_02_591c                                 ;; 02:4edf pP
-    db   $ef, $79                                      ;; 02:4ee1 ..
-data_02_4ee3:
-    dw   call_02_592d                                 ;; 02:4ee3 pP
-    db   $f6, $79                                      ;; 02:4ee5 ..
-    dw   call_02_592d                                 ;; 02:4ee7 pP
-    db   $fc, $79                                      ;; 02:4ee9 ..
-    dw   call_02_592d                                 ;; 02:4eeb pP
-    db   $02, $7a
-data_02_4eef:
-    db   $93, $59
-    db   $4c, $77
-    db   $c8, $59        ;; 02:4eed ..??????
-    db   $59, $77
-    db   $d2, $59
-    db   $68, $77
-    db   $db, $59        ;; 02:4ef5 ????????
-    db   $7c, $77
-    db   $e4, $59
-    db   $84, $77
-    db   $ed, $59        ;; 02:4efd ????????
-    db   $8a, $77                                      ;; 02:4f05 ??
-data_02_4f07:
-    dw   call_02_5a28                                 ;; 02:4f07 pP
-    db   $1b, $7a                                      ;; 02:4f09 ..
-data_02_4f0b:
-    dw   call_02_5a73                                 ;; 02:4f0b pP
-    db   $21, $7a
-data_02_4f0f:
-    db   $7d, $5a
-    db   $3a, $7a                  ;; 02:4f0d ..????
-data_02_4f13:
-    dw   call_02_5a8c                                 ;; 02:4f13 pP
-    db   $3a, $77                                      ;; 02:4f15 ..
-    dw   call_02_5a9a                                 ;; 02:4f17 pP
-    db   $44, $77
-data_02_4f1b:
-    db   $ab, $5a
-    db   $45, $7a
-    db   $ea, $5a        ;; 02:4f19 ..??????
-    db   $45, $7a
-    db   $39, $5b
-    db   $4b, $7a
-data_02_4f27:
-    db   $47, $5b        ;; 02:4f21 ????????
-    db   $51, $7a
-    db   $9d, $5b
-    db   $51, $7a                  ;; 02:4f29 ??????
-data_02_4f2f:
-    dw   call_02_5bb6                                 ;; 02:4f2f pP
-    db   $2e, $7a                                      ;; 02:4f31 ..
-data_02_4f33:
-    dw   call_02_5be1                                 ;; 02:4f33 pP
-    db   $34, $7a                                      ;; 02:4f35 ..
-data_02_4f37:
-    dw   call_02_596c                                 ;; 02:4f37 pP
-    db   $08, $7a                                      ;; 02:4f39 ..
-    dw   call_02_597a                                 ;; 02:4f3b pP
-    db   $0e, $7a                                      ;; 02:4f3d ..
-    dw   call_02_598c                                 ;; 02:4f3f pP
-    db   $15, $7a
-data_02_4f43:
-    db   $10, $5a
-    db   $d0, $79
-    db   $1f, $5a        ;; 02:4f41 ..??????
-    db   $d0, $79
-data_02_4f4b:
-    db   $e2, $5b
-    db   $7b, $7c
-    db   $f7, $5b        ;; 02:4f49 ????????
-    db   $81, $7c
-    db   $00, $5c
-    db   $9a, $7c
-data_02_4f57:
-    db   $08, $5c        ;; 02:4f51 ????????
-    db   $90, $77
-data_02_4f5b:
-    db   $10, $5c
-    db   $a7, $77
-data_02_4f5f:
-    db   $18, $5c        ;; 02:4f59 ????????
-    db   $d5, $77
-    db   $47, $5c
-    db   $e2, $77
-    db   $5b, $5c        ;; 02:4f61 ????????
-    db   $ea, $77
-data_02_4f6b:
-    db   $69, $5c
-    db   $62, $7a
-    db   $73, $5c        ;; 02:4f69 ????????
-    db   $68, $7a
-data_02_4f73:
-    db   $7c, $5c
-    db   $57, $7a
-data_02_4f77:
-    db   $7d, $5c        ;; 02:4f71 ????????
-    db   $73, $7a
-    db   $9c, $5c
-    db   $79, $7a
-data_02_4f7f:
-    db   $a8, $5c        ;; 02:4f79 ????????
-    db   $84, $7a
-    db   $ba, $5c
-    db   $8a, $7a
-data_02_4f87:
-    db   $bb, $5c        ;; 02:4f81 ????????
-    db   $90, $7a
-data_02_4f8b:
-    db   $cd, $5c
-    db   $96, $7a
-data_02_4f8f:
-    db   $ce, $5c        ;; 02:4f89 ????????
-    db   $9c, $7a
-data_02_4f93:
-    db   $cf, $5c
-    db   $b2, $77
-data_02_4f97:
-    db   $0b, $5d        ;; 02:4f91 ????????
-    db   $a8, $7a
-data_02_4f9b:
-    db   $0c, $5d
-    db   $ae, $7a
-    db   $37, $5d        ;; 02:4f99 ????????
-    db   $b4, $7a
-    db   $48, $5d
-    db   $ba, $7a
-    db   $5b, $5d        ;; 02:4fa1 ????????
-    db   $da, $7c
-data_02_4fab:
-    db   $6f, $5d
-    db   $90, $77
-data_02_4faf:
-    db   $81, $5d        ;; 02:4fa9 ????????
-    db   $c1, $7a
-data_02_4fb3:
-    db   $70, $5d
-    db   $c8, $7a
-data_02_4fb7:
-    db   $81, $5d        ;; 02:4fb1 ????????
-    db   $cf, $7a
-data_02_4fbb:
-    db   $92, $5d
-    db   $ef, $7a
-    db   $b2, $5d        ;; 02:4fb9 ????????
-    db   $f8, $7a
-    db   $d3, $5d
-    db   $01, $7b
-data_02_4fc7:
-    db   $dc, $5d        ;; 02:4fc1 ????????
-    db   $08, $7b
-    db   $e6, $5d
-    db   $e0, $7c
-data_02_4fcf:
-    db   $f8, $5d        ;; 02:4fc9 ????????
-    db   $d8, $7a
-    db   $02, $5e
-    db   $de, $7a
-data_02_4fd7:
-    db   $0b, $5e        ;; 02:4fd1 ????????
-    db   $a2, $7a
-data_02_4fdb:
-    db   $0c, $5e
-    db   $bd, $77
-data_02_4fdf:
-    db   $26, $5e        ;; 02:4fd9 ????????
-    db   $ca, $77
-data_02_4fe3:
-    db   $90, $5e
-    db   $e9, $7a
-data_02_4fe7:
-    db   $91, $5e        ;; 02:4fe1 ????????
-    db   $90, $77
-data_02_4feb:
-    db   $92, $5e
-    db   $15, $7b
-data_02_4fef:
-    db   $bd, $5e        ;; 02:4fe9 ????????
-    db   $1b, $7b
-data_02_4ff3:
-    db   $f0, $5e
-    db   $21, $7b
-    db   $fa, $5e        ;; 02:4ff1 ????????
-    db   $21, $7b
-data_02_4ffb:
-    db   $48, $5f
-    db   $f2, $77
-data_02_4fff:
-    db   $50, $5f        ;; 02:4ff9 ????????
-    db   $27, $7b
-data_02_5003:
-    db   $67, $5f
-    db   $24, $78
-data_02_5007:
-    db   $6d, $61        ;; 02:5001 ????????
-    db   $2d, $7b
-data_02_500b:
-    db   $52, $61
-    db   $39, $7b
-    db   $5f, $61        ;; 02:5009 ????????
-    db   $39, $7b
-data_02_5013:
-    db   $6e, $61
-    db   $fd, $77
-    db   $13, $62        ;; 02:5011 ????????
-    db   $06, $78
-    db   $1c, $62
-    db   $15, $78
-data_02_501f:
-    db   $6e, $61        ;; 02:5019 ????????
-    db   $fd, $77
-    db   $13, $62
-    db   $06, $78
-    db   $1c, $62        ;; 02:5021 ????????
-    db   $15, $78
-    db   $35, $62
-    db   $1e, $78
-data_02_502f:
-    db   $4c, $62        ;; 02:5029 ????????
-    db   $2a, $78
-    db   $c3, $62
-    db   $37, $78
-data_02_5037:
-    db   $db, $62        ;; 02:5031 ????????
-    db   $6c, $7b
-    db   $fc, $62
-    db   $6c, $7b
-    db   $27, $63        ;; 02:5039 ????????
-    db   $72, $7b
-data_02_5043:
-    db   $35, $63
-    db   $7a, $7b
-data_02_5047:
-    db   $3d, $63        ;; 02:5041 ????????
-    db   $85, $7b
-    db   $47, $63
-    db   $85, $7b
-data_02_504f:
-    db   $55, $63        ;; 02:5049 ????????
-    db   $8c, $7b
-data_02_5053:
-    db   $5d, $63
-    db   $92, $7b
-    db   $75, $63        ;; 02:5051 ????????
-    db   $ec, $7c
-data_02_505b:
-    db   $5d, $63
-    db   $92, $7b
-    db   $75, $63        ;; 02:5059 ????????
-    db   $ec, $7c
-data_02_5063:
-    db   $87, $63
-    db   $98, $7b
-data_02_5067:
-    db   $88, $63        ;; 02:5061 ????????
-    db   $98, $7b
-data_02_506b:
-    db   $88, $63
-    db   $42, $7b
-    db   $ac, $63        ;; 02:5069 ????????
-    db   $42, $7b
-    db   $fb, $63
-    db   $48, $7b
-data_02_5077:
-    db   $09, $64        ;; 02:5071 ????????
-    db   $4e, $7b
-data_02_507b:
-    db   $34, $64
-    db   $54, $7b
-data_02_507f:
-    db   $35, $64        ;; 02:5079 ????????
-    db   $5a, $7b
-data_02_5083:
-    db   $47, $64
-    db   $60, $7b
-data_02_5087:
-    db   $48, $64        ;; 02:5081 ????????
-    db   $66, $7b
-data_02_508b:
-    db   $49, $64
-    db   $98, $7b
-data_02_508f:
-    db   $4a, $64        ;; 02:5089 ????????
-    db   $98, $7b
-data_02_5093:
-    db   $9c, $64
-    db   $9e, $7b
-data_02_5097:
-    db   $ae, $64        ;; 02:5091 ????????
-    db   $a4, $7b
-data_02_509b:
-    db   $0f, $65
-    db   $a4, $7b
-data_02_509f:
-    db   $5d, $65        ;; 02:5099 ????????
-    db   $aa, $7b
-data_02_50a3:
-    db   $b7, $65
-    db   $bd, $7b
-    db   $c0, $65        ;; 02:50a1 ????????
-    db   $c3, $7b
-    db   $c9, $65
-    db   $cc, $7b
-    db   $d2, $65        ;; 02:50a9 ????????
-    db   $d5, $7b
-    db   $db, $65
-    db   $de, $7b
-data_02_50b7:
-    db   $26, $66        ;; 02:50b1 ????????
-    db   $90, $77
-data_02_50bb:
-    db   $27, $66
-    db   $b0, $7b
-data_02_50bf:
-    db   $28, $66        ;; 02:50b9 ????????
-    db   $b0, $7b
-data_02_50c3:
-    db   $29, $66
-    db   $65, $78
-    db   $32, $66        ;; 02:50c1 ????????
-    db   $72, $78
-    db   $33, $66
-    db   $79, $78
-data_02_50cf:
-    db   $34, $66        ;; 02:50c9 ????????
-    db   $f0, $7b
-data_02_50d3:
-    db   $35, $66
-    db   $f0, $7b
-data_02_50d7:
-    db   $36, $66        ;; 02:50d1 ????????
-    db   $80, $78
-data_02_50db:
-    db   $4b, $66
-    db   $b0, $7b
-    db   $4c, $66        ;; 02:50d9 ????????
-    db   $b0, $7b
-data_02_50e3:
-    db   $4d, $66
-    db   $4d, $78
-    db   $6b, $66        ;; 02:50e1 ????????
-    db   $5c, $78
-data_02_50eb:
-    db   $bb, $66
-    db   $e7, $7b
-data_02_50ef:
-    db   $6c, $66        ;; 02:50e9 ????????
-    db   $6f, $7c
-data_02_50f3:
-    db   $db, $66
-    db   $f0, $7b
-data_02_50f7:
-    db   $e3, $66        ;; 02:50f1 ????????
-    db   $f9, $7b
-    db   $f1, $66
-    db   $01, $7c
-data_02_50ff:
-    db   $fd, $66        ;; 02:50f9 ????????
-    db   $07, $7c
-    db   $10, $67
-    db   $07, $7c
-data_02_5107:
-    db   $23, $67        ;; 02:5101 ????????
-    db   $90, $77
-data_02_510b:
-    db   $24, $67
-    db   $10, $7c
-    db   $6c, $67        ;; 02:5109 ????????
-    db   $16, $7c
-data_02_5113:
-    db   $75, $67
-    db   $1d, $7c
-data_02_5117:
-    db   $86, $67        ;; 02:5111 ????????
-    db   $25, $7c
-    db   $9e, $67
-    db   $2b, $7c
-data_02_511f:
-    db   $c0, $68        ;; 02:5119 ????????
-    db   $42, $7c
-data_02_5123:
-    db   $6f, $69
-    db   $34, $7c
-    db   $93, $69        ;; 02:5121 ????????
-    db   $3a, $7c
-    db   $c4, $69
-    db   $48, $7c
-data_02_512f:
-    db   $d7, $69        ;; 02:5129 ????????
-    db   $50, $7c
-data_02_5133:
-    db   $33, $6a
-    db   $89, $78
-data_02_5137:
-    db   $3b, $6a        ;; 02:5131 ????????
-    db   $56, $7c
-data_02_513b:
-    db   $3c, $6a
-    db   $5c, $7c
-data_02_513f:
-    db   $8b, $6a        ;; 02:5139 ????????
-    db   $62, $7c
-    db   $ac, $6a
-    db   $68, $7c
-data_02_5147:
-    db   $d3, $6a        ;; 02:5141 ????????
-    db   $62, $7c
-    db   $f9, $6a
-    db   $68, $7c
-    db   $30, $6b        ;; 02:5149 ????????
-    db   $68, $7c
-    db   $43, $6b
-    db   $68, $7c
-data_02_5157:
-    db   $6a, $6b        ;; 02:5151 ????????
-    db   $62, $7c
-    db   $81, $6b
-    db   $68, $7c
-data_02_515f:
-    db   $18, $6c        ;; 02:5159 ????????
-    db   $a8, $78
-    db   $41, $6c
-    db   $b5, $78
-    db   $4a, $6c        ;; 02:5161 ????????
-    db   $d7, $78
-    db   $42, $6c
-    db   $e4, $78
-    db   $82, $6c        ;; 02:5169 ????????
-    db   $c2, $78
-    db   $99, $6c
-    db   $f1, $78
-    db   $99, $6c        ;; 02:5171 ????????
-    db   $f1, $78
-    db   $99, $6c
-    db   $f1, $78
-    db   $99, $6c        ;; 02:5179 ????????
-    db   $f1, $78
-    db   $9d, $6c
-    db   $fc, $78
-    db   $a6, $6c        ;; 02:5181 ????????
-    db   $0b, $79
-data_02_518b:
-    db   $11, $6d
-    db   $75, $7c
-data_02_518f:
-    db   $23, $6d        ;; 02:5189 ????????
-    db   $75, $7c
-data_02_5193:
-    db   $ca, $6c
-    db   $a1, $7c
-data_02_5197:	
-    db   $24, $6d        ;; 02:5191 ????????
-    db   $aa, $7c
-data_02_519b:
-    db   $5d, $6d
-    db   $b6, $7c
-    db   $7f, $6d        ;; 02:5199 ????????
-    db   $b6, $7c
-data_02_51a3:
-    db   $80, $6d
-    db   $bc, $7c
-    db   $b8, $6d        ;; 02:51a1 ????????
-    db   $c2, $7c
-data_02_51ab:
-    db   $e3, $6d
-    db   $94, $78
-data_02_51af:
-    db   $f0, $6d        ;; 02:51a9 ????????
-    db   $1a, $79                                      ;; 02:51b1 ??
-data_02_51b3:
-    dw   call_02_6df1                                  ;; 02:51b3 pP
-    db   $c8, $7c                                      ;; 02:51b5 ..
+data_02_4ddb:                        ;; Object_CollectibleSpawn
+    dw   call_02_51b7, data_02_7cce
+data_02_4ddf:                        ;; Object_TVButton
+    dw   call_02_51ea, data_02_7945
+    dw   call_02_5252, data_02_794b
+data_02_4de7:                        ;; Object_RedRemote
+    dw   $5253, data_02_7690
+    dw   $526a, data_02_769d
+data_02_4def:                        ;; Object_SilverRemote
+    dw   $5284, data_02_769d
+    dw   $528d, data_02_769d
+data_02_4df7:                        ;; Object_GoldRemote
+    dw   $528e, data_02_76a8
+    dw   $5297, data_02_769d
+data_02_4dff:                        ;; Object_unk_02
+    dw   $52aa, data_02_768a
+data_02_4e03:                        ;; Object_EnemyDefeated
+    dw   $52ab, data_02_7cd4
+data_02_4e07:                        ;; Object_unk_08
+    dw   $52e7, data_02_76b5
+data_02_4e0b:                        ;; Object_ScreamTV_FallingPlatform
+    dw   $52e8, data_02_7963
+data_02_4e0f:                        ;; Object_ScreamTV_MovingPlatform
+    dw   $5348, data_02_7969
+data_02_4e13:                        ;; Object_ScreamTV_PushBlock
+    dw   $5373, data_02_796f
+data_02_4e17:                        ;; Object_ScreamTV_Pumpkin
+    dw   $538b, data_02_76b5
+    dw   $5399, data_02_76bf
+data_02_4e1f:                        ;; Object_ScreamTV_Frankie
+    dw   $53aa, data_02_76c7
+data_02_4e23:                        ;; Object_ScreamTV_HeadGhost
+    dw   $53ad, data_02_7920
+    dw   $53d9, data_02_792d
+data_02_4e2b:                        ;; Object_ScreamTV_HeadGhostHead
+    dw   $53e2, data_02_7933
+data_02_4e2f:                        ;; Object_ScreamTV_FloatingSkull
+    dw   $5434, data_02_76d0
+    dw   $5440, data_02_76d9
+    dw   $545b, data_02_76df
+data_02_4e3b:                        ;; Object_ScreamTV_FloatingSkullProjectile
+    dw   $5464, data_02_7b0f
+    dw   $546e, data_02_7ce6
+data_02_4e43:                        ;; Object_ScreamTV_Zombie
+    dw   $5480, data_02_76e5
+    dw   $5480, data_02_76ee
+    dw   $54b4, data_02_76f7
+data_02_4e4f:                        ;; Object_ScreamTV_ZombieHead
+    dw   $54c6, data_02_768a
+    dw   $54df, data_02_768a
+    dw   $54fc, data_02_768a
+data_02_4e5b:                        ;; Object_ScreamTV_FallingAxe
+    dw   $54ff, data_02_7939
+    dw   $5513, data_02_7939
+    dw   $552c, data_02_793f
+    dw   $5535, data_02_7939
+data_02_4e6b:                        ;; Object_ScreamTV_Lantern
+    dw   $5544, data_02_7951
+    dw   $5551, data_02_7957
+data_02_4e73:                        ;; Object_ScreamTV_Bat
+    dw   $557c, data_02_76fd
+data_02_4e77:                        ;; Object_ScreamTV_OrangeMovingPlatform
+    dw   $5589, data_02_7975
+data_02_4e7b:                        ;; Object_ScreamTV_DoorOpening
+    dw   $559b, data_02_7706
+    dw   $559c, data_02_770f
+data_02_4e83:                        ;; Object_ScreamTV_Ghost
+    dw   $55a3, data_02_7718
+    dw   $55e8, data_02_7722
+    dw   $55f1, data_02_772c
+    dw   $5612, data_02_7733
+data_02_4e93:                        ;; Object_ScreamTV_ClimbWallSunEnemy
+    dw   $5628, data_02_795d
+data_02_4e97:                        ;; Object_ScreamTV_VanishingPlatform
+    dw   $563a, data_02_797b
+    dw   $5652, data_02_797b
+    dw   $56a1, data_02_7981
+data_02_4ea3:                        ;; Object_ScreamTV_MonaLisaElevator
+    dw   $56af, data_02_7987
+data_02_4ea7:                        ;; Object_ToonTV_HardHeadAreaObject
+    dw   $56dc, data_02_798d
+    dw   $576e, data_02_7993
+    dw   $576e, data_02_7999
+data_02_4eb3:                        ;; Object_ToonTV_StationaryBearTrap
+    dw   $57f3, data_02_79a6
+    dw   $5803, data_02_79ac
+data_02_4ebb:                        ;; Object_ToonTV_MovingBearTrap
+    dw   $5812, data_02_79b3
+    dw   $5830, data_02_79b9
+data_02_4ec3:                        ;; Object_ToonTV_Bumblebee
+    dw   $5843, data_02_799f
+    dw   $585e, data_02_799f
+data_02_4ecb:                        ;; Object_ToonTV_FallingBowlingBall
+    dw   $5871, data_02_79c5
+data_02_4ecf:                        ;; Object_ToonTV_Cactus
+    dw   $58d3, data_02_79d6
+    dw   $58e8, data_02_79dc
+    dw   $58fa, data_02_79e3
+data_02_4edb:                        ;; Object_ToonTV_Domino
+    dw   $590b, data_02_79e9
+data_02_4edf:                        ;; Object_ToonTV_Shark
+    dw   $591c, data_02_79ef
+data_02_4ee3:                        ;; Object_ToonTV_Flower
+    dw   $592d, data_02_79f6
+    dw   $592d, data_02_79fc
+    dw   $592d, data_02_7a02
+data_02_4eef:                        ;; Object_ToonTV_Hunter
+    dw   $5993, data_02_774c
+    dw   $59c8, data_02_7759
+    dw   $59d2, data_02_7768
+    dw   $59db, data_02_777c
+    dw   $59e4, data_02_7784
+    dw   $59ed, data_02_778a
+data_02_4f07:                        ;; Object_ToonTV_Mushroom
+    dw   $5a28, data_02_7a1b
+data_02_4f0b:                        ;; Object_unk_28
+    dw   $5a73, data_02_7a21
+data_02_4f0f:                        ;; Object_ToonTV_Lizard
+    dw   $5a7d, data_02_7a3a
+data_02_4f13:                        ;; Object_ToonTV_HappyFace
+    dw   $5a8c, data_02_773a
+    dw   $5a9a, data_02_7744
+data_02_4f1b:                        ;; Object_ToonTV_VanishingBlock
+    dw   $5aab, data_02_7a45
+    dw   $5aea, data_02_7a45
+    dw   $5b39, data_02_7a4b
+data_02_4f27:                        ;; Object_ToonTV_MovingBlock
+    dw   $5b47, data_02_7a51
+    dw   $5b9d, data_02_7a51
+data_02_4f2f:                        ;; Object_ToonTV_MovingLogPlatform
+    dw   $5bb6, data_02_7a2e
+data_02_4f33:                        ;; Object_ToonTV_StationaryLogPlatform
+    dw   $5be1, data_02_7a34
+data_02_4f37:                        ;; Object_ToonTV_FlowerHammerAttack
+    dw   $596c, data_02_7a08
+    dw   $597a, data_02_7a0e
+    dw   $598c, data_02_7a15
+data_02_4f43:                        ;; Object_ToonTV_HunterBullet
+    dw   $5a10, data_02_79d0
+    dw   $5a1f, data_02_79d0
+data_02_4f4b:                        ;; Object_ToonTV_Rocket
+    dw   $5be2, data_02_7c7b
+    dw   $5bf7, data_02_7c81
+    dw   $5c00, data_02_7c9a
+data_02_4f57:                        ;; Object_PreHistory_FastDinosaur
+    dw   $5c08, data_02_7790
+data_02_4f5b:                        ;; Object_PreHistory_Dragonfly
+    dw   $5c10, data_02_77a7
+data_02_4f5f:                        ;; Object_PreHistory_Egg
+    dw   $5c18, data_02_77d5
+    dw   $5c47, data_02_77e2
+    dw   $5c5b, data_02_77ea
+data_02_4f6b:                        ;; Object_unk_35
+    dw   $5c69, data_02_7a62
+    dw   $5c73, data_02_7a68
+data_02_4f73:                        ;; Object_unk_36
+    dw   $5c7c, data_02_7a57
+data_02_4f77:                        ;; Object_PreHistory_FallingLava
+    dw   $5c7d, data_02_7a73
+    dw   $5c9c, data_02_7a79
+data_02_4f7f:                        ;; Object_PreHistory_LavaRaft
+    dw   $5ca8, data_02_7a84
+    dw   $5cba, data_02_7a8a
+data_02_4f87:                        ;; Object_PreHistory_MovingPlatform
+    dw   $5cbb, data_02_7a90
+data_02_4f8b:                        ;; Object_unk_3A
+    dw   $5ccd, data_02_7a96
+data_02_4f8f:                        ;; Object_unk_3B
+    dw   $5cce, data_02_7a9c
+data_02_4f93:                        ;; Object_PreHistory_Pterosaur
+    dw   $5ccf, data_02_77b2
+data_02_4f97:                        ;; Object_unk_3D
+    dw   $5d0b, data_02_7aa8
+data_02_4f9b:                        ;; Object_PreHistory_FallingBoulder
+    dw   $5d0c, data_02_7aae
+    dw   $5d37, data_02_7ab4
+    dw   $5d48, data_02_7aba
+    dw   $5d5b, data_02_7cda
+data_02_4fab:                        ;; Object_unk_3F
+    dw   $5d6f, data_02_7790
+data_02_4faf:                        ;; Object_PreHistory_BeetleHorizontal
+    dw   $5d81, data_02_7ac1
+data_02_4fb3:                        ;; Object_PreHistory_BeetleVertical
+    dw   $5d70, data_02_7ac8
+data_02_4fb7:                        ;; Object_PreHistory_Ant
+    dw   $5d81, data_02_7acf
+data_02_4fbb:                        ;; Object_PreHistory_FirePlant
+    dw   $5d92, data_02_7aef
+    dw   $5db2, data_02_7af8
+    dw   $5dd3, data_02_7b01
+data_02_4fc7:                        ;; Object_PreHistory_FirePlantProjectiles
+    dw   $5ddc, data_02_7b08
+    dw   $5de6, data_02_7ce0
+data_02_4fcf:                        ;; Object_PreHistory_Geyser
+    dw   $5df8, data_02_7ad8
+    dw   $5e02, data_02_7ade
+data_02_4fd7:                        ;; Object_unk_46
+    dw   $5e0b, data_02_7aa2
+data_02_4fdb:                        ;; Object_PreHistory_Dinosaur
+    dw   $5e0c, data_02_77bd
+data_02_4fdf:                        ;; Object_PreHistory_Triceratops
+    dw   $5e26, data_02_77ca
+data_02_4fe3:                        ;; Object_PreHistory_TriceratopsHorn
+    dw   $5e90, data_02_7ae9
+data_02_4fe7:                        ;; Object_unk_4A
+    dw   $5e91, data_02_7790
+data_02_4feb:                        ;; Object_KungFuTheater_HangingBlade
+    dw   $5e92, data_02_7b15
+data_02_4fef:                        ;; Object_KungFuTheater_Cannon
+    dw   $5ebd, data_02_7b1b
+data_02_4ff3:                        ;; Object_KungFuTheater_CannonProjectile
+    dw   $5ef0, data_02_7b21
+    dw   $5efa, data_02_7b21
+data_02_4ffb:                        ;; Object_KungFuTheater_Dragonfly
+    dw   $5f48, data_02_77f2
+data_02_4fff:                        ;; Object_KungFuTheater_DragonBodySegment
+    dw   $5f50, data_02_7b27
+data_02_5003:                        ;; Object_KungFuTheater_DragonHead
+    dw   $5f67, data_02_7824
+data_02_5007:                        ;; Object_unk_51
+    dw   $616d, data_02_7b2d
+data_02_500b:                        ;; Object_KungFuTheater_DragonProjectile
+    dw   $6152, data_02_7b39
+    dw   $615f, data_02_7b39
+data_02_5013:                        ;; Object_KungFuTheater_WalkingNinja
+    dw   $616e, data_02_77fd
+    dw   $6213, data_02_7806
+    dw   $621c, data_02_7815
+data_02_501f:                        ;; Object_KungFuTheater_JumpingNinja
+    dw   $616e, data_02_77fd
+    dw   $6213, data_02_7806
+    dw   $621c, data_02_7815
+    dw   $6235, data_02_781e
+data_02_502f:                        ;; Object_KungFuTheater_SamuraiBody
+    dw   $624c, data_02_782a
+    dw   $62c3, data_02_7837
+data_02_5037:                        ;; Object_KungFuTheater_SamuraiHead
+    dw   $62db, data_02_7b6c
+    dw   $62fc, data_02_7b6c
+    dw   $6327, data_02_7b72
+data_02_5043:                        ;; Object_KungFuTheater_Lizard
+    dw   $6335, data_02_7b7a
+data_02_5047:                        ;; Object_KungFuTheater_NinjaProjectile
+    dw   $633d, data_02_7b85
+    dw   $6347, data_02_7b85
+data_02_504f:                        ;; Object_KungFuTheater_SpikyLog
+    dw   $6355, data_02_7b8c
+data_02_5053:                        ;; Object_KungFuTheater_TallJar
+    dw   $635d, data_02_7b92
+    dw   $6375, data_02_7cec
+data_02_505b:                        ;; Object_KungFuTheater_Jar
+    dw   $635d, data_02_7b92
+    dw   $6375, data_02_7cec
+data_02_5063:                        ;; Object_unk_5C
+    dw   $6387, data_02_7b98
+data_02_5067:                        ;; Object_unk_5D
+    dw   $6388, data_02_7b98
+data_02_506b:                        ;; Object_KungFuTheater_VanishingPlatform
+    dw   $6388, data_02_7b42
+    dw   $63ac, data_02_7b42
+    dw   $63fb, data_02_7b48
+data_02_5077:                        ;; Object_KungFuTheater_MovingPlatform
+    dw   $6409, data_02_7b4e
+data_02_507b:                        ;; Object_unk_60
+    dw   $6434, data_02_7b54
+data_02_507f:                        ;; Object_KungFuTheater_MovingRaft
+    dw   $6435, data_02_7b5a
+data_02_5083:                        ;; Object_KungFuTheater_StationaryRaft
+    dw   $6447, data_02_7b60
+data_02_5087:                        ;; Object_unk_63
+    dw   $6448, data_02_7b66
+data_02_508b:                        ;; Object_unk_64
+    dw   $6449, data_02_7b98
+data_02_508f:                        ;; Object_Rezopolis_SpecialMovingPlatform
+    dw   $644a, data_02_7b98
+data_02_5093:                        ;; Object_Rezopolis_MovingPlatform
+    dw   $649c, data_02_7b9e
+data_02_5097:                        ;; Object_Rezopolis_RedPlatform
+    dw   $64ae, data_02_7ba4
+data_02_509b:                        ;; Object_Rezopolis_ActivatedRedPlatform
+    dw   $650f, data_02_7ba4
+data_02_509f:                        ;; Object_Rezopolis_TailspinPlatform
+    dw   $655d, data_02_7baa
+data_02_50a3:                        ;; Object_Rezopolis_TailspinGear
+    dw   $65b7, data_02_7bbd
+    dw   $65c0, data_02_7bc3
+    dw   $65c9, data_02_7bcc
+    dw   $65d2, data_02_7bd5
+    dw   $65db, data_02_7bde
+data_02_50b7:                        ;; Object_unk_6B
+    dw   $6626, data_02_7790
+data_02_50bb:                        ;; Object_unk_6C
+    dw   $6627, data_02_7bb0
+data_02_50bf:                        ;; Object_unk_6D
+    dw   $6628, data_02_7bb0
+data_02_50c3:                        ;; Object_Rezopolis_GreenMonster
+    dw   $6629, data_02_7865
+    dw   $6632, data_02_7872
+    dw   $6633, data_02_7879
+data_02_50cf:                        ;; Object_unk_6F
+    dw   $6634, data_02_7bf0
+data_02_50d3:                        ;; Object_unk_70
+    dw   $6635, data_02_7bf0
+data_02_50d7:                        ;; Object_Rezopolis_Pincer
+    dw   $6636, data_02_7880
+data_02_50db:                        ;; Object_Rezopolis_Flamethrower
+    dw   $664b, data_02_7bb0
+    dw   $664c, data_02_7bb0
+data_02_50e3:                        ;; Object_Rezopolis_UFO
+    dw   $664d, data_02_784d
+    dw   $666b, data_02_785c
+data_02_50eb:                        ;; Object_Rezopolis_Ant
+    dw   $66bb, data_02_7be7
+data_02_50ef:                        ;; Object_Rezopolis_AntSpawner
+    dw   $666c, data_02_7c6f
+data_02_50f3:                        ;; Object_CircuitCentral_Ant
+    dw   $66db, data_02_7bf0
+data_02_50f7:                        ;; Object_CircuitCentral_Capacitor
+    dw   $66e3, data_02_7bf9
+    dw   $66f1, data_02_7c01
+data_02_50ff:                        ;; Object_CircuitCentral_PowerUp
+    dw   $66fd, data_02_7c07
+    dw   $6710, data_02_7c07
+data_02_5107:                        ;; Object_unk_79
+    dw   $6723, data_02_7790
+data_02_510b:                        ;; Object_CircuitCentral_LittleRobot
+    dw   $6724, data_02_7c10
+    dw   $676c, data_02_7c16
+data_02_5113:                        ;; Object_CircuitCentral_LittleRobotGear
+    dw   $6775, data_02_7c1d
+data_02_5117:                        ;; Object_CircuitCentral_ElectricBall
+    dw   $6786, data_02_7c25
+    dw   $679e, data_02_7c2b
+data_02_511f:                        ;; Object_CircuitCentral_MovingPlatform
+    dw   $68c0, data_02_7c42
+data_02_5123:                        ;; Object_CircuitCentral_PoweredPlaform
+    dw   $696f, data_02_7c34
+    dw   $6993, data_02_7c3a
+    dw   $69c4, data_02_7c48
+data_02_512f:                        ;; Object_CircuitCentral_LoweringPlatform
+    dw   $69d7, data_02_7c50
+data_02_5133:                        ;; Object_CircuitCentral_WalkerRobot
+    dw   $6a33, data_02_7889
+data_02_5137:                        ;; Object_CircuitCentral_PoweredWalkway
+    dw   $6a3b, data_02_7c56
+data_02_513b:                        ;; Object_CircuitCentral_WalkwayActivator
+    dw   $6a3c, data_02_7c5c
+data_02_513f:                        ;; Object_ChannelZ_ArcedGunProjectile
+    dw   $6a8b, data_02_7c62
+    dw   $6aac, data_02_7c68
+data_02_5147:                        ;; Object_ChannelZ_ArcedGunProjectile2
+    dw   $6ad3, data_02_7c62
+    dw   $6af9, data_02_7c68
+    dw   $6b30, data_02_7c68
+    dw   $6b43, data_02_7c68
+data_02_5157:                        ;; Object_ChannelZ_GunProjectile
+    dw   $6b6a, data_02_7c62
+    dw   $6b81, data_02_7c68
+data_02_515f:                        ;; Object_ChannelZ_Rez
+    dw   $6c18, data_02_78a8
+    dw   $6c41, data_02_78b5
+    dw   $6c4a, data_02_78d7
+    dw   $6c42, data_02_78e4
+    dw   $6c82, data_02_78c2
+    dw   $6c99, data_02_78f1
+    dw   $6c99, data_02_78f1
+    dw   $6c99, data_02_78f1
+    dw   $6c99, data_02_78f1
+    dw   $6c9d, data_02_78fc
+    dw   $6ca6, data_02_790b
+data_02_518b:                        ;; Object_unk_87
+    dw   $6d11, data_02_7c75
+data_02_518f:                        ;; Object_unk_88
+    dw   $6d23, data_02_7c75
+data_02_5193:                        ;; Object_ChannelZ_RezFollowingFire
+    dw   $6cca, data_02_7ca1
+data_02_5197:                        ;; Object_ChannelZ_GunProjectileExplosion
+    dw   $6d24, data_02_7caa
+data_02_519b:                        ;; Object_unk_8B
+    dw   $6d5d, data_02_7cb6
+    dw   $6d7f, data_02_7cb6
+data_02_51a3:                        ;; Object_ChannelZ_FinalBattleButton
+    dw   $6d80, data_02_7cbc
+    dw   $6db8, data_02_7cc2
+data_02_51ab:                        ;; Object_unk_8D
+    dw   $6de3, data_02_7894
+data_02_51af:                        ;; Object_unk_8E
+    dw   $6df0, data_02_791a
+data_02_51b3:                        ;; Object_MediaDimension_MovingPlatform
+    dw   call_02_6df1, data_02_7cc8
 
 call_02_51b7:
     call call_00_3b8d                                  ;; 02:51b7 $cd $8d $3b

@@ -369,6 +369,7 @@ def extract_bank_00():
         out2.write('data_'+bank2+'_'+addr_str+':\n    INCBIN \"./.gfx/menu_sprites2/image_'+bank+'_'+addr_str+'.bin\"\n')
         out2.close()
 
+
 def extract_bank_09():
     bank = "009"
     bank2 = "09"

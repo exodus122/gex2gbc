@@ -1,69 +1,37 @@
 ; Player action jump table
 data_02_4120:
-    dw   call_02_41a0_PlayerAction_Idle                                 ;; 02:4120 pP
-    db   $5c, $75                                      ;; 02:4122 ..
-    dw   call_02_41ad_PlayerAction_LevelInit                                 ;; 02:4124 pP
-    db   $6d, $75                                      ;; 02:4126 ..
-    dw   call_02_41b7                                 ;; 02:4128 pP
-    db   $73, $75                                      ;; 02:412a ..
-    dw   call_02_422b_PlayerAction_None                                  ;; 02:412c pP
-    db   $7c, $75                                      ;; 02:412e ..
-    dw   call_02_422c_PlayerAction_StartWalk                                  ;; 02:4130 pP
-    db   $82, $75                                      ;; 02:4132 ..
-    dw   call_02_4248_PlayerAction_Walk                                  ;; 02:4134 pP
-    db   $8f, $75                                      ;; 02:4136 ..
-    dw   call_02_425a_PlayerAction_SkidDecel                                  ;; 02:4138 pP
-    db   $9c, $75
-    dw   call_02_426b_PlayerAction_StopQuick
-    db   $a4, $75                          
-    dw   call_02_4270_PlayerAction_StandStill                                  ;; 02:4140 pP
-    db   $ad, $75                                      ;; 02:4142 ..
-    dw   call_02_4275_PlayerAction_Jump                                  ;; 02:4144 pP
-    db   $b3, $75                                      ;; 02:4146 ..
-    dw   call_02_42ac_PlayerAction_DoubleJump                                  ;; 02:4148 pP
-    db   $bb, $75
-    dw   call_02_42e0_PlayerAction_None
-    db   $c1, $75
-    dw   $42e1
-    db   $c7, $75                                      ;; 02:4152 ??
-    dw   call_02_42f7                                  ;; 02:4154 pP
-    db   $ce, $75
-    dw   $434d
-    db   $d9, $75
-    dw   $435b
-    db   $df, $75                                      ;; 02:415e ??
-    dw   call_02_4371                                  ;; 02:4160 pP
-    db   $e9, $75                                      ;; 02:4162 ..
-    dw   call_02_437b                                  ;; 02:4164 pP
-    db   $f2, $75                                      ;; 02:4166 ..
-    dw   call_02_43a7                                  ;; 02:4168 pP
-    db   $f9, $75
-    dw   $43c6
-    db   $f9, $75                  ;; 02:416a ..????
-    dw   call_02_43e5                                  ;; 02:4170 pP
-    db   $08, $76
-    dw   $43f6
-    db   $17, $76                  ;; 02:4172 ..????
-    dw   call_02_4407                                  ;; 02:4178 pP
-    db   $1d, $76                                      ;; 02:417a ..
-    dw   call_02_4418                                  ;; 02:417c pP
-    db   $2a, $76
-    dw   $4443
-    db   $33, $76                  ;; 02:417e ..????
-    dw   call_02_4448                                  ;; 02:4184 pP
-    db   $39, $76
-    dw   $4459
-    db   $47, $76
-    dw   $447e        ;; 02:4186 ..??????
-    db   $58, $76
-    dw   $4483
-    db   $65, $76                  ;; 02:418e ??????
-    dw   call_02_44af                                  ;; 02:4194 pP
-    db   $6d, $76
-    dw   $481b
-    db   $73, $76
-    dw   $4828        ;; 02:4196 ..??????
-    db   $84, $76                                      ;; 02:419e ??
+    dw   call_02_41a0_PlayerAction_Idle, data_02_755c
+    dw   call_02_41ad_PlayerAction_LevelInit, data_02_756d
+    dw   call_02_41b7, data_02_7573
+    dw   call_02_422b_PlayerAction_None, data_02_757c
+    dw   call_02_422c_PlayerAction_StartWalk, data_02_7582
+    dw   call_02_4248_PlayerAction_Walk, data_02_758f
+    dw   call_02_425a_PlayerAction_SkidDecel, data_02_759c
+    dw   call_02_426b_PlayerAction_StopQuick, data_02_75a4
+    dw   call_02_4270_PlayerAction_StandStill, data_02_75ad
+    dw   call_02_4275_PlayerAction_Jump, data_02_75b3
+    dw   call_02_42ac_PlayerAction_DoubleJump, data_02_75bb
+    dw   call_02_42e0_PlayerAction_None, data_02_75c1
+    dw   $42e1, data_02_75c7
+    dw   call_02_42f7, data_02_75ce
+    dw   $434d, data_02_75d9
+    dw   $435b, data_02_75df
+    dw   call_02_4371, data_02_75e9
+    dw   call_02_437b, data_02_75f2
+    dw   call_02_43a7, data_02_75f9
+    dw   $43c6, data_02_75f9
+    dw   call_02_43e5, data_02_7608
+    dw   $43f6, data_02_7617
+    dw   call_02_4407, data_02_761d
+    dw   call_02_4418, data_02_762a
+    dw   $4443, data_02_7633
+    dw   call_02_4448, data_02_7639
+    dw   $4459, data_02_7647
+    dw   $447e, data_02_7658
+    dw   $4483, data_02_7665
+    dw   call_02_44af, data_02_766d
+    dw   $481b, data_02_7673
+    dw   $4828, data_02_7684
     
 call_02_41a0_PlayerAction_Idle:
     ld   A, [wD209]                                    ;; 02:41a0 $fa $09 $d2
