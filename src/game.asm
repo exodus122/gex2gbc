@@ -13,9 +13,11 @@ INCLUDE "bank02_object_update.asm"
 SECTION "bank03", ROMX[$4000], BANK[$03]
 INCLUDE "bank03_collision_bg.asm"
 INCLUDE "bank03_collision_object.asm"
-INCLUDE "bank03_graphics.asm"
+INCLUDE "bank03_update_object_sprites.asm"
+INCLUDE "bank03_update_unk_graphics.asm"
+INCLUDE "bank03_update_misc_sprites.asm"
 INCLUDE "bank03_update_vram.asm"
-INCLUDE "bank03_moving_tiles.asm"
+INCLUDE "bank03_update_moving_tiles.asm"
 
 SECTION "bank04", ROMX[$4000], BANK[$04]
 image_004_4000.bin:

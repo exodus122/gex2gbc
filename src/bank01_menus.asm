@@ -2585,43 +2585,77 @@ data_01_568c:
     dw   data_01_571f                                      ;; 01:5690 ??
 
 data_01_5692:
-    db   $0a, $fe, $fe, $02, $e4, $5c, $0f, $83        ;; 01:5692 w..w....
-    db   $0b, $fe, $fe, $01, $eb, $5c, $00, $83        ;; 01:569a w..w....
-    db   $0c, $fe, $fe, $01, $f2, $5c, $51, $83        ;; 01:56a2 w..w....
+    db   $0a, $fe, $fe, $02
+    dw   data_01_5ce4
+    db   $0f, $83        ;; 01:5692 w..w....
+    db   $0b, $fe, $fe, $01
+    dw   data_01_5ceb
+    db   $00, $83        ;; 01:569a w..w....
+    db   $0c, $fe, $fe, $01
+    dw   data_01_5cf2
+    db   $51, $83        ;; 01:56a2 w..w....
     db   $ff                                           ;; 01:56aa .
 
 data_01_56ab:
-    db   $0a, $fe, $fe, $02, $fc, $5c, $0f, $83        ;; 01:56ab w..w....
-    db   $0b, $fe, $fe, $01, $12, $5d, $00, $83        ;; 01:56b3 w..w....
-    db   $0c, $fe, $fe, $01, $1a, $5d, $61, $83        ;; 01:56bb w..w....
+    db   $0a, $fe, $fe, $02
+    dw   data_01_5cfc
+    db   $0f, $83        ;; 01:56ab w..w....
+    db   $0b, $fe, $fe, $01
+    dw   data_01_5d12
+    db   $00, $83        ;; 01:56b3 w..w....
+    db   $0c, $fe, $fe, $01
+    dw   data_01_5d1a
+    db   $61, $83        ;; 01:56bb w..w....
     db   $ff                                           ;; 01:56c3 .
 
 data_01_56c4:
     db   $09, $fe, $fe, $00, $03, $e5, $0f, $83        ;; 01:56c4 w..w....
-    db   $0a, $fe, $fe, $02, $e4, $5c, $0f, $83        ;; 01:56cc w..w....
-    db   $0b, $fe, $fe, $01, $eb, $5c, $00, $83        ;; 01:56d4 w..w....
-    db   $0c, $fe, $fe, $01, $f7, $5c, $51, $83        ;; 01:56dc w..w....
+    db   $0a, $fe, $fe, $02
+    dw   data_01_5ce4
+    db   $0f, $83        ;; 01:56cc w..w....
+    db   $0b, $fe, $fe, $01
+    dw   data_01_5ceb
+    db   $00, $83        ;; 01:56d4 w..w....
+    db   $0c, $fe, $fe, $01
+    dw   data_01_5cf7
+    db   $51, $83        ;; 01:56dc w..w....
     db   $ff                                           ;; 01:56e4 .
 
 data_01_56e5:
     db   $09, $fe, $fe, $00, $03, $e5, $0f, $83        ;; 01:56e5 w..w....
-    db   $0a, $fe, $fe, $02, $06, $5d, $0f, $83        ;; 01:56ed w..w....
-    db   $0b, $fe, $fe, $01, $12, $5d, $00, $83        ;; 01:56f5 w..w....
-    db   $0c, $fe, $fe, $01, $1a, $5d, $61, $83        ;; 01:56fd w..w....
+    db   $0a, $fe, $fe, $02
+    dw   data_01_5d06
+    db   $0f, $83        ;; 01:56ed w..w....
+    db   $0b, $fe, $fe, $01
+    dw   data_01_5d12
+    db   $00, $83        ;; 01:56f5 w..w....
+    db   $0c, $fe, $fe, $01
+    dw   data_01_5d1a
+    db   $61, $83        ;; 01:56fd w..w....
     db   $ff
 
 data_01_5706:
-    db   $12, $fe, $fe, $02, $28, $5d, $0f        ;; 01:5705 .???????
-    db   $83, $15, $fe, $fe, $01, $f2, $5c, $02        ;; 01:570d ????????
+    db   $12, $fe, $fe, $02
+    dw   data_01_5d28
+    db   $0f        ;; 01:5705 .???????
+    db   $83, $15, $fe, $fe, $01
+    dw   data_01_5cf2
+    db   $02        ;; 01:570d ????????
     db   $83, $00, $00, $00, $00, $02, $ec, $0f        ;; 01:5715 ????????
     db   $e0, $ff                                      ;; 01:571d ??
 
 data_01_571f:
     db   $00, $00, $00, $00, $00, $e9, $0f, $e0        ;; 01:571f w.......
-    db   $13, $fe, $fe, $01, $32, $5d, $80, $83        ;; 01:5727 w..w....
-    db   $14, $fe, $fe, $01, $3e, $5d, $41, $83        ;; 01:572f w..w....
+    db   $13, $fe, $fe, $01
+    dw   data_01_5d32
+    db   $80, $83        ;; 01:5727 w..w....
+    db   $14, $fe, $fe, $01
+    dw   data_01_5d3e
+    db   $41, $83        ;; 01:572f w..w....
     db   $16, $fe, $fe, $00, $00, $ea, $0f, $83        ;; 01:5737 w..w....
-    db   $19, $fe, $fe, $00, $62, $5d, $0f, $c3        ;; 01:573f w..w....
+    db   $19, $fe, $fe, $00
+    dw   data_01_5d62
+    db   $0f, $c3        ;; 01:573f w..w....
     db   $1a, $fe, $fe, $00, $00, $e8, $0f, $c7        ;; 01:5747 w..ww...
     db   $1b, $fe, $fe, $00, $01, $e8, $0f, $c7        ;; 01:574f w..ww...
     db   $1c, $fe, $fe, $00, $02, $e8, $0f, $c7        ;; 01:5757 w..ww...
@@ -2642,12 +2676,18 @@ data_01_57a0:
 
 data_01_57b1:
     db   $00, $00, $00, $00, $01, $ed, $0f, $e0        ;; 01:57b1 w...w...
-    db   $0d, $fe, $fe, $00, $cf, $5c, $10, $e3        ;; 01:57b9 w..w....
-    db   $0d, $fe, $fe, $00, $db, $5c, $31, $e3        ;; 01:57c1 w..w....
+    db   $0d, $fe, $fe, $00
+    dw   data_01_5ccf
+    db   $10, $e3        ;; 01:57b9 w..w....
+    db   $0d, $fe, $fe, $00
+    dw   data_01_5cdb
+    db   $31, $e3        ;; 01:57c1 w..w....
     db   $ff                                           ;; 01:57c9 .
 
 data_01_57ca:
-    db   $10, $fe, $fe, $02, $56, $5d, $0f, $83        ;; 01:57ca w..w....
+    db   $10, $fe, $fe, $02
+    dw   data_01_5d56
+    db   $0f, $83        ;; 01:57ca w..w....
     db   $11, $fe, $fe, $01, $00, $e4, $0f, $83        ;; 01:57d2 w..w....
     db   $ff
 
@@ -2770,11 +2810,15 @@ data_01_5a26:
     
 data_01_5a2f:
     db   $00, $00, $00, $00, $02, $ed, $0f        ;; 01:5a2e .???????
-    db   $e0, $0d, $fe, $fe, $00, $cf, $5c, $00        ;; 01:5a36 ????????
-    db   $e3, $0d, $fe, $fe, $00, $d5, $5c, $01        ;; 01:5a3e ????????
-    db   $e3, $0d, $fe, $fe, $00, $d5, $5c, $02        ;; 01:5a46 ????????
-    db   $e3, $0d, $fe, $fe, $00, $d5, $5c, $03        ;; 01:5a4e ????????
-    db   $e3, $ff
+    db   $e0, $0d, $fe, $fe, $00
+    dw   data_01_5ccf        ;; 01:5a36 ????????
+    db   $00, $e3, $0d, $fe, $fe, $00
+    dw   data_01_5cd5         ;; 01:5a3e ????????
+    db   $01, $e3, $0d, $fe, $fe, $00
+    dw   data_01_5cd5        ;; 01:5a46 ????????
+    db   $02, $e3, $0d, $fe, $fe, $00
+    dw   data_01_5cd5       ;; 01:5a4e ????????
+    db   $03, $e3, $ff
     
 data_01_5a58:
     db   $00, $00, $00, $00, $03, $ed        ;; 01:5a56 ????????
@@ -2945,28 +2989,43 @@ data_01_5c99:
 data_01_5cb9:
     db   $00, $40, $00, $6d, $00, $70, $00, $6a        ;; 01:5cb9 ????????
     db   $00, $76, $00, $40, $00, $40, $00, $67        ;; 01:5cc1 ????....
-    db   $00, $79, $00, $40, $00, $73
+    db   $00, $79, $00, $40, $00, $73                  ;; 01:5cc9 ????....
 
-
-    db   "START", TextTerminator                       ;; 01:5ccf ????....
+data_01_5ccf:
+    db   "START", TextTerminator
+data_01_5cd5:
     db   "SOUND", TextTerminator
+data_01_5cdb:
     db   "PASSWORD", TextTerminator
+data_01_5ce4:
     db   "PAUSED", TextTerminator
+data_01_5ceb:
     db   "RESUME", TextTerminator
+data_01_5cf2:
     db   "QUIT", TextTerminator
+data_01_5cf7:
     db   "EXIT", TextTerminator
+data_01_5cfc:
     db   "QUIT GAME", TextTerminator
+data_01_5d06:
     db   "EXIT TO MAP", TextTerminator
+data_01_5d12:
     db   "NO WAY!", TextTerminator
+data_01_5d1a:
     db   "OKAY", TextTerminator
     db   "TIME UP!", TextTerminator
+data_01_5d28:
     db   "GAME OVER", TextTerminator
+data_01_5d32:
     db   "RESUME PLAY", TextTerminator
+data_01_5d3e:
     db   "SEE PASSWORD", TextTerminator
 
 data_01_5d4b:
     db   "GAME STATS", TextTerminator
+data_01_5d56:
     db   "ENTERING...", TextTerminator
+data_01_5d62:
     db   "X", TextTerminator
     db   "CONGRATULATIONS!", TextTerminator
     db   "REWARD", TextTerminator
@@ -3457,16 +3516,16 @@ data_01_669c:
     db   $10, $10, $10, $10, $10                       ;; 01:66a2 ?????
 
 data_01_66a7_font:
-    INCBIN "./gfx/menu_sprites/image_001_66a7_font.bin"
+    INCBIN "./gfx/fonts/image_001_66a7_font.bin"
 
 data_01_689f_font:
-    INCBIN "./gfx/menu_sprites/image_001_689f_font.bin"
+    INCBIN "./gfx/fonts/image_001_689f_font.bin"
 
 data_01_6add_font:
-    INCBIN "./gfx/menu_sprites/image_001_6add_font.bin"
+    INCBIN "./gfx/fonts/image_001_6add_font.bin"
 
 data_01_71e9:
-    INCBIN "./.gfx/misc_sprites/menus/image_001_71e9.bin"
+    INCBIN "./.gfx/misc_sprites/password/image_001_71e9.bin"
 
 data_01_74e9:
     dw   data_01_74fd, data_01_7540                            ;; 01:74e9 ....
@@ -3502,48 +3561,30 @@ data_01_7c0f_collectible_images:
     dw   data_01_7e2d, data_01_7cc5, data_01_7ea5, data_01_7c4d        ;; 01:7c3f ????????
     dw   data_01_7c4d, data_01_7c4d, data_01_7c4d
 
-
 data_01_7c4d:
-    INCBIN "./.gfx/misc_sprites/menus/image_001_7c4d.bin"
-    db   $00, $00        ;; 01:7ca7 ????????
-    db   $00, $00, $9b, $01, $5b, $07, $00, $00        ;; 01:7caf ????????
-    db   $00, $00, $1f, $00, $ff, $7f, $00, $00        ;; 01:7cb7 ????????
-    db   $00, $00, $1f, $00, $ff, $7f
+    INCBIN "./.gfx/misc_sprites/collectibles/image_collectibles_toon_tv.bin"
+    INCBIN "./gfx/misc_sprites/collectibles/palettes/palette_toon_tv_collectibles.bin"
 
 data_01_7cc5:
-    INCBIN "./.gfx/misc_sprites/menus/image_001_7cc5.bin"
-    db   $00, $00        ;; 01:7d1f ????????
-    db   $00, $00, $94, $3e, $ff, $7f, $00, $00        ;; 01:7d27 ????????
-    db   $00, $00, $94, $3e, $ff, $7f, $00, $00        ;; 01:7d2f ????????
-    db   $00, $00, $94, $3e, $ff, $7f
+    INCBIN "./.gfx/misc_sprites/collectibles/image_collectibles_scream_tv.bin"
+    INCBIN "./gfx/misc_sprites/collectibles/palettes/palette_scream_tv_collectibles.bin"
 
 data_01_7d3d:
-    INCBIN "./.gfx/misc_sprites/menus/image_001_7d3d.bin"
-    db   $00, $00        ;; 01:7d97 ????????
-    db   $00, $00, $1f, $00, $5a, $6b, $00, $00        ;; 01:7d9f ????????
-    db   $00, $00, $1f, $00, $5a, $6b, $00, $00        ;; 01:7da7 ????????
-    db   $00, $00, $1f, $00, $5a, $6b
+    INCBIN "./.gfx/misc_sprites/collectibles/image_collectibles_circuit_central.bin"
+    INCBIN "./gfx/misc_sprites/collectibles/palettes/palette_circuit_central_collectibles.bin"
 
 data_01_7db5:
-    INCBIN "./.gfx/misc_sprites/menus/image_001_7db5.bin"
-    db   $00, $00        ;; 01:7e0f ????????
-    db   $00, $00, $73, $4e, $de, $7b, $00, $00        ;; 01:7e17 ????????
-    db   $00, $00, $12, $71, $ff, $7f, $00, $00        ;; 01:7e1f ????????
-    db   $00, $00, $73, $4e, $de, $7b
+    INCBIN "./.gfx/misc_sprites/collectibles/image_collectibles_kung_fu_theater.bin"
+    INCBIN "./gfx/misc_sprites/collectibles/palettes/palette_kung_fu_theater_collectibles.bin"
 
 data_01_7e2d:
-    INCBIN "./.gfx/misc_sprites/menus/image_001_7e2d.bin"
-    db   $00, $00        ;; 01:7e87 ????????
-    db   $00, $00, $fb, $4a, $dc, $67, $00, $00        ;; 01:7e8f ????????
-    db   $00, $00, $73, $4e, $de, $7b, $00, $00        ;; 01:7e97 ????????
-    db   $00, $00, $fb, $4a, $dc, $67
+    INCBIN "./.gfx/misc_sprites/collectibles/image_collectibles_prehistory_channel.bin"
+    INCBIN "./gfx/misc_sprites/collectibles/palettes/palette_prehistory_channel_collectibles.bin"
 
 data_01_7ea5:
-    INCBIN "./.gfx/misc_sprites/menus/image_001_7ea5.bin"
-    db   $00, $00        ;; 01:7eff ????????
-    db   $00, $00, $b4, $01, $7f, $3f, $00, $00        ;; 01:7f07 ????????
-    db   $6f, $00, $bf, $04, $ff, $31, $00, $00        ;; 01:7f0f ????????
-    db   $00, $00, $9c, $02, $7f, $03, $00, $b4        ;; 01:7f17 ????????
-    db   $01, $7f, $3f, $00, $00, $6f, $00, $bf        ;; 01:7f1f ????????
-    db   $04, $ff, $31, $00, $00, $00, $00, $9c        ;; 01:7f27 ????????
-    db   $02, $7f, $03, $00, $00, $00                             ;; 01:7f2f ???
+    INCBIN "./.gfx/misc_sprites/collectibles/image_collectibles_rezopolis.bin"
+    INCBIN "./gfx/misc_sprites/collectibles/palettes/palette_rezopolis_collectibles.bin"
+
+    db   $00, $b4, $01, $7f, $3f, $00, $00, $6f
+    db   $00, $bf, $04, $ff, $31, $00, $00, $00
+    db   $00, $9c, $02, $7f, $03
