@@ -1223,6 +1223,13 @@
 02:526a call_02_526a
 02:52ab call_02_52ab
 02:52bc call_02_52ab.jr_02_52bc
+02:52ff label52FF
+02:530c label530C
+02:531c label531C
+02:5323 label5323
+02:532f label532F
+02:5336 label5336
+02:5341 label5341
 02:5348 call_02_5348
 02:5354 call_02_5348.jr_02_5354
 02:536d call_02_5348.jr_02_536d
@@ -1277,6 +1284,13 @@
 02:5a73 call_02_5a73
 02:5a8c call_02_5a8c
 02:5a9a call_02_5a9a
+02:5ab7 label5AB7
+02:5ad2 label5AD2
+02:5b1f label5B1F
+02:5b53 label5B53
+02:5b88 label5B88
+02:5b90 label5B90
+02:5b97 label5B97
 02:5bb6 call_02_5bb6
 02:5bc2 call_02_5bb6.jr_02_5bc2
 02:5bdb call_02_5bb6.jr_02_5bdb
