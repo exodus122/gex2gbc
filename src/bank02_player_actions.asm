@@ -12,26 +12,26 @@ data_02_4120:
     dw   call_02_4275_PlayerAction_Jump, data_02_75b3
     dw   call_02_42ac_PlayerAction_DoubleJump, data_02_75bb
     dw   call_02_42e0_PlayerAction_None, data_02_75c1
-    dw   $42e1, data_02_75c7
+    dw   call_02_42e1, data_02_75c7
     dw   call_02_42f7, data_02_75ce
-    dw   $434d, data_02_75d9
-    dw   $435b, data_02_75df
+    dw   call_02_434d, data_02_75d9
+    dw   call_02_435b, data_02_75df
     dw   call_02_4371, data_02_75e9
     dw   call_02_437b, data_02_75f2
     dw   call_02_43a7, data_02_75f9
-    dw   $43c6, data_02_75f9
+    dw   call_02_43c6, data_02_75f9
     dw   call_02_43e5, data_02_7608
-    dw   $43f6, data_02_7617
+    dw   call_02_43f6, data_02_7617
     dw   call_02_4407, data_02_761d
     dw   call_02_4418, data_02_762a
-    dw   $4443, data_02_7633
+    dw   call_02_4443, data_02_7633
     dw   call_02_4448, data_02_7639
-    dw   $4459, data_02_7647
-    dw   $447e, data_02_7658
-    dw   $4483, data_02_7665
+    dw   call_02_4459, data_02_7647
+    dw   call_02_447e, data_02_7658
+    dw   call_02_4483, data_02_7665
     dw   call_02_44af, data_02_766d
-    dw   $481b, data_02_7673
-    dw   $4828, data_02_7684
+    dw   call_02_481b, data_02_7673
+    dw   call_02_4828, data_02_7684
     
 call_02_41a0_PlayerAction_Idle:
     ld   A, [wD209]                                    ;; 02:41a0 $fa $09 $d2
@@ -154,9 +154,8 @@ call_02_425a_PlayerAction_SkidDecel:
     ret                                                ;; 02:426a $c9
 
 call_02_426b_PlayerAction_StopQuick:
-;    db   $af, $ea, $5e, $d7, $c9                       ;; 02:426b ?????
     xor a
-    ld [$d75e], a
+    ld [wD75E_PlayerXSpeed], a
     ret
 
 call_02_4270_PlayerAction_StandStill:
@@ -215,12 +214,22 @@ call_02_42ac_PlayerAction_DoubleJump:
     and  A, $02                                        ;; 02:42d9 $e6 $02
     jr   NZ, .jr_02_42b3                               ;; 02:42db $20 $d6
     jp   call_02_489a                                    ;; 02:42dd $c3 $9a $48
+
 call_02_42e0_PlayerAction_None:                             ;; 02:42e0
     ret
 
-    db   $fa, $09, $d2, $e6, $20, $28, $05        ;; 02:42e0 ????????
-    db   $3e, $30, $ea, $4c, $d7, $21, $4c, $d7        ;; 02:42e8 ????????
-    db   $35, $c0, $3e, $02, $c3, $cd, $4c             ;; 02:42f0 ???????
+call_02_42e1:
+    ld a, [wD209]
+    and $20
+    jr z, .jr_02_42ed
+    ld a, $30
+    ld [wD74C], a
+.jr_02_42ed:
+    ld hl, wD74C
+    dec [hl]
+    ret nz
+    ld a, $02
+    jp call_02_4ccd
 
 call_02_42f7:
     ld   A, [wD209]                                    ;; 02:42f7 $fa $09 $d2
@@ -264,11 +273,27 @@ call_02_42f7:
 .jr_02_4349:
     ld   A, C                                          ;; 02:4349 $79
     jp   call_02_4ccd                                  ;; 02:434a $c3 $cd $4c
-    db   $af, $ea, $5e, $d7, $fa, $09, $d2, $e6        ;; 02:434d ????????
-    db   $20, $c8, $af, $c3, $47, $06, $fa, $09        ;; 02:4355 ????????
-    db   $d2, $e6, $20, $28, $05, $0e, $10, $cd        ;; 02:435d ????????
-    db   $2f, $11, $af, $ea, $5e, $d7, $3e, $77        ;; 02:4365 ????????
-    db   $ea, $50, $d7, $c9                            ;; 02:436d ????
+
+call_02_434d:
+    xor  a
+    ld   [wD75E_PlayerXSpeed],a
+    ld   a,[wD209]
+    and  a,$20
+    ret  z
+    xor  a
+    jp   call_00_0647
+call_02_435b:
+    ld   a,[wD209]
+    and  a,$20
+    jr   z,.jr_02_4367
+    ld   c,$10
+    call call_00_112f
+.jr_02_4367:
+    xor  a
+    ld   [wD75E_PlayerXSpeed],a
+    ld   a,$77
+    ld   [wD750],a
+    ret  
 
 call_02_4371:
     xor  A, A                                          ;; 02:4371 $af
@@ -315,10 +340,23 @@ call_02_43a7:
     or   A, $04                                        ;; 02:43c0 $f6 $04
     ld   [wD621], A                                    ;; 02:43c2 $ea $21 $d6
     ret                                                ;; 02:43c5 $c9
-    db   $fa, $09, $d2, $e6, $20, $28, $05, $0e        ;; 02:43c6 ????????
-    db   $11, $cd, $2f, $11, $af, $ea, $5e, $d7        ;; 02:43ce ????????
-    db   $fa, $0a, $d2, $e6, $04, $c8, $fa, $21        ;; 02:43d6 ????????
-    db   $d6, $f6, $04, $ea, $21, $d6, $c9             ;; 02:43de ???????
+
+call_02_43c6:
+    ld   a,[wD209]
+    and  a,$20
+    jr   z,.jr_02_43D2
+    ld   c,$11
+    call call_00_112f
+.jr_02_43D2:
+    xor  a
+    ld   [wD75E_PlayerXSpeed],a
+    ld   a,[wD20A]
+    and  a,$04
+    ret  z
+    ld   a,[wD621]
+    or   a,$04
+    ld   [wD621],a
+    ret
 
 call_02_43e5:
     ld   A, [wD209]                                    ;; 02:43e5 $fa $09 $d2
@@ -330,9 +368,16 @@ call_02_43e5:
     xor  A, A                                          ;; 02:43f1 $af
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:43f2 $ea $5e $d7
     ret                                                ;; 02:43f5 $c9
-    db   $fa, $09, $d2, $e6, $20, $28, $05, $3e        ;; 02:43f6 ????????
-    db   $01, $ea, $5e, $d7, $0e, $02, $c3, $04        ;; 02:43fe ????????
-    db   $42                                           ;; 02:4406 ?
+
+call_02_43f6:
+    ld   a,[wD209]
+    and  a,$20
+    jr   z,.jr_02_4402
+    ld   a,$01
+    ld   [wD75E_PlayerXSpeed],a
+.jr_02_4402:
+    ld   c,$02
+    jp   call_02_4204
 
 call_02_4407:
     ld   A, [wD209]                                    ;; 02:4407 $fa $09 $d2
@@ -365,7 +410,11 @@ call_02_4418:
     jp   NZ, call_02_4ccd                              ;; 02:443b $c2 $cd $4c
     ld   A, $02                                        ;; 02:443e $3e $02
     jp   call_02_4ccd                                  ;; 02:4440 $c3 $cd $4c
-    db   $af, $ea, $5e, $d7, $c9                       ;; 02:4443 ?????
+
+call_02_4443:
+    xor  a
+    ld   [wD75E_PlayerXSpeed],a
+    ret  
 
 call_02_4448:
     ld   A, [wD209]                                    ;; 02:4448 $fa $09 $d2
@@ -377,17 +426,52 @@ call_02_4448:
     xor  A, A                                          ;; 02:4454 $af
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:4455 $ea $5e $d7
     ret                                                ;; 02:4458 $c9
-    db   $fa, $09, $d2, $e6, $20, $28, $05, $3e        ;; 02:4459 ????????
-    db   $00, $cd, $b7, $48, $af, $ea, $5e, $d7        ;; 02:4461 ????????
-    db   $cd, $94, $48, $c8, $fa, $21, $d6, $f6        ;; 02:4469 ????????
-    db   $08, $ea, $21, $d6, $3e, $1b, $ea, $44        ;; 02:4471 ????????
-    db   $d7, $cd, $f0, $38, $c9, $af, $ea, $5e        ;; 02:4479 ????????
-    db   $d7, $c9, $fa, $09, $d2, $e6, $20, $28        ;; 02:4481 ????????
-    db   $1b, $0e, $12, $cd, $2f, $11, $cd, $bf        ;; 02:4489 ????????
-    db   $06, $3e, $50, $ea, $60, $d7, $ea, $62        ;; 02:4491 ????????
-    db   $d7, $fa, $5e, $d7, $a7, $20, $05, $3e        ;; 02:4499 ????????
-    db   $01, $ea, $5e, $d7, $fa, $62, $d7, $a7        ;; 02:44a1 ????????
-    db   $c0, $3e, $02, $c3, $cd, $4c                  ;; 02:44a9 ??????
+
+call_02_4459:
+    ld   a,[wD209]
+    and  a,$20
+    jr   z,.jr_02_4465
+    ld   a,$00
+    call call_02_48b7
+.jr_02_4465:
+    xor  a
+    ld   [wD75E_PlayerXSpeed],a
+    call call_02_4894
+    ret  z
+    ld   a,[wD621]
+    or   a,$08
+    ld   [wD621],a
+    ld   a,$1B
+    ld   [wD744],a
+    call call_00_38f0
+    ret  
+
+call_02_447e:
+    xor  a
+    ld   [wD75E_PlayerXSpeed],a
+    ret  
+
+call_02_4483:
+    ld   a,[wD209]
+    and  a,$20
+    jr   z,.jr_02_44A5
+    ld   c,$12
+    call call_00_112f
+    call call_00_06bf_GexTakesDamage
+    ld   a,$50
+    ld   [wD760_PlayerYVelocity],a
+    ld   [wD762_PlayerInitialYVelocity],a
+    ld   a,[wD75E_PlayerXSpeed]
+    and  a
+    jr   nz,.jr_02_44A5
+    ld   a,$01
+    ld   [wD75E_PlayerXSpeed],a
+.jr_02_44A5:
+    ld   a,[wD762_PlayerInitialYVelocity]
+    and  a
+    ret  nz
+    ld   a,$02
+    jp   entry_02_4ccd
 
 call_02_44af:
     ld   A, [wD209]                                    ;; 02:44af $fa $09 $d2
@@ -419,11 +503,16 @@ call_02_44af:
     ld   L, A                                          ;; 02:44e3 $6f
     jp   HL                                            ;; 02:44e4 $e9
 .data_02_44e5:
-    dw   call_02_44f9                                 ;; 02:44e5 pP
-    db   $5f, $45, $b0, $45, $26, $46, $b0, $45        ;; 02:44e7 ????????
-    db   $26, $46                                      ;; 02:44ef ??
+    dw   call_02_44f9
+    dw   call_02_455f
+    dw   call_02_45b0                                 ;; 02:44e5 pP
+    dw   call_02_4626
+    dw   call_02_45b0        ;; 02:44e7 ????????
+    dw   call_02_4626                                      ;; 02:44ef ??
     dw   call_02_4667                                 ;; 02:44f1 pP
-    db   $8f, $46, $b3, $46, $b8, $46                  ;; 02:44f3 ??????
+    dw   call_02_468f
+    dw   call_02_46b3
+    dw   call_02_46b8                  ;; 02:44f3 ??????
 
 call_02_44f9:
     call call_02_4777                                  ;; 02:44f9 $cd $77 $47
@@ -477,38 +566,144 @@ call_02_44f9:
     db   $40, $50, $48, $97, $40, $50, $48, $97        ;; 02:454f ........
 .data_02_4557:
     db   $00, $00, $00, $00, $60, $60, $60, $60        ;; 02:4557 ........
-    db   $cd, $77, $47, $fe, $ff, $28, $03, $ea        ;; 02:455f ????????
-    db   $48, $d7, $21, $47, $d7, $34, $7e, $0f        ;; 02:4567 ????????
-    db   $0f, $e6, $07, $4f, $21, $48, $d7, $6e        ;; 02:456f ????????
-    db   $26, $00, $11, $a8, $45, $19, $7e, $81        ;; 02:4577 ????????
-    db   $e6, $07, $c6, $58, $21, $08, $d2, $be        ;; 02:457f ????????
-    db   $c8, $77, $3e, $00, $ea, $0d, $d2, $3e        ;; 02:4587 ????????
-    db   $00, $ea, $4b, $d7, $21, $0f, $d6, $cb        ;; 02:458f ????????
-    db   $c6, $fa, $47, $d7, $fe, $20, $d8, $3e        ;; 02:4597 ????????
-    db   $00, $ea, $46, $d7, $af, $ea, $47, $d7        ;; 02:459f ????????
-    db   $c9, $00, $07, $06, $05, $04, $03, $02        ;; 02:45a7 ????????
-    db   $01, $cd, $d5, $47, $fe, $ff, $28, $39        ;; 02:45af ????????
-    db   $ea, $48, $d7, $5f, $16, $00, $21, $0e        ;; 02:45b7 ????????
-    db   $46, $19, $7e, $fe, $ff, $28, $03, $ea        ;; 02:45bf ????????
-    db   $0d, $d2, $21, $16, $46, $19, $7e, $fe        ;; 02:45c7 ????????
-    db   $ff, $28, $03, $ea, $4b, $d7, $21, $1e        ;; 02:45cf ????????
-    db   $46, $19, $4e, $21, $47, $d7, $34, $7e        ;; 02:45d7 ????????
-    db   $0f, $0f, $e6, $07, $81, $21, $08, $d2        ;; 02:45df ????????
-    db   $be, $28, $06, $77, $21, $0f, $d6, $cb        ;; 02:45e7 ????????
-    db   $c6, $fa, $5a, $d7, $e6, $02, $28, $05        ;; 02:45ef ????????
-    db   $3e, $17, $cd, $cd, $4c, $fa, $5a, $d7        ;; 02:45f7 ????????
-    db   $e6, $01, $28, $0a, $3e, $03, $ea, $46        ;; 02:45ff ????????
-    db   $d7, $af, $ea, $47, $d7, $c9, $c9, $ff        ;; 02:4607 ????????
-    db   $00, $00, $00, $ff, $20, $20, $20, $00        ;; 02:460f ????????
-    db   $00, $00, $40, $40, $40, $00, $00, $60        ;; 02:4617 ????????
-    db   $60, $68, $60, $60, $60, $68, $60, $cd        ;; 02:461f ????????
-    db   $d5, $47, $fe, $ff, $28, $03, $ea, $48        ;; 02:4627 ????????
-    db   $d7, $21, $47, $d7, $34, $7e, $0f, $0f        ;; 02:462f ????????
-    db   $e6, $07, $21, $48, $d7, $6e, $26, $00        ;; 02:4637 ????????
-    db   $11, $5f, $46, $19, $86, $21, $08, $d2        ;; 02:463f ????????
-    db   $be, $c8, $77, $21, $0f, $d6, $cb, $c6        ;; 02:4647 ????????
-    db   $fa, $47, $d7, $fe, $20, $d8, $3e, $02        ;; 02:464f ????????
-    db   $ea, $46, $d7, $af, $ea, $47, $d7, $c9        ;; 02:4657 ????????
+
+call_02_455f:
+    call call_02_4777
+    cp   a,$FF
+    jr   z,.jr_02_4569
+    ld   [wD748],a
+.jr_02_4569:
+    ld   hl,wD747
+    inc  [hl]
+    ld   a,[hl]
+    rrca 
+    rrca 
+    and  a,$07
+    ld   c,a
+    ld   hl,wD748
+    ld   l,[hl]
+    ld   h,$00
+    ld   de,.data_02_45a8
+    add  hl,de
+    ld   a,[hl]
+    add  c
+    and  a,$07
+    add  a,$58
+    ld   hl,wD208_PlayerSpriteIndex
+    cp   [hl]
+    ret  z
+    ld   [hl],a
+    ld   a,$00
+    ld   [wD20D_PlayerFacingAngle],a
+    ld   a,$00
+    ld   [wD74B],a
+    ld   hl,wD60F_BitmapOfThingsToLoad
+    set  0,[hl]
+    ld   a,[wD747]
+    cp   a,$20
+    ret  c
+    ld   a,$00
+    ld   [wD746_PlayerClimbingState],a
+    xor  a
+    ld   [wD747],a
+    ret  
+.data_02_45a8:
+    db   $00, $07, $06, $05, $04, $03, $02, $01        ;; 02:45a7 ????????
+
+call_02_45b0:
+    call call_02_47d5
+    cp   a,$FF
+    jr   z,.jr_02_45F0
+    ld   [wD748],a
+    ld   e,a
+    ld   d,$00
+    ld   hl, .data_02_460e
+    add  hl,de
+    ld   a,[hl]
+    cp   a,$FF
+    jr   z,.jr_02_45C9
+    ld   [wD20D_PlayerFacingAngle],a
+.jr_02_45C9:
+    ld   hl, .data_02_4616
+    add  hl,de
+    ld   a,[hl]
+    cp   a,$FF
+    jr   z,.jr_02_45D5
+    ld   [wD74B],a
+.jr_02_45D5:
+    ld   hl, .data_02_461e
+    add  hl,de
+    ld   c,[hl]
+    ld   hl,wD747
+    inc  [hl]
+    ld   a,[hl]
+    rrca 
+    rrca 
+    and  a,$07
+    add  c
+    ld   hl,wD208_PlayerSpriteIndex
+    cp   [hl]
+    jr   z,.jr_02_45F0
+    ld   [hl],a
+    ld   hl,wD60F_BitmapOfThingsToLoad
+    set  0,[hl]
+.jr_02_45F0:
+    ld   a,[wD75A_CurrentInputs]
+    and  a,$02
+    jr   z,.jr_02_45FC
+    ld   a,$17
+    call entry_02_4ccd
+.jr_02_45FC:
+    ld   a,[wD75A_CurrentInputs]
+    and  a,$01
+    jr   z,.jr_02_460D
+    ld   a,$03
+    ld   [wD746_PlayerClimbingState],a
+    xor  a
+    ld   [wD747],a
+    ret  
+.jr_02_460D:
+    ret  
+.data_02_460e:
+    db   $ff, $00, $00, $00, $ff, $20, $20, $20
+.data_02_4616:
+    db   $00, $00, $00, $40, $40, $40, $00, $00
+.data_02_461e:
+    db   $60, $60, $68, $60, $60, $60, $68, $60
+
+call_02_4626:
+    call call_02_47d5
+    cp   a,$FF
+    jr   z,.jr_02_4630
+    ld   [wD748],a
+.jr_02_4630:
+    ld   hl,wD747
+    inc  [hl]
+    ld   a,[hl]
+    rrca 
+    rrca 
+    and  a,$07
+    ld   hl,wD748
+    ld   l,[hl]
+    ld   h,$00
+    ld   de, .data_02_465f
+    add  hl,de
+    add  [hl]
+    ld   hl,wD208_PlayerSpriteIndex
+    cp   [hl]
+    ret  z
+    ld   [hl],a
+    ld   hl,wD60F_BitmapOfThingsToLoad
+    set  0,[hl]
+    ld   a,[wD747]
+    cp   a,$20
+    ret  c
+    ld   a,$02
+    ld   [wD746_PlayerClimbingState],a
+    xor  a
+    ld   [wD747],a
+    ret  
+.data_02_465f:
     db   $70, $00, $78, $00, $70, $00, $78, $00        ;; 02:465f ????????
 
 call_02_4667:
@@ -531,32 +726,113 @@ call_02_4667:
     ld   A, $02                                        ;; 02:4684 $3e $02
     jp   call_02_4ccd                                  ;; 02:4686 $c3 $cd $4c
 .data_02_4689:
-    db   $c2, $c3, $c4, $c5, $c6, $c7, $3e, $00        ;; 02:4689 ......??
-    db   $ea, $4b, $d7, $21, $47, $d7, $7e, $fe        ;; 02:4691 ????????
-    db   $08, $28, $10, $34, $cb, $3f, $cb, $3f        ;; 02:4699 ????????
-    db   $6f, $26, $00, $11, $b1, $46, $19, $7e        ;; 02:46a1 ????????
-    db   $c3, $0f, $48, $3e, $02, $c3, $cd, $4c        ;; 02:46a9 ????????
-    db   $c8, $c9, $3e, $09, $c3, $cd, $4c, $fa        ;; 02:46b1 ????????
-    db   $3c, $d7, $e6, $1f, $c0, $fa, $49, $d7        ;; 02:46b9 ????????
-    db   $87, $87, $21, $0d, $d2, $cb, $6e, $28        ;; 02:46c1 ????????
-    db   $02, $c6, $02, $87, $6f, $26, $00, $11        ;; 02:46c9 ????????
-    db   $37, $47, $19, $4e, $23, $46, $23, $c5        ;; 02:46d1 ????????
-    db   $4e, $23, $46, $cd, $19, $4c, $c1, $cd        ;; 02:46d9 ????????
-    db   $0a, $4c, $fa, $47, $d7, $cb, $3f, $6f        ;; 02:46e1 ????????
-    db   $26, $00, $11, $2e, $47, $19, $7e, $cd        ;; 02:46e9 ????????
-    db   $0f, $48, $3e, $00, $ea, $4b, $d7, $21        ;; 02:46f1 ????????
-    db   $47, $d7, $34, $7e, $fe, $11, $c0, $36        ;; 02:46f9 ????????
-    db   $00, $fa, $49, $d7, $87, $87, $87, $21        ;; 02:4701 ????????
-    db   $0d, $d2, $cb, $6e, $28, $02, $c6, $04        ;; 02:4709 ????????
-    db   $6f, $26, $00, $11, $57, $47, $19, $2a        ;; 02:4711 ????????
-    db   $ea, $46, $d7, $2a, $ea, $0d, $d2, $2a        ;; 02:4719 ????????
-    db   $ea, $4b, $d7, $2a, $ea, $08, $d2, $21        ;; 02:4721 ????????
-    db   $0f, $d6, $cb, $c6, $c9, $08, $ca, $cb        ;; 02:4729 ????????
-    db   $cc, $cd, $ce, $cf, $d0, $d0, $00, $00        ;; 02:4731 ????????
+    db   $c2, $c3, $c4, $c5, $c6, $c7
+
+call_02_468f:    
+    ld   a,$00
+    ld   [wD74B],a
+    ld   hl,wD747
+    ld   a,[hl]
+    cp   a,$08
+    jr   z,.jr_02_46AC
+    inc  [hl]
+    srl  a
+    srl  a
+    ld   l,a
+    ld   h,$00
+    ld   de, .data_02_46b1
+    add  hl,de
+    ld   a,[hl]
+    jp   call_02_480f
+.jr_02_46AC:
+    ld   a,$02
+    jp   entry_02_4ccd
+.data_02_46b1:
+    db   $c8, $c9
+
+call_02_46b3:  
+    ld   a,$09
+    jp   entry_02_4ccd
+
+call_02_46b8:  
+    ld   a,[wD73C]
+    and  a,$1F
+    ret  nz
+    ld   a,[wD749]
+    add  a
+    add  a
+    ld   hl,wD20D_PlayerFacingAngle
+    bit  5,[hl]
+    jr   z,.jr_02_46CC
+    add  a,$02
+.jr_02_46CC:
+    add  a
+    ld   l,a
+    ld   h,$00
+    ld   de, .data_02_4737
+    add  hl,de
+    ld   c,[hl]
+    inc  hl
+    ld   b,[hl]
+    inc  hl
+    push bc
+    ld   c,[hl]
+    inc  hl
+    ld   b,[hl]
+    call call_02_4c19_UpdatePlayerYPosition
+    pop  bc
+    call call_02_4c0a_UpdatePlayerXPosition
+    ld   a,[wD747]
+    srl  a
+    ld   l,a
+    ld   h,$00
+    ld   de, .data_02_472e
+    add  hl,de
+    ld   a,[hl]
+    call call_02_480f
+    ld   a,$00
+    ld   [wD74B],a
+    ld   hl,wD747
+    inc  [hl]
+    ld   a,[hl]
+    cp   a,$11
+    ret  nz
+    ld   [hl],$00
+    ld   a,[wD749]
+    add  a
+    add  a
+    add  a
+    ld   hl,wD20D_PlayerFacingAngle
+    bit  5,[hl]
+    jr   z,.jr_02_4711
+    add  a,$04
+.jr_02_4711:
+    ld   l,a
+    ld   h,$00
+    ld   de, .data_02_4757
+    add  hl,de
+    ldi  a,[hl]
+    ld   [wD746_PlayerClimbingState],a
+    ldi  a,[hl]
+    ld   [wD20D_PlayerFacingAngle],a
+    ldi  a,[hl]
+    ld   [wD74B],a
+    ldi  a,[hl]
+    ld   [wD208_PlayerSpriteIndex],a
+    ld   hl,wD60F_BitmapOfThingsToLoad
+    set  0,[hl]
+    ret     
+.data_02_472e:
+    db   $08, $ca, $cb        ;; 02:4729 ????????
+    db   $cc, $cd, $ce, $cf, $d0, $d0
+.data_02_4737:
+    db   $00, $00        ;; 02:4731 ????????
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 02:4739 ????????
     db   $00, $00, $00, $00, $00, $00, $01, $00        ;; 02:4741 ????????
     db   $01, $00, $ff, $ff, $ff, $ff, $01, $00        ;; 02:4749 ????????
-    db   $ff, $ff, $ff, $ff, $01, $00, $00, $00        ;; 02:4751 ????????
+    db   $ff, $ff, $ff, $ff, $01, $00
+.data_02_4757:
+    db   $00, $00        ;; 02:4751 ????????
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 02:4759 ????????
     db   $00, $00, $00, $00, $00, $00, $04, $00        ;; 02:4761 ????????
     db   $00, $68, $02, $00, $00, $60, $02, $20        ;; 02:4769 ????????
@@ -603,12 +879,43 @@ call_02_4777:
     db   $60, $07, $ff, $ff, $ff, $ff, $a0, $05        ;; 02:47bd ?w....?w
     db   $ff, $ff, $01, $00, $50, $01, $01, $00        ;; 02:47c5 ....?w..
     db   $ff, $ff, $90, $03, $01, $00, $01, $00        ;; 02:47cd ..?w....
-    db   $fa, $5a, $d7, $e6, $c0, $28, $0f, $21        ;; 02:47d5 ????????
-    db   $03, $48, $11, $06, $00, $06, $02, $be        ;; 02:47dd ????????
-    db   $28, $07, $19, $05, $20, $f9, $3e, $ff        ;; 02:47e5 ????????
-    db   $c9, $23, $2a, $f5, $2a, $4f, $2a, $47        ;; 02:47ed ????????
-    db   $c5, $2a, $4f, $2a, $47, $cd, $19, $4c        ;; 02:47f5 ????????
-    db   $c1, $cd, $0a, $4c, $f1, $c9, $40, $00        ;; 02:47fd ????????
+
+call_02_47d5:
+    ld   a,[wD75A_CurrentInputs]
+    and  a,$C0
+    jr   z,.jr_02_47EB
+    ld   hl, .data_02_4803
+    ld   de,$0006
+    ld   b,$02
+.jr_02_47E4:
+    cp   [hl]
+    jr   z,.jr_02_47EE
+    add  hl,de
+    dec  b
+    jr   nz,.jr_02_47E4
+.jr_02_47EB:
+    ld   a,$FF
+    ret  
+.jr_02_47EE:
+    inc  hl
+    ldi  a,[hl]
+    push af
+    ldi  a,[hl]
+    ld   c,a
+    ldi  a,[hl]
+    ld   b,a
+    push bc
+    ldi  a,[hl]
+    ld   c,a
+    ldi  a,[hl]
+    ld   b,a
+    call call_02_4c19_UpdatePlayerYPosition
+    pop  bc
+    call call_02_4c0a_UpdatePlayerXPosition
+    pop  af
+    ret  
+.data_02_4803:    
+    db   $40, $00        ;; 02:47fd ????????
     db   $00, $00, $ff, $ff, $80, $04, $00, $00        ;; 02:4805 ????????
     db   $01, $00                                      ;; 02:480d ??
 
@@ -620,15 +927,48 @@ call_02_480f:
     ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 02:4815 $21 $0f $d6
     set  0, [HL]                                       ;; 02:4818 $cb $c6
     ret                                                ;; 02:481a $c9
-    db   $cd, $94, $48, $c8, $fa, $21, $d6, $f6        ;; 02:481b ????????
-    db   $04, $ea, $21, $d6, $c9, $af, $ea, $5e        ;; 02:4823 ????????
-    db   $d7, $26, $d2, $3e, $20, $6f, $7e, $fe        ;; 02:482b ????????
-    db   $31, $28, $06, $7d, $c6, $20, $20, $f5        ;; 02:4833 ????????
-    db   $c9, $7d, $f6, $10, $6f, $2a, $66, $6f        ;; 02:483b ????????
-    db   $ea, $10, $d2, $7c, $ea, $11, $d2, $29        ;; 02:4843 ????????
-    db   $29, $29, $7c, $fe, $55, $d0, $3e, $09        ;; 02:484b ????????
-    db   $c3, $cd, $4c                                 ;; 02:4853 ???
-    
+
+call_02_481b:
+    call call_02_4894
+    ret  z
+    ld   a,[wD621]
+    or   a,$04
+    ld   [wD621],a
+    ret  
+
+call_02_4828:
+    xor  a
+    ld   [wD75E_PlayerXSpeed],a
+    ld   h,$D2
+    ld   a,$20
+.jr_02_4830:
+    ld   l,a
+    ld   a,[hl]
+    cp   a,$31
+    jr   z,.jr_02_483C
+    ld   a,l
+    add  a,$20
+    jr   nz,.jr_02_4830
+    ret  
+.jr_02_483C:
+    ld   a,l
+    or   a,$10
+    ld   l,a
+    ldi  a,[hl]
+    ld   h,[hl]
+    ld   l,a
+    ld   [wD210_PlayerYPosition],a
+    ld   a,h
+    ld   [wD211_PlayerYPosition],a
+    add  hl,hl
+    add  hl,hl
+    add  hl,hl
+    ld   a,h
+    cp   a,$55
+    ret  nc
+    ld   a,$09
+    jp   entry_02_4ccd
+
 call_02_4856:
     ld   A, [wD758]                                    ;; 02:4856 $fa $58 $d7
     and  A, A                                          ;; 02:4859 $a7
@@ -669,5 +1009,8 @@ call_02_4856:
     call call_00_112f                                  ;; 02:488e $cd $2f $11
     ld   A, $60                                        ;; 02:4891 $3e $60
     ret                                                ;; 02:4893 $c9
-    db   $fa, $0a, $d2, $e6, $04, $c9                  ;; 02:4894 ??????
-    
+
+call_02_4894:
+    ld   a,[wD20A]
+    and  a,$04
+    ret     
