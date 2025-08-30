@@ -297,21 +297,21 @@ entry_0b_5d4b:
     dw   $0000
     dw   .channel_z_television_palette
 .scream_tv_television_palette:
-    INCBIN "../gfx/special_tilesets/media_dimension/palettes/scream_tv_television_palette.bin"
+    INCBIN "../gfx/secondary_tilesets/media_dimension/palettes/scream_tv_television_palette.bin"
 .toon_tv_television_palette:
-    INCBIN "../gfx/special_tilesets/media_dimension/palettes/toon_tv_television_palette.bin"
+    INCBIN "../gfx/secondary_tilesets/media_dimension/palettes/toon_tv_television_palette.bin"
 .prehistory_channel_television_palette:
-    INCBIN "../gfx/special_tilesets/media_dimension/palettes/prehistory_channel_television_palette.bin"
+    INCBIN "../gfx/secondary_tilesets/media_dimension/palettes/prehistory_channel_television_palette.bin"
 .circuit_central_television_palette:
-    INCBIN "../gfx/special_tilesets/media_dimension/palettes/circuit_central_television_palette.bin"
+    INCBIN "../gfx/secondary_tilesets/media_dimension/palettes/circuit_central_television_palette.bin"
 .kung_fu_theater_television_palette:
-    INCBIN "../gfx/special_tilesets/media_dimension/palettes/kung_fu_theater_television_palette.bin"
+    INCBIN "../gfx/secondary_tilesets/media_dimension/palettes/kung_fu_theater_television_palette.bin"
 .channel_z_television_palette:
-    INCBIN "../gfx/special_tilesets/media_dimension/palettes/channel_z_television_palette.bin"
+    INCBIN "../gfx/secondary_tilesets/media_dimension/palettes/channel_z_television_palette.bin"
 .rezopolis_television_palette:
-    INCBIN "../gfx/special_tilesets/media_dimension/palettes/rezopolis_television_palette.bin"
+    INCBIN "../gfx/secondary_tilesets/media_dimension/palettes/rezopolis_television_palette.bin"
 .bonus_tv_television_palette:
-    INCBIN "../gfx/special_tilesets/media_dimension/palettes/bonus_tv_television_palette.bin"
+    INCBIN "../gfx/secondary_tilesets/media_dimension/palettes/bonus_tv_television_palette.bin"
 
 
 entry_0b_5df8:
@@ -322,7 +322,7 @@ call_0b_5df8:
     ld   A, [wD624_CurrentLevelId]                                    ;; 0b:5dfd $fa $24 $d6
     and  A, A                                          ;; 0b:5e00 $a7
     ret  NZ                                            ;; 0b:5e01 $c0
-    ld   HL, wD72D_CurrentSpecialTilesetIndex                                     ;; 0b:5e02 $21 $2d $d7
+    ld   HL, wD72D_CurrentSecondaryTilesetIndex                                     ;; 0b:5e02 $21 $2d $d7
     ld   L, [HL]                                       ;; 0b:5e05 $6e
     ld   H, $00                                        ;; 0b:5e06 $26 $00
     add  HL, HL                                        ;; 0b:5e08 $29
@@ -351,21 +351,21 @@ call_0b_5df8:
     dw   .bonus_tv_television_palette
     
 .scream_tv_television_palette:
-    INCBIN "../gfx/special_tilesets/media_dimension/palettes/scream_tv_television_palette.bin"
+    INCBIN "../gfx/secondary_tilesets/media_dimension/palettes/scream_tv_television_palette.bin"
 .toon_tv_television_palette:
-    INCBIN "../gfx/special_tilesets/media_dimension/palettes/toon_tv_television_palette.bin"
+    INCBIN "../gfx/secondary_tilesets/media_dimension/palettes/toon_tv_television_palette.bin"
 .prehistory_channel_television_palette:
-    INCBIN "../gfx/special_tilesets/media_dimension/palettes/prehistory_channel_television_palette.bin"
+    INCBIN "../gfx/secondary_tilesets/media_dimension/palettes/prehistory_channel_television_palette.bin"
 .circuit_central_television_palette:
-    INCBIN "../gfx/special_tilesets/media_dimension/palettes/circuit_central_television_palette.bin"
+    INCBIN "../gfx/secondary_tilesets/media_dimension/palettes/circuit_central_television_palette.bin"
 .kung_fu_theater_television_palette:
-    INCBIN "../gfx/special_tilesets/media_dimension/palettes/kung_fu_theater_television_palette.bin"
+    INCBIN "../gfx/secondary_tilesets/media_dimension/palettes/kung_fu_theater_television_palette.bin"
 .channel_z_television_palette:
-    INCBIN "../gfx/special_tilesets/media_dimension/palettes/channel_z_television_palette.bin"
+    INCBIN "../gfx/secondary_tilesets/media_dimension/palettes/channel_z_television_palette.bin"
 .rezopolis_television_palette:
-    INCBIN "../gfx/special_tilesets/media_dimension/palettes/rezopolis_television_palette.bin"
+    INCBIN "../gfx/secondary_tilesets/media_dimension/palettes/rezopolis_television_palette.bin"
 .bonus_tv_television_palette:
-    INCBIN "../gfx/special_tilesets/media_dimension/palettes/bonus_tv_television_palette.bin"
+    INCBIN "../gfx/secondary_tilesets/media_dimension/palettes/bonus_tv_television_palette.bin"
 
 entry_0b_5ec3:
     ld   A, [wD59E]                                    ;; 0b:5ec3 $fa $9e $d5
@@ -494,7 +494,7 @@ entry_0b_641e:
     ld   A, [HL+]                                      ;; 0b:6429 $2a
     ld   H, [HL]                                       ;; 0b:642a $66
     ld   L, A                                          ;; 0b:642b $6f
-    ld   DE, wCF00_SpecialTilePaletteIds                                     ;; 0b:642c $11 $00 $cf
+    ld   DE, wCF00_SecondaryTilesetPaletteIds                                     ;; 0b:642c $11 $00 $cf
 .jr_0b_642f:
     ld   A, [HL+]                                      ;; 0b:642f $2a
     ld   [DE], A                                       ;; 0b:6430 $12

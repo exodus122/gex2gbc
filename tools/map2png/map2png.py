@@ -129,7 +129,7 @@ surface_type_colors = {
 
 
 create_tilesets = False
-create_special_tilesets = False
+create_secondary_tilesets = False
 create_blocksets = True
 create_maps = True
 
@@ -145,7 +145,7 @@ bg_collision_override = True
 bg_collision_tiles = []
 if bg_collision_override:
     os.system('mkdir -p tileset_images')
-    collision_tileset_data = open("../../data/bg_collision_data.bin", "rb").read()
+    collision_tileset_data = open("../../maps/bg_collision_data.bin", "rb").read()
     
     tileset_img = PIL.Image.new("RGB", (128, 128))
     draw2 = PIL.ImageDraw.Draw(tileset_img)
@@ -205,18 +205,18 @@ for i in range(0, len(levels)):
     map_file = "../../maps/"+level_name+"/map_"+level_name+channel_map_number+".bin"
     blockset_data_file = "../../maps/"+level_name+"/blockset_data_"+level_name+".bin"
     blockset_override_data_file = "../../maps/blockset_override_data_bank"+str(levels[i][2])+".bin"
-    special_tile_data_file = "../../maps/"+level_name+"/special_tile_data_"+level_name+".bin"
+    secondary_tileset_data_file = "../../maps/"+level_name+"/secondary_tileset_data_"+level_name+".bin"
     
     tileset_file = "../.././gfx/tilesets/tileset_"+level_name+".bin"
     palette_ids_file = "../../gfx/tilesets/palette_ids/palette_ids_"+level_name+".bin"
     palette_file = "../../gfx/tilesets/palettes/palette_"+level_name+".bin"
-    special_tileset_folder = "../.././gfx/special_tilesets/"+level_name+"/"
-    special_tileset_palette_ids_folder = "../../gfx/special_tilesets/"+level_name+"/palette_ids/"
+    secondary_tileset_folder = "../.././gfx/secondary_tilesets/"+level_name+"/"
+    secondary_tileset_palette_ids_folder = "../../gfx/secondary_tilesets/"+level_name+"/palette_ids/"
     
     palette_data = open(palette_file, "rb").read()
     palette_ids = open(palette_ids_file, "rb").read()
     
-    special_tiles = []
+    secondary_tiles = []
     tiles = []
     
     # create a colored version of the level's tileset, using palettes
@@ -256,36 +256,36 @@ for i in range(0, len(levels)):
                 count = count + 1
         new_tileset_img.save('./tileset_images/'+level_name+'_tileset.png')
     
-    # create a colored version of the level's special tilesets, using palettes
+    # create a colored version of the level's secondary tilesets, using palettes
     media_dimension_tv_order = ["scream_tv", "scream_tv", "toon_tv", "prehistory_channel", "circuit_central", "kung_fu_theater", "channel_z", "rezopolis", "bonus_tv"]
     media_dimension_tv_order2 = ["image_013_00", "image_013_12", "image_013_13", "image_013_14", "image_013_15", "image_013_16", "image_013_17", "image_013_18", "image_013_19"]
     
-    if create_special_tilesets:
+    if create_secondary_tilesets:
 
-        os.system('mkdir -p special_tile_bins/')
-        os.system('mkdir -p special_tile_bins/'+level_name)
-        os.system('mkdir -p special_tileset_images/')
-        os.system('mkdir -p special_tileset_images/'+level_name)
+        os.system('mkdir -p secondary_tile_bins/')
+        os.system('mkdir -p secondary_tile_bins/'+level_name)
+        os.system('mkdir -p secondary_tileset_images/')
+        os.system('mkdir -p secondary_tileset_images/'+level_name)
         
-        for tileset_file in os.listdir(special_tileset_folder):
+        for tileset_file in os.listdir(secondary_tileset_folder):
             if tileset_file == "image_00f_12.bin" or tileset_file == "image_00e_18.bin":
                 continue # no palette ids
             
             filename2 = tileset_file.split(".", 1)[0]
         
-            with open(special_tileset_folder+"/"+tileset_file, 'rb') as bf:
+            with open(secondary_tileset_folder+"/"+tileset_file, 'rb') as bf:
                 count = 0
                 for data in iter(lambda: bf.read(0x10), ''):
                     if not data:
                         break
                         
-                    os.system('mkdir -p special_tile_bins/'+level_name+'/'+filename2+'/')
+                    os.system('mkdir -p secondary_tile_bins/'+level_name+'/'+filename2+'/')
                     
-                    out = open('./special_tile_bins/'+level_name+'/'+filename2+'/tile_'+f"{count:0{2}x}"+'.bin', "wb")
+                    out = open('./secondary_tile_bins/'+level_name+'/'+filename2+'/tile_'+f"{count:0{2}x}"+'.bin', "wb")
                     out.write(data)
                     out.close()
                     
-                    palette_ids = open(special_tileset_palette_ids_folder+"/"+filename2+"_palette_ids.bin", "rb").read()
+                    palette_ids = open(secondary_tileset_palette_ids_folder+"/"+filename2+"_palette_ids.bin", "rb").read()
                     palette_index = palette_ids[count]
                     #print(palette_index)
                     temp_palette_data = palette_data[0x8*palette_index:0x8*palette_index+0x8]
@@ -301,7 +301,7 @@ for i in range(0, len(levels)):
                             q = q + 1
                         
                         if television != -1:
-                            palette_file2 = "../../gfx/special_tilesets/"+level_name+"/palettes/"+media_dimension_tv_order[q]+"_television_palette.bin"
+                            palette_file2 = "../../gfx/secondary_tilesets/"+level_name+"/palettes/"+media_dimension_tv_order[q]+"_television_palette.bin"
                             if media_dimension_tv_order[q] == "circuit_central":
                                 temp_palette_data = open(palette_file2, "rb").read()[8:]
                             else:
@@ -311,20 +311,20 @@ for i in range(0, len(levels)):
                     f.write(temp_palette_data)
                     f.close()
                     
-                    os.system('rg./gfx --reverse 1 -p '+"./temp.bin"+' --columns -o ./special_tile_bins/'+level_name+'/'+filename2+'/tile_'+f"{count:0{2}x}"+'.bin ./special_tile_bins/'+level_name+'/'+filename2+'/tile_'+f"{count:0{2}x}"+'.png')
+                    os.system('rg./gfx --reverse 1 -p '+"./temp.bin"+' --columns -o ./secondary_tile_bins/'+level_name+'/'+filename2+'/tile_'+f"{count:0{2}x}"+'.bin ./secondary_tile_bins/'+level_name+'/'+filename2+'/tile_'+f"{count:0{2}x}"+'.png')
                     
                     count = count + 1
             
-            os.system('mkdir -p special_tileset_images/'+level_name+'/')
+            os.system('mkdir -p secondary_tileset_images/'+level_name+'/')
             new_tileset_img = PIL.Image.new("RGB", (48, 48))
             count = 0
             for y in range(0, 6):
                 for x in range(0, 6):
-                    tile_img = PIL.Image.open('./special_tile_bins/'+level_name+'/'+filename2+'/tile_'+f"{count:0{2}x}"+'.png')
+                    tile_img = PIL.Image.open('./secondary_tile_bins/'+level_name+'/'+filename2+'/tile_'+f"{count:0{2}x}"+'.png')
                     new_tileset_img.paste(tile_img, (x*8, y*8))
-                    special_tiles.append(tile_img)
+                    secondary_tiles.append(tile_img)
                     count = count + 1
-            new_tileset_img.save('./special_tileset_images/'+level_name+'/'+filename2+'_tileset.png')
+            new_tileset_img.save('./secondary_tileset_images/'+level_name+'/'+filename2+'_tileset.png')
     
     # create the level's blockset from the tileset
     blockset_data = open(blockset_data_file, "rb").read()
@@ -392,10 +392,10 @@ for i in range(0, len(levels)):
         os.system('mkdir -p blockset_images/with_kill_tiles')
         
         blockset_img2 = PIL.Image.new("RGB", (512, 512))
-        special_tile_data = open(special_tile_data_file, "rb").read()
+        secondary_tileset_data = open(secondary_tileset_data_file, "rb").read()
         draw2 = PIL.ImageDraw.Draw(blockset_img2)
         
-        #print("special_tile_data[0] is: "+str(special_tile_data[0]))
+        #print("secondary_tileset_data[0] is: "+str(secondary_tileset_data[0]))
         
         block_counter = 0
         count = 0x1000
@@ -406,12 +406,12 @@ for i in range(0, len(levels)):
                 block_img =  PIL.Image.new("RGB", (32, 32))
                 draw3 = PIL.ImageDraw.Draw(block_img)
                 
-                special_tile_override = False
-                if block_counter >= special_tile_data[0]: # and blockset_data[val] 
-                    special_tileset_to_open = special_tile_data[block_counter-special_tile_data[0]+1]
-                    if special_tileset_to_open > 0:
-                        special_tile_override = True
-                    #block_img.paste(special_tiles[(special_tileset_to_open*16)+blockset_data[val]]], (inner_x*8, inner_y*8))
+                secondary_tile_override = False
+                if block_counter >= secondary_tileset_data[0]: # and blockset_data[val] 
+                    secondary_tileset_to_open = secondary_tileset_data[block_counter-secondary_tileset_data[0]+1]
+                    if secondary_tileset_to_open > 0:
+                        secondary_tile_override = True
+                    #block_img.paste(secondary_tiles[(secondary_tileset_to_open*16)+blockset_data[val]]], (inner_x*8, inner_y*8))
                 
                 val = count
                 for inner_y in range(0, 4):
@@ -423,8 +423,8 @@ for i in range(0, len(levels)):
                             if draw_tile_ids == True and blockset_data[0x2000+val] != 0x2f:
                                 draw3.text((inner_x*8, inner_y*8), "%x" % blockset_data[0x2000+val], "magenta")
                         else:
-                            if special_tile_override != False and blockset_data[val] < 0x24:
-                                tile_to_paste = special_tiles[(0x24*(special_tileset_to_open-1))+blockset_data[val]]
+                            if secondary_tile_override != False and blockset_data[val] < 0x24:
+                                tile_to_paste = secondary_tiles[(0x24*(secondary_tileset_to_open-1))+blockset_data[val]]
                             else:
                                 tile_to_paste = tiles[blockset_data[val]]
                             

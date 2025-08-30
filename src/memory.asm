@@ -62,7 +62,7 @@ wCE00_BgTileFlags:
 ; or hidden smellraiser switch, etc.
     ds 256
 
-wCF00_SpecialTilePaletteIds:
+wCF00_SecondaryTilesetPaletteIds:
     ds 256                                             ;; cf00
 
 wD000_ObjectFlags:
@@ -336,10 +336,10 @@ wD60F_BitmapOfThingsToLoad:
 wD610:
     ds 1                                               ;; d610
 
-wD611_MovingTilesId:
+wD611_AnimatedTileId:
     ds 1                                               ;; d611
 
-wD612_MovingTilesId:
+wD612_AnimatedTileId:
     ds 1                                               ;; d612
 
 wD613:
@@ -776,7 +776,7 @@ wD6F3:
 wD6F5_CurrentMapBank:
     ds 1                                               ;; d6f5
 
-wD6F6_CurrentMapSpecialTileBank:
+wD6F6_CurrentMapSecondaryTilesetBank:
     ds 1                                               ;; d6f6
 
 wD6F7_CurrentBlocksetAndCollisionBank:
@@ -845,13 +845,13 @@ wD724:
 wD725:
     ds 1                                               ;; d725
 
-wD726_SpecialTilesetBank:
+wD726_SecondaryTilesetBank:
     ds 1                                               ;; d726
 
 wD727:
     ds 1                                               ;; d727
 
-wD728_CurrentSpecialTilesetAddr: ; this determines which special tilset to load (and is loading)
+wD728_CurrentSecondaryTilesetAddr: ; this determines which secondary tilset to load (and is loading)
     ds 1                                               ;; d728
 
 wD729:
@@ -866,7 +866,7 @@ wD72B:
 wD72C:
     ds 1                                               ;; d72c
 
-wD72D_CurrentSpecialTilesetIndex:
+wD72D_CurrentSecondaryTilesetIndex:
     ds 1                                               ;; d72d
 
 wD72E:

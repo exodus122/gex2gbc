@@ -1102,7 +1102,7 @@ call_00_08b1:
     dw   $6700                                         ;; 00:08f4 wW
     db   $00, $79, $00, $40, $00, $73                  ;; 00:08f6 ??????
 
-call_00_08fc: ; this reads special tileset information from other banks and writes to a buffer that gets copied to vram
+call_00_08fc: ; this reads secondary tileset information from other banks and writes to a buffer that gets copied to vram
     ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:08fc $21 $0f $d6
     bit  7, [HL]                                       ;; 00:08ff $cb $7e
     jr   NZ, call_00_08fc                              ;; 00:0901 $20 $f9
@@ -1138,9 +1138,9 @@ call_00_08fc: ; this reads special tileset information from other banks and writ
     ld   A, [wD588]                                    ;; 00:0939 $fa $88 $d5
     jr   .jr_00_095e                                   ;; 00:093c $18 $20
 .jr_00_093e:
-    ld   A, [wD726_SpecialTilesetBank]                                    ;; 00:093e $fa $26 $d7 ; this is where it went when loading seconda tileset info
+    ld   A, [wD726_SecondaryTilesetBank]                                    ;; 00:093e $fa $26 $d7 ; this is where it went when loading seconda tileset info
     call call_00_1089_SwitchBank                                  ;; 00:0941 $cd $89 $10
-    ld   A, [wD728_CurrentSpecialTilesetAddr]                                    ;; 00:0944 $fa $28 $d7
+    ld   A, [wD728_CurrentSecondaryTilesetAddr]                                    ;; 00:0944 $fa $28 $d7
     jr   .jr_00_095e                                   ;; 00:0947 $18 $15
 .jr_00_0949:
     ld   A, [wD71F]                                    ;; 00:0949 $fa $1f $d7
@@ -1157,7 +1157,7 @@ call_00_08fc: ; this reads special tileset information from other banks and writ
     ld   L, $00                                        ;; 00:095f $2e $00
     ld   DE, wD100_TilesToLoadBuffer                                     ;; 00:0961 $11 $00 $d1
     ld   B, $10                                        ;; 00:0964 $06 $10
-    call call_00_0b6d                                  ;; 00:0966 $cd $6d $0b ; this reads special tileset information from other banks
+    call call_00_0b6d                                  ;; 00:0966 $cd $6d $0b ; this reads secondary tileset information from other banks
     ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:0969 $21 $0f $d6
     set  7, [HL]                                       ;; 00:096c $cb $fe
     jp   call_00_10a3_SwitchBank2                                  ;; 00:096e $c3 $a3 $10
@@ -1217,9 +1217,9 @@ call_00_09be:
 
 call_00_09e3:
     res  2, [HL]                                       ;; 00:09e3 $cb $96
-    ld   A, [wD726_SpecialTilesetBank]                                    ;; 00:09e5 $fa $26 $d7
+    ld   A, [wD726_SecondaryTilesetBank]                                    ;; 00:09e5 $fa $26 $d7
     call call_00_1089_SwitchBank                                  ;; 00:09e8 $cd $89 $10
-    ld   A, [wD728_CurrentSpecialTilesetAddr]                                    ;; 00:09eb $fa $28 $d7
+    ld   A, [wD728_CurrentSecondaryTilesetAddr]                                    ;; 00:09eb $fa $28 $d7
     ld   H, A                                          ;; 00:09ee $67
     ld   L, $00                                        ;; 00:09ef $2e $00
     ld   DE, $9000                                     ;; 00:09f1 $11 $00 $90
@@ -1377,7 +1377,7 @@ call_00_0ac1:
     jp   NZ, entry_03_6d13                              ;; 00:0b19 $c2 $13 $6d
     bit  2, A                                          ;; 00:0b1c $cb $57
     jp   NZ, entry_03_6ceb                                ;; 00:0b1e $c2 $eb $6c
-    jp   entry_03_7253_UpdateMovingTiles                                    ;; 00:0b21 $c3 $53 $72
+    jp   entry_03_7253_UpdateAnimatedTile                                    ;; 00:0b21 $c3 $53 $72
 .jp_00_0b24:
     ld   A, [wD72E]                                    ;; 00:0b24 $fa $2e $d7
     ld   [MBC1RomBank], A                                    ;; 00:0b27 $ea $01 $20
@@ -1601,7 +1601,7 @@ call_00_0bb9:
     res  2, [HL]                                       ;; 00:0c9c $cb $96
     ret                                                ;; 00:0c9e $c9
 .jr_00_0c9f:
-    ld   HL, wD728_CurrentSpecialTilesetAddr                                     ;; 00:0c9f $21 $28 $d7
+    ld   HL, wD728_CurrentSecondaryTilesetAddr                                     ;; 00:0c9f $21 $28 $d7
     inc  [HL]                                          ;; 00:0ca2 $34
     ld   HL, wD72A                                     ;; 00:0ca3 $21 $2a $d7
     inc  [HL]                                          ;; 00:0ca6 $34
@@ -1850,7 +1850,7 @@ call_00_0f01:
     ld   [wD60F_BitmapOfThingsToLoad], A                                    ;; 00:0f0d $ea $0f $d6
     ld   [wD77B], A                                    ;; 00:0f10 $ea $7b $d7
     ld   [wD72F], A                                    ;; 00:0f13 $ea $2f $d7
-    ld   [wD611_MovingTilesId], A                                    ;; 00:0f16 $ea $11 $d6
+    ld   [wD611_AnimatedTileId], A                                    ;; 00:0f16 $ea $11 $d6
     ld   [wD6E2], A                                    ;; 00:0f19 $ea $e2 $d6
     ld   [wDAD9], A                                    ;; 00:0f1c $ea $d9 $da
     ld   [wD71E], A                                    ;; 00:0f1f $ea $1e $d7
@@ -2340,8 +2340,8 @@ call_00_1264_LoadMap:
     call call_00_0ede                                  ;; 00:1264 $cd $de $0e
     call call_00_2eb0_GetCurrentMapBankNumber                                  ;; 00:1267 $cd $77 $2e
     ld   [wD6F5_CurrentMapBank], A                                    ;; 00:126a $ea $f5 $d6
-    call call_00_2eb0_GetCurrentSpecialTileBank                                  ;; 00:126d $cd $80 $2e
-    ld   [wD6F6_CurrentMapSpecialTileBank], A                                    ;; 00:1270 $ea $f6 $d6
+    call call_00_2eb0_GetCurrentSecondaryTilesetBank                                  ;; 00:126d $cd $80 $2e
+    ld   [wD6F6_CurrentMapSecondaryTilesetBank], A                                    ;; 00:1270 $ea $f6 $d6
     call call_00_2eb0_GetCurrentBlocksetBank                                  ;; 00:1273 $cd $89 $2e
     ld   [wD6F7_CurrentBlocksetAndCollisionBank], A                                    ;; 00:1276 $ea $f7 $d6
     call call_00_2e93                                  ;; 00:1279 $cd $93 $2e
@@ -2356,7 +2356,7 @@ call_00_1264_LoadMap:
     call call_00_0f38                                  ;; 00:128e $cd $38 $0f
     call call_00_1419_WriteTilesToVRAM                                  ;; 00:1291 $cd $19 $14
     ld   A, $ff                                        ;; 00:1294 $3e $ff
-    ld   [wD72D_CurrentSpecialTilesetIndex], A                                    ;; 00:1296 $ea $2d $d7
+    ld   [wD72D_CurrentSecondaryTilesetIndex], A                                    ;; 00:1296 $ea $2d $d7
     xor  A, A                                          ;; 00:1299 $af
     ld   [wD77B], A                                    ;; 00:129a $ea $7b $d7
     ld   [wD77D], A                                    ;; 00:129d $ea $7d $d7
@@ -2581,7 +2581,7 @@ call_00_1419_WriteTilesToVRAM: ; this function writes to the tiles part of vram 
     call call_00_1078_CallAltBankFunc                                  ;; 00:1446 $cd $78 $10
     ld   [wD59D_ReturnBank], A                                    ;; 00:1449 $ea $9d $d5
     ld   A, Bank03                                        ;; 00:144c $3e $03
-    ld   HL, entry_03_723c_SetupMovingTiles                                     ;; 00:144e $21 $3c $72
+    ld   HL, entry_03_723c_SetupAnimatedTile                                     ;; 00:144e $21 $3c $72
     call call_00_1078_CallAltBankFunc                                  ;; 00:1451 $cd $78 $10
     ret                                                ;; 00:1454 $c9
 
@@ -2702,7 +2702,7 @@ call_00_1472:
     ld   A, [HL+]                                      ;; 00:14f5 $2a
     ld   [DE], A                                       ;; 00:14f6 $12
     call call_00_10a3_SwitchBank2                                  ;; 00:14f7 $cd $a3 $10
-    ld   A, [wD6F6_CurrentMapSpecialTileBank]                                    ;; 00:14fa $fa $f6 $d6
+    ld   A, [wD6F6_CurrentMapSecondaryTilesetBank]                                    ;; 00:14fa $fa $f6 $d6
     call call_00_1089_SwitchBank                       ;; 00:14fd $cd $89 $10 switch to map data file 34/35
     pop  HL                                            ;; 00:1500 $e1 hl = 44b4
     ld   DE, wD703                                     ;; 00:1501 $11 $03 $d7 de = d703
@@ -2908,7 +2908,7 @@ call_00_157a:
     ld   A, [HL]                                       ;; 00:1607 $7e
     ld   [DE], A                                       ;; 00:1608 $12
     call call_00_10a3_SwitchBank2                                  ;; 00:1609 $cd $a3 $10
-    ld   A, [wD6F6_CurrentMapSpecialTileBank]                                    ;; 00:160c $fa $f6 $d6
+    ld   A, [wD6F6_CurrentMapSecondaryTilesetBank]                                    ;; 00:160c $fa $f6 $d6
     call call_00_1089_SwitchBank                                  ;; 00:160f $cd $89 $10
     pop  HL                                            ;; 00:1612 $e1
     ld   DE, wD70F                                     ;; 00:1613 $11 $0f $d7
@@ -3436,7 +3436,7 @@ call_00_18a7:
     call call_00_1e3c                                  ;; 00:18a7 $cd $3c $1e
     ld   A, [wD778]                                    ;; 00:18aa $fa $78 $d7
     and  A, A                                          ;; 00:18ad $a7
-    jr   Z, call_00_1922_LoadSpecialTiles                                 ;; 00:18ae $28 $72
+    jr   Z, call_00_1922_LoadSecondaryTileset                                 ;; 00:18ae $28 $72
     dec  A                                             ;; 00:18b0 $3d
     ld   E, A                                          ;; 00:18b1 $5f
     ld   D, $ce                                        ;; 00:18b2 $16 $ce
@@ -3476,13 +3476,13 @@ call_00_18a7:
     bit  7, E                                          ;; 00:18dd $cb $7b
     jr   Z, .jr_00_18bd                                ;; 00:18df $28 $dc
     pop  HL                                            ;; 00:18e1 $e1
-    jr   call_00_1922_LoadSpecialTiles                                    ;; 00:18e2 $18 $3e
+    jr   call_00_1922_LoadSecondaryTileset                                    ;; 00:18e2 $18 $3e
 
 call_00_18e4:
     call call_00_1e3c                                  ;; 00:18e4 $cd $3c $1e
     ld   A, [wD778]                                    ;; 00:18e7 $fa $78 $d7
     and  A, A                                          ;; 00:18ea $a7
-    jr   Z, call_00_1922_LoadSpecialTiles                                 ;; 00:18eb $28 $35
+    jr   Z, call_00_1922_LoadSecondaryTileset                                 ;; 00:18eb $28 $35
     dec  A                                             ;; 00:18ed $3d
     ld   E, A                                          ;; 00:18ee $5f
     ld   D, $cd                                        ;; 00:18ef $16 $cd
@@ -3523,9 +3523,9 @@ call_00_18e4:
     bit  7, E                                          ;; 00:191b $cb $7b
     jr   Z, .jr_00_18fa                                ;; 00:191d $28 $db
     pop  HL                                            ;; 00:191f $e1
-    jr   call_00_1922_LoadSpecialTiles                                    ;; 00:1920 $18 $00
+    jr   call_00_1922_LoadSecondaryTileset                                    ;; 00:1920 $18 $00
 
-call_00_1922_LoadSpecialTiles: ; special tile related
+call_00_1922_LoadSecondaryTileset:
     ld   A, [wD60F_BitmapOfThingsToLoad]                                    ;; 00:1922 $fa $0f $d6
     bit  2, A                                          ;; 00:1925 $cb $57
     ret  NZ                                            ;; 00:1927 $c0
@@ -3536,7 +3536,7 @@ call_00_1922_LoadSpecialTiles: ; special tile related
     ld   L, [HL]                                       ;; 00:1930 $6e
     ld   H, $00                                        ;; 00:1931 $26 $00
     add  HL, HL                                        ;; 00:1933 $29
-    ld   BC, data_00_1a2e_LevelSpecialTileIndices             ;; 00:1934 $01 $2e $1a
+    ld   BC, data_00_1a2e_LevelSecondaryTilesetIndices             ;; 00:1934 $01 $2e $1a
     add  HL, BC                                        ;; 00:1937 $09
     ld   A, [HL+]                                      ;; 00:1938 $2a
     ld   H, [HL]                                       ;; 00:1939 $66
@@ -3561,7 +3561,7 @@ call_00_1922_LoadSpecialTiles: ; special tile related
     ld   A, [HL]                                       ;; 00:194f $7e
     pop  HL                                            ;; 00:1950 $e1
     and  A, A                                          ;; 00:1951 $a7
-    jr   NZ, .jr_00_1959                               ;; 00:1952 $20 $05 ; perform this jump if going to load new special tileset
+    jr   NZ, .jr_00_1959                               ;; 00:1952 $20 $05 ; perform this jump if going to load new secondary tileset
 .jr_00_1954:
     dec  HL                                            ;; 00:1954 $2b
     dec  B                                             ;; 00:1955 $05
@@ -3569,9 +3569,9 @@ call_00_1922_LoadSpecialTiles: ; special tile related
     ret                                                ;; 00:1958 $c9
 .jr_00_1959:
     dec  A                                             ;; 00:1959 $3d
-    ld   HL, wD72D_CurrentSpecialTilesetIndex          ;; 00:195a $21 $2d $d7
+    ld   HL, wD72D_CurrentSecondaryTilesetIndex          ;; 00:195a $21 $2d $d7
     cp   A, [HL]                                       ;; 00:195d $be
-    ret  Z                                             ;; 00:195e $c8 ; return if the special tileset is already the current one
+    ret  Z                                             ;; 00:195e $c8 ; return if the secondary tileset is already the current one
     ld   [HL], A                                       ;; 00:195f $77
     ld   C, A                                          ;; 00:1960 $4f
     add  A, A                                          ;; 00:1961 $87
@@ -3580,13 +3580,13 @@ call_00_1922_LoadSpecialTiles: ; special tile related
     ld   L, [HL]                                       ;; 00:1966 $6e
     ld   H, $00                                        ;; 00:1967 $26 $00
     add  HL, HL                                        ;; 00:1969 $29
-    ld   DE, data_LevelSpecialTilesetBanks                                     ;; 00:196a $11 $f0 $19
+    ld   DE, data_LevelSecondaryTilesetBanks                                     ;; 00:196a $11 $f0 $19
     add  HL, DE                                        ;; 00:196d $19
     add  A, [HL]                                       ;; 00:196e $86
-    ld   [wD728_CurrentSpecialTilesetAddr], A                                    ;; 00:196f $ea $28 $d7
+    ld   [wD728_CurrentSecondaryTilesetAddr], A                                    ;; 00:196f $ea $28 $d7
     inc  HL                                            ;; 00:1972 $23
     ld   A, [HL]                                       ;; 00:1973 $7e
-    ld   [wD726_SpecialTilesetBank], A                                    ;; 00:1974 $ea $26 $d7
+    ld   [wD726_SecondaryTilesetBank], A                                    ;; 00:1974 $ea $26 $d7
     ld   [wD72E], A                                    ;; 00:1977 $ea $2e $d7
     call call_00_1089_SwitchBank                                  ;; 00:197a $cd $89 $10
     xor  A, A                                          ;; 00:197d $af
@@ -3605,7 +3605,7 @@ call_00_1922_LoadSpecialTiles: ; special tile related
     ld   L, A                                          ;; 00:199a $6f
     ld   DE, $240                                      ;; 00:199b $11 $40 $02
     add  HL, DE                                        ;; 00:199e $19
-    ld   DE, wCF00_SpecialTilePaletteIds                                     ;; 00:199f $11 $00 $cf
+    ld   DE, wCF00_SecondaryTilesetPaletteIds                                     ;; 00:199f $11 $00 $cf
     ld   B, $24                                        ;; 00:19a2 $06 $24
 .jr_00_19a4:
     ld   A, [HL+]                                      ;; 00:19a4 $2a
@@ -3651,7 +3651,7 @@ call_00_1922_LoadSpecialTiles: ; special tile related
     call call_00_1078_CallAltBankFunc                                  ;; 00:19ec $cd $78 $10
     ret                                                ;; 00:19ef $c9
 
-data_LevelSpecialTilesetBanks: ; this table contains the special tileset bank numbers 
+data_LevelSecondaryTilesetBanks: ; this table contains the secondary tileset bank numbers 
 ; AND the offset into that bank to start getting the tilesets
     db   $40, $13, $40, $0e, $40, $0f, $40, $0f        ;; 00:19f0 ?.?.?.??
     db   $61, $0d, $40, $10, $40, $13, $5b, $0e        ;; 00:19f8 ????????
@@ -3661,55 +3661,55 @@ data_LevelSpecialTilesetBanks: ; this table contains the special tileset bank nu
     db   $40, $13, $40, $10, $40, $0d, $61, $0d        ;; 00:1a18 ????????
     db   $5b, $0e, $40, $0f, $40, $0d, $40, $13        ;; 00:1a20 ????????
     db   $40, $13, $40, $13, $73, $0e
-data_00_1a2e_LevelSpecialTileIndices: ; one for each channel, some levels share the same one
-    dw   special_tile_data_media_dimension
-    dw   special_tile_data_toon_tv
-    dw   special_tile_data_scream_tv
-    dw   special_tile_data_scream_tv        ;; 00:1a2e ??????..
-    dw   special_tile_data_circuit_central
-    dw   special_tile_data_kung_fu_theater
-    dw   special_tile_data_media_dimension
-    dw   special_tile_data_prehistory_channel       ;; 00:1a ....????
-    dw   special_tile_data_toon_tv
-    dw   special_tile_data_prehistory_channel
-    dw   special_tile_data_circuit_central
-    dw   special_tile_data_scream_tv        ;; 00:1a3e ????????
-    dw   special_tile_data_media_dimension
-    dw   special_tile_data_kung_fu_theater
-    dw   special_tile_data_rezopolis
-    dw   special_tile_data_media_dimension        ;; 00:1a ????????
-    dw   special_tile_data_scream_tv
-    dw   special_tile_data_media_dimension
-    dw   special_tile_data_media_dimension
-    dw   special_tile_data_media_dimension        ;; 00:1a4e ????????
-    dw   special_tile_data_media_dimension
-    dw   special_tile_data_kung_fu_theater
-    dw   special_tile_data_rezopolis
-    dw   special_tile_data_circuit_central        ;; 00:1a ????????
-    dw   special_tile_data_prehistory_channel
-    dw   special_tile_data_scream_tv
-    dw   special_tile_data_rezopolis
-    dw   special_tile_data_media_dimension        ;; 00:1a5e ????????
-    dw   special_tile_data_media_dimension
-    dw   special_tile_data_media_dimension
-    dw   special_tile_data_channel_z
+data_00_1a2e_LevelSecondaryTilesetIndices: ; one for each channel, some levels share the same one
+    dw   secondary_tileset_data_media_dimension
+    dw   secondary_tileset_data_toon_tv
+    dw   secondary_tileset_data_scream_tv
+    dw   secondary_tileset_data_scream_tv        ;; 00:1a2e ??????..
+    dw   secondary_tileset_data_circuit_central
+    dw   secondary_tileset_data_kung_fu_theater
+    dw   secondary_tileset_data_media_dimension
+    dw   secondary_tileset_data_prehistory_channel       ;; 00:1a ....????
+    dw   secondary_tileset_data_toon_tv
+    dw   secondary_tileset_data_prehistory_channel
+    dw   secondary_tileset_data_circuit_central
+    dw   secondary_tileset_data_scream_tv        ;; 00:1a3e ????????
+    dw   secondary_tileset_data_media_dimension
+    dw   secondary_tileset_data_kung_fu_theater
+    dw   secondary_tileset_data_rezopolis
+    dw   secondary_tileset_data_media_dimension        ;; 00:1a ????????
+    dw   secondary_tileset_data_scream_tv
+    dw   secondary_tileset_data_media_dimension
+    dw   secondary_tileset_data_media_dimension
+    dw   secondary_tileset_data_media_dimension        ;; 00:1a4e ????????
+    dw   secondary_tileset_data_media_dimension
+    dw   secondary_tileset_data_kung_fu_theater
+    dw   secondary_tileset_data_rezopolis
+    dw   secondary_tileset_data_circuit_central        ;; 00:1a ????????
+    dw   secondary_tileset_data_prehistory_channel
+    dw   secondary_tileset_data_scream_tv
+    dw   secondary_tileset_data_rezopolis
+    dw   secondary_tileset_data_media_dimension        ;; 00:1a5e ????????
+    dw   secondary_tileset_data_media_dimension
+    dw   secondary_tileset_data_media_dimension
+    dw   secondary_tileset_data_channel_z
 
-special_tile_data_media_dimension:
-    INCBIN "maps/media_dimension/special_tile_data_media_dimension.bin"
-special_tile_data_toon_tv:
-    INCBIN "maps/toon_tv/special_tile_data_toon_tv.bin"
-special_tile_data_scream_tv:
-    INCBIN "maps/scream_tv/special_tile_data_scream_tv.bin"
-special_tile_data_circuit_central:
-    INCBIN "maps/circuit_central/special_tile_data_circuit_central.bin"
-special_tile_data_kung_fu_theater:
-    INCBIN "maps/kung_fu_theater/special_tile_data_kung_fu_theater.bin"
-special_tile_data_prehistory_channel:
-    INCBIN "maps/prehistory_channel/special_tile_data_prehistory_channel.bin"
-special_tile_data_rezopolis:
-    INCBIN "maps/rezopolis/special_tile_data_rezopolis.bin"
-special_tile_data_channel_z:
-    INCBIN "maps/channel_z/special_tile_data_channel_z.bin"
+secondary_tileset_data_media_dimension:
+    INCBIN "maps/media_dimension/secondary_tileset_data_media_dimension.bin"
+secondary_tileset_data_toon_tv:
+    INCBIN "maps/toon_tv/secondary_tileset_data_toon_tv.bin"
+secondary_tileset_data_scream_tv:
+    INCBIN "maps/scream_tv/secondary_tileset_data_scream_tv.bin"
+secondary_tileset_data_circuit_central:
+    INCBIN "maps/circuit_central/secondary_tileset_data_circuit_central.bin"
+secondary_tileset_data_kung_fu_theater:
+    INCBIN "maps/kung_fu_theater/secondary_tileset_data_kung_fu_theater.bin"
+secondary_tileset_data_prehistory_channel:
+    INCBIN "maps/prehistory_channel/secondary_tileset_data_prehistory_channel.bin"
+secondary_tileset_data_rezopolis:
+    INCBIN "maps/rezopolis/secondary_tileset_data_rezopolis.bin"
+secondary_tileset_data_channel_z:
+    INCBIN "maps/channel_z/secondary_tileset_data_channel_z.bin"
 
 call_00_1e3c:
 ; this function loads the values that were obtained from bank special tile banks 34 and 35
@@ -4935,7 +4935,7 @@ call_00_2eb0_GetCurrentMapBankNumber:
     ld   A, [HL]                                       ;; 00:2e7e $7e
     ret                                                ;; 00:2e7f $c9
 
-call_00_2eb0_GetCurrentSpecialTileBank:
+call_00_2eb0_GetCurrentSecondaryTilesetBank:
     call call_00_2eb0_GetLevelDataAddr                                  ;; 00:2e80 $cd $b0 $2e
     ld   DE, $05                                       ;; 00:2e83 $11 $05 $00
     add  HL, DE                                        ;; 00:2e86 $19
@@ -4991,7 +4991,7 @@ call_00_2eb0_GetLevelDataAddr:
 ; 0x1
 ; 0x2-0x3 is a pointer to the level's text (level name, mission names)
 ; 0x4 is map bank number
-; 0x5 is map special tile data bank
+; 0x5 is map secondary tileset data bank
 ; 0x6 is blockset/collision data bank
 ; 0x7
 ; 0x8 is the bit to use in the blockset/collision data bank
