@@ -346,7 +346,10 @@ wD613:
     ds 1                                               ;; d613
 
 wD614:
-    ds 3                                               ;; d614
+    ds 2                                               ;; d614
+
+wD616:
+    ds 1                                               ;; d616
 
 wD617:
     ds 1                                               ;; d617
@@ -996,7 +999,10 @@ wD755:
     ds 1                                               ;; d755
 
 wD756:
-    ds 2                                               ;; d756
+    ds 1                                               ;; d756
+
+wD757:
+    ds 1                                               ;; d757
 
 wD758:
     ds 1                                               ;; d758
@@ -1155,7 +1161,10 @@ wD78A_MusicId: ; multiplied by 4 and used as index into .data_00_1244_MusicList
     ds 1                                               ;; d78a
 
 wD78B:
-    ds 13                                              ;; d78b
+    ds 4                                              ;; d78b
+
+wD78F:
+    ds 9
 
 wD798:
     ds 2                                               ;; d798
