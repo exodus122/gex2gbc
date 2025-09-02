@@ -15,7 +15,7 @@ check: $(ROM)
 	md5sum -c $(ROM).md5
 
 clean:
-	-rm -rf .bin .obj .dep .gfx rom.sym rom.map $(ROM)
+	-rm -rf .bin .obj .dep .gfx $(ROM)
 
 $(ROM): $(patsubst src/game.asm,.obj/%.o,$(SRCS))
 	@mkdir -p $(@D)

@@ -776,7 +776,7 @@ wD6F3:
 wD6F5_CurrentMapBank:
     ds 1                                               ;; d6f5
 
-wD6F6_CurrentMapSecondaryTilesetBank:
+wD6F6_SecondaryTilesetOverrideBank:
     ds 1                                               ;; d6f6
 
 wD6F7_CurrentBlocksetAndCollisionBank:
@@ -803,7 +803,7 @@ wD6FE_LevelTileOverrideBit:
 wD6FF_CurrentBgTilesetBank:
     ds 1                                               ;; d6ff
 
-wD700:
+wD700: ; where block ids get written temporarily. also where override bits are set temporarily
     ds 2                                               ;; d700
 
 wD702:

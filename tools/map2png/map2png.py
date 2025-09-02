@@ -241,7 +241,7 @@ for i in range(0, len(levels)):
                 f.write(temp_palette_data)
                 f.close()
                 
-                os.system('rg./gfx --reverse 1 -p '+"./temp.bin"+' --columns -o ./tile_bins/'+level_name+'/tile_'+f"{count:0{2}x}"+'.bin ./tile_bins/'+level_name+'/tile_'+f"{count:0{2}x}"+'.png')
+                os.system('rgbgfx --reverse 1 -p '+"./temp.bin"+' --columns -o ./tile_bins/'+level_name+'/tile_'+f"{count:0{2}x}"+'.bin ./tile_bins/'+level_name+'/tile_'+f"{count:0{2}x}"+'.png')
                 
                 count = count + 1
         
@@ -311,7 +311,7 @@ for i in range(0, len(levels)):
                     f.write(temp_palette_data)
                     f.close()
                     
-                    os.system('rg./gfx --reverse 1 -p '+"./temp.bin"+' --columns -o ./secondary_tile_bins/'+level_name+'/'+filename2+'/tile_'+f"{count:0{2}x}"+'.bin ./secondary_tile_bins/'+level_name+'/'+filename2+'/tile_'+f"{count:0{2}x}"+'.png')
+                    os.system('rgbgfx --reverse 1 -p '+"./temp.bin"+' --columns -o ./secondary_tile_bins/'+level_name+'/'+filename2+'/tile_'+f"{count:0{2}x}"+'.bin ./secondary_tile_bins/'+level_name+'/'+filename2+'/tile_'+f"{count:0{2}x}"+'.png')
                     
                     count = count + 1
             

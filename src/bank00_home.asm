@@ -467,7 +467,7 @@ call_00_0150_Init:
     ld   A, Bank02                                        ;; 00:04e3 $3e $02
     ld   HL, entry_02_6eba_UpdateObjects                                     ;; 00:04e5 $21 $ba $6e
     call call_00_1078_CallAltBankFunc                                  ;; 00:04e8 $cd $78 $10
-    call call_00_1455                                  ;; 00:04eb $cd $55 $14
+    call call_00_1455_LoadBgMap                                  ;; 00:04eb $cd $55 $14
     call call_00_2305                                  ;; 00:04ee $cd $05 $23
     call call_00_1e5b                                  ;; 00:04f1 $cd $5b $1e
     call call_00_05c7                                  ;; 00:04f4 $cd $c7 $05
@@ -2338,15 +2338,15 @@ call_00_120c_SetupMusic:
 
 call_00_1264_LoadMap:
     call call_00_0ede                                  ;; 00:1264 $cd $de $0e
-    call call_00_2eb0_GetCurrentMapBankNumber                                  ;; 00:1267 $cd $77 $2e
+    call call_00_2e77_GetCurrentMapBankNumber                                  ;; 00:1267 $cd $77 $2e
     ld   [wD6F5_CurrentMapBank], A                                    ;; 00:126a $ea $f5 $d6
-    call call_00_2eb0_GetCurrentSecondaryTilesetBank                                  ;; 00:126d $cd $80 $2e
-    ld   [wD6F6_CurrentMapSecondaryTilesetBank], A                                    ;; 00:1270 $ea $f6 $d6
-    call call_00_2eb0_GetCurrentBlocksetBank                                  ;; 00:1273 $cd $89 $2e
+    call call_00_2e80_GetCurrentSecondaryTilesetBank                                  ;; 00:126d $cd $80 $2e
+    ld   [wD6F6_SecondaryTilesetOverrideBank], A                                    ;; 00:1270 $ea $f6 $d6
+    call call_00_2e89_GetCurrentBlocksetBank                                  ;; 00:1273 $cd $89 $2e
     ld   [wD6F7_CurrentBlocksetAndCollisionBank], A                                    ;; 00:1276 $ea $f7 $d6
     call call_00_2e93                                  ;; 00:1279 $cd $93 $2e
     ld   [wD6FE_LevelTileOverrideBit], A                                    ;; 00:127c $ea $fe $d6
-    call call_00_2eb0_GetCurrentBgTilesetBank                                  ;; 00:127f $cd $9c $2e
+    call call_00_2e9c_GetCurrentBgTilesetBank                                  ;; 00:127f $cd $9c $2e
     ld   [wD6FF_CurrentBgTilesetBank], A                                    ;; 00:1282 $ea $ff $d6
     call call_00_2ea5                                  ;; 00:1285 $cd $a5 $2e
     ld   HL, wD700                                     ;; 00:1288 $21 $00 $d7
@@ -2365,7 +2365,7 @@ call_00_1264_LoadMap:
     push AF                                            ;; 00:12a2 $f5
     ld   A, $01                                        ;; 00:12a3 $3e $01
     ld   [wD6F9], A                                    ;; 00:12a5 $ea $f9 $d6
-    call call_00_1455                                  ;; 00:12a8 $cd $55 $14
+    call call_00_1455_LoadBgMap                                  ;; 00:12a8 $cd $55 $14
     ld   [wD59D_ReturnBank], A                                    ;; 00:12ab $ea $9d $d5
     ld   A, Bank03                                        ;; 00:12ae $3e $03
     ld   HL, entry_03_6f5e_WriteVRAMBgMap                                     ;; 00:12b0 $21 $5e $6f
@@ -2585,21 +2585,21 @@ call_00_1419_WriteTilesToVRAM: ; this function writes to the tiles part of vram 
     call call_00_1078_CallAltBankFunc                                  ;; 00:1451 $cd $78 $10
     ret                                                ;; 00:1454 $c9
 
-call_00_1455:
+call_00_1455_LoadBgMap:
     ld   HL, wD6F9                                     ;; 00:1455 $21 $f9 $d6
     bit  7, [HL]                                       ;; 00:1458 $cb $7e
-    jr   NZ, call_00_1455                              ;; 00:145a $20 $f9
+    jr   NZ, call_00_1455_LoadBgMap                              ;; 00:145a $20 $f9
     ld   A, [wD6F9]                                    ;; 00:145c $fa $f9 $d6
     and  A, $03                                        ;; 00:145f $e6 $03
-    call NZ, call_00_1472                              ;; 00:1461 $c4 $72 $14
+    call NZ, call_00_1472_LoadBgMapVertical                              ;; 00:1461 $c4 $72 $14
     ld   A, [wD6F9]                                    ;; 00:1464 $fa $f9 $d6
     and  A, $0c                                        ;; 00:1467 $e6 $0c
-    call NZ, call_00_157a                              ;; 00:1469 $c4 $7a $15
+    call NZ, call_00_157a_LoadBgMapHorizontal                              ;; 00:1469 $c4 $7a $15
     ld   HL, wD6F9                                     ;; 00:146c $21 $f9 $d6
     set  7, [HL]                                       ;; 00:146f $cb $fe
     ret                                                ;; 00:1471 $c9
 
-call_00_1472:
+call_00_1472_LoadBgMapVertical:
 ; load bg map tiles (vertical camera movement)
     ld   HL, wD6EF_YPositionInMap                                     ;; 00:1472 $21 $ef $d6
     ld   A, [HL+]                                      ;; 00:1475 $2a
@@ -2702,7 +2702,7 @@ call_00_1472:
     ld   A, [HL+]                                      ;; 00:14f5 $2a
     ld   [DE], A                                       ;; 00:14f6 $12
     call call_00_10a3_SwitchBank2                                  ;; 00:14f7 $cd $a3 $10
-    ld   A, [wD6F6_CurrentMapSecondaryTilesetBank]                                    ;; 00:14fa $fa $f6 $d6
+    ld   A, [wD6F6_SecondaryTilesetOverrideBank]                                    ;; 00:14fa $fa $f6 $d6
     call call_00_1089_SwitchBank                       ;; 00:14fd $cd $89 $10 switch to map data file 34/35
     pop  HL                                            ;; 00:1500 $e1 hl = 44b4
     ld   DE, wD703                                     ;; 00:1501 $11 $03 $d7 de = d703
@@ -2797,7 +2797,7 @@ call_00_1472:
     call call_00_10a3_SwitchBank2                                  ;; 00:1576 $cd $a3 $10
     ret                                                ;; 00:1579 $c9
 
-call_00_157a:
+call_00_157a_LoadBgMapHorizontal:
 ; load bg map tiles (horizontal camera movement)
     ld   HL, wD6ED_XPositionInMap                                     ;; 00:157a $21 $ed $d6
     ld   A, [HL+]                                      ;; 00:157d $2a
@@ -2908,7 +2908,7 @@ call_00_157a:
     ld   A, [HL]                                       ;; 00:1607 $7e
     ld   [DE], A                                       ;; 00:1608 $12
     call call_00_10a3_SwitchBank2                                  ;; 00:1609 $cd $a3 $10
-    ld   A, [wD6F6_CurrentMapSecondaryTilesetBank]                                    ;; 00:160c $fa $f6 $d6
+    ld   A, [wD6F6_SecondaryTilesetOverrideBank]                                    ;; 00:160c $fa $f6 $d6
     call call_00_1089_SwitchBank                                  ;; 00:160f $cd $89 $10
     pop  HL                                            ;; 00:1612 $e1
     ld   DE, wD70F                                     ;; 00:1613 $11 $0f $d7
@@ -4419,7 +4419,7 @@ call_00_2329_UpdateMain:
     ld   A, Bank02                                        ;; 00:23c5 $3e $02
     ld   HL, entry_02_6eba_UpdateObjects                                     ;; 00:23c7 $21 $ba $6e
     call call_00_1078_CallAltBankFunc                                  ;; 00:23ca $cd $78 $10
-    call call_00_1455                                  ;; 00:23cd $cd $55 $14
+    call call_00_1455_LoadBgMap                                  ;; 00:23cd $cd $55 $14
     call call_00_08fc                                  ;; 00:23d0 $cd $fc $08
     ld   HL, wD79B                                     ;; 00:23d3 $21 $9b $d7
     ld   A, [HL]                                       ;; 00:23d6 $7e
@@ -4928,21 +4928,21 @@ call_00_2e5f:
     ld   L, E                                          ;; 00:2e75 $6b ; HL is value in [2 + 0x2-0x3 in the level data + A*2]
     ret                                                ;; 00:2e76 $c9
 
-call_00_2eb0_GetCurrentMapBankNumber:
+call_00_2e77_GetCurrentMapBankNumber:
     call call_00_2eb0_GetLevelDataAddr                                  ;; 00:2e77 $cd $b0 $2e
     ld   DE, $04                                       ;; 00:2e7a $11 $04 $00
     add  HL, DE                                        ;; 00:2e7d $19
     ld   A, [HL]                                       ;; 00:2e7e $7e
     ret                                                ;; 00:2e7f $c9
 
-call_00_2eb0_GetCurrentSecondaryTilesetBank:
+call_00_2e80_GetCurrentSecondaryTilesetBank:
     call call_00_2eb0_GetLevelDataAddr                                  ;; 00:2e80 $cd $b0 $2e
     ld   DE, $05                                       ;; 00:2e83 $11 $05 $00
     add  HL, DE                                        ;; 00:2e86 $19
     ld   A, [HL]                                       ;; 00:2e87 $7e
     ret                                                ;; 00:2e88 $c9
 
-call_00_2eb0_GetCurrentBlocksetBank:
+call_00_2e89_GetCurrentBlocksetBank:
     call call_00_2eb0_GetLevelDataAddr                                  ;; 00:2e89 $cd $b0 $2e
     ld   DE, $06                                       ;; 00:2e8c $11 $06 $00
     add  HL, DE                                        ;; 00:2e8f $19
@@ -4957,7 +4957,7 @@ call_00_2e93:
     ld   A, [HL]                                       ;; 00:2e9a $7e
     ret                                                ;; 00:2e9b $c9
 
-call_00_2eb0_GetCurrentBgTilesetBank:
+call_00_2e9c_GetCurrentBgTilesetBank:
     call call_00_2eb0_GetLevelDataAddr                                  ;; 00:2e9c $cd $b0 $2e
     ld   DE, $09                                       ;; 00:2e9f $11 $09 $00
     add  HL, DE                                        ;; 00:2ea2 $19
