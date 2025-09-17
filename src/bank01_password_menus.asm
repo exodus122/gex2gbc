@@ -318,7 +318,7 @@ call_01_5271_ProcessPassword: ; handles setting save data from password
     ld   C, $80                                        ;; 01:52d4 $0e $80
 .jr_01_52d6:
     push HL                                            ;; 01:52d6 $e5
-    call call_00_2e43                                  ;; 01:52d7 $cd $43 $2e
+    call call_00_2e43_GetRemoteProgressId                                  ;; 01:52d7 $cd $43 $2e
     ld   E, A                                          ;; 01:52da $5f
     ld   D, $00                                        ;; 01:52db $16 $00
     ld   HL, .data_01_531d                             ;; 01:52dd $21 $1d $53

@@ -389,7 +389,7 @@ entry_01_42bd_EnterTV:
     call call_01_4000_MenuLoad                                  ;; 01:42e2 $cd $00 $40
     jr   .jr_01_4319                                   ;; 01:42e5 $18 $32
 .jr_01_42e7:
-    call call_00_2e43                                  ;; 01:42e7 $cd $43 $2e
+    call call_00_2e43_GetRemoteProgressId                                  ;; 01:42e7 $cd $43 $2e
     ld   E, A                                          ;; 01:42ea $5f
     add  A, A                                          ;; 01:42eb $87
     add  A, E                                          ;; 01:42ec $83
@@ -454,7 +454,7 @@ call_01_4349_LoadEnteringMenu:
     ld   C, $80                                        ;; 01:435e $0e $80
 .jr_01_4360:
     push HL                                            ;; 01:4360 $e5
-    call call_00_2e43                                  ;; 01:4361 $cd $43 $2e
+    call call_00_2e43_GetRemoteProgressId                                  ;; 01:4361 $cd $43 $2e
     ld   E, A                                          ;; 01:4364 $5f
     ld   D, $00                                        ;; 01:4365 $16 $00
     ld   HL, .data_01_43b6                             ;; 01:4367 $21 $b6 $43
@@ -909,7 +909,7 @@ call_01_466b:
     ld   A, Bank0b                                        ;; 01:467a $3e $0b
     ld   HL, entry_0b_5d4b                              ;; 01:467c $21 $4b $5d
     call call_00_1078_CallAltBankFunc                                  ;; 01:467f $cd $78 $10
-    call call_00_2e3a                                  ;; 01:4682 $cd $3a $2e
+    call call_00_2e3a_GetTVPaletteId                                  ;; 01:4682 $cd $3a $2e
     ld   DE, data_01_5cb9                              ;; 01:4685 $11 $b9 $5c
     call call_00_07b9                                  ;; 01:4688 $cd $b9 $07
     ld   A, [wD69A]                                    ;; 01:468b $fa $9a $d6
@@ -923,7 +923,7 @@ call_01_466b:
     pop  HL                                            ;; 01:469f $e1
     ld   DE, wC000_BgMapTileIds                                     ;; 01:46a0 $11 $00 $c0
     ld   A, $13                                        ;; 01:46a3 $3e $13
-    jp   call_00_07a1                                    ;; 01:46a5 $c3 $a1 $07
+    jp   call_00_07a1_SwitchBankAndCopyBCBytesFromHLToDE                                    ;; 01:46a5 $c3 $a1 $07
 .data_01_46a8:
     db   $00, $00, $00, $02, $00, $00, $e0, $03        ;; 01:46a8 ........
     db   $00, $00, $8c, $01, $c0, $02, $5a, $03        ;; 01:46b0 ........
@@ -943,7 +943,7 @@ call_01_466b:
     db   $00, $00, $1f, $00, $ff, $01, $7f, $03        ;; 01:4720 ........
 
 call_01_4728:
-    call call_00_2e3a                                  ;; 01:4728 $cd $3a $2e
+    call call_00_2e3a_GetTVPaletteId                                  ;; 01:4728 $cd $3a $2e
     ld   DE, data_01_5ee7                              ;; 01:472b $11 $e7 $5e
     call call_00_07b9                                  ;; 01:472e $cd $b9 $07
     jp   call_01_4e6f                                  ;; 01:4731 $c3 $6f $4e
@@ -1143,7 +1143,7 @@ call_01_4879:
     inc  DE                                            ;; 01:48bb $13
     dec  B                                             ;; 01:48bc $05
     jr   NZ, .jr_01_48b3                               ;; 01:48bd $20 $f4
-    call call_00_2e43                                  ;; 01:48bf $cd $43 $2e
+    call call_00_2e43_GetRemoteProgressId                                  ;; 01:48bf $cd $43 $2e
     ld   C, A                                          ;; 01:48c2 $4f
     ld   A, [wD69B]                                    ;; 01:48c3 $fa $9b $d6
     add  A, C                                          ;; 01:48c6 $81
@@ -1226,7 +1226,7 @@ call_01_491d:
 ;    db   $29, $29, $19, $11, $a7, $49, $19, $2a        ;; 01:499a ????????
 ;    db   $66, $6f, $c3, $6f, $4e, 
 call_01_4969:    
-    call call_00_2e43
+    call call_00_2e43_GetRemoteProgressId
     push af
     push af
     ld hl, wD624_CurrentLevelId

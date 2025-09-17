@@ -61,7 +61,7 @@
 00:074d call_00_074d
 00:075b call_00_075b
 00:0771 data_00_0771
-00:07a1 call_00_07a1
+00:07a1 call_00_07a1_SwitchBankAndCopyBCBytesFromHLToDE
 00:07b0 call_00_07b0_CopyBCBytesFromHLToDE
 00:07b9 call_00_07b9
 00:07c3 call_00_07c3
@@ -290,14 +290,14 @@
 00:2e01 call_00_2dbf.jr_00_2e01
 00:2e14 call_00_2dbf.jr_00_2e14
 00:2e27 call_00_2dbf.jr_00_2e27
-00:2e3a call_00_2e3a
-00:2e43 call_00_2e43
+00:2e3a call_00_2e3a_GetTVPaletteId
+00:2e43 call_00_2e43_GetRemoteProgressId
 00:2e4c call_00_2e4c
 00:2e5f call_00_2e5f
 00:2e77 call_00_2e77_GetCurrentMapBankNumber
 00:2e80 call_00_2e80_GetCurrentSecondaryTilesetBank
 00:2e89 call_00_2e89_GetCurrentBlocksetBank
-00:2e93 call_00_2e93
+00:2e93 call_00_2e93_GetBlocksetOverrideBit
 00:2e9c call_00_2e9c_GetCurrentBgTilesetBank
 00:2ea5 call_00_2ea5
 00:2eb0 call_00_2eb0_GetLevelDataAddr

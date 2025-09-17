@@ -846,7 +846,7 @@ data_00_0771:
     db   $20, $20, $10, $22, $50, $20, $a0, $10        ;; 00:0795 ????????
     db   $ff, $64, $10, $ff                            ;; 00:079d ????
 
-call_00_07a1:
+call_00_07a1_SwitchBankAndCopyBCBytesFromHLToDE:
     push HL                                            ;; 00:07a1 $e5
     push DE                                            ;; 00:07a2 $d5
     push BC                                            ;; 00:07a3 $c5
@@ -1066,7 +1066,7 @@ call_00_08b1:
     push HL                                            ;; 00:08b4 $e5
     ld   A, $13                                        ;; 00:08b5 $3e $13
     call call_00_1089_SwitchBank                                  ;; 00:08b7 $cd $89 $10
-    call call_00_2e3a                                  ;; 00:08ba $cd $3a $2e
+    call call_00_2e3a_GetTVPaletteId                                  ;; 00:08ba $cd $3a $2e
     ld   DE, $8e6                                      ;; 00:08bd $11 $e6 $08
     call call_00_07b9                                  ;; 00:08c0 $cd $b9 $07
     ld   DE, $240                                      ;; 00:08c3 $11 $40 $02
@@ -2344,7 +2344,7 @@ call_00_1264_LoadMap:
     ld   [wD6F6_SecondaryTilesetOverrideBank], A                                    ;; 00:1270 $ea $f6 $d6
     call call_00_2e89_GetCurrentBlocksetBank                                  ;; 00:1273 $cd $89 $2e
     ld   [wD6F7_CurrentBlocksetAndCollisionBank], A                                    ;; 00:1276 $ea $f7 $d6
-    call call_00_2e93                                  ;; 00:1279 $cd $93 $2e
+    call call_00_2e93_GetBlocksetOverrideBit                                  ;; 00:1279 $cd $93 $2e
     ld   [wD6FE_LevelTileOverrideBit], A                                    ;; 00:127c $ea $fe $d6
     call call_00_2e9c_GetCurrentBgTilesetBank                                  ;; 00:127f $cd $9c $2e
     ld   [wD6FF_CurrentBgTilesetBank], A                                    ;; 00:1282 $ea $ff $d6
@@ -4880,14 +4880,14 @@ call_00_2dbf:
     ld   [wD211_PlayerYPosition], A                                    ;; 00:2e36 $ea $11 $d2
     ret                                                ;; 00:2e39 $c9
 
-call_00_2e3a:
+call_00_2e3a_GetTVPaletteId:
     call call_00_2eb0_GetLevelDataAddr                                  ;; 00:2e3a $cd $b0 $2e
     ld   DE, $00                                       ;; 00:2e3d $11 $00 $00
     add  HL, DE                                        ;; 00:2e40 $19
     ld   A, [HL]                                       ;; 00:2e41 $7e
     ret                                                ;; 00:2e42 $c9
 
-call_00_2e43:
+call_00_2e43_GetRemoteProgressId:
     call call_00_2eb0_GetLevelDataAddr                                  ;; 00:2e43 $cd $b0 $2e
     ld   DE, $01                                       ;; 00:2e46 $11 $01 $00
     add  HL, DE                                        ;; 00:2e49 $19
@@ -4950,7 +4950,7 @@ call_00_2e89_GetCurrentBlocksetBank:
     ret                                                ;; 00:2e91 $c9
     ret                                                ;; 00:2e92 $c9
 
-call_00_2e93:
+call_00_2e93_GetBlocksetOverrideBit:
     call call_00_2eb0_GetLevelDataAddr                                  ;; 00:2e93 $cd $b0 $2e
     ld   DE, $08                                       ;; 00:2e96 $11 $08 $00
     add  HL, DE                                        ;; 00:2e99 $19
@@ -4987,14 +4987,14 @@ call_00_2eb0_GetLevelDataAddr:
 
 .data_LevelData:
 ; List of which banks to use for each of the 31 maps. 0x10 bytes each
-; 0x0
-; 0x1
+; 0x0 tv palette number (index into .data_0b_5d62)
+; 0x1 remote progress related
 ; 0x2-0x3 is a pointer to the level's text (level name, mission names)
 ; 0x4 is map bank number
 ; 0x5 is map secondary tileset data bank
 ; 0x6 is blockset/collision data bank
 ; 0x7
-; 0x8 is the bit to use in the blockset/collision data bank
+; 0x8 is the bit to use in the blockset override data bank
 ; 0x9 is tileset bank
 ; 0xa
 ; 0xb

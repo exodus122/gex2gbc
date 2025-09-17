@@ -278,7 +278,7 @@ entry_0b_5d4b:
     ld   A, [wD59E]                                    ;; 0b:5d4b $fa $9e $d5
     and  A, A                                          ;; 0b:5d4e $a7
     ret  Z                                             ;; 0b:5d4f $c8
-    call call_00_2e3a                                  ;; 0b:5d50 $cd $3a $2e
+    call call_00_2e3a_GetTVPaletteId                                  ;; 0b:5d50 $cd $3a $2e
     ld   DE, .data_0b_5d62                             ;; 0b:5d53 $11 $62 $5d
     call call_00_07b9                                  ;; 0b:5d56 $cd $b9 $07
     ld   DE, wDA7B                                     ;; 0b:5d59 $11 $7b $da
