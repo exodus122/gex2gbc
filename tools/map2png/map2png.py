@@ -466,6 +466,19 @@ for level_counter in range(0, len(level_names)):
 
         if draw_objects_and_collectibles:
 
+            # draw objects
+            object_list_file = "../banks/object_lists/object_list_"+level_name_alt+".bin"
+            object_list_data = open(object_list_file, "rb").read()
+            for i in range(0, len(object_list_data)-1, 0x10):
+                try:
+                    objectId, x, y, unk05, unk06, unk07, unk08, un09, unk0a, unk0b, unk0c, unk0d, unk0e, unkf = struct.unpack('<BHHBBBBBBBBBBB',object_list_data[i:i+0x10])
+
+                    draw.rectangle(((x-8,y-8), (x+8,y+8)), "white","white")
+                    draw.text((x-5, y-5), f"{objectId:0{2}X}", "black")
+                    #img.paste(collectible_sprite, (x, y), collectible_sprite)
+                except:
+                    continue
+
             # draw collectibles
             if level_channel_name != "channel_z":
                 collectible_list_file = '../../maps/'+level_channel_name+'/collectible_list_'+level_name_alt+'.bin'

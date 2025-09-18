@@ -177,12 +177,18 @@ bank00a_data = open('./banks/bank_00a.bin', 'rb').read()
 
 os.system('mkdir -p ./banks')
 os.system('mkdir -p ./banks/maps')
+os.system('mkdir -p ./banks/object_lists')
 for level in levels:
     os.system('mkdir -p ./banks/maps/'+level[0])
+    
     
     out = open('./banks/maps/'+level[0]+'/object_list_'+level[1]+'.asm', "w")
     
     object_data = bank00a_data[level[2]-0x4000:level[3]-0x4000]
+
+    '''out_bin = open('./banks/object_lists/object_list_'+level[1]+'.bin', "wb")
+    out_bin.write(object_data)
+    out_bin.close()'''
     
     for i in range(0, len(object_data)-1, 0x10):
         objectId, xPosition, yPosition, unk05, unk06, unk07, unk08, un09, unk0a, unk0b, unk0c, unk0d, unk0e, unk0f = struct.unpack('<BHHBBBBBBBBBBB',object_data[i:i+0x10])
