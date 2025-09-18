@@ -23,6 +23,14 @@ level_names = ["MediaDimension", "ToonTV_OutOfToon", "ScreamTV_Smellraiser", "Sc
                "KungFuTheater_LizardInAChinaShop", "Rezopolis_BuggedOut", "CircuitCentral_ChipsAndDips", 
                "PreHistoryChannel_LavaDabbaDoo", "ScreamTV_TexasChainsawManicure", "Rezopolis_MazedAndConfused", 
                "unused_1B", "unused_1C", "unused_1D", "BossTV_ChannelZ"]
+level_names_alt = ['media_dimension', 'out_of_toon', 'smellraiser', 'frankensteinfeld',
+                'wwwdotcomcom', 'mao_tse_tongue', 'unused_04', 'pangaea_90210',
+                'fine_tooning', 'this_old_cave', 'honey_i_shrunk_the_gecko',
+                'poltergex', 'unused_0c', 'samurai_night_fever', 'no_weddings_and_a_funeral',
+                'unused_0f', 'thursday_the_12th', 'unused_11', 'unused_12', 'unused_13', 'unused_14',
+                'lizard_in_a_china_shop', 'bugged_out', 'chips_and_dips',
+                'lava_dabba_doo', 'texas_chainsaw_manicure', 'mazed_and_confused',
+                'unused_1b', 'unused_1c', 'unused_1d', 'channel_z']
 level_channel_names = ["media_dimension", "toon_tv", "scream_tv", "scream_tv", 
                "circuit_central", "kung_fu_theater", "media_dimension", "prehistory_channel", 
                "toon_tv", "prehistory_channel", "circuit_central", 
@@ -39,14 +47,16 @@ level_palette_names = ["media_dimension", "toon_tv", "scream_tv", "scream_tv",
                "kung_fu_theater2", "rezopolis", "circuit_central", 
                "prehistory_channel", "scream_tv", "rezopolis", 
                "media_dimension", "media_dimension", "media_dimension", "channel_z"]
+collectible_channels = ["toon_tv", "scream_tv", "circuit_central", "kung_fu_theater", "prehistory_channel", "rezopolis"]
 
 # run flags
 create_tilesets = False
 create_blocksets = False
 create_maps = True
-collision_override = True # if True, create collision maps instead of regular maps
-show_kill_tiles = False # displays kill tiles on map images as a pink square
+collision_override = False # if True, create collision maps instead of regular maps
 
+show_kill_tiles = False # displays kill tiles on map images as a pink square
+draw_objects_and_collectibles = True # draw these on the maps
 draw_tile_ids = False
 draw_block_ids = False
 
@@ -108,17 +118,64 @@ if collision_override:
     
     tileset_img.save("./tileset_images/collision_tileset.png")
 
+
+collectible_sprites = []
+# create the colored collectible sprites
+if draw_objects_and_collectibles:
+    os.system('mkdir -p collectible_sprites')
+    for channel in collectible_channels:
+        collectible_sprite_path = "../../.gfx/misc_sprites/collectibles/image_collectibles_"+channel+".bin"
+        collectible_sprite_data = open(collectible_sprite_path, 'rb').read()[0:0x20]
+        out = open('collectible_sprite.bin', "wb")
+        out.write(collectible_sprite_data)
+        out.close()
+
+        collectible_palette_path = "../../gfx/misc_sprites/collectibles/palettes/palette_"+channel+"_collectibles.bin"
+        collectible_palette_data = open(collectible_palette_path, 'rb').read()
+        collectible_palette_data = b'\xff\xff' + collectible_palette_data[2:]
+        out = open('collectible_palette.bin', "wb")
+        out.write(collectible_palette_data)
+        out.close()
+        
+        # create colored image of collectible sprite
+        os.system('rgbgfx --reverse 1 -p collectible_palette.bin --columns -o collectible_sprite.bin collectible_sprites/collectible_sprite_'+channel+'.png')
+
+        os.system('rm collectible_sprite.bin')
+        os.system('rm collectible_palette.bin')
+
+        # convert image to transparent background
+        img = PIL.Image.open('collectible_sprites/collectible_sprite_'+channel+'.png')
+        datas = img.getdata()
+
+        newData = []
+        # Define the color to make transparent
+        target_color = (173, 173, 173, 255)
+
+        for item in datas:
+            if item == target_color:
+                newData.append((255, 255, 255, 0)) # Change to transparent
+            else:
+                newData.append(item)
+
+        img.putdata(newData)
+        img.save('collectible_sprites/collectible_sprite_'+channel+'.png', "PNG")
+
+# create the tilesets, blocksets, and maps
 bank00_file = "../banks/bank_000.bin"
 bank_00_level_data = open(bank00_file, "rb").read()[0x2ebf:0x30af]
 
 for level_counter in range(0, len(level_names)):
     level_data = struct.unpack("<BBHBBBBBBHBBBB", bank_00_level_data[level_counter*0x10:(level_counter+1)*0x10])
     level_name = level_names[level_counter]
+    level_name_alt = level_names_alt[level_counter]
     level_channel_name = level_channel_names[level_counter]
     level_palette_name = level_palette_names[level_counter]
 
     tiles = []
     secondary_tiles = []
+
+    if "unused_" in level_name:
+        continue
 
     # create the colored tilesets
     if create_tilesets and collision_override == False:
@@ -370,6 +427,9 @@ for level_counter in range(0, len(level_names)):
         if collision_override:
             map_image_path = "./map_images/collision/"
             os.system('mkdir -p map_images/collision/')
+        elif draw_objects_and_collectibles == True:
+            map_image_path = "./map_images/with_objects/"
+            os.system('mkdir -p map_images/with_objects/')
         elif show_kill_tiles == True:
             map_image_path = "./map_images/with_kill_tiles/"
             os.system('mkdir -p map_images/with_kill_tiles/')
@@ -403,6 +463,25 @@ for level_counter in range(0, len(level_names)):
                     img.paste(blockset[map_data[count]], (x*32, y*32))
                 
                 count = count+1
+
+        if draw_objects_and_collectibles:
+
+            # draw collectibles
+            if level_channel_name != "channel_z":
+                collectible_list_file = '../../maps/'+level_channel_name+'/collectible_list_'+level_name_alt+'.bin'
+            else:
+                collectible_list_file = '../../maps/media_dimension/collectible_list_media_dimension.bin'
+            collectible_list_data = open(collectible_list_file, "rb").read()
+            
+            if level_channel_name != "media_dimension" and level_channel_name != "channel_z":
+                collectible_sprite = PIL.Image.open('collectible_sprites/collectible_sprite_'+level_channel_name+'.png').convert('RGBA')
+            else:
+                collectible_sprite = PIL.Image.open('collectible_sprites/collectible_sprite_toon_tv.png').convert('RGBA')
+
+            for i in range(0, len(collectible_list_data), 2):
+                x, y = collectible_list_data[i:i+2]
+
+                img.paste(collectible_sprite, (x*16+4, y*16), collectible_sprite)
         
         img.save(map_image_path+level_name+"_map.png")
 
