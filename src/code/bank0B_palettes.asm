@@ -75,7 +75,7 @@ call_0b_561b:
     ld   [wD59D_ReturnBank], A                                    ;; 0b:5645 $ea $9d $d5
     ld   A, Bank03                                        ;; 0b:5648 $3e $03
     ld   HL, call_03_6be5                                     ;; 0b:564a $21 $e5 $6b
-    call call_00_1078_CallAltBankFunc                                  ;; 0b:564d $cd $78 $10
+    call call_00_1078_FarCall                                  ;; 0b:564d $cd $78 $10
     ret                                                ;; 0b:5650 $c9
 .jr_0b_5651:
     ld   L, C                                          ;; 0b:5651 $69

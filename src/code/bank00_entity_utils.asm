@@ -1123,8 +1123,8 @@ call_00_3985:
     xor  A, A                                          ;; 00:39ae $af
     ld   [wD59D_ReturnBank], A                                    ;; 00:39af $ea $9d $d5
     ld   A, Bank02                                        ;; 00:39b2 $3e $02
-    ld   HL, call_02_7102_SetObjectAction                                     ;; 00:39b4 $21 $02 $71
-    call call_00_1078_CallAltBankFunc                                  ;; 00:39b7 $cd $78 $10
+    ld   HL, call_02_7102_SetEntityAction                                     ;; 00:39b4 $21 $02 $71
+    call call_00_1078_FarCall                                  ;; 00:39b7 $cd $78 $10
     ld   C, $17                                        ;; 00:39ba $0e $17
     call call_00_112f                                  ;; 00:39bc $cd $2f $11
     ret                                                ;; 00:39bf $c9

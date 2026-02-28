@@ -1,7 +1,7 @@
 ; This file handles gex's collision with objects (enemies, tv switches, remotes, etc.)
 
 call_03_4c76:
-    ld   A, [wD743]                                    ;; 03:4c76 $fa $43 $d7
+    ld   A, [wD743_DrawGexFlag]                                    ;; 03:4c76 $fa $43 $d7
     and  A, A                                          ;; 03:4c79 $a7
     ret  Z                                             ;; 03:4c7a $c8 ; return if [D743] is 0
     ld   H, $d2                                        ;; 03:4c7b $26 $d2
@@ -228,7 +228,7 @@ call_03_4c76:
     ld   [wD59D_ReturnBank], A                                    ;; 03:4e73 $ea $9d $d5
     ld   A, Bank02                                        ;; 03:4e76 $3e $02
     ld   HL, call_02_4ccd                             ;; 03:4e78 $21 $cd $4c
-    call call_00_1078_CallAltBankFunc                                  ;; 03:4e7b $cd $78 $10
+    call call_00_1078_FarCall                                  ;; 03:4e7b $cd $78 $10
     ret                                                ;; 03:4e7e $c9
 .jr_03_4e7f:
     db   $26, $d2, $fa, $00, $d3, $f6, $17, $6f        ;; 03:4e7f ????????

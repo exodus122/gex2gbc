@@ -396,7 +396,7 @@ call_02_51b7:
     ld   [wD59D_ReturnBank], A                                    ;; 02:51bb $ea $9d $d5
     ld   A, Bank03                                        ;; 02:51be $3e $03
     ld   HL, call_03_6584                              ;; 02:51c0 $21 $84 $65
-    call call_00_1078_CallAltBankFunc                                  ;; 02:51c3 $cd $78 $10
+    call call_00_1078_FarCall                                  ;; 02:51c3 $cd $78 $10
     jr   NZ, .jr_02_51cc                               ;; 02:51c6 $20 $04
     pop  AF                                            ;; 02:51c8 $f1
     jp   call_00_3931                                    ;; 02:51c9 $c3 $31 $39
@@ -455,7 +455,7 @@ call_02_51ea:
     ld   BC, $05                                       ;; 02:5221 $01 $05 $00
     call call_00_37d8                                  ;; 02:5224 $cd $d8 $37
     ld   A, $01                                        ;; 02:5227 $3e $01
-    call call_02_7102_SetObjectAction                                  ;; 02:5229 $cd $02 $71
+    call call_02_7102_SetEntityAction                                  ;; 02:5229 $cd $02 $71
     ld   A, [wD624_CurrentLevelId]                                    ;; 02:522c $fa $24 $d6
     and  A, A                                          ;; 02:522f $a7
     jr   NZ, .jr_02_524d                               ;; 02:5230 $20 $1b
@@ -489,7 +489,7 @@ call_02_5253:
     ld   A, [wD59E]                                    ;; 02:5261 $fa $9e $d5
     and  A, A                                          ;; 02:5264 $a7
     ld   A, $01                                        ;; 02:5265 $3e $01
-    call NZ, call_02_7102_SetObjectAction                              ;; 02:5267 $c4 $02 $71
+    call NZ, call_02_7102_SetEntityAction                              ;; 02:5267 $c4 $02 $71
 call_02_526a:
     call call_00_38c1                                  ;; 02:526a $cd $c1 $38
     ld   E, A                                          ;; 02:526d $5f
@@ -510,12 +510,12 @@ call_02_526a:
     ld   a,[wD59E]
     and  a
     ld   a,$01
-    call nz,call_02_7102_SetObjectAction
+    call nz,call_02_7102_SetEntityAction
     ret  
     ld   a,[wD59E]
     and  a
     ld   a,$01
-    call nz,call_02_7102_SetObjectAction
+    call nz,call_02_7102_SetEntityAction
     ld   a,[wD649_CollectibleAmount]
     and  a
     jp   nz,call_00_3931
@@ -533,7 +533,7 @@ call_02_52ab:
     ld   [wD59D_ReturnBank], A                                    ;; 02:52b0 $ea $9d $d5
     ld   A, Bank03                                        ;; 02:52b3 $3e $03
     ld   HL, call_03_65f9                              ;; 02:52b5 $21 $f9 $65
-    call call_00_1078_CallAltBankFunc                                  ;; 02:52b8 $cd $78 $10
+    call call_00_1078_FarCall                                  ;; 02:52b8 $cd $78 $10
     ret  NZ                                            ;; 02:52bb $c0
 .jr_02_52bc:
     ld   C, $01                                        ;; 02:52bc $0e $01
@@ -559,7 +559,7 @@ call_02_52ab:
     ld   C, $02                                        ;; 02:52de $0e $02
     call call_00_3a23                                  ;; 02:52e0 $cd $23 $3a
     xor  A, A                                          ;; 02:52e3 $af
-    jp   call_02_7102_SetObjectAction                                  ;; 02:52e4 $c3 $02 $71
+    jp   call_02_7102_SetEntityAction                                  ;; 02:52e4 $c3 $02 $71
     ret  
 
     call call_00_34f5
@@ -684,7 +684,7 @@ call_02_538b:
     ld   C, $28                                        ;; 02:538f $0e $28
     call call_00_335a                                  ;; 02:5391 $cd $5a $33
     ld   A, $01                                        ;; 02:5394 $3e $01
-    jp   call_02_7102_SetObjectAction                                  ;; 02:5396 $c3 $02 $71
+    jp   call_02_7102_SetEntityAction                                  ;; 02:5396 $c3 $02 $71
 call_02_5399:
     call call_00_30af                                  ;; 02:5399 $cd $af $30
     call call_00_3154                                  ;; 02:539c $cd $54 $31
@@ -692,7 +692,7 @@ call_02_5399:
     ld   C, $24                                        ;; 02:53a0 $0e $24
     call call_00_112f                                  ;; 02:53a2 $cd $2f $11
     ld   A, $00                                        ;; 02:53a5 $3e $00
-    jp   call_02_7102_SetObjectAction                                  ;; 02:53a7 $c3 $02 $71
+    jp   call_02_7102_SetEntityAction                                  ;; 02:53a7 $c3 $02 $71
 
     jp   $3364
     call call_00_34ea
@@ -716,12 +716,12 @@ label53C3:
     ld   [wD59D_ReturnBank],a
     ld   a,$0A
     ld   hl,$7B9A
-    call call_00_1078_CallAltBankFunc
+    call call_00_1078_FarCall
     ld   a,$01
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call call_00_3843
     ld   a,$00
-    call nz,call_02_7102_SetObjectAction
+    call nz,call_02_7102_SetEntityAction
     ret  
     ld   c,$01
     call $3350
@@ -789,7 +789,7 @@ label5421:
     ret  z
     call call_00_36bd
     ld   a,$01
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call call_00_3843
     ret  z
     ld   c,$34
@@ -798,23 +798,23 @@ label5421:
     ld   [wD59D_ReturnBank],a
     ld   a,$0A
     ld   hl,$7B9A
-    call call_00_1078_CallAltBankFunc
+    call call_00_1078_FarCall
     ld   a,$02
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call call_00_3843
     ld   a,$00
-    jp   nz,call_02_7102_SetObjectAction
+    jp   nz,call_02_7102_SetEntityAction
     ret  
     ld   c,$06
     call call_00_3a23
     ld   a,$01
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call call_00_3b8d
     jp   z,call_00_3931
     ld   [wD59D_ReturnBank],a
     ld   a,$03
     ld   hl,$6549
-    call call_00_1078_CallAltBankFunc
+    call call_00_1078_FarCall
     ret  
     ld   h,$d2
     ld   a,[wD300_CurrentObjectAddr]
@@ -840,10 +840,10 @@ label5421:
     ld   [wD59D_ReturnBank],a
     ld   a,$0A
     ld   hl,$7B9A
-    call call_00_1078_CallAltBankFunc
+    call call_00_1078_FarCall
 label54AF:
     ld   a,$02
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     ld   h,$d2
     ld   a,[wD300_CurrentObjectAddr]
     or   a,$18
@@ -853,7 +853,7 @@ label54AF:
     dec  l
     res  0,[hl]
     ld   a,$01
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     ld   c,$28
     call call_00_335a
     ld   c,$03
@@ -864,13 +864,13 @@ label54AF:
     ld   l,a
     ld   [hl],$00
     ld   a,$01
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call call_00_30af
     call call_00_3137
     ret  c
     call call_00_3817
     ld   a,$02
-    jp   z,call_02_7102_SetObjectAction
+    jp   z,call_02_7102_SetEntityAction
     ld   l,[hl]
     ld   h,$00
     ld   de,$54F9
@@ -889,7 +889,7 @@ label54AF:
     and  a,$7F
     cp   [hl]
     ld   a,$01
-    jp   z,call_02_7102_SetObjectAction
+    jp   z,call_02_7102_SetEntityAction
     ret  
     ld   bc,$0002
     call call_00_37d8
@@ -903,29 +903,29 @@ label54AF:
     cp   a,$24
     ret  nz
     ld   a,$02
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call call_00_3843
     ld   a,$03
-    jp   nz,call_02_7102_SetObjectAction
+    jp   nz,call_02_7102_SetEntityAction
     ret  
     ld   bc,$FFFF
     call call_00_37d8
     call call_00_3817
     ld   a,$00
-    jp   z,call_02_7102_SetObjectAction
+    jp   z,call_02_7102_SetEntityAction
     ret  
     call label555E
     ld   a,[wD757]
     and  a
     ret  nz
     ld   a,$01
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call label555E
     ld   a,[wD757]
     and  a
     ret  z
     ld   a,$00
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
 label555E:
     ld   h,$d2
     ld   a,[wD300_CurrentObjectAddr]
@@ -1007,11 +1007,11 @@ label55D1:
     ld   [de],a
     inc  e
     ld   a,$01
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call call_00_3843
     ret  z
     ld   a,$02
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     ld   a,[wD757]
     and  a
     jr   nz,label5608
@@ -1023,12 +1023,12 @@ label55D1:
     ret  z
     res  0,[hl]
     ld   a,$00
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
 label5608:
     ld   c,$00
     call $3350
     ld   a,$03
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     ld   a,[wD757]
     and  a
     jr   z,label5623
@@ -1038,7 +1038,7 @@ label5608:
     jp   $3251
 label5623:
     ld   a,$00
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call call_00_34ea
     jr   z,label5634
     ld   a,l
@@ -1062,7 +1062,7 @@ label5634:
     ld   l,a
     ld   [hl],$40
     ld   a,$01
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     ld   h,$d2
     ld   a,[wD300_CurrentObjectAddr]
     or   a,$18
@@ -1102,7 +1102,7 @@ label5687:
     ld   c,$00
     call $382F
     ld   a,$02
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     nop  
     ld   bc,$1111
     ld   d,l
@@ -1118,7 +1118,7 @@ label5687:
     ld   c,$10
     call $382F
     ld   a,$00
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call call_00_34ea
     jr   z,label56BB
     ld   a,l
@@ -1230,7 +1230,7 @@ call_02_56dc:
     ld   DE, .data_02_576a                             ;; 02:5750 $11 $6a $57
     add  HL, DE                                        ;; 02:5753 $19
     ld   A, [HL]                                       ;; 02:5754 $7e
-    call call_02_7102_SetObjectAction                                  ;; 02:5755 $cd $02 $71
+    call call_02_7102_SetEntityAction                                  ;; 02:5755 $cd $02 $71
     ld   C, $19                                        ;; 02:5758 $0e $19
     call call_00_112f                                  ;; 02:575a $cd $2f $11
     ret                                                ;; 02:575d $c9
@@ -1310,7 +1310,7 @@ call_02_576e:
     or   A, $20                                        ;; 02:57db $f6 $20
     ld   [HL], A                                       ;; 02:57dd $77
     ld   A, $00                                        ;; 02:57de $3e $00
-    jp   call_02_7102_SetObjectAction                                  ;; 02:57e0 $c3 $02 $71
+    jp   call_02_7102_SetEntityAction                                  ;; 02:57e0 $c3 $02 $71
 .data_02_57e3:
     db   $00, $01, $11, $11, $55, $55, $55, $ff        ;; 02:57e3 ........
 .data_02_57eb:
@@ -1322,12 +1322,12 @@ call_02_576e:
     ld   c,$24
     call call_00_335a
     ld   a,$01
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call call_00_30af
     ld   bc,$0008
     call call_00_316e
     ld   a,$00
-    jp   nc,call_02_7102_SetObjectAction
+    jp   nc,call_02_7102_SetEntityAction
     ret  
     call call_00_34ea
     jr   z,label581C
@@ -1341,14 +1341,14 @@ label581C:
     ld   c,$24
     call call_00_335a
     ld   a,$01
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call call_00_30af
     call call_00_3154
     jp   c,call_00_36f7
     ld   c,$09
     call call_00_335a
     ld   a,$00
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
 
 call_02_5843:
     ld   C, $08                                        ;; 02:5843 $0e $08
@@ -1361,7 +1361,7 @@ call_02_5843:
     ld   C, $1d                                        ;; 02:5854 $0e $1d
     call call_00_112f                                  ;; 02:5856 $cd $2f $11
     ld   A, $01                                        ;; 02:5859 $3e $01
-    jp   call_02_7102_SetObjectAction                                  ;; 02:585b $c3 $02 $71
+    jp   call_02_7102_SetEntityAction                                  ;; 02:585b $c3 $02 $71
 
     ld   c,$20
     call call_00_32e1
@@ -1370,7 +1370,7 @@ call_02_5843:
     call call_00_3859
     ret  c
     ld   a,$00
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call call_00_30af
     ld   h,$d2
     ld   a,[wD300_CurrentObjectAddr]
@@ -1431,7 +1431,7 @@ call_02_58d3:
     ld   C, A                                          ;; 02:58df $4f
     call call_00_3802                                  ;; 02:58e0 $cd $02 $38
     ld   A, $01                                        ;; 02:58e3 $3e $01
-    jp   call_02_7102_SetObjectAction                                  ;; 02:58e5 $c3 $02 $71
+    jp   call_02_7102_SetEntityAction                                  ;; 02:58e5 $c3 $02 $71
 call_02_58e8:
     call call_00_3843                                  ;; 02:58e8 $cd $43 $38
     ret  Z                                             ;; 02:58eb $c8
@@ -1440,7 +1440,7 @@ call_02_58e8:
     ld   C, $34                                        ;; 02:58f0 $0e $34
     call call_00_335a                                  ;; 02:58f2 $cd $5a $33
     ld   A, $02                                        ;; 02:58f5 $3e $02
-    jp   call_02_7102_SetObjectAction                                  ;; 02:58f7 $c3 $02 $71
+    jp   call_02_7102_SetEntityAction                                  ;; 02:58f7 $c3 $02 $71
 call_02_58fa:
     call call_00_30af                                  ;; 02:58fa $cd $af $30
     call call_00_3154                                  ;; 02:58fd $cd $54 $31
@@ -1448,7 +1448,7 @@ call_02_58fa:
     ld   C, $24                                        ;; 02:5901 $0e $24
     call call_00_112f                                  ;; 02:5903 $cd $2f $11
     ld   A, $00                                        ;; 02:5906 $3e $00
-    jp   call_02_7102_SetObjectAction                                  ;; 02:5908 $c3 $02 $71
+    jp   call_02_7102_SetEntityAction                                  ;; 02:5908 $c3 $02 $71
     db   $cd, $af, $30, $cd, $54, $31, $d8, $0e        ;; 02:590b ????????
     db   $1a, $cd, $2f, $11, $0e, $40, $c3, $5a        ;; 02:5913 ????????
     db   $33                                           ;; 02:591b ?
@@ -1474,7 +1474,7 @@ call_02_592d:
     ld   A, $00                                        ;; 02:5942 $3e $00
 .jr_02_5944:
     push AF                                            ;; 02:5944 $f5
-    call call_02_7102_SetObjectAction                                  ;; 02:5945 $cd $02 $71
+    call call_02_7102_SetEntityAction                                  ;; 02:5945 $cd $02 $71
     ld   H, $d2                                        ;; 02:5948 $26 $d2
     ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:594a $fa $00 $d3
     or   A, $18                                        ;; 02:594d $f6 $18
@@ -1495,7 +1495,7 @@ call_02_592d:
     ld   [wD59D_ReturnBank], A                                    ;; 02:5960 $ea $9d $d5
     ld   A, Bank0a                                        ;; 02:5963 $3e $0a
     ld   HL, call_0a_7b9a                              ;; 02:5965 $21 $9a $7b
-    call call_00_1078_CallAltBankFunc                                  ;; 02:5968 $cd $78 $10
+    call call_00_1078_FarCall                                  ;; 02:5968 $cd $78 $10
     ret                                                ;; 02:596b $c9
 call_02_596c:
     call call_00_3843                                  ;; 02:596c $cd $43 $38
@@ -1503,14 +1503,14 @@ call_02_596c:
     ld   C, $1c                                        ;; 02:5970 $0e $1c
     call call_00_112f                                  ;; 02:5972 $cd $2f $11
     ld   A, $01                                        ;; 02:5975 $3e $01
-    jp   call_02_7102_SetObjectAction                                  ;; 02:5977 $c3 $02 $71
+    jp   call_02_7102_SetEntityAction                                  ;; 02:5977 $c3 $02 $71
 call_02_597a:
     call call_00_30af                                  ;; 02:597a $cd $af $30
     call call_00_30af                                  ;; 02:597d $cd $af $30
     ld   BC, $0c                                       ;; 02:5980 $01 $0c $00
     call call_00_316e                                  ;; 02:5983 $cd $6e $31
     ld   A, $02                                        ;; 02:5986 $3e $02
-    jp   NC, call_02_7102_SetObjectAction                              ;; 02:5988 $d2 $02 $71
+    jp   NC, call_02_7102_SetEntityAction                              ;; 02:5988 $d2 $02 $71
     ret                                                ;; 02:598b $c9
 call_02_598c:
     call call_00_3843                                  ;; 02:598c $cd $43 $38
@@ -1532,9 +1532,9 @@ label599D:
     ld   [wD59D_ReturnBank],a
     ld   a,$0A
     ld   hl,$7B9A
-    call call_00_1078_CallAltBankFunc
+    call call_00_1078_FarCall
     ld   a,$01
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
 label59BE:
     ld   c,$08
     call call_00_32e1
@@ -1543,18 +1543,18 @@ label59BE:
     call call_00_3843
     jr   z,label5A00
     ld   a,$00
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call call_00_3843
     ld   a,$03
-    jp   nz,call_02_7102_SetObjectAction
+    jp   nz,call_02_7102_SetEntityAction
     ret  
     call call_00_3843
     ld   a,$04
-    jp   nz,call_02_7102_SetObjectAction
+    jp   nz,call_02_7102_SetEntityAction
     ret  
     call call_00_3843
     ld   a,$05
-    jp   nz,call_02_7102_SetObjectAction
+    jp   nz,call_02_7102_SetEntityAction
     ret  
     call call_00_3843
     ret  z
@@ -1564,7 +1564,7 @@ label59BE:
     ld   l,a
     res  0,[hl]
     ld   a,$00
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
 label5A00:
     ld   h,$d2
     ld   a,[wD300_CurrentObjectAddr]
@@ -1573,13 +1573,13 @@ label5A00:
     bit  0,[hl]
     ret  z
     ld   a,$02
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     ld   c,$01
     call $3350
     ld   c,$5A
     call call_00_3802
     ld   a,$01
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call call_00_3817
     jp   z,call_00_3910
     jp   $3442
@@ -1603,7 +1603,7 @@ call_02_5a28:
     ld   [wD59D_ReturnBank], A                                    ;; 02:5a43 $ea $9d $d5
     ld   A, Bank0a                                        ;; 02:5a46 $3e $0a
     ld   HL, call_0a_7b9a                              ;; 02:5a48 $21 $9a $7b
-    call call_00_1078_CallAltBankFunc                                  ;; 02:5a4b $cd $78 $10
+    call call_00_1078_FarCall                                  ;; 02:5a4b $cd $78 $10
     call call_00_3985                                  ;; 02:5a4e $cd $85 $39
     ld   H, $d2                                        ;; 02:5a51 $26 $d2
     ld   A, $20                                        ;; 02:5a53 $3e $20
@@ -1642,7 +1642,7 @@ call_02_5a8c:
     ld   C, $28                                        ;; 02:5a90 $0e $28
     call call_00_335a                                  ;; 02:5a92 $cd $5a $33
     ld   A, $01                                        ;; 02:5a95 $3e $01
-    jp   call_02_7102_SetObjectAction                                  ;; 02:5a97 $c3 $02 $71
+    jp   call_02_7102_SetEntityAction                                  ;; 02:5a97 $c3 $02 $71
 call_02_5a9a:
     call call_00_30af                                  ;; 02:5a9a $cd $af $30
     call call_00_3154                                  ;; 02:5a9d $cd $54 $31
@@ -1650,7 +1650,7 @@ call_02_5a9a:
     ld   C, $24                                        ;; 02:5aa1 $0e $24
     call call_00_112f                                  ;; 02:5aa3 $cd $2f $11
     ld   A, $00                                        ;; 02:5aa6 $3e $00
-    jp   call_02_7102_SetObjectAction                                  ;; 02:5aa8 $c3 $02 $71
+    jp   call_02_7102_SetEntityAction                                  ;; 02:5aa8 $c3 $02 $71
     call call_00_34ea
 
     jr   z,label5AB7
@@ -1690,7 +1690,7 @@ label5AD2:
     ld   l,a
     ld   [hl],$40
     ld   a,$01
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     ld   h,$D2
     ld   a,[wD300_CurrentObjectAddr]
     or   a,$18
@@ -1730,7 +1730,7 @@ label5B1F:
     ld   c,$00
     call $382F
     ld   a,$02
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     nop  
     ld   bc,$1111
     ld   d,l
@@ -1746,7 +1746,7 @@ label5B1F:
     ld   c,$08
     call $382F
     ld   a,$00
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call call_00_34ea
     jr   z,label5B53
     ld   a,l
@@ -1793,7 +1793,7 @@ label5B88:
     inc  l
     ld   [hl],$46
     ld   a,01
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
 label5B90:
     ld   a,[de]
     and  a
@@ -1814,7 +1814,7 @@ label5B97:
     ld   l,a
     set  0,[hl]
     ld   a,$00
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
 
 call_02_5bb6:
     call call_00_34ea                                  ;; 02:5bb6 $cd $ea $34
@@ -1856,10 +1856,10 @@ call_02_5be1:
     ld   c,$1E
     call call_00_112f
     ld   a,$01
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call call_00_3843
     ld   a,$02
-    jp   nz,call_02_7102_SetObjectAction
+    jp   nz,call_02_7102_SetEntityAction
     ret  
     ld   c,$c0
     call $3316
@@ -1890,29 +1890,29 @@ label5C3D:
     ld   c,$30
     call call_00_335a
     ld   a,$01
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     ld   c,$10
     call call_00_32e1
     call call_00_36f7
     call call_00_30af
     call call_00_3154
     ld   a,$02
-    jp   nc,call_02_7102_SetObjectAction
+    jp   nc,call_02_7102_SetEntityAction
     ret  
     ld   c,$00
     call $3350
     call call_00_3843
     ld   a,$00
-    jp   nz,call_02_7102_SetObjectAction
+    jp   nz,call_02_7102_SetEntityAction
     ret  
     ld   a,[wD73B]
     and  a
     ld   a,$01
-    jp   z,call_02_7102_SetObjectAction
+    jp   z,call_02_7102_SetEntityAction
     ret  
     call call_00_3843
     ld   a,$00
-    jp   nz,call_02_7102_SetObjectAction
+    jp   nz,call_02_7102_SetEntityAction
     ret  
     ret  
     call call_00_349c
@@ -1930,11 +1930,11 @@ label5C3D:
     or   a,$40
     ld   [hl],a
     ld   a,$01
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call call_00_30af
     call call_00_3154
     ld   a,$00
-    jp   nc,call_02_7102_SetObjectAction
+    jp   nc,call_02_7102_SetEntityAction
     ret  
 
     call call_00_34ea
@@ -2017,29 +2017,29 @@ label5D01:
     ld   c,$0F
     call $3825
     ld   a,$01
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call call_00_30af
     call call_00_3154
     ret  c
     ld   c,$31
     call call_00_112f
     ld   a,$02
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call call_00_3843
     ret  z
     ld   c,$13
     call $3825
     ld   a,$03
-    call call_02_7102_SetObjectAction
+    call call_02_7102_SetEntityAction
     ld   c,$04
     jp   call_00_3a23
     call call_00_3b8d
     ld   a,$00
-    jp   z,call_02_7102_SetObjectAction
+    jp   z,call_02_7102_SetEntityAction
     ld   [wD59D_ReturnBank],a
     ld   a,$03
     ld   hl,$65B8
-    call call_00_1078_CallAltBankFunc
+    call call_00_1078_FarCall
     ret  
     ret  
     ld   c,$18
@@ -2074,7 +2074,7 @@ label5D8C:
     ld   c,$40
     call call_00_335a
     ld   a,$01
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call call_00_30af
     ld   bc,$0008
     call call_00_316e
@@ -2085,32 +2085,32 @@ label5D8C:
     ld   [wD59D_ReturnBank],a
     ld   a,$0A
     ld   hl,$7B9A
-    call call_00_1078_CallAltBankFunc
+    call call_00_1078_FarCall
     ld   a,$02
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call call_00_3843
     ld   a,$00
-    jp   nz,call_02_7102_SetObjectAction
+    jp   nz,call_02_7102_SetEntityAction
     ret  
     ld   c,$06
     call call_00_3a23
     ld   a,$01
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call call_00_3b8d
     jp   z,call_00_3931
     ld   [wD59D_ReturnBank],a
     ld   a,$03
     ld   hl,$663A
-    call call_00_1078_CallAltBankFunc
+    call call_00_1078_FarCall
     ret  
     ld   a,[wD73B]
     and  a
     ld   a,$01
-    jp   z,call_02_7102_SetObjectAction
+    jp   z,call_02_7102_SetEntityAction
     ret  
     call call_00_3843
     ld   a,$00
-    jp   nz,call_02_7102_SetObjectAction
+    jp   nz,call_02_7102_SetEntityAction
     ret  
     ret  
     ld   c,$10
@@ -2130,7 +2130,7 @@ label5D8C:
     ld   [wD59D_ReturnBank],a
     ld   a,$0A
     ld   hl,$7B9A
-    call call_00_1078_CallAltBankFunc
+    call call_00_1078_FarCall
 label5E38:
     ld   c,$08
     call call_00_32e1
@@ -2243,14 +2243,14 @@ label5ECC:
     ld   [wD59D_ReturnBank],a
     ld   a,$0A
     ld   hl,$7B9A
-    call call_00_1078_CallAltBankFunc
+    call call_00_1078_FarCall
     ld   c,$30
     call call_00_112f
     ret  
     ld   c,$80
     call call_00_3802
     ld   a,$01
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call call_00_3817
     jp   z,call_00_3910
     ld   c,$02
@@ -2338,7 +2338,7 @@ label5F8A:
     ld   [wD59D_ReturnBank],a
     ld   a,$0A
     ld   hl,$7B9A
-    call call_00_1078_CallAltBankFunc
+    call call_00_1078_FarCall
     ld   c,$2F
     call call_00_112f
 label5FA0:
@@ -2445,7 +2445,7 @@ label613F:
     call call_00_3802
     call call_00_36bd
     ld   a,$01
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call call_00_3817
     jp   z,call_00_3910
     ld   c,$02
@@ -2496,7 +2496,7 @@ label61BC:
     call call_00_36bd
     call call_00_3817
     ld   a,$01
-    jp   nz,call_02_7102_SetObjectAction
+    jp   nz,call_02_7102_SetEntityAction
     ld   c,$00
     call $37F8
     jr   label6182
@@ -2516,7 +2516,7 @@ label61E1:
     jr   z,label61F6
     and  a,$1F
     ld   a,$02
-    jp   z,call_02_7102_SetObjectAction
+    jp   z,call_02_7102_SetEntityAction
     ld   c,$02
     call call_00_32e1
     call call_00_36f7
@@ -2534,10 +2534,10 @@ label61FB:
     ld   c,$28
     call call_00_335a
     ld   a,$03
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call call_00_3843
     ld   a,$00
-    jp   nz,call_02_7102_SetObjectAction
+    jp   nz,call_02_7102_SetEntityAction
     ret  
     call call_00_36bd
     call call_00_3843
@@ -2546,9 +2546,9 @@ label61FB:
     ld   [wD59D_ReturnBank],a
     ld   a,$0A
     ld   hl,$7B9A
-    call call_00_1078_CallAltBankFunc
+    call call_00_1078_FarCall
     ld   a,$00
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call call_00_36f7
     call call_00_30af
     call call_00_3154
@@ -2557,14 +2557,14 @@ label61FB:
     call $37F8
     call call_00_36bd
     ld   a,$00
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call call_00_34ea
     jr   z,label625E
     ld   c,$05
     ld   [wD59D_ReturnBank],a
     ld   a,$0A
     ld   hl,$7B9A
-    call call_00_1078_CallAltBankFunc
+    call call_00_1078_FarCall
 label625E:
     ld   c,$10
     call call_00_32e1
@@ -2573,7 +2573,7 @@ label625E:
     call call_00_3859
     jr   nc,label6275
     ld   a,$01
-    call call_02_7102_SetObjectAction
+    call call_02_7102_SetEntityAction
     call call_00_36bd
 label6275:
     ld   h,$D2
@@ -2644,7 +2644,7 @@ label62AC:
     call call_00_36bd
     ld   a,$01
 label62D5:
-    call call_02_7102_SetObjectAction
+    call call_02_7102_SetEntityAction
     jp   label6275
     ld   h,$D2
     ld   a,$20
@@ -2666,7 +2666,7 @@ label62EB:
     ld   c,$34
     call call_00_335a
     ld   a,$01
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call call_00_30af
     call call_00_3154
     ret  c
@@ -2681,7 +2681,7 @@ label6315:
     ld   c,$19
     call $3825
     ld   a,$02
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     nop  
     nop  
     nop  
@@ -2703,7 +2703,7 @@ label6315:
     ld   c,$ff
     call call_00_3802
     ld   a,$01
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call call_00_3817
     jp   z,call_00_3910
     ld   c,$02
@@ -2719,7 +2719,7 @@ label6315:
     ld   c,$00
     call $3825
     ld   a,$01
-    call call_02_7102_SetObjectAction
+    call call_02_7102_SetEntityAction
     ld   c,$05
     jp   call_00_3a23
     call call_00_3b8d
@@ -2727,7 +2727,7 @@ label6315:
     ld   [wD59D_ReturnBank],a
     ld   a,$03
     ld   hl,$6675
-    call call_00_1078_CallAltBankFunc
+    call call_00_1078_FarCall
     ret  
     ret  
     call call_00_34ea
@@ -2751,7 +2751,7 @@ label6394:
     ld   l,a
     ld   [hl],$40
     ld   a,$01
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     ld   h,$D2
     ld   a,[wD300_CurrentObjectAddr]
     or   a,$18
@@ -2791,7 +2791,7 @@ label63E1:
     ld   c,$00
     call $382F
     ld   a,$02
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     nop  
     ld   bc,$1111
     ld   d,l
@@ -2807,7 +2807,7 @@ label63E1:
     ld   c,$10
     call $382F
     ld   a,$00
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call call_00_34ea
     jr   z,label6415
     ld   a,l
@@ -3133,7 +3133,7 @@ label65FA:
     cp   c
     ld   a,c
     ret  z
-    call call_02_7102_SetObjectAction
+    call call_02_7102_SetEntityAction
     ld   c,$35
     call call_00_112f
     ret  
@@ -3230,7 +3230,7 @@ label6698:
     ld   [wD59D_ReturnBank],a
     ld   a,$0A
     ld   hl,$7B9A
-    call call_00_1078_CallAltBankFunc
+    call call_00_1078_FarCall
     ld   c,$06
     call call_00_112f
     ret  
@@ -3268,11 +3268,11 @@ label66D3:
     ld   c,$30
     call call_00_335a
     ld   a,$01
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call call_00_30af
     call call_00_3154
     ld   a,$00
-    call nc,call_02_7102_SetObjectAction
+    call nc,call_02_7102_SetEntityAction
     ret  
     call call_00_3843
     ret  z
@@ -3282,7 +3282,7 @@ label66D3:
     ld   l,a
     ld   [hl],$60
     ld   a,$01
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call call_00_3843
     ret  z
     ld   h,$D2
@@ -3291,7 +3291,7 @@ label66D3:
     ld   l,a
     ld   [hl],$00
     ld   a,$00
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     ret  
     call call_00_34ea
     jr   z,label6736
@@ -3299,13 +3299,13 @@ label66D3:
     ld   [wD59D_ReturnBank],a
     ld   a,$0A
     ld   hl,$7B9A
-    call call_00_1078_CallAltBankFunc
+    call call_00_1078_FarCall
 label6736:
     ld   c,$08
     call call_00_32e1
     call call_00_36f7
     ld   a,$01
-    call nz,call_02_7102_SetObjectAction
+    call nz,call_02_7102_SetEntityAction
     ld   h,$D2
     ld   a,[wD300_CurrentObjectAddr]
     or   a,$0E
@@ -3339,7 +3339,7 @@ label6760:
     ret  
     call call_00_3843
     ld   a,$00
-    jp   nz,call_02_7102_SetObjectAction
+    jp   nz,call_02_7102_SetEntityAction
     ret  
     ld   h,$D2
     ld   a,$20
@@ -3363,7 +3363,7 @@ label6779:
     ld   [hl],$00
     call label680E
     ld   a,$01
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     ld   h,$D2
     ld   a,[wD300_CurrentObjectAddr]
     or   a,$17
@@ -3546,7 +3546,7 @@ label697B:
     set  2,[hl]
     set  0,[hl]
     ld   a,$01
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     ld   h,$D2
     ld   a,[wD300_CurrentObjectAddr]
     or   a,$17
@@ -3566,12 +3566,12 @@ label697B:
     jr   nz,label69B6
     res  2,[hl]
     ld   a,$00
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
 label69B6:
     inc  l
     ld   [hl],$B4
     ld   a,$02
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
 label69BE:
     call call_00_3559
     jp   call_00_318d
@@ -3583,7 +3583,7 @@ label69BE:
     ld   l,a
     set  0,[hl]
     ld   a,$01
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call call_00_34f5
     bit  1,[hl]
     jr   nz,label69FE
@@ -3719,7 +3719,7 @@ label6A54:
     ld   c,$30
     call call_00_335a
     ld   a,$01
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call $3442
     ld   h,$D2
     ld   a,[wD300_CurrentObjectAddr]
@@ -3752,7 +3752,7 @@ label6AC4:
     ld   c,$f0
     call call_00_3802
     ld   a,$01
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call $3442
     call call_00_3817
     jp   z,label6C03
@@ -3770,7 +3770,7 @@ label6B17:
     call $3345
     bit  7,a
     ld   a,$02
-    jp   nz,call_02_7102_SetObjectAction
+    jp   nz,call_02_7102_SetEntityAction
     ld   bc,hFFF1
     call call_00_316e
     jp   nc,$6C03
@@ -3783,7 +3783,7 @@ label6B17:
     ret  nc
 label6B3E:
     ld   a,$03
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call $3442
     ld   h,$D2
     ld   a,[wD300_CurrentObjectAddr]
@@ -3810,7 +3810,7 @@ label6B5B:
     ret  nz
     call label6BCD
     ld   a,$01
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     ld   h,$D2
     ld   a,[wD300_CurrentObjectAddr]
     or   a,$1A
@@ -3897,7 +3897,7 @@ label6C03:
     ld   [wD59D_ReturnBank],a
     ld   a,$0A
     ld   hl,$7B9A
-    call call_00_1078_CallAltBankFunc
+    call call_00_1078_FarCall
     jp   call_00_3910
     call call_00_34ea
     jr   z,label6C38
@@ -3916,16 +3916,16 @@ label6C03:
     ld   a,h
     cp   a,$73
     ld   a,$08
-    jp   nc,call_02_7102_SetObjectAction
+    jp   nc,call_02_7102_SetEntityAction
 label6C38:
     call call_00_3843
     ld   a,$02
-    jp   nz,call_02_7102_SetObjectAction
+    jp   nz,call_02_7102_SetEntityAction
     ret  
     ret  
     call call_00_3843
     ld   a,$02
-    call nz,call_02_7102_SetObjectAction
+    call nz,call_02_7102_SetEntityAction
     ld   a,[wD73B]
     and  a,$03
     jr   nz,label6C7C
@@ -3961,7 +3961,7 @@ label6C7C:
     call call_00_3843
     ret  z
     ld   a,$03
-    call call_02_7102_SetObjectAction
+    call call_02_7102_SetEntityAction
     ld   h,$D2
     ld   a,[wD300_CurrentObjectAddr]
     or   a,$1B
@@ -3975,7 +3975,7 @@ label6C7C:
     ret  
     call call_00_3843
     ld   a,$08
-    jp   nz,call_02_7102_SetObjectAction
+    jp   nz,call_02_7102_SetEntityAction
     ret  
     ret  
 label6CA7:
@@ -3985,12 +3985,12 @@ label6CA7:
     res  7,[hl]
     dec  [hl]
     ld   a,$09
-    jp   nz,call_02_7102_SetObjectAction
+    jp   nz,call_02_7102_SetEntityAction
     ld   c,$11
     ld   [wD59D_ReturnBank],a
     ld   a,$0A
     ld   hl,$7B9A
-    call call_00_1078_CallAltBankFunc
+    call call_00_1078_FarCall
     ld   c,$37
     call call_00_112f
     jp   call_00_3985
@@ -4136,13 +4136,13 @@ label6D9D:
     ld   [wD59D_ReturnBank],a
     ld   a,$0A
     ld   hl,$7B9A
-    call call_00_1078_CallAltBankFunc
+    call call_00_1078_FarCall
     ld   bc,$0005
     call call_00_37d8
     ld   c,$39
     call call_00_112f
     ld   a,$01
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     ld   h,$D2
     ld   a,$20
 label6DBC:
@@ -4169,7 +4169,7 @@ label6DCE:
     ld   bc,$ffFB
     call call_00_37d8
     ld   a,$00
-    jp   call_02_7102_SetObjectAction
+    jp   call_02_7102_SetEntityAction
     call call_00_3843
     ret  z
     xor  a

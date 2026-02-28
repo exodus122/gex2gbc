@@ -310,7 +310,7 @@ call_03_4ac4_ProcessClimbCollision:
     ld   A, [HL+]                                      ;; 03:4ae4 $2a
     ld   H, [HL]                                       ;; 03:4ae5 $66
     ld   L, A                                          ;; 03:4ae6 $6f
-    ld   A, [wD75A_CurrentInputs]                                    ;; 03:4ae7 $fa $5a $d7
+    ld   A, [wD75A_CurrentInputsAlt]                                    ;; 03:4ae7 $fa $5a $d7
     and  A, [HL]                                       ;; 03:4aea $a6
     ret  Z                                             ;; 03:4aeb $c8
     inc  HL                                            ;; 03:4aec $23
@@ -327,9 +327,9 @@ call_03_4ac4_ProcessClimbCollision:
     dec  B                                             ;; 03:4af7 $05
     jr   NZ, .jr_03_4af3                               ;; 03:4af8 $20 $f9
 .jr_03_4afa:
-    ld   A, [wD75A_CurrentInputs]                                    ;; 03:4afa $fa $5a $d7
+    ld   A, [wD75A_CurrentInputsAlt]                                    ;; 03:4afa $fa $5a $d7
     and  A, $0f                                        ;; 03:4afd $e6 $0f
-    ld   [wD75A_CurrentInputs], A                                    ;; 03:4aff $ea $5a $d7
+    ld   [wD75A_CurrentInputsAlt], A                                    ;; 03:4aff $ea $5a $d7
     ret                                                ;; 03:4b02 $c9
 .jr_03_4b03:
     inc  HL                                            ;; 03:4b03 $23
@@ -342,7 +342,7 @@ call_03_4ac4_ProcessClimbCollision:
     pop  HL                                            ;; 03:4b0c $e1
     bit  6, B                                          ;; 03:4b0d $cb $70
     jr   Z, .jr_03_4b2b                                ;; 03:4b0f $28 $1a
-    ld   A, [wD75A_CurrentInputs]                                    ;; 03:4b11 $fa $5a $d7
+    ld   A, [wD75A_CurrentInputsAlt]                                    ;; 03:4b11 $fa $5a $d7
     cp   A, $80                                        ;; 03:4b14 $fe $80
     jr   NZ, .jr_03_4afa                               ;; 03:4b16 $20 $e2
     ld   A, [wD746_PlayerClimbingState]                                    ;; 03:4b18 $fa $46 $d7
@@ -366,7 +366,7 @@ call_03_4ac4_ProcessClimbCollision:
     ld   A, [wD746_PlayerClimbingState]                                    ;; 03:4b36 $fa $46 $d7
     cp   A, $02                                        ;; 03:4b39 $fe $02
     jr   C, .jr_03_4afa                                ;; 03:4b3b $38 $bd
-    ld   A, [wD75A_CurrentInputs]                                    ;; 03:4b3d $fa $5a $d7
+    ld   A, [wD75A_CurrentInputsAlt]                                    ;; 03:4b3d $fa $5a $d7
     and  A, $40                                        ;; 03:4b40 $e6 $40
     jr   Z, .jr_03_4afa                                ;; 03:4b42 $28 $b6
     ld   A, $08                                        ;; 03:4b44 $3e $08

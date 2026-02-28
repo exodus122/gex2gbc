@@ -99,11 +99,11 @@ call_02_4204:
     ld   C, $15                                        ;; 02:4211 $0e $15
     jr   .jr_02_4227                                   ;; 02:4213 $18 $12
 .jr_02_4215:
-    ld   A, [wD75A_CurrentInputs]                                    ;; 02:4215 $fa $5a $d7
+    ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:4215 $fa $5a $d7
     and  A, $30                                        ;; 02:4218 $e6 $30
     jr   Z, .jr_02_4227                                ;; 02:421a $28 $0b
     ld   C, $15                                        ;; 02:421c $0e $15
-    ld   A, [wD75A_CurrentInputs]                                    ;; 02:421e $fa $5a $d7
+    ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:421e $fa $5a $d7
     and  A, $30                                        ;; 02:4221 $e6 $30
     jr   Z, .jr_02_4227                                ;; 02:4223 $28 $02
     ld   C, $16                                        ;; 02:4225 $0e $16
@@ -183,7 +183,7 @@ call_02_4275_PlayerAction_Jump:
     ld   A, [wD762_PlayerInitialYVelocity]                                    ;; 02:429a $fa $62 $d7
     and  A, A                                          ;; 02:429d $a7
     ret  NZ                                            ;; 02:429e $c0
-    ld   A, [wD75A_CurrentInputs]                                    ;; 02:429f $fa $5a $d7
+    ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:429f $fa $5a $d7
     and  A, $02                                        ;; 02:42a2 $e6 $02
     ld   A, $0a                                        ;; 02:42a4 $3e $0a
     jp   NZ, call_02_4ccd                              ;; 02:42a6 $c2 $cd $4c
@@ -210,7 +210,7 @@ call_02_42ac_PlayerAction_DoubleJump:
     ld   A, [wD762_PlayerInitialYVelocity]                                    ;; 02:42d1 $fa $62 $d7
     and  A, A                                          ;; 02:42d4 $a7
     ret  NZ                                            ;; 02:42d5 $c0
-    ld   A, [wD75A_CurrentInputs]                                    ;; 02:42d6 $fa $5a $d7
+    ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:42d6 $fa $5a $d7
     and  A, $02                                        ;; 02:42d9 $e6 $02
     jr   NZ, .jr_02_42b3                               ;; 02:42db $20 $d6
     jp   call_02_489a                                    ;; 02:42dd $c3 $9a $48
@@ -262,7 +262,7 @@ call_02_42f7:
     bit  7, [HL]                                       ;; 02:4331 $cb $7e
     jr   Z, .jr_02_4349                                ;; 02:4333 $28 $14
     ld   C, $02                                        ;; 02:4335 $0e $02
-    ld   A, [wD75A_CurrentInputs]                                    ;; 02:4337 $fa $5a $d7
+    ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:4337 $fa $5a $d7
     and  A, $30                                        ;; 02:433a $e6 $30
     jr   Z, .jr_02_4349                                ;; 02:433c $28 $0b
     ld   C, $05                                        ;; 02:433e $0e $05
@@ -404,7 +404,7 @@ call_02_4418:
     ld   A, [wD762_PlayerInitialYVelocity]                                    ;; 02:442f $fa $62 $d7
     and  A, A                                          ;; 02:4432 $a7
     ret  NZ                                            ;; 02:4433 $c0
-    ld   A, [wD75A_CurrentInputs]                                    ;; 02:4434 $fa $5a $d7
+    ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:4434 $fa $5a $d7
     and  A, $30                                        ;; 02:4437 $e6 $30
     ld   A, $04                                        ;; 02:4439 $3e $04
     jp   NZ, call_02_4ccd                              ;; 02:443b $c2 $cd $4c
@@ -546,13 +546,13 @@ call_02_44f9:
     ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 02:452c $21 $0f $d6
     set  0, [HL]                                       ;; 02:452f $cb $c6
 .jr_02_4531:
-    ld   A, [wD75A_CurrentInputs]                                    ;; 02:4531 $fa $5a $d7
+    ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:4531 $fa $5a $d7
     and  A, $02                                        ;; 02:4534 $e6 $02
     jr   Z, .jr_02_453d                                ;; 02:4536 $28 $05
     ld   A, $17                                        ;; 02:4538 $3e $17
     call call_02_4ccd                                  ;; 02:453a $cd $cd $4c
 .jr_02_453d:
-    ld   A, [wD75A_CurrentInputs]                                    ;; 02:453d $fa $5a $d7
+    ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:453d $fa $5a $d7
     and  A, $01                                        ;; 02:4540 $e6 $01
     jr   Z, .jr_02_454e                                ;; 02:4542 $28 $0a
     ld   A, $01                                        ;; 02:4544 $3e $01
@@ -648,13 +648,13 @@ call_02_45b0:
     ld   hl,wD60F_BitmapOfThingsToLoad
     set  0,[hl]
 .jr_02_45F0:
-    ld   a,[wD75A_CurrentInputs]
+    ld   a,[wD75A_CurrentInputsAlt]
     and  a,$02
     jr   z,.jr_02_45FC
     ld   a,$17
     call call_02_4ccd
 .jr_02_45FC:
-    ld   a,[wD75A_CurrentInputs]
+    ld   a,[wD75A_CurrentInputsAlt]
     and  a,$01
     jr   z,.jr_02_460D
     ld   a,$03
@@ -839,7 +839,7 @@ call_02_46b8:
     db   $00, $60, $04, $20, $00, $68                  ;; 02:4771 ??????
 
 call_02_4777:
-    ld   A, [wD75A_CurrentInputs]                                    ;; 02:4777 $fa $5a $d7
+    ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:4777 $fa $5a $d7
     and  A, $f0                                        ;; 02:477a $e6 $f0
     jr   Z, .jr_02_478d                                ;; 02:477c $28 $0f
     ld   HL, .data_02_47a5                             ;; 02:477e $21 $a5 $47
@@ -881,7 +881,7 @@ call_02_4777:
     db   $ff, $ff, $90, $03, $01, $00, $01, $00        ;; 02:47cd ..?w....
 
 call_02_47d5:
-    ld   a,[wD75A_CurrentInputs]
+    ld   a,[wD75A_CurrentInputsAlt]
     and  a,$C0
     jr   z,.jr_02_47EB
     ld   hl, .data_02_4803

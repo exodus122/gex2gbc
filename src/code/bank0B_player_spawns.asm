@@ -77,7 +77,7 @@ call_0b_4efe_SpawnPositionInMap:
     ld   [wD210_PlayerYPosition], A                                    ;; 0b:4f66 $ea $10 $d2
     ld   A, H                                          ;; 0b:4f69 $7c
     ld   [wD211_PlayerYPosition], A                                    ;; 0b:4f6a $ea $11 $d2
-    jp   call_00_13a6                                  ;; 0b:4f6d $c3 $a6 $13
+    jp   call_00_13a6_UpdatePlayerMapWindow                                  ;; 0b:4f6d $c3 $a6 $13
 .jr_0b_4f70:
     ld   A, [wD624_CurrentLevelId]                                    ;; 0b:4f70 $fa $24 $d6
     and  A, A                                          ;; 0b:4f73 $a7
@@ -117,7 +117,7 @@ call_0b_4efe_SpawnPositionInMap:
     ld   [wD210_PlayerYPosition], A                                    ;; 0b:4fa5 $ea $10 $d2
     ld   A, H                                          ;; 0b:4fa8 $7c
     ld   [wD211_PlayerYPosition], A                                    ;; 0b:4fa9 $ea $11 $d2
-    jp   call_00_13a6                                  ;; 0b:4fac $c3 $a6 $13
+    jp   call_00_13a6_UpdatePlayerMapWindow                                  ;; 0b:4fac $c3 $a6 $13
 .jr_0b_4faf:
     ld   HL, wD624_CurrentLevelId                                     ;; 0b:4faf $21 $24 $d6
     ld   L, [HL]                                       ;; 0b:4fb2 $6e
@@ -161,7 +161,7 @@ call_0b_4efe_SpawnPositionInMap:
     ld   [wD210_PlayerYPosition], A                                    ;; 0b:4fe8 $ea $10 $d2
     ld   A, H                                          ;; 0b:4feb $7c
     ld   [wD211_PlayerYPosition], A                                    ;; 0b:4fec $ea $11 $d2
-    jp   call_00_13a6                                  ;; 0b:4fef $c3 $a6 $13
+    jp   call_00_13a6_UpdatePlayerMapWindow                                  ;; 0b:4fef $c3 $a6 $13
 .data_LevelDoorSpawns:
     dw   .data_0b_5030
     dw   .data_0b_5051

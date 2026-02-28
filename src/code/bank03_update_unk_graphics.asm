@@ -85,7 +85,7 @@ call_03_6499:
     inc  L                                             ;; 03:64f9 $2c
     ld   [HL], $01                                     ;; 03:64fa $36 $01
     inc  L                                             ;; 03:64fc $2c
-    ld   A, [wD743]                                    ;; 03:64fd $fa $43 $d7
+    ld   A, [wD743_DrawGexFlag]                                    ;; 03:64fd $fa $43 $d7
     and  A, A                                          ;; 03:6500 $a7
     jr   Z, .jr_03_6524                                ;; 03:6501 $28 $21
     ld   A, [wD212_PlayerScreenXPosition]                                    ;; 03:6503 $fa $12 $d2

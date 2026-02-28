@@ -390,7 +390,7 @@ wD620_DemoInputs:
 wD621:
     ds 1                                               ;; d621
 
-wD622:
+wD622_InterruptFlag:
     ds 1                                               ;; d622
 
 wD623:
@@ -932,7 +932,7 @@ wD741_PlayerHealth:
 wD742_PlayerCurrentFly:
     ds 1                                               ;; d742
 
-wD743:
+wD743_DrawGexFlag:
     ds 1                                               ;; d743
 
 wD744:
@@ -1010,7 +1010,7 @@ wD758:
 wD759:
     ds 1                                               ;; d759
 
-wD75A_CurrentInputs:
+wD75A_CurrentInputsAlt:
 ; button bits are only set for 1 frame. d-pad stays set while held
 ; A = 01, B = 02, Select = 04, Start = 08, Right = 0x10, Left = 0x20, Up = 0x40, Down = 0x80
     ds 1                                               ;; d75a
@@ -1172,17 +1172,11 @@ wD798:
 wD79A:
     ds 1                                               ;; d79a
 
-wD79B:
-    ds 1                                               ;; d79b
+wD79B_MissionPreviewCutsceneRelated:
+    ds 2                                               ;; d79b
 
-wD79C:
-    ds 1                                               ;; d79c
-
-wD79D:
-    ds 1                                               ;; d79d
-
-wD79E:
-    ds 1                                               ;; d79e
+wD79D_MissionPreviewCutsceneMovementFlags:
+    ds 2                                               ;; d79d
 
 wD79F:
     ds 256                                             ;; d79f

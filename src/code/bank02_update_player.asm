@@ -2,7 +2,7 @@ call_02_489a:
     ld   HL, wD759                                     ;; 02:489a $21 $59 $d7
     set  6, [HL]                                       ;; 02:489d $cb $f6
     ld   C, $02                                        ;; 02:489f $0e $02
-    ld   A, [wD75A_CurrentInputs]                                    ;; 02:48a1 $fa $5a $d7
+    ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:48a1 $fa $5a $d7
     and  A, $30                                        ;; 02:48a4 $e6 $30
     jr   Z, .jr_02_48b3                                ;; 02:48a6 $28 $0b
     ld   C, $05                                        ;; 02:48a8 $0e $05
@@ -80,7 +80,7 @@ data_02_4900:
     ld   A, [DE]                                       ;; 02:490c $1a
     ld   [HL], A                                       ;; 02:490d $77
     pop  AF                                            ;; 02:490e $f1
-    call call_02_7102_SetObjectAction                                  ;; 02:490f $cd $02 $71
+    call call_02_7102_SetEntityAction                                  ;; 02:490f $cd $02 $71
     call call_00_34d8                                  ;; 02:4912 $cd $d8 $34
     xor  A, A                                          ;; 02:4915 $af
     ld   [wD300_CurrentObjectAddr], A                                    ;; 02:4916 $ea $00 $d3
@@ -160,7 +160,7 @@ call_02_4939_PlayerUpdate:
     jr   Z, .jr_02_49a4                                ;; 02:49a0 $28 $02
     set  1, C                                          ;; 02:49a2 $cb $c9
 .jr_02_49a4:
-    ld   HL, wD75A_CurrentInputs                                     ;; 02:49a4 $21 $5a $d7
+    ld   HL, wD75A_CurrentInputsAlt                                     ;; 02:49a4 $21 $5a $d7
     ld   [HL], C                                       ;; 02:49a7 $71
     ld   HL, wD750                                     ;; 02:49a8 $21 $50 $d7
     ld   A, [HL]                                       ;; 02:49ab $7e
@@ -172,19 +172,19 @@ call_02_4939_PlayerUpdate:
     ld   [wD59D_ReturnBank], A                                    ;; 02:49b3 $ea $9d $d5
     ld   A, Bank03                                        ;; 02:49b6 $3e $03
     ld   HL, call_03_4900_UpdateCollision                              ;; 02:49b8 $21 $00 $49
-    call call_00_1078_CallAltBankFunc                                  ;; 02:49bb $cd $78 $10
+    call call_00_1078_FarCall                                  ;; 02:49bb $cd $78 $10
     call call_02_4b78                                  ;; 02:49be $cd $78 $4b
     ld   [wD59D_ReturnBank], A                                    ;; 02:49c1 $ea $9d $d5
     ld   A, Bank03                                        ;; 02:49c4 $3e $03
     ld   HL, call_03_4c0a_UpdateTilesTouchingPlayer                              ;; 02:49c6 $21 $0a $4c
-    call call_00_1078_CallAltBankFunc                                  ;; 02:49c9 $cd $78 $10
+    call call_00_1078_FarCall                                  ;; 02:49c9 $cd $78 $10
     call call_02_4c4f                                  ;; 02:49cc $cd $4f $4c
     ld   HL, wD745                                     ;; 02:49cf $21 $45 $d7
     ld   A, [HL]                                       ;; 02:49d2 $7e
     ld   [HL], $ff                                     ;; 02:49d3 $36 $ff
     cp   A, $ff                                        ;; 02:49d5 $fe $ff
     jr   Z, .jr_02_49e6                                ;; 02:49d7 $28 $0d
-    call call_02_7102_SetObjectAction                                  ;; 02:49d9 $cd $02 $71
+    call call_02_7102_SetEntityAction                                  ;; 02:49d9 $cd $02 $71
     ld   A, $ff                                        ;; 02:49dc $3e $ff
     ld   [wD746_PlayerClimbingState], A                                    ;; 02:49de $ea $46 $d7
     ld   A, $00                                        ;; 02:49e1 $3e $00
@@ -194,7 +194,7 @@ call_02_4939_PlayerUpdate:
     ld   A, [HL+]                                      ;; 02:49e9 $2a
     ld   H, [HL]                                       ;; 02:49ea $66
     ld   L, A                                          ;; 02:49eb $6f
-    call call_00_10bd_CallFuncInHL                                  ;; 02:49ec $cd $bd $10
+    call call_00_10bd_JumpHL                                  ;; 02:49ec $cd $bd $10
     call call_02_4a77                                  ;; 02:49ef $cd $77 $4a
     xor  A, A                                          ;; 02:49f2 $af
     ld   [wD758], A                                    ;; 02:49f3 $ea $58 $d7
@@ -212,12 +212,12 @@ call_02_4939_PlayerUpdate:
     ld   HL, wD20A                                     ;; 02:4a08 $21 $0a $d2
     res  6, [HL]                                       ;; 02:4a0b $cb $b6
     call call_02_6fda                                  ;; 02:4a0d $cd $da $6f
-    call call_02_715a                                  ;; 02:4a10 $cd $5a $71
+    call call_02_715a_UpdateMapWindow                                  ;; 02:4a10 $cd $5a $71
     call call_02_4c28                                  ;; 02:4a13 $cd $28 $4c
     ld   [wD59D_ReturnBank], A                                    ;; 02:4a16 $ea $9d $d5
     ld   A, Bank03                                        ;; 02:4a19 $3e $03
     ld   HL, call_03_5ca8                              ;; 02:4a1b $21 $a8 $5c
-    call call_00_1078_CallAltBankFunc                                  ;; 02:4a1e $cd $78 $10
+    call call_00_1078_FarCall                                  ;; 02:4a1e $cd $78 $10
     ld   HL, wD751                                     ;; 02:4a21 $21 $51 $d7
     call call_02_4a30                                  ;; 02:4a24 $cd $30 $4a
     ld   HL, wD755                                     ;; 02:4a27 $21 $55 $d7
@@ -247,7 +247,7 @@ call_02_4a45:
     ld   A, [wD746_PlayerClimbingState]                                    ;; 02:4a45 $fa $46 $d7
     cp   A, $ff                                        ;; 02:4a48 $fe $ff
     ret  NZ                                            ;; 02:4a4a $c0
-    ld   A, [wD75A_CurrentInputs]                                    ;; 02:4a4b $fa $5a $d7
+    ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:4a4b $fa $5a $d7
     and  A, $30                                        ;; 02:4a4e $e6 $30
     jr   Z, .jr_02_4a62                                ;; 02:4a50 $28 $10
     ld   C, $00                                        ;; 02:4a52 $0e $00
@@ -590,7 +590,7 @@ call_02_4c4f:
     cp   A, $23                                        ;; 02:4c65 $fe $23
     jp   Z, call_00_0696                                 ;; 02:4c67 $ca $96 $06
 .jr_02_4c6a:
-    ld   A, [wD75A_CurrentInputs]                                    ;; 02:4c6a $fa $5a $d7
+    ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:4c6a $fa $5a $d7
     and  A, $40                                        ;; 02:4c6d $e6 $40
     jr   Z, .jr_02_4ca6                                ;; 02:4c6f $28 $35
     ld   A, [wD764_TileTypeBehindGexsBody]                                    ;; 02:4c71 $fa $64 $d7
@@ -630,7 +630,7 @@ call_02_4c4f:
     ld   L, A                                          ;; 02:4cb3 $6f
     or   A, H                                          ;; 02:4cb4 $b4
     ret  Z                                             ;; 02:4cb5 $c8
-    ld   A, [wD75A_CurrentInputs]                                    ;; 02:4cb6 $fa $5a $d7
+    ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:4cb6 $fa $5a $d7
     ld   C, A                                          ;; 02:4cb9 $4f
 .jr_02_4cba:
     ld   A, [HL+]                                      ;; 02:4cba $2a
