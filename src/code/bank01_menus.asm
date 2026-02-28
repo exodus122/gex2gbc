@@ -3070,36 +3070,30 @@ data_01_7bcc:
     INCBIN ".gfx/menu_sprites/image_001_7bcf.bin"
 
 data_01_7c0f_collectible_images:
-    dw   data_01_7c4d, data_01_7c4d, data_01_7cc5, data_01_7cc5        ;; 01:7c0f ????????
-    dw   data_01_7d3d, data_01_7db5, data_01_7c4d, data_01_7e2d        ;; 01:7c17 ????????
-    dw   data_01_7c4d, data_01_7e2d, data_01_7d3d, data_01_7cc5        ;; 01:7c1f ????????
-    dw   data_01_7c4d, data_01_7db5, data_01_7ea5, data_01_7c4d        ;; 01:7c27 ????????
-    dw   data_01_7cc5, data_01_7c4d, data_01_7c4d, data_01_7c4d        ;; 01:7c2f ????????
-    dw   data_01_7c4d, data_01_7db5, data_01_7ea5, data_01_7d3d        ;; 01:7c37 ????????
-    dw   data_01_7e2d, data_01_7cc5, data_01_7ea5, data_01_7c4d        ;; 01:7c3f ????????
-    dw   data_01_7c4d, data_01_7c4d, data_01_7c4d
-
-data_01_7c4d:
+    dw   .data_01_7c4d, .data_01_7c4d, .data_01_7cc5, .data_01_7cc5        ;; 01:7c0f ????????
+    dw   .data_01_7d3d, .data_01_7db5, .data_01_7c4d, .data_01_7e2d        ;; 01:7c17 ????????
+    dw   .data_01_7c4d, .data_01_7e2d, .data_01_7d3d, .data_01_7cc5        ;; 01:7c1f ????????
+    dw   .data_01_7c4d, .data_01_7db5, .data_01_7ea5, .data_01_7c4d        ;; 01:7c27 ????????
+    dw   .data_01_7cc5, .data_01_7c4d, .data_01_7c4d, .data_01_7c4d        ;; 01:7c2f ????????
+    dw   .data_01_7c4d, .data_01_7db5, .data_01_7ea5, .data_01_7d3d        ;; 01:7c37 ????????
+    dw   .data_01_7e2d, .data_01_7cc5, .data_01_7ea5, .data_01_7c4d        ;; 01:7c3f ????????
+    dw   .data_01_7c4d, .data_01_7c4d, .data_01_7c4d
+.data_01_7c4d:
     INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_toon_tv.bin"
     INCBIN "gfx/misc_sprites/collectibles/palettes/palette_toon_tv_collectibles.bin"
-
-data_01_7cc5:
+.data_01_7cc5:
     INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_scream_tv.bin"
     INCBIN "gfx/misc_sprites/collectibles/palettes/palette_scream_tv_collectibles.bin"
-
-data_01_7d3d:
+.data_01_7d3d:
     INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_circuit_central.bin"
     INCBIN "gfx/misc_sprites/collectibles/palettes/palette_circuit_central_collectibles.bin"
-
-data_01_7db5:
+.data_01_7db5:
     INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_kung_fu_theater.bin"
     INCBIN "gfx/misc_sprites/collectibles/palettes/palette_kung_fu_theater_collectibles.bin"
-
-data_01_7e2d:
+.data_01_7e2d:
     INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_prehistory_channel.bin"
     INCBIN "gfx/misc_sprites/collectibles/palettes/palette_prehistory_channel_collectibles.bin"
-
-data_01_7ea5:
+.data_01_7ea5:
     INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_rezopolis.bin"
     INCBIN "gfx/misc_sprites/collectibles/palettes/palette_rezopolis_collectibles.bin"
 

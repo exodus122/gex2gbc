@@ -76,380 +76,380 @@ call_03_7253_UpdateAnimatedTile:
     ret                                                ;; 03:72aa $c9
 
 data_03_72ab:
-    dw   data_03_72e8_media_dimension_animated_tiles                                  ;; 03:72ab pP
-    dw   data_03_72e9_toon_tv_animated_tiles                                  ;; 03:72ad pP
-    dw   data_03_734a_scream_tv_animated_tiles                                  ;; 03:72af pP
-    dw   data_03_734a_scream_tv_animated_tiles
-    dw   data_03_73bb_circuit_central_animated_tiles
-    dw   data_03_72e8_media_dimension_animated_tiles
-    dw   data_03_72e8_media_dimension_animated_tiles
-    dw   data_03_72e8_media_dimension_animated_tiles
-    dw   data_03_72e9_toon_tv_animated_tiles
-    dw   data_03_72e8_media_dimension_animated_tiles
-    dw   data_03_73bb_circuit_central_animated_tiles
-    dw   data_03_734a_scream_tv_animated_tiles
-    dw   data_03_72e8_media_dimension_animated_tiles
-    dw   data_03_72e8_media_dimension_animated_tiles
-    dw   data_03_741c_rezopolis_animated_tiles
-    dw   data_03_72e8_media_dimension_animated_tiles
-    dw   data_03_734a_scream_tv_animated_tiles
-    dw   data_03_72e8_media_dimension_animated_tiles
-    dw   data_03_72e8_media_dimension_animated_tiles
-    dw   data_03_72e8_media_dimension_animated_tiles
-    dw   data_03_72e8_media_dimension_animated_tiles
-    dw   data_03_72e8_media_dimension_animated_tiles
-    dw   data_03_741c_rezopolis_animated_tiles
-    dw   data_03_73bb_circuit_central_animated_tiles
-    dw   data_03_72e8_media_dimension_animated_tiles
-    dw   data_03_734a_scream_tv_animated_tiles
-    dw   data_03_741c_rezopolis_animated_tiles
-    dw   data_03_72e8_media_dimension_animated_tiles
-    dw   data_03_72e8_media_dimension_animated_tiles
-    dw   data_03_72e8_media_dimension_animated_tiles
+    dw   .data_03_72e8_media_dimension_animated_tiles                                  ;; 03:72ab pP
+    dw   .data_03_72e9_toon_tv_animated_tiles                                  ;; 03:72ad pP
+    dw   .data_03_734a_scream_tv_animated_tiles                                  ;; 03:72af pP
+    dw   .data_03_734a_scream_tv_animated_tiles
+    dw   .data_03_73bb_circuit_central_animated_tiles
+    dw   .data_03_72e8_media_dimension_animated_tiles
+    dw   .data_03_72e8_media_dimension_animated_tiles
+    dw   .data_03_72e8_media_dimension_animated_tiles
+    dw   .data_03_72e9_toon_tv_animated_tiles
+    dw   .data_03_72e8_media_dimension_animated_tiles
+    dw   .data_03_73bb_circuit_central_animated_tiles
+    dw   .data_03_734a_scream_tv_animated_tiles
+    dw   .data_03_72e8_media_dimension_animated_tiles
+    dw   .data_03_72e8_media_dimension_animated_tiles
+    dw   .data_03_741c_rezopolis_animated_tiles
+    dw   .data_03_72e8_media_dimension_animated_tiles
+    dw   .data_03_734a_scream_tv_animated_tiles
+    dw   .data_03_72e8_media_dimension_animated_tiles
+    dw   .data_03_72e8_media_dimension_animated_tiles
+    dw   .data_03_72e8_media_dimension_animated_tiles
+    dw   .data_03_72e8_media_dimension_animated_tiles
+    dw   .data_03_72e8_media_dimension_animated_tiles
+    dw   .data_03_741c_rezopolis_animated_tiles
+    dw   .data_03_73bb_circuit_central_animated_tiles
+    dw   .data_03_72e8_media_dimension_animated_tiles
+    dw   .data_03_734a_scream_tv_animated_tiles
+    dw   .data_03_741c_rezopolis_animated_tiles
+    dw   .data_03_72e8_media_dimension_animated_tiles
+    dw   .data_03_72e8_media_dimension_animated_tiles
+    dw   .data_03_72e8_media_dimension_animated_tiles
     db   $e8
 
-data_03_72e8_media_dimension_animated_tiles:
+.data_03_72e8_media_dimension_animated_tiles:
     db   $00                                           ;; 03:72e8 .
 
-data_03_72e9_toon_tv_animated_tiles:
+.data_03_72e9_toon_tv_animated_tiles:
     db   $0c
     
     db   $04, $00                                 ;; 03:72e9 ...
     dw   $8b30                                         ;; 03:72ec pP
-    dw   data_03_747d
+    dw   .data_03_747d
     db   $00, $00
     
     db   $02, $00                  ;; 03:72ee ..??..
     dw   $8a50                                         ;; 03:72f4 pP
-    dw   data_03_757d
+    dw   .data_03_757d
     db   $00, $00
     
     db   $04, $00                  ;; 03:72f6 ..??..
     dw   $8c40                                         ;; 03:72fc pP
-    dw   data_03_75fd
+    dw   .data_03_75fd
     db   $00, $00
     
     db   $04, $00                  ;; 03:72fe ..??..
     dw   $8b30                                         ;; 03:7304 pP
-    dw   data_03_74bd
+    dw   .data_03_74bd
     db   $00, $00
     
     db   $02, $00                  ;; 03:7306 ..??..
     dw   $8a50                                         ;; 03:730c pP
-    dw   data_03_759d
+    dw   .data_03_759d
     db   $00, $00
     
     db   $04, $00                  ;; 03:730e ..??..
     dw   $8c40                                         ;; 03:7314 pP
-    dw   data_03_763d
+    dw   .data_03_763d
     db   $00, $00
     
     db   $04, $00                  ;; 03:7316 ..??..
     dw   $8b30                                         ;; 03:731c pP
-    dw   data_03_74fd
+    dw   .data_03_74fd
     db   $00, $00
     
     db   $02, $00                  ;; 03:731e ..??..
     dw   $8a50                                         ;; 03:7324 pP
-    dw   data_03_75bd
+    dw   .data_03_75bd
     db   $00, $00
     
     db   $04, $00                  ;; 03:7326 ..??..
     dw   $8c40                                         ;; 03:732c pP
-    dw   data_03_767d
+    dw   .data_03_767d
     db   $00, $00
     
     db   $04, $00                  ;; 03:732e ..??..
     dw   $8b30                                         ;; 03:7334 pP
-    dw   data_03_753d
+    dw   .data_03_753d
     db   $00, $00
     
     db   $02, $00                  ;; 03:7336 ..??..
     dw   $8a50                                         ;; 03:733c pP
-    dw   data_03_75dd
+    dw   .data_03_75dd
     db   $00, $00
     
     db   $04, $00                  ;; 03:733e ..??..
     dw   $8c40                                         ;; 03:7344 pP
-    dw   data_03_76bd
+    dw   .data_03_76bd
     db   $00, $00                            ;; 03:7346 ..??
 
-data_03_734a_scream_tv_animated_tiles:
+.data_03_734a_scream_tv_animated_tiles:
     db   $0e
     
     db   $02, $00                                 ;; 03:734a ...
     dw   $97e0                                         ;; 03:734d pP
-    dw   data_03_787d
+    dw   .data_03_787d
     db   $00, $00
     
     db   $06, $00                  ;; 03:734f ..??..
     dw   $96a0                                         ;; 03:7355 pP
-    dw   data_03_76fd
+    dw   .data_03_76fd
     db   $00, $00
     
     db   $04, $00                  ;; 03:7357 ..??..
     dw   $8ac0                                         ;; 03:735d pP
-    dw   data_03_78bd
+    dw   .data_03_78bd
     db   $00, $00
     
     db   $04, $00                  ;; 03:735f ..??..
     dw   $8b00                                         ;; 03:7365 pP
-    dw   data_03_78fd
+    dw   .data_03_78fd
     db   $00, $00
     
     db   $06, $00                  ;; 03:7367 ..??..
     dw   $96a0                                         ;; 03:736d pP
-    dw   data_03_775d
+    dw   .data_03_775d
     db   $00, $00
     
     db   $04, $00                  ;; 03:736f ..??..
     dw   $8ac0                                         ;; 03:7375 pP
-    dw   data_03_793d
+    dw   .data_03_793d
     db   $00, $00
     
     db   $04, $00                  ;; 03:7377 ..??..
     dw   $8b00                                         ;; 03:737d pP
-    dw   data_03_797d
+    dw   .data_03_797d
     db   $00, $00
     
     db   $02, $00                  ;; 03:737f ..??..
     dw   $97e0                                         ;; 03:7385 pP
-    dw   data_03_789d
+    dw   .data_03_789d
     db   $00, $00
     
     db   $06, $00                  ;; 03:7387 ..??..
     dw   $96a0                                         ;; 03:738d pP
-    dw   data_03_77bd
+    dw   .data_03_77bd
     db   $00, $00
     
     db   $04, $00                  ;; 03:738f ..??..
     dw   $8ac0                                         ;; 03:7395 pP
-    dw   data_03_79bd
+    dw   .data_03_79bd
     db   $00, $00
     
     db   $04, $00                  ;; 03:7397 ..??..
     dw   $8b00                                         ;; 03:739d pP
-    dw   data_03_79fd
+    dw   .data_03_79fd
     db   $00, $00
     
     db   $06, $00                  ;; 03:739f ..??..
     dw   $96a0                                         ;; 03:73a5 pP
-    dw   data_03_781d
+    dw   .data_03_781d
     db   $00, $00
     
     db   $04, $00                  ;; 03:73a7 ..??..
     dw   $8ac0                                         ;; 03:73ad pP
-    dw   data_03_7a3d
+    dw   .data_03_7a3d
     db   $00, $00
     
     db   $04, $00                  ;; 03:73af ..??..
     dw   $8b00                                         ;; 03:73b5 pP
-    dw   data_03_7a7d
+    dw   .data_03_7a7d
     db   $00, $00
-data_03_73bb_circuit_central_animated_tiles:
+.data_03_73bb_circuit_central_animated_tiles:
     db   $0c
     
     db   $02, $81, $e0        ;; 03:73bb ..??????
     db   $91
-    dw   data_03_7b7d
+    dw   .data_03_7b7d
     db   $00, $00
     
     db   $02, $82, $00        ;; 03:73bf ????????
     db   $92
-    dw   data_03_7b7d
+    dw   .data_03_7b7d
     db   $00, $00
     
     db   $02, $83, $20        ;; 03:73c7 ????????
     db   $92
-    dw   data_03_7b7d
+    dw   .data_03_7b7d
     db   $00, $00
     
     db   $02, $81, $e0        ;; 03:73cf ????????
     db   $91
-    dw   data_03_7b9d
+    dw   .data_03_7b9d
     db   $00, $00
     
     db   $02, $82, $00        ;; 03:73d7 ????????
     db   $92
-    dw   data_03_7b9d
+    dw   .data_03_7b9d
     db   $00, $00
     
     db   $02, $83, $20        ;; 03:73df ????????
     db   $92
-    dw   data_03_7b9d
+    dw   .data_03_7b9d
     db   $00, $00
     
     db   $02, $81, $e0        ;; 03:73e7 ????????
     db   $91
-    dw   data_03_7bbd
+    dw   .data_03_7bbd
     db   $00, $00
     
     db   $02, $82, $00        ;; 03:73ef ????????
     db   $92
-    dw   data_03_7bbd
+    dw   .data_03_7bbd
     db   $00, $00
     
     db   $02, $83, $20        ;; 03:73f7 ????????
     db   $92
-    dw   data_03_7bbd
+    dw   .data_03_7bbd
     db   $00, $00
     
     db   $02, $81, $e0        ;; 03:73ff ????????
     db   $91
-    dw   data_03_7bdd
+    dw   .data_03_7bdd
     db   $00, $00
     
     db   $02, $82, $00        ;; 03:7407 ????????
     db   $92
-    dw   data_03_7bdd
+    dw   .data_03_7bdd
     db   $00, $00
     
     db   $02, $83, $20        ;; 03:740f ????????
     db   $92
-    dw   data_03_7bdd
+    dw   .data_03_7bdd
     db   $00, $00
-data_03_741c_rezopolis_animated_tiles:
+.data_03_741c_rezopolis_animated_tiles:
     db   $0c
     
     db   $02, $00        ;; 03:7417 ????????
     db   $b0, $8c
-    dw   data_03_7abd
+    dw   .data_03_7abd
     db   $00
     
     db   $00, $01, $00        ;; 03:741f ????????
     db   $00, $8e
-    dw   data_03_7afd
+    dw   .data_03_7afd
     db   $00
     
     db   $00, $01, $00        ;; 03:7427 ????????
     db   $00, $8f
-    dw   data_03_7b3d
+    dw   .data_03_7b3d
     db   $00
     
     db   $00, $02, $00        ;; 03:742f ????????
     db   $b0, $8c
-    dw   data_03_7add
+    dw   .data_03_7add
     db   $00
     
     db   $00, $01, $00        ;; 03:7437 ????????
     db   $00, $8e
-    dw   data_03_7b0d
+    dw   .data_03_7b0d
     db   $00
     
     db   $00, $01, $00        ;; 03:743f ????????
     db   $00, $8f
-    dw   data_03_7b4d
+    dw   .data_03_7b4d
     db   $00
     
     db   $00, $02, $00        ;; 03:7447 ????????
     db   $b0, $8c
-    dw   data_03_7abd
+    dw   .data_03_7abd
     db   $00
     
     db   $00, $01, $00        ;; 03:744f ????????
     db   $00, $8e
-    dw   data_03_7b1d
+    dw   .data_03_7b1d
     db   $00
     
     db   $00, $01, $00        ;; 03:7457 ????????
     db   $00, $8f
-    dw   data_03_7b5d
+    dw   .data_03_7b5d
     db   $00
     
     db   $00, $02, $00        ;; 03:745f ????????
     db   $b0, $8c
-    dw   data_03_7add
+    dw   .data_03_7add
     db   $00
     
     db   $00, $01, $00        ;; 03:7467 ????????
     db   $00, $8e
-    dw   data_03_7b2d
+    dw   .data_03_7b2d
     db   $00
     
     db   $00, $01, $00        ;; 03:746f ????????
     db   $00, $8f
-    dw   data_03_7b6d
+    dw   .data_03_7b6d
     db   $00, $00                  ;; 03:7477 ??????
 
-data_03_747d:
+.data_03_747d:
     INCBIN ".gfx/animated_tiles/image_003_747d.bin"
-data_03_74bd:
+.data_03_74bd:
     INCBIN ".gfx/animated_tiles/image_003_74bd.bin"
-data_03_74fd:
+.data_03_74fd:
     INCBIN ".gfx/animated_tiles/image_003_74fd.bin"
-data_03_753d:
+.data_03_753d:
     INCBIN ".gfx/animated_tiles/image_003_753d.bin"
-data_03_757d:
+.data_03_757d:
     INCBIN ".gfx/animated_tiles/image_003_757d.bin"
-data_03_759d:
+.data_03_759d:
     INCBIN ".gfx/animated_tiles/image_003_759d.bin"
-data_03_75bd:
+.data_03_75bd:
     INCBIN ".gfx/animated_tiles/image_003_75bd.bin"
-data_03_75dd:
+.data_03_75dd:
     INCBIN ".gfx/animated_tiles/image_003_75dd.bin"
-data_03_75fd:
+.data_03_75fd:
     INCBIN ".gfx/animated_tiles/image_003_75fd.bin"
-data_03_763d:
+.data_03_763d:
     INCBIN ".gfx/animated_tiles/image_003_763d.bin"
-data_03_767d:
+.data_03_767d:
     INCBIN ".gfx/animated_tiles/image_003_767d.bin"
-data_03_76bd:
+.data_03_76bd:
     INCBIN ".gfx/animated_tiles/image_003_76bd.bin"
-data_03_76fd:
+.data_03_76fd:
     INCBIN ".gfx/animated_tiles/image_003_76fd.bin"
-data_03_775d:
+.data_03_775d:
     INCBIN ".gfx/animated_tiles/image_003_775d.bin"
-data_03_77bd:
+.data_03_77bd:
     INCBIN ".gfx/animated_tiles/image_003_77bd.bin"
-data_03_781d:
+.data_03_781d:
     INCBIN ".gfx/animated_tiles/image_003_781d.bin"
-data_03_787d:
+.data_03_787d:
     INCBIN ".gfx/animated_tiles/image_003_787d.bin"
-data_03_789d:
+.data_03_789d:
     INCBIN ".gfx/animated_tiles/image_003_789d.bin"
-data_03_78bd:
+.data_03_78bd:
     INCBIN ".gfx/animated_tiles/image_003_78bd.bin"
-data_03_78fd:
+.data_03_78fd:
     INCBIN ".gfx/animated_tiles/image_003_78fd.bin"
-data_03_793d:
+.data_03_793d:
     INCBIN ".gfx/animated_tiles/image_003_793d.bin"
-data_03_797d:
+.data_03_797d:
     INCBIN ".gfx/animated_tiles/image_003_797d.bin"
-data_03_79bd:
+.data_03_79bd:
     INCBIN ".gfx/animated_tiles/image_003_79bd.bin"
-data_03_79fd:
+.data_03_79fd:
     INCBIN ".gfx/animated_tiles/image_003_79fd.bin"
-data_03_7a3d:
+.data_03_7a3d:
     INCBIN ".gfx/animated_tiles/image_003_7a3d.bin"
-data_03_7a7d:
+.data_03_7a7d:
     INCBIN ".gfx/animated_tiles/image_003_7a7d.bin"
-data_03_7abd:
+.data_03_7abd:
     INCBIN ".gfx/animated_tiles/image_003_7abd.bin"
-data_03_7add:
+.data_03_7add:
     INCBIN ".gfx/animated_tiles/image_003_7add.bin"
-data_03_7afd:
+.data_03_7afd:
     INCBIN ".gfx/animated_tiles/image_003_7afd.bin"
-data_03_7b0d:
+.data_03_7b0d:
     INCBIN ".gfx/animated_tiles/image_003_7b0d.bin"
-data_03_7b1d:
+.data_03_7b1d:
     INCBIN ".gfx/animated_tiles/image_003_7b1d.bin"
-data_03_7b2d:
+.data_03_7b2d:
     INCBIN ".gfx/animated_tiles/image_003_7b2d.bin"
-data_03_7b3d:
+.data_03_7b3d:
     INCBIN ".gfx/animated_tiles/image_003_7b3d.bin"
-data_03_7b4d:
+.data_03_7b4d:
     INCBIN ".gfx/animated_tiles/image_003_7b4d.bin"
-data_03_7b5d:
+.data_03_7b5d:
     INCBIN ".gfx/animated_tiles/image_003_7b5d.bin"
-data_03_7b6d:
+.data_03_7b6d:
     INCBIN ".gfx/animated_tiles/image_003_7b6d.bin"
-data_03_7b7d:
+.data_03_7b7d:
     INCBIN ".gfx/animated_tiles/image_003_7b7d.bin"
-data_03_7b9d:
+.data_03_7b9d:
     INCBIN ".gfx/animated_tiles/image_003_7b9d.bin"
-data_03_7bbd:
+.data_03_7bbd:
     INCBIN ".gfx/animated_tiles/image_003_7bbd.bin"
-data_03_7bdd:
+.data_03_7bdd:
     INCBIN ".gfx/animated_tiles/image_003_7bdd.bin"
 
 data_03_7bfd:

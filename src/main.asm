@@ -15,6 +15,7 @@ SECTION "bank02", ROMX[$4000], BANK[$02]
 INCLUDE "code/bank02_update_entities.asm"
 
 SECTION "bank03", ROMX[$4000], BANK[$03]
+INCBIN "data/maps/bg_collision_data.bin"
 INCLUDE "code/bank03_bg_collision.asm"
 INCLUDE "code/bank03_entity_collision.asm"
 INCLUDE "code/bank03_entity_graphics.asm"

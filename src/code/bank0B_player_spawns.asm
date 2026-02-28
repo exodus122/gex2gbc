@@ -348,7 +348,6 @@ call_0b_4efe_SpawnPositionInMap:
     db   $2d, $ff
 .data_0b_53fc:
     db   $62, $7d, $70, $7d, $ff             ;; 0b:53fc ???????
-
 .data_MediaDimensionSpawns:
     db   $25, $0d
     db   $05, $0b

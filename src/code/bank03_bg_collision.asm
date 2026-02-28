@@ -1,7 +1,5 @@
 ; This file handles gex's collision with background walls, floors, ceilings, etc.
 
-INCBIN "data/maps/bg_collision_data.bin"
-
 call_03_4900_UpdateCollision:
     ld   HL, wD585_CollisionFlags                                     ;; 03:4900 $21 $85 $d5
     ld   A, [HL]                                       ;; 03:4903 $7e

@@ -18,7 +18,6 @@ call_03_66ae:
     ld   DE, $8680                                     ;; 03:66d8 $11 $80 $86
     call call_03_6efd                                  ;; 03:66db $cd $fd $6e
     jp   call_03_6ceb                                    ;; 03:66de $c3 $eb $6c
-
 .image_03_66e1:
     INCBIN ".gfx/misc_sprites/image_003_66e1.bin"
 .image_demo_mode_03_6821:
@@ -79,7 +78,6 @@ call_03_6941:
     dw   .image_collectibles_toon_tv_003_69a5
     dw   .image_collectibles_toon_tv_003_69a5
     dw   .image_collectibles_toon_tv_003_69a5
-
 .image_collectibles_toon_tv_003_69a5:
     INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_toon_tv.bin"
 .image_collectibles_scream_tv_003_6a05:
@@ -279,7 +277,6 @@ call_03_6d88:
 .jr_03_6d99:
     add  HL, BC                                        ;; 03:6d99 $09
     jp   call_03_6f2d                                  ;; 03:6d9a $c3 $2d $6f
-
 .numbers_003_6d9d:
     INCBIN ".gfx/misc_sprites/numbers_003_6d9d.bin"
 .numbers_003_6e4d:

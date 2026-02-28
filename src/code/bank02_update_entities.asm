@@ -149,6 +149,8 @@ dw   data_02_51ab        ;; Object_unk_8D
 dw   data_02_51af        ;; Object_unk_8E
 dw   data_02_51b3        ;; Object_MediaDimension_MovingPlatform
 
+INCLUDE "code/bank02_player_actions.asm"
+
 INCLUDE "code/bank02_update_player.asm"
 
 INCLUDE "code/bank02_entity_actions.asm"

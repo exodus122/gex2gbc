@@ -106,7 +106,6 @@ call_0b_4000:
     dw   .data_40a0_media_dimension_collectible_coords
     dw   .data_40a0_media_dimension_collectible_coords
     dw   .data_40a0_media_dimension_collectible_coords
-
 .data_40a0_media_dimension_collectible_coords:
     INCBIN "data/maps/media_dimension/collectible_list_media_dimension.bin"
 .data_40a4_out_of_toon_collectible_coords:
