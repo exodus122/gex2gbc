@@ -1,4 +1,4 @@
-entry_0b_4efe_SpawnPositionInMap:
+call_0b_4efe_SpawnPositionInMap:
     ld   HL, wD621                                     ;; 0b:4efe $21 $21 $d6
     ld   A, [HL]                                       ;; 0b:4f01 $7e
     and  A, $08                                        ;; 0b:4f02 $e6 $08

@@ -99,7 +99,7 @@ call_03_6f2d:
     inc  DE                                            ;; 03:6f5c $13
     ret                                                ;; 03:6f5d $c9
 
-entry_03_6f5e_WriteVRAMBgMap:
+call_03_6f5e_WriteVRAMBgMap:
     ld   A, [wD59E]                                    ;; 03:6f5e $fa $9e $d5
     and  A, A                                          ;; 03:6f61 $a7
     jp   Z, .jp_03_701d                                ;; 03:6f62 $ca $1d $70
@@ -386,7 +386,7 @@ entry_03_6f5e_WriteVRAMBgMap:
     ld   [DE], A                                       ;; 03:708b $12
     ret                                                ;; 03:708c $c9
 
-entry_03_708d:
+call_03_708d:
     ld   A, [wD59E]                                    ;; 03:708d $fa $9e $d5
     and  A, A                                          ;; 03:7090 $a7
     jp   Z, .jp_03_71ab                                ;; 03:7091 $ca $ab $71

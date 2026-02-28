@@ -1,6 +1,6 @@
 ;; Disassembled with BadBoy Disassembler: https://github.com/daid/BadBoy
 
-entry_0b_5537:
+call_0b_5537:
     ld   A, [wD59E]                                    ;; 0b:5537 $fa $9e $d5
     and  A, A                                          ;; 0b:553a $a7
     jp   NZ, call_0b_561b                               ;; 0b:553b $c2 $1b $56
@@ -74,7 +74,7 @@ call_0b_561b:
     call call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 0b:5642 $cd $b0 $07
     ld   [wD59D_ReturnBank], A                                    ;; 0b:5645 $ea $9d $d5
     ld   A, Bank03                                        ;; 0b:5648 $3e $03
-    ld   HL, entry_03_6be5                                     ;; 0b:564a $21 $e5 $6b
+    ld   HL, call_03_6be5                                     ;; 0b:564a $21 $e5 $6b
     call call_00_1078_CallAltBankFunc                                  ;; 0b:564d $cd $78 $10
     ret                                                ;; 0b:5650 $c9
 
@@ -274,7 +274,7 @@ palette_rezopolis:
 palette_channel_z:
     INCBIN "gfx/tilesets/palettes/palette_channel_z.bin"
 
-entry_0b_5d4b:
+call_0b_5d4b:
     ld   A, [wD59E]                                    ;; 0b:5d4b $fa $9e $d5
     and  A, A                                          ;; 0b:5d4e $a7
     ret  Z                                             ;; 0b:5d4f $c8
@@ -313,8 +313,6 @@ entry_0b_5d4b:
 .bonus_tv_television_palette:
     INCBIN "gfx/secondary_tilesets/media_dimension/palettes/bonus_tv_television_palette.bin"
 
-
-entry_0b_5df8:
 call_0b_5df8:
     ld   A, [wD59E]                                    ;; 0b:5df8 $fa $9e $d5
     and  A, A                                          ;; 0b:5dfb $a7
@@ -367,7 +365,7 @@ call_0b_5df8:
 .bonus_tv_television_palette:
     INCBIN "gfx/secondary_tilesets/media_dimension/palettes/bonus_tv_television_palette.bin"
 
-entry_0b_5ec3:
+call_0b_5ec3:
     ld   A, [wD59E]                                    ;; 0b:5ec3 $fa $9e $d5
     and  A, A                                          ;; 0b:5ec6 $a7
     ret  Z                                             ;; 0b:5ec7 $c8
@@ -425,7 +423,7 @@ entry_0b_5ec3:
     db   $00, $00, $00, $00, $00, $50, $00, $70        ;; 0b:5f47 ????????
     db   $00, $00, $00, $00, $00, $03, $00, $03        ;; 0b:5f4f ????????
 
-entry_0b_5f57:
+call_0b_5f57:
     ld   A, [wD300_CurrentObjectAddr]                                    ;; 0b:5f57 $fa $00 $d3
     rlca                                               ;; 0b:5f5a $07
     rlca                                               ;; 0b:5f5b $07
@@ -484,7 +482,7 @@ entry_0b_5f57:
 .data_object_palettes:
     INCBIN "gfx/object_sprites/object_palettes.bin"
 
-entry_0b_641e:
+call_0b_641e:
     ld   HL, wD624_CurrentLevelId                                     ;; 0b:641e $21 $24 $d6
     ld   L, [HL]                                       ;; 0b:6421 $6e
     ld   H, $00                                        ;; 0b:6422 $26 $00

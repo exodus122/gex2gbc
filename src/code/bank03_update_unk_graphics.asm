@@ -130,7 +130,7 @@ call_03_6499:
     inc  E                                             ;; 03:653d $1c
     jr   .jr_03_652a                                   ;; 03:653e $18 $ea
 
-entry_03_6540:
+call_03_6540:
     call call_03_6499                                  ;; 03:6540 $cd $99 $64
     call call_03_5b5b                                  ;; 03:6543 $cd $5b $5b
     jp   call_03_6484                                    ;; 03:6546 $c3 $84 $64
@@ -199,7 +199,7 @@ jr_03_657d:
     inc hl
     jr jr_03_6575
 
-entry_03_6584:
+call_03_6584:
     call call_00_3a0a                                  ;; 03:6584 $cd $0a $3a
     push DE                                            ;; 03:6587 $d5
     inc  DE                                            ;; 03:6588 $13
@@ -316,7 +316,7 @@ jr_03_65f2:
     inc hl
     jr jr_03_65ea
 
-entry_03_65f9:
+call_03_65f9:
     call call_00_3a0a                                  ;; 03:65f9 $cd $0a $3a
     push DE                                            ;; 03:65fc $d5
     inc  DE                                            ;; 03:65fd $13

@@ -1,4 +1,4 @@
-entry_03_66ae:
+call_03_66ae:
     ld   HL, .image_03_66e1                             ;; 03:66ae $21 $e1 $66
     ld   DE, $8600                                     ;; 03:66b1 $11 $00 $86
     ld   BC, $140                                      ;; 03:66b4 $01 $40 $01
@@ -26,7 +26,6 @@ entry_03_66ae:
 .image_colon_03_6921:
     INCBIN ".gfx/misc_sprites/image_colon_003_6921.bin"
 
-entry_03_6941:
 call_03_6941:
     ld   HL, wD60E                                     ;; 03:6941 $21 $0e $d6
     res  3, [HL]                                       ;; 03:6944 $cb $9e
@@ -94,7 +93,6 @@ call_03_6941:
 .image_collectibles_rezopolis_003_6b85:
     INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_rezopolis.bin"
 
-entry_03_6be5:
 call_03_6be5:
     ld   A, [wD59E]                                    ;; 03:6be5 $fa $9e $d5
     and  A, A                                          ;; 03:6be8 $a7
@@ -185,7 +183,6 @@ call_03_6be5:
 .palette_rezopolis_collectibles: ;; 03:6cd3
     INCBIN "gfx/misc_sprites/collectibles/palettes/palette_rezopolis_collectibles.bin"
 
-entry_03_6ceb:
 call_03_6ceb:
     ld   HL, wD60E                                     ;; 03:6ceb $21 $0e $d6
     res  2, [HL]                                       ;; 03:6cee $cb $96
@@ -203,7 +200,6 @@ call_03_6ceb:
     call call_03_6d88                                  ;; 03:6d0e $cd $88 $6d
     jr   jr_03_6d5e                                    ;; 03:6d11 $18 $4b
 
-entry_03_6d13:
 call_03_6d13:
     ld   HL, wD60E                                     ;; 03:6d13 $21 $0e $d6
     res  1, [HL]                                       ;; 03:6d16 $cb $8e

@@ -496,7 +496,7 @@ wD665:
 wD667_PasswordExitButton: ; Password exit button (value 49)
     ds 1                                               ;; d667
 
-wD668_PasswordValues: ; password on entry screen and in game
+wD668_PasswordValues: ; password on call screen and in game
 ; 20 is blank
 ; solid color arrows: 45 right, 46 left, 47 up, 48 down
 ; outlined arrows:  41 right, 42 left, 43 up, 44 down
@@ -716,10 +716,10 @@ wD6DE_MenuType:
 ; 5 = view totals, 6 = current password, B = mission select, F = enter password
     ds 1                                               ;; d6de
 
-wD6DF_MenuSelectedColumn: ; used for password entry, but not totals screen
+wD6DF_MenuSelectedColumn: ; used for password call, but not totals screen
     ds 1                                               ;; d6df
 
-wD6E0_MenuSelectedRow: ; used for password entry, title screen, mission select, and leaving maps
+wD6E0_MenuSelectedRow: ; used for password call, title screen, mission select, and leaving maps
     ds 1                                               ;; d6e0
 
 wD6E1:

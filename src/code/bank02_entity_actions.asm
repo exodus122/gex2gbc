@@ -395,7 +395,7 @@ call_02_51b7:
     push AF                                            ;; 02:51ba $f5
     ld   [wD59D_ReturnBank], A                                    ;; 02:51bb $ea $9d $d5
     ld   A, Bank03                                        ;; 02:51be $3e $03
-    ld   HL, entry_03_6584                              ;; 02:51c0 $21 $84 $65
+    ld   HL, call_03_6584                              ;; 02:51c0 $21 $84 $65
     call call_00_1078_CallAltBankFunc                                  ;; 02:51c3 $cd $78 $10
     jr   NZ, .jr_02_51cc                               ;; 02:51c6 $20 $04
     pop  AF                                            ;; 02:51c8 $f1
@@ -510,12 +510,12 @@ call_02_526a:
     ld   a,[wD59E]
     and  a
     ld   a,$01
-    call nz,entry_02_7102_SetObjectAction
+    call nz,call_02_7102_SetObjectAction
     ret  
     ld   a,[wD59E]
     and  a
     ld   a,$01
-    call nz,entry_02_7102_SetObjectAction
+    call nz,call_02_7102_SetObjectAction
     ld   a,[wD649_CollectibleAmount]
     and  a
     jp   nz,call_00_3931
@@ -532,7 +532,7 @@ call_02_52ab:
     jr   Z, .jr_02_52bc                                ;; 02:52ae $28 $0c
     ld   [wD59D_ReturnBank], A                                    ;; 02:52b0 $ea $9d $d5
     ld   A, Bank03                                        ;; 02:52b3 $3e $03
-    ld   HL, entry_03_65f9                              ;; 02:52b5 $21 $f9 $65
+    ld   HL, call_03_65f9                              ;; 02:52b5 $21 $f9 $65
     call call_00_1078_CallAltBankFunc                                  ;; 02:52b8 $cd $78 $10
     ret  NZ                                            ;; 02:52bb $c0
 .jr_02_52bc:
@@ -718,10 +718,10 @@ label53C3:
     ld   hl,$7B9A
     call call_00_1078_CallAltBankFunc
     ld   a,$01
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call call_00_3843
     ld   a,$00
-    call nz,entry_02_7102_SetObjectAction
+    call nz,call_02_7102_SetObjectAction
     ret  
     ld   c,$01
     call $3350
@@ -789,7 +789,7 @@ label5421:
     ret  z
     call call_00_36bd
     ld   a,$01
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call call_00_3843
     ret  z
     ld   c,$34
@@ -800,15 +800,15 @@ label5421:
     ld   hl,$7B9A
     call call_00_1078_CallAltBankFunc
     ld   a,$02
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call call_00_3843
     ld   a,$00
-    jp   nz,entry_02_7102_SetObjectAction
+    jp   nz,call_02_7102_SetObjectAction
     ret  
     ld   c,$06
     call call_00_3a23
     ld   a,$01
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call call_00_3b8d
     jp   z,call_00_3931
     ld   [wD59D_ReturnBank],a
@@ -843,7 +843,7 @@ label5421:
     call call_00_1078_CallAltBankFunc
 label54AF:
     ld   a,$02
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     ld   h,$d2
     ld   a,[wD300_CurrentObjectAddr]
     or   a,$18
@@ -853,7 +853,7 @@ label54AF:
     dec  l
     res  0,[hl]
     ld   a,$01
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     ld   c,$28
     call call_00_335a
     ld   c,$03
@@ -864,13 +864,13 @@ label54AF:
     ld   l,a
     ld   [hl],$00
     ld   a,$01
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call call_00_30af
     call call_00_3137
     ret  c
     call call_00_3817
     ld   a,$02
-    jp   z,entry_02_7102_SetObjectAction
+    jp   z,call_02_7102_SetObjectAction
     ld   l,[hl]
     ld   h,$00
     ld   de,$54F9
@@ -889,7 +889,7 @@ label54AF:
     and  a,$7F
     cp   [hl]
     ld   a,$01
-    jp   z,entry_02_7102_SetObjectAction
+    jp   z,call_02_7102_SetObjectAction
     ret  
     ld   bc,$0002
     call call_00_37d8
@@ -903,29 +903,29 @@ label54AF:
     cp   a,$24
     ret  nz
     ld   a,$02
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call call_00_3843
     ld   a,$03
-    jp   nz,entry_02_7102_SetObjectAction
+    jp   nz,call_02_7102_SetObjectAction
     ret  
     ld   bc,$FFFF
     call call_00_37d8
     call call_00_3817
     ld   a,$00
-    jp   z,entry_02_7102_SetObjectAction
+    jp   z,call_02_7102_SetObjectAction
     ret  
     call label555E
     ld   a,[wD757]
     and  a
     ret  nz
     ld   a,$01
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call label555E
     ld   a,[wD757]
     and  a
     ret  z
     ld   a,$00
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
 label555E:
     ld   h,$d2
     ld   a,[wD300_CurrentObjectAddr]
@@ -1007,11 +1007,11 @@ label55D1:
     ld   [de],a
     inc  e
     ld   a,$01
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call call_00_3843
     ret  z
     ld   a,$02
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     ld   a,[wD757]
     and  a
     jr   nz,label5608
@@ -1023,12 +1023,12 @@ label55D1:
     ret  z
     res  0,[hl]
     ld   a,$00
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
 label5608:
     ld   c,$00
     call $3350
     ld   a,$03
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     ld   a,[wD757]
     and  a
     jr   z,label5623
@@ -1038,7 +1038,7 @@ label5608:
     jp   $3251
 label5623:
     ld   a,$00
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call call_00_34ea
     jr   z,label5634
     ld   a,l
@@ -1062,7 +1062,7 @@ label5634:
     ld   l,a
     ld   [hl],$40
     ld   a,$01
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     ld   h,$d2
     ld   a,[wD300_CurrentObjectAddr]
     or   a,$18
@@ -1102,7 +1102,7 @@ label5687:
     ld   c,$00
     call $382F
     ld   a,$02
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     nop  
     ld   bc,$1111
     ld   d,l
@@ -1118,7 +1118,7 @@ label5687:
     ld   c,$10
     call $382F
     ld   a,$00
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call call_00_34ea
     jr   z,label56BB
     ld   a,l
@@ -1322,12 +1322,12 @@ call_02_576e:
     ld   c,$24
     call call_00_335a
     ld   a,$01
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call call_00_30af
     ld   bc,$0008
     call call_00_316e
     ld   a,$00
-    jp   nc,entry_02_7102_SetObjectAction
+    jp   nc,call_02_7102_SetObjectAction
     ret  
     call call_00_34ea
     jr   z,label581C
@@ -1341,14 +1341,14 @@ label581C:
     ld   c,$24
     call call_00_335a
     ld   a,$01
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call call_00_30af
     call call_00_3154
     jp   c,call_00_36f7
     ld   c,$09
     call call_00_335a
     ld   a,$00
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
 
 call_02_5843:
     ld   C, $08                                        ;; 02:5843 $0e $08
@@ -1370,7 +1370,7 @@ call_02_5843:
     call call_00_3859
     ret  c
     ld   a,$00
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call call_00_30af
     ld   h,$d2
     ld   a,[wD300_CurrentObjectAddr]
@@ -1494,7 +1494,7 @@ call_02_592d:
     ld   C, $03                                        ;; 02:595e $0e $03
     ld   [wD59D_ReturnBank], A                                    ;; 02:5960 $ea $9d $d5
     ld   A, Bank0a                                        ;; 02:5963 $3e $0a
-    ld   HL, entry_0a_7b9a                              ;; 02:5965 $21 $9a $7b
+    ld   HL, call_0a_7b9a                              ;; 02:5965 $21 $9a $7b
     call call_00_1078_CallAltBankFunc                                  ;; 02:5968 $cd $78 $10
     ret                                                ;; 02:596b $c9
 call_02_596c:
@@ -1534,7 +1534,7 @@ label599D:
     ld   hl,$7B9A
     call call_00_1078_CallAltBankFunc
     ld   a,$01
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
 label59BE:
     ld   c,$08
     call call_00_32e1
@@ -1543,18 +1543,18 @@ label59BE:
     call call_00_3843
     jr   z,label5A00
     ld   a,$00
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call call_00_3843
     ld   a,$03
-    jp   nz,entry_02_7102_SetObjectAction
+    jp   nz,call_02_7102_SetObjectAction
     ret  
     call call_00_3843
     ld   a,$04
-    jp   nz,entry_02_7102_SetObjectAction
+    jp   nz,call_02_7102_SetObjectAction
     ret  
     call call_00_3843
     ld   a,$05
-    jp   nz,entry_02_7102_SetObjectAction
+    jp   nz,call_02_7102_SetObjectAction
     ret  
     call call_00_3843
     ret  z
@@ -1564,7 +1564,7 @@ label59BE:
     ld   l,a
     res  0,[hl]
     ld   a,$00
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
 label5A00:
     ld   h,$d2
     ld   a,[wD300_CurrentObjectAddr]
@@ -1573,13 +1573,13 @@ label5A00:
     bit  0,[hl]
     ret  z
     ld   a,$02
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     ld   c,$01
     call $3350
     ld   c,$5A
     call call_00_3802
     ld   a,$01
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call call_00_3817
     jp   z,call_00_3910
     jp   $3442
@@ -1602,7 +1602,7 @@ call_02_5a28:
     ld   C, $08                                        ;; 02:5a41 $0e $08
     ld   [wD59D_ReturnBank], A                                    ;; 02:5a43 $ea $9d $d5
     ld   A, Bank0a                                        ;; 02:5a46 $3e $0a
-    ld   HL, entry_0a_7b9a                              ;; 02:5a48 $21 $9a $7b
+    ld   HL, call_0a_7b9a                              ;; 02:5a48 $21 $9a $7b
     call call_00_1078_CallAltBankFunc                                  ;; 02:5a4b $cd $78 $10
     call call_00_3985                                  ;; 02:5a4e $cd $85 $39
     ld   H, $d2                                        ;; 02:5a51 $26 $d2
@@ -1690,7 +1690,7 @@ label5AD2:
     ld   l,a
     ld   [hl],$40
     ld   a,$01
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     ld   h,$D2
     ld   a,[wD300_CurrentObjectAddr]
     or   a,$18
@@ -1730,7 +1730,7 @@ label5B1F:
     ld   c,$00
     call $382F
     ld   a,$02
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     nop  
     ld   bc,$1111
     ld   d,l
@@ -1746,7 +1746,7 @@ label5B1F:
     ld   c,$08
     call $382F
     ld   a,$00
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call call_00_34ea
     jr   z,label5B53
     ld   a,l
@@ -1793,7 +1793,7 @@ label5B88:
     inc  l
     ld   [hl],$46
     ld   a,01
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
 label5B90:
     ld   a,[de]
     and  a
@@ -1814,7 +1814,7 @@ label5B97:
     ld   l,a
     set  0,[hl]
     ld   a,$00
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
 
 call_02_5bb6:
     call call_00_34ea                                  ;; 02:5bb6 $cd $ea $34
@@ -1856,10 +1856,10 @@ call_02_5be1:
     ld   c,$1E
     call call_00_112f
     ld   a,$01
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call call_00_3843
     ld   a,$02
-    jp   nz,entry_02_7102_SetObjectAction
+    jp   nz,call_02_7102_SetObjectAction
     ret  
     ld   c,$c0
     call $3316
@@ -1890,29 +1890,29 @@ label5C3D:
     ld   c,$30
     call call_00_335a
     ld   a,$01
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     ld   c,$10
     call call_00_32e1
     call call_00_36f7
     call call_00_30af
     call call_00_3154
     ld   a,$02
-    jp   nc,entry_02_7102_SetObjectAction
+    jp   nc,call_02_7102_SetObjectAction
     ret  
     ld   c,$00
     call $3350
     call call_00_3843
     ld   a,$00
-    jp   nz,entry_02_7102_SetObjectAction
+    jp   nz,call_02_7102_SetObjectAction
     ret  
     ld   a,[wD73B]
     and  a
     ld   a,$01
-    jp   z,entry_02_7102_SetObjectAction
+    jp   z,call_02_7102_SetObjectAction
     ret  
     call call_00_3843
     ld   a,$00
-    jp   nz,entry_02_7102_SetObjectAction
+    jp   nz,call_02_7102_SetObjectAction
     ret  
     ret  
     call call_00_349c
@@ -1930,11 +1930,11 @@ label5C3D:
     or   a,$40
     ld   [hl],a
     ld   a,$01
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call call_00_30af
     call call_00_3154
     ld   a,$00
-    jp   nc,entry_02_7102_SetObjectAction
+    jp   nc,call_02_7102_SetObjectAction
     ret  
 
     call call_00_34ea
@@ -2017,25 +2017,25 @@ label5D01:
     ld   c,$0F
     call $3825
     ld   a,$01
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call call_00_30af
     call call_00_3154
     ret  c
     ld   c,$31
     call call_00_112f
     ld   a,$02
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call call_00_3843
     ret  z
     ld   c,$13
     call $3825
     ld   a,$03
-    call entry_02_7102_SetObjectAction
+    call call_02_7102_SetObjectAction
     ld   c,$04
     jp   call_00_3a23
     call call_00_3b8d
     ld   a,$00
-    jp   z,entry_02_7102_SetObjectAction
+    jp   z,call_02_7102_SetObjectAction
     ld   [wD59D_ReturnBank],a
     ld   a,$03
     ld   hl,$65B8
@@ -2074,7 +2074,7 @@ label5D8C:
     ld   c,$40
     call call_00_335a
     ld   a,$01
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call call_00_30af
     ld   bc,$0008
     call call_00_316e
@@ -2087,15 +2087,15 @@ label5D8C:
     ld   hl,$7B9A
     call call_00_1078_CallAltBankFunc
     ld   a,$02
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call call_00_3843
     ld   a,$00
-    jp   nz,entry_02_7102_SetObjectAction
+    jp   nz,call_02_7102_SetObjectAction
     ret  
     ld   c,$06
     call call_00_3a23
     ld   a,$01
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call call_00_3b8d
     jp   z,call_00_3931
     ld   [wD59D_ReturnBank],a
@@ -2106,11 +2106,11 @@ label5D8C:
     ld   a,[wD73B]
     and  a
     ld   a,$01
-    jp   z,entry_02_7102_SetObjectAction
+    jp   z,call_02_7102_SetObjectAction
     ret  
     call call_00_3843
     ld   a,$00
-    jp   nz,entry_02_7102_SetObjectAction
+    jp   nz,call_02_7102_SetObjectAction
     ret  
     ret  
     ld   c,$10
@@ -2250,7 +2250,7 @@ label5ECC:
     ld   c,$80
     call call_00_3802
     ld   a,$01
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call call_00_3817
     jp   z,call_00_3910
     ld   c,$02
@@ -2445,7 +2445,7 @@ label613F:
     call call_00_3802
     call call_00_36bd
     ld   a,$01
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call call_00_3817
     jp   z,call_00_3910
     ld   c,$02
@@ -2496,7 +2496,7 @@ label61BC:
     call call_00_36bd
     call call_00_3817
     ld   a,$01
-    jp   nz,entry_02_7102_SetObjectAction
+    jp   nz,call_02_7102_SetObjectAction
     ld   c,$00
     call $37F8
     jr   label6182
@@ -2516,7 +2516,7 @@ label61E1:
     jr   z,label61F6
     and  a,$1F
     ld   a,$02
-    jp   z,entry_02_7102_SetObjectAction
+    jp   z,call_02_7102_SetObjectAction
     ld   c,$02
     call call_00_32e1
     call call_00_36f7
@@ -2534,10 +2534,10 @@ label61FB:
     ld   c,$28
     call call_00_335a
     ld   a,$03
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call call_00_3843
     ld   a,$00
-    jp   nz,entry_02_7102_SetObjectAction
+    jp   nz,call_02_7102_SetObjectAction
     ret  
     call call_00_36bd
     call call_00_3843
@@ -2548,7 +2548,7 @@ label61FB:
     ld   hl,$7B9A
     call call_00_1078_CallAltBankFunc
     ld   a,$00
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call call_00_36f7
     call call_00_30af
     call call_00_3154
@@ -2557,7 +2557,7 @@ label61FB:
     call $37F8
     call call_00_36bd
     ld   a,$00
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call call_00_34ea
     jr   z,label625E
     ld   c,$05
@@ -2573,7 +2573,7 @@ label625E:
     call call_00_3859
     jr   nc,label6275
     ld   a,$01
-    call entry_02_7102_SetObjectAction
+    call call_02_7102_SetObjectAction
     call call_00_36bd
 label6275:
     ld   h,$D2
@@ -2644,7 +2644,7 @@ label62AC:
     call call_00_36bd
     ld   a,$01
 label62D5:
-    call entry_02_7102_SetObjectAction
+    call call_02_7102_SetObjectAction
     jp   label6275
     ld   h,$D2
     ld   a,$20
@@ -2666,7 +2666,7 @@ label62EB:
     ld   c,$34
     call call_00_335a
     ld   a,$01
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call call_00_30af
     call call_00_3154
     ret  c
@@ -2681,7 +2681,7 @@ label6315:
     ld   c,$19
     call $3825
     ld   a,$02
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     nop  
     nop  
     nop  
@@ -2703,7 +2703,7 @@ label6315:
     ld   c,$ff
     call call_00_3802
     ld   a,$01
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call call_00_3817
     jp   z,call_00_3910
     ld   c,$02
@@ -2719,7 +2719,7 @@ label6315:
     ld   c,$00
     call $3825
     ld   a,$01
-    call entry_02_7102_SetObjectAction
+    call call_02_7102_SetObjectAction
     ld   c,$05
     jp   call_00_3a23
     call call_00_3b8d
@@ -2751,7 +2751,7 @@ label6394:
     ld   l,a
     ld   [hl],$40
     ld   a,$01
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     ld   h,$D2
     ld   a,[wD300_CurrentObjectAddr]
     or   a,$18
@@ -2791,7 +2791,7 @@ label63E1:
     ld   c,$00
     call $382F
     ld   a,$02
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     nop  
     ld   bc,$1111
     ld   d,l
@@ -2807,7 +2807,7 @@ label63E1:
     ld   c,$10
     call $382F
     ld   a,$00
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call call_00_34ea
     jr   z,label6415
     ld   a,l
@@ -3133,7 +3133,7 @@ label65FA:
     cp   c
     ld   a,c
     ret  z
-    call entry_02_7102_SetObjectAction
+    call call_02_7102_SetObjectAction
     ld   c,$35
     call call_00_112f
     ret  
@@ -3268,11 +3268,11 @@ label66D3:
     ld   c,$30
     call call_00_335a
     ld   a,$01
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call call_00_30af
     call call_00_3154
     ld   a,$00
-    call nc,entry_02_7102_SetObjectAction
+    call nc,call_02_7102_SetObjectAction
     ret  
     call call_00_3843
     ret  z
@@ -3282,7 +3282,7 @@ label66D3:
     ld   l,a
     ld   [hl],$60
     ld   a,$01
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call call_00_3843
     ret  z
     ld   h,$D2
@@ -3291,7 +3291,7 @@ label66D3:
     ld   l,a
     ld   [hl],$00
     ld   a,$00
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     ret  
     call call_00_34ea
     jr   z,label6736
@@ -3305,7 +3305,7 @@ label6736:
     call call_00_32e1
     call call_00_36f7
     ld   a,$01
-    call nz,entry_02_7102_SetObjectAction
+    call nz,call_02_7102_SetObjectAction
     ld   h,$D2
     ld   a,[wD300_CurrentObjectAddr]
     or   a,$0E
@@ -3339,7 +3339,7 @@ label6760:
     ret  
     call call_00_3843
     ld   a,$00
-    jp   nz,entry_02_7102_SetObjectAction
+    jp   nz,call_02_7102_SetObjectAction
     ret  
     ld   h,$D2
     ld   a,$20
@@ -3363,7 +3363,7 @@ label6779:
     ld   [hl],$00
     call label680E
     ld   a,$01
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     ld   h,$D2
     ld   a,[wD300_CurrentObjectAddr]
     or   a,$17
@@ -3546,7 +3546,7 @@ label697B:
     set  2,[hl]
     set  0,[hl]
     ld   a,$01
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     ld   h,$D2
     ld   a,[wD300_CurrentObjectAddr]
     or   a,$17
@@ -3566,12 +3566,12 @@ label697B:
     jr   nz,label69B6
     res  2,[hl]
     ld   a,$00
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
 label69B6:
     inc  l
     ld   [hl],$B4
     ld   a,$02
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
 label69BE:
     call call_00_3559
     jp   call_00_318d
@@ -3583,7 +3583,7 @@ label69BE:
     ld   l,a
     set  0,[hl]
     ld   a,$01
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call call_00_34f5
     bit  1,[hl]
     jr   nz,label69FE
@@ -3719,7 +3719,7 @@ label6A54:
     ld   c,$30
     call call_00_335a
     ld   a,$01
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call $3442
     ld   h,$D2
     ld   a,[wD300_CurrentObjectAddr]
@@ -3752,7 +3752,7 @@ label6AC4:
     ld   c,$f0
     call call_00_3802
     ld   a,$01
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call $3442
     call call_00_3817
     jp   z,label6C03
@@ -3770,7 +3770,7 @@ label6B17:
     call $3345
     bit  7,a
     ld   a,$02
-    jp   nz,entry_02_7102_SetObjectAction
+    jp   nz,call_02_7102_SetObjectAction
     ld   bc,hFFF1
     call call_00_316e
     jp   nc,$6C03
@@ -3783,7 +3783,7 @@ label6B17:
     ret  nc
 label6B3E:
     ld   a,$03
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call $3442
     ld   h,$D2
     ld   a,[wD300_CurrentObjectAddr]
@@ -3810,7 +3810,7 @@ label6B5B:
     ret  nz
     call label6BCD
     ld   a,$01
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     ld   h,$D2
     ld   a,[wD300_CurrentObjectAddr]
     or   a,$1A
@@ -3916,16 +3916,16 @@ label6C03:
     ld   a,h
     cp   a,$73
     ld   a,$08
-    jp   nc,entry_02_7102_SetObjectAction
+    jp   nc,call_02_7102_SetObjectAction
 label6C38:
     call call_00_3843
     ld   a,$02
-    jp   nz,entry_02_7102_SetObjectAction
+    jp   nz,call_02_7102_SetObjectAction
     ret  
     ret  
     call call_00_3843
     ld   a,$02
-    call nz,entry_02_7102_SetObjectAction
+    call nz,call_02_7102_SetObjectAction
     ld   a,[wD73B]
     and  a,$03
     jr   nz,label6C7C
@@ -3961,7 +3961,7 @@ label6C7C:
     call call_00_3843
     ret  z
     ld   a,$03
-    call entry_02_7102_SetObjectAction
+    call call_02_7102_SetObjectAction
     ld   h,$D2
     ld   a,[wD300_CurrentObjectAddr]
     or   a,$1B
@@ -3975,7 +3975,7 @@ label6C7C:
     ret  
     call call_00_3843
     ld   a,$08
-    jp   nz,entry_02_7102_SetObjectAction
+    jp   nz,call_02_7102_SetObjectAction
     ret  
     ret  
 label6CA7:
@@ -3985,7 +3985,7 @@ label6CA7:
     res  7,[hl]
     dec  [hl]
     ld   a,$09
-    jp   nz,entry_02_7102_SetObjectAction
+    jp   nz,call_02_7102_SetObjectAction
     ld   c,$11
     ld   [wD59D_ReturnBank],a
     ld   a,$0A
@@ -4142,7 +4142,7 @@ label6D9D:
     ld   c,$39
     call call_00_112f
     ld   a,$01
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     ld   h,$D2
     ld   a,$20
 label6DBC:
@@ -4169,13 +4169,13 @@ label6DCE:
     ld   bc,$ffFB
     call call_00_37d8
     ld   a,$00
-    jp   entry_02_7102_SetObjectAction
+    jp   call_02_7102_SetObjectAction
     call call_00_3843
     ret  z
     xor  a
     ld   [wD647],a
     ld   a,$13
-    jp   entry_02_4ccd
+    jp   call_02_4ccd
     ret  
 
 call_02_6df1:

@@ -471,7 +471,7 @@ call_02_4483:
     and  a
     ret  nz
     ld   a,$02
-    jp   entry_02_4ccd
+    jp   call_02_4ccd
 
 call_02_44af:
     ld   A, [wD209]                                    ;; 02:44af $fa $09 $d2
@@ -652,7 +652,7 @@ call_02_45b0:
     and  a,$02
     jr   z,.jr_02_45FC
     ld   a,$17
-    call entry_02_4ccd
+    call call_02_4ccd
 .jr_02_45FC:
     ld   a,[wD75A_CurrentInputs]
     and  a,$01
@@ -746,13 +746,13 @@ call_02_468f:
     jp   call_02_480f
 .jr_02_46AC:
     ld   a,$02
-    jp   entry_02_4ccd
+    jp   call_02_4ccd
 .data_02_46b1:
     db   $c8, $c9
 
 call_02_46b3:  
     ld   a,$09
-    jp   entry_02_4ccd
+    jp   call_02_4ccd
 
 call_02_46b8:  
     ld   a,[wD73C]
@@ -967,7 +967,7 @@ call_02_4828:
     cp   a,$55
     ret  nc
     ld   a,$09
-    jp   entry_02_4ccd
+    jp   call_02_4ccd
 
 call_02_4856:
     ld   A, [wD758]                                    ;; 02:4856 $fa $58 $d7

@@ -173,12 +173,12 @@ call_02_4939_PlayerUpdate:
     call call_02_4a45                                  ;; 02:49b0 $cd $45 $4a
     ld   [wD59D_ReturnBank], A                                    ;; 02:49b3 $ea $9d $d5
     ld   A, Bank03                                        ;; 02:49b6 $3e $03
-    ld   HL, entry_03_4900_UpdateCollision                              ;; 02:49b8 $21 $00 $49
+    ld   HL, call_03_4900_UpdateCollision                              ;; 02:49b8 $21 $00 $49
     call call_00_1078_CallAltBankFunc                                  ;; 02:49bb $cd $78 $10
     call call_02_4b78                                  ;; 02:49be $cd $78 $4b
     ld   [wD59D_ReturnBank], A                                    ;; 02:49c1 $ea $9d $d5
     ld   A, Bank03                                        ;; 02:49c4 $3e $03
-    ld   HL, entry_03_4c0a_UpdateTilesTouchingPlayer                              ;; 02:49c6 $21 $0a $4c
+    ld   HL, call_03_4c0a_UpdateTilesTouchingPlayer                              ;; 02:49c6 $21 $0a $4c
     call call_00_1078_CallAltBankFunc                                  ;; 02:49c9 $cd $78 $10
     call call_02_4c4f                                  ;; 02:49cc $cd $4f $4c
     ld   HL, wD745                                     ;; 02:49cf $21 $45 $d7
@@ -218,7 +218,7 @@ call_02_4939_PlayerUpdate:
     call call_02_4c28                                  ;; 02:4a13 $cd $28 $4c
     ld   [wD59D_ReturnBank], A                                    ;; 02:4a16 $ea $9d $d5
     ld   A, Bank03                                        ;; 02:4a19 $3e $03
-    ld   HL, entry_03_5ca8                              ;; 02:4a1b $21 $a8 $5c
+    ld   HL, call_03_5ca8                              ;; 02:4a1b $21 $a8 $5c
     call call_00_1078_CallAltBankFunc                                  ;; 02:4a1e $cd $78 $10
     ld   HL, wD751                                     ;; 02:4a21 $21 $51 $d7
     call call_02_4a30                                  ;; 02:4a24 $cd $30 $4a
@@ -651,7 +651,6 @@ call_02_4c4f:
 .jr_02_4ccc:
     ld   A, [HL+]                                      ;; 02:4ccc $2a
 
-entry_02_4ccd:
 call_02_4ccd:
     ld   HL, wD201_PlayerObject_ActionId                                     ;; 02:4ccd $21 $01 $d2
     cp   A, [HL]                                       ;; 02:4cd0 $be

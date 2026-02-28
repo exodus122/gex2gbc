@@ -1067,7 +1067,7 @@ DEF SCRN_VY_B EQU 32  ; Virtual height of screen in bytes
 ;***************************************************************************
 
 ; OAM attributes
-; each entry in OAM RAM is 4 bytes (sizeof_OAM_ATTRS)
+; each call in OAM RAM is 4 bytes (sizeof_OAM_ATTRS)
 RSRESET
 DEF OAMA_Y              RB  1   ; y pos plus 16
 DEF OAMA_X              RB  1   ; x pos plus 8

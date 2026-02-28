@@ -1,7 +1,5 @@
 ;; Disassembled with BadBoy Disassembler: https://github.com/daid/BadBoy
 
-SECTION "bank02", ROMX[$4000], BANK[$02]
-
 ; This file updates all objects.
 ; Below is a list of jump tables, one for each object, starting with Player
 
@@ -151,11 +149,11 @@ dw   data_02_51ab        ;; Object_unk_8D
 dw   data_02_51af        ;; Object_unk_8E
 dw   data_02_51b3        ;; Object_MediaDimension_MovingPlatform
 
-INCLUDE "code/bank02_player_update.asm"
+INCLUDE "code/bank02_update_player.asm"
 
-INCLUDE "code/bank02_object_actions.asm"
+INCLUDE "code/bank02_entity_actions.asm"
     
-entry_02_6e17_PlayerInit:
+call_02_6e17_PlayerInit:
     xor  A, A                                          ;; 02:6e17 $af
     ld   [wD300_CurrentObjectAddr], A                                    ;; 02:6e18 $ea $00 $d3
     ld   A, $00                                        ;; 02:6e1b $3e $00
@@ -188,7 +186,7 @@ entry_02_6e17_PlayerInit:
     ld   A, $00                                        ;; 02:6e63 $3e $00
     ld   [wD20D_PlayerFacingAngle], A                                    ;; 02:6e65 $ea $0d $d2
 
-entry_02_6e68:
+call_02_6e68:
     xor  A, A                                          ;; 02:6e68 $af
     ld   [wD587], A                                    ;; 02:6e69 $ea $87 $d5
     ld   [wD74D], A                                    ;; 02:6e6c $ea $4d $d7
@@ -212,19 +210,19 @@ entry_02_6e68:
 .jr_02_6e93:
     ld   [wD59D_ReturnBank], A                                    ;; 02:6e93 $ea $9d $d5
     ld   A, Bank0a                                        ;; 02:6e96 $3e $0a
-    ld   HL, entry_0a_4000                              ;; 02:6e98 $21 $00 $40
+    ld   HL, call_0a_4000                              ;; 02:6e98 $21 $00 $40
     call call_00_1078_CallAltBankFunc                                  ;; 02:6e9b $cd $78 $10
 .jr_02_6e9e:
     ld   [wD59D_ReturnBank], A                                    ;; 02:6e9e $ea $9d $d5
     ld   A, Bank0a                                        ;; 02:6ea1 $3e $0a
-    ld   HL, entry_0a_7a7c                              ;; 02:6ea3 $21 $7c $7a
+    ld   HL, call_0a_7a7c                              ;; 02:6ea3 $21 $7c $7a
     call call_00_1078_CallAltBankFunc                                  ;; 02:6ea6 $cd $78 $10
     ld   A, [wD338]                                    ;; 02:6ea9 $fa $38 $d3
     cp   A, $01                                        ;; 02:6eac $fe $01
     jr   NZ, .jr_02_6e9e                               ;; 02:6eae $20 $ee
     ret                                                ;; 02:6eb0 $c9
 
-entry_02_6eb1:
+call_02_6eb1:
     xor  A, A                                          ;; 02:6eb1 $af
     ld   HL, wD000_ObjectFlags                                     ;; 02:6eb2 $21 $00 $d0
 .jr_02_6eb5:
@@ -233,7 +231,7 @@ entry_02_6eb1:
     jr   NZ, .jr_02_6eb5                               ;; 02:6eb7 $20 $fc
     ret                                                ;; 02:6eb9 $c9
 
-entry_02_6eba_UpdateObjects:
+call_02_6eba_UpdateObjects:
     xor  A, A                                          ;; 02:6eba $af
     ld   [wD75C], A                                    ;; 02:6ebb $ea $5c $d7
     ld   A, $20                                        ;; 02:6ebe $3e $20
@@ -320,7 +318,7 @@ entry_02_6eba_UpdateObjects:
     call call_02_6fda                                  ;; 02:6f4e $cd $da $6f
     ld   [wD59D_ReturnBank], A                                    ;; 02:6f51 $ea $9d $d5
     ld   A, Bank03                                        ;; 02:6f54 $3e $03
-    ld   HL, entry_03_5ebf                              ;; 02:6f56 $21 $bf $5e
+    ld   HL, call_03_5ebf                              ;; 02:6f56 $21 $bf $5e
     call call_00_1078_CallAltBankFunc                                  ;; 02:6f59 $cd $78 $10
 .jr_02_6f5c:
     ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:6f5c $fa $00 $d3
@@ -329,16 +327,16 @@ entry_02_6eba_UpdateObjects:
     call call_00_1138                                  ;; 02:6f63 $cd $38 $11
     ld   [wD59D_ReturnBank], A                                    ;; 02:6f66 $ea $9d $d5
     ld   A, Bank0a                                        ;; 02:6f69 $3e $0a
-    ld   HL, entry_0a_7a7c                              ;; 02:6f6b $21 $7c $7a
+    ld   HL, call_0a_7a7c                              ;; 02:6f6b $21 $7c $7a
     call call_00_1078_CallAltBankFunc                                  ;; 02:6f6e $cd $78 $10
     call call_02_722c                                  ;; 02:6f71 $cd $2c $72
     ld   [wD59D_ReturnBank], A                                    ;; 02:6f74 $ea $9d $d5
     ld   A, Bank03                                        ;; 02:6f77 $3e $03
-    ld   HL, entry_03_6540                              ;; 02:6f79 $21 $40 $65
+    ld   HL, call_03_6540                              ;; 02:6f79 $21 $40 $65
     call call_00_1078_CallAltBankFunc                                  ;; 02:6f7c $cd $78 $10
     ret                                                ;; 02:6f7f $c9
     
-entry_02_6f80:
+call_02_6f80:
     ld   A, $20                                        ;; 02:6f80 $3e $20
     ld   [wD739], A                                    ;; 02:6f82 $ea $39 $d7
     ld   A, [wD743]                                    ;; 02:6f85 $fa $43 $d7
@@ -348,7 +346,7 @@ entry_02_6f80:
     ld   [wD300_CurrentObjectAddr], A                                    ;; 02:6f8d $ea $00 $d3
     ld   [wD59D_ReturnBank], A                                    ;; 02:6f90 $ea $9d $d5
     ld   A, Bank03                                        ;; 02:6f93 $3e $03
-    ld   HL, entry_03_5ca8                              ;; 02:6f95 $21 $a8 $5c
+    ld   HL, call_03_5ca8                              ;; 02:6f95 $21 $a8 $5c
     call call_00_1078_CallAltBankFunc                                  ;; 02:6f98 $cd $78 $10
     ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 02:6f9b $21 $0f $d6
     set  0, [HL]                                       ;; 02:6f9e $cb $c6
@@ -372,7 +370,7 @@ entry_02_6f80:
 .jr_02_6fbc:
     ld   [wD59D_ReturnBank], A                                    ;; 02:6fbc $ea $9d $d5
     ld   A, Bank03                                        ;; 02:6fbf $3e $03
-    ld   HL, entry_03_5ebf                              ;; 02:6fc1 $21 $bf $5e
+    ld   HL, call_03_5ebf                              ;; 02:6fc1 $21 $bf $5e
     call call_00_1078_CallAltBankFunc                                  ;; 02:6fc4 $cd $78 $10
 .jr_02_6fc7:
     ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:6fc7 $fa $00 $d3
@@ -380,7 +378,7 @@ entry_02_6f80:
     jr   NZ, .jr_02_6fa2                               ;; 02:6fcc $20 $d4
     ld   [wD59D_ReturnBank], A                                    ;; 02:6fce $ea $9d $d5
     ld   A, Bank03                                        ;; 02:6fd1 $3e $03
-    ld   HL, entry_03_6540                              ;; 02:6fd3 $21 $40 $65
+    ld   HL, call_03_6540                              ;; 02:6fd3 $21 $40 $65
     call call_00_1078_CallAltBankFunc                                  ;; 02:6fd6 $cd $78 $10
     ret                                                ;; 02:6fd9 $c9
 
@@ -514,7 +512,6 @@ call_02_70f1:
     jp   call_02_4ccd                                  ;; 02:70ff $c3 $cd $4c
 
 call_02_7102_SetObjectAction:
-entry_02_7102_SetObjectAction:
 ; gets a jump table value from data_02_4000_ObjectJumpTables
 ; updates the object instances at D200-D300
 ; sets action id, action pointer, data_0c, unknown_pointer_04_05, and more?
@@ -587,7 +584,6 @@ entry_02_7102_SetObjectAction:
     jp   jp_02_7030                                    ;; 02:7157 $c3 $30 $70
 
 call_02_715a:
-entry_02_715a:
     call call_00_13a6                                  ;; 02:715a $cd $a6 $13
     call call_02_7164                                  ;; 02:715d $cd $64 $71
     call call_02_7196                                  ;; 02:7160 $cd $96 $71
@@ -667,7 +663,7 @@ call_02_7196:
     ld   [HL], A                                       ;; 02:71c6 $77
     ret                                                ;; 02:71c7 $c9
     
-entry_02_71c8:
+call_02_71c8:
     ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:71c8 $fa $00 $d3
     push AF                                            ;; 02:71cb $f5
     ld   A, $20                                        ;; 02:71cc $3e $20
@@ -694,7 +690,7 @@ entry_02_71c8:
     ld   C, [HL]                                       ;; 02:71ee $4e
     ld   [wD59D_ReturnBank], A                                    ;; 02:71ef $ea $9d $d5
     ld   A, Bank0b                                        ;; 02:71f2 $3e $0b
-    ld   HL, entry_0b_5f57                              ;; 02:71f4 $21 $57 $5f
+    ld   HL, call_0b_5f57                              ;; 02:71f4 $21 $57 $5f
     call call_00_1078_CallAltBankFunc                                  ;; 02:71f7 $cd $78 $10
 .jr_02_71fa:
     ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:71fa $fa $00 $d3
@@ -702,14 +698,13 @@ entry_02_71c8:
     jr   NZ, .jr_02_71ce                               ;; 02:71ff $20 $cd
     ld   [wD59D_ReturnBank], A                                    ;; 02:7201 $ea $9d $d5
     ld   A, Bank0b                                        ;; 02:7204 $3e $0b
-    ld   HL, entry_03_5f1b                              ;; 02:7206 $21 $1b $5f
+    ld   HL, call_03_5f1b                              ;; 02:7206 $21 $1b $5f
     call call_00_1078_CallAltBankFunc                                  ;; 02:7209 $cd $78 $10
     pop  AF                                            ;; 02:720c $f1
     ld   [wD300_CurrentObjectAddr], A                                    ;; 02:720d $ea $00 $d3
     ret                                                ;; 02:7210 $c9
 
 call_02_7211:
-entry_02_7211:
     ld   HL, wD71E                                     ;; 02:7211 $21 $1e $d7
     ld   E, [HL]                                       ;; 02:7214 $5e
     ld   HL, wD71A                                     ;; 02:7215 $21 $1a $d7
@@ -731,7 +726,6 @@ entry_02_7211:
     ret                                                ;; 02:722b $c9
 
 call_02_722c:
-entry_02_722c:
     ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 02:722c $21 $0f $d6
     bit  3, [HL]                                       ;; 02:722f $cb $5e
     ret  NZ                                            ;; 02:7231 $c0

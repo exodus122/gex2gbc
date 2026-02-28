@@ -5,7 +5,7 @@
 
 SECTION "bank22", ROMX[$4000], BANK[$22]
 
-entry_22_4000:
+call_22_4000:
     ld   HL, data_22_4460                              ;; 22:4000 $21 $60 $44
     ld   A, L                                          ;; 22:4003 $7d
     ld   [wDFAE_AudioBankDataPointer], A                                    ;; 22:4004 $ea $ae $df

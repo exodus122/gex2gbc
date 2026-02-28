@@ -346,7 +346,7 @@ call_03_5b5b:
     db   $2c, $68, $34, $6a, $44, $68, $4c, $6a        ;; 03:5c98 ........
     db   $5c, $68, $64, $6a, $74, $68, $7c, $6a        ;; 03:5ca0 ........
 
-entry_03_5ca8:
+call_03_5ca8:
     ld   A, [wD586]                                    ;; 03:5ca8 $fa $86 $d5
     ld   HL, wD20D_PlayerFacingAngle                                     ;; 03:5cab $21 $0d $d2
     bit  5, [HL]                                       ;; 03:5cae $cb $6e
@@ -507,7 +507,7 @@ entry_03_5ca8:
     db   $00, $02, $fe, $00, $fe, $fe, $fc, $fc        ;; 03:5eaf ????????
     db   $fa, $fa, $fc, $f8, $fe, $fa, $00, $fc        ;; 03:5eb7 ????????
     
-entry_03_5ebf:
+call_03_5ebf:
     ld   A, [wD300_CurrentObjectAddr]                                    ;; 03:5ebf $fa $00 $d3
     rlca                                               ;; 03:5ec2 $07
     rlca                                               ;; 03:5ec3 $07
@@ -570,7 +570,7 @@ entry_03_5ebf:
     and  A, A                                          ;; 03:5f18 $a7
     jr   NZ, call_03_5f2b                               ;; 03:5f19 $20 $10
 
-entry_03_5f1b:
+call_03_5f1b:
     ld   A, B                                          ;; 03:5f1b $78
     cp   A, $f0                                        ;; 03:5f1c $fe $f0
     jr   NC, call_03_5f2b                               ;; 03:5f1e $30 $0b

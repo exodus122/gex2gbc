@@ -2,7 +2,7 @@
 
 INCBIN "data/maps/bg_collision_data.bin"
 
-entry_03_4900_UpdateCollision:
+call_03_4900_UpdateCollision:
     ld   HL, wD585_CollisionFlags                                     ;; 03:4900 $21 $85 $d5
     ld   A, [HL]                                       ;; 03:4903 $7e
     ld   [HL], $00                                     ;; 03:4904 $36 $00
@@ -450,7 +450,7 @@ call_03_4bd4:
 .data_03_4c02:
     db   $80, $40, $20, $10, $08, $04, $02, $01        ;; 03:4c02 ????????
 
-entry_03_4c0a_UpdateTilesTouchingPlayer:
+call_03_4c0a_UpdateTilesTouchingPlayer:
     ld   A, [wD210_PlayerYPosition]                                    ;; 03:4c0a $fa $10 $d2
     and  A, $f8                                        ;; 03:4c0d $e6 $f8
     ld   L, A                                          ;; 03:4c0f $6f

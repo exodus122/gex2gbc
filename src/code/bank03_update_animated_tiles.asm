@@ -1,4 +1,4 @@
-entry_03_723c_SetupAnimatedTile:
+call_03_723c_SetupAnimatedTile:
     ld   HL, wD624_CurrentLevelId                                     ;; 03:723c $21 $24 $d6
     ld   L, [HL]                                       ;; 03:723f $6e
     ld   H, $00                                        ;; 03:7240 $26 $00
@@ -14,7 +14,7 @@ entry_03_723c_SetupAnimatedTile:
     ld   [wD612_AnimatedTileId], A                                    ;; 03:724f $ea $12 $d6
     ret                                                ;; 03:7252 $c9
 
-entry_03_7253_UpdateAnimatedTile:
+call_03_7253_UpdateAnimatedTile:
     ld   A, [wD611_AnimatedTileId]                                    ;; 03:7253 $fa $11 $d6
     and  A, A                                          ;; 03:7256 $a7
     ret  Z                                             ;; 03:7257 $c8

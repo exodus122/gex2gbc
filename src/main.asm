@@ -5,14 +5,19 @@ INCLUDE "constants/constants.asm"
 INCLUDE "constants/memory.asm"
 INCLUDE "code/macros/macros.inc"
 
+SECTION "bank00", ROM0[$0000]
 INCLUDE "code/bank00_home.asm"
+
+SECTION "bank01", ROMX[$4000], BANK[$01]
 INCLUDE "code/bank01_menus.asm"
-INCLUDE "code/bank02_object_update.asm"
+
+SECTION "bank02", ROMX[$4000], BANK[$02]
+INCLUDE "code/bank02_update_entities.asm"
 
 SECTION "bank03", ROMX[$4000], BANK[$03]
-INCLUDE "code/bank03_collision_bg.asm"
-INCLUDE "code/bank03_collision_object.asm"
-INCLUDE "code/bank03_update_object_sprites.asm"
+INCLUDE "code/bank03_bg_collision.asm"
+INCLUDE "code/bank03_entity_collision.asm"
+INCLUDE "code/bank03_entity_graphics.asm"
 INCLUDE "code/bank03_update_unk_graphics.asm"
 INCLUDE "code/bank03_update_misc_sprites.asm"
 INCLUDE "code/bank03_update_vram.asm"
@@ -59,7 +64,8 @@ image_009_4000.bin:
     INCBIN ".gfx/secondary_tilesets/image_009_4000.bin"
     INCBIN "gfx/secondary_tilesets/image_009_4000_data.bin"
 
-INCLUDE "code/bank0A_load_objects.asm"
+SECTION "bank0a", ROMX[$4000], BANK[$0a]
+INCLUDE "code/bank0A_load_entities.asm"
 
 SECTION "bank0b", ROMX[$4000], BANK[$0b]
 INCLUDE "code/bank0B_load_collectibles.asm"

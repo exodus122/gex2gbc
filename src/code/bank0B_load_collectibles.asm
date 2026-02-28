@@ -1,4 +1,4 @@
-entry_0b_4000:
+call_0b_4000:
     xor  A, A                                          ;; 0b:4000 $af
     ld   L, A                                          ;; 0b:4001 $6f
 .jr_0b_4002:

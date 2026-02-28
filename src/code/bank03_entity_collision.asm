@@ -235,7 +235,7 @@ call_03_4e20:
     ld   A, $19                                        ;; 03:4e71 $3e $19
     ld   [wD59D_ReturnBank], A                                    ;; 03:4e73 $ea $9d $d5
     ld   A, Bank02                                        ;; 03:4e76 $3e $02
-    ld   HL, entry_02_4ccd                             ;; 03:4e78 $21 $cd $4c
+    ld   HL, call_02_4ccd                             ;; 03:4e78 $21 $cd $4c
     call call_00_1078_CallAltBankFunc                                  ;; 03:4e7b $cd $78 $10
     ret                                                ;; 03:4e7e $c9
 call_03_4e7f:
