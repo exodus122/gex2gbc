@@ -1,4 +1,4 @@
-; Object Action jump tables [one for each object]
+; Object Action jump tables
 data_02_4ddb:                        ;; Object_CollectibleSpawn
     dw   call_02_51b7, data_02_7cce
 data_02_4ddf:                        ;; Object_TVButton
@@ -2676,7 +2676,7 @@ label62EB:
     ld   hl,$631F
     ld   de,$DA3B
     ld   bc,$0008
-    call call_00_07b0_CopyBCBytesFromHLToDE
+    call call_00_07b0_MemCopy
 label6315:
     ld   c,$19
     call $3825

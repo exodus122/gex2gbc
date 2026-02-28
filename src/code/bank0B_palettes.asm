@@ -66,12 +66,12 @@ call_0b_561b:
     ld   L, A                                          ;; 0b:562c $6f
     ld   DE, wD9CB_Bg_Palettes                                     ;; 0b:562d $11 $cb $d9
     ld   BC, $40                                       ;; 0b:5630 $01 $40 $00
-    call call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 0b:5633 $cd $b0 $07
+    call call_00_07b0_MemCopy                                  ;; 0b:5633 $cd $b0 $07
     call call_0b_5df8                                  ;; 0b:5636 $cd $f8 $5d
     ld   HL, .data_gex_object_palette2                             ;; 0b:5639 $21 $03 $5b
     ld   DE, wDA0B_Obj_Palettes                                     ;; 0b:563c $11 $0b $da
     ld   BC, $08                                       ;; 0b:563f $01 $08 $00
-    call call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 0b:5642 $cd $b0 $07
+    call call_00_07b0_MemCopy                                  ;; 0b:5642 $cd $b0 $07
     ld   [wD59D_ReturnBank], A                                    ;; 0b:5645 $ea $9d $d5
     ld   A, Bank03                                        ;; 0b:5648 $3e $03
     ld   HL, call_03_6be5                                     ;; 0b:564a $21 $e5 $6b
@@ -88,7 +88,7 @@ call_0b_561b:
     ld   L, A                                          ;; 0b:565b $6f
     ld   DE, wD9CB_Bg_Palettes                                     ;; 0b:565c $11 $cb $d9
     ld   BC, $80                                       ;; 0b:565f $01 $80 $00
-    jp   call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 0b:5662 $c3 $b0 $07
+    jp   call_00_07b0_MemCopy                                  ;; 0b:5662 $c3 $b0 $07
 .data_0b_5665_level_palettes:
     dw   .palette_media_dimension
     dw   .palette_toon_tv
@@ -279,7 +279,7 @@ call_0b_5d4b:
     call call_00_07b9                                  ;; 0b:5d56 $cd $b9 $07
     ld   DE, wDA7B                                     ;; 0b:5d59 $11 $7b $da
     ld   BC, $10                                       ;; 0b:5d5c $01 $10 $00
-    jp   call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 0b:5d5f $c3 $b0 $07
+    jp   call_00_07b0_MemCopy                                  ;; 0b:5d5f $c3 $b0 $07
 .data_0b_5d62:
     dw   $0000
     dw   .circuit_central_television_palette
@@ -329,7 +329,7 @@ call_0b_5df8:
     ret  Z                                             ;; 0b:5e11 $c8
     ld   DE, wD9FB                                     ;; 0b:5e12 $11 $fb $d9
     ld   BC, $10                                       ;; 0b:5e15 $01 $10 $00
-    jp   call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 0b:5e18 $c3 $b0 $07
+    jp   call_00_07b0_MemCopy                                  ;; 0b:5e18 $c3 $b0 $07
 .media_dimension_tv_palettes:
     dw   .scream_tv_television_palette
     db   $00, $00, $00, $00, $00, $00, $00, $00
@@ -387,7 +387,7 @@ call_0b_5ec3:
 .jr_0b_5ef2:
     ld   DE, wDA0B_Obj_Palettes                                     ;; 0b:5ef2 $11 $0b $da
     ld   BC, $08                                       ;; 0b:5ef5 $01 $08 $00
-    jp   call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 0b:5ef8 $c3 $b0 $07
+    jp   call_00_07b0_MemCopy                                  ;; 0b:5ef8 $c3 $b0 $07
 .data_0b_5efb:
     db   $00, $00, $64, $02, $f5, $3b, $ff, $43        ;; 0b:5efb ????????
 .data_0b_5f03:
@@ -410,7 +410,7 @@ call_0b_5ec3:
     add  HL, DE                                        ;; 0b:5f2d $19
     ld   DE, wDA1B                                     ;; 0b:5f2e $11 $1b $da
     ld   BC, $08                                       ;; 0b:5f31 $01 $08 $00
-    jp   call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 0b:5f34 $c3 $b0 $07
+    jp   call_00_07b0_MemCopy                                  ;; 0b:5f34 $c3 $b0 $07
 .data_0b_5f37:
     db   $00, $00, $00, $00, $94, $52, $9c, $73        ;; 0b:5f37 ????????
     db   $00, $00, $00, $00, $14, $00, $1c, $00        ;; 0b:5f3f ????????

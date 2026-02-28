@@ -60,7 +60,7 @@ call_00_0150_Init:
     ld   DE, $c001                                     ;; 00:0173 $11 $01 $c0
     ld   BC, $1fff                                     ;; 00:0176 $01 $ff $1f
     ld   [HL], $00                                     ;; 00:0179 $36 $00
-    call call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 00:017b $cd $b0 $07
+    call call_00_07b0_MemCopy                                  ;; 00:017b $cd $b0 $07
     xor  A, A                                          ;; 00:017e $af
     ldh  [rSCX], A                                     ;; 00:017f $e0 $43
     ldh  [rSCY], A                                     ;; 00:0181 $e0 $42
@@ -86,7 +86,7 @@ call_00_0150_Init:
     ld   HL, $ef7                                      ;; 00:01ac $21 $f7 $0e
     ld   DE, hFF80                                     ;; 00:01af $11 $80 $ff
     ld   BC, $0a                                       ;; 00:01b2 $01 $0a $00
-    call call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 00:01b5 $cd $b0 $07
+    call call_00_07b0_MemCopy                                  ;; 00:01b5 $cd $b0 $07
     call call_00_0e87                                  ;; 00:01b8 $cd $87 $0e
     ld   HL, wD59A                                     ;; 00:01bb $21 $9a $d5
     ld   DE, wD58A                                     ;; 00:01be $11 $8a $d5
@@ -712,7 +712,7 @@ jr_00_06b7:
     ld   [hl], $04
     jp   call_00_0629
 
-call_00_06bf_GexTakesDamage: ; Deal damage to Gex
+call_00_06bf_DealDamageToPlayer: ; Deal damage to Gex
     call call_00_075b                                  ;; 00:06bf $cd $5b $07
     ret  NZ                                            ;; 00:06c2 $c0
     ld   HL, wD742_PlayerCurrentFly                                     ;; 00:06c3 $21 $42 $d7
@@ -832,17 +832,17 @@ call_00_07a1_SwitchBankAndCopyBCBytesFromHLToDE:
     pop  BC                                            ;; 00:07a7 $c1
     pop  DE                                            ;; 00:07a8 $d1
     pop  HL                                            ;; 00:07a9 $e1
-    call call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 00:07aa $cd $b0 $07
+    call call_00_07b0_MemCopy                                  ;; 00:07aa $cd $b0 $07
     jp   call_00_10a3_RestoreBank                                  ;; 00:07ad $c3 $a3 $10
 
-call_00_07b0_CopyBCBytesFromHLToDE:
+call_00_07b0_MemCopy:
     ld   A, [HL+]                                      ;; 00:07b0 $2a
     ld   [DE], A                                       ;; 00:07b1 $12
     inc  DE                                            ;; 00:07b2 $13
     dec  BC                                            ;; 00:07b3 $0b
     ld   A, B                                          ;; 00:07b4 $78
     or   A, C                                          ;; 00:07b5 $b1
-    jr   NZ, call_00_07b0_CopyBCBytesFromHLToDE                              ;; 00:07b6 $20 $f8
+    jr   NZ, call_00_07b0_MemCopy                              ;; 00:07b6 $20 $f8
     ret                                                ;; 00:07b8 $c9
 
 call_00_07b9:
@@ -896,7 +896,7 @@ call_00_07c3:
     ld a, [hl+]
     ld h, [hl]
     ld l, a
-    call call_00_07b0_CopyBCBytesFromHLToDE
+    call call_00_07b0_MemCopy
     ld a, [wD6A6]
     ld [wD6AF], a
     ld hl, wD6A9
@@ -984,10 +984,10 @@ call_00_084d:
     ld   L, A                                          ;; 00:0858 $6f
     ld   DE, $8000                                     ;; 00:0859 $11 $00 $80
     ld   BC, $f00                                      ;; 00:085c $01 $00 $0f
-    call call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 00:085f $cd $b0 $07
+    call call_00_07b0_MemCopy                                  ;; 00:085f $cd $b0 $07
     ld   DE, $9000                                     ;; 00:0862 $11 $00 $90
     ld   BC, $780                                      ;; 00:0865 $01 $80 $07
-    call call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 00:0868 $cd $b0 $07
+    call call_00_07b0_MemCopy                                  ;; 00:0868 $cd $b0 $07
     ld   A, [wD59E]                                    ;; 00:086b $fa $9e $d5
     and  A, A                                          ;; 00:086e $a7
     jr   Z, .jr_00_0891                                ;; 00:086f $28 $20
@@ -1169,11 +1169,11 @@ call_00_098f:
     push HL                                            ;; 00:09a7 $e5
     ld   DE, $8000                                     ;; 00:09a8 $11 $00 $80
     ld   BC, $100                                      ;; 00:09ab $01 $00 $01
-    call call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 00:09ae $cd $b0 $07
+    call call_00_07b0_MemCopy                                  ;; 00:09ae $cd $b0 $07
     pop  HL                                            ;; 00:09b1 $e1
     ld   DE, $8100                                     ;; 00:09b2 $11 $00 $81
     ld   BC, $100                                      ;; 00:09b5 $01 $00 $01
-    call call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 00:09b8 $cd $b0 $07
+    call call_00_07b0_MemCopy                                  ;; 00:09b8 $cd $b0 $07
     jp   call_00_10a3_RestoreBank                                  ;; 00:09bb $c3 $a3 $10
 
 call_00_09be:
@@ -1186,11 +1186,11 @@ call_00_09be:
     push HL                                            ;; 00:09cc $e5
     ld   DE, $8200                                     ;; 00:09cd $11 $00 $82
     ld   BC, $100                                      ;; 00:09d0 $01 $00 $01
-    call call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 00:09d3 $cd $b0 $07
+    call call_00_07b0_MemCopy                                  ;; 00:09d3 $cd $b0 $07
     pop  HL                                            ;; 00:09d6 $e1
     ld   DE, $8300                                     ;; 00:09d7 $11 $00 $83
     ld   BC, $100                                      ;; 00:09da $01 $00 $01
-    call call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 00:09dd $cd $b0 $07
+    call call_00_07b0_MemCopy                                  ;; 00:09dd $cd $b0 $07
     jp   call_00_10a3_RestoreBank                                  ;; 00:09e0 $c3 $a3 $10
 
 call_00_09e3:
@@ -1202,7 +1202,7 @@ call_00_09e3:
     ld   L, $00                                        ;; 00:09ef $2e $00
     ld   DE, $9000                                     ;; 00:09f1 $11 $00 $90
     ld   BC, $240                                      ;; 00:09f4 $01 $40 $02
-    call call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 00:09f7 $cd $b0 $07
+    call call_00_07b0_MemCopy                                  ;; 00:09f7 $cd $b0 $07
     jp   call_00_10a3_RestoreBank                                  ;; 00:09fa $c3 $a3 $10
 
 call_00_09fd:
@@ -1220,7 +1220,7 @@ call_00_09fd:
     ld   L, $00                                        ;; 00:0a13 $2e $00
     ld   DE, $8600                                     ;; 00:0a15 $11 $00 $86
     ld   BC, $100                                      ;; 00:0a18 $01 $00 $01
-    call call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 00:0a1b $cd $b0 $07
+    call call_00_07b0_MemCopy                                  ;; 00:0a1b $cd $b0 $07
     jp   call_00_10a3_RestoreBank                                  ;; 00:0a1e $c3 $a3 $10
 
 call_00_0a21:
@@ -1246,7 +1246,7 @@ call_00_0a21:
     ld   A, [HL+]                                      ;; 00:0a49 $2a
     ld   H, [HL]                                       ;; 00:0a4a $66
     ld   L, A                                          ;; 00:0a4b $6f
-    call call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 00:0a4c $cd $b0 $07
+    call call_00_07b0_MemCopy                                  ;; 00:0a4c $cd $b0 $07
     call call_00_10a3_RestoreBank                                  ;; 00:0a4f $cd $a3 $10
     jr   call_00_0a21                                    ;; 00:0a52 $18 $cd
 
@@ -1814,7 +1814,7 @@ call_00_0ee8:
     ld   DE, wCC01                                     ;; 00:0eeb $11 $01 $cc
     ld   BC, $9f                                       ;; 00:0eee $01 $9f $00
     ld   [HL], $00                                     ;; 00:0ef1 $36 $00
-    call call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 00:0ef3 $cd $b0 $07
+    call call_00_07b0_MemCopy                                  ;; 00:0ef3 $cd $b0 $07
     ret                                                ;; 00:0ef6 $c9
     db   $3e, $cc, $e0, $46, $3e, $28, $3d, $20        ;; 00:0ef7 ........
     db   $fd, $c9                                      ;; 00:0eff ..

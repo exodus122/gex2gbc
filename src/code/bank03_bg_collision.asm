@@ -1,6 +1,6 @@
 ; This file handles gex's collision with background walls, floors, ceilings, etc.
 
-call_03_4900_UpdateCollision:
+call_03_4900_UpdateBgCollision_MainDispatcher:
     ld   HL, wD585_CollisionFlags                                     ;; 03:4900 $21 $85 $d5
     ld   A, [HL]                                       ;; 03:4903 $7e
     ld   [HL], $00                                     ;; 03:4904 $36 $00
@@ -8,11 +8,11 @@ call_03_4900_UpdateCollision:
     ld   A, [wD201_PlayerObject_ActionId]                                    ;; 03:4909 $fa $01 $d2
     and  A, PlayerAction_unk_1f                                        ;; 03:490c $e6 $1f
     cp   A, PlayerAction_unk_1f                                        ;; 03:490e $fe $1f
-    jr   NZ, call_03_4915_ProcessCollision                                ;; 03:4910 $20 $03
+    jr   NZ, call_03_4915_BgCollisionHandler_Sidescroller                                ;; 03:4910 $20 $03
     set  7, [HL]                                       ;; 03:4912 $cb $fe
     ret                                                ;; 03:4914 $c9
 
-call_03_4915_ProcessCollision:
+call_03_4915_BgCollisionHandler_Sidescroller:
     ld   A, [wD74D]                                    ;; 03:4915 $fa $4d $d7
     and  A, A                                          ;; 03:4918 $a7
     jr   Z, .jr_03_491d                                ;; 03:4919 $28 $02
@@ -126,7 +126,7 @@ call_03_4915_ProcessCollision:
 .jr_03_49d1:
     push AF                                            ;; 03:49d1 $f5
     push BC                                            ;; 03:49d2 $c5
-    call call_03_4bd4                                  ;; 03:49d3 $cd $d4 $4b
+    call call_03_4bd4_TileCollisionCheck_Raw                                  ;; 03:49d3 $cd $d4 $4b
     pop  BC                                            ;; 03:49d6 $c1
     and  A, A                                          ;; 03:49d7 $a7
     jr   Z, .jr_03_49db                                ;; 03:49d8 $28 $01
@@ -143,7 +143,7 @@ call_03_4915_ProcessCollision:
 .jr_03_49e6:
     push AF                                            ;; 03:49e6 $f5
     push BC                                            ;; 03:49e7 $c5
-    call call_03_4bd4                                  ;; 03:49e8 $cd $d4 $4b
+    call call_03_4bd4_TileCollisionCheck_Raw                                  ;; 03:49e8 $cd $d4 $4b
     pop  BC                                            ;; 03:49eb $c1
     and  A, A                                          ;; 03:49ec $a7
     jr   Z, .jr_03_49f0                                ;; 03:49ed $28 $01
@@ -338,7 +338,7 @@ call_03_4ac4_ProcessClimbCollision:
     ld   A, [HL+]                                      ;; 03:4b06 $2a
     ld   B, A                                          ;; 03:4b07 $47
     push HL                                            ;; 03:4b08 $e5
-    call call_03_4c5a                                  ;; 03:4b09 $cd $5a $4c
+    call call_03_4c5a_FetchTileValue                                  ;; 03:4b09 $cd $5a $4c
     pop  HL                                            ;; 03:4b0c $e1
     bit  6, B                                          ;; 03:4b0d $cb $70
     jr   Z, .jr_03_4b2b                                ;; 03:4b0f $28 $1a
@@ -360,7 +360,7 @@ call_03_4ac4_ProcessClimbCollision:
     ld   C, A                                          ;; 03:4b2c $4f
     ld   A, [HL+]                                      ;; 03:4b2d $2a
     ld   B, A                                          ;; 03:4b2e $47
-    call call_03_4c5a                                  ;; 03:4b2f $cd $5a $4c
+    call call_03_4c5a_FetchTileValue                                  ;; 03:4b2f $cd $5a $4c
     bit  7, B                                          ;; 03:4b32 $cb $78
     jr   NZ, .jr_03_4b4a                               ;; 03:4b34 $20 $14
     ld   A, [wD746_PlayerClimbingState]                                    ;; 03:4b36 $fa $46 $d7
@@ -412,7 +412,7 @@ call_03_4ac4_ProcessClimbCollision:
     db   $20, $f7, $f7, $ff, $f7, $10, $09, $f7        ;; 03:4bca ????????
     db   $01, $f7                                      ;; 03:4bd2 ??
 
-call_03_4bd4:
+call_03_4bd4_TileCollisionCheck_Raw:
     ld   A, [wD210_PlayerYPosition]                                    ;; 03:4bd4 $fa $10 $d2
     add  A, $0f                                        ;; 03:4bd7 $c6 $0f
     add  A, B                                          ;; 03:4bd9 $80
@@ -448,7 +448,7 @@ call_03_4bd4:
 .data_03_4c02:
     db   $80, $40, $20, $10, $08, $04, $02, $01        ;; 03:4c02 ????????
 
-call_03_4c0a_UpdateTilesTouchingPlayer:
+call_03_4c0a_CacheNearbyTileValues:
     ld   A, [wD210_PlayerYPosition]                                    ;; 03:4c0a $fa $10 $d2
     and  A, $f8                                        ;; 03:4c0d $e6 $f8
     ld   L, A                                          ;; 03:4c0f $6f
@@ -498,7 +498,7 @@ call_03_4c0a_UpdateTilesTouchingPlayer:
     ld   [wD766_TileTypeBehindGexsFace], A                                    ;; 03:4c56 $ea $66 $d7
     ret                                                ;; 03:4c59 $c9
 
-call_03_4c5a:
+call_03_4c5a_FetchTileValue:
     ld   A, [wD210_PlayerYPosition]                                    ;; 03:4c5a $fa $10 $d2
     add  A, B                                          ;; 03:4c5d $80
     and  A, $f8                                        ;; 03:4c5e $e6 $f8

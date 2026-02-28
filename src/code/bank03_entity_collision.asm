@@ -1,6 +1,6 @@
 ; This file handles gex's collision with objects (enemies, tv switches, remotes, etc.)
 
-call_03_4c76:
+call_03_4c76_UpdateEntityCollision_Dispatch:
     ld   A, [wD743_DrawGexFlag]                                    ;; 03:4c76 $fa $43 $d7
     and  A, A                                          ;; 03:4c79 $a7
     ret  Z                                             ;; 03:4c7a $c8 ; return if [D743] is 0
@@ -20,14 +20,14 @@ call_03_4c76:
     res  7, L                                          ;; 03:4c8e $cb $bd
     ld   H, $00                                        ;; 03:4c90 $26 $00
     add  HL, HL                                        ;; 03:4c92 $29
-    ld   BC, .data_03_4c9b_ObjectCollisionJumpTable    ;; 03:4c93 $01 $9b $4c
+    ld   BC, .data_03_4c9b_EntityCollisionJumpTable    ;; 03:4c93 $01 $9b $4c
     add  HL, BC                                        ;; 03:4c96 $09
     ld   A, [HL+]                                      ;; 03:4c97 $2a
     ld   H, [HL]                                       ;; 03:4c98 $66
     ld   L, A                                          ;; 03:4c99 $6f
     jp   HL                                            ;; 03:4c9a $e9
-.data_03_4c9b_ObjectCollisionJumpTable:               ;; 03:4c9b pP ; jump table
-    dw   .jr_03_4ce5
+.data_03_4c9b_EntityCollisionJumpTable:               ;; 03:4c9b pP ; jump table
+    dw   .jr_03_4ce5_CollisionHandler_None
     dw   .jr_03_4ce6                                 ;; 03:4c9d pP
     dw   .jr_03_4d33                                      ;; 03:4c9f ??
     dw   call_03_52c5                                  ;; 03:4ca1 pP
@@ -64,7 +64,7 @@ call_03_4c76:
     dw   .jr_03_514e
     dw   .jr_03_5163
     dw   .jr_03_516d        ;; 03:4cdd ????????
-.jr_03_4ce5:
+.jr_03_4ce5_CollisionHandler_None:
     ret        	;; 03:4ce5 $c9
 .jr_03_4ce6:
     call call_03_519b                                  ;; 03:4ce6 $cd $9b $51
@@ -489,7 +489,7 @@ call_03_519b:
 
 call_03_52be:
     call call_00_075b                                  ;; 03:52be $cd $5b $07
-    call Z, call_00_06bf_GexTakesDamage                               ;; 03:52c1 $cc $bf $06
+    call Z, call_00_06bf_DealDamageToPlayer                               ;; 03:52c1 $cc $bf $06
     ret                                                ;; 03:52c4 $c9
 
 call_03_52c5:

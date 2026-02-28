@@ -171,12 +171,12 @@ call_02_4939_PlayerUpdate:
     call call_02_4a45                                  ;; 02:49b0 $cd $45 $4a
     ld   [wD59D_ReturnBank], A                                    ;; 02:49b3 $ea $9d $d5
     ld   A, Bank03                                        ;; 02:49b6 $3e $03
-    ld   HL, call_03_4900_UpdateCollision                              ;; 02:49b8 $21 $00 $49
+    ld   HL, call_03_4900_UpdateBgCollision_MainDispatcher                              ;; 02:49b8 $21 $00 $49
     call call_00_1078_FarCall                                  ;; 02:49bb $cd $78 $10
     call call_02_4b78                                  ;; 02:49be $cd $78 $4b
     ld   [wD59D_ReturnBank], A                                    ;; 02:49c1 $ea $9d $d5
     ld   A, Bank03                                        ;; 02:49c4 $3e $03
-    ld   HL, call_03_4c0a_UpdateTilesTouchingPlayer                              ;; 02:49c6 $21 $0a $4c
+    ld   HL, call_03_4c0a_CacheNearbyTileValues                              ;; 02:49c6 $21 $0a $4c
     call call_00_1078_FarCall                                  ;; 02:49c9 $cd $78 $10
     call call_02_4c4f                                  ;; 02:49cc $cd $4f $4c
     ld   HL, wD745                                     ;; 02:49cf $21 $45 $d7

@@ -702,19 +702,19 @@ call_00_3628:
     ld   HL, wD000_ObjectFlags                                     ;; 00:3645 $21 $00 $d0
     ld   DE, wD79F                                     ;; 00:3648 $11 $9f $d7
     ld   BC, $100                                      ;; 00:364b $01 $00 $01
-    call call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 00:364e $cd $b0 $07
+    call call_00_07b0_MemCopy                                  ;; 00:364e $cd $b0 $07
     ld   HL, wD200_PlayerObject_Id                                     ;; 00:3651 $21 $00 $d2
     ld   DE, wD89F                                     ;; 00:3654 $11 $9f $d8
     ld   BC, $100                                      ;; 00:3657 $01 $00 $01
-    call call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 00:365a $cd $b0 $07
+    call call_00_07b0_MemCopy                                  ;; 00:365a $cd $b0 $07
     ld   HL, wD301                                     ;; 00:365d $21 $01 $d3
     ld   DE, wD99F                                     ;; 00:3660 $11 $9f $d9
     ld   BC, $08                                       ;; 00:3663 $01 $08 $00
-    call call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 00:3666 $cd $b0 $07
+    call call_00_07b0_MemCopy                                  ;; 00:3666 $cd $b0 $07
     ld   HL, wD309                                     ;; 00:3669 $21 $09 $d3
     ld   DE, wD9A7                                     ;; 00:366c $11 $a7 $d9
     ld   BC, $20                                       ;; 00:366f $01 $20 $00
-    jp   call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 00:3672 $c3 $b0 $07
+    jp   call_00_07b0_MemCopy                                  ;; 00:3672 $c3 $b0 $07
 
 call_00_3675:
     ld   A, [wD9C7]                                    ;; 00:3675 $fa $c7 $d9
@@ -728,19 +728,19 @@ call_00_3675:
     ld   HL, wD79F                                     ;; 00:368d $21 $9f $d7
     ld   DE, wD000_ObjectFlags                                     ;; 00:3690 $11 $00 $d0
     ld   BC, $100                                      ;; 00:3693 $01 $00 $01
-    call call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 00:3696 $cd $b0 $07
+    call call_00_07b0_MemCopy                                  ;; 00:3696 $cd $b0 $07
     ld   HL, wD89F                                     ;; 00:3699 $21 $9f $d8
     ld   DE, wD200_PlayerObject_Id                                     ;; 00:369c $11 $00 $d2
     ld   BC, $100                                      ;; 00:369f $01 $00 $01
-    call call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 00:36a2 $cd $b0 $07
+    call call_00_07b0_MemCopy                                  ;; 00:36a2 $cd $b0 $07
     ld   HL, wD99F                                     ;; 00:36a5 $21 $9f $d9
     ld   DE, wD301                                     ;; 00:36a8 $11 $01 $d3
     ld   BC, $08                                       ;; 00:36ab $01 $08 $00
-    call call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 00:36ae $cd $b0 $07
+    call call_00_07b0_MemCopy                                  ;; 00:36ae $cd $b0 $07
     ld   HL, wD9A7                                     ;; 00:36b1 $21 $a7 $d9
     ld   DE, wD309                                     ;; 00:36b4 $11 $09 $d3
     ld   BC, $20                                       ;; 00:36b7 $01 $20 $00
-    jp   call_00_07b0_CopyBCBytesFromHLToDE                                  ;; 00:36ba $c3 $b0 $07
+    jp   call_00_07b0_MemCopy                                  ;; 00:36ba $c3 $b0 $07
 
 call_00_36bd:
     ld   H, $d2                                        ;; 00:36bd $26 $d2

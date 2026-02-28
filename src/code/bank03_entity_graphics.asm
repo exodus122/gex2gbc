@@ -619,7 +619,7 @@ call_03_5f32:
 .jr_03_5f58:
     ld   A, [DE]                                       ;; 03:5f58 $1a
     bit  3, A                                          ;; 03:5f59 $cb $5f
-    jp   NZ, call_03_4c76                                ;; 03:5f5b $c2 $76 $4c
+    jp   NZ, call_03_4c76_UpdateEntityCollision_Dispatch                                ;; 03:5f5b $c2 $76 $4c
     bit  0, A                                          ;; 03:5f5e $cb $47
     jp   NZ, .jp_03_6451                               ;; 03:5f60 $c2 $51 $64
     bit  7, A                                          ;; 03:5f63 $cb $7f
@@ -690,7 +690,7 @@ call_03_5f32:
     jr   NZ, .jr_03_5fa4                               ;; 03:5fc2 $20 $e0
     ld   A, E                                          ;; 03:5fc4 $7b
     ld   [wD739], A                                    ;; 03:5fc5 $ea $39 $d7
-    jp   call_03_4c76                                    ;; 03:5fc8 $c3 $76 $4c
+    jp   call_03_4c76_UpdateEntityCollision_Dispatch                                    ;; 03:5fc8 $c3 $76 $4c
 .jr_03_5fcb:
     ld   D, $d2                                        ;; 03:5fcb $16 $d2
     ld   A, [wD300_CurrentObjectAddr]                                    ;; 03:5fcd $fa $00 $d3
@@ -757,7 +757,7 @@ call_03_5f32:
     jr   NZ, .jr_03_6007                               ;; 03:6025 $20 $e0
     ld   A, E                                          ;; 03:6027 $7b
     ld   [wD739], A                                    ;; 03:6028 $ea $39 $d7
-    jp   call_03_4c76                                    ;; 03:602b $c3 $76 $4c
+    jp   call_03_4c76_UpdateEntityCollision_Dispatch                                    ;; 03:602b $c3 $76 $4c
 .jp_03_602e:
     push BC                                            ;; 03:602e $c5
     ld   D, $d2                                        ;; 03:602f $16 $d2
@@ -826,7 +826,7 @@ call_03_5f32:
     jr   NZ, .jr_03_6067                               ;; 03:6085 $20 $e0
     ld   A, E                                          ;; 03:6087 $7b
     ld   [wD739], A                                    ;; 03:6088 $ea $39 $d7
-    jp   call_03_4c76                                    ;; 03:608b $c3 $76 $4c
+    jp   call_03_4c76_UpdateEntityCollision_Dispatch                                    ;; 03:608b $c3 $76 $4c
 .data_03_608e:
     dw   .data_03_6102, .data_03_610b, .data_03_6114, .data_03_6125        ;; 03:608e ????....
     dw   $6136, $614f, $6168, $6189        ;; 03:6096 ......??
@@ -969,7 +969,7 @@ call_03_5f32:
     ld   D, $cc                                        ;; 03:645a $16 $cc
     ld   A, [HL+]                                      ;; 03:645c $2a
     and  A, A                                          ;; 03:645d $a7
-    jp   Z, call_03_4c76                                 ;; 03:645e $ca $76 $4c
+    jp   Z, call_03_4c76_UpdateEntityCollision_Dispatch                                 ;; 03:645e $ca $76 $4c
 .jr_03_6461:
     push AF                                            ;; 03:6461 $f5
     ld   A, E                                          ;; 03:6462 $7b
@@ -997,4 +997,4 @@ call_03_5f32:
     jr   NZ, .jr_03_6461                               ;; 03:647b $20 $e4
     ld   A, E                                          ;; 03:647d $7b
     ld   [wD739], A                                    ;; 03:647e $ea $39 $d7
-    jp   call_03_4c76                                    ;; 03:6481 $c3 $76 $4c
+    jp   call_03_4c76_UpdateEntityCollision_Dispatch                                    ;; 03:6481 $c3 $76 $4c
