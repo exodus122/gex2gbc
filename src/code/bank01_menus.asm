@@ -2064,7 +2064,7 @@ call_01_4eb1:
 .data_01_4ecc:
     db   $01, $02, $04                                 ;; 01:4ecc ...
 
-INCLUDE "bank01_password_menus.asm"
+INCLUDE "code/bank01_password_menus.asm"
 
 data_01_5324:
     db   $06, $05, $01, $01, $06, $ff, $00, $00        ;; 01:5324 ..ww..??
@@ -2622,7 +2622,7 @@ data_01_5cb9:
     db   $00, $76, $00, $40, $00, $40, $00, $67        ;; 01:5cc1 ????....
     db   $00, $79, $00, $40, $00, $73                  ;; 01:5cc9 ????....
 
-INCLUDE "bank01_text.asm"
+INCLUDE "data/bank01_text.asm"
 
 data_01_65fe:
     dw   data_01_66a7_font                                  ;; 01:65fe pP
@@ -2670,16 +2670,16 @@ data_01_669c:
     db   $10, $10, $10, $10, $10                       ;; 01:66a2 ?????
 
 data_01_66a7_font:
-    INCBIN "./gfx/fonts/image_001_66a7_font.bin"
+    INCBIN "gfx/fonts/image_001_66a7_font.bin"
 
 data_01_689f_font:
-    INCBIN "./gfx/fonts/image_001_689f_font.bin"
+    INCBIN "gfx/fonts/image_001_689f_font.bin"
 
 data_01_6add_font:
-    INCBIN "./gfx/fonts/image_001_6add_font.bin"
+    INCBIN "gfx/fonts/image_001_6add_font.bin"
 
 data_01_71e9:
-    INCBIN "./.gfx/misc_sprites/password/image_001_71e9.bin"
+    INCBIN ".gfx/misc_sprites/password/image_001_71e9.bin"
 
 data_01_74e9:
     dw   data_01_74fd, data_01_7540                            ;; 01:74e9 ....
@@ -2688,22 +2688,22 @@ data_01_74ed:
     dw   data_01_7bcc, data_01_7583, data_01_7706, data_00_3c72        ;; 01:74f5 ......??
 data_01_74fd:
     db   $02, $02, $00                                 ;; 01:74fd ...
-    INCBIN "./.gfx/menu_sprites/image_001_7500.bin"
+    INCBIN ".gfx/menu_sprites/image_001_7500.bin"
 data_01_7540:
     db   $02, $02, $00                                 ;; 01:7540 ...
-    INCBIN "./.gfx/menu_sprites/image_001_7543.bin"
+    INCBIN ".gfx/menu_sprites/image_001_7543.bin"
 data_01_7583:
     db   $0c, $02, $00                                 ;; 01:7583 ...
-    INCBIN "./.gfx/menu_sprites/image_001_7586.bin"
+    INCBIN ".gfx/menu_sprites/image_001_7586.bin"
 data_01_7706:
     db   $12, $04, $00                                 ;; 01:7706 ...
-    INCBIN "./.gfx/menu_sprites/image_001_7709.bin"
+    INCBIN ".gfx/menu_sprites/image_001_7709.bin"
 data_01_7b89:
     db   $02, $02, $00                                 ;; 01:7b89 ...
-    INCBIN "./.gfx/menu_sprites/image_001_7b8c.bin"
+    INCBIN ".gfx/menu_sprites/image_001_7b8c.bin"
 data_01_7bcc:
     db   $02, $02, $00                                 ;; 01:7bcc ...
-    INCBIN "./.gfx/menu_sprites/image_001_7bcf.bin"
+    INCBIN ".gfx/menu_sprites/image_001_7bcf.bin"
 
 data_01_7c0f_collectible_images:
     dw   data_01_7c4d, data_01_7c4d, data_01_7cc5, data_01_7cc5        ;; 01:7c0f ????????
@@ -2716,28 +2716,28 @@ data_01_7c0f_collectible_images:
     dw   data_01_7c4d, data_01_7c4d, data_01_7c4d
 
 data_01_7c4d:
-    INCBIN "./.gfx/misc_sprites/collectibles/image_collectibles_toon_tv.bin"
-    INCBIN "./gfx/misc_sprites/collectibles/palettes/palette_toon_tv_collectibles.bin"
+    INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_toon_tv.bin"
+    INCBIN "gfx/misc_sprites/collectibles/palettes/palette_toon_tv_collectibles.bin"
 
 data_01_7cc5:
-    INCBIN "./.gfx/misc_sprites/collectibles/image_collectibles_scream_tv.bin"
-    INCBIN "./gfx/misc_sprites/collectibles/palettes/palette_scream_tv_collectibles.bin"
+    INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_scream_tv.bin"
+    INCBIN "gfx/misc_sprites/collectibles/palettes/palette_scream_tv_collectibles.bin"
 
 data_01_7d3d:
-    INCBIN "./.gfx/misc_sprites/collectibles/image_collectibles_circuit_central.bin"
-    INCBIN "./gfx/misc_sprites/collectibles/palettes/palette_circuit_central_collectibles.bin"
+    INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_circuit_central.bin"
+    INCBIN "gfx/misc_sprites/collectibles/palettes/palette_circuit_central_collectibles.bin"
 
 data_01_7db5:
-    INCBIN "./.gfx/misc_sprites/collectibles/image_collectibles_kung_fu_theater.bin"
-    INCBIN "./gfx/misc_sprites/collectibles/palettes/palette_kung_fu_theater_collectibles.bin"
+    INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_kung_fu_theater.bin"
+    INCBIN "gfx/misc_sprites/collectibles/palettes/palette_kung_fu_theater_collectibles.bin"
 
 data_01_7e2d:
-    INCBIN "./.gfx/misc_sprites/collectibles/image_collectibles_prehistory_channel.bin"
-    INCBIN "./gfx/misc_sprites/collectibles/palettes/palette_prehistory_channel_collectibles.bin"
+    INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_prehistory_channel.bin"
+    INCBIN "gfx/misc_sprites/collectibles/palettes/palette_prehistory_channel_collectibles.bin"
 
 data_01_7ea5:
-    INCBIN "./.gfx/misc_sprites/collectibles/image_collectibles_rezopolis.bin"
-    INCBIN "./gfx/misc_sprites/collectibles/palettes/palette_rezopolis_collectibles.bin"
+    INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_rezopolis.bin"
+    INCBIN "gfx/misc_sprites/collectibles/palettes/palette_rezopolis_collectibles.bin"
 
     db   $00, $b4, $01, $7f, $3f, $00, $00, $6f
     db   $00, $bf, $04, $ff, $31, $00, $00, $00

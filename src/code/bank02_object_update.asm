@@ -151,9 +151,9 @@ dw   data_02_51ab        ;; Object_unk_8D
 dw   data_02_51af        ;; Object_unk_8E
 dw   data_02_51b3        ;; Object_MediaDimension_MovingPlatform
 
-INCLUDE "bank02_player_update.asm"
+INCLUDE "code/bank02_player_update.asm"
 
-INCLUDE "bank02_object_actions.asm"
+INCLUDE "code/bank02_object_actions.asm"
     
 entry_02_6e17_PlayerInit:
     xor  A, A                                          ;; 02:6e17 $af

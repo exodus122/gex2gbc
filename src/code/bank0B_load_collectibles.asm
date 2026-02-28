@@ -108,42 +108,42 @@ entry_0b_4000:
     dw   .data_40a0_media_dimension_collectible_coords
 
 .data_40a0_media_dimension_collectible_coords:
-    INCBIN "./maps/media_dimension/collectible_list_media_dimension.bin"
+    INCBIN "data/maps/media_dimension/collectible_list_media_dimension.bin"
 .data_40a4_out_of_toon_collectible_coords:
-    INCBIN "./maps/toon_tv/collectible_list_out_of_toon.bin"
+    INCBIN "data/maps/toon_tv/collectible_list_out_of_toon.bin"
 .data_41b8_smellraiser_collectible_coords:
-    INCBIN "./maps/scream_tv/collectible_list_smellraiser.bin"
+    INCBIN "data/maps/scream_tv/collectible_list_smellraiser.bin"
 .data_4254_frankensteinfeld_collectible_coords:
-    INCBIN "./maps/scream_tv/collectible_list_frankensteinfeld.bin"
+    INCBIN "data/maps/scream_tv/collectible_list_frankensteinfeld.bin"
 .data_430a_wwwdotcomcom_collectible_coords:
-    INCBIN "./maps/circuit_central/collectible_list_wwwdotcomcom.bin"
+    INCBIN "data/maps/circuit_central/collectible_list_wwwdotcomcom.bin"
 .data_4400_mao_tse_tongue_collectible_coords:
-    INCBIN "./maps/kung_fu_theater/collectible_list_mao_tse_tongue.bin"
+    INCBIN "data/maps/kung_fu_theater/collectible_list_mao_tse_tongue.bin"
 .data_44d0_pangaea_90210_collectible_coords:
-    INCBIN "./maps/prehistory_channel/collectible_list_pangaea_90210.bin"
+    INCBIN "data/maps/prehistory_channel/collectible_list_pangaea_90210.bin"
 .data_45b4_fine_tooning_collectible_coords:
-    INCBIN "./maps/toon_tv/collectible_list_fine_tooning.bin"
+    INCBIN "data/maps/toon_tv/collectible_list_fine_tooning.bin"
 .data_467a_this_old_cave_collectible_coords:
-    INCBIN "./maps/prehistory_channel/collectible_list_this_old_cave.bin"
+    INCBIN "data/maps/prehistory_channel/collectible_list_this_old_cave.bin"
 .data_4778_honey_i_shrunk_the_gecko_collectible_coords:
-    INCBIN "./maps/circuit_central/collectible_list_honey_i_shrunk_the_gecko.bin"
+    INCBIN "data/maps/circuit_central/collectible_list_honey_i_shrunk_the_gecko.bin"
 .data_48fe_poltergex_collectible_coords:
-    INCBIN "./maps/scream_tv/collectible_list_poltergex.bin"
+    INCBIN "data/maps/scream_tv/collectible_list_poltergex.bin"
 .data_497a_samurai_night_fever_collectible_coords:
-    INCBIN "./maps/kung_fu_theater/collectible_list_samurai_night_fever.bin"
+    INCBIN "data/maps/kung_fu_theater/collectible_list_samurai_night_fever.bin"
 .data_4a66_no_weddings_and_a_funeral_collectible_coords:
-    INCBIN "./maps/rezopolis/collectible_list_no_weddings_and_a_funeral.bin"
+    INCBIN "data/maps/rezopolis/collectible_list_no_weddings_and_a_funeral.bin"
 .data_4b0e_thursday_the_12th_collectible_coords:
-    INCBIN "./maps/scream_tv/collectible_list_thursday_the_12th.bin"
+    INCBIN "data/maps/scream_tv/collectible_list_thursday_the_12th.bin"
 .data_4b0e_lizard_in_a_china_shop_collectible_coords:
-    INCBIN "./maps/kung_fu_theater/collectible_list_lizard_in_a_china_shop.bin"
+    INCBIN "data/maps/kung_fu_theater/collectible_list_lizard_in_a_china_shop.bin"
 .data_4bb4_bugged_out_collectible_coords:
-    INCBIN "./maps/rezopolis/collectible_list_bugged_out.bin"
+    INCBIN "data/maps/rezopolis/collectible_list_bugged_out.bin"
 .data_4bb6_chips_and_dips_collectible_coords:
-    INCBIN "./maps/circuit_central/collectible_list_chips_and_dips.bin"
+    INCBIN "data/maps/circuit_central/collectible_list_chips_and_dips.bin"
 .data_4c2c_lava_dabba_doo_collectible_coords:
-    INCBIN "./maps/prehistory_channel/collectible_list_lava_dabba_doo.bin"
+    INCBIN "data/maps/prehistory_channel/collectible_list_lava_dabba_doo.bin"
 .data_4d3a_texas_chainsaw_manicure_collectible_coords:
-    INCBIN "./maps/scream_tv/collectible_list_texas_chainsaw_manicure.bin"
+    INCBIN "data/maps/scream_tv/collectible_list_texas_chainsaw_manicure.bin"
 .data_4dee_mazed_and_confused_collectible_coords:
-    INCBIN "./maps/rezopolis/collectible_list_mazed_and_confused.bin"
+    INCBIN "data/maps/rezopolis/collectible_list_mazed_and_confused.bin"

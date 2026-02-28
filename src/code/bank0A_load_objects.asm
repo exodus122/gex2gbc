@@ -55,67 +55,67 @@ call_0a_4000:
     dw   data_ChannelZObjects
 
 data_MediaDimensionObjects:                             ;; 0a:4057
-INCLUDE "./maps/media_dimension/object_list_media_dimension.asm"
+INCLUDE "data/maps/media_dimension/object_list_media_dimension.asm"
 
 data_OutOfToonObjects:                             ;; 0a:4488
-INCLUDE "./maps/toon_tv/object_list_out_of_toon.asm"
+INCLUDE "data/maps/toon_tv/object_list_out_of_toon.asm"
 
 data_SmellraiserObjects:                             ;; 0a:48c9
-INCLUDE "./maps/scream_tv/object_list_smellraiser.asm"
+INCLUDE "data/maps/scream_tv/object_list_smellraiser.asm"
 
 data_FrankensteinfeldObjects:                             ;; 0a:4aba
-INCLUDE "./maps/scream_tv/object_list_frankensteinfeld.asm"
+INCLUDE "data/maps/scream_tv/object_list_frankensteinfeld.asm"
 
 data_wwwdotcomcomObjects:                             ;; 0a:4ddb
-INCLUDE "./maps/circuit_central/object_list_wwwdotcomcom.asm"
+INCLUDE "data/maps/circuit_central/object_list_wwwdotcomcom.asm"
 
 data_MaoTseTongueObjects:                             ;; 0a:51ec
-INCLUDE "./maps/kung_fu_theater/object_list_mao_tse_tongue.asm"
+INCLUDE "data/maps/kung_fu_theater/object_list_mao_tse_tongue.asm"
 
 data_Pangaea90210_Objects:                             ;; 0a:54ed
-INCLUDE "./maps/prehistory_channel/object_list_pangaea_90210.asm"
+INCLUDE "data/maps/prehistory_channel/object_list_pangaea_90210.asm"
 
 data_FineTooningObjects:                             ;; 0a:57ee
-INCLUDE "./maps/toon_tv/object_list_fine_tooning.asm"
+INCLUDE "data/maps/toon_tv/object_list_fine_tooning.asm"
 
 data_ThisOldCaveObjects:                             ;; 0a:5c8f
-INCLUDE "./maps/prehistory_channel/object_list_this_old_cave.asm"
+INCLUDE "data/maps/prehistory_channel/object_list_this_old_cave.asm"
 
 data_HoneyIShrunkTheGeckoObjects:                             ;; 0a:5e20
-INCLUDE "./maps/circuit_central/object_list_honey_i_shrunk_the_gecko.asm"
+INCLUDE "data/maps/circuit_central/object_list_honey_i_shrunk_the_gecko.asm"
     
 data_PoltergexObjects:                             ;; 0a:6331
-INCLUDE "./maps/scream_tv/object_list_poltergex.asm"
+INCLUDE "data/maps/scream_tv/object_list_poltergex.asm"
 
 data_SamuraiNightFeverObjects:                             ;; 0a:6692
-INCLUDE "./maps/kung_fu_theater/object_list_samurai_night_fever.asm"
+INCLUDE "data/maps/kung_fu_theater/object_list_samurai_night_fever.asm"
 
 data_NoWeddingsAndAFuneralObjects:                             ;; 0a:6a43
-INCLUDE "./maps/rezopolis/object_list_no_weddings_and_a_funeral.asm"
+INCLUDE "data/maps/rezopolis/object_list_no_weddings_and_a_funeral.asm"
 
 data_ThursdayThe12thObjects:                             ;; 0a:6c84
-INCLUDE "./maps/scream_tv/object_list_thursday_the_12th.asm"
+INCLUDE "data/maps/scream_tv/object_list_thursday_the_12th.asm"
 
 data_LizardInAChinaShopObjects:                             ;; 0a:6d45
-INCLUDE "./maps/kung_fu_theater/object_list_lizard_in_a_china_shop.asm"
+INCLUDE "data/maps/kung_fu_theater/object_list_lizard_in_a_china_shop.asm"
 
 data_BuggedOutObjects:                             ;; 0a:6dc6
-INCLUDE "./maps/rezopolis/object_list_bugged_out.asm"
+INCLUDE "data/maps/rezopolis/object_list_bugged_out.asm"
 
 data_ChipsAndDipsObjects:                             ;; 0a:6df7
-INCLUDE "./maps/circuit_central/object_list_chips_and_dips.asm"
+INCLUDE "data/maps/circuit_central/object_list_chips_and_dips.asm"
 
 data_LavaDabbaDooObjects:                             ;; 0a:6e78
-INCLUDE "./maps/prehistory_channel/object_list_lava_dabba_doo.asm"
+INCLUDE "data/maps/prehistory_channel/object_list_lava_dabba_doo.asm"
 
 data_TexasChainsawManicureObjects:                             ;; 0a:7149
-INCLUDE "./maps/scream_tv/object_list_texas_chainsaw_manicure.asm"
+INCLUDE "data/maps/scream_tv/object_list_texas_chainsaw_manicure.asm"
     
 data_MazedAndConfusedObjects:                             ;; 0a:734a
-INCLUDE "./maps/rezopolis/object_list_mazed_and_confused.asm"
+INCLUDE "data/maps/rezopolis/object_list_mazed_and_confused.asm"
 
 data_ChannelZObjects:                             ;; 0a:751b
-INCLUDE "./maps/channel_z/object_list_channel_z.asm"
+INCLUDE "data/maps/channel_z/object_list_channel_z.asm"
 
 data_0a_75fc:
     db   $00                                           ;; 0a:75fc ?

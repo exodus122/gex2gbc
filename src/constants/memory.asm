@@ -83,7 +83,7 @@ wD100_TilesToLoadBuffer:
 ; 0x01 current action id (index into action jump table)
 ; 0x02-0x03 pointer to current action function
 ; 0x04-0x05 ? pointer to some data in bank 2, whose value is set to 0x0C
-; 0x06 ? animation timer, how many frames to be in this animation?
+; 0x06 ? animation timer, how many frames are in this animation?
 ; 0x07 ? animation timer/index?, which frame of animation?
 ; 0x08 sprite index (for example gex's 4 standing sprites are 0x14-0x17, and that's the index to those sprites in bank 4
 ; 0x09 ? bitfield

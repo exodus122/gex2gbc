@@ -1,4 +1,4 @@
-INCLUDE "bank02_player_actions.asm"
+INCLUDE "code/bank02_player_actions.asm"
 
 call_02_489a:
     ld   HL, wD759                                     ;; 02:489a $21 $59 $d7

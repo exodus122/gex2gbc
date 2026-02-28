@@ -282,6 +282,9 @@
 00:2420 call_00_2329_UpdateMain.jr_00_2420
 00:2441 call_00_2329_UpdateMain.jr_00_2441
 00:2445 call_00_2329_UpdateMain.jp_00_2445
+00:2472 call_00_2329_UpdateMain.data_00_2472
+00:2662 call_00_2329_UpdateMain.data_00_2662
+00:26e8 call_00_2329_UpdateMain.data_00_26e8
 00:2794 call_00_2329_UpdateMain.data_00_2794
 00:27d4 call_00_2329_UpdateMain.data_00_27d4
 00:2dbf call_00_2dbf
