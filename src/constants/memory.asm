@@ -152,7 +152,7 @@ wD213_PlayerScreenYPosition:
 wD220_OtherLoadedObjects:
     ds 224                                             ;; d220
 
-wD300_CurrentObjectAddr:
+wD300_CurrentEntityAddrLo:
 ; addr of object currently being updated (normally set to first available slot)
     ds 1                                               ;; d300
 

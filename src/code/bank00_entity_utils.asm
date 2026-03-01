@@ -1,6 +1,6 @@
 call_00_30af:
     ld   H, $d2                                        ;; 00:30af $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:30b1 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:30b1 $fa $00 $d3
     or   A, $1e                                        ;; 00:30b4 $f6 $1e
     ld   L, A                                          ;; 00:30b6 $6f
     ld   A, [HL]                                       ;; 00:30b7 $7e
@@ -24,126 +24,102 @@ call_00_30af:
     adc  A, $00                                        ;; 00:30d4 $ce $00
     ld   B, A                                          ;; 00:30d6 $47
     jp   call_00_37d8                                  ;; 00:30d7 $c3 $d8 $37
-;    db   $26, $d2, $fa, $00, $d3, $f6, $1e, $6f        ;; 00:30da ????????
-;    db   $7e, $d6, $02, $cb, $7f, $28, $06, $fe        ;; 00:30e2 ????????
-;    db   $c0, $30, $02, $3e, $c0, $77, $cb, $2f        ;; 00:30ea ????????
-;    db   $cb, $2f, $cb, $2f, $cb, $2f, $4f, $fe        ;; 00:30f2 ????????
-;    db   $80, $3e, $ff, $ce, $00, $47, $7d, $ee        ;; 00:30fa ????????
-;    db   $0e, $6f, $7e, $81, $22, $7e, $88, $77        ;; 00:3102 ????????
-;    db   $cd, $9c, $34, $26, $d2, $fa, $00, $d3        ;; 00:310a ????????
-;    db   $f6, $10, $6f, $7b, $96, $23, $7a, $9e        ;; 00:3112 ????????
-;    db   $d8, $72, $2d, $73, $7d, $ee, $0e, $6f        ;; 00:311a ????????
-;    db   $af, $77, $c9, $26, $d2, $fa, $00, $d3        ;; 00:3122 ????????
-;    db   $f6, $10, $6f, $5e, $2c, $56, $ee, $0a        ;; 00:312a ????????
-;    db   $6f, $73, $2c, $72, $c9, $26, $d2, $fa        ;; 00:3132 ????????
-;    db   $00, $d3, $f6, $1a, $6f, $5e, $2c, $56        ;; 00:313a ????????
-;    db   $ee, $0a, $6f, $2a, $93, $7e, $9a, $d8        ;; 00:3142 ????????
-;    db   $72, $2d, $73, $7d, $ee, $0e, $6f, $af        ;; 00:314a ????????
-;    db   $77, $c9                                      ;; 00:3152 ??
-
-
-    ld h, $d2
-    ld a, [$d300]
-    or $1e
-    ld l, a
-    ld a, [hl]
-    sub $02
-    bit 7, a
-    jr z, jr_00_30ef
-
-    cp $c0
-    jr nc, jr_00_30ef
-
-    ld a, $c0
-
-jr_00_30ef:
-    ld [hl], a
-    sra a
-    sra a
-    sra a
-    sra a
-    ld c, a
-    cp $80
-    ld a, $ff
-    adc $00
-    ld b, a
-    ld a, l
-    xor $0e
-    ld l, a
-    ld a, [hl]
-    add c
-    ld [hl+], a
-    ld a, [hl]
-    adc b
-    ld [hl], a
+    
+call_00_30da:
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$1E
+    ld   l,a
+    ld   a,[hl]
+    sub  a,$02
+    bit  7,a
+    jr   z,jr_00_30ef
+    cp   a,$C0
+    jr   nc,jr_00_30ef
+    ld   a,$C0
+    jr_00_30ef:
+    ld   [hl],a
+    sra  a
+    sra  a
+    sra  a
+    sra  a
+    ld   c,a
+    cp   a,$80
+    ld   a,$FF
+    adc  a,$00
+    ld   b,a
+    ld   a,l
+    xor  a,$0E
+    ld   l,a
+    ld   a,[hl]
+    add  c
+    ldi  [hl],a
+    ld   a,[hl]
+    adc  b
+    ld   [hl],a
     call call_00_349c
-    ld h, $d2
-    ld a, [$d300]
-    or $10
-    ld l, a
-    ld a, e
-    sub [hl]
-    inc hl
-    ld a, d
-    sbc [hl]
-    ret c
-
-    ld [hl], d
-    dec l
-    ld [hl], e
-    ld a, l
-    xor $0e
-    ld l, a
-    xor a
-    ld [hl], a
-    ret
-
-
-    ld h, $d2
-    ld a, [$d300]
-    or $10
-    ld l, a
-    ld e, [hl]
-    inc l
-    ld d, [hl]
-    xor $0a
-    ld l, a
-    ld [hl], e
-    inc l
-    ld [hl], d
-    ret
-
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$10
+    ld   l,a
+    ld   a,e
+    sub  [hl]
+    inc  hl
+    ld   a,d
+    sbc  [hl]
+    ret  c
+    ld   [hl],d
+    dec  l
+    ld   [hl],e
+    ld   a,l
+    xor  a,$0E
+    ld   l,a
+    xor  a
+    ld   [hl],a
+    ret  
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$10
+    ld   l,a
+    ld   e,[hl]
+    inc  l
+    ld   d,[hl]
+    xor  a,$0A
+    ld   l,a
+    ld   [hl],e
+    inc  l
+    ld   [hl],d
+    ret  
 
 call_00_3137:
-    ld h, $d2
-    ld a, [$d300]
-    or $1a
-    ld l, a
-    ld e, [hl]
-    inc l
-    ld d, [hl]
-    xor $0a
-    ld l, a
-    ld a, [hl+]
-    sub e
-    ld a, [hl]
-    sbc d
-    ret c
-
-    ld [hl], d
-    dec l
-    ld [hl], e
-    ld a, l
-    xor $0e
-    ld l, a
-    xor a
-    ld [hl], a
-    ret
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$1A
+    ld   l,a
+    ld   e,[hl]
+    inc  l
+    ld   d,[hl]
+    xor  a,$0A
+    ld   l,a
+    ldi  a,[hl]
+    sub  e
+    ld   a,[hl]
+    sbc  d
+    ret  c
+    ld   [hl],d
+    dec  l
+    ld   [hl],e
+    ld   a,l
+    xor  a,$0E
+    ld   l,a
+    xor  a
+    ld   [hl],a
+    ret  
 
 call_00_3154:
     call call_00_34ba                                  ;; 00:3154 $cd $ba $34
     ld   H, $d2                                        ;; 00:3157 $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:3159 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3159 $fa $00 $d3
     or   A, $10                                        ;; 00:315c $f6 $10
     ld   L, A                                          ;; 00:315e $6f
     ld   A, [HL+]                                      ;; 00:315f $2a
@@ -169,7 +145,7 @@ call_00_316e:
     ld   E, L                                          ;; 00:3174 $5d
     ld   D, H                                          ;; 00:3175 $54
     ld   H, $d2                                        ;; 00:3176 $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:3178 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3178 $fa $00 $d3
     or   A, $10                                        ;; 00:317b $f6 $10
     ld   L, A                                          ;; 00:317d $6f
     ld   A, [HL+]                                      ;; 00:317e $2a
@@ -189,7 +165,7 @@ call_00_316e:
 
 call_00_318d:
     ld   H, $d2                                        ;; 00:318d $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:318f $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:318f $fa $00 $d3
     or   A, $17                                        ;; 00:3192 $f6 $17
     ld   L, A                                          ;; 00:3194 $6f
     bit  3, [HL]                                       ;; 00:3195 $cb $5e
@@ -203,7 +179,7 @@ call_00_318d:
     jr   NZ, .jr_00_31de                               ;; 00:31a2 $20 $3a
     call call_00_347e                                  ;; 00:31a4 $cd $7e $34
     ld   H, $d2                                        ;; 00:31a7 $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:31a9 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:31a9 $fa $00 $d3
     or   A, $0e                                        ;; 00:31ac $f6 $0e
     ld   L, A                                          ;; 00:31ae $6f
     ld   A, [HL+]                                      ;; 00:31af $2a
@@ -249,7 +225,7 @@ call_00_318d:
 .jr_00_31de:
     call call_00_3460                                  ;; 00:31de $cd $60 $34
     ld   H, $d2                                        ;; 00:31e1 $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:31e3 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:31e3 $fa $00 $d3
     or   A, $0e                                        ;; 00:31e6 $f6 $0e
     ld   L, A                                          ;; 00:31e8 $6f
     ld   A, [HL+]                                      ;; 00:31e9 $2a
@@ -278,7 +254,7 @@ call_00_318d:
     jr   NZ, .jr_00_322a                               ;; 00:3204 $20 $24
     call call_00_34ba                                  ;; 00:3206 $cd $ba $34
     ld   H, $d2                                        ;; 00:3209 $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:320b $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:320b $fa $00 $d3
     or   A, $10                                        ;; 00:320e $f6 $10
     ld   L, A                                          ;; 00:3210 $6f
     ld   A, [HL+]                                      ;; 00:3211 $2a
@@ -305,7 +281,7 @@ call_00_318d:
 .jr_00_322a:
     call call_00_349c                                  ;; 00:322a $cd $9c $34
     ld   H, $d2                                        ;; 00:322d $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:322f $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:322f $fa $00 $d3
     or   A, $10                                        ;; 00:3232 $f6 $10
     ld   L, A                                          ;; 00:3234 $6f
     ld   A, [HL+]                                      ;; 00:3235 $2a
@@ -331,28 +307,119 @@ call_00_318d:
     ld   L, A                                          ;; 00:324b $6f
     res  6, [HL]                                       ;; 00:324c $cb $b6
     jp   .jp_00_31c4                                   ;; 00:324e $c3 $c4 $31
-    db   $26, $d2, $fa, $00, $d3, $f6, $0d, $6f        ;; 00:3251 ????????
-    db   $4e, $ee, $16, $6f, $2a, $cb, $69, $28        ;; 00:3259 ????????
-    db   $08, $2f, $3c, $be, $28, $07, $35, $18        ;; 00:3261 ????????
-    db   $04, $be, $28, $01, $34, $2a, $4f, $7e        ;; 00:3269 ????????
-    db   $e6, $0f, $81, $77, $cb, $2f, $cb, $2f        ;; 00:3271 ????????
-    db   $cb, $2f, $cb, $2f, $4f, $fe, $80, $3e        ;; 00:3279 ????????
-    db   $ff, $ce, $00, $47, $7d, $ee, $13, $6f        ;; 00:3281 ????????
-    db   $7e, $81, $22, $7e, $88, $77, $c9, $26        ;; 00:3289 ????????
-    db   $d2, $fa, $00, $d3, $f6, $0d, $6f, $71        ;; 00:3291 ????????
-    db   $c9, $26, $d2, $fa, $00, $d3, $f6, $0d        ;; 00:3299 ????????
-    db   $6f, $4e, $7d, $ee, $11, $6f, $2a, $cb        ;; 00:32a1 ????????
-    db   $69, $28, $02, $2f, $3c, $86, $4f, $e6        ;; 00:32a9 ????????
-    db   $0f, $77, $79, $cb, $2f, $cb, $2f, $cb        ;; 00:32b1 ????????
-    db   $2f, $cb, $2f, $4f, $fe, $80, $3e, $ff        ;; 00:32b9 ????????
-    db   $ce, $00, $47, $c5, $7d, $ee, $06, $6f        ;; 00:32c1 ????????
-    db   $79, $86, $32, $cb, $7f, $28, $02, $2f        ;; 00:32c9 ????????
-    db   $3c, $be, $38, $08, $7d, $ee, $17, $6f        ;; 00:32d1 ????????
-    db   $7e, $ee, $20, $77, $c1, $c3, $c9, $37        ;; 00:32d9 ????????
+
+call_00_3251:
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$0D
+    ld   l,a
+    ld   c,[hl]
+    xor  a,$16
+    ld   l,a
+    ldi  a,[hl]
+    bit  5,c
+    jr   z,label326A
+    cpl  
+    inc  a
+    cp   [hl]
+    jr   z,label326E
+    dec  [hl]
+    jr   label326E
+    label326A:
+    cp   [hl]
+    jr   z,label326E
+    inc  [hl]
+    label326E:
+    ldi  a,[hl]
+    ld   c,a
+    ld   a,[hl]
+    and  a,$0F
+    add  c
+    ld   [hl],a
+    sra  a
+    sra  a
+    sra  a
+    sra  a
+    ld   c,a
+    cp   a,$80
+    ld   a,$FF
+    adc  a,$00
+    ld   b,a
+    ld   a,l
+    xor  a,$13
+    ld   l,a
+    ld   a,[hl]
+    add  c
+    ldi  [hl],a
+    ld   a,[hl]
+    adc  b
+    ld   [hl],a
+    ret  
+
+call_00_3290:
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$0D
+    ld   l,a
+    ld   [hl],c
+    ret  
+
+call_00_329a:
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$0D
+    ld   l,a
+    ld   c,[hl]
+    ld   a,l
+    xor  a,$11
+    ld   l,a
+    ldi  a,[hl]
+    bit  5,c
+    jr   z,label32AE
+    cpl  
+    inc  a
+    label32AE:
+    add  [hl]
+    ld   c,a
+    and  a,$0F
+    ld   [hl],a
+    ld   a,c
+    sra  a
+    sra  a
+    sra  a
+    sra  a
+    ld   c,a
+    cp   a,$80
+    ld   a,$FF
+    adc  a,$00
+    ld   b,a
+    push bc
+    ld   a,l
+    xor  a,$06
+    ld   l,a
+    ld   a,c
+    add  [hl]
+    ldd  [hl],a
+    bit  7,a
+    jr   z,label32D2
+    cpl  
+    inc  a
+    label32D2:
+    cp   [hl]
+    jr   c,label32DD
+    ld   a,l
+    xor  a,$17
+    ld   l,a
+    ld   a,[hl]
+    xor  a,$20
+    ld   [hl],a
+    label32DD:
+    pop  bc
+    jp   $37C9
 
 call_00_32e1:
     ld   H, $d2                                        ;; 00:32e1 $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:32e3 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:32e3 $fa $00 $d3
     or   A, $1c                                        ;; 00:32e6 $f6 $1c
     ld   L, A                                          ;; 00:32e8 $6f
     ld   A, [HL]                                       ;; 00:32e9 $7e
@@ -364,62 +431,284 @@ call_00_32e1:
 .jr_00_32f0:
     inc  [HL]                                          ;; 00:32f0 $34
     ret                                                ;; 00:32f1 $c9
-    db   $26, $d2, $fa, $00, $d3, $f6, $1c, $6f        ;; 00:32f2 ????????
-    db   $cb, $79, $20, $0b, $cb, $7e, $20, $12        ;; 00:32fa ????????
-    db   $7e, $b9, $c8, $38, $0d, $18, $09, $cb        ;; 00:3302 ????????
-    db   $7e, $28, $05, $7e, $b9, $c8, $38, $02        ;; 00:330a ????????
-    db   $35, $c9, $34, $c9, $26, $d2, $fa, $00        ;; 00:3312 ????????
-    db   $d3, $f6, $1e, $6f, $cb, $79, $20, $0b        ;; 00:331a ????????
-    db   $cb, $7e, $20, $12, $7e, $b9, $c8, $38        ;; 00:3322 ????????
-    db   $0d, $18, $09, $cb, $7e, $28, $05, $7e        ;; 00:332a ????????
-    db   $b9, $c8, $38, $02, $35, $c9, $34, $c9        ;; 00:3332 ????????
-    db   $26, $d2, $fa, $00, $d3, $f6, $1c, $6f        ;; 00:333a ????????
-    db   $7e, $a7, $c9, $26, $d2, $fa, $00, $d3        ;; 00:3342 ????????
-    db   $f6, $1e, $6f, $7e, $a7, $c9, $26, $d2        ;; 00:334a ????????
-    db   $fa, $00, $d3, $f6, $1c, $6f, $71, $c9        ;; 00:3352 ????????
+
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$1C
+    ld   l,a
+    bit  7,c
+    jr   nz,label3309
+    bit  7,[hl]
+    jr   nz,label3314
+    ld   a,[hl]
+    cp   c
+    ret  z
+    jr   c,label3314
+    jr   label3312
+label3309:
+    bit  7,[hl]
+    jr   z,label3312
+    ld   a,[hl]
+    cp   c
+    ret  z
+    jr   c,label3314
+label3312:
+    dec  [hl]
+    ret  
+label3314:
+    inc  [hl]
+    ret  
+
+call_00_3316:
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$1E
+    ld   l,a
+    bit  7,c
+    jr   nz,label332D
+    bit  7,[hl]
+    jr   nz,label3338
+    ld   a,[hl]
+    cp   c
+    ret  z
+    jr   c,label3338
+    jr   label3336
+label332D:
+    bit  7,[hl]
+    jr   z,label3336
+    ld   a,[hl]
+    cp   c
+    ret  z
+    jr   c,label3338
+label3336:
+    dec  [hl]
+    ret  
+label3338:
+    inc  [hl]
+    ret  
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$1C
+    ld   l,a
+    ld   a,[hl]
+    and  a
+    ret  
+
+call_00_3345:
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$1E
+    ld   l,a
+    ld   a,[hl]
+    and  a
+    ret  
+
+call_00_3350:  
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$1C
+    ld   l,a
+    ld   [hl],c
+    ret  
 
 call_00_335a:
     ld   H, $d2                                        ;; 00:335a $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:335c $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:335c $fa $00 $d3
     or   A, $1e                                        ;; 00:335f $f6 $1e
     ld   L, A                                          ;; 00:3361 $6f
     ld   [HL], C                                       ;; 00:3362 $71
     ret                                                ;; 00:3363 $c9
-    db   $fa, $00, $d3, $0f, $0f, $0f, $e6, $1c        ;; 00:3364 ????????
-    db   $6f, $26, $00, $11, $09, $d3, $19, $46        ;; 00:336c ????????
-    db   $05, $23, $4e, $0c, $26, $d2, $fa, $00        ;; 00:3374 ????????
-    db   $d3, $f6, $0e, $6f, $2a, $66, $6f, $29        ;; 00:337c ????????
-    db   $29, $29, $5c, $21, $6a, $d7, $7e, $b9        ;; 00:3384 ????????
-    db   $38, $17, $78, $be, $38, $13, $7b, $be        ;; 00:338c ????????
-    db   $28, $0f, $16, $00, $38, $02, $16, $20        ;; 00:3394 ????????
-    db   $26, $d2, $fa, $00, $d3, $f6, $0d, $6f        ;; 00:339c ????????
-    db   $72, $26, $d2, $fa, $00, $d3, $f6, $0d        ;; 00:33a4 ????????
-    db   $6f, $cb, $6e, $28, $16, $7b, $b9, $38        ;; 00:33ac ????????
-    db   $16, $36, $20, $7d, $ee, $11, $6f, $4e        ;; 00:33b4 ????????
-    db   $ee, $12, $6f, $7e, $91, $22, $7e, $de        ;; 00:33bc ????????
-    db   $00, $77, $c9, $7b, $b8, $30, $ea, $36        ;; 00:33c4 ????????
-    db   $00, $7d, $ee, $11, $6f, $4e, $ee, $12        ;; 00:33cc ????????
-    db   $6f, $7e, $81, $22, $7e, $ce, $00, $77        ;; 00:33d4 ????????
-    db   $c9, $26, $d2, $fa, $00, $d3, $f6, $0a        ;; 00:33dc ????????
-    db   $6f, $cb, $6e, $c8, $7d, $ee, $1d, $6f        ;; 00:33e4 ????????
-    db   $cb, $4e, $28, $02, $18, $29, $26, $d2        ;; 00:33ec ????????
-    db   $fa, $00, $d3, $f6, $1c, $6f, $4e, $2d        ;; 00:33f4 ????????
-    db   $cb, $7e, $20, $0c, $7e, $81, $fe, $80        ;; 00:33fc ????????
-    db   $38, $08, $d6, $7f, $2f, $3c, $81, $4f        ;; 00:3404 ????????
-    db   $7e, $81, $77, $7d, $ee, $15, $6f, $7e        ;; 00:340c ????????
-    db   $81, $22, $7e, $ce, $00, $77, $c9, $26        ;; 00:3414 ????????
-    db   $d2, $fa, $00, $d3, $f6, $1c, $6f, $4e        ;; 00:341c ????????
-    db   $2d, $cb, $7e, $28, $0a, $7e, $91, $fe        ;; 00:3424 ????????
-    db   $80, $30, $06, $d6, $80, $81, $4f, $7e        ;; 00:342c ????????
-    db   $91, $77, $7d, $ee, $15, $6f, $7e, $91        ;; 00:3434 ????????
-    db   $22, $7e, $de, $00, $77, $c9, $26, $d2        ;; 00:343c ????????
-    db   $fa, $00, $d3, $f6, $0d, $6f, $4e, $ee        ;; 00:3444 ????????
-    db   $11, $6f, $7e, $cb, $69, $28, $02, $2f        ;; 00:344c ????????
-    db   $3c, $4f, $fe, $80, $3e, $ff, $ce, $00        ;; 00:3454 ????????
-    db   $47, $c3, $c9, $37                            ;; 00:345c ????
+
+call_00_3364:
+    ld   a,[wD300_CurrentEntityAddrLo]
+    rrca 
+    rrca 
+    rrca 
+    and  a,$1C
+    ld   l,a
+    ld   h,$00
+    ld   de,wD309
+    add  hl,de
+    ld   b,[hl]
+    dec  b
+    inc  hl
+    ld   c,[hl]
+    inc  c
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$0E
+    ld   l,a
+    ldi  a,[hl]
+    ld   h,[hl]
+    ld   l,a
+    add  hl,hl
+    add  hl,hl
+    add  hl,hl
+    ld   e,h
+    ld   hl,wD76A_PlayerXPositionBlock
+    ld   a,[hl]
+    cp   c
+    jr   c,label33A5
+    ld   a,b
+    cp   [hl]
+    jr   c,label33A5
+    ld   a,e
+    cp   [hl]
+    jr   z,label33A5
+    ld   d,$00
+    jr   c,label339C
+    ld   d,$20
+    label339C:
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$0D
+    ld   l,a
+    ld   [hl],d
+    label33A5:
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$0D
+    ld   l,a
+    bit  5,[hl]
+    jr   z,label33C7
+    ld   a,e
+    cp   c
+    jr   c,label33CB
+    label33B5:
+    ld   [hl],$20
+    ld   a,l
+    xor  a,$11
+    ld   l,a
+    ld   c,[hl]
+    xor  a,$12
+    ld   l,a
+    ld   a,[hl]
+    sub  c
+    ldi  [hl],a
+    ld   a,[hl]
+    sbc  a,$00
+    ld   [hl],a
+    ret  
+    label33C7:
+    ld   a,e
+    cp   b
+    jr   nc,label33B5
+    label33CB:
+    ld   [hl],$00
+    ld   a,l
+    xor  a,$11
+    ld   l,a
+    ld   c,[hl]
+    xor  a,$12
+    ld   l,a
+    ld   a,[hl]
+    add  c
+    ldi  [hl],a
+    ld   a,[hl]
+    adc  a,$00
+    ld   [hl],a
+    ret  
+
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$0A
+    ld   l,a
+    bit  5,[hl]
+    ret  z
+    ld   a,l
+    xor  a,$1D
+    ld   l,a
+    bit  1,[hl]
+    jr   z,label33F2
+    jr   label341B
+    label33F2:
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$1C
+    ld   l,a
+    ld   c,[hl]
+    dec  l
+    bit  7,[hl]
+    jr   nz,label340C
+    ld   a,[hl]
+    add  c
+    cp   a,$80
+    jr   c,label340E
+    sub  a,$7F
+    cpl  
+    inc  a
+    add  c
+    ld   c,a
+    label340C:
+    ld   a,[hl]
+    add  c
+    label340E:
+    ld   [hl],a
+    ld   a,l
+    xor  a,$15
+    ld   l,a
+    ld   a,[hl]
+    add  c
+    ldi  [hl],a
+    ld   a,[hl]
+    adc  a,$00
+    ld   [hl],a
+    ret  
+    label341B:
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$1C
+    ld   l,a
+    ld   c,[hl]
+    dec  l
+    bit  7,[hl]
+    jr   z,label3433
+    ld   a,[hl]
+    sub  c
+    cp   a,$80
+    jr   nc,label3435
+    sub  a,$80
+    add  c
+    ld   c,a
+    label3433:
+    ld   a,[hl]
+    sub  c
+    label3435:
+    ld   [hl],a
+    ld   a,l
+    xor  a,$15
+    ld   l,a
+    ld   a,[hl]
+    sub  c
+    ldi  [hl],a
+    ld   a,[hl]
+    sbc  a,$00
+    ld   [hl],a
+    ret  
+
+call_00_3442:
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$0D
+    ld   l,a
+    ld   c,[hl]
+    xor  a,$11
+    ld   l,a
+    ld   a,[hl]
+    bit  5,c
+    jr   z,label3455
+    cpl  
+    inc  a
+    label3455:
+    ld   c,a
+    cp   a,$80
+    ld   a,$FF
+    adc  a,$00
+    ld   b,a
+    jp   $37C9
 
 call_00_3460:
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:3460 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3460 $fa $00 $d3
     rrca                                               ;; 00:3463 $0f
     rrca                                               ;; 00:3464 $0f
     rrca                                               ;; 00:3465 $0f
@@ -442,7 +731,7 @@ call_00_3460:
     ret                                                ;; 00:347d $c9
 
 call_00_347e:
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:347e $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:347e $fa $00 $d3
     rrca                                               ;; 00:3481 $0f
     rrca                                               ;; 00:3482 $0f
     rrca                                               ;; 00:3483 $0f
@@ -465,7 +754,7 @@ call_00_347e:
     ret                                                ;; 00:349b $c9
 
 call_00_349c:
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:349c $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:349c $fa $00 $d3
     rrca                                               ;; 00:349f $0f
     rrca                                               ;; 00:34a0 $0f
     rrca                                               ;; 00:34a1 $0f
@@ -488,7 +777,7 @@ call_00_349c:
     ret                                                ;; 00:34b9 $c9
 
 call_00_34ba:
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:34ba $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:34ba $fa $00 $d3
     rrca                                               ;; 00:34bd $0f
     rrca                                               ;; 00:34be $0f
     rrca                                               ;; 00:34bf $0f
@@ -511,7 +800,7 @@ call_00_34ba:
     ret                                                ;; 00:34d7 $c9
 
 call_00_34d8:
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:34d8 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:34d8 $fa $00 $d3
     rlca                                               ;; 00:34db $07
     rlca                                               ;; 00:34dc $07
     rlca                                               ;; 00:34dd $07
@@ -525,7 +814,7 @@ call_00_34d8:
 
 call_00_34ea:
     ld   H, $d2                                        ;; 00:34ea $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:34ec $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:34ec $fa $00 $d3
     or   A, $09                                        ;; 00:34ef $f6 $09
     ld   L, A                                          ;; 00:34f1 $6f
     bit  5, [HL]                                       ;; 00:34f2 $cb $6e
@@ -533,7 +822,7 @@ call_00_34ea:
 
 call_00_34f5:
     ld   H, $d2                                        ;; 00:34f5 $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:34f7 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:34f7 $fa $00 $d3
     or   A, $17                                        ;; 00:34fa $f6 $17
     ld   L, A                                          ;; 00:34fc $6f
     ld   A, [wD74D]                                    ;; 00:34fd $fa $4d $d7
@@ -549,7 +838,7 @@ call_00_34f5:
     ret                                                ;; 00:350b $c9
 
 call_00_350c:
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:350c $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:350c $fa $00 $d3
     rrca                                               ;; 00:350f $0f
     rrca                                               ;; 00:3510 $0f
     rrca                                               ;; 00:3511 $0f
@@ -579,15 +868,42 @@ call_00_350c:
     ld   A, [HL]                                       ;; 00:352e $7e
     cp   A, E                                          ;; 00:352f $bb
     ret                                                ;; 00:3530 $c9
-    db   $fa, $00, $d3, $0f, $0f, $0f, $e6, $1c        ;; 00:3531 ????????
-    db   $6f, $26, $00, $11, $09, $d3, $19, $46        ;; 00:3539 ????????
-    db   $05, $23, $4e, $0c, $26, $d2, $fa, $00        ;; 00:3541 ????????
-    db   $d3, $f6, $0e, $6f, $2a, $66, $6f, $29        ;; 00:3549 ????????
-    db   $29, $29, $7c, $b9, $d8, $78, $bc, $c9        ;; 00:3551 ????????
+
+call_00_3531:
+    ld   a,[wD300_CurrentEntityAddrLo]
+    rrca 
+    rrca 
+    rrca 
+    and  a,$1C
+    ld   l,a
+    ld   h,$00
+    ld   de,wD309
+    add  hl,de
+    ld   b,[hl]
+    dec  b
+    inc  hl
+    ld   c,[hl]
+    inc  c
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$0E
+    ld   l,a
+    ldi  a,[hl]
+    ld   h,[hl]
+    ld   l,a
+    add  hl,hl
+    add  hl,hl
+    add  hl,hl
+    ld   a,h
+    cp   c
+    ret  c
+    ld   a,b
+    cp   h
+    ret  
 
 call_00_3559:
     ld   H, $d2                                        ;; 00:3559 $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:355b $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:355b $fa $00 $d3
     or   A, $1c                                        ;; 00:355e $f6 $1c
     ld   L, A                                          ;; 00:3560 $6f
     ld   A, [HL+]                                      ;; 00:3561 $2a
@@ -623,18 +939,51 @@ call_00_3559:
     ld   B, A                                          ;; 00:358f $47
     call call_00_37d8                                  ;; 00:3590 $cd $d8 $37
     pop  BC                                            ;; 00:3593 $c1
-    jp   .jp_00_35d5                                   ;; 00:3594 $c3 $d5 $35
-    db   $26, $d2, $fa, $00, $d3, $f6, $1c, $6f        ;; 00:3597 ????????
-    db   $2a, $4f, $7e, $e6, $0f, $81, $22, $cb        ;; 00:359f ????????
-    db   $2f, $cb, $2f, $cb, $2f, $cb, $2f, $4f        ;; 00:35a7 ????????
-    db   $fe, $80, $3e, $ff, $ce, $00, $47, $c5        ;; 00:35af ????????
-    db   $2a, $4f, $7e, $e6, $0f, $81, $77, $cb        ;; 00:35b7 ????????
-    db   $2f, $cb, $2f, $cb, $2f, $cb, $2f, $4f        ;; 00:35bf ????????
-    db   $fe, $80, $3e, $ff, $ce, $00, $47, $cd        ;; 00:35c7 ????????
-    db   $d8, $37, $c1, $c3, $c9, $37                  ;; 00:35cf ??????
-.jp_00_35d5:
+    jp   call_00_35d5                                   ;; 00:3594 $c3 $d5 $35
+
+call_00_3597:
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$1C
+    ld   l,a
+    ldi  a,[hl]
+    ld   c,a
+    ld   a,[hl]
+    and  a,$0F
+    add  c
+    ldi  [hl],a
+    sra  a
+    sra  a
+    sra  a
+    sra  a
+    ld   c,a
+    cp   a,$80
+    ld   a,$FF
+    adc  a,$00
+    ld   b,a
+    push bc
+    ldi  a,[hl]
+    ld   c,a
+    ld   a,[hl]
+    and  a,$0F
+    add  c
+    ld   [hl],a
+    sra  a
+    sra  a
+    sra  a
+    sra  a
+    ld   c,a
+    cp   a,$80
+    ld   a,$FF
+    adc  a,$00
+    ld   b,a
+    call call_00_37d8
+    pop  bc
+    jp   $37C9
+
+call_00_35d5:
     ld   H, $d2                                        ;; 00:35d5 $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:35d7 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:35d7 $fa $00 $d3
     or   A, $0e                                        ;; 00:35da $f6 $0e
     ld   L, A                                          ;; 00:35dc $6f
     ld   A, [HL]                                       ;; 00:35dd $7e
@@ -658,7 +1007,7 @@ call_00_3559:
     cp   A, [HL]                                       ;; 00:35f6 $be
     ret  NZ                                            ;; 00:35f7 $c0
     ld   H, $d2                                        ;; 00:35f8 $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:35fa $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:35fa $fa $00 $d3
     or   A, $12                                        ;; 00:35fd $f6 $12
     ld   L, A                                          ;; 00:35ff $6f
     ld   A, [wD212_PlayerScreenXPosition]                                    ;; 00:3600 $fa $12 $d2
@@ -744,7 +1093,7 @@ call_00_3675:
 
 call_00_36bd:
     ld   H, $d2                                        ;; 00:36bd $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:36bf $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:36bf $fa $00 $d3
     or   A, $0e                                        ;; 00:36c2 $f6 $0e
     ld   L, A                                          ;; 00:36c4 $6f
     ld   A, [wD20E_PlayerXPosition]                                    ;; 00:36c5 $fa $0e $d2
@@ -761,14 +1110,30 @@ call_00_36bd:
     ld   L, A                                          ;; 00:36d7 $6f
     ld   [HL], C                                       ;; 00:36d8 $71
     ret                                                ;; 00:36d9 $c9
-    db   $26, $d2, $fa, $00, $d3, $f6, $0e, $6f        ;; 00:36da ????????
-    db   $fa, $0e, $d2, $96, $23, $fa, $0f, $d2        ;; 00:36e2 ????????
-    db   $9e, $0e, $00, $38, $02, $0e, $20, $7d        ;; 00:36ea ????????
-    db   $ee, $02, $6f, $71, $c9                       ;; 00:36f2 ?????
+    
+call_00_36da:
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$0E
+    ld   l,a
+    ld   a,[wD20E_PlayerXPosition]
+    sub  [hl]
+    inc  hl
+    ld   a,[wD20F_PlayerXPosition]
+    sbc  [hl]
+    ld   c,$00
+    jr   c,label36F1
+    ld   c,$20
+    label36F1:
+    ld   a,l
+    xor  a,$02
+    ld   l,a
+    ld   [hl],c
+    ret  
 
 call_00_36f7:
     ld   H, $d2                                        ;; 00:36f7 $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:36f9 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:36f9 $fa $00 $d3
     or   A, $0d                                        ;; 00:36fc $f6 $0d
     ld   L, A                                          ;; 00:36fe $6f
     ld   C, [HL]                                       ;; 00:36ff $4e
@@ -811,7 +1176,7 @@ call_00_36f7:
     add  HL, HL                                        ;; 00:372f $29
     add  HL, HL                                        ;; 00:3730 $29
     ld   D, H                                          ;; 00:3731 $54
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:3732 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3732 $fa $00 $d3
     rrca                                               ;; 00:3735 $0f
     rrca                                               ;; 00:3736 $0f
     rrca                                               ;; 00:3737 $0f
@@ -837,32 +1202,109 @@ call_00_36f7:
     ret                                                ;; 00:3753 $c9
 .jr_00_3754:
     ld   H, $d2                                        ;; 00:3754 $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:3756 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3756 $fa $00 $d3
     or   A, $0d                                        ;; 00:3759 $f6 $0d
     ld   L, A                                          ;; 00:375b $6f
     ld   A, [HL]                                       ;; 00:375c $7e
     ld   [HL], C                                       ;; 00:375d $71
     cp   A, C                                          ;; 00:375e $b9
     ret                                                ;; 00:375f $c9
-    db   $26, $d2, $fa, $00, $d3, $f6, $0d, $6f        ;; 00:3760 ????????
-    db   $4e, $7d, $ee, $11, $6f, $2a, $cb, $71        ;; 00:3768 ????????
-    db   $20, $02, $2f, $3c, $86, $4f, $e6, $0f        ;; 00:3770 ????????
-    db   $77, $79, $cb, $2f, $cb, $2f, $cb, $2f        ;; 00:3778 ????????
-    db   $cb, $2f, $4f, $fe, $80, $3e, $ff, $ce        ;; 00:3780 ????????
-    db   $00, $47, $7d, $ee, $0d, $6f, $7e, $81        ;; 00:3788 ????????
-    db   $22, $4f, $7e, $88, $77, $69, $67, $29        ;; 00:3790 ????????
-    db   $29, $29, $54, $fa, $00, $d3, $0f, $0f        ;; 00:3798 ????????
-    db   $0f, $e6, $1c, $6f, $26, $00, $01, $0b        ;; 00:37a0 ????????
-    db   $d3, $09, $46, $05, $23, $4e, $0c, $7a        ;; 00:37a8 ????????
-    db   $b9, $0e, $40, $38, $08, $78, $ba, $0e        ;; 00:37b0 ????????
-    db   $00, $38, $02, $af, $c9, $26, $d2, $fa        ;; 00:37b8 ????????
-    db   $00, $d3, $f6, $0d, $6f, $7e, $71, $b9        ;; 00:37c0 ????????
-    db   $c9, $26, $d2, $fa, $00, $d3, $f6, $0e        ;; 00:37c8 ????????
-    db   $6f, $7e, $81, $22, $7e, $88, $77, $c9        ;; 00:37d0 ????????
+    
+call_00_3760:
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$0D
+    ld   l,a
+    ld   c,[hl]
+    ld   a,l
+    xor  a,$11
+    ld   l,a
+    ldi  a,[hl]
+    bit  6,c
+    jr   nz,label3774
+    cpl  
+    inc  a
+    label3774:
+    add  [hl]
+    ld   c,a
+    and  a,$0F
+    ld   [hl],a
+    ld   a,c
+    sra  a
+    sra  a
+    sra  a
+    sra  a
+    ld   c,a
+    cp   a,$80
+    ld   a,$FF
+    adc  a,$00
+    ld   b,a
+    ld   a,l
+    xor  a,$0D
+    ld   l,a
+    ld   a,[hl]
+    add  c
+    ldi  [hl],a
+    ld   c,a
+    ld   a,[hl]
+    adc  b
+    ld   [hl],a
+    ld   l,c
+    ld   h,a
+    add  hl,hl
+    add  hl,hl
+    add  hl,hl
+    ld   d,h
+    ld   a,[wD300_CurrentEntityAddrLo]
+    rrca 
+    rrca 
+    rrca 
+    and  a,$1C
+    ld   l,a
+    ld   h,$00
+    ld   bc,wD30B
+    add  hl,bc
+    ld   b,[hl]
+    dec  b
+    inc  hl
+    ld   c,[hl]
+    inc  c
+    ld   a,d
+    cp   c
+    ld   c,$40
+    jr   c,label37BD
+    ld   a,b
+    cp   d
+    ld   c,$00
+    jr   c,label37BD
+    xor  a
+    ret  
+    label37BD:
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$0D
+    ld   l,a
+    ld   a,[hl]
+    ld   [hl],c
+    cp   c
+    ret  
+
+call_00_37c9:
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$0E
+    ld   l,a
+    ld   a,[hl]
+    add  c
+    ldi  [hl],a
+    ld   a,[hl]
+    adc  b
+    ld   [hl],a
+    ret  
 
 call_00_37d8:
     ld   H, $d2                                        ;; 00:37d8 $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:37da $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:37da $fa $00 $d3
     or   A, $10                                        ;; 00:37dd $f6 $10
     ld   L, A                                          ;; 00:37df $6f
     ld   A, [HL]                                       ;; 00:37e0 $7e
@@ -874,7 +1316,7 @@ call_00_37d8:
     ret                                                ;; 00:37e6 $c9
 
 call_00_37e7:
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:37e7 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:37e7 $fa $00 $d3
     rlca                                               ;; 00:37ea $07
     rlca                                               ;; 00:37eb $07
     rlca                                               ;; 00:37ec $07
@@ -885,22 +1327,35 @@ call_00_37e7:
     add  HL, DE                                        ;; 00:37f5 $19
     ld   [HL], C                                       ;; 00:37f6 $71
     ret                                                ;; 00:37f7 $c9
-    db   $26, $d2, $fa, $00, $d3, $f6, $17, $6f        ;; 00:37f8 ????????
-    db   $71, $c9                                      ;; 00:3800 ??
+
+call_00_37f8:
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$17
+    ld   l,a
+    ld   [hl],c
+    ret  
 
 call_00_3802:
     ld   H, $d2                                        ;; 00:3802 $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:3804 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3804 $fa $00 $d3
     or   A, $18                                        ;; 00:3807 $f6 $18
     ld   L, A                                          ;; 00:3809 $6f
     ld   [HL], C                                       ;; 00:380a $71
     ret                                                ;; 00:380b $c9
-    db   $26, $d2, $fa, $00, $d3, $f6, $18, $6f        ;; 00:380c ????????
-    db   $7e, $a7, $c9                                 ;; 00:3814 ???
+    
+call_00_380c:
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$18
+    ld   l,a
+    ld   a,[hl]
+    and  a
+    ret  
 
 call_00_3817:
     ld   H, $d2                                        ;; 00:3817 $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:3819 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3819 $fa $00 $d3
     or   A, $18                                        ;; 00:381c $f6 $18
     ld   L, A                                          ;; 00:381e $6f
     ld   A, [HL]                                       ;; 00:381f $7e
@@ -909,24 +1364,48 @@ call_00_3817:
     dec  [HL]                                          ;; 00:3822 $35
     ld   A, [HL]                                       ;; 00:3823 $7e
     ret                                                ;; 00:3824 $c9
-    db   $26, $d2, $fa, $00, $d3, $f6, $16, $6f        ;; 00:3825 ????????
-    db   $71, $c9, $26, $d2, $fa, $00, $d3, $f6        ;; 00:382d ????????
-    db   $14, $6f, $71, $c9, $26, $d2, $fa, $00        ;; 00:3835 ????????
-    db   $d3, $f6, $07, $6f, $7e, $c9                  ;; 00:383d ??????
+
+call_00_3825:
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$16
+    ld   l,a
+    ld   [hl],c
+    ret  
+
+call_00_382f:
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$14
+    ld   l,a
+    ld   [hl],c
+    ret  
+
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$07
+    ld   l,a
+    ld   a,[hl]
+    ret  
 
 call_00_3843:
     ld   H, $d2                                        ;; 00:3843 $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:3845 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3845 $fa $00 $d3
     or   A, $0a                                        ;; 00:3848 $f6 $0a
     ld   L, A                                          ;; 00:384a $6f
     bit  2, [HL]                                       ;; 00:384b $cb $56
     ret                                                ;; 00:384d $c9
-    db   $26, $d2, $fa, $00, $d3, $f6, $0a, $6f        ;; 00:384e ????????
-    db   $cb, $76, $c9                                 ;; 00:3856 ???
+
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$0A
+    ld   l,a
+    bit  6,[hl]
+    ret  
 
 call_00_3859:
     ld   H, $d2                                        ;; 00:3859 $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:385b $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:385b $fa $00 $d3
     or   A, $0e                                        ;; 00:385e $f6 $0e
     ld   L, A                                          ;; 00:3860 $6f
     ld   A, [wD20E_PlayerXPosition]                                    ;; 00:3861 $fa $0e $d2
@@ -950,7 +1429,7 @@ call_00_3878:
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:3878 $fa $24 $d6
     and  A, A                                          ;; 00:387b $a7
     jr   Z, jr_00_3899                                 ;; 00:387c $28 $1b
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:387e $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:387e $fa $00 $d3
     rlca                                               ;; 00:3881 $07
     rlca                                               ;; 00:3882 $07
     rlca                                               ;; 00:3883 $07
@@ -971,7 +1450,7 @@ call_00_3878:
 
 jr_00_3899:
     ld   H, $d2                                        ;; 00:3899 $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:389b $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:389b $fa $00 $d3
     or   A, $19                                        ;; 00:389e $f6 $19
     ld   L, A                                          ;; 00:38a0 $6f
     ld   A, [wD64F]                                    ;; 00:38a1 $fa $4f $d6
@@ -999,7 +1478,7 @@ call_00_38c1:
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:38c1 $fa $24 $d6
     and  A, A                                          ;; 00:38c4 $a7
     jr   Z, jr_00_3899                                 ;; 00:38c5 $28 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:38c7 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:38c7 $fa $00 $d3
     rlca                                               ;; 00:38ca $07
     rlca                                               ;; 00:38cb $07
     rlca                                               ;; 00:38cc $07
@@ -1026,26 +1505,26 @@ call_00_38c1:
     db   $01, $02, $04                                 ;; 00:38ed .?.
 
 call_00_38f0:
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:38f0 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:38f0 $fa $00 $d3
     push AF                                            ;; 00:38f3 $f5
     ld   A, $20                                        ;; 00:38f4 $3e $20
 .jr_00_38f6:
-    ld   [wD300_CurrentObjectAddr], A                                    ;; 00:38f6 $ea $00 $d3
+    ld   [wD300_CurrentEntityAddrLo], A                                    ;; 00:38f6 $ea $00 $d3
     or   A, $00                                        ;; 00:38f9 $f6 $00
     ld   L, A                                          ;; 00:38fb $6f
     ld   H, $d2                                        ;; 00:38fc $26 $d2
     ld   A, [HL]                                       ;; 00:38fe $7e
     cp   A, $ff                                        ;; 00:38ff $fe $ff
     call NZ, call_00_3910                              ;; 00:3901 $c4 $10 $39
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:3904 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3904 $fa $00 $d3
     add  A, $20                                        ;; 00:3907 $c6 $20
     jr   NZ, .jr_00_38f6                               ;; 00:3909 $20 $eb
     pop  AF                                            ;; 00:390b $f1
-    ld   [wD300_CurrentObjectAddr], A                                    ;; 00:390c $ea $00 $d3
+    ld   [wD300_CurrentEntityAddrLo], A                                    ;; 00:390c $ea $00 $d3
     ret                                                ;; 00:390f $c9
 
 call_00_3910:
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:3910 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3910 $fa $00 $d3
     or   A, $00                                        ;; 00:3913 $f6 $00
     ld   L, A                                          ;; 00:3915 $6f
     ld   H, $d2                                        ;; 00:3916 $26 $d2
@@ -1069,14 +1548,14 @@ call_00_3910:
 
 call_00_3931:
     ld   H, $d2                                        ;; 00:3931 $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:3933 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3933 $fa $00 $d3
     or   A, $00                                        ;; 00:3936 $f6 $00
     ld   L, A                                          ;; 00:3938 $6f
     ld   [HL], $ff                                     ;; 00:3939 $36 $ff
     ret                                                ;; 00:393b $c9
 
 call_00_393c:
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:393c $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:393c $fa $00 $d3
     rlca                                               ;; 00:393f $07
     rlca                                               ;; 00:3940 $07
     rlca                                               ;; 00:3941 $07
@@ -1089,19 +1568,48 @@ call_00_393c:
     ld   H, $d0                                        ;; 00:394c $26 $d0
     ld   [HL], $ff                                     ;; 00:394e $36 $ff
     ret                                                ;; 00:3950 $c9
-    db   $26, $d2, $3e, $20, $6f, $7e, $fe, $ff        ;; 00:3951 ????????
-    db   $28, $06, $7d, $c6, $20, $20, $f5, $c9        ;; 00:3959 ????????
-    db   $fa, $00, $d3, $f5, $7d, $ea, $00, $d3        ;; 00:3961 ????????
-    db   $f6, $0e, $6f, $11, $0e, $d2, $1a, $22        ;; 00:3969 ????????
-    db   $13, $1a, $22, $13, $1a, $22, $13, $1a        ;; 00:3971 ????????
-    db   $77, $cd, $d8, $34, $cd, $85, $39, $f1        ;; 00:3979 ????????
-    db   $ea, $00, $d3, $c9                            ;; 00:3981 ????
+
+    ld   h,$D2
+    ld   a,$20
+    label3955:
+    ld   l,a
+    ld   a,[hl]
+    cp   a,$FF
+    jr   z,label3961
+    ld   a,l
+    add  a,$20
+    jr   nz,label3955
+    ret  
+    label3961:
+    ld   a,[wD300_CurrentEntityAddrLo]
+    push af
+    ld   a,l
+    ld   [wD300_CurrentEntityAddrLo],a
+    or   a,$0E
+    ld   l,a
+    ld   de,wD20E_PlayerXPosition
+    ld   a,[de]
+    ldi  [hl],a
+    inc  de
+    ld   a,[de]
+    ldi  [hl],a
+    inc  de
+    ld   a,[de]
+    ldi  [hl],a
+    inc  de
+    ld   a,[de]
+    ld   [hl],a
+    call call_00_34d8
+    call call_00_3985
+    pop  af
+    ld   [wD300_CurrentEntityAddrLo],a
+    ret  
 
 call_00_3985:
     ld   C, $01                                        ;; 00:3985 $0e $01
     call call_00_37e7                                  ;; 00:3987 $cd $e7 $37
     ld   H, $d2                                        ;; 00:398a $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:398c $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:398c $fa $00 $d3
     or   A, $16                                        ;; 00:398f $f6 $16
     ld   L, A                                          ;; 00:3991 $6f
     ld   [HL], $00                                     ;; 00:3992 $36 $00
@@ -1135,7 +1643,7 @@ data_00_39c0:
     dw   wD402, wD534, wD423, wD55C
 
 call_00_39e0:
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:39e0 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:39e0 $fa $00 $d3
     rlca                                               ;; 00:39e3 $07
     rlca                                               ;; 00:39e4 $07
     rlca                                               ;; 00:39e5 $07
@@ -1152,7 +1660,7 @@ call_00_39e0:
     ret                                                ;; 00:39f4 $c9
 
 call_00_39f5:
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:39f5 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:39f5 $fa $00 $d3
     rlca                                               ;; 00:39f8 $07
     rlca                                               ;; 00:39f9 $07
     rlca                                               ;; 00:39fa $07
@@ -1169,7 +1677,7 @@ call_00_39f5:
     ret                                                ;; 00:3a09 $c9
 
 call_00_3a0a:
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:3a0a $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3a0a $fa $00 $d3
     rlca                                               ;; 00:3a0d $07
     rlca                                               ;; 00:3a0e $07
     rlca                                               ;; 00:3a0f $07
@@ -1198,7 +1706,7 @@ call_00_3a23:
     ld   E, [HL]                                       ;; 00:3a2b $5e
     inc  HL                                            ;; 00:3a2c $23
     ld   D, [HL]                                       ;; 00:3a2d $56
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:3a2e $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3a2e $fa $00 $d3
     rlca                                               ;; 00:3a31 $07
     rlca                                               ;; 00:3a32 $07
     rlca                                               ;; 00:3a33 $07
@@ -1238,7 +1746,7 @@ call_00_3a23:
     dec  B                                             ;; 00:3a59 $05
     jr   NZ, .jr_00_3a4a                               ;; 00:3a5a $20 $ee
     ld   H, $d2                                        ;; 00:3a5c $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:3a5e $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3a5e $fa $00 $d3
     or   A, $0a                                        ;; 00:3a61 $f6 $0a
     ld   L, A                                          ;; 00:3a63 $6f
     set  0, [HL]                                       ;; 00:3a64 $cb $c6
@@ -1286,7 +1794,7 @@ call_00_3a23:
     db   $0c, $06, $ff, $81, $18, $0c, $03, $ff        ;; 00:3b85 ????????
 
 call_00_3b8d:
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:3b8d $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3b8d $fa $00 $d3
     rlca                                               ;; 00:3b90 $07
     rlca                                               ;; 00:3b91 $07
     rlca                                               ;; 00:3b92 $07
@@ -1366,7 +1874,7 @@ call_00_3bf4:
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:3bf4 $fa $24 $d6
     and  A, A                                          ;; 00:3bf7 $a7
     ret  NZ                                            ;; 00:3bf8 $c0
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 00:3bf9 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3bf9 $fa $00 $d3
     rlca                                               ;; 00:3bfc $07
     rlca                                               ;; 00:3bfd $07
     rlca                                               ;; 00:3bfe $07

@@ -157,7 +157,7 @@ INCLUDE "code/bank02_entity_actions.asm"
     
 call_02_6e17_InitEntitiesAndSpawnPlayer:
     xor  A, A                                          ;; 02:6e17 $af
-    ld   [wD300_CurrentObjectAddr], A                                    ;; 02:6e18 $ea $00 $d3
+    ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:6e18 $ea $00 $d3
     ld   A, $00                                        ;; 02:6e1b $3e $00
     ld   [wD200_PlayerObject_Id], A                                    ;; 02:6e1d $ea $00 $d2
     ld   A, [wD744]                                    ;; 02:6e20 $fa $44 $d7
@@ -243,7 +243,7 @@ call_02_6eba_UpdateAllEntities:
     ld   A, [wD74D]                                    ;; 02:6ec9 $fa $4d $d7
     and  A, A                                          ;; 02:6ecc $a7
     jr   Z, .jr_02_6ef3                                ;; 02:6ecd $28 $24
-    ld   [wD300_CurrentObjectAddr], A                                    ;; 02:6ecf $ea $00 $d3
+    ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:6ecf $ea $00 $d3
     or   A, $02                                        ;; 02:6ed2 $f6 $02
     ld   L, A                                          ;; 02:6ed4 $6f
     ld   H, $d2                                        ;; 02:6ed5 $26 $d2
@@ -266,7 +266,7 @@ call_02_6eba_UpdateAllEntities:
     ld   A, [wD74F]                                    ;; 02:6ef3 $fa $4f $d7
     and  A, A                                          ;; 02:6ef6 $a7
     jr   Z, .jr_02_6f07                                ;; 02:6ef7 $28 $0e
-    ld   [wD300_CurrentObjectAddr], A                                    ;; 02:6ef9 $ea $00 $d3
+    ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:6ef9 $ea $00 $d3
     or   A, $02                                        ;; 02:6efc $f6 $02
     ld   L, A                                          ;; 02:6efe $6f
     ld   H, $d2                                        ;; 02:6eff $26 $d2
@@ -276,19 +276,19 @@ call_02_6eba_UpdateAllEntities:
     call call_00_10bd_JumpHL                                  ;; 02:6f04 $cd $bd $10
 .jr_02_6f07:
     ld   A, $00                                        ;; 02:6f07 $3e $00
-    ld   [wD300_CurrentObjectAddr], A                                    ;; 02:6f09 $ea $00 $d3
+    ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:6f09 $ea $00 $d3
     call call_02_4939_PlayerUpdate                                  ;; 02:6f0c $cd $39 $49
 .jr_02_6f0f:
     ld   A, $20                                        ;; 02:6f0f $3e $20
 .jr_02_6f11:
-    ld   [wD300_CurrentObjectAddr], A                                    ;; 02:6f11 $ea $00 $d3
+    ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:6f11 $ea $00 $d3
     or   A, $00                                        ;; 02:6f14 $f6 $00
     ld   L, A                                          ;; 02:6f16 $6f
     ld   H, $d2                                        ;; 02:6f17 $26 $d2
     ld   A, [HL]                                       ;; 02:6f19 $7e
     cp   A, $ff                                        ;; 02:6f1a $fe $ff
     jr   Z, .jr_02_6f5c                                ;; 02:6f1c $28 $3e
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:6f1e $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:6f1e $fa $00 $d3
     ld   HL, wD74D                                     ;; 02:6f21 $21 $4d $d7
     cp   A, [HL]                                       ;; 02:6f24 $be
     jr   Z, .jr_02_6f38                                ;; 02:6f25 $28 $11
@@ -304,7 +304,7 @@ call_02_6eba_UpdateAllEntities:
     call call_00_10bd_JumpHL                                  ;; 02:6f35 $cd $bd $10
 .jr_02_6f38:
     ld   H, $d2                                        ;; 02:6f38 $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:6f3a $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:6f3a $fa $00 $d3
     or   A, $00                                        ;; 02:6f3d $f6 $00
     ld   L, A                                          ;; 02:6f3f $6f
     ld   A, [HL]                                       ;; 02:6f40 $7e
@@ -322,7 +322,7 @@ call_02_6eba_UpdateAllEntities:
     ld   HL, call_03_5ebf                              ;; 02:6f56 $21 $bf $5e
     call call_00_1078_FarCall                                  ;; 02:6f59 $cd $78 $10
 .jr_02_6f5c:
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:6f5c $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:6f5c $fa $00 $d3
     add  A, $20                                        ;; 02:6f5f $c6 $20
     jr   NZ, .jr_02_6f11                               ;; 02:6f61 $20 $ae
     call call_00_1138                                  ;; 02:6f63 $cd $38 $11
@@ -344,7 +344,7 @@ call_02_6f80:
     and  A, A                                          ;; 02:6f88 $a7
     jr   Z, .jr_02_6fa0                                ;; 02:6f89 $28 $15
     ld   A, $00                                        ;; 02:6f8b $3e $00
-    ld   [wD300_CurrentObjectAddr], A                                    ;; 02:6f8d $ea $00 $d3
+    ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:6f8d $ea $00 $d3
     ld   [wD59D_ReturnBank], A                                    ;; 02:6f90 $ea $9d $d5
     ld   A, Bank03                                        ;; 02:6f93 $3e $03
     ld   HL, call_03_5ca8                              ;; 02:6f95 $21 $a8 $5c
@@ -354,7 +354,7 @@ call_02_6f80:
 .jr_02_6fa0:
     ld   A, $20                                        ;; 02:6fa0 $3e $20
 .jr_02_6fa2:
-    ld   [wD300_CurrentObjectAddr], A                                    ;; 02:6fa2 $ea $00 $d3
+    ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:6fa2 $ea $00 $d3
     or   A, $00                                        ;; 02:6fa5 $f6 $00
     ld   L, A                                          ;; 02:6fa7 $6f
     ld   H, $d2                                        ;; 02:6fa8 $26 $d2
@@ -374,7 +374,7 @@ call_02_6f80:
     ld   HL, call_03_5ebf                              ;; 02:6fc1 $21 $bf $5e
     call call_00_1078_FarCall                                  ;; 02:6fc4 $cd $78 $10
 .jr_02_6fc7:
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:6fc7 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:6fc7 $fa $00 $d3
     add  A, $20                                        ;; 02:6fca $c6 $20
     jr   NZ, .jr_02_6fa2                               ;; 02:6fcc $20 $d4
     ld   [wD59D_ReturnBank], A                                    ;; 02:6fce $ea $9d $d5
@@ -385,7 +385,7 @@ call_02_6f80:
 
 call_02_6fda:
     ld   H, $d2                                        ;; 02:6fda $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:6fdc $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:6fdc $fa $00 $d3
     ld   C, A                                          ;; 02:6fdf $4f
     or   A, $0a                                        ;; 02:6fe0 $f6 $0a
     ld   L, A                                          ;; 02:6fe2 $6f
@@ -452,7 +452,7 @@ call_02_6fda:
     ld   [HL], B                                       ;; 02:702f $70
 
 call_02_7030:
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:7030 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:7030 $fa $00 $d3
     and  A, A                                          ;; 02:7033 $a7
     jr   NZ, .jr_02_703c                               ;; 02:7034 $20 $06
     ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 02:7036 $21 $0f $d6
@@ -502,7 +502,7 @@ call_02_7030:
     db   $00, $00, $00, $00, $00, $1b, $00, $00        ;; 02:70e9 ????????
 
 call_02_70f1:
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:70f1 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:70f1 $fa $00 $d3
     or   A, $09                                        ;; 02:70f4 $f6 $09
     ld   L, A                                          ;; 02:70f6 $6f
     ld   H, $d2                                        ;; 02:70f7 $26 $d2
@@ -518,7 +518,7 @@ call_02_7102_SetEntityAction:
 ; sets action id, action pointer, data_0c, unknown_pointer_04_05, and more?
     and  A, $1f                                        ;; 02:7102 $e6 $1f
     ld   C, A                                          ;; 02:7104 $4f
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:7105 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:7105 $fa $00 $d3
     or   A, $01                                        ;; 02:7108 $f6 $01
     ld   L, A                                          ;; 02:710a $6f
     ld   H, $d2                                        ;; 02:710b $26 $d2
@@ -537,7 +537,7 @@ call_02_7102_SetEntityAction:
     add  HL, HL                                        ;; 02:711d $29
     add  HL, HL                                        ;; 02:711e $29
     add  HL, DE                                        ;; 02:711f $19
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:7120 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:7120 $fa $00 $d3
     or   A, $02                                        ;; 02:7123 $f6 $02
     ld   E, A                                          ;; 02:7125 $5f
     ld   D, $d2                                        ;; 02:7126 $16 $d2
@@ -550,7 +550,7 @@ call_02_7102_SetEntityAction:
     ld   A, [HL+]                                      ;; 02:712e $2a
     ld   H, [HL]                                       ;; 02:712f $66
     ld   L, A                                          ;; 02:7130 $6f
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:7131 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:7131 $fa $00 $d3
     or   A, $09                                        ;; 02:7134 $f6 $09
     ld   C, A                                          ;; 02:7136 $4f
     ld   B, $d2                                        ;; 02:7137 $06 $d2
@@ -665,11 +665,11 @@ call_02_7196_CheckHorizontalMapScroll:
     ret                                                ;; 02:71c7 $c9
     
 call_02_71c8:
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:71c8 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:71c8 $fa $00 $d3
     push AF                                            ;; 02:71cb $f5
     ld   A, $20                                        ;; 02:71cc $3e $20
 .jr_02_71ce:
-    ld   [wD300_CurrentObjectAddr], A                                    ;; 02:71ce $ea $00 $d3
+    ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:71ce $ea $00 $d3
     ld   L, A                                          ;; 02:71d1 $6f
     ld   H, $d2                                        ;; 02:71d2 $26 $d2
     ld   A, [HL]                                       ;; 02:71d4 $7e
@@ -694,7 +694,7 @@ call_02_71c8:
     ld   HL, call_0b_5f57                              ;; 02:71f4 $21 $57 $5f
     call call_00_1078_FarCall                                  ;; 02:71f7 $cd $78 $10
 .jr_02_71fa:
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:71fa $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:71fa $fa $00 $d3
     add  A, $20                                        ;; 02:71fd $c6 $20
     jr   NZ, .jr_02_71ce                               ;; 02:71ff $20 $cd
     ld   [wD59D_ReturnBank], A                                    ;; 02:7201 $ea $9d $d5
@@ -702,7 +702,7 @@ call_02_71c8:
     ld   HL, call_03_5f1b                              ;; 02:7206 $21 $1b $5f
     call call_00_1078_FarCall                                  ;; 02:7209 $cd $78 $10
     pop  AF                                            ;; 02:720c $f1
-    ld   [wD300_CurrentObjectAddr], A                                    ;; 02:720d $ea $00 $d3
+    ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:720d $ea $00 $d3
     ret                                                ;; 02:7210 $c9
 
 call_02_7211:

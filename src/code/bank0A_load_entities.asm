@@ -254,7 +254,7 @@ call_0a_7a7c:
     ret                                                ;; 0a:7a8b $c9
 .jr_0a_7a8c: ; jump here if the value was 0xff. so basically it is looping through 7 sets of 32 bytes looking for a free slot (ff)
     ld   A, L                                          ;; 0a:7a8c $7d
-    ld   [wD300_CurrentObjectAddr], A                                    ;; 0a:7a8d $ea $00 $d3 ; so d300 is the address of the ff byte it found
+    ld   [wD300_CurrentEntityAddrLo], A                                    ;; 0a:7a8d $ea $00 $d3 ; so d300 is the address of the ff byte it found
     rlca                                               ;; 0a:7a90 $07
     rlca                                               ;; 0a:7a91 $07
     rlca                                               ;; 0a:7a92 $07 so now a is the slot number, where slot 1 is dd20, and slot 3 is dd60
@@ -284,7 +284,7 @@ call_0a_7a7c:
     ld   [wD33A], A                                    ;; 0a:7abc $ea $3a $d3
     inc  DE                                            ;; 0a:7abf $13
     ld   H, $d2                                        ;; 0a:7ac0 $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 0a:7ac2 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 0a:7ac2 $fa $00 $d3
     or   A, $0e                                        ;; 0a:7ac5 $f6 $0e
     ld   L, A                                          ;; 0a:7ac7 $6f
     ld   A, [DE]                                       ;; 0a:7ac8 $1a
@@ -326,7 +326,7 @@ call_0a_7a7c:
     pop  DE                                            ;; 0a:7af8 $d1
     ret  C                                             ;; 0a:7af9 $d8
     push DE                                            ;; 0a:7afa $d5
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 0a:7afb $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 0a:7afb $fa $00 $d3
     or   A, $00                                        ;; 0a:7afe $f6 $00
     ld   E, A                                          ;; 0a:7b00 $5f
     ld   D, $d2                                        ;; 0a:7b01 $16 $d2
@@ -365,7 +365,7 @@ call_0a_7a7c:
     sla  B                                             ;; 0a:7b2a $cb $20
     dec  C                                             ;; 0a:7b2c $0d
     jr   NZ, .jr_0a_7b21                               ;; 0a:7b2d $20 $f2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 0a:7b2f $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 0a:7b2f $fa $00 $d3
     or   A, $14                                        ;; 0a:7b32 $f6 $14
     ld   E, A                                          ;; 0a:7b34 $5f
     pop  HL                                            ;; 0a:7b35 $e1
@@ -443,7 +443,7 @@ call_0a_7b9a:
     jr   NZ, .jr_0a_7b9e                               ;; 0a:7ba7 $20 $f5
     ret                                                ;; 0a:7ba9 $c9
 .jr_0a_7baa:
-    ld   HL, wD300_CurrentObjectAddr                                     ;; 0a:7baa $21 $00 $d3
+    ld   HL, wD300_CurrentEntityAddrLo                                     ;; 0a:7baa $21 $00 $d3
     ld   A, [HL]                                       ;; 0a:7bad $7e
     ld   [HL], E                                       ;; 0a:7bae $73
     push AF                                            ;; 0a:7baf $f5
@@ -585,7 +585,7 @@ call_0a_7b9a:
     ld   HL, call_02_7102_SetEntityAction                             ;; 0a:7c5f $21 $02 $71
     call call_00_1078_FarCall                                  ;; 0a:7c62 $cd $78 $10
     pop  AF                                            ;; 0a:7c65 $f1
-    ld   HL, wD300_CurrentObjectAddr                                     ;; 0a:7c66 $21 $00 $d3
+    ld   HL, wD300_CurrentEntityAddrLo                                     ;; 0a:7c66 $21 $00 $d3
     ld   C, [HL]                                       ;; 0a:7c69 $4e
     ld   [HL], A                                       ;; 0a:7c6a $77
     rrca                                               ;; 0a:7c6b $0f

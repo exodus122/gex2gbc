@@ -418,7 +418,7 @@ call_0b_5ec3:
     db   $00, $00, $00, $00, $00, $03, $00, $03        ;; 0b:5f4f ????????
 
 call_0b_5f57:
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 0b:5f57 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 0b:5f57 $fa $00 $d3
     rlca                                               ;; 0b:5f5a $07
     rlca                                               ;; 0b:5f5b $07
     rlca                                               ;; 0b:5f5c $07
@@ -439,7 +439,7 @@ call_0b_5f57:
     ld   E, L                                          ;; 0b:5f72 $5d
     ld   D, H                                          ;; 0b:5f73 $54
     ld   H, $d2                                        ;; 0b:5f74 $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 0b:5f76 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 0b:5f76 $fa $00 $d3
     or   A, $00                                        ;; 0b:5f79 $f6 $00
     ld   L, A                                          ;; 0b:5f7b $6f
     ld   L, [HL]                                       ;; 0b:5f7c $6e

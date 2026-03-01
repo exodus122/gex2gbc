@@ -108,17 +108,16 @@ call_00_2eb0_GetLevelDataAddr:
 ; 0x1 remote progress related
 ; 0x2-0x3 is a pointer to the level's text (level name, mission names)
 ; 0x4 is map bank number
-; 0x5 is map secondary tileset data bank
+; 0x5 is blockset override bank
 ; 0x6 is blockset/collision data bank
-; 0x7
+; 0x7 unused (always 0)
 ; 0x8 is the bit to use in the blockset override data bank
 ; 0x9 is tileset bank
-; 0xa
-; 0xb
-; 0xc
-; 0xd
-; 0xe
-; 0xf
+; 0xa-0xb is tileset bank offset
+; 0xc unused (always 0)
+; 0xd unused (always 0)
+; 0xe unused (always 0)
+; 0xf unused (always 0)
     db   $00, $06                                      ;; 00:2ebf ?w
     dw   data_01_5f88                                         ;; 00:2ec1 wW
     db   $30, $34, $38, $00, $04, $36, $00, $40        ;; 00:2ec3 ...?....

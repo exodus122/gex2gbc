@@ -508,7 +508,7 @@ call_03_5ca8:
     db   $fa, $fa, $fc, $f8, $fe, $fa, $00, $fc        ;; 03:5eb7 ????????
     
 call_03_5ebf:
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 03:5ebf $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:5ebf $fa $00 $d3
     rlca                                               ;; 03:5ec2 $07
     rlca                                               ;; 03:5ec3 $07
     rlca                                               ;; 03:5ec4 $07
@@ -519,14 +519,14 @@ call_03_5ebf:
     add  HL, DE                                        ;; 03:5ecd $19
     ld   E, [HL]                                       ;; 03:5ece $5e
     ld   H, $d2                                        ;; 03:5ecf $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 03:5ed1 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:5ed1 $fa $00 $d3
     or   A, $0d                                        ;; 03:5ed4 $f6 $0d
     ld   L, A                                          ;; 03:5ed6 $6f
     ld   A, [HL]                                       ;; 03:5ed7 $7e
     or   A, E                                          ;; 03:5ed8 $b3
     ld   [wD335], A                                    ;; 03:5ed9 $ea $35 $d3
     ld   D, $d2                                        ;; 03:5edc $16 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 03:5ede $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:5ede $fa $00 $d3
     or   A, $0a                                        ;; 03:5ee1 $f6 $0a
     ld   E, A                                          ;; 03:5ee3 $5f
     ld   A, [DE]                                       ;; 03:5ee4 $1a
@@ -693,7 +693,7 @@ call_03_5f32:
     jp   call_03_4c76_UpdateEntityCollision_Dispatch                                    ;; 03:5fc8 $c3 $76 $4c
 .jr_03_5fcb:
     ld   D, $d2                                        ;; 03:5fcb $16 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 03:5fcd $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:5fcd $fa $00 $d3
     or   A, $0d                                        ;; 03:5fd0 $f6 $0d
     ld   E, A                                          ;; 03:5fd2 $5f
     ld   A, [DE]                                       ;; 03:5fd3 $1a
@@ -761,7 +761,7 @@ call_03_5f32:
 .jp_03_602e:
     push BC                                            ;; 03:602e $c5
     ld   D, $d2                                        ;; 03:602f $16 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 03:6031 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:6031 $fa $00 $d3
     or   A, $08                                        ;; 03:6034 $f6 $08
     ld   E, A                                          ;; 03:6036 $5f
     ld   A, [DE]                                       ;; 03:6037 $1a

@@ -40,7 +40,7 @@ call_02_48b7:
     jr   NZ, .jr_02_48cd                               ;; 02:48d6 $20 $f5
 .jr_02_48d8:
     ld   A, L                                          ;; 02:48d8 $7d
-    ld   [wD300_CurrentObjectAddr], A                                    ;; 02:48d9 $ea $00 $d3
+    ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:48d9 $ea $00 $d3
     or   A, $00                                        ;; 02:48dc $f6 $00
     ld   L, A                                          ;; 02:48de $6f
     ld   H, $d2                                        ;; 02:48df $26 $d2
@@ -83,7 +83,7 @@ data_02_4900:
     call call_02_7102_SetEntityAction                                  ;; 02:490f $cd $02 $71
     call call_00_34d8                                  ;; 02:4912 $cd $d8 $34
     xor  A, A                                          ;; 02:4915 $af
-    ld   [wD300_CurrentObjectAddr], A                                    ;; 02:4916 $ea $00 $d3
+    ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:4916 $ea $00 $d3
     ret                                                ;; 02:4919 $c9
 
 data_02_491a:

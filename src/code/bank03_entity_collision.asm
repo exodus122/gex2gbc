@@ -5,7 +5,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     and  A, A                                          ;; 03:4c79 $a7
     ret  Z                                             ;; 03:4c7a $c8 ; return if [D743] is 0
     ld   H, $d2                                        ;; 03:4c7b $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 03:4c7d $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:4c7d $fa $00 $d3
     or   A, $0a                                        ;; 03:4c80 $f6 $0a
     ld   L, A                                          ;; 03:4c82 $6f
     bit  5, [HL]                                       ;; 03:4c83 $cb $6e
@@ -70,7 +70,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     call call_03_519b                                  ;; 03:4ce6 $cd $9b $51
     ret  NC                                            ;; 03:4ce9 $d0
     ld   H, $d2                                        ;; 03:4cea $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 03:4cec $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:4cec $fa $00 $d3
     or   A, $12                                        ;; 03:4cef $f6 $12
     ld   L, A                                          ;; 03:4cf1 $6f
     ld   C, [HL]                                       ;; 03:4cf2 $4e
@@ -173,7 +173,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     db   $39, $f1, $ea, $00, $d3, $c3, $31, $39        ;; 03:4e18 ????????
 .jr_03_4e20:
     ld   H, $d2                                        ;; 03:4e20 $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 03:4e22 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:4e22 $fa $00 $d3
     or   A, $1e                                        ;; 03:4e25 $f6 $1e
     ld   L, A                                          ;; 03:4e27 $6f
     bit  7, [HL]                                       ;; 03:4e28 $cb $7e
@@ -244,7 +244,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     cp   A, $00                                        ;; 03:4eb8 $fe $00
     ret  Z                                             ;; 03:4eba $c8
     ld   H, $d2                                        ;; 03:4ebb $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 03:4ebd $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:4ebd $fa $00 $d3
     or   A, $17                                        ;; 03:4ec0 $f6 $17
     ld   L, A                                          ;; 03:4ec2 $6f
     set  0, [HL]                                       ;; 03:4ec3 $cb $c6
@@ -378,7 +378,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
 
 call_03_519b:
     ld   H, $d2                                        ;; 03:519b $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 03:519d $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:519d $fa $00 $d3
     or   A, $00                                        ;; 03:51a0 $f6 $00
     ld   L, A                                          ;; 03:51a2 $6f
     ld   L, [HL]                                       ;; 03:51a3 $6e
@@ -387,7 +387,7 @@ call_03_519b:
     add  HL, BC                                        ;; 03:51a9 $09
     ld   B, [HL]                                       ;; 03:51aa $46
     ld   H, $d2                                        ;; 03:51ab $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 03:51ad $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:51ad $fa $00 $d3
     or   A, $13                                        ;; 03:51b0 $f6 $13
     ld   L, A                                          ;; 03:51b2 $6f
     ld   A, E                                          ;; 03:51b3 $7b
@@ -493,7 +493,7 @@ call_03_52be:
     ret                                                ;; 03:52c4 $c9
 
 call_03_52c5:
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 03:52c5 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:52c5 $fa $00 $d3
     or   A, $13                                        ;; 03:52c8 $f6 $13
     ld   L, A                                          ;; 03:52ca $6f
     ld   H, $d2                                        ;; 03:52cb $26 $d2
@@ -564,7 +564,7 @@ call_03_5314:
     jr   C, .jr_03_533f                                ;; 03:533b $38 $02
     jr   jr_03_534d                                   ;; 03:533d $18 $0e
 .jr_03_533f:
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 03:533f $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:533f $fa $00 $d3
     ld   [wD74D], A                                    ;; 03:5342 $ea $4d $d7
     ld   HL, wD74E                                     ;; 03:5345 $21 $4e $d7
     cp   A, [HL]                                       ;; 03:5348 $be
@@ -572,7 +572,7 @@ call_03_5314:
     ld   [HL], $00                                     ;; 03:534a $36 $00
     ret                                                ;; 03:534c $c9
 jr_03_534d:
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 03:534d $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:534d $fa $00 $d3
     ld   HL, wD74D                                     ;; 03:5350 $21 $4d $d7
     cp   A, [HL]                                       ;; 03:5353 $be
     jr   NZ, .jr_03_5358                               ;; 03:5354 $20 $02
@@ -585,7 +585,7 @@ jr_03_534d:
     ret                                                ;; 03:535f $c9
 
 call_03_5360:
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 03:5360 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:5360 $fa $00 $d3
     ld   HL, wD74D                                     ;; 03:5363 $21 $4d $d7
     cp   A, [HL]                                       ;; 03:5366 $be
     jr   NZ, .jr_03_536b                               ;; 03:5367 $20 $02
@@ -595,7 +595,7 @@ call_03_5360:
     ret                                                ;; 03:536e $c9
 
 call_03_536f:
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 03:536f $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:536f $fa $00 $d3
     or   A, $13                                        ;; 03:5372 $f6 $13
     ld   L, A                                          ;; 03:5374 $6f
     ld   H, $d2                                        ;; 03:5375 $26 $d2
@@ -683,7 +683,7 @@ call_03_536f:
     jr   C, .jr_03_53f7                                ;; 03:53f3 $38 $02
     jr   .jr_03_5405                                   ;; 03:53f5 $18 $0e
 .jr_03_53f7:
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 03:53f7 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:53f7 $fa $00 $d3
     ld   [wD74D], A                                    ;; 03:53fa $ea $4d $d7
     ld   HL, wD74F                                     ;; 03:53fd $21 $4f $d7
     cp   A, [HL]                                       ;; 03:5400 $be
@@ -691,7 +691,7 @@ call_03_536f:
     ld   [HL], $00                                     ;; 03:5402 $36 $00
     ret                                                ;; 03:5404 $c9
 .jr_03_5405:
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 03:5405 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:5405 $fa $00 $d3
     ld   HL, wD74D                                     ;; 03:5408 $21 $4d $d7
     cp   A, [HL]                                       ;; 03:540b $be
     jr   NZ, .jr_03_5410                               ;; 03:540c $20 $02
@@ -703,7 +703,7 @@ call_03_536f:
     ld   [HL], $00                                     ;; 03:5415 $36 $00
     ret                                                ;; 03:5417 $c9
 .jr_03_5418:
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 03:5418 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:5418 $fa $00 $d3
     ld   HL, wD74D                                     ;; 03:541b $21 $4d $d7
     cp   A, [HL]                                       ;; 03:541e $be
     jr   NZ, .jr_03_5423                               ;; 03:541f $20 $02

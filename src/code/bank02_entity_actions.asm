@@ -1,208 +1,208 @@
-; Object Action jump tables
+; Entity Action jump tables
 data_02_4ddb:                        ;; Object_CollectibleSpawn
     dw   call_02_51b7, data_02_7cce
 data_02_4ddf:                        ;; Object_TVButton
     dw   call_02_51ea, data_02_7945
     dw   call_02_5252, data_02_794b
 data_02_4de7:                        ;; Object_RedRemote
-    dw   $5253, data_02_7690
-    dw   $526a, data_02_769d
+    dw   call_02_5253, data_02_7690
+    dw   call_02_526a, data_02_769d
 data_02_4def:                        ;; Object_SilverRemote
-    dw   $5284, data_02_769d
-    dw   $528d, data_02_769d
+    dw   call_02_5284, data_02_769d
+    dw   call_02_528d, data_02_769d
 data_02_4df7:                        ;; Object_GoldRemote
-    dw   $528e, data_02_76a8
-    dw   $5297, data_02_769d
+    dw   call_02_528e, data_02_76a8
+    dw   call_02_5297, data_02_769d
 data_02_4dff:                        ;; Object_unk_02
-    dw   $52aa, data_02_768a
+    dw   call_02_52aa, data_02_768a
 data_02_4e03:                        ;; Object_EnemyDefeated
-    dw   $52ab, data_02_7cd4
+    dw   call_02_52ab, data_02_7cd4
 data_02_4e07:                        ;; Object_unk_08
-    dw   $52e7, data_02_76b5
+    dw   call_02_52e7, data_02_76b5
 data_02_4e0b:                        ;; Object_ScreamTV_FallingPlatform
-    dw   $52e8, data_02_7963
+    dw   call_02_52e8, data_02_7963
 data_02_4e0f:                        ;; Object_ScreamTV_MovingPlatform
-    dw   $5348, data_02_7969
+    dw   call_02_5348, data_02_7969
 data_02_4e13:                        ;; Object_ScreamTV_PushBlock
-    dw   $5373, data_02_796f
+    dw   call_02_5373, data_02_796f
 data_02_4e17:                        ;; Object_ScreamTV_Pumpkin
-    dw   $538b, data_02_76b5
-    dw   $5399, data_02_76bf
+    dw   call_02_538b, data_02_76b5
+    dw   call_02_5399, data_02_76bf
 data_02_4e1f:                        ;; Object_ScreamTV_Frankie
-    dw   $53aa, data_02_76c7
+    dw   call_02_53aa, data_02_76c7
 data_02_4e23:                        ;; Object_ScreamTV_HeadGhost
-    dw   $53ad, data_02_7920
-    dw   $53d9, data_02_792d
+    dw   call_02_53ad, data_02_7920
+    dw   call_02_53d9, data_02_792d
 data_02_4e2b:                        ;; Object_ScreamTV_HeadGhostHead
-    dw   $53e2, data_02_7933
+    dw   call_02_53e2, data_02_7933
 data_02_4e2f:                        ;; Object_ScreamTV_FloatingSkull
-    dw   $5434, data_02_76d0
-    dw   $5440, data_02_76d9
-    dw   $545b, data_02_76df
+    dw   call_02_5434, data_02_76d0
+    dw   call_02_5440, data_02_76d9
+    dw   call_02_545b, data_02_76df
 data_02_4e3b:                        ;; Object_ScreamTV_FloatingSkullProjectile
-    dw   $5464, data_02_7b0f
-    dw   $546e, data_02_7ce6
+    dw   call_02_5464, data_02_7b0f
+    dw   call_02_546e, data_02_7ce6
 data_02_4e43:                        ;; Object_ScreamTV_Zombie
-    dw   $5480, data_02_76e5
-    dw   $5480, data_02_76ee
-    dw   $54b4, data_02_76f7
+    dw   call_02_5480, data_02_76e5
+    dw   call_02_5480, data_02_76ee
+    dw   call_02_54b4, data_02_76f7
 data_02_4e4f:                        ;; Object_ScreamTV_ZombieHead
-    dw   $54c6, data_02_768a
-    dw   $54df, data_02_768a
-    dw   $54fc, data_02_768a
+    dw   call_02_54c6, data_02_768a
+    dw   call_02_54df, data_02_768a
+    dw   call_02_54fc, data_02_768a
 data_02_4e5b:                        ;; Object_ScreamTV_FallingAxe
-    dw   $54ff, data_02_7939
-    dw   $5513, data_02_7939
-    dw   $552c, data_02_793f
-    dw   $5535, data_02_7939
+    dw   call_02_54ff, data_02_7939
+    dw   call_02_5513, data_02_7939
+    dw   call_02_552c, data_02_793f
+    dw   call_02_5535, data_02_7939
 data_02_4e6b:                        ;; Object_ScreamTV_Lantern
-    dw   $5544, data_02_7951
-    dw   $5551, data_02_7957
+    dw   call_02_5544, data_02_7951
+    dw   call_02_5551, data_02_7957
 data_02_4e73:                        ;; Object_ScreamTV_Bat
-    dw   $557c, data_02_76fd
+    dw   call_02_557c, data_02_76fd
 data_02_4e77:                        ;; Object_ScreamTV_OrangeMovingPlatform
-    dw   $5589, data_02_7975
+    dw   call_02_5589, data_02_7975
 data_02_4e7b:                        ;; Object_ScreamTV_DoorOpening
-    dw   $559b, data_02_7706
-    dw   $559c, data_02_770f
+    dw   call_02_559b, data_02_7706
+    dw   call_02_559c, data_02_770f
 data_02_4e83:                        ;; Object_ScreamTV_Ghost
-    dw   $55a3, data_02_7718
-    dw   $55e8, data_02_7722
-    dw   $55f1, data_02_772c
-    dw   $5612, data_02_7733
+    dw   call_02_55a3, data_02_7718
+    dw   call_02_55e8, data_02_7722
+    dw   call_02_55f1, data_02_772c
+    dw   call_02_5612, data_02_7733
 data_02_4e93:                        ;; Object_ScreamTV_ClimbWallSunEnemy
-    dw   $5628, data_02_795d
+    dw   call_02_5628, data_02_795d
 data_02_4e97:                        ;; Object_ScreamTV_VanishingPlatform
-    dw   $563a, data_02_797b
-    dw   $5652, data_02_797b
-    dw   $56a1, data_02_7981
+    dw   call_02_563a, data_02_797b
+    dw   call_02_5652, data_02_797b
+    dw   call_02_56a1, data_02_7981
 data_02_4ea3:                        ;; Object_ScreamTV_MonaLisaElevator
-    dw   $56af, data_02_7987
+    dw   call_02_56af, data_02_7987
 data_02_4ea7:                        ;; Object_ToonTV_HardHeadAreaObject
-    dw   $56dc, data_02_798d
-    dw   $576e, data_02_7993
-    dw   $576e, data_02_7999
+    dw   call_02_56dc, data_02_798d
+    dw   call_02_576e, data_02_7993
+    dw   call_02_576e, data_02_7999
 data_02_4eb3:                        ;; Object_ToonTV_StationaryBearTrap
-    dw   $57f3, data_02_79a6
-    dw   $5803, data_02_79ac
+    dw   call_02_57f3, data_02_79a6
+    dw   call_02_5803, data_02_79ac
 data_02_4ebb:                        ;; Object_ToonTV_MovingBearTrap
-    dw   $5812, data_02_79b3
-    dw   $5830, data_02_79b9
+    dw   call_02_5812, data_02_79b3
+    dw   call_02_5830, data_02_79b9
 data_02_4ec3:                        ;; Object_ToonTV_Bumblebee
-    dw   $5843, data_02_799f
-    dw   $585e, data_02_799f
+    dw   call_02_5843, data_02_799f
+    dw   call_02_585e, data_02_799f
 data_02_4ecb:                        ;; Object_ToonTV_FallingBowlingBall
-    dw   $5871, data_02_79c5
+    dw   call_02_5871, data_02_79c5
 data_02_4ecf:                        ;; Object_ToonTV_Cactus
-    dw   $58d3, data_02_79d6
-    dw   $58e8, data_02_79dc
-    dw   $58fa, data_02_79e3
+    dw   call_02_58d3, data_02_79d6
+    dw   call_02_58e8, data_02_79dc
+    dw   call_02_58fa, data_02_79e3
 data_02_4edb:                        ;; Object_ToonTV_Domino
-    dw   $590b, data_02_79e9
+    dw   call_02_590b, data_02_79e9
 data_02_4edf:                        ;; Object_ToonTV_Shark
-    dw   $591c, data_02_79ef
+    dw   call_02_591c, data_02_79ef
 data_02_4ee3:                        ;; Object_ToonTV_Flower
-    dw   $592d, data_02_79f6
-    dw   $592d, data_02_79fc
-    dw   $592d, data_02_7a02
+    dw   call_02_592d, data_02_79f6
+    dw   call_02_592d, data_02_79fc
+    dw   call_02_592d, data_02_7a02
 data_02_4eef:                        ;; Object_ToonTV_Hunter
-    dw   $5993, data_02_774c
-    dw   $59c8, data_02_7759
-    dw   $59d2, data_02_7768
-    dw   $59db, data_02_777c
-    dw   $59e4, data_02_7784
-    dw   $59ed, data_02_778a
+    dw   call_02_5993, data_02_774c
+    dw   call_02_59c8, data_02_7759
+    dw   call_02_59d2, data_02_7768
+    dw   call_02_59db, data_02_777c
+    dw   call_02_59e4, data_02_7784
+    dw   call_02_59ed, data_02_778a
 data_02_4f07:                        ;; Object_ToonTV_Mushroom
-    dw   $5a28, data_02_7a1b
+    dw   call_02_5a28, data_02_7a1b
 data_02_4f0b:                        ;; Object_unk_28
-    dw   $5a73, data_02_7a21
+    dw   call_02_5a73, data_02_7a21
 data_02_4f0f:                        ;; Object_ToonTV_Lizard
-    dw   $5a7d, data_02_7a3a
+    dw   call_02_5a7d, data_02_7a3a
 data_02_4f13:                        ;; Object_ToonTV_HappyFace
-    dw   $5a8c, data_02_773a
-    dw   $5a9a, data_02_7744
+    dw   call_02_5a8c, data_02_773a
+    dw   call_02_5a9a, data_02_7744
 data_02_4f1b:                        ;; Object_ToonTV_VanishingBlock
-    dw   $5aab, data_02_7a45
-    dw   $5aea, data_02_7a45
-    dw   $5b39, data_02_7a4b
+    dw   call_02_5aab, data_02_7a45
+    dw   call_02_5aea, data_02_7a45
+    dw   call_02_5b39, data_02_7a4b
 data_02_4f27:                        ;; Object_ToonTV_MovingBlock
-    dw   $5b47, data_02_7a51
-    dw   $5b9d, data_02_7a51
+    dw   call_02_5b47, data_02_7a51
+    dw   call_02_5b9d, data_02_7a51
 data_02_4f2f:                        ;; Object_ToonTV_MovingLogPlatform
-    dw   $5bb6, data_02_7a2e
+    dw   call_02_5bb6, data_02_7a2e
 data_02_4f33:                        ;; Object_ToonTV_StationaryLogPlatform
-    dw   $5be1, data_02_7a34
+    dw   call_02_5be1, data_02_7a34
 data_02_4f37:                        ;; Object_ToonTV_FlowerHammerAttack
-    dw   $596c, data_02_7a08
-    dw   $597a, data_02_7a0e
-    dw   $598c, data_02_7a15
+    dw   call_02_596c, data_02_7a08
+    dw   call_02_597a, data_02_7a0e
+    dw   call_02_598c, data_02_7a15
 data_02_4f43:                        ;; Object_ToonTV_HunterBullet
-    dw   $5a10, data_02_79d0
-    dw   $5a1f, data_02_79d0
+    dw   call_02_5a10, data_02_79d0
+    dw   call_02_5a1f, data_02_79d0
 data_02_4f4b:                        ;; Object_ToonTV_Rocket
-    dw   $5be2, data_02_7c7b
-    dw   $5bf7, data_02_7c81
-    dw   $5c00, data_02_7c9a
+    dw   call_02_5be2, data_02_7c7b
+    dw   call_02_5bf7, data_02_7c81
+    dw   call_02_5c00, data_02_7c9a
 data_02_4f57:                        ;; Object_PreHistory_FastDinosaur
-    dw   $5c08, data_02_7790
+    dw   call_02_5c08, data_02_7790
 data_02_4f5b:                        ;; Object_PreHistory_Dragonfly
-    dw   $5c10, data_02_77a7
+    dw   call_02_5c10, data_02_77a7
 data_02_4f5f:                        ;; Object_PreHistory_Egg
-    dw   $5c18, data_02_77d5
-    dw   $5c47, data_02_77e2
-    dw   $5c5b, data_02_77ea
+    dw   call_02_5c18, data_02_77d5
+    dw   call_02_5c47, data_02_77e2
+    dw   call_02_5c5b, data_02_77ea
 data_02_4f6b:                        ;; Object_unk_35
-    dw   $5c69, data_02_7a62
-    dw   $5c73, data_02_7a68
+    dw   call_02_5c69, data_02_7a62
+    dw   call_02_5c73, data_02_7a68
 data_02_4f73:                        ;; Object_unk_36
-    dw   $5c7c, data_02_7a57
+    dw   call_02_5c7c, data_02_7a57
 data_02_4f77:                        ;; Object_PreHistory_FallingLava
-    dw   $5c7d, data_02_7a73
-    dw   $5c9c, data_02_7a79
+    dw   call_02_5c7d, data_02_7a73
+    dw   call_02_5c9c, data_02_7a79
 data_02_4f7f:                        ;; Object_PreHistory_LavaRaft
-    dw   $5ca8, data_02_7a84
-    dw   $5cba, data_02_7a8a
+    dw   call_02_5ca8, data_02_7a84
+    dw   call_02_5cba, data_02_7a8a
 data_02_4f87:                        ;; Object_PreHistory_MovingPlatform
-    dw   $5cbb, data_02_7a90
+    dw   call_02_5cbb, data_02_7a90
 data_02_4f8b:                        ;; Object_unk_3A
-    dw   $5ccd, data_02_7a96
+    dw   call_02_5ccd, data_02_7a96
 data_02_4f8f:                        ;; Object_unk_3B
-    dw   $5cce, data_02_7a9c
+    dw   call_02_5cce, data_02_7a9c
 data_02_4f93:                        ;; Object_PreHistory_Pterosaur
-    dw   $5ccf, data_02_77b2
+    dw   call_02_5ccf, data_02_77b2
 data_02_4f97:                        ;; Object_unk_3D
-    dw   $5d0b, data_02_7aa8
+    dw   call_02_5d0b, data_02_7aa8
 data_02_4f9b:                        ;; Object_PreHistory_FallingBoulder
-    dw   $5d0c, data_02_7aae
-    dw   $5d37, data_02_7ab4
-    dw   $5d48, data_02_7aba
-    dw   $5d5b, data_02_7cda
+    dw   call_02_5d0c, data_02_7aae
+    dw   call_02_5d37, data_02_7ab4
+    dw   call_02_5d48, data_02_7aba
+    dw   call_02_5d5b, data_02_7cda
 data_02_4fab:                        ;; Object_unk_3F
-    dw   $5d6f, data_02_7790
+    dw   call_02_5d6f, data_02_7790
 data_02_4faf:                        ;; Object_PreHistory_BeetleHorizontal
-    dw   $5d81, data_02_7ac1
+    dw   call_02_5d81, data_02_7ac1
 data_02_4fb3:                        ;; Object_PreHistory_BeetleVertical
-    dw   $5d70, data_02_7ac8
+    dw   call_02_5d70, data_02_7ac8
 data_02_4fb7:                        ;; Object_PreHistory_Ant
-    dw   $5d81, data_02_7acf
+    dw   call_02_5d81, data_02_7acf
 data_02_4fbb:                        ;; Object_PreHistory_FirePlant
-    dw   $5d92, data_02_7aef
-    dw   $5db2, data_02_7af8
-    dw   $5dd3, data_02_7b01
+    dw   call_02_5d92, data_02_7aef
+    dw   call_02_5db2, data_02_7af8
+    dw   call_02_5dd3, data_02_7b01
 data_02_4fc7:                        ;; Object_PreHistory_FirePlantProjectiles
-    dw   $5ddc, data_02_7b08
-    dw   $5de6, data_02_7ce0
+    dw   call_02_5ddc, data_02_7b08
+    dw   call_02_5de6, data_02_7ce0
 data_02_4fcf:                        ;; Object_PreHistory_Geyser
-    dw   $5df8, data_02_7ad8
-    dw   $5e02, data_02_7ade
+    dw   call_02_5df8, data_02_7ad8
+    dw   call_02_5e02, data_02_7ade
 data_02_4fd7:                        ;; Object_unk_46
-    dw   $5e0b, data_02_7aa2
+    dw   call_02_5e0b, data_02_7aa2
 data_02_4fdb:                        ;; Object_PreHistory_Dinosaur
-    dw   $5e0c, data_02_77bd
+    dw   call_02_5e0c, data_02_77bd
 data_02_4fdf:                        ;; Object_PreHistory_Triceratops
-    dw   $5e26, data_02_77ca
+    dw   call_02_5e26, data_02_77ca
 data_02_4fe3:                        ;; Object_PreHistory_TriceratopsHorn
-    dw   $5e90, data_02_7ae9
+    dw   call_02_5e90, data_02_7ae9
 data_02_4fe7:                        ;; Object_unk_4A
     dw   $5e91, data_02_7790
 data_02_4feb:                        ;; Object_KungFuTheater_HangingBlade
@@ -404,7 +404,7 @@ call_02_51b7:
     pop  AF                                            ;; 02:51cc $f1
     ret  NZ                                            ;; 02:51cd $c0
     ld   H, $d2                                        ;; 02:51ce $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:51d0 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:51d0 $fa $00 $d3
     or   A, $18                                        ;; 02:51d3 $f6 $18
     ld   L, A                                          ;; 02:51d5 $6f
     dec  [HL]                                          ;; 02:51d6 $35
@@ -425,7 +425,7 @@ call_02_51ea:
     call call_00_3878                                  ;; 02:51ea $cd $78 $38
     ld   E, A                                          ;; 02:51ed $5f
     ld   H, $d2                                        ;; 02:51ee $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:51f0 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:51f0 $fa $00 $d3
     or   A, $0a                                        ;; 02:51f3 $f6 $0a
     ld   L, A                                          ;; 02:51f5 $6f
     res  3, [HL]                                       ;; 02:51f6 $cb $9e
@@ -459,7 +459,7 @@ call_02_51ea:
     ld   A, [wD624_CurrentLevelId]                                    ;; 02:522c $fa $24 $d6
     and  A, A                                          ;; 02:522f $a7
     jr   NZ, .jr_02_524d                               ;; 02:5230 $20 $1b
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:5232 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:5232 $fa $00 $d3
     rlca                                               ;; 02:5235 $07
     rlca                                               ;; 02:5236 $07
     rlca                                               ;; 02:5237 $07
@@ -494,7 +494,7 @@ call_02_526a:
     call call_00_38c1                                  ;; 02:526a $cd $c1 $38
     ld   E, A                                          ;; 02:526d $5f
     ld   H, $d2                                        ;; 02:526e $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:5270 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:5270 $fa $00 $d3
     or   A, $0a                                        ;; 02:5273 $f6 $0a
     ld   L, A                                          ;; 02:5275 $6f
     res  3, [HL]                                       ;; 02:5276 $cb $9e
@@ -507,15 +507,20 @@ call_02_526a:
     set  3, [HL]                                       ;; 02:5281 $cb $de
     ret                                                ;; 02:5283 $c9
 
+call_02_5284:
     ld   a,[wD59E]
     and  a
     ld   a,$01
     call nz,call_02_7102_SetEntityAction
+call_02_528d:
     ret  
+
+call_02_528e:
     ld   a,[wD59E]
     and  a
     ld   a,$01
     call nz,call_02_7102_SetEntityAction
+call_02_5297:
     ld   a,[wD649_CollectibleAmount]
     and  a
     jp   nz,call_00_3931
@@ -525,6 +530,8 @@ call_02_526a:
     ld   c,$04
     call call_00_112f
     ret  
+
+call_02_52aa:
     ret  
 
 call_02_52ab:
@@ -539,7 +546,7 @@ call_02_52ab:
     ld   C, $01                                        ;; 02:52bc $0e $01
     call call_00_37e7                                  ;; 02:52be $cd $e7 $37
     ld   H, $d2                                        ;; 02:52c1 $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:52c3 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:52c3 $fa $00 $d3
     or   A, $18                                        ;; 02:52c6 $f6 $18
     ld   L, A                                          ;; 02:52c8 $6f
     ld   [HL], $ff                                     ;; 02:52c9 $36 $ff
@@ -560,8 +567,11 @@ call_02_52ab:
     call call_00_3a23                                  ;; 02:52e0 $cd $23 $3a
     xor  A, A                                          ;; 02:52e3 $af
     jp   call_02_7102_SetEntityAction                                  ;; 02:52e4 $c3 $02 $71
+
+call_02_52e7:
     ret  
 
+call_02_52e8:
     call call_00_34f5
     bit  0,[hl]
     jr   nz,label52FF
@@ -644,7 +654,7 @@ call_02_5348:
     ld   [HL], A                                       ;; 02:5353 $77
 .jr_02_5354:
     ld   H, $d2                                        ;; 02:5354 $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:5356 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:5356 $fa $00 $d3
     or   A, $1a                                        ;; 02:5359 $f6 $1a
     ld   L, A                                          ;; 02:535b $6f
     ld   A, [HL]                                       ;; 02:535c $7e
@@ -662,8 +672,9 @@ call_02_5348:
     call call_00_3559                                  ;; 02:536d $cd $59 $35
     jp   call_00_318d                                    ;; 02:5370 $c3 $8d $31
 
+call_02_5373:
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$0E
     ld   l,a
     ldi  a,[hl]
@@ -685,6 +696,7 @@ call_02_538b:
     call call_00_335a                                  ;; 02:5391 $cd $5a $33
     ld   A, $01                                        ;; 02:5394 $3e $01
     jp   call_02_7102_SetEntityAction                                  ;; 02:5396 $c3 $02 $71
+
 call_02_5399:
     call call_00_30af                                  ;; 02:5399 $cd $af $30
     call call_00_3154                                  ;; 02:539c $cd $54 $31
@@ -694,7 +706,10 @@ call_02_5399:
     ld   A, $00                                        ;; 02:53a5 $3e $00
     jp   call_02_7102_SetEntityAction                                  ;; 02:53a7 $c3 $02 $71
 
-    jp   $3364
+call_02_53aa:
+    jp   call_00_3364
+
+call_02_53ad:
     call call_00_34ea
     jr   z,label53C3
     ld   a,l
@@ -719,16 +734,20 @@ label53C3:
     call call_00_1078_FarCall
     ld   a,$01
     jp   call_02_7102_SetEntityAction
+
+call_02_53d9:
     call call_00_3843
     ld   a,$00
     call nz,call_02_7102_SetEntityAction
     ret  
+
+call_02_53e2:
     ld   c,$01
-    call $3350
-    call $3442
+    call call_00_3350
+    call call_00_3442
     call call_00_30af
     ld   h,$d2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$18
     ld   l,a
     ld   e,[hl]
@@ -785,11 +804,15 @@ label5421:
     ld   [hl],c
     ld   c,$28
     jp   call_00_335a
+
+call_02_5434:
     call call_00_3843
     ret  z
     call call_00_36bd
     ld   a,$01
     jp   call_02_7102_SetEntityAction
+
+call_02_5440:
     call call_00_3843
     ret  z
     ld   c,$34
@@ -801,14 +824,20 @@ label5421:
     call call_00_1078_FarCall
     ld   a,$02
     jp   call_02_7102_SetEntityAction
+
+call_02_545b:
     call call_00_3843
     ld   a,$00
     jp   nz,call_02_7102_SetEntityAction
     ret  
+
+call_02_5464:
     ld   c,$06
     call call_00_3a23
     ld   a,$01
     jp   call_02_7102_SetEntityAction
+
+call_02_546e:
     call call_00_3b8d
     jp   z,call_00_3931
     ld   [wD59D_ReturnBank],a
@@ -816,8 +845,10 @@ label5421:
     ld   hl,$6549
     call call_00_1078_FarCall
     ret  
+
+call_02_5480:
     ld   h,$d2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$1A
     ld   l,a
     ld   [hl],$02
@@ -844,8 +875,10 @@ label5421:
 label54AF:
     ld   a,$02
     jp   call_02_7102_SetEntityAction
+
+call_02_54b4:
     ld   h,$d2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$18
     ld   l,a
     dec  [hl]
@@ -854,17 +887,21 @@ label54AF:
     res  0,[hl]
     ld   a,$01
     jp   call_02_7102_SetEntityAction
+
+call_02_54c6:
     ld   c,$28
     call call_00_335a
     ld   c,$03
     call call_00_3802
     ld   h,$d2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$0D
     ld   l,a
     ld   [hl],$00
     ld   a,$01
     jp   call_02_7102_SetEntityAction
+
+call_02_54df:
     call call_00_30af
     call call_00_3137
     ret  c
@@ -880,9 +917,13 @@ label54AF:
     nop  
     ld   a,[bc]
     inc  d
+
+call_02_54fc:
     jp   call_00_36bd
+
+call_02_54ff:
     ld   h,$d2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$19
     ld   l,a
     ld   a,[wD73B]
@@ -891,10 +932,12 @@ label54AF:
     ld   a,$01
     jp   z,call_02_7102_SetEntityAction
     ret  
+
+call_02_5513:
     ld   bc,$0002
     call call_00_37d8
     ld   h,$d2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$18
     ld   l,a
     inc  [hl]
@@ -904,31 +947,40 @@ label54AF:
     ret  nz
     ld   a,$02
     jp   call_02_7102_SetEntityAction
+
+call_02_552c:
     call call_00_3843
     ld   a,$03
     jp   nz,call_02_7102_SetEntityAction
     ret  
+
+call_02_5535:
     ld   bc,$FFFF
     call call_00_37d8
     call call_00_3817
     ld   a,$00
     jp   z,call_02_7102_SetEntityAction
     ret  
-    call label555E
+
+call_02_5544:
+    call call_02_555e
     ld   a,[wD757]
     and  a
     ret  nz
     ld   a,$01
     jp   call_02_7102_SetEntityAction
-    call label555E
+
+call_02_5551:
+    call call_02_555e
     ld   a,[wD757]
     and  a
     ret  z
     ld   a,$00
     jp   call_02_7102_SetEntityAction
-label555E:
+
+call_02_555e:
     ld   h,$d2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$18
     ld   l,a
     inc  [hl]
@@ -942,12 +994,16 @@ label555E:
     jp   z,call_00_37d8
     ld   bc,$FFFF
     jp   call_00_37d8
+
+call_02_557c:
     ld   h,$d2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$1C
     ld   l,a
     ld   [hl],$01
     jp   $3364
+
+call_02_5589:
     call call_00_34ea
     jr   z,label5595
     ld   a,l
@@ -959,10 +1015,16 @@ label555E:
 label5595:
     call call_00_3559
     jp   call_00_318d
+
+call_02_559b:
     ret  
+
+call_02_559c:
     call call_00_3843
     call nz,call_00_3931
     ret  
+
+call_02_55a3:
     call call_00_3843
     ret  z
     ld   h,$d2
@@ -981,7 +1043,7 @@ label55B9:
     or   a,$0E
     ld   l,a
     ld   d,h
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$0E
     ld   e,a
     ld   bc,$0030
@@ -1008,15 +1070,19 @@ label55D1:
     inc  e
     ld   a,$01
     jp   call_02_7102_SetEntityAction
+
+call_02_55e8:
     call call_00_3843
     ret  z
     ld   a,$02
     jp   call_02_7102_SetEntityAction
+
+call_02_55f1:
     ld   a,[wD757]
     and  a
     jr   nz,label5608
     ld   h,$d2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   l
     ld   l,a
     bit  0,[hl]
@@ -1026,19 +1092,23 @@ label55D1:
     jp   call_02_7102_SetEntityAction
 label5608:
     ld   c,$00
-    call $3350
+    call call_00_3350
     ld   a,$03
     jp   call_02_7102_SetEntityAction
+
+call_02_5612:
     ld   a,[wD757]
     and  a
     jr   z,label5623
-    call $3531
+    call call_00_3531
     jr   c,label5623
     call call_00_36bd
-    jp   $3251
+    jp   call_00_3251
 label5623:
     ld   a,$00
     jp   call_02_7102_SetEntityAction
+
+call_02_5628:
     call call_00_34ea
     jr   z,label5634
     ld   a,l
@@ -1050,8 +1120,10 @@ label5623:
 label5634:
     call call_00_3559
     jp   call_00_318d
+
+call_02_563a:
     ld   h,$d2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$1B
     ld   l,a
     ld   a,[wD73B]
@@ -1063,8 +1135,10 @@ label5634:
     ld   [hl],$40
     ld   a,$01
     jp   call_02_7102_SetEntityAction
+
+call_02_5652:
     ld   h,$d2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$18
     ld   l,a
     dec  [hl]
@@ -1075,7 +1149,7 @@ label5634:
     res  3,[hl]
     ld   a,c
     and  a
-    jr   z,label5687
+    jr   z,.jr_02_5687
     cp   a,$40
     ret  nc
     push hl
@@ -1084,13 +1158,13 @@ label5634:
     srl  a
     ld   e,a
     ld   d,$00
-    ld   hl,$5691
+    ld   hl,.data_02_5691
     add  hl,de
     ld   b,[hl]
     ld   a,c
     and  a,$07
     ld   e,a
-    ld   hl,$5699
+    ld   hl,.data_02_5699
     add  hl,de
     ld   a,[hl]
     pop  hl
@@ -1098,27 +1172,25 @@ label5634:
     ret  nz
     set  3,[hl]
     ret  
-label5687:
+.jr_02_5687:
     ld   c,$00
-    call $382F
+    call call_00_382f
     ld   a,$02
     jp   call_02_7102_SetEntityAction
-    nop  
-    ld   bc,$1111
-    ld   d,l
-    ld   d,l
-    ld   d,l
-    rst  $38
-    ld   bc,$0402
-    ld   [$2010],sp
-    ld   b,b
-    add  b
+.data_02_5691:
+    db   $00, $01, $11, $11, $55, $55, $55, $ff
+.data_02_5699:
+    db   $01, $02, $04, $08, $10, $20, $40, $80
+
+call_02_56a1:
     call call_00_3843
     ret  z
     ld   c,$10
-    call $382F
+    call call_00_382f
     ld   a,$00
     jp   call_02_7102_SetEntityAction
+
+call_02_56af:
     call call_00_34ea
     jr   z,label56BB
     ld   a,l
@@ -1151,7 +1223,7 @@ label56D9:
 
 call_02_56dc:
     ld   H, $d2                                        ;; 02:56dc $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:56de $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:56de $fa $00 $d3
     or   A, $10                                        ;; 02:56e1 $f6 $10
     ld   L, A                                          ;; 02:56e3 $6f
     ld   A, [wD6EF_YPositionInMap]                                    ;; 02:56e4 $fa $ef $d6
@@ -1179,7 +1251,7 @@ call_02_56dc:
     ld   A, [wD20F_PlayerXPosition]                                    ;; 02:570a $fa $0f $d2
     adc  A, [HL]                                       ;; 02:570d $8e
     ld   B, A                                          ;; 02:570e $47
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:570f $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:570f $fa $00 $d3
     rrca                                               ;; 02:5712 $0f
     rrca                                               ;; 02:5713 $0f
     rrca                                               ;; 02:5714 $0f
@@ -1205,7 +1277,7 @@ call_02_56dc:
     cp   A, H                                          ;; 02:572c $bc
     ret  C                                             ;; 02:572d $d8
     ld   H, $d2                                        ;; 02:572e $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:5730 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:5730 $fa $00 $d3
     or   A, $0e                                        ;; 02:5733 $f6 $0e
     ld   L, A                                          ;; 02:5735 $6f
     ld   [HL], C                                       ;; 02:5736 $71
@@ -1239,9 +1311,10 @@ call_02_56dc:
     db   $48, $00, $b8, $ff                            ;; 02:5766 ????
 .data_02_576a:
     db   $01, $02, $01, $02                            ;; 02:576a .??.
+
 call_02_576e:
     ld   H, $d2                                        ;; 02:576e $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:5770 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:5770 $fa $00 $d3
     or   A, $17                                        ;; 02:5773 $f6 $17
     ld   L, A                                          ;; 02:5775 $6f
     bit  0, [HL]                                       ;; 02:5776 $cb $46
@@ -1252,7 +1325,7 @@ call_02_576e:
     ld   C, $1a                                        ;; 02:5781 $0e $1a
     call call_00_112f                                  ;; 02:5783 $cd $2f $11
     ld   H, $d2                                        ;; 02:5786 $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:5788 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:5788 $fa $00 $d3
     or   A, $17                                        ;; 02:578b $f6 $17
     ld   L, A                                          ;; 02:578d $6f
     set  0, [HL]                                       ;; 02:578e $cb $c6
@@ -1316,6 +1389,7 @@ call_02_576e:
 .data_02_57eb:
     db   $01, $02, $04, $08, $10, $20, $40, $80        ;; 02:57eb ........
 
+call_02_57f3:
     call call_00_3817
     ret  nz
     ld   [hl],$FF
@@ -1323,16 +1397,20 @@ call_02_576e:
     call call_00_335a
     ld   a,$01
     jp   call_02_7102_SetEntityAction
+
+call_02_5803:
     call call_00_30af
     ld   bc,$0008
     call call_00_316e
     ld   a,$00
     jp   nc,call_02_7102_SetEntityAction
     ret  
+
+call_02_5812:
     call call_00_34ea
     jr   z,label581C
     ld   c,$10
-    call $3350
+    call call_00_3350
 label581C:
     call call_00_30af
     call call_00_3154
@@ -1342,6 +1420,8 @@ label581C:
     call call_00_335a
     ld   a,$01
     jp   call_02_7102_SetEntityAction
+
+call_02_5830:
     call call_00_30af
     call call_00_3154
     jp   c,call_00_36f7
@@ -1363,6 +1443,7 @@ call_02_5843:
     ld   A, $01                                        ;; 02:5859 $3e $01
     jp   call_02_7102_SetEntityAction                                  ;; 02:585b $c3 $02 $71
 
+call_02_585e:
     ld   c,$20
     call call_00_32e1
     call call_00_36f7
@@ -1371,9 +1452,11 @@ call_02_5843:
     ret  c
     ld   a,$00
     jp   call_02_7102_SetEntityAction
+
+call_02_5871:
     call call_00_30af
     ld   h,$d2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$18
     ld   l,a
     push hl
@@ -1384,7 +1467,7 @@ call_02_5843:
     res  7,l
     ld   h,$00
     add  hl,hl
-    ld   de,$58C1
+    ld   de,.data_02_58c1
     add  hl,de
     ld   c,[hl]
     inc  hl
@@ -1394,7 +1477,7 @@ call_02_5843:
     ld   c,$1A
     call call_00_112f
     ld   h,$d2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$18
     ld   l,a
     dec  [hl]
@@ -1417,10 +1500,11 @@ call_02_5843:
     add  a,$08
     ld   c,a
     jp   call_00_3802
-
+.data_02_58c1:
     db   $80, $00, $00, $00, $c0        ;; 02:58be ????????
     db   $ff, $80, $ff, $40, $ff, $00, $ff, $c0        ;; 02:58c6 ????????
     db   $fe, $80, $fe, $40, $fe                       ;; 02:58ce ?????
+
 call_02_58d3:
     ld   C, $40                                        ;; 02:58d3 $0e $40
     call call_00_3859                                  ;; 02:58d5 $cd $59 $38
@@ -1432,6 +1516,7 @@ call_02_58d3:
     call call_00_3802                                  ;; 02:58e0 $cd $02 $38
     ld   A, $01                                        ;; 02:58e3 $3e $01
     jp   call_02_7102_SetEntityAction                                  ;; 02:58e5 $c3 $02 $71
+
 call_02_58e8:
     call call_00_3843                                  ;; 02:58e8 $cd $43 $38
     ret  Z                                             ;; 02:58eb $c8
@@ -1441,6 +1526,7 @@ call_02_58e8:
     call call_00_335a                                  ;; 02:58f2 $cd $5a $33
     ld   A, $02                                        ;; 02:58f5 $3e $02
     jp   call_02_7102_SetEntityAction                                  ;; 02:58f7 $c3 $02 $71
+
 call_02_58fa:
     call call_00_30af                                  ;; 02:58fa $cd $af $30
     call call_00_3154                                  ;; 02:58fd $cd $54 $31
@@ -1449,9 +1535,16 @@ call_02_58fa:
     call call_00_112f                                  ;; 02:5903 $cd $2f $11
     ld   A, $00                                        ;; 02:5906 $3e $00
     jp   call_02_7102_SetEntityAction                                  ;; 02:5908 $c3 $02 $71
-    db   $cd, $af, $30, $cd, $54, $31, $d8, $0e        ;; 02:590b ????????
-    db   $1a, $cd, $2f, $11, $0e, $40, $c3, $5a        ;; 02:5913 ????????
-    db   $33                                           ;; 02:591b ?
+
+call_02_590b:
+    call call_00_30af
+    call call_00_3154
+    ret  c
+    ld   c,$1A
+    call call_00_112f
+    ld   c,$40
+    jp   call_00_335a
+
 call_02_591c:
     ld   C, $30                                        ;; 02:591c $0e $30
     call call_00_3859                                  ;; 02:591e $cd $59 $38
@@ -1476,7 +1569,7 @@ call_02_592d:
     push AF                                            ;; 02:5944 $f5
     call call_02_7102_SetEntityAction                                  ;; 02:5945 $cd $02 $71
     ld   H, $d2                                        ;; 02:5948 $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:594a $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:594a $fa $00 $d3
     or   A, $18                                        ;; 02:594d $f6 $18
     ld   L, A                                          ;; 02:594f $6f
     inc  [HL]                                          ;; 02:5950 $34
@@ -1517,6 +1610,7 @@ call_02_598c:
     jp   NZ, call_00_3910                              ;; 02:598f $c2 $10 $39
     ret                                                ;; 02:5992 $c9
 
+call_02_5993:
     call call_00_34ea
     jr   z,label599D
     ld   c,$03
@@ -1540,26 +1634,35 @@ label59BE:
     call call_00_32e1
     call call_00_36f7
     jr   label5A00
+call_02_59c8:
     call call_00_3843
     jr   z,label5A00
     ld   a,$00
     jp   call_02_7102_SetEntityAction
+
+call_02_59d2:
     call call_00_3843
     ld   a,$03
     jp   nz,call_02_7102_SetEntityAction
     ret  
+
+call_02_59db:
     call call_00_3843
     ld   a,$04
     jp   nz,call_02_7102_SetEntityAction
     ret  
+
+call_02_59e4:
     call call_00_3843
     ld   a,$05
     jp   nz,call_02_7102_SetEntityAction
     ret  
+
+call_02_59ed:
     call call_00_3843
     ret  z
     ld   h,$d2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$17
     ld   l,a
     res  0,[hl]
@@ -1567,26 +1670,30 @@ label59BE:
     jp   call_02_7102_SetEntityAction
 label5A00:
     ld   h,$d2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$17
     ld   l,a
     bit  0,[hl]
     ret  z
     ld   a,$02
     jp   call_02_7102_SetEntityAction
+
+call_02_5a10:
     ld   c,$01
-    call $3350
+    call call_00_3350
     ld   c,$5A
     call call_00_3802
     ld   a,$01
     jp   call_02_7102_SetEntityAction
+
+call_02_5a1f:
     call call_00_3817
     jp   z,call_00_3910
-    jp   $3442
+    jp   call_00_3442
 
 call_02_5a28:
     ld   H, $d2                                        ;; 02:5a28 $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:5a2a $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:5a2a $fa $00 $d3
     or   A, $17                                        ;; 02:5a2d $f6 $17
     ld   L, A                                          ;; 02:5a2f $6f
     bit  0, [HL]                                       ;; 02:5a30 $cb $46
@@ -1634,8 +1741,16 @@ call_02_5a73:
     call call_00_3154                                  ;; 02:5a76 $cd $54 $31
     jp   NC, call_00_3910                              ;; 02:5a79 $d2 $10 $39
     ret                                                ;; 02:5a7c $c9
-    db   $fa, $3b, $d7, $e6, $3f, $20, $00, $0e        ;; 02:5a7d ????????
-    db   $14, $cd, $e1, $32, $c3, $f7, $36             ;; 02:5a85 ???????
+
+call_02_5a7d:
+    ld   a,[wD73B]
+    and  a,$3F
+    jr   nz,label5A84
+label5A84:
+    ld   c,$14
+    call call_00_32e1
+    jp   call_00_36f7
+
 call_02_5a8c:
     call call_00_3843                                  ;; 02:5a8c $cd $43 $38
     ret  Z                                             ;; 02:5a8f $c8
@@ -1651,8 +1766,9 @@ call_02_5a9a:
     call call_00_112f                                  ;; 02:5aa3 $cd $2f $11
     ld   A, $00                                        ;; 02:5aa6 $3e $00
     jp   call_02_7102_SetEntityAction                                  ;; 02:5aa8 $c3 $02 $71
-    call call_00_34ea
 
+call_02_5aab:
+    call call_00_34ea
     jr   z,label5AB7
     ld   a,l
     xor  a,$10
@@ -1662,7 +1778,7 @@ call_02_5a9a:
     ld   [hl],a
 label5AB7:
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$17
     ld   l,a
     bit  0,[hl]
@@ -1679,7 +1795,7 @@ label5AB7:
     jp   z,call_00_3910
 label5AD2:
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$1B
     ld   l,a
     ld   a,[wD73B]
@@ -1691,8 +1807,10 @@ label5AD2:
     ld   [hl],$40
     ld   a,$01
     jp   call_02_7102_SetEntityAction
+
+call_02_5aea:
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$18
     ld   l,a
     dec  [hl]
@@ -1728,7 +1846,7 @@ label5AD2:
     ret  
 label5B1F:
     ld   c,$00
-    call $382F
+    call call_00_382f
     ld   a,$02
     jp   call_02_7102_SetEntityAction
     nop  
@@ -1741,12 +1859,15 @@ label5B1F:
     ld   [$2010],sp
     ld   b,b
     add  b
+call_02_5b39:
     call call_00_3843
     ret  z
     ld   c,$08
-    call $382F
+    call call_00_382f
     ld   a,$00
     jp   call_02_7102_SetEntityAction
+
+call_02_5b47:
     call call_00_34ea
     jr   z,label5B53
     ld   a,l
@@ -1757,7 +1878,7 @@ label5B1F:
     ld   [hl],a
 label5B53:
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$1A
     ld   l,a
     ldd  a,[hl]
@@ -1803,13 +1924,15 @@ label5B90:
 label5B97:
     call call_00_3559
     jp   call_00_318d
+
+call_02_5b9d:
     ld   a,[wD73B]
     and  a,$07
     ret  nz
     call call_00_3817
     ret  nz
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$17
     ld   l,a
     set  0,[hl]
@@ -1827,7 +1950,7 @@ call_02_5bb6:
     ld   [HL], A                                       ;; 02:5bc1 $77
 .jr_02_5bc2:
     ld   H, $d2                                        ;; 02:5bc2 $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:5bc4 $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:5bc4 $fa $00 $d3
     or   A, $1a                                        ;; 02:5bc7 $f6 $1a
     ld   L, A                                          ;; 02:5bc9 $6f
     ld   A, [HL]                                       ;; 02:5bca $7e
@@ -1847,8 +1970,9 @@ call_02_5bb6:
 call_02_5be1:
     ret                                                ;; 02:5be1 $c9
     
+call_02_5be2:
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$17
     ld   l,a
     bit  7,[hl]
@@ -1857,19 +1981,29 @@ call_02_5be1:
     call call_00_112f
     ld   a,$01
     jp   call_02_7102_SetEntityAction
+
+call_02_5bf7:
     call call_00_3843
     ld   a,$02
     jp   nz,call_02_7102_SetEntityAction
     ret  
+
+call_02_5c00:
     ld   c,$c0
-    call $3316
-    jp   $3597
+    call call_00_3316
+    jp   call_00_3597
+
+call_02_5c08:
     ld   c,$22
     call call_00_32e1
     jp   call_00_36f7
+
+call_02_5c10:
     ld   c,$0C
     call call_00_32e1
     jp   call_00_36f7
+
+call_02_5c18:
     ld   c,$30
     call call_00_3859
     jr   c,label5C27
@@ -1877,7 +2011,7 @@ call_02_5be1:
     call call_00_32e1
     jp   call_00_36f7
 label5C27:
-    call $36DA
+    call call_00_36da
     ld   c,$1E
     call call_00_32e1
     call call_00_36f7
@@ -1891,6 +2025,8 @@ label5C3D:
     call call_00_335a
     ld   a,$01
     jp   call_02_7102_SetEntityAction
+
+call_02_5c47:
     ld   c,$10
     call call_00_32e1
     call call_00_36f7
@@ -1899,25 +2035,35 @@ label5C3D:
     ld   a,$02
     jp   nc,call_02_7102_SetEntityAction
     ret  
+
+call_02_5c5b:
     ld   c,$00
-    call $3350
+    call call_00_3350
     call call_00_3843
     ld   a,$00
     jp   nz,call_02_7102_SetEntityAction
     ret  
+
+call_02_5c69:
     ld   a,[wD73B]
     and  a
     ld   a,$01
     jp   z,call_02_7102_SetEntityAction
     ret  
+
+call_02_5c73:
     call call_00_3843
     ld   a,$00
     jp   nz,call_02_7102_SetEntityAction
     ret  
+
+call_02_5c7c:
     ret  
+
+call_02_5c7d:
     call call_00_349c
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$10
     ld   l,a
     ld   [hl],e
@@ -1931,12 +2077,15 @@ label5C3D:
     ld   [hl],a
     ld   a,$01
     jp   call_02_7102_SetEntityAction
+
+call_02_5c9c:
     call call_00_30af
     call call_00_3154
     ld   a,$00
     jp   nc,call_02_7102_SetEntityAction
     ret  
 
+call_02_5ca8:
     call call_00_34ea
     jr   z,label5CB4
     ld   a,l
@@ -1948,7 +2097,11 @@ label5C3D:
 label5CB4:
     call call_00_3559
     jp   call_00_318d
+
+call_02_5cba:
     ret  
+
+call_02_5cbb:
     call call_00_34ea
     jr   z,label5CC7
     ld   a,l
@@ -1960,17 +2113,23 @@ label5CB4:
 label5CC7:
     call call_00_3559
     jp   call_00_318d
+
+call_02_5ccd:
     ret  
+
+call_02_5cce:
     ret  
-    call $30DA
+
+call_02_5ccf:
+    call call_00_30da
     jr   nc,label5CDF
-    call $3345
+    call call_00_3345
     ld   c,$20
     bit  7,a
     jr   z,label5D01
     jr   label5CFF
 label5CDF:
-    call $380C
+    call call_00_380c
     jr   nz,label5CFF
     ld   c,$30
     call call_00_3859
@@ -1991,8 +2150,11 @@ label5D01:
     call call_00_36f7
     call nz,call_00_3817
     ret  
+
+call_02_5d0b:
     ret  
 
+call_02_5d0c:
     ld   hl,wD6EF_YPositionInMap
     ldi  a,[hl]
     ld   h,[hl]
@@ -2002,7 +2164,7 @@ label5D01:
     ld   e,l
     ld   d,h
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$10
     ld   l,a
     ld   [hl],e
@@ -2015,9 +2177,11 @@ label5D01:
     cp   [hl]
     ret  nz
     ld   c,$0F
-    call $3825
+    call call_00_3825
     ld   a,$01
     jp   call_02_7102_SetEntityAction
+
+call_02_5d37:
     call call_00_30af
     call call_00_3154
     ret  c
@@ -2025,14 +2189,18 @@ label5D01:
     call call_00_112f
     ld   a,$02
     jp   call_02_7102_SetEntityAction
+
+call_02_5d48:
     call call_00_3843
     ret  z
     ld   c,$13
-    call $3825
+    call call_00_3825
     ld   a,$03
     call call_02_7102_SetEntityAction
     ld   c,$04
     jp   call_00_3a23
+
+call_02_5d5b:
     call call_00_3b8d
     ld   a,$00
     jp   z,call_02_7102_SetEntityAction
@@ -2041,7 +2209,11 @@ label5D01:
     ld   hl,$65B8
     call call_00_1078_FarCall
     ret  
+
+call_02_5d6f:
     ret  
+
+call_02_5d70:
     ld   c,$18
     call call_00_3859
     ld   c,$20
@@ -2049,7 +2221,9 @@ label5D01:
     ld   c,$10
 label5D7B:
     call call_00_32e1
-    jp   $3760
+    jp   call_00_3760
+
+call_02_5d81:
     ld   c,$18
     call call_00_3859
     ld   c,$20
@@ -2058,12 +2232,14 @@ label5D7B:
 label5D8C:
     call call_00_32e1
     jp   call_00_36f7
+
+call_02_5d92:
     call call_00_3843
     ret  z
     call call_00_3817
     ret  nz
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$19
     ld   l,a
     dec  [hl]
@@ -2075,6 +2251,8 @@ label5D8C:
     call call_00_335a
     ld   a,$01
     jp   call_02_7102_SetEntityAction
+
+call_02_5db2:
     call call_00_30af
     ld   bc,$0008
     call call_00_316e
@@ -2088,14 +2266,20 @@ label5D8C:
     call call_00_1078_FarCall
     ld   a,$02
     jp   call_02_7102_SetEntityAction
+
+call_02_5dd3:
     call call_00_3843
     ld   a,$00
     jp   nz,call_02_7102_SetEntityAction
     ret  
+
+call_02_5ddc:
     ld   c,$06
     call call_00_3a23
     ld   a,$01
     jp   call_02_7102_SetEntityAction
+
+call_02_5de6:
     call call_00_3b8d
     jp   z,call_00_3931
     ld   [wD59D_ReturnBank],a
@@ -2103,16 +2287,24 @@ label5D8C:
     ld   hl,$663A
     call call_00_1078_FarCall
     ret  
+
+call_02_5df8:
     ld   a,[wD73B]
     and  a
     ld   a,$01
     jp   z,call_02_7102_SetEntityAction
     ret  
+
+call_02_5e02:
     call call_00_3843
     ld   a,$00
     jp   nz,call_02_7102_SetEntityAction
     ret  
+
+call_02_5e0b:
     ret  
+
+call_02_5e0c:
     ld   c,$10
     call call_00_32e1
     call call_00_36f7
@@ -2124,6 +2316,8 @@ label5D8C:
     ld   c,$28
     call c,call_00_335a
     ret  
+
+call_02_5e26:
     call call_00_34ea
     jr   z,label5E38
     ld   c,$07
@@ -2136,7 +2330,7 @@ label5E38:
     call call_00_32e1
     call call_00_36f7
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$01
     or   a,$0D
     ld   l,a
@@ -2197,10 +2391,12 @@ label5E8C:
     inc  l
     ld   [hl],b
     ret  
+
+call_02_5e90:
     ret  
     ret  
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$17
     ld   l,a
     bit  0,[hl]
@@ -2211,17 +2407,17 @@ label5E8C:
     ld   c,$3C
     call call_00_3802
     ld   c,$01
-    jp   $37F8
+    jp   call_00_37f8
 label5EAF:
     call call_00_3817
     ret  nz
     ld   c,$00
-    call $37F8
+    call call_00_37f8
     ld   c,$40
     jp   call_00_335a
     ld   h,$D2
     data_02_5ebf:
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$17
     ld   l,a
     bit  7,[hl]
@@ -2238,7 +2434,7 @@ label5ECC:
     jr   nz,label5ECC
     ld   hl,$D615
     ld   c,[hl]
-    call $3290
+    call call_00_3290
     ld   c,$0D
     ld   [wD59D_ReturnBank],a
     ld   a,$0A
@@ -2254,10 +2450,10 @@ label5ECC:
     call call_00_3817
     jp   z,call_00_3910
     ld   c,$02
-    call $3350
-    call $3442
+    call call_00_3350
+    call call_00_3442
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$0A
     ld   l,a
     bit  5,[hl]
@@ -2280,7 +2476,7 @@ label5F21:
     ld   e,[hl]
     inc  l
     ld   d,[hl]
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$12
     ld   l,a
     ldi  a,[hl]
@@ -2312,7 +2508,7 @@ label5F5A:
     ld   a,[wD613]
     and  a
     jp   z,call_00_3985
-    jp   $6029
+    jp   call_02_6029
     call label613F
     ld   a,[wD613]
     and  a
@@ -2322,7 +2518,7 @@ label5F5A:
     jp   call_00_3985
 label5F79:
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$1A
     ld   l,a
     ldd  a,[hl]
@@ -2342,9 +2538,9 @@ label5F8A:
     ld   c,$2F
     call call_00_112f
 label5FA0:
-    call $6029
+    call call_02_6029
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$1A
     ld   l,a
     ldd  a,[hl]
@@ -2377,7 +2573,7 @@ label5FB5:
     ret  z
     ld   [hl],a
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$0D
     ld   l,a
     ld   [hl],b
@@ -2394,21 +2590,97 @@ label5FB5:
     db   $03, $60, $04, $60, $05, $60, $06, $60        ;; 02:600f ????????
     db   $07, $60, $08, $60, $07, $40, $06, $40        ;; 02:6017 ????????
     db   $05, $40, $04, $40, $03, $40, $02, $40        ;; 02:601f ????????
-    db   $01, $40, $26, $d2, $fa, $00, $d3, $f6        ;; 02:6027 ????????
-    db   $19, $6f, $34, $7e, $d6, $52, $20, $06        ;; 02:602f ????????
-    db   $77, $2c, $34, $cb, $96, $2d, $2c, $3a        ;; 02:6037 ????????
-    db   $6e, $26, $00, $29, $11, $9b, $60, $19        ;; 02:603f ????????
-    db   $fe, $00, $28, $21, $fe, $01, $28, $15        ;; 02:6047 ????????
-    db   $fe, $02, $28, $07, $2a, $2f, $3c, $4f        ;; 02:604f ????????
-    db   $5e, $18, $15, $2a, $2f, $3c, $5f, $7e        ;; 02:6057 ????????
-    db   $2f, $3c, $4f, $18, $0b, $4e, $23, $7e        ;; 02:605f ????????
-    db   $2f, $3c, $5f, $18, $03, $5e, $23, $4e        ;; 02:6067 ????????
-    db   $7b, $fe, $80, $3e, $ff, $ce, $00, $57        ;; 02:606f ????????
-    db   $21, $30, $02, $19, $5d, $54, $79, $fe        ;; 02:6077 ????????
-    db   $80, $3e, $ff, $ce, $00, $47, $21, $f0        ;; 02:607f ????????
-    db   $04, $09, $4d, $44, $26, $d2, $fa, $00        ;; 02:6087 ????????
-    db   $d3, $f6, $0e, $6f, $73, $2c, $72, $2c        ;; 02:608f ????????
-    db   $71, $2c, $70, $c9, $00, $c6, $01, $c6        ;; 02:6097 ????????
+    db   $01, $40
+    
+call_02_6029:
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$19
+    ld   l,a
+    inc  [hl]
+    ld   a,[hl]
+    sub  a,$52
+    jr   nz,label603D
+    ld   [hl],a
+    inc  l
+    inc  [hl]
+    res  2,[hl]
+    dec  l
+    label603D:
+    inc  l
+    ldd  a,[hl]
+    ld   l,[hl]
+    ld   h,$00
+    add  hl,hl
+    ld   de,$609B
+    add  hl,de
+    cp   a,$00
+    jr   z,label606C
+    cp   a,$01
+    jr   z,label6064
+    cp   a,$02
+    jr   z,label605A
+    ldi  a,[hl]
+    cpl  
+    inc  a
+    ld   c,a
+    ld   e,[hl]
+    jr   label606F
+    label605A:
+    ldi  a,[hl]
+    cpl  
+    inc  a
+    ld   e,a
+    ld   a,[hl]
+    cpl  
+    inc  a
+    ld   c,a
+    jr   label606F
+    label6064:
+    ld   c,[hl]
+    inc  hl
+    ld   a,[hl]
+    cpl  
+    inc  a
+    ld   e,a
+    jr   label606F
+    label606C:
+    ld   e,[hl]
+    inc  hl
+    ld   c,[hl]
+    label606F:
+    ld   a,e
+    cp   a,$80
+    ld   a,$FF
+    adc  a,$00
+    ld   d,a
+    ld   hl,$0230
+    add  hl,de
+    ld   e,l
+    ld   d,h
+    ld   a,c
+    cp   a,$80
+    ld   a,$FF
+    adc  a,$00
+    ld   b,a
+    ld   hl,$04F0
+    add  hl,bc
+    ld   c,l
+    ld   b,h
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$0E
+    ld   l,a
+    ld   [hl],e
+    inc  l
+    ld   [hl],d
+    inc  l
+    ld   [hl],c
+    inc  l
+    ld   [hl],b
+    ret  
+    
+    db   $00, $c6, $01, $c6        ;; 02:6097 ????????
     db   $02, $c6, $03, $c6, $04, $c6, $05, $c6        ;; 02:609f ????????
     db   $06, $c6, $07, $c6, $08, $c7, $09, $c7        ;; 02:60a7 ????????
     db   $0a, $c7, $0b, $c7, $0c, $c7, $0d, $c7        ;; 02:60af ????????
@@ -2431,7 +2703,7 @@ label5FB5:
     db   $39, $fd, $39, $fe, $39, $ff, $39, $00        ;; 02:6137 ????????
 label613F:    
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$0A
     ld   l,a
     res  3,[hl]
@@ -2449,12 +2721,12 @@ label613F:
     call call_00_3817
     jp   z,call_00_3910
     ld   c,$02
-    call $3350
-    jp   $3442
+    call call_00_3350
+    jp   call_00_3442
     ret  
 
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$17
     ld   l,a
     bit  0,[hl]
@@ -2468,7 +2740,7 @@ label6182:
     call call_00_3859
     jr   c,label61AC
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$00
     ld   l,a
     ld   a,[hl]
@@ -2486,7 +2758,7 @@ label61A4:
     jp   call_00_36f7
 label61AC:
     ld   c,$01
-    call $37F8
+    call call_00_37f8
     ld   a,[wD20E_PlayerXPosition]
     and  a,$01
     add  a,$02
@@ -2498,11 +2770,11 @@ label61BC:
     ld   a,$01
     jp   nz,call_02_7102_SetEntityAction
     ld   c,$00
-    call $37F8
+    call call_00_37f8
     jr   label6182
 label61CE:
     ld   c,$02
-    call $37F8
+    call call_00_37f8
     ld   a,[wD20E_PlayerXPosition]
     rrca 
     rrca 
@@ -2523,7 +2795,7 @@ label61E1:
     ret  z
 label61F6:
     ld   c,$04
-    call $37F8
+    call call_00_37f8
 label61FB:
     ld   c,$18
     call call_00_32e1
@@ -2539,6 +2811,7 @@ label61FB:
     ld   a,$00
     jp   nz,call_02_7102_SetEntityAction
     ret  
+
     call call_00_36bd
     call call_00_3843
     ret  z
@@ -2554,7 +2827,7 @@ label61FB:
     call call_00_3154
     ret  c
     ld   c,$00
-    call $37F8
+    call call_00_37f8
     call call_00_36bd
     ld   a,$00
     jp   call_02_7102_SetEntityAction
@@ -2577,7 +2850,7 @@ label625E:
     call call_00_36bd
 label6275:
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$01
     or   a,$0D
     ld   l,a
@@ -2679,7 +2952,7 @@ label62EB:
     call call_00_07b0_MemCopy
 label6315:
     ld   c,$19
-    call $3825
+    call call_00_3825
     ld   a,$02
     jp   call_02_7102_SetEntityAction
     nop  
@@ -2691,7 +2964,7 @@ label6315:
     ld   a,b
     ld   [hl],a
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$17
     ld   l,a
     bit  0,[hl]
@@ -2707,17 +2980,17 @@ label6315:
     call call_00_3817
     jp   z,call_00_3910
     ld   c,$02
-    call $3350
-    jp   $3442
+    call call_00_3350
+    jp   call_00_3442
     ld   c,$10
     call call_00_32e1
-    jp   $3760
-    call $380C
+    jp   call_00_3760
+    call call_00_380c
     ret  z
     ld   c,$2D
     call call_00_112f
     ld   c,$00
-    call $3825
+    call call_00_3825
     ld   a,$01
     call call_02_7102_SetEntityAction
     ld   c,$05
@@ -2740,7 +3013,7 @@ label6315:
     ld   [hl],a
 label6394:
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$1B
     ld   l,a
     ld   a,[wD73B]
@@ -2753,7 +3026,7 @@ label6394:
     ld   a,$01
     jp   call_02_7102_SetEntityAction
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$18
     ld   l,a
     dec  [hl]
@@ -2789,7 +3062,7 @@ label6394:
     ret  
 label63E1:
     ld   c,$00
-    call $382F
+    call call_00_382f
     ld   a,$02
     jp   call_02_7102_SetEntityAction
     nop  
@@ -2805,7 +3078,7 @@ label63E1:
     call call_00_3843
     ret  z
     ld   c,$10
-    call $382F
+    call call_00_382f
     ld   a,$00
     jp   call_02_7102_SetEntityAction
     call call_00_34ea
@@ -2818,7 +3091,7 @@ label63E1:
     ld   [hl],a
 label6415:
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$1A
     ld   l,a
     ld   a,[hl]
@@ -2873,7 +3146,7 @@ label6456:
     bit  0,b
     jr   nz,label648A
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$18
     ld   l,a
     ld   a,[hl]
@@ -2891,7 +3164,7 @@ label6484:
     jp   call_00_318d
 label648A:
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$18
     ld   l,a
     ld   a,[hl]
@@ -2912,7 +3185,7 @@ label64A8:
     call call_00_3559
     jp   call_00_318d
     ld   c,$80
-    call $3290
+    call call_00_3290
     call call_00_34f5
     bit  1,[hl]
     jr   nz,label64DA
@@ -2980,9 +3253,9 @@ label64FF:
     ld   bc,$ffFF
     jp   call_00_37d8
     ld   c,$80
-    call $3290
+    call call_00_3290
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$17
     ld   l,a
     bit  0,[hl]
@@ -3037,7 +3310,7 @@ label654F:
     cp   a,$0D
     jr   nz,label65A2
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$10
     ld   l,a
     ldi  a,[hl]
@@ -3047,7 +3320,7 @@ label654F:
     add  hl,hl
     add  hl,hl
     ld   c,h
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     rrca 
     rrca 
     rrca 
@@ -3061,7 +3334,7 @@ label654F:
     cp   c
     ret  nc
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$19
     ld   l,a
     ld   a,[hl]
@@ -3108,7 +3381,7 @@ label65A2:
     ld   b,$04
 label65E2:
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$17
     ld   l,a
     bit  0,[hl]
@@ -3125,7 +3398,7 @@ label65F4:
     ret  z
 label65FA:
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$01
     ld   l,a
     ld   a,[hl]
@@ -3163,7 +3436,7 @@ label661B:
     ret  
     ret  
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$19
     ld   l,a
     ld   c,$00
@@ -3178,14 +3451,14 @@ label6646:
     ret  
     ret  
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$19
     ld   l,a
     bit  0,[hl]
     jr   nz,label6662
     ld   c,$08
     call call_00_32e1
-    call $3760
+    call call_00_3760
     ret  
 label6662:
     ld   c,$08
@@ -3194,7 +3467,7 @@ label6662:
     ret  
     ret  
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$0D
     ld   l,a
     ld   [hl],$20
@@ -3242,7 +3515,7 @@ label66B4:
     res  0,[hl]
     ret  
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$0E
     ld   l,a
     ldi  a,[hl]
@@ -3277,7 +3550,7 @@ label66D3:
     call call_00_3843
     ret  z
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$0D
     ld   l,a
     ld   [hl],$60
@@ -3286,7 +3559,7 @@ label66D3:
     call call_00_3843
     ret  z
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$0D
     ld   l,a
     ld   [hl],$00
@@ -3307,7 +3580,7 @@ label6736:
     ld   a,$01
     call nz,call_02_7102_SetEntityAction
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$0E
     ld   l,a
     ld   e,[hl]
@@ -3353,7 +3626,7 @@ label6779:
     jr   nz,label6779
     jp   call_00_3910
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$1B
     ld   l,a
     ld   a,[wD73B]
@@ -3365,7 +3638,7 @@ label6779:
     ld   a,$01
     jp   call_02_7102_SetEntityAction
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$17
     ld   l,a
     ld   a,[hl]
@@ -3386,9 +3659,9 @@ label6779:
     ld   b,[hl]
     call call_00_37d8
     pop  bc
-    call $37C9
+    call call_00_37c9
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$18
     ld   l,a
     dec  [hl]
@@ -3407,7 +3680,7 @@ label6779:
 
 label680E:
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$1A
     ld   l,a
     ld   c,[hl]
@@ -3426,7 +3699,7 @@ label680E:
     add  hl,hl
     add  hl,de
     ld   d,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$17
     ld   e,a
     ldi  a,[hl]
@@ -3460,7 +3733,7 @@ label680E:
     call nz,label68D6
     call call_00_3559
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$1B
     ld   l,a
     dec  [hl]
@@ -3468,7 +3741,7 @@ label680E:
     ret  
 label68D6:
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$1A
     ld   l,a
     ld   c,[hl]
@@ -3489,7 +3762,7 @@ label68D6:
     add  hl,bc
     add  hl,de
     ld   d,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$1B
     ld   e,a
     ldi  a,[hl]
@@ -3507,24 +3780,24 @@ label6902:
     ret  
 label6909:
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$1A
     ld   l,a
     ld   [hl],$00
     jr   label68D6
 
-        db   $1d, $69, $2a, $69        ;; 02:6911 ????????  
-        db   $43, $69, $5c, $69, $e0, $10, $f0, $a0        ;; 02:6919 ????????
-        db   $10, $10, $a0, $f0, $f0, $e0, $f0, $10        ;; 02:6921 ????????
-        db   $ff, $80, $f0, $00, $80, $f0, $00, $80        ;; 02:6929 ????????
-        db   $f0, $00, $80, $f0, $00, $80, $10, $00        ;; 02:6931 ????????
-        db   $80, $10, $00, $80, $10, $00, $80, $10        ;; 02:6939 ????????
-        db   $00, $ff, $e0, $f0, $00, $e0, $f0, $00        ;; 02:6941 ????????
-        db   $20, $f0, $00, $80, $10, $f0, $80, $10        ;; 02:6949 ????????
-        db   $f0, $e0, $10, $00, $80, $00, $10, $80        ;; 02:6951 ????????
-        db   $00, $10, $ff, $e0, $f0, $f0, $e0, $10        ;; 02:6959 ????????
-        db   $f0, $e0, $f0, $f0, $e0, $10, $10, $e0        ;; 02:6961 ????????
-        db   $f0, $10, $e0, $10, $10, $ff
+    db   $1d, $69, $2a, $69        ;; 02:6911 ????????  
+    db   $43, $69, $5c, $69, $e0, $10, $f0, $a0        ;; 02:6919 ????????
+    db   $10, $10, $a0, $f0, $f0, $e0, $f0, $10        ;; 02:6921 ????????
+    db   $ff, $80, $f0, $00, $80, $f0, $00, $80        ;; 02:6929 ????????
+    db   $f0, $00, $80, $f0, $00, $80, $10, $00        ;; 02:6931 ????????
+    db   $80, $10, $00, $80, $10, $00, $80, $10        ;; 02:6939 ????????
+    db   $00, $ff, $e0, $f0, $00, $e0, $f0, $00        ;; 02:6941 ????????
+    db   $20, $f0, $00, $80, $10, $f0, $80, $10        ;; 02:6949 ????????
+    db   $f0, $e0, $10, $00, $80, $00, $10, $80        ;; 02:6951 ????????
+    db   $00, $10, $ff, $e0, $f0, $f0, $e0, $10        ;; 02:6959 ????????
+    db   $f0, $e0, $f0, $f0, $e0, $10, $10, $e0        ;; 02:6961 ????????
+    db   $f0, $10, $e0, $10, $10, $ff
 
     call call_00_34ea
     jr   z,label697B
@@ -3548,7 +3821,7 @@ label697B:
     ld   a,$01
     jp   call_02_7102_SetEntityAction
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$17
     ld   l,a
     bit  3,[hl]
@@ -3578,7 +3851,7 @@ label69BE:
     call call_00_3817
     ret  nz
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$17
     ld   l,a
     set  0,[hl]
@@ -3655,7 +3928,7 @@ label6A23:
     jp   call_00_36f7
     ret  
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$19
     ld   l,a
     ld   l,[hl]
@@ -3670,7 +3943,7 @@ label6A23:
     ld   c,$10
 label6A54:
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$14
     ld   l,a
     ld   [hl],c
@@ -3682,7 +3955,7 @@ label6A54:
     add  hl,hl
     add  hl,hl
     ld   c,h
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     rrca 
     rrca 
     rrca 
@@ -3697,7 +3970,7 @@ label6A54:
     cp   [hl]
     ret  c
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$0E
     ld   l,a
     ld   a,[wD20E_PlayerXPosition]
@@ -3706,7 +3979,7 @@ label6A54:
     ld   [hl],a
     ret  
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$19
     ld   l,a
     ld   a,[wD73B]
@@ -3715,19 +3988,19 @@ label6A54:
     ret  nz
     call label6BCD
     ld   c,$02
-    call $3350
+    call call_00_3350
     ld   c,$30
     call call_00_335a
     ld   a,$01
     jp   call_02_7102_SetEntityAction
-    call $3442
+    call call_00_3442
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$1A
     ld   l,a
     bit  0,[hl]
     jr   nz,label6AC4
-    call $30DA
+    call call_00_30da
     jp   nc,$6C03
     jp   label6BF8
 label6AC4:
@@ -3737,7 +4010,7 @@ label6AC4:
     jp   nc,$6C03
     jp   label6BF8
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$19
     ld   l,a
     ld   a,[wD73B]
@@ -3746,28 +4019,28 @@ label6AC4:
     ret  nz
     call label6BCD
     ld   c,$02
-    call $3350
+    call call_00_3350
     ld   c,$30
     call call_00_335a
     ld   c,$f0
     call call_00_3802
     ld   a,$01
     jp   call_02_7102_SetEntityAction
-    call $3442
+    call call_00_3442
     call call_00_3817
     jp   z,label6C03
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$1A
     ld   l,a
     bit  0,[hl]
     jr   nz,label6B17
-    call $30DA
+    call call_00_30da
     jp   nc,$6C03
     jp   label6BF8
 label6B17:
     call call_00_30af
-    call $3345
+    call call_00_3345
     bit  7,a
     ld   a,$02
     jp   nz,call_02_7102_SetEntityAction
@@ -3775,7 +4048,7 @@ label6B17:
     call call_00_316e
     jp   nc,$6C03
     jp   label6BF8
-    call $3442
+    call call_00_3442
     call call_00_3817
     jr   z,label6B3E
     ld   c,$08
@@ -3784,14 +4057,14 @@ label6B17:
 label6B3E:
     ld   a,$03
     jp   call_02_7102_SetEntityAction
-    call $3442
+    call call_00_3442
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$1A
     ld   l,a
     bit  0,[hl]
     jr   nz,label6B5B
-    call $30DA
+    call call_00_30da
     jp   nc,$6C03
     jp   label6BF8
 label6B5B:
@@ -3801,7 +4074,7 @@ label6B5B:
     jp   nc,$6C03
     jp   label6BF8
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$19
     ld   l,a
     ld   a,[wD73B]
@@ -3812,7 +4085,7 @@ label6B5B:
     ld   a,$01
     jp   call_02_7102_SetEntityAction
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$1A
     ld   l,a
     ld   c,[hl]
@@ -3827,7 +4100,7 @@ label6B5B:
     ld   b,h
     bit  0,c
     jr   z,label6BAF
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     rrca 
     rrca 
     rrca 
@@ -3842,7 +4115,7 @@ label6B5B:
     ld   c,$D0
     jr   label6BC4
 label6BAF:
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     rrca 
     rrca 
     rrca 
@@ -3856,16 +4129,16 @@ label6BAF:
     jr   z,label6C03
     ld   c,$30
 label6BC4:
-    call $3316
-    call $3597
+    call call_00_3316
+    call call_00_3597
     jp   label6BF8
 label6BCD:
     ld   c,$36
     call call_00_112f
     ld   c,$1E
-    call $3825
+    call call_00_3825
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$1C
     ld   l,a
     xor  a
@@ -3885,7 +4158,7 @@ label6BF2:
     jp   call_00_37d8
 label6BF8:
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$17
     ld   l,a
     bit  7,[hl]
@@ -3904,7 +4177,7 @@ label6C03:
     ld   a,$0A
     ld   [wD616],a
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$0E
     ld   l,a
     ldi  a,[hl]
@@ -3930,7 +4203,7 @@ label6C38:
     and  a,$03
     jr   nz,label6C7C
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$10
     ld   l,a
     ld   e,[hl]
@@ -3957,13 +4230,13 @@ label6C79:
     call call_00_37d8
 label6C7C:
     call call_00_36bd
-    jp   $3251
+    jp   call_00_3251
     call call_00_3843
     ret  z
     ld   a,$03
     call call_02_7102_SetEntityAction
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$1B
     ld   l,a
     ld   a,[hl]
@@ -4038,7 +4311,7 @@ label6CFB:
     ld   a,[hl]
     adc  a,$00
     ld   d,a
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$0E
     ld   l,a
     ld   [hl],c
@@ -4064,7 +4337,7 @@ label6D1D:
     call call_00_3843
     jp   nz,call_00_3910
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$07
     ld   l,a
     ld   l,[hl]
@@ -4076,7 +4349,7 @@ label6D1D:
     inc  hl
     ld   d,[hl]
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$0D
     ld   l,a
     ld   [hl],e
@@ -4099,7 +4372,7 @@ label6D53:
     ld   [0000],sp
     call call_00_30af
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$10
     ld   l,a
     ldi  a,[hl]
@@ -4124,7 +4397,7 @@ label6D53:
     and  a,$7F
     ret  z
     ld   h,$D2
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$19
     ld   l,a
     ld   a,[hl]
@@ -4150,7 +4423,7 @@ label6DBC:
     ld   a,[hl]
     cp   a,$8C
     jr   nz,label6DC8
-    ld   a,[wD300_CurrentObjectAddr]
+    ld   a,[wD300_CurrentEntityAddrLo]
     cp   l
     jr   nz,label6DCE
 label6DC8:
@@ -4189,7 +4462,7 @@ call_02_6df1:
     ld   [HL], A                                       ;; 02:6dfc $77
 .jr_02_6dfd:
     ld   H, $d2                                        ;; 02:6dfd $26 $d2
-    ld   A, [wD300_CurrentObjectAddr]                                    ;; 02:6dff $fa $00 $d3
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:6dff $fa $00 $d3
     or   A, $1a                                        ;; 02:6e02 $f6 $1a
     ld   L, A                                          ;; 02:6e04 $6f
     ld   A, [HL]                                       ;; 02:6e05 $7e
