@@ -325,7 +325,13 @@ wD5A9:
     ds 1                                               ;; d5a9
 
 wD5AA:
-    ds 100                                             ;; d5aa
+    ds 96                                              ;; d5aa
+
+wD60A:
+    ds 1                                               ;; d60a
+
+wD60B:
+    ds 3                                               ;; d60b
 
 wD60E:
     ds 1                                               ;; d60e

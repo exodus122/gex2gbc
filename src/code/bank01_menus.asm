@@ -557,7 +557,6 @@ call_01_43e6:
     dw   .jp_01_446e                                 ;; 01:4421 pP
     dw   .jp_01_446e, .jp_01_446e, .jp_01_446e, .jp_01_446e        ;; 01:4423 ????????
     dw   .jp_01_446e                                      ;; 01:442b ??
-
 .jp_01_442d:
     ld   C, $4e                                        ;; 01:442d $0e $4e
     ld   B, $08                                        ;; 01:442f $06 $08
@@ -576,12 +575,10 @@ call_01_43e6:
     ld   HL, wD6EC                                     ;; 01:4441 $21 $ec $d6
     ld   [HL], B                                       ;; 01:4444 $70
     ret                                                ;; 01:4445 $c9
-
 .jp_01_4446:
     ld   C, $16                                        ;; 01:4446 $0e $16
     ld   B, $08                                        ;; 01:4448 $06 $08
     jr   .jr_01_4431                                   ;; 01:444a $18 $e5
-
 .jp_01_444c:
     ld   HL, wD6E0_MenuSelectedRow                                     ;; 01:444c $21 $e0 $d6
     ld   L, [HL]                                       ;; 01:444f $6e
@@ -593,12 +590,17 @@ call_01_43e6:
     ld   H, [HL]                                       ;; 01:4458 $66
     ld   L, A                                          ;; 01:4459 $6f
     jp   call_01_4d0a                                  ;; 01:445a $c3 $0a $4d
-
 .jp_01_445d:
-    db   $21, $e0, $d6, $6e, $26, $00, $29, $11        ;; 01:445d ????????
-    db   $13, $0e, $19, $2a, $66, $6f, $c3, $0a        ;; 01:4465 ????????
-    db   $4d                                           ;; 01:446d ?
-
+    ld   hl,wD6E0_MenuSelectedRow
+    ld   l,[hl]
+    ld   h,$00
+    add  hl,hl
+    ld   de,data_00_0e13
+    add  hl,de
+    ldi  a,[hl]
+    ld   h,[hl]
+    ld   l,a
+    jp   call_01_4d0a
 .jp_01_446e:
     ret                                                ;; 01:446e $c9
 
@@ -1008,18 +1010,15 @@ call_01_473a:
     ld   [wD6D5], A                                    ;; 01:479b $ea $d5 $d6
     ld   BC, $202                                      ;; 01:479e $01 $02 $02
     jp   call_01_4e01                                  ;; 01:47a1 $c3 $01 $4e
-;    db   $fa, $9b, $d6, $11, $b9, $47, $cd, $b9        ;; 01:47a4 ????????
-;    db   $07, $11, $a5, $d6, $01, $0a, $00, $cd        ;; 01:47ac ????????
-;    db   $b0, $07, $c3, $c3, $07, 
 call_01_47a4:
-    ld a, [$d69b]
-    ld de, $47b9
+    ld   a, [wD69B]
+    ld   de, .data_01_47b9
     call call_00_07b9
-    ld de, wD6A5_PasswordTilesBank
-    ld bc, $000a
+    ld   de, wD6A5_PasswordTilesBank
+    ld   bc, $000a
     call call_00_07b0_MemCopy
-    jp call_00_07c3
-    
+    jp   call_00_07c3
+.data_01_47b9:
     db   $bb, $47, $09, $b6, $14, $12, $d0, $42,       ;; 01:47b4 ????????
     db   $00, $40, $d0, $02                               ;; 01:47bc ????????
 
@@ -1051,34 +1050,56 @@ call_01_47f6:
     call call_00_07b9                                  ;; 01:47fc $cd $b9 $07
     jp   HL                                            ;; 01:47ff $e9
 .data_01_4800:
-    dw   .data_01_4814                                 ;; 01:4800 pP
-    dw   .data_01_4818                                 ;; 01:4802 pP
-    dw   .data_01_481c                                 ;; 01:4804 pP
-    dw   .data_01_4820                                 ;; 01:4806 pP
-    dw   .data_01_4824                                 ;; 01:4808 pP
-    db   $28, $48, $34, $48, $47, $48, $69, $48        ;; 01:480a ????????
-    db   $6e, $48                                      ;; 01:4812 ??
-.data_01_4814:
+    dw   .jr_01_4814                                 ;; 01:4800 pP
+    dw   .jr_01_4818                                 ;; 01:4802 pP
+    dw   .jr_01_481c                                 ;; 01:4804 pP
+    dw   .jr_01_4820                                 ;; 01:4806 pP
+    dw   .jr_01_4824                                 ;; 01:4808 pP
+    dw   .jr_01_4828
+    dw   .jr_01_4834
+    dw   .jr_01_4847
+    dw   .jr_01_4869        ;; 01:480a ????????
+    dw   .jr_01_486e                                      ;; 01:4812 ??
+.jr_01_4814:
     ld   A, [wD73D_LivesRemaining]                                    ;; 01:4814 $fa $3d $d7
     ret                                                ;; 01:4817 $c9
-.data_01_4818:
+.jr_01_4818:
     ld   A, [wD741_PlayerHealth]                                    ;; 01:4818 $fa $41 $d7
     ret                                                ;; 01:481b $c9
-.data_01_481c:
+.jr_01_481c:
     ld   C, $07                                        ;; 01:481c $0e $07
     jr   .jr_01_4852                                   ;; 01:481e $18 $32
-.data_01_4820:
+.jr_01_4820:
     ld   C, $18                                        ;; 01:4820 $0e $18
     jr   .jr_01_4852                                   ;; 01:4822 $18 $2e
-.data_01_4824:
+.jr_01_4824:
     ld   C, $20                                        ;; 01:4824 $0e $20
     jr   .jr_01_4852                                   ;; 01:4826 $18 $2a
-    db   $fa, $48, $d6, $fe, $01, $3e, $1e, $d0        ;; 01:4828 ????????
-    db   $fa, $49, $d6, $c9, $fa, $48, $d6, $fe        ;; 01:4830 ????????
-    db   $02, $3e, $28, $d0, $fa, $48, $d6, $fe        ;; 01:4838 ????????
-    db   $01, $fa, $49, $d6, $d0, $af, $c9, $fa        ;; 01:4840 ????????
-    db   $48, $d6, $fe, $02, $fa, $49, $d6, $d0        ;; 01:4848 ????????
-    db   $af, $c9                                      ;; 01:4850 ??
+.jr_01_4828:
+    ld   a,[wD648]
+    cp   a,$01
+    ld   a,$1E
+    ret  nc
+    ld   a,[wD649_CollectibleAmount]
+    ret  
+.jr_01_4834:
+    ld   a,[wD648]
+    cp   a,$02
+    ld   a,$28
+    ret  nc
+    ld   a,[wD648]
+    cp   a,$01
+    ld   a,[wD649_CollectibleAmount]
+    ret  nc
+    xor  a
+    ret  
+.jr_01_4847:
+    ld   a,[wD648]
+    cp   a,$02
+    ld   a,[wD649_CollectibleAmount]
+    ret  nc
+    xor  a
+    ret  
 .jr_01_4852:
     ld   HL, wD629_RemoteProgressFlags                                     ;; 01:4852 $21 $29 $d6
     ld   B, $1e                                        ;; 01:4855 $06 $1e
@@ -1098,8 +1119,20 @@ call_01_47f6:
     jr   NZ, .jr_01_4859                               ;; 01:4865 $20 $f2
     ld   A, E                                          ;; 01:4867 $7b
     ret                                                ;; 01:4868 $c9
-    db   $21, $0e, $d2, $18, $03, $21, $10, $d2        ;; 01:4869 ????????
-    db   $2a, $66, $6f, $29, $29, $29, $7c, $c9        ;; 01:4871 ????????
+.jr_01_4869:
+    ld   hl,wD20E_PlayerXPosition
+    jr   .jr_01_4871
+.jr_01_486e:
+    ld   hl,wD210_PlayerYPosition
+.jr_01_4871:
+    ldi  a,[hl]
+    ld   h,[hl]
+    ld   l,a
+    add  hl,hl
+    add  hl,hl
+    add  hl,hl
+    ld   a,h
+    ret  
 
 call_01_4879:
     ld   A, [wD69A]                                    ;; 01:4879 $fa $9a $d6
@@ -1171,22 +1204,18 @@ call_01_48df:
     ld   HL, data_01_5d4b                              ;; 01:48f7 $21 $4b $5d
     jp   call_01_4e6f                                  ;; 01:48fa $c3 $6f $4e
 
-;    db   $21, $9b, $d6, $6e, $26, $00, $11, $67        ;; 01:48fd ????????
-;    db   $d6, $19, $7e, $ea, $0a, $d6, $3e, $80        ;; 01:4905 ????????
-;    db   $ea, $0b, $d6, $21, $0a, $d6, $c3, $6f        ;; 01:490d ????????
-;    db   $4e                                           ;; 01:4915 ?
 call_01_48fd:
-    ld hl, $d69b
-    ld l, [hl]
-    ld h, $00
-    ld de, $d667
-    add hl, de
-    ld a, [hl]
-    ld [$d60a], a
-    ld a, $80
-    ld [$d60b], a
-    ld hl, $d60a
-    jp call_01_4e6f
+    ld   hl,wD69B
+    ld   l,[hl]
+    ld   h,$00
+    ld   de,wD667_PasswordExitButton
+    add  hl,de
+    ld   a,[hl]
+    ld   [wD60A],a
+    ld   a,$80
+    ld   [wD60B],a
+    ld   hl,wD60A
+    jp   call_01_4e6f
 
 call_01_4916:
     ld   A, [wD69B]                                    ;; 01:4916 $fa $9b $d6
@@ -1209,107 +1238,82 @@ call_01_491d:
     db   $40, $08, $e8, $57, $0c, $00, $40, $0c        ;; 01:494a ....????
     db   $e8, $60, $1f, $00, $40, $1f, $e8, $57        ;; 01:4952 ??......
     db   $1e, $00, $40, $1e, $e8, $57, $1d, $00        ;; 01:495a ...?????
-    db   $40, $1d, $e8, $57, $3d, $00, $40, 
+    db   $40, $1d, $e8, $57, $3d, $00, $40
     
-
-;    db   $cd        ;; 01:4962 ????????
-;    db   $43, $2e, $f5, $f5, $21, $24, $d6, $6e        ;; 01:496a ????????
-;    db   $26, $00, $11, $29, $d6, $19, $4e, $f1        ;; 01:4972 ????????
-;    db   $fe, $05, $20, $09, $79, $e6, $20, $28
-;    db   $0e, $3e, $01, $18, $0a, $06, $03, $af        ;; 01:4982 ????????
-;    db   $cb, $39, $ce, $00, $05, $20, $f9, $87        ;; 01:498a ????????
-;    db   $5f, $16, $00, $f1, $6f, $26, $00, $29        ;; 01:4992 ????????
-;    db   $29, $29, $19, $11, $a7, $49, $19, $2a        ;; 01:499a ????????
-;    db   $66, $6f, $c3, $6f, $4e, 
-call_01_4969:    
+call_01_4969:
     call call_00_2e43_GetRemoteProgressId
     push af
     push af
-    ld hl, wD624_CurrentLevelId
-    ld l, [hl]
-    ld h, $00
-    ld de, wD629_RemoteProgressFlags
-    add hl, de
-    ld c, [hl]
-    pop af
-    cp $05
-    jr nz, jr_01_4987
-    
-    ld a, c
-    and $20
-    jr z, jr_01_4991
-
-    ld a, $01
-    jr jr_01_4991
-
-jr_01_4987:
-    ld b, $03
-    xor a
-
-jr_01_498a:
-    srl c
-    adc $00
-    dec b
-    jr nz, jr_01_498a
-
-jr_01_4991:
-    add a
-    ld e, a
-    ld d, $00
-    pop af
-    ld l, a
-    ld h, $00
-    add hl, hl
-    add hl, hl
-    add hl, hl
-    add hl, de
-    ld de, $49a7
-    add hl, de
-    ld a, [hl+]
-    ld h, [hl]
-    ld l, a
-    jp call_01_4e6f
-    
+    ld   hl,wD624_CurrentLevelId
+    ld   l,[hl]
+    ld   h,$00
+    ld   de,wD629_RemoteProgressFlags
+    add  hl,de
+    ld   c,[hl]
+    pop  af
+    cp   a,$05
+    jr   nz,.jr_01_4987
+    ld   a,c
+    and  a,$20
+    jr   z,.jr_01_4991
+    ld   a,$01
+    jr   .jr_01_4991
+.jr_01_4987:
+    ld   b,$03
+    xor  a
+.jr_01_498a:
+    srl  c
+    adc  a,$00
+    dec  b
+    jr   nz,.jr_01_498a
+.jr_01_4991:
+    add  a
+    ld   e,a
+    ld   d,$00
+    pop  af
+    ld   l,a
+    ld   h,$00
+    add  hl,hl
+    add  hl,hl
+    add  hl,hl
+    add  hl,de
+    ld   de,.data_01_49a7
+    add  hl,de
+    ldi  a,[hl]
+    ld   h,[hl]
+    ld   l,a
+    jp   call_01_4e6f
+.data_01_49a7:
     db   $97, $5d, $b0        ;; 01:49a2 ????????
     db   $5d, $c9, $5d, $e2, $5d, $fb, $5d, $14        ;; 01:49aa ????????
     db   $5e, $2d, $5e, $2d, $5e, $46, $5e, $5f        ;; 01:49b2 ????????
     db   $5e, $5f, $5e, $5f, $5e, $fb, $5d, $14        ;; 01:49ba ????????
     db   $5e, $2d, $5e, $2d, $5e, $46, $5e, $5f        ;; 01:49c2 ????????
     db   $5e, $5f, $5e, $5f, $5e, $78, $5e, $92        ;; 01:49ca ????????
-    db   $5e, $92, $5e, $92, $5e, 
-
-;    db   $21, $0f, $4a        ;; 01:49d2 ????????
-;    db   $11, $4b, $da, $01, $80, $00, $cd, $b0        ;; 01:49da ????????
-;    db   $07, $fa, $24, $d6, $11, $0f, $7c, $cd        ;; 01:49e2 ????????
-;    db   $b9, $07, $3e, $92, $ea, $96, $d6, $3e        ;; 01:49ea ????????
-;    db   $03, $ea, $92, $d6, $3e, $02, $ea, $93        ;; 01:49f2 ????????
-;    db   $d6, $e5, $cd, $5a, $4e, $e1, $11, $00        ;; 01:49fa ????????
-;    db   $c0, $cd, $b0, $07, $11, $ab, $da, $01        ;; 01:4a02 ????????
-;    db   $18, $00, $c3, $b0, $07, 
+    db   $5e, $92, $5e, $92, $5e
 
 call_01_49d7:
-    ld hl, data_01_4a0f
-    ld de, wDA4B
-    ld bc, $0080
+    ld   hl,data_01_4a0f
+    ld   de,wDA4B
+    ld   bc,$0080
     call call_00_07b0_MemCopy
-    ld a, [wD624_CurrentLevelId]
-    ld de, data_01_7c0f_collectible_images
+    ld   a,[wD624_CurrentLevelId]
+    ld   de,data_01_7c0f_collectible_images
     call call_00_07b9
-    ld a, $92
-    ld [wD696], a
-    ld a, $03
-    ld [wD692], a
-    ld a, $02
-    ld [wD693], a
+    ld   a,$92
+    ld   [wD696],a
+    ld   a,$03
+    ld   [wD692],a
+    ld   a,$02
+    ld   [wD693],a
     push hl
     call call_01_4e5a
-    pop hl
-    ld de, wC000_BgMapTileIds
+    pop  hl
+    ld   de,wC000_BgMapTileIds
     call call_00_07b0_MemCopy
-    ld de, wDAAB
-    ld bc, $0018
-    jp call_00_07b0_MemCopy
-    
+    ld   de,wDAAB
+    ld   bc,$0018
+    jp   call_00_07b0_MemCopy
 data_01_4a0f:
     db   $00, $00, $00                                 
     db   $02, $00, $00, $e0, $03, $00, $00, $8c        ;; 01:4a12 ????????
@@ -2296,11 +2300,10 @@ call_01_4fa5_SetupPassword:
     dw   $d65b, $0001, $d682, $0002        ;; 01:5267 ????????
     dw   $0000                             ;; 01:526f ??
 
-call_01_5271_ProcessPassword: ; handles setting save data from password
-    
+call_01_5271_ProcessPassword: ; handles setting save data from password 
     ; check if any of the boxes are blank. if so, it is an invalid password
     ld   HL, wD668_PasswordValues                      ;; 01:5271 $21 $68 $d6
-    ld   B, $1c                                        ;; 01:5274 $06 $1c ; 1c is the number of password boxes (28)
+    ld   B, $1c                                        ;; 01:5274 $06 $1c ; 1c is the number of password boxes [28]
 .jr_01_5276:
     ld   A, [HL+]                                      ;; 01:5276 $2a
     cp   A, $20                                        ;; 01:5277 $fe $20
@@ -2417,11 +2420,8 @@ call_01_5271_ProcessPassword: ; handles setting save data from password
     ld   [wD624_CurrentLevelId], A                                    ;; 01:530c $ea $24 $d6
     cp   A, $1e                                        ;; 01:530f $fe $1e
     jr   NZ, .jr_01_52d6                               ;; 01:5311 $20 $c3
-    
-    ; set current level to 0
     pop  AF                                            ;; 01:5313 $f1
-    ld   [wD624_CurrentLevelId], A                                    ;; 01:5314 $ea $24 $d6
-    
+    ld   [wD624_CurrentLevelId], A ; set current level to 0                                   ;; 01:5314 $ea $24 $d6
     ld   A, $30                                        ;; 01:5317 $3e $30
     ret                                                ;; 01:5319 $c9
 .jp_01_531a:
