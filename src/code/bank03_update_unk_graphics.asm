@@ -441,6 +441,7 @@ jr_03_666e:
     inc hl
     jr jr_03_6666
 
+call_03_6675:
     call call_00_3a0a
     push de
     inc de

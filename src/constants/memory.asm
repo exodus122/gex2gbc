@@ -346,7 +346,10 @@ wD613:
     ds 1                                               ;; d613
 
 wD614:
-    ds 2                                               ;; d614
+    ds 1                                               ;; d614
+
+wD615:
+    ds 1                                               ;; d615
 
 wD616:
     ds 1                                               ;; d616
@@ -1215,7 +1218,10 @@ wDA13:
     ds 8                                               ;; da13
 
 wDA1B:
-    ds 48                                              ;; da1b
+    ds 32                                              ;; da1b
+
+wDA3B:
+    ds 16                                              ;; da1b
 
 wDA4B:
     ds 48                                              ;; da4b

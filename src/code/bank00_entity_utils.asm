@@ -318,18 +318,18 @@ call_00_3251:
     ld   l,a
     ldi  a,[hl]
     bit  5,c
-    jr   z,label326A
+    jr   z,.jr_02_326A
     cpl  
     inc  a
     cp   [hl]
-    jr   z,label326E
+    jr   z,.jr_02_326E
     dec  [hl]
-    jr   label326E
-    label326A:
+    jr   .jr_02_326E
+.jr_02_326A:
     cp   [hl]
-    jr   z,label326E
+    jr   z,.jr_02_326E
     inc  [hl]
-    label326E:
+.jr_02_326E:
     ldi  a,[hl]
     ld   c,a
     ld   a,[hl]
@@ -375,10 +375,10 @@ call_00_329a:
     ld   l,a
     ldi  a,[hl]
     bit  5,c
-    jr   z,label32AE
+    jr   z,.jr_02_32AE
     cpl  
     inc  a
-    label32AE:
+.jr_02_32AE:
     add  [hl]
     ld   c,a
     and  a,$0F
@@ -401,21 +401,21 @@ call_00_329a:
     add  [hl]
     ldd  [hl],a
     bit  7,a
-    jr   z,label32D2
+    jr   z,.jr_02_32D2
     cpl  
     inc  a
-    label32D2:
+.jr_02_32D2:
     cp   [hl]
-    jr   c,label32DD
+    jr   c,.jr_02_32DD
     ld   a,l
     xor  a,$17
     ld   l,a
     ld   a,[hl]
     xor  a,$20
     ld   [hl],a
-    label32DD:
+.jr_02_32DD:
     pop  bc
-    jp   $37C9
+    jp   call_00_37c9
 
 call_00_32e1:
     ld   H, $d2                                        ;; 00:32e1 $26 $d2
@@ -437,25 +437,25 @@ call_00_32e1:
     or   a,$1C
     ld   l,a
     bit  7,c
-    jr   nz,label3309
+    jr   nz,.jr_02_3309
     bit  7,[hl]
-    jr   nz,label3314
+    jr   nz,.jr_02_3314
     ld   a,[hl]
     cp   c
     ret  z
-    jr   c,label3314
-    jr   label3312
-label3309:
+    jr   c,.jr_02_3314
+    jr   .jr_02_3312
+.jr_02_3309:
     bit  7,[hl]
-    jr   z,label3312
+    jr   z,.jr_02_3312
     ld   a,[hl]
     cp   c
     ret  z
-    jr   c,label3314
-label3312:
+    jr   c,.jr_02_3314
+.jr_02_3312:
     dec  [hl]
     ret  
-label3314:
+.jr_02_3314:
     inc  [hl]
     ret  
 
@@ -465,25 +465,25 @@ call_00_3316:
     or   a,$1E
     ld   l,a
     bit  7,c
-    jr   nz,label332D
+    jr   nz,.jr_02_332D
     bit  7,[hl]
-    jr   nz,label3338
+    jr   nz,.jr_02_3338
     ld   a,[hl]
     cp   c
     ret  z
-    jr   c,label3338
-    jr   label3336
-label332D:
+    jr   c,.jr_02_3338
+    jr   .jr_02_3336
+.jr_02_332D:
     bit  7,[hl]
-    jr   z,label3336
+    jr   z,.jr_02_3336
     ld   a,[hl]
     cp   c
     ret  z
-    jr   c,label3338
-label3336:
+    jr   c,.jr_02_3338
+.jr_02_3336:
     dec  [hl]
     ret  
-label3338:
+.jr_02_3338:
     inc  [hl]
     ret  
     ld   h,$D2
@@ -548,33 +548,33 @@ call_00_3364:
     ld   hl,wD76A_PlayerXPositionBlock
     ld   a,[hl]
     cp   c
-    jr   c,label33A5
+    jr   c,.jr_02_33A5
     ld   a,b
     cp   [hl]
-    jr   c,label33A5
+    jr   c,.jr_02_33A5
     ld   a,e
     cp   [hl]
-    jr   z,label33A5
+    jr   z,.jr_02_33A5
     ld   d,$00
-    jr   c,label339C
+    jr   c,.jr_02_339C
     ld   d,$20
-    label339C:
+.jr_02_339C:
     ld   h,$D2
     ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$0D
     ld   l,a
     ld   [hl],d
-    label33A5:
+.jr_02_33A5:
     ld   h,$D2
     ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$0D
     ld   l,a
     bit  5,[hl]
-    jr   z,label33C7
+    jr   z,.jr_02_33C7
     ld   a,e
     cp   c
-    jr   c,label33CB
-    label33B5:
+    jr   c,.jr_02_33CB
+.jr_02_33B5:
     ld   [hl],$20
     ld   a,l
     xor  a,$11
@@ -589,11 +589,11 @@ call_00_3364:
     sbc  a,$00
     ld   [hl],a
     ret  
-    label33C7:
+.jr_02_33C7:
     ld   a,e
     cp   b
-    jr   nc,label33B5
-    label33CB:
+    jr   nc,.jr_02_33B5
+.jr_02_33CB:
     ld   [hl],$00
     ld   a,l
     xor  a,$11
@@ -619,9 +619,9 @@ call_00_3364:
     xor  a,$1D
     ld   l,a
     bit  1,[hl]
-    jr   z,label33F2
-    jr   label341B
-    label33F2:
+    jr   z,.jr_02_33F2
+    jr   .jr_02_341B
+.jr_02_33F2:
     ld   h,$D2
     ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$1C
@@ -629,20 +629,20 @@ call_00_3364:
     ld   c,[hl]
     dec  l
     bit  7,[hl]
-    jr   nz,label340C
+    jr   nz,.jr_02_340C
     ld   a,[hl]
     add  c
     cp   a,$80
-    jr   c,label340E
+    jr   c,.jr_02_340E
     sub  a,$7F
     cpl  
     inc  a
     add  c
     ld   c,a
-    label340C:
+.jr_02_340C:
     ld   a,[hl]
     add  c
-    label340E:
+.jr_02_340E:
     ld   [hl],a
     ld   a,l
     xor  a,$15
@@ -654,7 +654,7 @@ call_00_3364:
     adc  a,$00
     ld   [hl],a
     ret  
-    label341B:
+.jr_02_341B:
     ld   h,$D2
     ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$1C
@@ -662,18 +662,18 @@ call_00_3364:
     ld   c,[hl]
     dec  l
     bit  7,[hl]
-    jr   z,label3433
+    jr   z,.jr_02_3433
     ld   a,[hl]
     sub  c
     cp   a,$80
-    jr   nc,label3435
+    jr   nc,.jr_02_3435
     sub  a,$80
     add  c
     ld   c,a
-    label3433:
+.jr_02_3433:
     ld   a,[hl]
     sub  c
-    label3435:
+.jr_02_3435:
     ld   [hl],a
     ld   a,l
     xor  a,$15
@@ -696,16 +696,16 @@ call_00_3442:
     ld   l,a
     ld   a,[hl]
     bit  5,c
-    jr   z,label3455
+    jr   z,.jr_02_3455
     cpl  
     inc  a
-    label3455:
+.jr_02_3455:
     ld   c,a
     cp   a,$80
     ld   a,$FF
     adc  a,$00
     ld   b,a
-    jp   $37C9
+    jp   call_00_37c9
 
 call_00_3460:
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3460 $fa $00 $d3
@@ -979,7 +979,7 @@ call_00_3597:
     ld   b,a
     call call_00_37d8
     pop  bc
-    jp   $37C9
+    jp   call_00_37c9
 
 call_00_35d5:
     ld   H, $d2                                        ;; 00:35d5 $26 $d2
@@ -1122,9 +1122,9 @@ call_00_36da:
     ld   a,[wD20F_PlayerXPosition]
     sbc  [hl]
     ld   c,$00
-    jr   c,label36F1
+    jr   c,.jr_02_36F1
     ld   c,$20
-    label36F1:
+.jr_02_36F1:
     ld   a,l
     xor  a,$02
     ld   l,a
@@ -1221,10 +1221,10 @@ call_00_3760:
     ld   l,a
     ldi  a,[hl]
     bit  6,c
-    jr   nz,label3774
+    jr   nz,.jr_02_3774
     cpl  
     inc  a
-    label3774:
+.jr_02_3774:
     add  [hl]
     ld   c,a
     and  a,$0F
@@ -1272,14 +1272,14 @@ call_00_3760:
     ld   a,d
     cp   c
     ld   c,$40
-    jr   c,label37BD
+    jr   c,.jr_02_37BD
     ld   a,b
     cp   d
     ld   c,$00
-    jr   c,label37BD
+    jr   c,.jr_02_37BD
     xor  a
     ret  
-    label37BD:
+.jr_02_37BD:
     ld   h,$D2
     ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$0D
@@ -1491,7 +1491,7 @@ call_00_38c1:
     dec  A                                             ;; 00:38d7 $3d
     srl  A                                             ;; 00:38d8 $cb $3f
     ld   E, A                                          ;; 00:38da $5f
-    ld   HL, $38ed                                     ;; 00:38db $21 $ed $38
+    ld   HL, .data_02_38ed                                     ;; 00:38db $21 $ed $38
     add  HL, DE                                        ;; 00:38de $19
     ld   A, [HL]                                       ;; 00:38df $7e
     ld   HL, wD624_CurrentLevelId                                     ;; 00:38e0 $21 $24 $d6
@@ -1502,6 +1502,7 @@ call_00_38c1:
     and  A, [HL]                                       ;; 00:38ea $a6
     ld   E, A                                          ;; 00:38eb $5f
     ret                                                ;; 00:38ec $c9
+.data_02_38ed:
     db   $01, $02, $04                                 ;; 00:38ed .?.
 
 call_00_38f0:
@@ -1571,16 +1572,16 @@ call_00_393c:
 
     ld   h,$D2
     ld   a,$20
-    label3955:
+.jr_02_3955:
     ld   l,a
     ld   a,[hl]
     cp   a,$FF
-    jr   z,label3961
+    jr   z,.jr_02_3961
     ld   a,l
     add  a,$20
-    jr   nz,label3955
+    jr   nz,.jr_02_3955
     ret  
-    label3961:
+.jr_02_3961:
     ld   a,[wD300_CurrentEntityAddrLo]
     push af
     ld   a,l
@@ -1637,7 +1638,9 @@ call_00_3985:
     call call_00_112f                                  ;; 00:39bc $cd $2f $11
     ret                                                ;; 00:39bf $c9
 data_00_39c0:
-    dw   wD33C, wD444, wD35D, wD46C
+    dw   wD33C
+data_00_39c2:
+    dw   wD444, wD35D, wD46C
     dw   wD37E, wD494, wD39F, wD4BC
     dw   wD3C0, wD4E4, wD3E1, wD50C
     dw   wD402, wD534, wD423, wD55C
@@ -1652,7 +1655,7 @@ call_00_39e0:
     ld   H, $00                                        ;; 00:39e9 $26 $00
     add  HL, HL                                        ;; 00:39eb $29
     add  HL, HL                                        ;; 00:39ec $29
-    ld   DE, $39c0                                     ;; 00:39ed $11 $c0 $39
+    ld   DE, data_00_39c0                                     ;; 00:39ed $11 $c0 $39
     add  HL, DE                                        ;; 00:39f0 $19
     ld   E, [HL]                                       ;; 00:39f1 $5e
     inc  HL                                            ;; 00:39f2 $23
@@ -1669,7 +1672,7 @@ call_00_39f5:
     ld   H, $00                                        ;; 00:39fe $26 $00
     add  HL, HL                                        ;; 00:3a00 $29
     add  HL, HL                                        ;; 00:3a01 $29
-    ld   DE, $39c2                                     ;; 00:3a02 $11 $c2 $39
+    ld   DE, data_00_39c2                                     ;; 00:3a02 $11 $c2 $39
     add  HL, DE                                        ;; 00:3a05 $19
     ld   E, [HL]                                       ;; 00:3a06 $5e
     inc  HL                                            ;; 00:3a07 $23
@@ -1686,7 +1689,7 @@ call_00_3a0a:
     ld   H, $00                                        ;; 00:3a13 $26 $00
     add  HL, HL                                        ;; 00:3a15 $29
     add  HL, HL                                        ;; 00:3a16 $29
-    ld   DE, $39c0                                     ;; 00:3a17 $11 $c0 $39
+    ld   DE, data_00_39c0                                     ;; 00:3a17 $11 $c0 $39
     add  HL, DE                                        ;; 00:3a1a $19
     ld   E, [HL]                                       ;; 00:3a1b $5e
     inc  HL                                            ;; 00:3a1c $23
@@ -1701,7 +1704,7 @@ call_00_3a23:
     ld   L, C                                          ;; 00:3a23 $69
     ld   H, $00                                        ;; 00:3a24 $26 $00
     add  HL, HL                                        ;; 00:3a26 $29
-    ld   DE, $3a67                                     ;; 00:3a27 $11 $67 $3a
+    ld   DE, .data_00_3a67                                     ;; 00:3a27 $11 $67 $3a
     add  HL, DE                                        ;; 00:3a2a $19
     ld   E, [HL]                                       ;; 00:3a2b $5e
     inc  HL                                            ;; 00:3a2c $23
@@ -1715,7 +1718,7 @@ call_00_3a23:
     ld   H, $00                                        ;; 00:3a37 $26 $00
     add  HL, HL                                        ;; 00:3a39 $29
     add  HL, HL                                        ;; 00:3a3a $29
-    ld   BC, $39c0                                     ;; 00:3a3b $01 $c0 $39
+    ld   BC, data_00_39c0                                     ;; 00:3a3b $01 $c0 $39
     add  HL, BC                                        ;; 00:3a3e $09
     ld   C, [HL]                                       ;; 00:3a3f $4e
     inc  HL                                            ;; 00:3a40 $23
@@ -1751,6 +1754,7 @@ call_00_3a23:
     ld   L, A                                          ;; 00:3a63 $6f
     set  0, [HL]                                       ;; 00:3a64 $cb $c6
     ret                                                ;; 00:3a66 $c9
+.data_00_3a67:
     db   $75, $3a                                      ;; 00:3a67 ??
     dw   .data_00_3a9d                                 ;; 00:3a69 pP
     dw   .data_00_3ac5                                 ;; 00:3a6b pP
@@ -1803,7 +1807,7 @@ call_00_3b8d:
     ld   H, $00                                        ;; 00:3b96 $26 $00
     add  HL, HL                                        ;; 00:3b98 $29
     add  HL, HL                                        ;; 00:3b99 $29
-    ld   DE, $39c2                                     ;; 00:3b9a $11 $c2 $39
+    ld   DE, data_00_39c2                                     ;; 00:3b9a $11 $c2 $39
     add  HL, DE                                        ;; 00:3b9d $19
     ld   A, [HL+]                                      ;; 00:3b9e $2a
     ld   H, [HL]                                       ;; 00:3b9f $66
@@ -1888,7 +1892,7 @@ call_00_3bf4:
     srl  A                                             ;; 00:3c0a $cb $3f
     ld   L, A                                          ;; 00:3c0c $6f
     ld   H, $00                                        ;; 00:3c0d $26 $00
-    ld   DE, $3c20                                     ;; 00:3c0f $11 $20 $3c
+    ld   DE, .data_00_3c20                                     ;; 00:3c0f $11 $20 $3c
     add  HL, DE                                        ;; 00:3c12 $19
     ld   A, [HL]                                       ;; 00:3c13 $7e
     cp   A, $ff                                        ;; 00:3c14 $fe $ff
@@ -1897,6 +1901,7 @@ call_00_3bf4:
     ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:3c1a $21 $0f $d6
     set  4, [HL]                                       ;; 00:3c1d $cb $e6
     ret                                                ;; 00:3c1f $c9
+.data_00_3c20:
     db   $ff, $0f, $05, $04, $02, $0c, $ff, $09        ;; 00:3c20 ?..?????
     db   $0e, $08, $03, $00, $ff, $0b, $11, $ff        ;; 00:3c28 ????????
     db   $07, $ff, $ff, $ff, $ff, $0d, $0a, $01        ;; 00:3c30 .???????

@@ -57,7 +57,7 @@ call_00_0150_Init:
     ld   [MBC1SRamEnable], A                           ;; 00:016a $ea $01 $00
     ld   [MBC1SRamBankingMode], A                                    ;; 00:016d $ea $01 $60
     ld   HL, wC000_BgMapTileIds                                     ;; 00:0170 $21 $00 $c0
-    ld   DE, $c001                                     ;; 00:0173 $11 $01 $c0
+    ld   DE, wC000_BgMapTileIds+1                                     ;; 00:0173 $11 $01 $c0
     ld   BC, $1fff                                     ;; 00:0176 $01 $ff $1f
     ld   [HL], $00                                     ;; 00:0179 $36 $00
     call call_00_07b0_MemCopy                                  ;; 00:017b $cd $b0 $07
@@ -662,8 +662,8 @@ call_00_0647:
     ret nz
 
     xor a
-    ld [$d753], a
-    ld [$d754], a
+    ld [wD753], a
+    ld [wD754], a
     ld de, $0708
     ld hl, wD755
     ld [hl], e
@@ -673,8 +673,8 @@ call_00_0647:
 
 
 jr_00_067a:
-    ld [$d755], a
-    ld [$d756], a
+    ld [wD755], a
+    ld [wD756], a
     ld de, $0708
     ld hl, wD753
     ld [hl], e
