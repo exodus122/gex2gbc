@@ -628,59 +628,44 @@ call_00_0634:
 .jr_00_0643:
     ld   [wD689], A                                    ;; 00:0643 $ea $89 $d6
     ret                                                ;; 00:0646 $c9
-;    db   $21, $42, $d7, $4e, $77, $c5, $ea, $9d        ;; 00:0647 ????????
-;    db   $d5, $3e, $0b, $21, $1b, $5f, $cd, $78        ;; 00:064f ????????
-;    db   $10, $c1, $79, $fe, $03, $28, $59, $fe        ;; 00:0657 ????????
-;    db   $04, $28, $28, $fe, $01, $28, $14, $fe        ;; 00:065f ????????
-;    db   $02, $c0, $af, $ea, $53, $d7, $ea, $54        ;; 00:0667 ????????
-;    db   $d7, $11, $08, $07, $21, $55, $d7, $73        ;; 00:066f ????????
-;    db   $23, $72, $c9, $ea, $55, $d7, $ea, $56        ;; 00:0677 ????????
-;    db   $d7, $11, $08, $07, $21, $53, $d7, $73        ;; 00:067f ????????
-;    db   $23, $72, $c9                                 ;; 00:0687 ???
 
 call_00_0647:
-    ld hl, wD742_PlayerCurrentFly
-    ld c, [hl]
-    ld [hl], a
+    ld   hl,wD742_PlayerCurrentFly
+    ld   c,[hl]
+    ld   [hl],a
     push bc
-    ld [wD59D_ReturnBank], a
-    ld a, BANK_0B
-    ld hl, $5f1b
+    ld   [wD59D_ReturnBank],a
+    ld   a,$0B
+    ld   hl,call_03_5f1b
     call call_00_1078_FarCall
-    pop bc
-    ld a, c
-    cp $03
-    jr z, jr_00_06b7
-
-    cp $04
-    jr z, call_00_068a
-
-    cp $01
-    jr z, jr_00_067a
-
-    cp $02
-    ret nz
-
-    xor a
-    ld [wD753], a
-    ld [wD754], a
-    ld de, $0708
-    ld hl, wD755
-    ld [hl], e
-    inc hl
-    ld [hl], d
-    ret
-
-
-jr_00_067a:
-    ld [wD755], a
-    ld [wD756], a
-    ld de, $0708
-    ld hl, wD753
-    ld [hl], e
-    inc hl
-    ld [hl], d
-    ret
+    pop  bc
+    ld   a,c
+    cp   a,$03
+    jr   z,call_00_06b7
+    cp   a,$04
+    jr   z,call_00_068a
+    cp   a,$01
+    jr   z,.jr_00_067a
+    cp   a,$02
+    ret  nz
+    xor  a
+    ld   [wD753],a
+    ld   [wD754],a
+    ld   de,$0708
+    ld   hl,wD755
+    ld   [hl],e
+    inc  hl
+    ld   [hl],d
+    ret  
+.jr_00_067a:
+    ld   [wD755],a
+    ld   [wD756],a
+    ld   de,$0708
+    ld   hl,wD753
+    ld   [hl],e
+    inc  hl
+    ld   [hl],d
+    ret  
 
 call_00_068a:
     call call_00_074d                                  ;; 00:068a $cd $4d $07
@@ -694,7 +679,7 @@ call_00_0696:
     ld   A, $10                                        ;; 00:0696 $3e $10
     ld   [wD59D_ReturnBank], A                                    ;; 00:0698 $ea $9d $d5
     ld   A, BANK_02                                        ;; 00:069b $3e $02
-    ld   HL, call_02_4ccd                                   ;; 00:069d $21 $cd $4c (BANK 3)
+    ld   HL, call_02_4ccd                                   ;; 00:069d $21 $cd $4c [BANK 3]
     call call_00_1078_FarCall                                  ;; 00:06a0 $cd $78 $10
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:06a3 $fa $24 $d6
     and  A, A                                          ;; 00:06a6 $a7
@@ -706,8 +691,8 @@ call_00_0696:
     ld   HL, wD73D_LivesRemaining                                     ;; 00:06b0 $21 $3d $d7
     dec  [HL]                                          ;; 00:06b3 $35
     jp   call_00_0634                                  ;; 00:06b4 $c3 $34 $06
-;    db   $21, $41, $d7, $36, $04, $c3, $29, $06        ;; 00:06b7 ????????
-jr_00_06b7:
+
+call_00_06b7:
     ld   hl, wD741_PlayerHealth
     ld   [hl], $04
     jp   call_00_0629
@@ -731,7 +716,7 @@ call_00_06bf_DealDamageToPlayer: ; Deal damage to Gex
     ld   A, $0f                                        ;; 00:06dc $3e $0f
     ld   [wD59D_ReturnBank], A                                    ;; 00:06de $ea $9d $d5
     ld   A, BANK_02                                        ;; 00:06e1 $3e $02
-    ld   HL, call_02_4ccd                                   ;; 00:06e3 $21 $cd $4c (BANK 3)
+    ld   HL, call_02_4ccd                                   ;; 00:06e3 $21 $cd $4c [BANK 3]
     call call_00_1078_FarCall                                  ;; 00:06e6 $cd $78 $10
     jp   call_00_0629                                    ;; 00:06e9 $c3 $29 $06
 
@@ -855,125 +840,97 @@ call_00_07b9:
     ld   H, [HL]                                       ;; 00:07c0 $66
     ld   L, E                                          ;; 00:07c1 $6b
     ret                                                ;; 00:07c2 $c9
-;    db   $fa, $a5, $d6, $cd, $89, $10, $21, $ad        ;; 00:07c3 ????????
-;    db   $d6, $4e, $23, $46, $21, $a6, $d6, $6e        ;; 00:07cb ????????
-;    db   $26, $00, $29, $29, $29, $29, $11, $00        ;; 00:07d3 ????????
-;    db   $80, $19, $5d, $54, $21, $ab, $d6, $2a        ;; 00:07db ????????
-;    db   $66, $6f, $cd, $b0, $07, $fa, $a6, $d6        ;; 00:07e3 ????????
-;    db   $ea, $af, $d6, $21, $a9, $d6, $2a, $66        ;; 00:07eb ????????
-;    db   $6f, $11, $00, $98, $fa, $a8, $d6, $47        ;; 00:07f3 ????????
-;    db   $fa, $a7, $d6, $4f, $d5, $fa, $9e, $d5        ;; 00:07fb ????????
-;    db   $a7, $28, $2e, $3e, $01, $e0, $4f, $e5        ;; 00:0803 ????????
-;    db   $d5, $c5, $4e, $21, $a7, $d6, $5e, $16        ;; 00:080b ????????
-;    db   $00, $21, $a8, $d6, $46, $21, $00, $00        ;; 00:0813 ????????
-;    db   $19, $05, $20, $fc, $5d, $54, $21, $a9        ;; 00:081b ????????
-;    db   $d6, $2a, $66, $6f, $19, $06, $00, $09        ;; 00:0823 ????????
-;    db   $7e, $c1, $d1, $e1, $12, $3e, $00, $e0        ;; 00:082b ????????
-;    db   $4f, $fa, $af, $d6, $86, $12, $23, $13        ;; 00:0833 ????????
-;    db   $0d, $20, $c2, $d1, $7b, $c6, $20, $5f        ;; 00:083b ????????
-;    db   $7a, $ce, $00, $57, $05, $20, $b1, $c3        ;; 00:0843 ????????
-;    db   $a3, $10                                      ;; 00:084b ??
 
 call_00_07c3:
-    ld a, [wD6A5_PasswordTilesBank]
+    ld   a,[wD6A5_PasswordTilesBank]
     call call_00_1089_SwitchBank
-    ld hl, wD6AD
-    ld c, [hl]
-    inc hl
-    ld b, [hl]
-    ld hl, wD6A6
-    ld l, [hl]
-    ld h, $00
-    add hl, hl
-    add hl, hl
-    add hl, hl
-    add hl, hl
-    ld de, $8000
-    add hl, de
-    ld e, l
-    ld d, h
-    ld hl, wD6AB
-    ld a, [hl+]
-    ld h, [hl]
-    ld l, a
+    ld   hl,wD6AD
+    ld   c,[hl]
+    inc  hl
+    ld   b,[hl]
+    ld   hl,wD6A6
+    ld   l,[hl]
+    ld   h,$00
+    add  hl,hl
+    add  hl,hl
+    add  hl,hl
+    add  hl,hl
+    ld   de,$8000
+    add  hl,de
+    ld   e,l
+    ld   d,h
+    ld   hl,wD6AB
+    ldi  a,[hl]
+    ld   h,[hl]
+    ld   l,a
     call call_00_07b0_MemCopy
-    ld a, [wD6A6]
-    ld [wD6AF], a
-    ld hl, wD6A9
-    ld a, [hl+]
-    ld h, [hl]
-    ld l, a
-    ld de, $9800
-    ld a, [wD6A8]
-    ld b, a
-
-jr_00_07fb:
-    ld a, [$d6a7]
-    ld c, a
-
-call_00_07ff:
+    ld   a,[wD6A6]
+    ld   [wD6AF],a
+    ld   hl,wD6A9
+    ldi  a,[hl]
+    ld   h,[hl]
+    ld   l,a
+    ld   de,$9800
+    ld   a,[wD6A8]
+    ld   b,a
+.jr_00_07fb:
+    ld   a,[wD6A7]
+    ld   c,a
     push de
-
-jr_00_0800:
-    ld a, [$d59e]
-    and a
-    jr z, jr_00_0834
-
-    ld a, $01
-    ldh [rVBK], a
+.jr_00_0800:
+    ld   a,[wD59E]
+    and  a
+    jr   z,.jr_00_0834
+    ld   a,$01
+    ldh   [rVBK],a
     push hl
     push de
     push bc
-    ld c, [hl]
-    ld hl, wD6A7
-    ld e, [hl]
-    ld d, $00
-    ld hl, wD6A8
-    ld b, [hl]
-    ld hl, $0000
-
-jr_00_081b:
-    add hl, de
-    dec b
-    jr nz, jr_00_081b
-
-    ld e, l
-    ld d, h
-    ld hl, wD6A9
-    ld a, [hl+]
-    ld h, [hl]
-    ld l, a
-    add hl, de
-    ld b, $00
-    add hl, bc
-    ld a, [hl]
-    pop bc
-    pop de
-    pop hl
-    ld [de], a
-    ld a, $00
-    ldh [rVBK], a
-
-jr_00_0834:
-    ld a, [$d6af]
-    add [hl]
-    ld [de], a
-    inc hl
-    inc de
-    dec c
-    jr nz, jr_00_0800
-
-    pop de
-    ld a, e
-    add $20
-    ld e, a
-    ld a, d
-    adc $00
-    ld d, a
-    dec b
-    jr nz, jr_00_07fb
-
-    jp call_00_10a3_RestoreBank
+    ld   c,[hl]
+    ld   hl,wD6A7
+    ld   e,[hl]
+    ld   d,$00
+    ld   hl,wD6A8
+    ld   b,[hl]
+    ld   hl,$0000
+.jr_00_081b:
+    add  hl,de
+    dec  b
+    jr   nz,.jr_00_081b
+    ld   e,l
+    ld   d,h
+    ld   hl,wD6A9
+    ldi  a,[hl]
+    ld   h,[hl]
+    ld   l,a
+    add  hl,de
+    ld   b,$00
+    add  hl,bc
+    ld   a,[hl]
+    pop  bc
+    pop  de
+    pop  hl
+    ld   [de],a
+    ld   a,$00
+    ldh  [rVBK], a
+.jr_00_0834:
+    ld   a,[wD6AF]
+    add  [hl]
+    ld   [de],a
+    inc  hl
+    inc  de
+    dec  c
+    jr   nz,.jr_00_0800
+    pop  de
+    ld   a,e
+    add  a,$20
+    ld   e,a
+    ld   a,d
+    adc  a,$00
+    ld   d,a
+    dec  b
+    jr   nz,.jr_00_07fb
+    jp   call_00_10a3_RestoreBank
 
 call_00_084d:
     ld   A, [wD6B0]                                    ;; 00:084d $fa $b0 $d6
@@ -1045,7 +1002,7 @@ call_00_08b1:
     ld   A, $13                                        ;; 00:08b5 $3e $13
     call call_00_1089_SwitchBank                                  ;; 00:08b7 $cd $89 $10
     call call_00_2e3a_GetTVPaletteId                                  ;; 00:08ba $cd $3a $2e
-    ld   DE, $8e6                                      ;; 00:08bd $11 $e6 $08
+    ld   DE, .data_00_08e6                                      ;; 00:08bd $11 $e6 $08
     call call_00_07b9                                  ;; 00:08c0 $cd $b9 $07
     ld   DE, $240                                      ;; 00:08c3 $11 $40 $02
     add  HL, DE                                        ;; 00:08c6 $19
@@ -1074,6 +1031,7 @@ call_00_08b1:
     pop  DE                                            ;; 00:08e3 $d1
     pop  HL                                            ;; 00:08e4 $e1
     ret                                                ;; 00:08e5 $c9
+.data_00_08e6:
     db   $00, $40, $00, $6d, $00, $70, $00, $6a        ;; 00:08e6 ????????
     db   $00, $76, $00, $40                            ;; 00:08ee ????
     dw   $4000                                         ;; 00:08f2 wW
@@ -1457,17 +1415,14 @@ call_00_0b6d: ; writes tile data in VRAM, reads from banks
     dec  B                                             ;; 00:0b9d $05
     jr   NZ, call_00_0b6d                              ;; 00:0b9e $20 $cd
     ret                                                ;; 00:0ba0 $c9
-;    db   $fa, $fd, $cc, $e6, $7f, $fe, $00, $c8        ;; 00:0ba1 ????????
-;    db   $cd, $b4, $0a, $18, $f3                       ;; 00:0ba9 ?????
 
-jr_00_0ba1:
-    ld a, [$ccfd]
-    and $7f
-    cp $00
-    ret z
-
+call_00_0ba1:
+    ld   a,[wCCFD]
+    and  a,$7F
+    cp   a,$00
+    ret  z
     call call_00_0ab4_WaitForInterrupt
-    jr jr_00_0ba1
+    jr   call_00_0ba1
 
 call_00_0bae:
     ld   HL, wCCFD                                     ;; 00:0bae $21 $fd $cc
@@ -1481,7 +1436,7 @@ call_00_0bae:
 call_00_0bb9:
     ld   L, A                                          ;; 00:0bb9 $6f
     ld   H, $00                                        ;; 00:0bba $26 $00
-    ld   DE, $bdc                                      ;; 00:0bbc $11 $dc $0b
+    ld   DE, .data_00_0bdc                                      ;; 00:0bbc $11 $dc $0b
     add  HL, DE                                        ;; 00:0bbf $19
     or   A, $80                                        ;; 00:0bc0 $f6 $80
     ld   [wCCFD], A                                    ;; 00:0bc2 $ea $fd $cc
@@ -1502,16 +1457,29 @@ call_00_0bb9:
     ld   A, H                                          ;; 00:0bd7 $7c
     ld   [wCCFF], A                                    ;; 00:0bd8 $ea $ff $cc
     ret                                                ;; 00:0bdb $c9
+.data_00_0bdc:
     db   $01, $e5, $0b, $2a, $e7, $0b, $3b, $49        ;; 00:0bdc ........
     db   $0d, $d9                                      ;; 00:0be4 ..
     ret                                                ;; 00:0be6 $c9
     db   $d9, $e5, $d5, $21, $ff, $d1, $16, $80        ;; 00:0be7 ........
     db   $5d, $3a, $12, $1d, $3a, $12, $1d, $3a        ;; 00:0bef ........
     db   $12, $1d, $3a, $12, $7d, $ea, $a4, $cc        ;; 00:0bf7 ........
-    db   $3c, $20, $0b, $21, $0f, $d6, $cb, $be        ;; 00:0bff ........
-    db   $fa, $83, $0d, $ea, $a0, $cc, $d1, $e1        ;; 00:0c07 ........
-    db   $f1, $d9                                      ;; 00:0c0f ..
-    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:0c11 $21 $0f $d6
+    db   $3c, $20, $0b
+    
+;    db   $21, $0f, $d6, $cb, $be        ;; 00:0bff ........
+;    db   $fa, $83, $0d, $ea, $a0, $cc, $d1, $e1        ;; 00:0c07 ........
+;    db   $f1, $d9                                      ;; 00:0c0f ..
+
+    ld   hl,wD60F_BitmapOfThingsToLoad
+    res  7,[hl]
+    ld   a,[$0D83]
+    ld   [wCCA0],a
+    pop  de
+    pop  hl
+    pop  af
+    reti 
+
+    ld   HL, wD60F_BitmapOfThingsToLoad                ;; 00:0c11 $21 $0f $d6
     bit  7, [HL]                                       ;; 00:0c14 $cb $7e
     ret  Z                                             ;; 00:0c16 $c8
     bit  0, [HL]                                       ;; 00:0c17 $cb $46
@@ -2306,7 +2274,7 @@ call_00_120c_SetupMusic:
     ld   A, $00                                        ;; 00:123f $3e $00
     jp   call_00_113e                                  ;; 00:1241 $c3 $3e $11
 .data_00_1244_MusicList:
-; this is the list of songs (first byte is bank number)
+; this is the list of songs [first byte is bank number]
     db   BANK_21, $04, $0f, $00
     db   BANK_21, $00, $0f, $00        ;; 00:1244 ????????
     db   BANK_21, $08, $0f, $00
@@ -2460,7 +2428,7 @@ call_00_1f80:
     db   $0b, $21, $28, $21, $45, $21, $8c, $20        ;; 00:206e ????????
     db   $01, $00, $00, $00, $01, $01, $2a, $02        ;; 00:2076 ????????
     db   $fa, $01, $8c, $20, $01, $00, $00, $00        ;; 00:207e ????????
-    db   $01, $01, $2a, $02, $ea, $01,                 ;; 00:2086 ????????
+;    db   $01, $01, $2a, $02, $ea, $01,                 ;; 00:2086 ????????
 ;     db   $21, $82                                      ;; 00:2086 ????????
 ;    db   $d7, $4e, $21, $83, $d7, $46, $21, $b6        ;; 00:208e ????????
 ;    db   $20, $11, $04, $00, $e5, $fa, $24, $d6        ;; 00:2096 ????????
@@ -2468,41 +2436,38 @@ call_00_1f80:
 ;    db   $2a, $b8, $20, $04, $7e, $ea, $18, $d6        ;; 00:20a6 ????????
 ;    db   $e1, $19, $7e, $fe, $ff, $20, $e5, $c9        ;; 00:20ae ????????
     
-    ld hl, $d782
-    ld c, [hl]
-    ld hl, $d783
-
+    ld   bc,$2A01
+    ld   [bc],a
+    ld   [$2101],a
+    add  d
+    rst  $10
+    ld   c,[hl]
+    ld   hl,wD783
 jr_00_2093:
-    ld b, [hl]
-    ld hl, $20b6
-    ld de, $0004
-
+    ld   b,[hl]
+    ld   hl,$20B6
+    ld   de,$0004
 jr_00_209a:
     push hl
-    ld a, [wD624_CurrentLevelId]
-    cp [hl]
-    jr nz, jr_00_20ae
-
-    inc hl
-    ld a, [hl+]
-    cp c
-    jr nz, jr_00_20ae
-
-    ld a, [hl+]
-    cp b
-    jr nz, jr_00_20ae
-
-    ld a, [hl]
-    ld [$d618], a
-
-jr_00_20ae:
-    pop hl
-    add hl, de
-    ld a, [hl]
-    cp $ff
-    jr nz, jr_00_209a
-
-    ret
+    ld   a,[wD624_CurrentLevelId]
+    cp   [hl]
+    jr   nz,.jr_00_20ae
+    inc  hl
+    ldi  a,[hl]
+    cp   c
+    jr   nz,.jr_00_20ae
+    ldi  a,[hl]
+    cp   b
+    jr   nz,.jr_00_20ae
+    ld   a,[hl]
+    ld   [wD618_CheckpointSpawnId],a
+.jr_00_20ae:
+    pop  hl
+    add  hl,de
+    ld   a,[hl]
+    cp   a,$FF
+    jr   nz,jr_00_209a
+    ret  
     
     db   $01, $26, $3a, $01, $02, $4b, $0a, $01        ;; 00:20b6 ????????
     db   $05, $10, $15, $01, $0a, $4d, $34, $01        ;; 00:20be ????????
@@ -2530,39 +2495,28 @@ jr_00_20ae:
     db   $86, $21, $03, $3c, $00, $00, $01, $02        ;; 00:216e ????????
     db   $23, $22, $00, $00, $e2, $01, $08, $d9        ;; 00:2176 ????????
     db   $01, $da, $01, $08, $00, $00, $e2, $01        ;; 00:217e ????????
-    
-;    db   $21, $72, $d7, $34, $0e, $05, $11, $99        ;; 00:2186 ????????
-;    db   $d7, $fa, $24, $d6, $fe, $02, $28, $05        ;; 00:218e ????????
-;    db   $0e, $08, $11, $9a, $d7, $79, $be, $20        ;; 00:2196 ????????
-;    db   $03, $3e, $02, $12, $ea, $9d, $d5, $3e        ;; 00:219e ????????
-;    db   $00, $21, $51, $39, $cd, $78, $10, $c9        ;; 00:21a6 ????????
+    db   $21, $72, $d7, $34
 
-    ld hl, $d772
-    inc [hl]
-    ld c, $05
-    ld de, $d799
-    ld a, [wD624_CurrentLevelId]
-    cp $02
-    jr z, jr_00_219b
-
-    ld c, $08
-    ld de, $d79a
-
-jr_00_219b:
-    ld a, c
-    cp [hl]
-    jr nz, jr_00_21a2
-
-    ld a, $02
-    ld [de], a
-
-jr_00_21a2:
-    ld [$d59d], a
-    ld a, BANK_00
-    ld hl, $3951
+    ld   c,$05
+    ld   de,$D799
+    ld   a,[wD624_CurrentLevelId]
+    cp   a,$02
+    jr   z,.jr_00_219b
+    ld   c,$08
+    ld   de,wD79A
+.jr_00_219b:
+    ld   a,c
+    cp   [hl]
+    jr   nz,.jr_00_21a2
+    ld   a,$02
+    ld   [de],a
+.jr_00_21a2:
+    ld   [wD59D_ReturnBank],a
+    ld   a,$00
+    ld   hl,$3951
     call call_00_1078_FarCall
-    ret
-    
+    ret  
+
     db   $bc, $21, $01, $00, $ff, $00, $02, $01        ;; 00:21ae ????????
     db   $2c, $26, $c9, $01, $ca, $01, $21, $8b        ;; 00:21b6 ????????
     db   $d7, $36, $02, $c9, $00, $00, $05, $08        ;; 00:21be ????????
@@ -2577,8 +2531,7 @@ jr_00_21a2:
     db   $11, $22, $01, $00, $00, $00, $01, $01        ;; 00:2206 ????????
     db   $0a, $c7, $01, $21, $8b, $d7, $36, $02        ;; 00:220e ????????
     db   $c9, $25, $22, $01, $08, $00, $ff, $01        ;; 00:2216 ????????
-    db   $02, $28, $1b, $f8, $01, $f9, $01             ;; 00:221e ????????
-    
+    db   $02, $28, $1b, $f8, $01, $f9, $01             ;; 00:221e ???????? 
 ;    db   $21        
 ;    db   $82, $d7, $4e, $21, $83, $d7, $46, $21        ;; 00:2226 ????????
 ;    db   $53, $22, $1e, $00, $2a, $b9, $20, $04        ;; 00:222e ????????
@@ -2587,50 +2540,40 @@ jr_00_21a2:
 ;    db   $d7, $19, $7e, $a7, $c0, $36, $01, $7b        ;; 00:2246 ????????
 ;    db   $fe, $06, $c0, $34, $c9                       ;; 00:224e ????????
     
-    
-    ld hl, $d782
-    ld c, [hl]
-    ld hl, $d783
-    ld b, [hl]
-    ld hl, $2253
-    ld e, $00
-
-jr_00_2232:
-    ld a, [hl+]
-    cp c
-    jr nz, jr_00_223a
-
-    ld a, [hl]
-    cp b
-
-call_00_2238:
-    jr z, jr_00_2242
-
-jr_00_223a:
-    inc hl
-    inc e
-    ld a, [hl]
-    cp $ff
-    jr nz, jr_00_2232
-
-    ret
-
-jr_00_2242:
-    ld d, $00
-    ld hl, $d78b
-    add hl, de
-    ld a, [hl]
-    and a
-    ret nz
-
-    ld [hl], $01
-    ld a, e
-    cp $06
-    ret nz
-
-    inc [hl]
-    ret
-    
+    ld   hl,wD782
+    ld   c,[hl]
+    ld   hl,wD783
+    ld   b,[hl]
+    ld   hl,.data_00_2253
+    ld   e,$00
+.jr_00_2232:
+    ldi  a,[hl]
+    cp   c
+    jr   nz,.jr_00_223a
+    ld   a,[hl]
+    cp   b
+    jr   z,.jr_00_2242
+.jr_00_223a:
+    inc  hl
+    inc  e
+    ld   a,[hl]
+    cp   a,$FF
+    jr   nz,.jr_00_2232
+    ret  
+.jr_00_2242:
+    ld   d,$00
+    ld   hl,wD78B
+    add  hl,de
+    ld   a,[hl]
+    and  a
+    ret  nz
+    ld   [hl],$01
+    ld   a,e
+    cp   a,$06
+    ret  nz
+    inc  [hl]
+    ret  
+.data_00_2253:
     db   $25, $59, $2a
     db   $59, $2f, $59, $47, $51, $54, $55, $5a        ;; 00:2256 ????????
     db   $55, $29, $4a, $39, $64, $10, $47, $ff        ;; 00:225e ????????
@@ -2646,53 +2589,46 @@ jr_00_2242:
 ;    db   $8b, $d7, $19, $7e, $a7, $c0, $36, $02        ;; 00:229e ????????
 ;    db   $c9,                                          ;; 00:22a6 ????????
 
-    ld hl, $d782
-    ld c, [hl]
-    ld hl, $d783
-    ld b, [hl]
-    ld hl, $22a7
-    ld a, [wD624_CurrentLevelId]
-    cp $05
-    jr z, jr_00_2289
-
-    ld hl, $22b8
-
-jr_00_2289:
-    ld e, $00
-
-jr_00_228b:
-    ld a, [hl+]
-    cp c
-    jr nz, jr_00_2293
-
-    ld a, [hl]
-    cp b
-    jr z, jr_00_229b
-
-jr_00_2293:
-    inc hl
-    inc e
-    ld a, [hl]
-    cp $ff
-    jr nz, jr_00_228b
-
-    ret
-
-
-jr_00_229b:
-    ld d, $00
-    ld hl, $d78b
-    add hl, de
-    ld a, [hl]
-    and a
-    ret nz
-
-    ld [hl], $02
-    ret
-    
+    ld   hl,wD782
+    ld   c,[hl]
+    ld   hl,wD783
+    ld   b,[hl]
+    ld   hl,.data_00_22a7
+    ld   a,[wD624_CurrentLevelId]
+    cp   a,$05
+    jr   z,.jr_00_2289
+    ld   hl,.data_00_22b8
+.jr_00_2289:
+    ld   e,$00
+.jr_00_228b:
+    ldi  a,[hl]
+    cp   c
+    jr   nz,.jr_00_2293
+    ld   a,[hl]
+    cp   b
+    jr   z,.jr_00_229b
+.jr_00_2293:
+    inc  hl
+    inc  e
+    ld   a,[hl]
+    cp   a,$FF
+    jr   nz,.jr_00_228b
+    ret  
+.jr_00_229b:
+    ld   d,$00
+    ld   hl,wD78B
+    add  hl,de
+    ld   a,[hl]
+    and  a
+    ret  nz
+    ld   [hl],$02
+    ret  
+.data_00_22a7:
     db   $00, $00, $4c, $3a, $4b, $05, $44             ;; 00:22a6 ????????
     db   $36, $00, $00, $32, $04, $5a, $30, $48        ;; 00:22ae ????????
-    db   $0e, $ff, $5e, $0d, $43, $1f, $4f, $1f        ;; 00:22b6 ????????
+    db   $0e, $ff
+.data_00_22b8:
+    db   $5e, $0d, $43, $1f, $4f, $1f        ;; 00:22b6 ????????
     db   $05, $0f, $75, $04, $51, $1e, $73, $2d        ;; 00:22be ????????
     db   $6e, $2d, $ff, $e1, $22, $03, $06, $00        ;; 00:22c6 ????????
     db   $00, $02, $01, $28, $2c, $b9, $01, $ba        ;; 00:22ce ????????
