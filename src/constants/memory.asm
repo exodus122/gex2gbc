@@ -65,7 +65,7 @@ wCE00_BgTileFlags:
 wCF00_SecondaryTilesetPaletteIds:
     ds 256                                             ;; cf00
 
-wD000_ObjectFlags:
+wD000_EntityFlags:
 ;; FF = killed enemy
 ;; 01 = active
     ds 256                                             ;; d000
@@ -74,12 +74,12 @@ wD100_TilesToLoadBuffer:
     ds 256                                             ;; d100
 
 
-; From D200 to D300 is the loaded objects space
-; Each object takes up 0x20 of space, and there can be up to 8 objects. 
-; Gex occupies the first slot. The first byte of each object is the id
+; From D200 to D300 is the loaded entities space
+; Each entity takes up 0x20 of space, and there can be up to 8 entities. 
+; Gex occupies the first slot. The first byte of each entity is the id
 
-; Object Instance Struct
-; 0x00 object id
+; Entity Instance Struct
+; 0x00 entity id
 ; 0x01 current action id (index into action jump table)
 ; 0x02-0x03 pointer to current action function
 ; 0x04-0x05 ? pointer to some data in bank 2, whose value is set to 0x0C
@@ -100,13 +100,13 @@ wD100_TilesToLoadBuffer:
 ; 
 ; 
 
-wD200_PlayerObject_Id:
+wD200_PlayerEntity_Id:
     ds 1                                               ;; d200
 
-wD201_PlayerObject_ActionId:
+wD201_PlayerEntity_ActionId:
     ds 1                                               ;; d201
 
-wD202_PlayerObject_ActionFunc:
+wD202_PlayerEntity_ActionFunc:
     ds 2                                               ;; d202
 
     ds 3
@@ -149,11 +149,11 @@ wD213_PlayerScreenYPosition:
 
     ds 12                                              ;; d213
 
-wD220_OtherLoadedObjects:
+wD220_OtherLoadedEntitys:
     ds 224                                             ;; d220
 
 wD300_CurrentEntityAddrLo:
-; addr of object currently being updated (normally set to first available slot)
+; addr of entity currently being updated (normally set to first available slot)
     ds 1                                               ;; d300
 
 wD301:
@@ -189,10 +189,10 @@ wD32D:
 wD335:
     ds 1                                               ;; d335
 
-wD336_CurrentObjectToLoadPtr:
+wD336_CurrentEntityToLoadPtr:
     ds 1                                               ;; d336
 
-wD337_CurrentObjectToLoadPtr:
+wD337_CurrentEntityToLoadPtr:
     ds 1                                               ;; d337
 
 wD338:

@@ -1048,11 +1048,11 @@ call_00_3628:
     ld   [wD9CA], A                                    ;; 00:363d $ea $ca $d9
     ld   A, $a0                                        ;; 00:3640 $3e $a0
     ld   [wD688], A                                    ;; 00:3642 $ea $88 $d6
-    ld   HL, wD000_ObjectFlags                                     ;; 00:3645 $21 $00 $d0
+    ld   HL, wD000_EntityFlags                                     ;; 00:3645 $21 $00 $d0
     ld   DE, wD79F                                     ;; 00:3648 $11 $9f $d7
     ld   BC, $100                                      ;; 00:364b $01 $00 $01
     call call_00_07b0_MemCopy                                  ;; 00:364e $cd $b0 $07
-    ld   HL, wD200_PlayerObject_Id                                     ;; 00:3651 $21 $00 $d2
+    ld   HL, wD200_PlayerEntity_Id                                     ;; 00:3651 $21 $00 $d2
     ld   DE, wD89F                                     ;; 00:3654 $11 $9f $d8
     ld   BC, $100                                      ;; 00:3657 $01 $00 $01
     call call_00_07b0_MemCopy                                  ;; 00:365a $cd $b0 $07
@@ -1075,11 +1075,11 @@ call_00_3675:
     ld   A, [wD9CA]                                    ;; 00:3687 $fa $ca $d9
     ld   [wD688], A                                    ;; 00:368a $ea $88 $d6
     ld   HL, wD79F                                     ;; 00:368d $21 $9f $d7
-    ld   DE, wD000_ObjectFlags                                     ;; 00:3690 $11 $00 $d0
+    ld   DE, wD000_EntityFlags                                     ;; 00:3690 $11 $00 $d0
     ld   BC, $100                                      ;; 00:3693 $01 $00 $01
     call call_00_07b0_MemCopy                                  ;; 00:3696 $cd $b0 $07
     ld   HL, wD89F                                     ;; 00:3699 $21 $9f $d8
-    ld   DE, wD200_PlayerObject_Id                                     ;; 00:369c $11 $00 $d2
+    ld   DE, wD200_PlayerEntity_Id                                     ;; 00:369c $11 $00 $d2
     ld   BC, $100                                      ;; 00:369f $01 $00 $01
     call call_00_07b0_MemCopy                                  ;; 00:36a2 $cd $b0 $07
     ld   HL, wD99F                                     ;; 00:36a5 $21 $9f $d9
@@ -1631,7 +1631,7 @@ call_00_3985:
     call call_00_393c                                  ;; 00:39ab $cd $3c $39
     xor  A, A                                          ;; 00:39ae $af
     ld   [wD59D_ReturnBank], A                                    ;; 00:39af $ea $9d $d5
-    ld   A, Bank02                                        ;; 00:39b2 $3e $02
+    ld   A, BANK_02                                        ;; 00:39b2 $3e $02
     ld   HL, call_02_7102_SetEntityAction                                     ;; 00:39b4 $21 $02 $71
     call call_00_1078_FarCall                                  ;; 00:39b7 $cd $78 $10
     ld   C, $17                                        ;; 00:39ba $0e $17

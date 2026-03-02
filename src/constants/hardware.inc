@@ -31,7 +31,7 @@
 ;* Rev 2.7 - 19-Jan-19 : Added rPCMXX (ISSOtm)
 ;* Rev 2.8 - 03-Feb-19 : Added audio registers flags (Álvaro Cuesta)
 ;* Rev 2.9 - 28-Feb-20 : Added utility rP1 constants
-;* Rev 3.0 - 27-Aug-20 : Register ordering, byte-based sizes, OAM additions, general cleanup (Blitter Object)
+;* Rev 3.0 - 27-Aug-20 : Register ordering, byte-based sizes, OAM additions, general cleanup (Blitter Entity)
 ;* Rev 4.0 - 03-May-21 : Updated to use RGBDS 0.5.0 syntax, changed IEF_LCDC to IEF_STAT (Eievui)
 ;* Rev 4.1 - 16-Aug-21 : Added more flags, bit number defines, and offset constants for OAM and window positions (rondnelson99)
 ;* Rev 4.2 - 04-Sep-21 : Added CH3- and CH4-specific audio registers flags (ISSOtm)
@@ -641,7 +641,7 @@ DEF rBGP EQU $FF47
 
 ; --
 ; -- OBP0 ($FF48)
-; -- Object Palette 0 Data (W)
+; -- Entity Palette 0 Data (W)
 ; --
 ; -- See BGP for info
 ; --
@@ -650,7 +650,7 @@ DEF rOBP0 EQU $FF48
 
 ; --
 ; -- OBP1 ($FF49)
-; -- Object Palette 1 Data (W)
+; -- Entity Palette 1 Data (W)
 ; --
 ; -- See BGP for info
 ; --
@@ -786,7 +786,7 @@ DEF rBGPD EQU rBCPD
 
 ; --
 ; -- OCPS/OBPI ($FF6A)
-; -- Object Color Palette Specification (aka Object Background Palette Index) (R/W)
+; -- Entity Color Palette Specification (aka Entity Background Palette Index) (R/W)
 ; --
 DEF rOCPS EQU $FF6A
 DEF rOBPI EQU rOCPS
@@ -799,7 +799,7 @@ DEF OBPIB_AUTOINC EQU OCPSB_AUTOINC
 
 ; --
 ; -- OCPD/OBPD ($FF6B)
-; -- Object Color Palette Data (aka Object Background Palette Data) (R/W)
+; -- Entity Color Palette Data (aka Entity Background Palette Data) (R/W)
 ; --
 DEF rOCPD EQU $FF6B
 DEF rOBPD EQU rOCPD
@@ -807,7 +807,7 @@ DEF rOBPD EQU rOCPD
 
 ; --
 ; -- OPRI ($FF6C)
-; -- Object Priority Mode (R/W)
+; -- Entity Priority Mode (R/W)
 ; -- CGB Only
 
 ; --
@@ -815,8 +815,8 @@ DEF rOBPD EQU rOCPD
 ; --
 DEF rOPRI EQU $FF6C
 
-DEF OPRI_OAM   EQU 0 ; Prioritize objects by location in OAM (CGB Mode default)
-DEF OPRI_COORD EQU 1 ; Prioritize objects by x-coordinate (Non-CGB Mode default)
+DEF OPRI_OAM   EQU 0 ; Prioritize entities by location in OAM (CGB Mode default)
+DEF OPRI_COORD EQU 1 ; Prioritize entities by x-coordinate (Non-CGB Mode default)
 
 
 

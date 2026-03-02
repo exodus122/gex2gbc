@@ -1,7 +1,7 @@
 ;; Disassembled with BadBoy Disassembler: https://github.com/daid/BadBoy
 
-; This file handles loading objects (other than Gex).
-; It contains a list of objects to load on each level.
+; This file handles loading entities (other than Gex).
+; It contains a list of entities to load on each level.
 
 call_0a_4000:
     ld   HL, wD624_CurrentLevelId                                     ;; 0a:4000 $21 $24 $d6
@@ -11,86 +11,86 @@ call_0a_4000:
     ld   DE, .data_0a_4019                             ;; 0a:4007 $11 $19 $40
     add  HL, DE                                        ;; 0a:400a $19
     ld   A, [HL+]                                      ;; 0a:400b $2a
-    ld   [wD336_CurrentObjectToLoadPtr], A                                    ;; 0a:400c $ea $36 $d3
+    ld   [wD336_CurrentEntityToLoadPtr], A                                    ;; 0a:400c $ea $36 $d3
     ld   A, [HL+]                                      ;; 0a:400f $2a
-    ld   [wD337_CurrentObjectToLoadPtr], A                                    ;; 0a:4010 $ea $37 $d3
+    ld   [wD337_CurrentEntityToLoadPtr], A                                    ;; 0a:4010 $ea $37 $d3
     ld   A, $01                                        ;; 0a:4013 $3e $01
     ld   [wD338], A                                    ;; 0a:4015 $ea $38 $d3
     ret                                                ;; 0a:4018 $c9
 .data_0a_4019:
-    dw   .data_MediaDimensionObjects
-    dw   .data_OutOfToonObjects
-    dw   .data_SmellraiserObjects
-    dw   .data_FrankensteinfeldObjects
-    dw   .data_wwwdotcomcomObjects
-    dw   .data_MaoTseTongueObjects
-    dw   .data_Pangaea90210_Objects
-    dw   .data_Pangaea90210_Objects
-    dw   .data_FineTooningObjects
-    dw   .data_ThisOldCaveObjects
-    dw   .data_HoneyIShrunkTheGeckoObjects
-    dw   .data_PoltergexObjects
-    dw   .data_SamuraiNightFeverObjects
-    dw   .data_SamuraiNightFeverObjects
-    dw   .data_NoWeddingsAndAFuneralObjects
-    dw   .data_ThursdayThe12thObjects
-    dw   .data_ThursdayThe12thObjects
-    dw   .data_MediaDimensionObjects
-    dw   .data_MediaDimensionObjects
-    dw   .data_MediaDimensionObjects
-    dw   .data_MediaDimensionObjects
-    dw   .data_LizardInAChinaShopObjects
-    dw   .data_BuggedOutObjects
-    dw   .data_ChipsAndDipsObjects
-    dw   .data_LavaDabbaDooObjects
-    dw   .data_TexasChainsawManicureObjects
-    dw   .data_MazedAndConfusedObjects
-    dw   .data_MediaDimensionObjects
-    dw   .data_MediaDimensionObjects
-    dw   .data_MediaDimensionObjects
-    dw   .data_ChannelZObjects
-.data_MediaDimensionObjects:                             ;; 0a:4057
-    INCLUDE "data/maps/media_dimension/object_list_media_dimension.asm"
-.data_OutOfToonObjects:                             ;; 0a:4488
-    INCLUDE "data/maps/toon_tv/object_list_out_of_toon.asm"
-.data_SmellraiserObjects:                             ;; 0a:48c9
-    INCLUDE "data/maps/scream_tv/object_list_smellraiser.asm"
-.data_FrankensteinfeldObjects:                             ;; 0a:4aba
-    INCLUDE "data/maps/scream_tv/object_list_frankensteinfeld.asm"
-.data_wwwdotcomcomObjects:                             ;; 0a:4ddb
-    INCLUDE "data/maps/circuit_central/object_list_wwwdotcomcom.asm"
-.data_MaoTseTongueObjects:                             ;; 0a:51ec
-    INCLUDE "data/maps/kung_fu_theater/object_list_mao_tse_tongue.asm"
-.data_Pangaea90210_Objects:                             ;; 0a:54ed
-    INCLUDE "data/maps/prehistory_channel/object_list_pangaea_90210.asm"
-.data_FineTooningObjects:                             ;; 0a:57ee
-    INCLUDE "data/maps/toon_tv/object_list_fine_tooning.asm"
-.data_ThisOldCaveObjects:                             ;; 0a:5c8f
-    INCLUDE "data/maps/prehistory_channel/object_list_this_old_cave.asm"
-.data_HoneyIShrunkTheGeckoObjects:                             ;; 0a:5e20
-    INCLUDE "data/maps/circuit_central/object_list_honey_i_shrunk_the_gecko.asm"
-.data_PoltergexObjects:                             ;; 0a:6331
-    INCLUDE "data/maps/scream_tv/object_list_poltergex.asm"
-.data_SamuraiNightFeverObjects:                             ;; 0a:6692
-    INCLUDE "data/maps/kung_fu_theater/object_list_samurai_night_fever.asm"
-.data_NoWeddingsAndAFuneralObjects:                             ;; 0a:6a43
-    INCLUDE "data/maps/rezopolis/object_list_no_weddings_and_a_funeral.asm"
-.data_ThursdayThe12thObjects:                             ;; 0a:6c84
-    INCLUDE "data/maps/scream_tv/object_list_thursday_the_12th.asm"
-.data_LizardInAChinaShopObjects:                             ;; 0a:6d45
-    INCLUDE "data/maps/kung_fu_theater/object_list_lizard_in_a_china_shop.asm"
-.data_BuggedOutObjects:                             ;; 0a:6dc6
-    INCLUDE "data/maps/rezopolis/object_list_bugged_out.asm"
-.data_ChipsAndDipsObjects:                             ;; 0a:6df7
-    INCLUDE "data/maps/circuit_central/object_list_chips_and_dips.asm"
-.data_LavaDabbaDooObjects:                             ;; 0a:6e78
-    INCLUDE "data/maps/prehistory_channel/object_list_lava_dabba_doo.asm"
-.data_TexasChainsawManicureObjects:                             ;; 0a:7149
-    INCLUDE "data/maps/scream_tv/object_list_texas_chainsaw_manicure.asm"
-.data_MazedAndConfusedObjects:                             ;; 0a:734a
-    INCLUDE "data/maps/rezopolis/object_list_mazed_and_confused.asm"
-.data_ChannelZObjects:                             ;; 0a:751b
-    INCLUDE "data/maps/channel_z/object_list_channel_z.asm"
+    dw   .data_MediaDimensionEntitys
+    dw   .data_OutOfToonEntitys
+    dw   .data_SmellraiserEntitys
+    dw   .data_FrankensteinfeldEntitys
+    dw   .data_wwwdotcomcomEntitys
+    dw   .data_MaoTseTongueEntitys
+    dw   .data_Pangaea90210_Entitys
+    dw   .data_Pangaea90210_Entitys
+    dw   .data_FineTooningEntitys
+    dw   .data_ThisOldCaveEntitys
+    dw   .data_HoneyIShrunkTheGeckoEntitys
+    dw   .data_PoltergexEntitys
+    dw   .data_SamuraiNightFeverEntitys
+    dw   .data_SamuraiNightFeverEntitys
+    dw   .data_NoWeddingsAndAFuneralEntitys
+    dw   .data_ThursdayThe12thEntitys
+    dw   .data_ThursdayThe12thEntitys
+    dw   .data_MediaDimensionEntitys
+    dw   .data_MediaDimensionEntitys
+    dw   .data_MediaDimensionEntitys
+    dw   .data_MediaDimensionEntitys
+    dw   .data_LizardInAChinaShopEntitys
+    dw   .data_BuggedOutEntitys
+    dw   .data_ChipsAndDipsEntitys
+    dw   .data_LavaDabbaDooEntitys
+    dw   .data_TexasChainsawManicureEntitys
+    dw   .data_MazedAndConfusedEntitys
+    dw   .data_MediaDimensionEntitys
+    dw   .data_MediaDimensionEntitys
+    dw   .data_MediaDimensionEntitys
+    dw   .data_ChannelZEntitys
+.data_MediaDimensionEntitys:                             ;; 0a:4057
+    INCLUDE "data/maps/media_dimension/entity_list_media_dimension.asm"
+.data_OutOfToonEntitys:                             ;; 0a:4488
+    INCLUDE "data/maps/toon_tv/entity_list_out_of_toon.asm"
+.data_SmellraiserEntitys:                             ;; 0a:48c9
+    INCLUDE "data/maps/scream_tv/entity_list_smellraiser.asm"
+.data_FrankensteinfeldEntitys:                             ;; 0a:4aba
+    INCLUDE "data/maps/scream_tv/entity_list_frankensteinfeld.asm"
+.data_wwwdotcomcomEntitys:                             ;; 0a:4ddb
+    INCLUDE "data/maps/circuit_central/entity_list_wwwdotcomcom.asm"
+.data_MaoTseTongueEntitys:                             ;; 0a:51ec
+    INCLUDE "data/maps/kung_fu_theater/entity_list_mao_tse_tongue.asm"
+.data_Pangaea90210_Entitys:                             ;; 0a:54ed
+    INCLUDE "data/maps/prehistory_channel/entity_list_pangaea_90210.asm"
+.data_FineTooningEntitys:                             ;; 0a:57ee
+    INCLUDE "data/maps/toon_tv/entity_list_fine_tooning.asm"
+.data_ThisOldCaveEntitys:                             ;; 0a:5c8f
+    INCLUDE "data/maps/prehistory_channel/entity_list_this_old_cave.asm"
+.data_HoneyIShrunkTheGeckoEntitys:                             ;; 0a:5e20
+    INCLUDE "data/maps/circuit_central/entity_list_honey_i_shrunk_the_gecko.asm"
+.data_PoltergexEntitys:                             ;; 0a:6331
+    INCLUDE "data/maps/scream_tv/entity_list_poltergex.asm"
+.data_SamuraiNightFeverEntitys:                             ;; 0a:6692
+    INCLUDE "data/maps/kung_fu_theater/entity_list_samurai_night_fever.asm"
+.data_NoWeddingsAndAFuneralEntitys:                             ;; 0a:6a43
+    INCLUDE "data/maps/rezopolis/entity_list_no_weddings_and_a_funeral.asm"
+.data_ThursdayThe12thEntitys:                             ;; 0a:6c84
+    INCLUDE "data/maps/scream_tv/entity_list_thursday_the_12th.asm"
+.data_LizardInAChinaShopEntitys:                             ;; 0a:6d45
+    INCLUDE "data/maps/kung_fu_theater/entity_list_lizard_in_a_china_shop.asm"
+.data_BuggedOutEntitys:                             ;; 0a:6dc6
+    INCLUDE "data/maps/rezopolis/entity_list_bugged_out.asm"
+.data_ChipsAndDipsEntitys:                             ;; 0a:6df7
+    INCLUDE "data/maps/circuit_central/entity_list_chips_and_dips.asm"
+.data_LavaDabbaDooEntitys:                             ;; 0a:6e78
+    INCLUDE "data/maps/prehistory_channel/entity_list_lava_dabba_doo.asm"
+.data_TexasChainsawManicureEntitys:                             ;; 0a:7149
+    INCLUDE "data/maps/scream_tv/entity_list_texas_chainsaw_manicure.asm"
+.data_MazedAndConfusedEntitys:                             ;; 0a:734a
+    INCLUDE "data/maps/rezopolis/entity_list_mazed_and_confused.asm"
+.data_ChannelZEntitys:                             ;; 0a:751b
+    INCLUDE "data/maps/channel_z/entity_list_channel_z.asm"
 
 data_0a_75fc:
     db   $00                                           ;; 0a:75fc ?
@@ -259,7 +259,7 @@ call_0a_7a7c:
     rlca                                               ;; 0a:7a91 $07
     rlca                                               ;; 0a:7a92 $07 so now a is the slot number, where slot 1 is dd20, and slot 3 is dd60
     ld   [wD339], A                                    ;; 0a:7a93 $ea $39 $d3
-    ld   HL, wD336_CurrentObjectToLoadPtr                                     ;; 0a:7a96 $21 $36 $d3
+    ld   HL, wD336_CurrentEntityToLoadPtr                                     ;; 0a:7a96 $21 $36 $d3
     ld   E, [HL]                                       ;; 0a:7a99 $5e
     inc  HL                                            ;; 0a:7a9a $23
     ld   D, [HL]                                       ;; 0a:7a9b $56
@@ -270,9 +270,9 @@ call_0a_7a7c:
     ld   HL, $10                                       ;; 0a:7aa5 $21 $10 $00
     add  HL, DE                                        ;; 0a:7aa8 $19
     ld   A, L                                          ;; 0a:7aa9 $7d
-    ld   [wD336_CurrentObjectToLoadPtr], A                                    ;; 0a:7aaa $ea $36 $d3
+    ld   [wD336_CurrentEntityToLoadPtr], A                                    ;; 0a:7aaa $ea $36 $d3
     ld   A, H                                          ;; 0a:7aad $7c
-    ld   [wD337_CurrentObjectToLoadPtr], A                                    ;; 0a:7aae $ea $37 $d3 ; load 2 bytes 0x10 after first
+    ld   [wD337_CurrentEntityToLoadPtr], A                                    ;; 0a:7aae $ea $37 $d3 ; load 2 bytes 0x10 after first
     ld   HL, wD338                                     ;; 0a:7ab1 $21 $38 $d3 
     ld   C, [HL]                                       ;; 0a:7ab4 $4e 
     inc  [HL]                                          ;; 0a:7ab5 $34
@@ -288,7 +288,7 @@ call_0a_7a7c:
     or   A, $0e                                        ;; 0a:7ac5 $f6 $0e
     ld   L, A                                          ;; 0a:7ac7 $6f
     ld   A, [DE]                                       ;; 0a:7ac8 $1a
-    ld   [HL+], A                                      ;; 0a:7ac9 $22 ; this is where the x and y coords of the object are read and written
+    ld   [HL+], A                                      ;; 0a:7ac9 $22 ; this is where the x and y coords of the entity are read and written
     inc  DE                                            ;; 0a:7aca $13
     ld   A, [DE]                                       ;; 0a:7acb $1a
     ld   [HL+], A                                      ;; 0a:7acc $22
@@ -320,7 +320,7 @@ call_0a_7a7c:
     inc  DE                                            ;; 0a:7aeb $13
     push DE                                            ;; 0a:7aec $d5
     ld   [wD59D_ReturnBank], A                                    ;; 0a:7aed $ea $9d $d5
-    ld   A, Bank00                                        ;; 0a:7af0 $3e $00
+    ld   A, BANK_00                                        ;; 0a:7af0 $3e $00
     ld   HL, call_00_350c                              ;; 0a:7af2 $21 $0c $35
     call call_00_1078_FarCall                                  ;; 0a:7af5 $cd $78 $10
     pop  DE                                            ;; 0a:7af8 $d1
@@ -395,7 +395,7 @@ call_0a_7a7c:
     ld   [HL], $01                                     ;; 0a:7b57 $36 $01
     xor  A, A                                          ;; 0a:7b59 $af
     ld   [wD59D_ReturnBank], A                                    ;; 0a:7b5a $ea $9d $d5
-    ld   A, Bank02                                        ;; 0a:7b5d $3e $02
+    ld   A, BANK_02                                        ;; 0a:7b5d $3e $02
     ld   HL, call_02_7102_SetEntityAction                             ;; 0a:7b5f $21 $02 $71
     call call_00_1078_FarCall                                  ;; 0a:7b62 $cd $78 $10
     ld   HL, wD339                                     ;; 0a:7b65 $21 $39 $d3
@@ -415,7 +415,7 @@ call_0a_7a7c:
     and  A, A                                          ;; 0a:7b79 $a7
     jr   Z, .jr_0a_7b87                                ;; 0a:7b7a $28 $0b
     ld   [wD59D_ReturnBank], A                                    ;; 0a:7b7c $ea $9d $d5
-    ld   A, Bank02                                        ;; 0a:7b7f $3e $02
+    ld   A, BANK_02                                        ;; 0a:7b7f $3e $02
     ld   HL, call_02_7211                             ;; 0a:7b81 $21 $11 $72
     call call_00_1078_FarCall                                  ;; 0a:7b84 $cd $78 $10
 .jr_0a_7b87:
@@ -425,7 +425,7 @@ call_0a_7a7c:
     ret  Z                                             ;; 0a:7b8c $c8
     ld   C, [HL]                                       ;; 0a:7b8d $4e
     ld   [wD59D_ReturnBank], A                                    ;; 0a:7b8e $ea $9d $d5
-    ld   A, Bank0b                                        ;; 0a:7b91 $3e $0b
+    ld   A, BANK_0B                                        ;; 0a:7b91 $3e $0b
     ld   HL, call_0b_5f57                             ;; 0a:7b93 $21 $57 $5f
     call call_00_1078_FarCall                                  ;; 0a:7b96 $cd $78 $10
     ret                                                ;; 0a:7b99 $c9
@@ -564,7 +564,7 @@ call_0a_7b9a:
     and  A, A                                          ;; 0a:7c35 $a7
     jr   Z, .jr_0a_7c43                                ;; 0a:7c36 $28 $0b
     ld   [wD59D_ReturnBank], A                                    ;; 0a:7c38 $ea $9d $d5
-    ld   A, Bank02                                        ;; 0a:7c3b $3e $02
+    ld   A, BANK_02                                        ;; 0a:7c3b $3e $02
     ld   HL, call_02_7211                             ;; 0a:7c3d $21 $11 $72
     call call_00_1078_FarCall                                  ;; 0a:7c40 $cd $78 $10
 .jr_0a_7c43:
@@ -574,14 +574,14 @@ call_0a_7b9a:
     jr   Z, .jr_0a_7c56                                ;; 0a:7c48 $28 $0c
     ld   C, [HL]                                       ;; 0a:7c4a $4e
     ld   [wD59D_ReturnBank], A                                    ;; 0a:7c4b $ea $9d $d5
-    ld   A, Bank0b                                        ;; 0a:7c4e $3e $0b
+    ld   A, BANK_0B                                        ;; 0a:7c4e $3e $0b
     ld   HL, call_0b_5f57                             ;; 0a:7c50 $21 $57 $5f
     call call_00_1078_FarCall                                  ;; 0a:7c53 $cd $78 $10
 .jr_0a_7c56:
     call call_00_34d8                                  ;; 0a:7c56 $cd $d8 $34
     xor  A, A                                          ;; 0a:7c59 $af
     ld   [wD59D_ReturnBank], A                                    ;; 0a:7c5a $ea $9d $d5
-    ld   A, Bank02                                        ;; 0a:7c5d $3e $02
+    ld   A, BANK_02                                        ;; 0a:7c5d $3e $02
     ld   HL, call_02_7102_SetEntityAction                             ;; 0a:7c5f $21 $02 $71
     call call_00_1078_FarCall                                  ;; 0a:7c62 $cd $78 $10
     pop  AF                                            ;; 0a:7c65 $f1

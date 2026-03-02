@@ -297,7 +297,7 @@ call_01_4000_MenuLoad: ; this is the primary menu loading and updating function
     ret                                                ;; 01:422e $c9
 .jr_01_422f:
     call call_01_4f87_LoadEnterPasswordMenu                                  ;; 01:422f $cd $87 $4f
-    ld   A, MenuType_EnterPassword                                        ;; 01:4232 $3e $0f
+    ld   A, MENU_TYPE_ENTER_PASSWORD                                        ;; 01:4232 $3e $0f
     call call_01_4000_MenuLoad                                  ;; 01:4234 $cd $00 $40
     cp   A, $00                                        ;; 01:4237 $fe $00
     jr   Z, .jr_01_422c                                ;; 01:4239 $28 $f1
@@ -306,14 +306,14 @@ call_01_4000_MenuLoad: ; this is the primary menu loading and updating function
     cp   A, $30                                        ;; 01:423e $fe $30
     ret  Z                                             ;; 01:4240 $c8
     call call_01_4f87_LoadEnterPasswordMenu                                  ;; 01:4241 $cd $87 $4f
-    ld   A, MenuType_EnteredInvalidPassword                                        ;; 01:4244 $3e $15
+    ld   A, MENU_TYPE_ENTERED_INVALID_PASSWORD                                        ;; 01:4244 $3e $15
     call call_01_4000_MenuLoad                                  ;; 01:4246 $cd $00 $40
     cp   A, $00                                        ;; 01:4249 $fe $00
     jr   Z, .jr_01_422c                                ;; 01:424b $28 $df
     jr   .jr_01_423b                                   ;; 01:424d $18 $ec
 .jr_01_424f:
     call call_01_4fa5_SetupPassword                                  ;; 01:424f $cd $a5 $4f
-    ld   A, MenuType_ViewPassword                                        ;; 01:4252 $3e $06
+    ld   A, MENU_TYPE_VIEW_PASSWORD                                        ;; 01:4252 $3e $06
     jp   call_01_4000_MenuLoad                                  ;; 01:4254 $c3 $00 $40
 .jr_01_4257:
     ld   A, [wD624_CurrentLevelId]                                    ;; 01:4257 $fa $24 $d6
@@ -339,7 +339,7 @@ call_01_4265:
     db   $01, $01, $01, $00, $00, $00, $01             ;; 01:428a ......?
 
 call_01_4291_LoadAudioOptionsMenu:
-    ld   A, MenuType_AudioOptionsUnused                ;; 01:4291 $3e $11
+    ld   A, MENU_TYPE_AUDIO_OPTIONS_UNUSED                ;; 01:4291 $3e $11
     call call_01_4000_MenuLoad                         ;; 01:4293 $cd $00 $40
     ret                                                ;; 01:4296 $c9
 
@@ -382,7 +382,7 @@ call_01_42bd_EnterTV:
     ld   A, [wD621]                                    ;; 01:42d8 $fa $21 $d6
     and  A, $ef                                        ;; 01:42db $e6 $ef
     ld   [wD621], A                                    ;; 01:42dd $ea $21 $d6
-    ld   A, MenuType_TimeUp                                        ;; 01:42e0 $3e $1b
+    ld   A, MENU_TYPE_TIME_UP                                        ;; 01:42e0 $3e $1b
     call call_01_4000_MenuLoad                                  ;; 01:42e2 $cd $00 $40
     jr   .jr_01_4319                                   ;; 01:42e5 $18 $32
 .jr_01_42e7:
@@ -412,11 +412,11 @@ call_01_42bd_EnterTV:
     call call_01_43c7_LoadCreditsMenus                                  ;; 01:430f $cd $c7 $43
     jr   .jr_01_4319                                   ;; 01:4312 $18 $05
 .jr_01_4314:
-    ld   A, MenuType_Congratulations                                        ;; 01:4314 $3e $0e
+    ld   A, MENU_TYPE_CONGRATULATIONS                                        ;; 01:4314 $3e $0e
     call call_01_4000_MenuLoad                                  ;; 01:4316 $cd $00 $40
 .jr_01_4319:
     call call_01_4349_LoadEnteringMenu                                  ;; 01:4319 $cd $49 $43
-    ld   A, MenuType_ViewTotals                                        ;; 01:431c $3e $05
+    ld   A, MENU_TYPE_VIEW_TOTALS                                        ;; 01:431c $3e $05
     call call_01_4000_MenuLoad                                  ;; 01:431e $cd $00 $40
     xor  A, A                                          ;; 01:4321 $af
     ld   [wD624_CurrentLevelId], A                                    ;; 01:4322 $ea $24 $d6
@@ -505,23 +505,23 @@ call_01_4349_LoadEnteringMenu:
     db   $1f, $1b, $19, $03, $01, $20, $00
 
 call_01_43bd_LoadGameOverMenu:    
-    ld a, MenuType_GameOver
+    ld a, MENU_TYPE_GAME_OVER
     call call_01_4000_MenuLoad
-    ld a, MenuType_GameOverTotals
+    ld a, MENU_TYPE_GAME_OVER_TOTALS
     jp call_01_4000_MenuLoad                                        ;; 01:43c6 ?
 
 call_01_43c7_LoadCreditsMenus:
-    ld   A, MenuType_TitleOptions                                        ;; 01:43c7 $3e $07
+    ld   A, MENU_TYPE_TITLE_OPTIONS                                        ;; 01:43c7 $3e $07
     call call_00_120c_SetupMusic                                  ;; 01:43c9 $cd $0c $12
-    ld   A, MenuType_CreditsGreatJob                                        ;; 01:43cc $3e $12
+    ld   A, MENU_TYPE_CREDITS_GREAT_JOB                                        ;; 01:43cc $3e $12
     call call_01_4000_MenuLoad                                  ;; 01:43ce $cd $00 $40
-    ld   A, MenuType_Credits1                                        ;; 01:43d1 $3e $17
+    ld   A, MENU_TYPE_CREDITS_1                                        ;; 01:43d1 $3e $17
     call call_01_4000_MenuLoad                                  ;; 01:43d3 $cd $00 $40
-    ld   A, MenuType_Credits2                                        ;; 01:43d6 $3e $18
+    ld   A, MENU_TYPE_CREDITS_2                                        ;; 01:43d6 $3e $18
     call call_01_4000_MenuLoad                                  ;; 01:43d8 $cd $00 $40
-    ld   A, MenuType_Credits3                                        ;; 01:43db $3e $19
+    ld   A, MENU_TYPE_CREDITS_3                                        ;; 01:43db $3e $19
     call call_01_4000_MenuLoad                                  ;; 01:43dd $cd $00 $40
-    ld   A, MenuType_Credits4                                        ;; 01:43e0 $3e $1a
+    ld   A, MENU_TYPE_CREDITS_4                                        ;; 01:43e0 $3e $1a
     call call_01_4000_MenuLoad                                  ;; 01:43e2 $cd $00 $40
     ret                                                ;; 01:43e5 $c9
 
@@ -639,7 +639,7 @@ call_01_446f_LoadMenuGraphics:
     ld   [wD6E1], A                                    ;; 01:44ab $ea $e1 $d6
     ld   C, [HL]                                       ;; 01:44ae $4e
     ld   [wD59D_ReturnBank], A                                    ;; 01:44af $ea $9d $d5
-    ld   A, Bank0b                                        ;; 01:44b2 $3e $0b
+    ld   A, BANK_0B                                        ;; 01:44b2 $3e $0b
     ld   HL, call_0b_5537                              ;; 01:44b4 $21 $37 $55
     call call_00_1078_FarCall                                  ;; 01:44b7 $cd $78 $10
     ld   A, $ff                                        ;; 01:44ba $3e $ff
@@ -904,7 +904,7 @@ call_01_466b:
     ld   BC, $80                                       ;; 01:4671 $01 $80 $00
     call call_00_07b0_MemCopy                                  ;; 01:4674 $cd $b0 $07
     ld   [wD59D_ReturnBank], A                                    ;; 01:4677 $ea $9d $d5
-    ld   A, Bank0b                                        ;; 01:467a $3e $0b
+    ld   A, BANK_0B                                        ;; 01:467a $3e $0b
     ld   HL, call_0b_5d4b                              ;; 01:467c $21 $4b $5d
     call call_00_1078_FarCall                                  ;; 01:467f $cd $78 $10
     call call_00_2e3a_GetTVPaletteId                                  ;; 01:4682 $cd $3a $2e

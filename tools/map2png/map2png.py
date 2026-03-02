@@ -56,7 +56,7 @@ create_maps = True
 collision_override = False # if True, create collision maps instead of regular maps
 
 show_kill_tiles = False # displays kill tiles on map images as a pink square
-draw_objects_and_collectibles = True # draw these on the maps
+draw_entities_and_collectibles = True # draw these on the maps
 draw_tile_ids = False
 draw_block_ids = False
 
@@ -121,7 +121,7 @@ if collision_override:
 
 collectible_sprites = []
 # create the colored collectible sprites
-if draw_objects_and_collectibles:
+if draw_entities_and_collectibles:
     os.system('mkdir -p collectible_sprites')
     for channel in collectible_channels:
         collectible_sprite_path = "../../.gfx/misc_sprites/collectibles/image_collectibles_"+channel+".bin"
@@ -427,9 +427,9 @@ for level_counter in range(0, len(level_names)):
         if collision_override:
             map_image_path = "./map_images/collision/"
             os.system('mkdir -p map_images/collision/')
-        elif draw_objects_and_collectibles == True:
-            map_image_path = "./map_images/with_objects/"
-            os.system('mkdir -p map_images/with_objects/')
+        elif draw_entities_and_collectibles == True:
+            map_image_path = "./map_images/with_entities/"
+            os.system('mkdir -p map_images/with_entities/')
         elif show_kill_tiles == True:
             map_image_path = "./map_images/with_kill_tiles/"
             os.system('mkdir -p map_images/with_kill_tiles/')
@@ -464,17 +464,17 @@ for level_counter in range(0, len(level_names)):
                 
                 count = count+1
 
-        if draw_objects_and_collectibles:
+        if draw_entities_and_collectibles:
 
-            # draw objects
-            object_list_file = "../banks/object_lists/object_list_"+level_name_alt+".bin"
-            object_list_data = open(object_list_file, "rb").read()
-            for i in range(0, len(object_list_data)-1, 0x10):
+            # draw entities
+            entity_list_file = "../banks/entity_lists/entity_list_"+level_name_alt+".bin"
+            entity_list_data = open(entity_list_file, "rb").read()
+            for i in range(0, len(entity_list_data)-1, 0x10):
                 try:
-                    objectId, x, y, unk05, unk06, unk07, unk08, un09, unk0a, unk0b, unk0c, unk0d, unk0e, unkf = struct.unpack('<BHHBBBBBBBBBBB',object_list_data[i:i+0x10])
+                    entityId, x, y, unk05, unk06, unk07, unk08, un09, unk0a, unk0b, unk0c, unk0d, unk0e, unkf = struct.unpack('<BHHBBBBBBBBBBB',entity_list_data[i:i+0x10])
 
                     draw.rectangle(((x-8,y-8), (x+8,y+8)), "white","white")
-                    draw.text((x-5, y-5), f"{objectId:0{2}X}", "black")
+                    draw.text((x-5, y-5), f"{entityId:0{2}X}", "black")
                     #img.paste(collectible_sprite, (x, y), collectible_sprite)
                 except:
                     continue

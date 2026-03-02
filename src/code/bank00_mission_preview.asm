@@ -51,7 +51,7 @@ call_00_2329_LoadAndRunMissionPreviewCutscene:
     ld   [wD743_DrawGexFlag], A                                    ;; 00:236c $ea $43 $d7
     call call_00_1264_LoadFullMap                                  ;; 00:236f $cd $64 $12
     ld   [wD59D_ReturnBank], A                                    ;; 00:2372 $ea $9d $d5
-    ld   A, Bank02                                        ;; 00:2375 $3e $02
+    ld   A, BANK_02                                        ;; 00:2375 $3e $02
     ld   HL, call_02_6e68_InitEntitiesOtherThanPlayer                                     ;; 00:2377 $21 $68 $6e
     call call_00_1078_FarCall                                  ;; 00:237a $cd $78 $10
     call call_00_0521_DrawEntitiesWrapper                                  ;; 00:237d $cd $21 $05
@@ -91,11 +91,11 @@ call_00_2329_LoadAndRunMissionPreviewCutscene:
     call call_00_0ab4_WaitForInterrupt                                  ;; 00:23b1 $cd $b4 $0a
     call call_00_2dbf_ProcessCutsceneMovement                                  ;; 00:23b4 $cd $bf $2d
     ld   [wD59D_ReturnBank], A                                    ;; 00:23b7 $ea $9d $d5
-    ld   A, Bank02                                        ;; 00:23ba $3e $02
+    ld   A, BANK_02                                        ;; 00:23ba $3e $02
     ld   HL, call_02_715a_UpdateMapWindow                                     ;; 00:23bc $21 $5a $71
     call call_00_1078_FarCall                                  ;; 00:23bf $cd $78 $10
     ld   [wD59D_ReturnBank], A                                    ;; 00:23c2 $ea $9d $d5
-    ld   A, Bank02                                        ;; 00:23c5 $3e $02
+    ld   A, BANK_02                                        ;; 00:23c5 $3e $02
     ld   HL, call_02_6eba_UpdateAllEntities                                     ;; 00:23c7 $21 $ba $6e
     call call_00_1078_FarCall                                  ;; 00:23ca $cd $78 $10
     call call_00_1455_LoadBgMapDirtyRegions                                  ;; 00:23cd $cd $55 $14
@@ -133,7 +133,7 @@ call_00_2329_LoadAndRunMissionPreviewCutscene:
     call call_00_0ab4_WaitForInterrupt                                  ;; 00:23fe $cd $b4 $0a
     call call_00_1e5b                                  ;; 00:2401 $cd $5b $1e
     ld   [wD59D_ReturnBank], A                                    ;; 00:2404 $ea $9d $d5
-    ld   A, Bank02                                        ;; 00:2407 $3e $02
+    ld   A, BANK_02                                        ;; 00:2407 $3e $02
     ld   HL, call_02_6eba_UpdateAllEntities                                     ;; 00:2409 $21 $ba $6e
     call call_00_1078_FarCall                                  ;; 00:240c $cd $78 $10
     call call_00_08fc_SetupEntityVRAMTransfer                                  ;; 00:240f $cd $fc $08
@@ -149,7 +149,7 @@ call_00_2329_LoadAndRunMissionPreviewCutscene:
     push AF                                            ;; 00:2420 $f5
     call call_00_0ab4_WaitForInterrupt                                  ;; 00:2421 $cd $b4 $0a
     ld   [wD59D_ReturnBank], A                                    ;; 00:2424 $ea $9d $d5
-    ld   A, Bank02                                        ;; 00:2427 $3e $02
+    ld   A, BANK_02                                        ;; 00:2427 $3e $02
     ld   HL, call_02_6eba_UpdateAllEntities                                     ;; 00:2429 $21 $ba $6e
     call call_00_1078_FarCall                                  ;; 00:242c $cd $78 $10
     call call_00_08fc_SetupEntityVRAMTransfer                                  ;; 00:242f $cd $fc $08
@@ -185,7 +185,7 @@ call_00_2329_LoadAndRunMissionPreviewCutscene:
     call call_00_13a6_UpdatePlayerMapWindow                                  ;; 00:245e $cd $a6 $13
     call call_00_1264_LoadFullMap                                  ;; 00:2461 $cd $64 $12
     ld   [wD59D_ReturnBank], A                                    ;; 00:2464 $ea $9d $d5
-    ld   A, Bank02                                        ;; 00:2467 $3e $02
+    ld   A, BANK_02                                        ;; 00:2467 $3e $02
     ld   HL, call_02_71c8                                     ;; 00:2469 $21 $c8 $71
     call call_00_1078_FarCall                                  ;; 00:246c $cd $78 $10
     jp   call_00_0521_DrawEntitiesWrapper                                  ;; 00:246f $c3 $21 $05

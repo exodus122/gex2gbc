@@ -27,25 +27,25 @@ INCLUDE "code/bank03_update_animated_tiles.asm"
 
 SECTION "bank04", ROMX[$4000], BANK[$04]
 image_004_4000.bin:
-    INCBIN ".gfx/object_sprites/image_004_4000.bin"
+    INCBIN ".gfx/entity_sprites/image_004_4000.bin"
 image_004_6000.bin:
-    INCBIN ".gfx/object_sprites/image_004_6000.bin"
+    INCBIN ".gfx/entity_sprites/image_004_6000.bin"
 
 SECTION "bank05", ROMX[$4000], BANK[$05]
 image_005_4000.bin:
-    INCBIN ".gfx/object_sprites/image_005_4000.bin"
+    INCBIN ".gfx/entity_sprites/image_005_4000.bin"
 image_005_6000.bin:
-    INCBIN ".gfx/object_sprites/image_005_6000.bin"
+    INCBIN ".gfx/entity_sprites/image_005_6000.bin"
 
 SECTION "bank06", ROMX[$4000], BANK[$06]
 image_006_4000.bin:
-    INCBIN ".gfx/object_sprites/image_006_4000.bin"
+    INCBIN ".gfx/entity_sprites/image_006_4000.bin"
 image_006_6000.bin:
-    INCBIN ".gfx/object_sprites/image_006_6000.bin"
+    INCBIN ".gfx/entity_sprites/image_006_6000.bin"
 
 SECTION "bank07", ROMX[$4000], BANK[$07]
 image_007_4000.bin:
-    INCBIN ".gfx/object_sprites/image_007_4000.bin"
+    INCBIN ".gfx/entity_sprites/image_007_4000.bin"
 
 SECTION "bank08", ROMX[$4000], BANK[$08]
 image_title_screen_008_0.bin:
@@ -342,13 +342,13 @@ image_010_12_palette_ids.bin:
 
 SECTION "bank11", ROMX[$4000], BANK[$11]
 image_011_4000.bin:
-    INCBIN ".gfx/object_sprites/image_011_4000.bin"
+    INCBIN ".gfx/entity_sprites/image_011_4000.bin"
 
 SECTION "bank12", ROMX[$4000], BANK[$12]
 image_012_4000.bin:
-    INCBIN ".gfx/object_sprites/image_012_4000.bin"
+    INCBIN ".gfx/entity_sprites/image_012_4000.bin"
 image_012_6000.bin:
-    INCBIN ".gfx/object_sprites/image_012_6000.bin"
+    INCBIN ".gfx/entity_sprites/image_012_6000.bin"
 
 SECTION "bank13", ROMX[$4000], BANK[$13]
 image_013_00.bin:
@@ -482,33 +482,33 @@ SECTION "bank17", ROMX[$4000], BANK[$17]
 
 SECTION "bank18", ROMX[$4000], BANK[$18]
 image_018_4000.bin:
-    INCBIN ".gfx/object_sprites/image_018_4000.bin"
+    INCBIN ".gfx/entity_sprites/image_018_4000.bin"
 image_018_6000.bin:
-    INCBIN ".gfx/object_sprites/image_018_6000.bin"
+    INCBIN ".gfx/entity_sprites/image_018_6000.bin"
 
 SECTION "bank19", ROMX[$4000], BANK[$19]
 image_019_4000.bin:
-    INCBIN ".gfx/object_sprites/image_019_4000.bin"
+    INCBIN ".gfx/entity_sprites/image_019_4000.bin"
 image_019_6000.bin:
-    INCBIN ".gfx/object_sprites/image_019_6000.bin"
+    INCBIN ".gfx/entity_sprites/image_019_6000.bin"
 
 SECTION "bank1a", ROMX[$4000], BANK[$1a]
 image_01a_4000.bin:
-    INCBIN ".gfx/object_sprites/image_01a_4000.bin"
+    INCBIN ".gfx/entity_sprites/image_01a_4000.bin"
 image_01a_6000.bin:
-    INCBIN ".gfx/object_sprites/image_01a_6000.bin"
+    INCBIN ".gfx/entity_sprites/image_01a_6000.bin"
 
 SECTION "bank1b", ROMX[$4000], BANK[$1b]
 image_01b_4000.bin:
-    INCBIN ".gfx/object_sprites/image_01b_4000.bin"
+    INCBIN ".gfx/entity_sprites/image_01b_4000.bin"
 image_01b_6000.bin:
-    INCBIN ".gfx/object_sprites/image_01b_6000.bin"
+    INCBIN ".gfx/entity_sprites/image_01b_6000.bin"
 
 SECTION "bank1c", ROMX[$4000], BANK[$1c]
 image_01c_4000.bin:
-    INCBIN ".gfx/object_sprites/image_01c_4000.bin"
+    INCBIN ".gfx/entity_sprites/image_01c_4000.bin"
 image_01c_6000.bin:
-    INCBIN ".gfx/object_sprites/image_01c_6000.bin"
+    INCBIN ".gfx/entity_sprites/image_01c_6000.bin"
 
 SECTION "bank1d", ROMX[$4000], BANK[$1d]
 image_credits2_01d_0.bin:

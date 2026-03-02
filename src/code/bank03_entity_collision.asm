@@ -1,4 +1,4 @@
-; This file handles gex's collision with objects (enemies, tv switches, remotes, etc.)
+; This file handles gex's collision with entities (enemies, tv switches, remotes, etc.)
 
 call_03_4c76_UpdateEntityCollision_Dispatch:
     ld   A, [wD743_DrawGexFlag]                                    ;; 03:4c76 $fa $43 $d7
@@ -226,7 +226,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ld   [wD750], A                                    ;; 03:4e6e $ea $50 $d7
     ld   A, $19                                        ;; 03:4e71 $3e $19
     ld   [wD59D_ReturnBank], A                                    ;; 03:4e73 $ea $9d $d5
-    ld   A, Bank02                                        ;; 03:4e76 $3e $02
+    ld   A, BANK_02                                        ;; 03:4e76 $3e $02
     ld   HL, call_02_4ccd                             ;; 03:4e78 $21 $cd $4c
     call call_00_1078_FarCall                                  ;; 03:4e7b $cd $78 $10
     ret                                                ;; 03:4e7e $c9
@@ -417,7 +417,7 @@ call_03_519b:
     jr   NZ, .jr_03_51f5                               ;; 03:51d7 $20 $1c
     bit  1, B                                          ;; 03:51d9 $cb $48
     jr   Z, .jr_03_51fa                                ;; 03:51db $28 $1d
-    ld   A, [wD201_PlayerObject_ActionId]                                    ;; 03:51dd $fa $01 $d2
+    ld   A, [wD201_PlayerEntity_ActionId]                                    ;; 03:51dd $fa $01 $d2
     and  A, $1f                                        ;; 03:51e0 $e6 $1f
     cp   A, $0d                                        ;; 03:51e2 $fe $0d
     jr   Z, .jr_03_51f5                                ;; 03:51e4 $28 $0f
@@ -449,7 +449,7 @@ call_03_519b:
     ret  NC                                            ;; 03:5209 $d0
     bit  2, B                                          ;; 03:520a $cb $50
     jr   Z, .jr_03_5229                                ;; 03:520c $28 $1b
-    ld   A, [wD201_PlayerObject_ActionId]                                    ;; 03:520e $fa $01 $d2
+    ld   A, [wD201_PlayerEntity_ActionId]                                    ;; 03:520e $fa $01 $d2
     and  A, $1f                                        ;; 03:5211 $e6 $1f
     cp   A, $09                                        ;; 03:5213 $fe $09
     jr   Z, .jr_03_521b                                ;; 03:5215 $28 $04

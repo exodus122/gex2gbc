@@ -374,7 +374,7 @@ call_03_5ca8:
     add  A, $10                                        ;; 03:5cd9 $c6 $10
     ld   B, A                                          ;; 03:5cdb $47
     ld   [wD213_PlayerScreenYPosition], A                                    ;; 03:5cdc $ea $13 $d2
-    ld   A, [wD201_PlayerObject_ActionId]                                    ;; 03:5cdf $fa $01 $d2
+    ld   A, [wD201_PlayerEntity_ActionId]                                    ;; 03:5cdf $fa $01 $d2
     and  A, $1f                                        ;; 03:5ce2 $e6 $1f
     cp   A, $11                                        ;; 03:5ce4 $fe $11
     jr   Z, .jr_03_5d11                                ;; 03:5ce6 $28 $29
@@ -589,17 +589,17 @@ call_03_5f2b:
     ret                                                ;; 03:5f31 $c9
 
 call_03_5f32:
-; updates sprites? in object instances
+; updates sprites? in entity instances
     inc  E                                             ;; 03:5f32 $1c
     ld   A, C                                          ;; 03:5f33 $79
     add  A, $08                                        ;; 03:5f34 $c6 $08
     ld   C, A                                          ;; 03:5f36 $4f
-    ld   [DE], A                                       ;; 03:5f37 $12 ; updates object instance + 0x12
+    ld   [DE], A                                       ;; 03:5f37 $12 ; updates entity instance + 0x12
     inc  E                                             ;; 03:5f38 $1c
     ld   A, B                                          ;; 03:5f39 $78
     add  A, $10                                        ;; 03:5f3a $c6 $10
     ld   B, A                                          ;; 03:5f3c $47
-    ld   [DE], A                                       ;; 03:5f3d $12 ; updates object instance + 0x13
+    ld   [DE], A                                       ;; 03:5f3d $12 ; updates entity instance + 0x13
     ld   A, E                                          ;; 03:5f3e $7b
     xor  A, $19                                        ;; 03:5f3f $ee $19
     ld   E, A                                          ;; 03:5f41 $5f

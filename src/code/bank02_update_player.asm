@@ -170,12 +170,12 @@ call_02_4939_PlayerUpdate:
 .jr_02_49b0:
     call call_02_4a45                                  ;; 02:49b0 $cd $45 $4a
     ld   [wD59D_ReturnBank], A                                    ;; 02:49b3 $ea $9d $d5
-    ld   A, Bank03                                        ;; 02:49b6 $3e $03
+    ld   A, BANK_03                                        ;; 02:49b6 $3e $03
     ld   HL, call_03_4900_UpdateBgCollision_MainDispatcher                              ;; 02:49b8 $21 $00 $49
     call call_00_1078_FarCall                                  ;; 02:49bb $cd $78 $10
     call call_02_4b78                                  ;; 02:49be $cd $78 $4b
     ld   [wD59D_ReturnBank], A                                    ;; 02:49c1 $ea $9d $d5
-    ld   A, Bank03                                        ;; 02:49c4 $3e $03
+    ld   A, BANK_03                                        ;; 02:49c4 $3e $03
     ld   HL, call_03_4c0a_CacheNearbyTileValues                              ;; 02:49c6 $21 $0a $4c
     call call_00_1078_FarCall                                  ;; 02:49c9 $cd $78 $10
     call call_02_4c4f                                  ;; 02:49cc $cd $4f $4c
@@ -190,7 +190,7 @@ call_02_4939_PlayerUpdate:
     ld   A, $00                                        ;; 02:49e1 $3e $00
     ld   [wD74B], A                                    ;; 02:49e3 $ea $4b $d7
 .jr_02_49e6:
-    ld   HL, wD202_PlayerObject_ActionFunc                                     ;; 02:49e6 $21 $02 $d2
+    ld   HL, wD202_PlayerEntity_ActionFunc                                     ;; 02:49e6 $21 $02 $d2
     ld   A, [HL+]                                      ;; 02:49e9 $2a
     ld   H, [HL]                                       ;; 02:49ea $66
     ld   L, A                                          ;; 02:49eb $6f
@@ -215,7 +215,7 @@ call_02_4939_PlayerUpdate:
     call call_02_715a_UpdateMapWindow                                  ;; 02:4a10 $cd $5a $71
     call call_02_4c28                                  ;; 02:4a13 $cd $28 $4c
     ld   [wD59D_ReturnBank], A                                    ;; 02:4a16 $ea $9d $d5
-    ld   A, Bank03                                        ;; 02:4a19 $3e $03
+    ld   A, BANK_03                                        ;; 02:4a19 $3e $03
     ld   HL, call_03_5ca8                              ;; 02:4a1b $21 $a8 $5c
     call call_00_1078_FarCall                                  ;; 02:4a1e $cd $78 $10
     ld   HL, wD751                                     ;; 02:4a21 $21 $51 $d7
@@ -578,7 +578,7 @@ call_02_4c28:
     ret                                                ;; 02:4c4e $c9
 
 call_02_4c4f:
-    ld   A, [wD201_PlayerObject_ActionId]                                    ;; 02:4c4f $fa $01 $d2
+    ld   A, [wD201_PlayerEntity_ActionId]                                    ;; 02:4c4f $fa $01 $d2
     cp   A, $10                                        ;; 02:4c52 $fe $10
     jr   Z, .jr_02_4c6a                                ;; 02:4c54 $28 $14
     cp   A, $11                                        ;; 02:4c56 $fe $11
@@ -619,7 +619,7 @@ call_02_4c4f:
     ld   A, $1d                                        ;; 02:4ca2 $3e $1d
     jr   call_02_4ccd                                  ;; 02:4ca4 $18 $27
 .jr_02_4ca6:
-    ld   HL, wD201_PlayerObject_ActionId                                     ;; 02:4ca6 $21 $01 $d2
+    ld   HL, wD201_PlayerEntity_ActionId                                     ;; 02:4ca6 $21 $01 $d2
     ld   L, [HL]                                       ;; 02:4ca9 $6e
     ld   H, $00                                        ;; 02:4caa $26 $00
     add  HL, HL                                        ;; 02:4cac $29
@@ -650,7 +650,7 @@ call_02_4c4f:
     ld   A, [HL+]                                      ;; 02:4ccc $2a
 
 call_02_4ccd:
-    ld   HL, wD201_PlayerObject_ActionId                                     ;; 02:4ccd $21 $01 $d2
+    ld   HL, wD201_PlayerEntity_ActionId                                     ;; 02:4ccd $21 $01 $d2
     cp   A, [HL]                                       ;; 02:4cd0 $be
     ret  Z                                             ;; 02:4cd1 $c8
     ld   L, A                                          ;; 02:4cd2 $6f
@@ -662,7 +662,7 @@ call_02_4ccd:
     ld   HL, wD745                                     ;; 02:4cdd $21 $45 $d7
     bit  7, [HL]                                       ;; 02:4ce0 $cb $7e
     jr   Z, .jr_02_4ce7                                ;; 02:4ce2 $28 $03
-    ld   HL, wD201_PlayerObject_ActionId                                     ;; 02:4ce4 $21 $01 $d2
+    ld   HL, wD201_PlayerEntity_ActionId                                     ;; 02:4ce4 $21 $01 $d2
 .jr_02_4ce7:
     ld   L, [HL]                                       ;; 02:4ce7 $6e
     ld   H, $00                                        ;; 02:4ce8 $26 $00

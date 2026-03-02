@@ -68,12 +68,12 @@ call_0b_561b:
     ld   BC, $40                                       ;; 0b:5630 $01 $40 $00
     call call_00_07b0_MemCopy                                  ;; 0b:5633 $cd $b0 $07
     call call_0b_5df8                                  ;; 0b:5636 $cd $f8 $5d
-    ld   HL, .data_gex_object_palette2                             ;; 0b:5639 $21 $03 $5b
+    ld   HL, .data_gex_entity_palette2                             ;; 0b:5639 $21 $03 $5b
     ld   DE, wDA0B_Obj_Palettes                                     ;; 0b:563c $11 $0b $da
     ld   BC, $08                                       ;; 0b:563f $01 $08 $00
     call call_00_07b0_MemCopy                                  ;; 0b:5642 $cd $b0 $07
     ld   [wD59D_ReturnBank], A                                    ;; 0b:5645 $ea $9d $d5
-    ld   A, Bank03                                        ;; 0b:5648 $3e $03
+    ld   A, BANK_03                                        ;; 0b:5648 $3e $03
     ld   HL, call_03_6be5                                     ;; 0b:564a $21 $e5 $6b
     call call_00_1078_FarCall                                  ;; 0b:564d $cd $78 $10
     ret                                                ;; 0b:5650 $c9
@@ -249,7 +249,7 @@ call_0b_561b:
     db   $00, $00, $ef, $01, $f7, $02, $ff, $03        ;; 0b:5aeb ........
     db   $00, $00, $00, $00, $20, $03, $bf, $0b        ;; 0b:5af3 ........
     db   $00, $00, $1f, $00, $ff, $01, $7f, $03        ;; 0b:5afb ........
-.data_gex_object_palette2:
+.data_gex_entity_palette2:
     db   $00, $00, $00, $00, $8a, $02, $fd, $03        ;; 0b:5b03 ........
 .palette_media_dimension:
     INCBIN "gfx/tilesets/palettes/palette_media_dimension.bin"
@@ -383,7 +383,7 @@ call_0b_5ec3:
     ld   HL, .data_0b_5f03                             ;; 0b:5eea $21 $03 $5f
     jr   NZ, .jr_0b_5ef2                               ;; 0b:5eed $20 $03
 .jr_0b_5eef:
-    ld   HL, .data_gex_object_palette                             ;; 0b:5eef $21 $13 $5f
+    ld   HL, .data_gex_entity_palette                             ;; 0b:5eef $21 $13 $5f
 .jr_0b_5ef2:
     ld   DE, wDA0B_Obj_Palettes                                     ;; 0b:5ef2 $11 $0b $da
     ld   BC, $08                                       ;; 0b:5ef5 $01 $08 $00
@@ -393,7 +393,7 @@ call_0b_5ec3:
 .data_0b_5f03:
     db   $00, $00, $55, $01, $7f, $02, $ff, $03        ;; 0b:5f03 ????????
     db   $00, $00, $40, $45, $af, $7e, $f5, $7f        ;; 0b:5f0b ????????
-.data_gex_object_palette:
+.data_gex_entity_palette:
     db   $00, $00, $00, $00, $8a, $02, $fd, $03        ;; 0b:5f13 ........
     
     ld   A, [wD59E]                                    ;; 0b:5f1b $fa $9e $d5
@@ -447,7 +447,7 @@ call_0b_5f57:
     add  HL, HL                                        ;; 0b:5f7f $29
     add  HL, HL                                        ;; 0b:5f80 $29
     add  HL, HL                                        ;; 0b:5f81 $29
-    ld   BC, .data_object_palettes                             ;; 0b:5f82 $01 $9e $5f
+    ld   BC, .data_entity_palettes                             ;; 0b:5f82 $01 $9e $5f
     add  HL, BC                                        ;; 0b:5f85 $09
     ld   A, [HL+]                                      ;; 0b:5f86 $2a
     ld   [DE], A                                       ;; 0b:5f87 $12
@@ -473,8 +473,8 @@ call_0b_5f57:
     ld   A, [HL]                                       ;; 0b:5f9b $7e
     ld   [DE], A                                       ;; 0b:5f9c $12
     ret                                                ;; 0b:5f9d $c9
-.data_object_palettes:
-    INCBIN "gfx/object_sprites/object_palettes.bin"
+.data_entity_palettes:
+    INCBIN "gfx/entity_sprites/entity_palettes.bin"
 
 call_0b_641e:
     ld   HL, wD624_CurrentLevelId                                     ;; 0b:641e $21 $24 $d6

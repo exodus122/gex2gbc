@@ -1,153 +1,153 @@
 ;; Disassembled with BadBoy Disassembler: https://github.com/daid/BadBoy
 
-; This file updates all objects.
-; Below is a list of jump tables, one for each object, starting with Player
+; This file updates all entities.
+; Below is a list of jump tables, one for each entity, starting with Player
 
 data_02_4000_EntityDataTables:
-dw   data_02_4120        ;; Object_Gex
-dw   data_02_4ddb        ;; Object_CollectibleSpawn
-dw   data_02_4dff        ;; Object_unk_02
-dw   data_02_4ddf        ;; Object_TVButton
-dw   data_02_4de7        ;; Object_RedRemote
-dw   data_02_4def        ;; Object_SilverRemote
-dw   data_02_4df7        ;; Object_GoldRemote
-dw   data_02_4e03        ;; Object_EnemyDefeated
-dw   data_02_4e07        ;; Object_unk_08
-dw   data_02_4e0b        ;; Object_ScreamTV_FallingPlatform
-dw   data_02_4e0f        ;; Object_ScreamTV_MovingPlatform
-dw   data_02_4e13        ;; Object_ScreamTV_PushBlock
-dw   data_02_4e17        ;; Object_ScreamTV_Pumpkin
-dw   data_02_4e1f        ;; Object_ScreamTV_Frankie
-dw   data_02_4e23        ;; Object_ScreamTV_HeadGhost
-dw   data_02_4e2b        ;; Object_ScreamTV_HeadGhostHead
-dw   data_02_4e2f        ;; Object_ScreamTV_FloatingSkull
-dw   data_02_4e3b        ;; Object_ScreamTV_FloatingSkullProjectile
-dw   data_02_4e43        ;; Object_ScreamTV_Zombie
-dw   data_02_4e4f        ;; Object_ScreamTV_ZombieHead
-dw   data_02_4e5b        ;; Object_ScreamTV_FallingAxe
-dw   data_02_4e6b        ;; Object_ScreamTV_Lantern
-dw   data_02_4e73        ;; Object_ScreamTV_Bat
-dw   data_02_4e77        ;; Object_ScreamTV_OrangeMovingPlatform
-dw   data_02_4e7b        ;; Object_ScreamTV_DoorOpening
-dw   data_02_4e83        ;; Object_ScreamTV_Ghost
-dw   data_02_4e93        ;; Object_ScreamTV_ClimbWallSunEnemy
-dw   data_02_4e97        ;; Object_ScreamTV_VanishingPlatform
-dw   data_02_4ea3        ;; Object_ScreamTV_MonaLisaElevator
-dw   data_02_4ea7        ;; Object_ToonTV_HardHeadAreaObject
-dw   data_02_4eb3        ;; Object_ToonTV_StationaryBearTrap
-dw   data_02_4ebb        ;; Object_ToonTV_MovingBearTrap
-dw   data_02_4ec3        ;; Object_ToonTV_Bumblebee
-dw   data_02_4ecb        ;; Object_ToonTV_FallingBowlingBall
-dw   data_02_4ecf        ;; Object_ToonTV_Cactus
-dw   data_02_4edb        ;; Object_ToonTV_Domino
-dw   data_02_4edf        ;; Object_ToonTV_Shark
-dw   data_02_4ee3        ;; Object_ToonTV_Flower
-dw   data_02_4eef        ;; Object_ToonTV_Hunter
-dw   data_02_4f07        ;; Object_ToonTV_Mushroom
-dw   data_02_4f0b        ;; Object_unk_28
-dw   data_02_4f0f        ;; Object_ToonTV_Lizard
-dw   data_02_4f13        ;; Object_ToonTV_HappyFace
-dw   data_02_4f1b        ;; Object_ToonTV_VanishingBlock
-dw   data_02_4f27        ;; Object_ToonTV_MovingBlock
-dw   data_02_4f2f        ;; Object_ToonTV_MovingLogPlatform
-dw   data_02_4f33        ;; Object_ToonTV_StationaryLogPlatform
-dw   data_02_4f37        ;; Object_ToonTV_FlowerHammerAttack
-dw   data_02_4f43        ;; Object_ToonTV_HunterBullet
-dw   data_02_4f4b        ;; Object_ToonTV_Rocket
-dw   data_02_4f57        ;; Object_PreHistory_FastDinosaur
-dw   data_02_4f5b        ;; Object_PreHistory_Dragonfly
-dw   data_02_4f5f        ;; Object_PreHistory_Egg
-dw   data_02_4f6b        ;; Object_unk_35
-dw   data_02_4f73        ;; Object_unk_36
-dw   data_02_4f77        ;; Object_PreHistory_FallingLava
-dw   data_02_4f7f        ;; Object_PreHistory_LavaRaft
-dw   data_02_4f87        ;; Object_PreHistory_MovingPlatform
-dw   data_02_4f8b        ;; Object_unk_3A
-dw   data_02_4f8f        ;; Object_unk_3B
-dw   data_02_4f93        ;; Object_PreHistory_Pterosaur
-dw   data_02_4f97        ;; Object_unk_3D
-dw   data_02_4f9b        ;; Object_PreHistory_FallingBoulder
-dw   data_02_4fab        ;; Object_unk_3F
-dw   data_02_4faf        ;; Object_PreHistory_BeetleHorizontal
-dw   data_02_4fb3        ;; Object_PreHistory_BeetleVertical
-dw   data_02_4fb7        ;; Object_PreHistory_Ant
-dw   data_02_4fbb        ;; Object_PreHistory_FirePlant
-dw   data_02_4fc7        ;; Object_PreHistory_FirePlantProjectiles
-dw   data_02_4fcf        ;; Object_PreHistory_Geyser
-dw   data_02_4fd7        ;; Object_unk_46
-dw   data_02_4fdb        ;; Object_PreHistory_Dinosaur
-dw   data_02_4fdf        ;; Object_PreHistory_Triceratops
-dw   data_02_4fe3        ;; Object_PreHistory_TriceratopsHorn
-dw   data_02_4fe7        ;; Object_unk_4A
-dw   data_02_4feb        ;; Object_KungFuTheater_HangingBlade
-dw   data_02_4fef        ;; Object_KungFuTheater_Cannon
-dw   data_02_4ff3        ;; Object_KungFuTheater_CannonProjectile
-dw   data_02_4ffb        ;; Object_KungFuTheater_Dragonfly
-dw   data_02_4fff        ;; Object_KungFuTheater_DragonBodySegment
-dw   data_02_5003        ;; Object_KungFuTheater_DragonHead
-dw   data_02_5007        ;; Object_unk_51
-dw   data_02_500b        ;; Object_KungFuTheater_DragonProjectile
-dw   data_02_5013        ;; Object_KungFuTheater_WalkingNinja
-dw   data_02_501f        ;; Object_KungFuTheater_JumpingNinja
-dw   data_02_502f        ;; Object_KungFuTheater_SamuraiBody
-dw   data_02_5037        ;; Object_KungFuTheater_SamuraiHead
-dw   data_02_5043        ;; Object_KungFuTheater_Lizard
-dw   data_02_5047        ;; Object_KungFuTheater_NinjaProjectile
-dw   data_02_504f        ;; Object_KungFuTheater_SpikyLog
-dw   data_02_5053        ;; Object_KungFuTheater_TallJar
-dw   data_02_505b        ;; Object_KungFuTheater_Jar
-dw   data_02_5063        ;; Object_unk_5C
-dw   data_02_5067        ;; Object_unk_5D
-dw   data_02_506b        ;; Object_KungFuTheater_VanishingPlatform
-dw   data_02_5077        ;; Object_KungFuTheater_MovingPlatform
-dw   data_02_507b        ;; Object_unk_60
-dw   data_02_507f        ;; Object_KungFuTheater_MovingRaft
-dw   data_02_5083        ;; Object_KungFuTheater_StationaryRaft
-dw   data_02_5087        ;; Object_unk_63
-dw   data_02_508b        ;; Object_unk_64
-dw   data_02_508f        ;; Object_Rezopolis_SpecialMovingPlatform
-dw   data_02_5093        ;; Object_Rezopolis_MovingPlatform
-dw   data_02_5097        ;; Object_Rezopolis_RedPlatform
-dw   data_02_509b        ;; Object_Rezopolis_ActivatedRedPlatform
-dw   data_02_509f        ;; Object_Rezopolis_TailspinPlatform
-dw   data_02_50a3        ;; Object_Rezopolis_TailspinGear
-dw   data_02_50b7        ;; Object_unk_6B
-dw   data_02_50bb        ;; Object_unk_6C
-dw   data_02_50bf        ;; Object_unk_6D
-dw   data_02_50c3        ;; Object_Rezopolis_GreenMonster
-dw   data_02_50cf        ;; Object_unk_6F
-dw   data_02_50d3        ;; Object_unk_70
-dw   data_02_50d7        ;; Object_Rezopolis_Pincer
-dw   data_02_50db        ;; Object_Rezopolis_Flamethrower
-dw   data_02_50e3        ;; Object_Rezopolis_UFO
-dw   data_02_50eb        ;; Object_Rezopolis_Ant
-dw   data_02_50ef        ;; Object_Rezopolis_AntSpawner
-dw   data_02_50f3        ;; Object_CircuitCentral_Ant
-dw   data_02_50f7        ;; Object_CircuitCentral_Capacitor
-dw   data_02_50ff        ;; Object_CircuitCentral_PowerUp
-dw   data_02_5107        ;; Object_unk_79
-dw   data_02_510b        ;; Object_CircuitCentral_LittleRobot
-dw   data_02_5113        ;; Object_CircuitCentral_LittleRobotGear
-dw   data_02_5117        ;; Object_CircuitCentral_ElectricBall
-dw   data_02_511f        ;; Object_CircuitCentral_MovingPlatform
-dw   data_02_5123        ;; Object_CircuitCentral_PoweredPlaform
-dw   data_02_512f        ;; Object_CircuitCentral_LoweringPlatform
-dw   data_02_5133        ;; Object_CircuitCentral_WalkerRobot
-dw   data_02_5137        ;; Object_CircuitCentral_PoweredWalkway
-dw   data_02_513b        ;; Object_CircuitCentral_WalkwayActivator
-dw   data_02_513f        ;; Object_ChannelZ_ArcedGunProjectile
-dw   data_02_5147        ;; Object_ChannelZ_ArcedGunProjectile2
-dw   data_02_5157        ;; Object_ChannelZ_GunProjectile
-dw   data_02_515f        ;; Object_ChannelZ_Rez
-dw   data_02_518b        ;; Object_unk_87
-dw   data_02_518f        ;; Object_unk_88
-dw   data_02_5193        ;; Object_ChannelZ_RezFollowingFire
-dw   data_02_5197        ;; Object_ChannelZ_GunProjectileExplosion
-dw   data_02_519b        ;; Object_unk_8B
-dw   data_02_51a3        ;; Object_ChannelZ_FinalBattleButton
-dw   data_02_51ab        ;; Object_unk_8D
-dw   data_02_51af        ;; Object_unk_8E
-dw   data_02_51b3        ;; Object_MediaDimension_MovingPlatform
+dw   data_02_4120        ;; Entity_Gex
+dw   data_02_4ddb        ;; Entity_CollectibleSpawn
+dw   data_02_4dff        ;; Entity_unk_02
+dw   data_02_4ddf        ;; Entity_TVButton
+dw   data_02_4de7        ;; Entity_RedRemote
+dw   data_02_4def        ;; Entity_SilverRemote
+dw   data_02_4df7        ;; Entity_GoldRemote
+dw   data_02_4e03        ;; Entity_EnemyDefeated
+dw   data_02_4e07        ;; Entity_unk_08
+dw   data_02_4e0b        ;; Entity_ScreamTV_FallingPlatform
+dw   data_02_4e0f        ;; Entity_ScreamTV_MovingPlatform
+dw   data_02_4e13        ;; Entity_ScreamTV_PushBlock
+dw   data_02_4e17        ;; Entity_ScreamTV_Pumpkin
+dw   data_02_4e1f        ;; Entity_ScreamTV_Frankie
+dw   data_02_4e23        ;; Entity_ScreamTV_HeadGhost
+dw   data_02_4e2b        ;; Entity_ScreamTV_HeadGhostHead
+dw   data_02_4e2f        ;; Entity_ScreamTV_FloatingSkull
+dw   data_02_4e3b        ;; Entity_ScreamTV_FloatingSkullProjectile
+dw   data_02_4e43        ;; Entity_ScreamTV_Zombie
+dw   data_02_4e4f        ;; Entity_ScreamTV_ZombieHead
+dw   data_02_4e5b        ;; Entity_ScreamTV_FallingAxe
+dw   data_02_4e6b        ;; Entity_ScreamTV_Lantern
+dw   data_02_4e73        ;; Entity_ScreamTV_Bat
+dw   data_02_4e77        ;; Entity_ScreamTV_OrangeMovingPlatform
+dw   data_02_4e7b        ;; Entity_ScreamTV_DoorOpening
+dw   data_02_4e83        ;; Entity_ScreamTV_Ghost
+dw   data_02_4e93        ;; Entity_ScreamTV_ClimbWallSunEnemy
+dw   data_02_4e97        ;; Entity_ScreamTV_VanishingPlatform
+dw   data_02_4ea3        ;; Entity_ScreamTV_MonaLisaElevator
+dw   data_02_4ea7        ;; Entity_ToonTV_HardHeadAreaEntity
+dw   data_02_4eb3        ;; Entity_ToonTV_StationaryBearTrap
+dw   data_02_4ebb        ;; Entity_ToonTV_MovingBearTrap
+dw   data_02_4ec3        ;; Entity_ToonTV_Bumblebee
+dw   data_02_4ecb        ;; Entity_ToonTV_FallingBowlingBall
+dw   data_02_4ecf        ;; Entity_ToonTV_Cactus
+dw   data_02_4edb        ;; Entity_ToonTV_Domino
+dw   data_02_4edf        ;; Entity_ToonTV_Shark
+dw   data_02_4ee3        ;; Entity_ToonTV_Flower
+dw   data_02_4eef        ;; Entity_ToonTV_Hunter
+dw   data_02_4f07        ;; Entity_ToonTV_Mushroom
+dw   data_02_4f0b        ;; Entity_unk_28
+dw   data_02_4f0f        ;; Entity_ToonTV_Lizard
+dw   data_02_4f13        ;; Entity_ToonTV_HappyFace
+dw   data_02_4f1b        ;; Entity_ToonTV_VanishingBlock
+dw   data_02_4f27        ;; Entity_ToonTV_MovingBlock
+dw   data_02_4f2f        ;; Entity_ToonTV_MovingLogPlatform
+dw   data_02_4f33        ;; Entity_ToonTV_StationaryLogPlatform
+dw   data_02_4f37        ;; Entity_ToonTV_FlowerHammerAttack
+dw   data_02_4f43        ;; Entity_ToonTV_HunterBullet
+dw   data_02_4f4b        ;; Entity_ToonTV_Rocket
+dw   data_02_4f57        ;; Entity_PreHistory_FastDinosaur
+dw   data_02_4f5b        ;; Entity_PreHistory_Dragonfly
+dw   data_02_4f5f        ;; Entity_PreHistory_Egg
+dw   data_02_4f6b        ;; Entity_unk_35
+dw   data_02_4f73        ;; Entity_unk_36
+dw   data_02_4f77        ;; Entity_PreHistory_FallingLava
+dw   data_02_4f7f        ;; Entity_PreHistory_LavaRaft
+dw   data_02_4f87        ;; Entity_PreHistory_MovingPlatform
+dw   data_02_4f8b        ;; Entity_unk_3A
+dw   data_02_4f8f        ;; Entity_unk_3B
+dw   data_02_4f93        ;; Entity_PreHistory_Pterosaur
+dw   data_02_4f97        ;; Entity_unk_3D
+dw   data_02_4f9b        ;; Entity_PreHistory_FallingBoulder
+dw   data_02_4fab        ;; Entity_unk_3F
+dw   data_02_4faf        ;; Entity_PreHistory_BeetleHorizontal
+dw   data_02_4fb3        ;; Entity_PreHistory_BeetleVertical
+dw   data_02_4fb7        ;; Entity_PreHistory_Ant
+dw   data_02_4fbb        ;; Entity_PreHistory_FirePlant
+dw   data_02_4fc7        ;; Entity_PreHistory_FirePlantProjectiles
+dw   data_02_4fcf        ;; Entity_PreHistory_Geyser
+dw   data_02_4fd7        ;; Entity_unk_46
+dw   data_02_4fdb        ;; Entity_PreHistory_Dinosaur
+dw   data_02_4fdf        ;; Entity_PreHistory_Triceratops
+dw   data_02_4fe3        ;; Entity_PreHistory_TriceratopsHorn
+dw   data_02_4fe7        ;; Entity_unk_4A
+dw   data_02_4feb        ;; Entity_KungFuTheater_HangingBlade
+dw   data_02_4fef        ;; Entity_KungFuTheater_Cannon
+dw   data_02_4ff3        ;; Entity_KungFuTheater_CannonProjectile
+dw   data_02_4ffb        ;; Entity_KungFuTheater_Dragonfly
+dw   data_02_4fff        ;; Entity_KungFuTheater_DragonBodySegment
+dw   data_02_5003        ;; Entity_KungFuTheater_DragonHead
+dw   data_02_5007        ;; Entity_unk_51
+dw   data_02_500b        ;; Entity_KungFuTheater_DragonProjectile
+dw   data_02_5013        ;; Entity_KungFuTheater_WalkingNinja
+dw   data_02_501f        ;; Entity_KungFuTheater_JumpingNinja
+dw   data_02_502f        ;; Entity_KungFuTheater_SamuraiBody
+dw   data_02_5037        ;; Entity_KungFuTheater_SamuraiHead
+dw   data_02_5043        ;; Entity_KungFuTheater_Lizard
+dw   data_02_5047        ;; Entity_KungFuTheater_NinjaProjectile
+dw   data_02_504f        ;; Entity_KungFuTheater_SpikyLog
+dw   data_02_5053        ;; Entity_KungFuTheater_TallJar
+dw   data_02_505b        ;; Entity_KungFuTheater_Jar
+dw   data_02_5063        ;; Entity_unk_5C
+dw   data_02_5067        ;; Entity_unk_5D
+dw   data_02_506b        ;; Entity_KungFuTheater_VanishingPlatform
+dw   data_02_5077        ;; Entity_KungFuTheater_MovingPlatform
+dw   data_02_507b        ;; Entity_unk_60
+dw   data_02_507f        ;; Entity_KungFuTheater_MovingRaft
+dw   data_02_5083        ;; Entity_KungFuTheater_StationaryRaft
+dw   data_02_5087        ;; Entity_unk_63
+dw   data_02_508b        ;; Entity_unk_64
+dw   data_02_508f        ;; Entity_Rezopolis_SpecialMovingPlatform
+dw   data_02_5093        ;; Entity_Rezopolis_MovingPlatform
+dw   data_02_5097        ;; Entity_Rezopolis_RedPlatform
+dw   data_02_509b        ;; Entity_Rezopolis_ActivatedRedPlatform
+dw   data_02_509f        ;; Entity_Rezopolis_TailspinPlatform
+dw   data_02_50a3        ;; Entity_Rezopolis_TailspinGear
+dw   data_02_50b7        ;; Entity_unk_6B
+dw   data_02_50bb        ;; Entity_unk_6C
+dw   data_02_50bf        ;; Entity_unk_6D
+dw   data_02_50c3        ;; Entity_Rezopolis_GreenMonster
+dw   data_02_50cf        ;; Entity_unk_6F
+dw   data_02_50d3        ;; Entity_unk_70
+dw   data_02_50d7        ;; Entity_Rezopolis_Pincer
+dw   data_02_50db        ;; Entity_Rezopolis_Flamethrower
+dw   data_02_50e3        ;; Entity_Rezopolis_UFO
+dw   data_02_50eb        ;; Entity_Rezopolis_Ant
+dw   data_02_50ef        ;; Entity_Rezopolis_AntSpawner
+dw   data_02_50f3        ;; Entity_CircuitCentral_Ant
+dw   data_02_50f7        ;; Entity_CircuitCentral_Capacitor
+dw   data_02_50ff        ;; Entity_CircuitCentral_PowerUp
+dw   data_02_5107        ;; Entity_unk_79
+dw   data_02_510b        ;; Entity_CircuitCentral_LittleRobot
+dw   data_02_5113        ;; Entity_CircuitCentral_LittleRobotGear
+dw   data_02_5117        ;; Entity_CircuitCentral_ElectricBall
+dw   data_02_511f        ;; Entity_CircuitCentral_MovingPlatform
+dw   data_02_5123        ;; Entity_CircuitCentral_PoweredPlaform
+dw   data_02_512f        ;; Entity_CircuitCentral_LoweringPlatform
+dw   data_02_5133        ;; Entity_CircuitCentral_WalkerRobot
+dw   data_02_5137        ;; Entity_CircuitCentral_PoweredWalkway
+dw   data_02_513b        ;; Entity_CircuitCentral_WalkwayActivator
+dw   data_02_513f        ;; Entity_ChannelZ_ArcedGunProjectile
+dw   data_02_5147        ;; Entity_ChannelZ_ArcedGunProjectile2
+dw   data_02_5157        ;; Entity_ChannelZ_GunProjectile
+dw   data_02_515f        ;; Entity_ChannelZ_Rez
+dw   data_02_518b        ;; Entity_unk_87
+dw   data_02_518f        ;; Entity_unk_88
+dw   data_02_5193        ;; Entity_ChannelZ_RezFollowingFire
+dw   data_02_5197        ;; Entity_ChannelZ_GunProjectileExplosion
+dw   data_02_519b        ;; Entity_unk_8B
+dw   data_02_51a3        ;; Entity_ChannelZ_FinalBattleButton
+dw   data_02_51ab        ;; Entity_unk_8D
+dw   data_02_51af        ;; Entity_unk_8E
+dw   data_02_51b3        ;; Entity_MediaDimension_MovingPlatform
 
 INCLUDE "code/bank02_player_actions.asm"
 
@@ -159,7 +159,7 @@ call_02_6e17_InitEntitiesAndSpawnPlayer:
     xor  A, A                                          ;; 02:6e17 $af
     ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:6e18 $ea $00 $d3
     ld   A, $00                                        ;; 02:6e1b $3e $00
-    ld   [wD200_PlayerObject_Id], A                                    ;; 02:6e1d $ea $00 $d2
+    ld   [wD200_PlayerEntity_Id], A                                    ;; 02:6e1d $ea $00 $d2
     ld   A, [wD744]                                    ;; 02:6e20 $fa $44 $d7
     call call_02_7102_SetEntityAction                                  ;; 02:6e23 $cd $02 $71
     xor  A, A                                          ;; 02:6e26 $af
@@ -193,7 +193,7 @@ call_02_6e68_InitEntitiesOtherThanPlayer:
     ld   [wD74D], A                                    ;; 02:6e6c $ea $4d $d7
     ld   [wD74E], A                                    ;; 02:6e6f $ea $4e $d7
     ld   [wD74F], A                                    ;; 02:6e72 $ea $4f $d7
-    ld   HL, wD220_OtherLoadedObjects                                     ;; 02:6e75 $21 $20 $d2
+    ld   HL, wD220_OtherLoadedEntitys                                     ;; 02:6e75 $21 $20 $d2
     ld   DE, $20                                       ;; 02:6e78 $11 $20 $00
     ld   B, $07                                        ;; 02:6e7b $06 $07
 .jr_02_6e7d:
@@ -210,12 +210,12 @@ call_02_6e68_InitEntitiesOtherThanPlayer:
     call Z, call_02_48b7                               ;; 02:6e90 $cc $b7 $48
 .jr_02_6e93:
     ld   [wD59D_ReturnBank], A                                    ;; 02:6e93 $ea $9d $d5
-    ld   A, Bank0a                                        ;; 02:6e96 $3e $0a
+    ld   A, BANK_0A                                        ;; 02:6e96 $3e $0a
     ld   HL, call_0a_4000                              ;; 02:6e98 $21 $00 $40
     call call_00_1078_FarCall                                  ;; 02:6e9b $cd $78 $10
 .jr_02_6e9e:
     ld   [wD59D_ReturnBank], A                                    ;; 02:6e9e $ea $9d $d5
-    ld   A, Bank0a                                        ;; 02:6ea1 $3e $0a
+    ld   A, BANK_0A                                        ;; 02:6ea1 $3e $0a
     ld   HL, call_0a_7a7c                              ;; 02:6ea3 $21 $7c $7a
     call call_00_1078_FarCall                                  ;; 02:6ea6 $cd $78 $10
     ld   A, [wD338]                                    ;; 02:6ea9 $fa $38 $d3
@@ -225,7 +225,7 @@ call_02_6e68_InitEntitiesOtherThanPlayer:
 
 call_02_6eb1:
     xor  A, A                                          ;; 02:6eb1 $af
-    ld   HL, wD000_ObjectFlags                                     ;; 02:6eb2 $21 $00 $d0
+    ld   HL, wD000_EntityFlags                                     ;; 02:6eb2 $21 $00 $d0
 .jr_02_6eb5:
     ld   [HL], A                                       ;; 02:6eb5 $77
     inc  L                                             ;; 02:6eb6 $2c
@@ -318,7 +318,7 @@ call_02_6eba_UpdateAllEntities:
     res  6, [HL]                                       ;; 02:6f4c $cb $b6
     call call_02_6fda                                  ;; 02:6f4e $cd $da $6f
     ld   [wD59D_ReturnBank], A                                    ;; 02:6f51 $ea $9d $d5
-    ld   A, Bank03                                        ;; 02:6f54 $3e $03
+    ld   A, BANK_03                                        ;; 02:6f54 $3e $03
     ld   HL, call_03_5ebf                              ;; 02:6f56 $21 $bf $5e
     call call_00_1078_FarCall                                  ;; 02:6f59 $cd $78 $10
 .jr_02_6f5c:
@@ -327,12 +327,12 @@ call_02_6eba_UpdateAllEntities:
     jr   NZ, .jr_02_6f11                               ;; 02:6f61 $20 $ae
     call call_00_1138                                  ;; 02:6f63 $cd $38 $11
     ld   [wD59D_ReturnBank], A                                    ;; 02:6f66 $ea $9d $d5
-    ld   A, Bank0a                                        ;; 02:6f69 $3e $0a
+    ld   A, BANK_0A                                        ;; 02:6f69 $3e $0a
     ld   HL, call_0a_7a7c                              ;; 02:6f6b $21 $7c $7a
     call call_00_1078_FarCall                                  ;; 02:6f6e $cd $78 $10
     call call_02_722c                                  ;; 02:6f71 $cd $2c $72
     ld   [wD59D_ReturnBank], A                                    ;; 02:6f74 $ea $9d $d5
-    ld   A, Bank03                                        ;; 02:6f77 $3e $03
+    ld   A, BANK_03                                        ;; 02:6f77 $3e $03
     ld   HL, call_03_6540                              ;; 02:6f79 $21 $40 $65
     call call_00_1078_FarCall                                  ;; 02:6f7c $cd $78 $10
     ret                                                ;; 02:6f7f $c9
@@ -346,7 +346,7 @@ call_02_6f80:
     ld   A, $00                                        ;; 02:6f8b $3e $00
     ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:6f8d $ea $00 $d3
     ld   [wD59D_ReturnBank], A                                    ;; 02:6f90 $ea $9d $d5
-    ld   A, Bank03                                        ;; 02:6f93 $3e $03
+    ld   A, BANK_03                                        ;; 02:6f93 $3e $03
     ld   HL, call_03_5ca8                              ;; 02:6f95 $21 $a8 $5c
     call call_00_1078_FarCall                                  ;; 02:6f98 $cd $78 $10
     ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 02:6f9b $21 $0f $d6
@@ -370,7 +370,7 @@ call_02_6f80:
     set  1, [HL]                                       ;; 02:6fba $cb $ce
 .jr_02_6fbc:
     ld   [wD59D_ReturnBank], A                                    ;; 02:6fbc $ea $9d $d5
-    ld   A, Bank03                                        ;; 02:6fbf $3e $03
+    ld   A, BANK_03                                        ;; 02:6fbf $3e $03
     ld   HL, call_03_5ebf                              ;; 02:6fc1 $21 $bf $5e
     call call_00_1078_FarCall                                  ;; 02:6fc4 $cd $78 $10
 .jr_02_6fc7:
@@ -378,7 +378,7 @@ call_02_6f80:
     add  A, $20                                        ;; 02:6fca $c6 $20
     jr   NZ, .jr_02_6fa2                               ;; 02:6fcc $20 $d4
     ld   [wD59D_ReturnBank], A                                    ;; 02:6fce $ea $9d $d5
-    ld   A, Bank03                                        ;; 02:6fd1 $3e $03
+    ld   A, BANK_03                                        ;; 02:6fd1 $3e $03
     ld   HL, call_03_6540                              ;; 02:6fd3 $21 $40 $65
     call call_00_1078_FarCall                                  ;; 02:6fd6 $cd $78 $10
     ret                                                ;; 02:6fd9 $c9
@@ -514,7 +514,7 @@ call_02_70f1:
 
 call_02_7102_SetEntityAction:
 ; gets a jump table value from data_02_4000_EntityDataTables
-; updates the object instances at D200-D300
+; updates the entity instances at D200-D300
 ; sets action id, action pointer, data_0c, unknown_pointer_04_05, and more?
     and  A, $1f                                        ;; 02:7102 $e6 $1f
     ld   C, A                                          ;; 02:7104 $4f
@@ -542,10 +542,10 @@ call_02_7102_SetEntityAction:
     ld   E, A                                          ;; 02:7125 $5f
     ld   D, $d2                                        ;; 02:7126 $16 $d2
     ld   A, [HL+]                                      ;; 02:7128 $2a
-    ld   [DE], A                                       ;; 02:7129 $12 ; sets current action pointer in object instance
+    ld   [DE], A                                       ;; 02:7129 $12 ; sets current action pointer in entity instance
     inc  E                                             ;; 02:712a $1c
     ld   A, [HL+]                                      ;; 02:712b $2a
-    ld   [DE], A                                       ;; 02:712c $12 ; sets current action pointer in object instance
+    ld   [DE], A                                       ;; 02:712c $12 ; sets current action pointer in entity instance
     inc  E                                             ;; 02:712d $1c
     ld   A, [HL+]                                      ;; 02:712e $2a
     ld   H, [HL]                                       ;; 02:712f $66
@@ -690,7 +690,7 @@ call_02_71c8:
     jr   Z, .jr_02_71fa                                ;; 02:71ec $28 $0c
     ld   C, [HL]                                       ;; 02:71ee $4e
     ld   [wD59D_ReturnBank], A                                    ;; 02:71ef $ea $9d $d5
-    ld   A, Bank0b                                        ;; 02:71f2 $3e $0b
+    ld   A, BANK_0B                                        ;; 02:71f2 $3e $0b
     ld   HL, call_0b_5f57                              ;; 02:71f4 $21 $57 $5f
     call call_00_1078_FarCall                                  ;; 02:71f7 $cd $78 $10
 .jr_02_71fa:
@@ -698,7 +698,7 @@ call_02_71c8:
     add  A, $20                                        ;; 02:71fd $c6 $20
     jr   NZ, .jr_02_71ce                               ;; 02:71ff $20 $cd
     ld   [wD59D_ReturnBank], A                                    ;; 02:7201 $ea $9d $d5
-    ld   A, Bank0b                                        ;; 02:7204 $3e $0b
+    ld   A, BANK_0B                                        ;; 02:7204 $3e $0b
     ld   HL, call_03_5f1b                              ;; 02:7206 $21 $1b $5f
     call call_00_1078_FarCall                                  ;; 02:7209 $cd $78 $10
     pop  AF                                            ;; 02:720c $f1

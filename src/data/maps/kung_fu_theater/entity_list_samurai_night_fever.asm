@@ -1,296 +1,296 @@
-    db   Object_TVButton
+    db   ENTITY_TV_BUTTON
     dw   $0780, $0338
     db   $3d, $3b, $1a
     db   $18, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_RedRemote
+    db   ENTITY_RED_REMOTE
     dw   $0780, $0300
     db   $3d, $3b, $19
     db   $17, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_TVButton
+    db   ENTITY_TV_BUTTON
     dw   $0f80, $05b8
     db   $7d, $7b, $2e
     db   $2c, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_RedRemote
+    db   ENTITY_RED_REMOTE
     dw   $0f80, $0580
     db   $7d, $7b, $2d
     db   $2b, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_TVButton
+    db   ENTITY_TV_BUTTON
     dw   $05e0, $07b8
     db   $30, $2e, $3e
     db   $3c, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_RedRemote
+    db   ENTITY_RED_REMOTE
     dw   $05e0, $0780
     db   $30, $2e, $3d
     db   $3b, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_WalkingNinja
+    db   ENTITY_KUNG_FU_THEATER_WALKING_NINJA
     dw   $0a10, $05f0
     db   $52, $4e, $30
     db   $2e, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_SpikyLog
+    db   ENTITY_KUNG_FU_THEATER_SPIKY_LOG
     dw   $0cd0, $0090
     db   $67, $65, $06
     db   $03, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_MovingPlatform
+    db   ENTITY_KUNG_FU_THEATER_MOVING_PLATFORM
     dw   $0e10, $00c0
     db   $74, $6e, $07
     db   $05, $a0, $ff, $10, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_JumpingNinja
+    db   ENTITY_KUNG_FU_THEATER_JUMPING_NINJA
     dw   $0710, $0150
     db   $3a, $36, $0b
     db   $09, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_Jar
+    db   ENTITY_KUNG_FU_THEATER_JAR
     dw   $0810, $0150
     db   $41, $3f, $0b
     db   $09, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_Dragonfly
+    db   ENTITY_KUNG_FU_THEATER_DRAGONFLY
     dw   $0210, $0190
     db   $18, $0c, $0d
     db   $0b, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_Jar
+    db   ENTITY_KUNG_FU_THEATER_JAR
     dw   $0410, $0190
     db   $21, $1f, $0d
     db   $0b, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_Jar
+    db   ENTITY_KUNG_FU_THEATER_JAR
     dw   $04b0, $0190
     db   $26, $24, $0d
     db   $0b, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_SpikyLog
+    db   ENTITY_KUNG_FU_THEATER_SPIKY_LOG
     dw   $0610, $0190
     db   $31, $2f, $0e
     db   $0b, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_MovingPlatform
+    db   ENTITY_KUNG_FU_THEATER_MOVING_PLATFORM
     dw   $0a70, $0180
     db   $54, $52, $0e
     db   $0b, $52, $ff, $10, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_WalkingNinja
+    db   ENTITY_KUNG_FU_THEATER_WALKING_NINJA
     dw   $08d0, $01b0
     db   $4a, $44, $0e
     db   $0c, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_MovingPlatform
+    db   ENTITY_KUNG_FU_THEATER_MOVING_PLATFORM
     dw   $0ab0, $01c8
     db   $56, $54, $10
     db   $0c, $52, $ff, $10, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_MovingPlatform
+    db   ENTITY_KUNG_FU_THEATER_MOVING_PLATFORM
     dw   $0b90, $01c8
     db   $5d, $5b, $0f
     db   $0a, $52, $00, $10, $00, $00, $00, $00
 
-    db   Object_SilverRemote
+    db   ENTITY_SILVER_REMOTE
     dw   $0d50, $0210
     db   $6b, $69, $11
     db   $0f, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_MovingPlatform
+    db   ENTITY_KUNG_FU_THEATER_MOVING_PLATFORM
     dw   $0830, $0340
     db   $44, $3e, $1b
     db   $19, $a0, $ff, $10, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_MovingPlatform
+    db   ENTITY_KUNG_FU_THEATER_MOVING_PLATFORM
     dw   $0930, $0340
     db   $4a, $48, $1f
     db   $18, $52, $02, $10, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_TallJar
+    db   ENTITY_KUNG_FU_THEATER_TALL_JAR
     dw   $0110, $03d0
     db   $09, $07, $1f
     db   $1d, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_Jar
+    db   ENTITY_KUNG_FU_THEATER_JAR
     dw   $0210, $03d0
     db   $11, $0f, $1f
     db   $1d, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_Jar
+    db   ENTITY_KUNG_FU_THEATER_JAR
     dw   $0310, $03d0
     db   $19, $17, $1f
     db   $1d, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_Dragonfly
+    db   ENTITY_KUNG_FU_THEATER_DRAGONFLY
     dw   $0550, $03d0
     db   $2d, $26, $1f
     db   $1d, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_MovingPlatform
+    db   ENTITY_KUNG_FU_THEATER_MOVING_PLATFORM
     dw   $0810, $03f0
     db   $42, $3f, $20
     db   $1e, $a0, $ff, $10, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_MovingPlatform
+    db   ENTITY_KUNG_FU_THEATER_MOVING_PLATFORM
     dw   $0910, $0400
     db   $4b, $47, $21
     db   $1f, $a0, $01, $10, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_WalkingNinja
+    db   ENTITY_KUNG_FU_THEATER_WALKING_NINJA
     dw   $0690, $0450
     db   $3a, $32, $23
     db   $21, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_TallJar
+    db   ENTITY_KUNG_FU_THEATER_TALL_JAR
     dw   $0cd0, $0450
     db   $67, $65, $23
     db   $21, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_TallJar
+    db   ENTITY_KUNG_FU_THEATER_TALL_JAR
     dw   $0d70, $0450
     db   $6c, $6a, $23
     db   $21, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_Jar
+    db   ENTITY_KUNG_FU_THEATER_JAR
     dw   $0f30, $05d0
     db   $7a, $78, $2f
     db   $2d, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_MovingPlatform
+    db   ENTITY_KUNG_FU_THEATER_MOVING_PLATFORM
     dw   $0690, $05e8
     db   $36, $32, $30
     db   $2e, $a0, $ff, $10, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_MovingPlatform
+    db   ENTITY_KUNG_FU_THEATER_MOVING_PLATFORM
     dw   $07d0, $0600
     db   $40, $3c, $31
     db   $2f, $a0, $ff, $10, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_VanishingPlatform
+    db   ENTITY_KUNG_FU_THEATER_VANISHING_PLATFORM
     dw   $0890, $05f0
     db   $45, $43, $30
     db   $2e, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_MovingPlatform
+    db   ENTITY_KUNG_FU_THEATER_MOVING_PLATFORM
     dw   $0dd0, $05e0
     db   $75, $6c, $30
     db   $2e, $a0, $ff, $10, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_MovingPlatform
+    db   ENTITY_KUNG_FU_THEATER_MOVING_PLATFORM
     dw   $0410, $0610
     db   $21, $1f, $32
     db   $2e, $52, $ff, $10, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_VanishingPlatform
+    db   ENTITY_KUNG_FU_THEATER_VANISHING_PLATFORM
     dw   $0930, $0600
     db   $4a, $48, $31
     db   $2f, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_VanishingPlatform
+    db   ENTITY_KUNG_FU_THEATER_VANISHING_PLATFORM
     dw   $0b40, $0600
     db   $5b, $59, $31
     db   $2f, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_VanishingPlatform
+    db   ENTITY_KUNG_FU_THEATER_VANISHING_PLATFORM
     dw   $01b0, $0630
     db   $0e, $0c, $32
     db   $30, $00, $00, $80, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_MovingPlatform
+    db   ENTITY_KUNG_FU_THEATER_MOVING_PLATFORM
     dw   $0210, $0620
     db   $12, $0e, $32
     db   $30, $a0, $ff, $10, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_JumpingNinja
+    db   ENTITY_KUNG_FU_THEATER_JUMPING_NINJA
     dw   $03b0, $0630
     db   $1e, $1b, $32
     db   $30, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_MovingPlatform
+    db   ENTITY_KUNG_FU_THEATER_MOVING_PLATFORM
     dw   $04f0, $0638
     db   $29, $24, $32
     db   $30, $a0, $ff, $10, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_VanishingPlatform
+    db   ENTITY_KUNG_FU_THEATER_VANISHING_PLATFORM
     dw   $0170, $0640
     db   $0c, $0a, $33
     db   $31, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_MovingPlatform
+    db   ENTITY_KUNG_FU_THEATER_MOVING_PLATFORM
     dw   $02b0, $0640
     db   $1b, $13, $33
     db   $31, $a0, $ff, $10, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_MovingPlatform
+    db   ENTITY_KUNG_FU_THEATER_MOVING_PLATFORM
     dw   $0710, $0848
     db   $39, $37, $44
     db   $3e, $52, $ff, $10, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_MovingPlatform
+    db   ENTITY_KUNG_FU_THEATER_MOVING_PLATFORM
     dw   $05d0, $0890
     db   $30, $2b, $45
     db   $43, $a0, $ff, $10, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_VanishingPlatform
+    db   ENTITY_KUNG_FU_THEATER_VANISHING_PLATFORM
     dw   $06f0, $0880
     db   $38, $36, $45
     db   $43, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_VanishingPlatform
+    db   ENTITY_KUNG_FU_THEATER_VANISHING_PLATFORM
     dw   $0230, $08c0
     db   $12, $10, $47
     db   $45, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_JumpingNinja
+    db   ENTITY_KUNG_FU_THEATER_JUMPING_NINJA
     dw   $0570, $08b0
     db   $2d, $29, $46
     db   $44, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_VanishingPlatform
+    db   ENTITY_KUNG_FU_THEATER_VANISHING_PLATFORM
     dw   $0270, $08f0
     db   $14, $12, $48
     db   $46, $00, $00, $80, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_Jar
+    db   ENTITY_KUNG_FU_THEATER_JAR
     dw   $0050, $0910
     db   $03, $01, $49
     db   $47, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_Jar
+    db   ENTITY_KUNG_FU_THEATER_JAR
     dw   $00b0, $0910
     db   $06, $04, $49
     db   $47, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_VanishingPlatform
+    db   ENTITY_KUNG_FU_THEATER_VANISHING_PLATFORM
     dw   $05f0, $0950
     db   $30, $2e, $4b
     db   $49, $00, $00, $80, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_VanishingPlatform
+    db   ENTITY_KUNG_FU_THEATER_VANISHING_PLATFORM
     dw   $05b0, $0970
     db   $2e, $2c, $4c
     db   $4a, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_MovingPlatform
+    db   ENTITY_KUNG_FU_THEATER_MOVING_PLATFORM
     dw   $0590, $09e8
     db   $2d, $2b, $50
     db   $4e, $52, $ff, $10, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_MovingPlatform
+    db   ENTITY_KUNG_FU_THEATER_MOVING_PLATFORM
     dw   $0630, $0a00
     db   $32, $2d, $51
     db   $4f, $a0, $ff, $10, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_SamuraiBody
+    db   ENTITY_KUNG_FU_THEATER_SAMURAI_BODY
     dw   $0690, $0a90
     db   $36, $32, $55
     db   $53, $00, $00, $00, $00, $00, $00, $00
 
-    db   Object_KungFuTheater_MovingPlatform
+    db   ENTITY_KUNG_FU_THEATER_MOVING_PLATFORM
     dw   $05d0, $0aa0
     db   $30, $2d, $56
     db   $54, $a0, $ff, $10, $00, $00, $00, $00
 
-    db   ObjectListTerminator
+    db   ENTITY_LIST_TERMINATOR
