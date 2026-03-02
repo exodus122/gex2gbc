@@ -1,4 +1,4 @@
-; This file handles gex's collision with entities (enemies, tv switches, remotes, etc.)
+; This file handles gex's collision with entities [enemies, tv switches, remotes, etc.]
 
 call_03_4c76_UpdateEntityCollision_Dispatch:
     ld   A, [wD743_DrawGexFlag]                                    ;; 03:4c76 $fa $43 $d7
@@ -121,34 +121,80 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     pop  AF                                            ;; 03:4d2f $f1
     jp   call_00_06ec                                  ;; 03:4d30 $c3 $ec $06
 .jr_03_4d33:
-    db   $cd, $9b, $51, $d0, $cd, $31, $39, $3e        ;; 03:4d33 ????????
-    db   $04, $c3, $47, $06
+    call call_03_519b
+    ret  nc
+    call call_00_3931
+    ld   a,$04
+    jp   call_00_0647
 .jr_03_4d3f:
-	db   $cd, $9b, $51, $d0        ;; 03:4d3b ????????
-    db   $fa, $4c, $d6, $f6, $10, $ea, $4c, $d6        ;; 03:4d43 ????????
-    db   $0e, $03, $cd, $2f, $11, $cd, $31, $39        ;; 03:4d4b ????????
-    db   $c3, $3c, $39
+    call call_03_519b
+    ret  nc
+    ld   a,[wD64C]
+    or   a,$10
+    ld   [wD64C],a
+    ld   c,$03
+    call call_00_112f
+    call call_00_3931
+    jp   call_00_393c
 .jr_03_4d56:
-	db   $fa, $21, $d6, $e6, $10        ;; 03:4d53 ????????
-    db   $c0, $cd, $9b, $51, $d0, $21, $24, $d6        ;; 03:4d5b ????????
-    db   $6e, $26, $00, $11, $29, $d6, $19, $7e        ;; 03:4d63 ????????
-    db   $f6, $20, $77, $cd, $31, $39, $cd, $3c        ;; 03:4d6b ????????
-    db   $39, $3e, $1e, $ea, $9d, $d5, $3e, $02        ;; 03:4d73 ????????
-    db   $21, $cd, $4c, $cd, $78, $10, $c9
+    ld   a,[wD621]
+    and  a,$10
+    ret  nz
+    call call_03_519b
+    ret  nc
+    ld   hl,wD624_CurrentLevelId
+    ld   l,[hl]
+    ld   h,$00
+    ld   de,wD629_RemoteProgressFlags
+    add  hl,de
+    ld   a,[hl]
+    or   a,$20
+    ld   [hl],a
+    call call_00_3931
+    call call_00_393c
+    ld   a,$1E
+    ld   [wD59D_ReturnBank],a
+    ld   a,$02
+    ld   hl,call_02_4ccd
+    call call_00_1078_FarCall
+    ret  
 .jr_03_4d82:
-	db   $cd        ;; 03:4d7b ????????
-    db   $9b, $51, $d0, $fe, $00, $cc, $be, $52        ;; 03:4d83 ????????
-    db   $c9
+    call call_03_519b
+    ret  nc
+    cp   a,$00
+    call z,call_03_52be
+    ret  
 .jr_03_4d8c:
-	db   $3e, $01, $ea, $57, $d7, $cd, $9b        ;; 03:4d8b ????????
-    db   $51, $d0, $af, $ea, $57, $d7, $c9
+    ld   a,$01
+    ld   [wD757],a
+    call call_03_519b
+    ret  nc
+    xor  a
+    ld   [wD757],a
+    ret  
 .jr_03_4d9a:
-	db   $cd        ;; 03:4d93 ????????
-    db   $9b, $51, $d0, $fe, $00, $20, $03, $c3        ;; 03:4d9b ????????
-    db   $be, $52, $26, $d2, $fa, $00, $d3, $f6        ;; 03:4da3 ????????
-    db   $17, $6f, $cb, $46, $c0, $cb, $c6, $2c        ;; 03:4dab ????????
-    db   $36, $3c, $2c, $2c, $7e, $a7, $c8, $35        ;; 03:4db3 ????????
-    db   $c9                                           ;; 03:4dbb ?
+    call call_03_519b
+    ret  nc
+    cp   a,$00
+    jr   nz,.jr_03_4DA5
+    jp   call_03_52be
+.jr_03_4DA5:
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$17
+    ld   l,a
+    bit  0,[hl]
+    ret  nz
+    set  0,[hl]
+    inc  l
+    ld   [hl],$3C
+    inc  l
+    inc  l
+    ld   a,[hl]
+    and  a
+    ret  z
+    dec  [hl]
+    ret  
 .jr_03_4dbc:
     call call_03_519b                                  ;; 03:4dbc $cd $9b $51
     ret  NC                                            ;; 03:4dbf $d0
@@ -156,21 +202,56 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     jp   Z, call_03_52be                               ;; 03:4dc2 $ca $be $52
     jp   call_00_3985                                  ;; 03:4dc5 $c3 $85 $39
 .jr_03_4dc8:
-    db   $cd, $9b, $51, $d0, $fe, $00, $cc, $be        ;; 03:4dc8 ????????
-    db   $52, $c3, $31, $39
+    call call_03_519b
+    ret  nc
+    cp   a,$00
+    call z,call_03_52be
+    jp   call_00_3931
 .jr_03_4dd4:
-	db   $cd, $9b, $51, $d0        ;; 03:4dd0 ????????
-    db   $21, $57, $d7, $34, $35, $28, $06, $fe        ;; 03:4dd8 ????????
-    db   $00, $ca, $be, $52, $c9, $fe, $01, $c2        ;; 03:4de0 ????????
-    db   $be, $52, $26, $d2, $fa, $00, $d3, $b5        ;; 03:4de8 ????????
-    db   $6f, $cb, $c6, $c9
+    call call_03_519b
+    ret  nc
+    ld   hl,wD757
+    inc  [hl]
+    dec  [hl]
+    jr   z,.jr_03_4DE5
+    cp   a,$00
+    jp   z,call_03_52be
+    ret  
+.jr_03_4DE5:
+    cp   a,$01
+    jp   nz,call_03_52be
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   l
+    ld   l,a
+    set  0,[hl]
+    ret  
 .jr_03_4df4:
-	db   $cd, $9b, $51, $d0        ;; 03:4df0 ????????
-    db   $fe, $00, $ca, $be, $52, $fa, $00, $d3        ;; 03:4df8 ????????
-    db   $f5, $26, $d2, $3e, $20, $6f, $7e, $fe        ;; 03:4e00 ????????
-    db   $12, $28, $07, $7d, $c6, $20, $20, $f5        ;; 03:4e08 ????????
-    db   $18, $07, $7d, $ea, $00, $d3, $cd, $85        ;; 03:4e10 ????????
-    db   $39, $f1, $ea, $00, $d3, $c3, $31, $39        ;; 03:4e18 ????????
+    call call_03_519b
+    ret  nc
+    cp   a,$00
+    jp   z,call_03_52be
+    ld   a,[wD300_CurrentEntityAddrLo]
+    push af
+    ld   h,$D2
+    ld   a,$20
+.jr_03_4E05:
+    ld   l,a
+    ld   a,[hl]
+    cp   a,$12
+    jr   z,.jr_03_4E12
+    ld   a,l
+    add  a,$20
+    jr   nz,.jr_03_4E05
+    jr   .jr_03_4E19
+.jr_03_4E12:
+    ld   a,l
+    ld   [wD300_CurrentEntityAddrLo],a
+    call call_00_3985
+.jr_03_4E19:
+    pop  af
+    ld   [wD300_CurrentEntityAddrLo],a
+    jp   call_00_3931
 .jr_03_4e20:
     ld   H, $d2                                        ;; 03:4e20 $26 $d2
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:4e22 $fa $00 $d3
@@ -231,150 +312,492 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     call call_00_1078_FarCall                                  ;; 03:4e7b $cd $78 $10
     ret                                                ;; 03:4e7e $c9
 .jr_03_4e7f:
-    db   $26, $d2, $fa, $00, $d3, $f6, $17, $6f        ;; 03:4e7f ????????
-    db   $cb, $46, $c0, $cd, $9b, $51, $d0, $fe        ;; 03:4e87 ????????
-    db   $00, $ca, $be, $52, $cd, $17, $38, $28        ;; 03:4e8f ????????
-    db   $0b, $26, $d2, $fa, $00, $d3, $f6, $17        ;; 03:4e97 ????????
-    db   $6f, $cb, $c6, $c9, $cd, $85, $39, $21        ;; 03:4e9f ????????
-    db   $73, $d7, $34, $7e, $fe, $02, $c0, $21        ;; 03:4ea7 ????????
-    db   $99, $d7, $36, $02, $c9                       ;; 03:4eaf ?????
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$17
+    ld   l,a
+    bit  0,[hl]
+    ret  nz
+    call call_03_519b
+    ret  nc
+    cp   a,$00
+    jp   z,call_03_52be
+    call call_00_3817
+    jr   z,.jr_03_4EA3
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$17
+    ld   l,a
+    set  0,[hl]
+    ret  
+.jr_03_4EA3:
+    call call_00_3985
+    ld   hl,wD773
+    inc  [hl]
+    ld   a,[hl]
+    cp   a,$02
+    ret  nz
+    ld   hl,wD799
+    ld   [hl],$02
+    ret  
 .jr_03_4eb4:
-    call call_03_519b                                  ;; 03:4eb4 $cd $9b $51
-    ret  NC                                            ;; 03:4eb7 $d0
-    cp   A, $00                                        ;; 03:4eb8 $fe $00
-    ret  Z                                             ;; 03:4eba $c8
-    ld   H, $d2                                        ;; 03:4ebb $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:4ebd $fa $00 $d3
-    or   A, $17                                        ;; 03:4ec0 $f6 $17
-    ld   L, A                                          ;; 03:4ec2 $6f
-    set  0, [HL]                                       ;; 03:4ec3 $cb $c6
-    ret                                                ;; 03:4ec5 $c9
+    call call_03_519b
+    ret  nc
+    cp   a,$00
+    ret  z
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$17
+    ld   l,a
+    set  0,[hl]
+    ret  
 .jr_03_4ec6:
-    db   $c9
+    ret  
 .jr_03_4ec7:
-	db   $26, $d2, $fa, $00, $d3, $f6, $12        ;; 03:4ec6 ????????
-    db   $6f, $2a, $c6, $04, $4f, $7e, $c6, $08        ;; 03:4ece ????????
-    db   $47, $cd, $f5, $39, $6b, $62, $3e, $08        ;; 03:4ed6 ????????
-    db   $f5, $c5, $e5, $2a, $cb, $47, $28, $1d        ;; 03:4ede ????????
-    db   $23, $78, $96, $23, $47, $fa, $13, $d2        ;; 03:4ee6 ????????
-    db   $90, $c6, $06, $fe, $0c, $30, $0e, $23        ;; 03:4eee ????????
-    db   $2a, $81, $4f, $fa, $12, $d2, $91, $c6        ;; 03:4ef6 ????????
-    db   $04, $fe, $08, $38, $0b, $e1, $01, $05        ;; 03:4efe ????????
-    db   $00, $09, $c1, $f1, $3d, $20, $d1, $c9        ;; 03:4f06 ????????
-    db   $e1, $c1, $f1, $c3, $be, $52
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$12
+    ld   l,a
+    ldi  a,[hl]
+    add  a,$04
+    ld   c,a
+    ld   a,[hl]
+    add  a,$08
+    ld   b,a
+    call call_00_39f5
+    ld   l,e
+    ld   h,d
+    ld   a,$08
+.jr_03_4EDE:
+    push af
+    push bc
+    push hl
+    ldi  a,[hl]
+    bit  0,a
+    jr   z,.jr_03_4F03
+    inc  hl
+    ld   a,b
+    sub  [hl]
+    inc  hl
+    ld   b,a
+    ld   a,[wD213_PlayerScreenYPosition]
+    sub  b
+    add  a,$06
+    cp   a,$0C
+    jr   nc,.jr_03_4F03
+    inc  hl
+    ldi  a,[hl]
+    add  c
+    ld   c,a
+    ld   a,[wD212_PlayerScreenXPosition]
+    sub  c
+    add  a,$04
+    cp   a,$08
+    jr   c,.jr_03_4F0E
+.jr_03_4F03:
+    pop  hl
+    ld   bc,$0005
+    add  hl,bc
+    pop  bc
+    pop  af
+    dec  a
+    jr   nz,.jr_03_4EDE
+    ret  
+.jr_03_4F0E:
+    pop  hl
+    pop  bc
+    pop  af
+    jp   call_03_52be
 .jr_03_4f14:
-	db   $cd, $9b        ;; 03:4f0e ????????
-    db   $51, $d0, $fe, $01, $c0, $0e, $01, $c3        ;; 03:4f16 ????????
-    db   $02, $38
+    call call_03_519b
+    ret  nc
+    cp   a,$01
+    ret  nz
+    ld   c,$01
+    jp   call_00_3802
 .jr_03_4f20:
-	db   $d5, $26, $d2, $fa, $00, $d3        ;; 03:4f1e ????????
-    db   $f6, $01, $6f, $7e, $e6, $1f, $fe, $00        ;; 03:4f26 ????????
-    db   $28, $3f, $fe, $02, $28, $3b, $fe, $03        ;; 03:4f2e ????????
-    db   $28, $0b, $e5, $7d, $ee, $06, $6f, $7e        ;; 03:4f36 ????????
-    db   $e1, $fe, $02, $38, $2c, $7d, $ee, $13        ;; 03:4f3e ????????
-    db   $6f, $5e, $2c, $4e, $ee, $1f, $6f, $7b        ;; 03:4f46 ????????
-    db   $c6, $10, $cb, $6e, $28, $02, $d6, $20        ;; 03:4f4e ????????
-    db   $5f, $fa, $13, $d2, $91, $c6, $10, $fe        ;; 03:4f56 ????????
-    db   $20, $30, $0e, $fa, $12, $d2, $93, $c6        ;; 03:4f5e ????????
-    db   $06, $fe, $0c, $30, $04, $d1, $c3, $be        ;; 03:4f66 ????????
-    db   $52, $d1, $cd, $9b, $51, $d0, $fe, $00        ;; 03:4f6e ????????
-    db   $ca, $be, $52, $26, $d2, $fa, $00, $d3        ;; 03:4f76 ????????
-    db   $f6, $19, $6f, $7e, $a7, $28, $02, $35        ;; 03:4f7e ????????
-    db   $c9, $fa, $00, $d3, $07, $07, $07, $5f        ;; 03:4f86 ????????
-    db   $16, $00, $21, $01, $d3, $19, $4e, $21        ;; 03:4f8e ????????
-    db   $bd, $4f, $11, $03, $00, $fa, $24, $d6        ;; 03:4f96 ????????
-    db   $be, $20, $06, $23, $79, $be, $28, $0a        ;; 03:4f9e ????????
-    db   $2b, $19, $7e, $fe, $ff, $20, $ee, $c3        ;; 03:4fa6 ????????
-    db   $85, $39, $23, $6e, $26, $00, $11, $8b        ;; 03:4fae ????????
-    db   $d7, $19, $36, $02, $c3, $85, $39, $0d        ;; 03:4fb6 ????????
-    db   $07, $08, $05, $05, $00, $05, $06, $08        ;; 03:4fbe ????????
-    db   $ff
+    push de
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$01
+    ld   l,a
+    ld   a,[hl]
+    and  a,$1F
+    cp   a,$00
+    jr   z,.jr_03_4F6F
+    cp   a,$02
+    jr   z,.jr_03_4F6F
+    cp   a,$03
+    jr   z,.jr_03_4F43
+    push hl
+    ld   a,l
+    xor  a,$06
+    ld   l,a
+    ld   a,[hl]
+    pop  hl
+    cp   a,$02
+    jr   c,.jr_03_4F6F
+.jr_03_4F43:
+    ld   a,l
+    xor  a,$13
+    ld   l,a
+    ld   e,[hl]
+    inc  l
+    ld   c,[hl]
+    xor  a,$1F
+    ld   l,a
+    ld   a,e
+    add  a,$10
+    bit  5,[hl]
+    jr   z,.jr_03_4F56
+    sub  a,$20
+.jr_03_4F56:
+    ld   e,a
+    ld   a,[wD213_PlayerScreenYPosition]
+    sub  c
+    add  a,$10
+    cp   a,$20
+    jr   nc,.jr_03_4F6F
+    ld   a,[wD212_PlayerScreenXPosition]
+    sub  e
+    add  a,$06
+    cp   a,$0C
+    jr   nc,.jr_03_4F6F
+    pop  de
+    jp   call_03_52be
+.jr_03_4F6F:
+    pop  de
+    call call_03_519b
+    ret  nc
+    cp   a,$00
+    jp   z,call_03_52be
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$19
+    ld   l,a
+    ld   a,[hl]
+    and  a
+    jr   z,.jr_03_4F87
+    dec  [hl]
+    ret  
+.jr_03_4F87:
+    ld   a,[wD300_CurrentEntityAddrLo]
+    rlca 
+    rlca 
+    rlca 
+    ld   e,a
+    ld   d,$00
+    ld   hl,wD301
+    add  hl,de
+    ld   c,[hl]
+    ld   hl,.data_03_4fbd
+    ld   de,$0003
+.jr_03_4F9B:
+    ld   a,[wD624_CurrentLevelId]
+    cp   [hl]
+    jr   nz,.jr_03_4FA7
+    inc  hl
+    ld   a,c
+    cp   [hl]
+    jr   z,.jr_03_4FB0
+    dec  hl
+.jr_03_4FA7:
+    add  hl,de
+    ld   a,[hl]
+    cp   a,$FF
+    jr   nz,.jr_03_4F9B
+    jp   call_00_3985
+.jr_03_4FB0:
+    inc  hl
+    ld   l,[hl]
+    ld   h,$00
+    ld   de,wD78B
+    add  hl,de
+    ld   [hl],$02
+    jp   call_00_3985
+.data_03_4fbd:
+    db   $0d, $07, $08, $05, $05, $00, $05, $06
+    db   $08, $ff
 .jr_03_4fc7:
-    db   $d5, $cd, $20, $4e, $d1, $c3, $82        ;; 03:4fc6 ????????
-    db   $4d
+    push de
+    call .jr_03_4e20
+    pop  de
+    jp   .jr_03_4d82
 .jr_03_4fcf:
-	db   $cd, $9b, $51, $d0, $3e, $7f, $ea        ;; 03:4fce ????????
-    db   $58, $d7, $c9
+    call call_03_519b
+    ret  nc
+    ld   a,$7F
+    ld   [wD758],a
+    ret  
 .jr_03_4fd9:
-	db   $d5, $26, $d2, $fa, $00        ;; 03:4fd6 ????????
-    db   $d3, $f6, $01, $6f, $7e, $e6, $1f, $fe        ;; 03:4fde ????????
-    db   $01, $20, $37, $e5, $7d, $ee, $06, $6f        ;; 03:4fe6 ????????
-    db   $7e, $e1, $fe, $02, $38, $2c, $7d, $ee        ;; 03:4fee ????????
-    db   $13, $6f, $5e, $2c, $4e, $ee, $1f, $6f        ;; 03:4ff6 ????????
-    db   $7b, $c6, $0e, $cb, $6e, $28, $02, $d6        ;; 03:4ffe ????????
-    db   $1c, $5f, $fa, $13, $d2, $91, $c6, $10        ;; 03:5006 ????????
-    db   $fe, $20, $30, $0e, $fa, $12, $d2, $93        ;; 03:500e ????????
-    db   $c6, $04, $fe, $08, $30, $04, $d1, $c3        ;; 03:5016 ????????
-    db   $be, $52, $d1, $cd, $9b, $51, $d0, $fe        ;; 03:501e ????????
-    db   $00, $ca, $be, $52, $26, $d2, $fa, $00        ;; 03:5026 ????????
-    db   $d3, $f6, $17, $6f, $cb, $c6, $c9
+    push de
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$01
+    ld   l,a
+    ld   a,[hl]
+    and  a,$1F
+    cp   a,$01
+    jr   nz,.jr_03_5020
+    push hl
+    ld   a,l
+    xor  a,$06
+    ld   l,a
+    ld   a,[hl]
+    pop  hl
+    cp   a,$02
+    jr   c,.jr_03_5020
+    ld   a,l
+    xor  a,$13
+    ld   l,a
+    ld   e,[hl]
+    inc  l
+    ld   c,[hl]
+    xor  a,$1F
+    ld   l,a
+    ld   a,e
+    add  a,$0E
+    bit  5,[hl]
+    jr   z,.jr_03_5007
+    sub  a,$1C
+.jr_03_5007:
+    ld   e,a
+    ld   a,[wD213_PlayerScreenYPosition]
+    sub  c
+    add  a,$10
+    cp   a,$20
+    jr   nc,.jr_03_5020
+    ld   a,[wD212_PlayerScreenXPosition]
+    sub  e
+    add  a,$04
+    cp   a,$08
+    jr   nc,.jr_03_5020
+    pop  de
+    jp   call_03_52be
+.jr_03_5020:
+    pop  de
+    call call_03_519b
+    ret  nc
+    cp   a,$00
+    jp   z,call_03_52be
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$17
+    ld   l,a
+    set  0,[hl]
+    ret  
 .jr_03_5035:
-	db   $cd        ;; 03:502e ????????
-    db   $9b, $51, $d0, $fe, $00, $ca, $be, $52        ;; 03:5036 ????????
-    db   $26, $d2, $fa, $00, $d3, $f6, $17, $6f        ;; 03:503e ????????
-    db   $cb, $c6, $c9
+    call call_03_519b
+    ret  nc
+    cp   a,$00
+    jp   z,call_03_52be
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$17
+    ld   l,a
+    set  0,[hl]
+    ret  
 .jr_03_5049:
-	db   $26, $d2, $fa, $00, $d3        ;; 03:5046 ????????
-    db   $f6, $01, $6f, $7e, $e6, $1f, $fe, $01        ;; 03:504e ????????
-    db   $c0, $3e, $50, $ea, $58, $d7, $c9
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$01
+    ld   l,a
+    ld   a,[hl]
+    and  a,$1F
+    cp   a,$01
+    ret  nz
+    ld   a,$50
+    ld   [wD758],a
+    ret  
 .jr_03_505d:
-	db   $d5        ;; 03:5056 ????????
-    db   $26, $d2, $fa, $00, $d3, $f6, $12, $6f        ;; 03:505e ????????
-    db   $5e, $2c, $4e, $ee, $1f, $6f, $7b, $c6        ;; 03:5066 ????????
-    db   $14, $cb, $6e, $28, $02, $d6, $28, $5f        ;; 03:506e ????????
-    db   $fa, $13, $d2, $91, $c6, $06, $fe, $0c        ;; 03:5076 ????????
-    db   $30, $0e, $fa, $12, $d2, $93, $c6, $06        ;; 03:507e ????????
-    db   $fe, $0c, $30, $04, $d1, $c3, $be, $52        ;; 03:5086 ????????
-    db   $d1, $cd, $9b, $51, $d0, $fe, $00, $ca        ;; 03:508e ????????
-    db   $be, $52, $26, $d2, $3e, $20, $6f, $7e        ;; 03:5096 ????????
-    db   $fe, $49, $20, $02, $36, $ff, $7d, $c6        ;; 03:509e ????????
-    db   $20, $20, $f3, $c3, $85, $39
+    push de
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$12
+    ld   l,a
+    ld   e,[hl]
+    inc  l
+    ld   c,[hl]
+    xor  a,$1F
+    ld   l,a
+    ld   a,e
+    add  a,$14
+    bit  5,[hl]
+    jr   z,.jr_03_5075
+    sub  a,$28
+.jr_03_5075:
+    ld   e,a
+    ld   a,[wD213_PlayerScreenYPosition]
+    sub  c
+    add  a,$06
+    cp   a,$0C
+    jr   nc,.jr_03_508E
+    ld   a,[wD212_PlayerScreenXPosition]
+    sub  e
+    add  a,$06
+    cp   a,$0C
+    jr   nc,.jr_03_508E
+    pop  de
+    jp   call_03_52be
+.jr_03_508E:
+    pop  de
+    call call_03_519b
+    ret  nc
+    cp   a,$00
+    jp   z,call_03_52be
+    ld   h,$D2
+    ld   a,$20
+.jr_03_509C:
+    ld   l,a
+    ld   a,[hl]
+    cp   a,$49
+    jr   nz,.jr_03_50A4
+    ld   [hl],$FF
+.jr_03_50A4:
+    ld   a,l
+    add  a,$20
+    jr   nz,.jr_03_509C
+    jp   call_00_3985
 .jr_03_50ac:
-	db   $cd, $9b        ;; 03:50a6 ????????
-    db   $51, $f5, $26, $d2, $fa, $00, $d3, $f6        ;; 03:50ae ????????
-    db   $17, $6f, $f1, $30, $07, $fe, $01, $20        ;; 03:50b6 ????????
-    db   $03, $cb, $c6, $c9, $cb, $86, $c9
+    call call_03_519b
+    push af
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$17
+    ld   l,a
+    pop  af
+    jr   nc,.jr_03_50C2
+    cp   a,$01
+    jr   nz,.jr_03_50C2
+    set  0,[hl]
+    ret  
+.jr_03_50C2:
+    res  0,[hl]
+    ret  
 .jr_03_50c5:
-	db   $26        ;; 03:50be ????????
-    db   $d2, $fa, $00, $d3, $f6, $01, $6f, $7e        ;; 03:50c6 ????????
-    db   $e6, $1f, $fe, $00, $c2, $82, $4d, $c9        ;; 03:50ce ????????
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$01
+    ld   l,a
+    ld   a,[hl]
+    and  a,$1F
+    cp   a,$00
+    jp   nz,.jr_03_4d82
+    ret  
 .jr_03_50d6:
-    db   $cd, $9b, $51, $d0, $26, $d2, $fa, $00        ;; 03:50d6 ????????
-    db   $d3, $f6, $17, $6f, $cb, $fe, $c3, $be        ;; 03:50de ????????
-    db   $52
+    call call_03_519b
+    ret  nc
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$17
+    ld   l,a
+    set  7,[hl]
+    jp   call_03_52be
 .jr_03_50e7:
-	db   $21, $55, $d7, $2a, $b6, $c8, $cd        ;; 03:50e6 ????????
-    db   $9b, $51, $d0, $26, $d2, $fa, $00, $d3        ;; 03:50ee ????????
-    db   $f6, $17, $6f, $cb, $fe, $3e, $1f, $ea        ;; 03:50f6 ????????
-    db   $9d, $d5, $3e, $02, $21, $cd, $4c, $cd        ;; 03:50fe ????????
-    db   $78, $10, $c9
+    ld   hl,wD755
+    ldi  a,[hl]
+    or   [hl]
+    ret  z
+    call call_03_519b
+    ret  nc
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$17
+    ld   l,a
+    set  7,[hl]
+    ld   a,$1F
+    ld   [wD59D_ReturnBank],a
+    ld   a,$02
+    ld   hl,call_02_4ccd
+    call call_00_1078_FarCall
+    ret  
 .jr_03_5109:
-	db   $26, $d2, $3e, $20, $6f        ;; 03:5106 ????????
-    db   $7e, $fe, $4d, $c8, $7d, $c6, $20, $20        ;; 03:510e ????????
-    db   $f6, $cd, $9b, $51, $d0, $fe, $02, $c0        ;; 03:5116 ????????
-    db   $26, $d2, $fa, $00, $d3, $f6, $17, $6f        ;; 03:511e ????????
-    db   $cb, $fe, $c9
+    ld   h,$D2
+    ld   a,$20
+.jr_03_510D:
+    ld   l,a
+    ld   a,[hl]
+    cp   a,$4D
+    ret  z
+    ld   a,l
+    add  a,$20
+    jr   nz,.jr_03_510D
+    call call_03_519b
+    ret  nc
+    cp   a,$02
+    ret  nz
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$17
+    ld   l,a
+    set  7,[hl]
+    ret  
 .jr_03_5129:
-	db   $cd, $9b, $51, $d0, $21        ;; 03:5126 ????????
-    db   $51, $d7, $2a, $b6, $c8, $26, $d2, $fa        ;; 03:512e ????????
-    db   $00, $d3, $f6, $19, $6f, $6e, $2d, $26        ;; 03:5136 ????????
-    db   $00, $11, $a3, $d5, $19, $7e, $36, $06        ;; 03:513e ????????
-    db   $a7, $c0, $0e, $2b, $cd, $2f, $11, $c9        ;; 03:5146 ????????
+    call call_03_519b
+    ret  nc
+    ld   hl,wD751
+    ldi  a,[hl]
+    or   [hl]
+    ret  z
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$19
+    ld   l,a
+    ld   l,[hl]
+    dec  l
+    ld   h,$00
+    ld   de,wD5A3
+    add  hl,de
+    ld   a,[hl]
+    ld   [hl],$06
+    and  a
+    ret  nz
+    ld   c,$2B
+    call call_00_112f
+    ret  
 .jr_03_514e:
-    db   $cd, $9b, $51, $d0, $26, $d2, $fa, $00        ;; 03:514e ????????
-    db   $d3, $f6, $19, $6f, $2a, $ea, $51, $d7        ;; 03:5156 ????????
-    db   $7e, $ea, $52, $d7, $c9
+    call call_03_519b
+    ret  nc
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$19
+    ld   l,a
+    ldi  a,[hl]
+    ld   [wD751],a
+    ld   a,[hl]
+    ld   [wD752],a
+    ret  
 .jr_03_5163:
-	db   $cd, $9b, $51        ;; 03:515e ????????
-    db   $d0, $cd, $be, $52, $c3, $10, $39
+    call call_03_519b
+    ret  nc
+    call call_03_52be
+    jp   call_00_3910
 .jr_03_516d:
-	db   $26        ;; 03:5166 ????????
-    db   $d2, $fa, $00, $d3, $f6, $01, $6f, $7e        ;; 03:516e ????????
-    db   $e6, $1f, $fe, $04, $c8, $30, $17, $cd        ;; 03:5176 ????????
-    db   $9b, $51, $d0, $fe, $00, $ca, $be, $52        ;; 03:517e ????????
-    db   $3e, $04, $ea, $9d, $d5, $3e, $02, $21        ;; 03:5186 ????????
-    db   $02, $71, $cd, $78, $10, $c9, $fe, $09        ;; 03:518e ????????
-    db   $c8, $fe, $0a, $c8, $c9                       ;; 03:5196 ?????
+    ld   h,$D2
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$01
+    ld   l,a
+    ld   a,[hl]
+    and  a,$1F
+    cp   a,$04
+    ret  z
+    jr   nc,.jr_03_5194
+    call call_03_519b
+    ret  nc
+    cp   a,$00
+    jp   z,call_03_52be
+    ld   a,$04
+    ld   [wD59D_ReturnBank],a
+    ld   a,$02
+    ld   hl,call_02_7102_SetEntityAction
+    call call_00_1078_FarCall
+    ret  
+.jr_03_5194:
+    cp   a,$09
+    ret  z
+    cp   a,$0A
+    ret  z
+    ret  
 
 call_03_519b:
     ld   H, $d2                                        ;; 03:519b $26 $d2
@@ -533,8 +956,14 @@ call_03_52c5:
     jr   jr_03_534d                                   ;; 03:5302 $18 $49
 
 call_03_5304:
-    db   $fa, $00, $d3, $f6, $13, $6f, $26, $d2        ;; 03:5304 ????????
-    db   $fa, $13, $d2, $c6, $0f, $be, $30, $39        ;; 03:530c ????????
+    ld   a,[wD300_CurrentEntityAddrLo]
+    or   a,$13
+    ld   l,a
+    ld   h,$D2
+    ld   a,[wD213_PlayerScreenYPosition]
+    add  a,$0F
+    cp   [hl]
+    jr   nc,jr_03_534d
 
 call_03_5314:
     ld   C, A                                          ;; 03:5314 $4f

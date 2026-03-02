@@ -300,6 +300,37 @@ DEF ENTITY_UNK_8E                            EQU $8E ; not in level ENTITY lists
 DEF ENTITY_MEDIA_DIMENSION_MOVING_PLATFORM   EQU $8F
 DEF ENTITY_LIST_TERMINATOR                   EQU $FF
 
+; Entity Instance Struct - these are copied from gex3 and are not all verified
+DEF ENTITY_FIELD_ENTITY_ID                  EQU $00
+DEF ENTITY_FIELD_ACTION_ID                  EQU $01
+DEF ENTITY_FIELD_ACTION_FUNC                EQU $02
+DEF ENTITY_FIELD_SPRITE_FLAGS2              EQU $04
+DEF ENTITY_FIELD_GRAPHICS_FLAGS             EQU $05
+DEF ENTITY_FIELD_SPRITE_FRAME_COUNTER_MAX   EQU $06 ; how many frames to use this sprite
+DEF ENTITY_FIELD_SPRITE_FRAME_COUNTER       EQU $07 ; counter for the above
+DEF ENTITY_FIELD_SPRITE_COUNTER_MAX         EQU $08 ; total sprite frames for current action
+DEF ENTITY_FIELD_SPRITE_COUNTER             EQU $09 ; counter for above
+DEF ENTITY_FIELD_SPRITE_ID                  EQU $0A ; current sprite id
+DEF ENTITY_FIELD_SPRITE_IDS_PTR             EQU $0B ; ptr to sprite data (in entity_animation_data.asm)
+DEF ENTITY_FIELD_FACING_DIRECTION           EQU $0D
+DEF ENTITY_FIELD_XPOS                       EQU $0E
+DEF ENTITY_FIELD_YPOS                       EQU $10
+DEF ENTITY_FIELD_WIDTH                      EQU $12 ; set to [1] into data_00_3258
+DEF ENTITY_FIELD_HEIGHT                     EQU $13 ; set to [2] into data_00_3258
+DEF ENTITY_FIELD_COLLISION_TYPE             EQU $14 ; set to [3] into data_00_3258
+DEF ENTITY_FIELD_COOLDOWN_TIMER             EQU $15 ; defaults to 0, but might get set to $3c (same value as gex's cooldown timer)
+DEF ENTITY_FIELD_DAMAGE_STATE               EQU $16 ; stores current health or other damage states
+DEF ENTITY_FIELD_SPRITE_BANK                EQU $17
+DEF ENTITY_FIELD_UNK18                      EQU $18 ; seems unused
+DEF ENTITY_FIELD_MISC_FLAGS                 EQU $19 ; only used by moving platforms, skating elf health, and sec bot?
+                                                    ; initially set to data_00_3258[entity_id*8][5]
+DEF ENTITY_FIELD_MISC_TIMER                 EQU $1A ; timer which can be used for various purposes
+DEF ENTITY_FIELD_XVEL                       EQU $1B
+DEF ENTITY_FIELD_XVEL_RELATED               EQU $1C ; used with XVEL to calculate X delta
+DEF ENTITY_FIELD_YVEL                       EQU $1D
+DEF ENTITY_FIELD_UNK1E                      EQU $1E ; seems unused, likely would have been used for Y velocity delta
+DEF ENTITY_FIELD_PARENT                     EQU $1F ; stores entity list index of this entity's parent (used for projectiles, flies)
+
 ; Player Action Ids
 DEF PLAYER_ACTION_SPAWN_IN_LEVEL             EQU $00
 DEF PLAYER_ACTION_UNK_01                     EQU $01
