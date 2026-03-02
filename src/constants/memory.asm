@@ -277,7 +277,7 @@ wD589:
 wD58A:
     ds 16                                              ;; d58a
 
-wD59A:
+wD59A_PtrToBankStackPosition:
 ; used to switch back to previous bank after loaded asset from a new bank (or ran code?)
     ds 2                                               ;; d59a
 

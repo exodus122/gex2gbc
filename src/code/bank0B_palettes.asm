@@ -72,10 +72,7 @@ call_0b_561b:
     ld   DE, wDA0B_Obj_Palettes                                     ;; 0b:563c $11 $0b $da
     ld   BC, $08                                       ;; 0b:563f $01 $08 $00
     call call_00_07b0_MemCopy                                  ;; 0b:5642 $cd $b0 $07
-    ld   [wD59D_ReturnBank], A                                    ;; 0b:5645 $ea $9d $d5
-    ld   A, BANK_03                                        ;; 0b:5648 $3e $03
-    ld   HL, call_03_6be5                                     ;; 0b:564a $21 $e5 $6b
-    call call_00_1078_FarCall                                  ;; 0b:564d $cd $78 $10
+    farcall call_03_6be5
     ret                                                ;; 0b:5650 $c9
 .jr_0b_5651:
     ld   L, C                                          ;; 0b:5651 $69
@@ -129,7 +126,7 @@ call_0b_561b:
     dw   .data_57c3_Palette
     dw   .image_great_job_00c_2_palette
     dw   .data_5a83_Palette
-    dw   $da4b
+    dw   wDA4B
     dw   .image_splash_01f_1_palette
     dw   .image_crave_01f_0_palette
     dw   .image_david_01e_0_palette
@@ -396,6 +393,7 @@ call_0b_5ec3:
 .data_gex_entity_palette:
     db   $00, $00, $00, $00, $8a, $02, $fd, $03        ;; 0b:5f13 ........
     
+call_0b_5f1b:
     ld   A, [wD59E]                                    ;; 0b:5f1b $fa $9e $d5
     and  A, A                                          ;; 0b:5f1e $a7
     ret  Z                                             ;; 0b:5f1f $c8

@@ -1570,6 +1570,7 @@ call_00_393c:
     ld   [HL], $ff                                     ;; 00:394e $36 $ff
     ret                                                ;; 00:3950 $c9
 
+call_00_3951:
     ld   h,$D2
     ld   a,$20
 .jr_02_3955:
@@ -1630,10 +1631,7 @@ call_00_3985:
     call call_00_3a23                                  ;; 00:39a8 $cd $23 $3a
     call call_00_393c                                  ;; 00:39ab $cd $3c $39
     xor  A, A                                          ;; 00:39ae $af
-    ld   [wD59D_ReturnBank], A                                    ;; 00:39af $ea $9d $d5
-    ld   A, BANK_02                                        ;; 00:39b2 $3e $02
-    ld   HL, call_02_7102_SetEntityAction                                     ;; 00:39b4 $21 $02 $71
-    call call_00_1078_FarCall                                  ;; 00:39b7 $cd $78 $10
+    farcall call_02_7102_SetEntityAction
     ld   C, $17                                        ;; 00:39ba $0e $17
     call call_00_112f                                  ;; 00:39bc $cd $2f $11
     ret                                                ;; 00:39bf $c9

@@ -153,10 +153,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     call call_00_3931
     call call_00_393c
     ld   a,$1E
-    ld   [wD59D_ReturnBank],a
-    ld   a,$02
-    ld   hl,call_02_4ccd
-    call call_00_1078_FarCall
+    farcall call_02_4ccd
     ret  
 .jr_03_4d82:
     call call_03_519b
@@ -306,10 +303,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ld   A, $77                                        ;; 03:4e6c $3e $77
     ld   [wD750], A                                    ;; 03:4e6e $ea $50 $d7
     ld   A, $19                                        ;; 03:4e71 $3e $19
-    ld   [wD59D_ReturnBank], A                                    ;; 03:4e73 $ea $9d $d5
-    ld   A, BANK_02                                        ;; 03:4e76 $3e $02
-    ld   HL, call_02_4ccd                             ;; 03:4e78 $21 $cd $4c
-    call call_00_1078_FarCall                                  ;; 03:4e7b $cd $78 $10
+    farcall call_02_4ccd
     ret                                                ;; 03:4e7e $c9
 .jr_03_4e7f:
     ld   h,$D2
@@ -706,10 +700,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ld   l,a
     set  7,[hl]
     ld   a,$1F
-    ld   [wD59D_ReturnBank],a
-    ld   a,$02
-    ld   hl,call_02_4ccd
-    call call_00_1078_FarCall
+    farcall call_02_4ccd
     ret  
 .jr_03_5109:
     ld   h,$D2
@@ -787,10 +778,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     cp   a,$00
     jp   z,call_03_52be
     ld   a,$04
-    ld   [wD59D_ReturnBank],a
-    ld   a,$02
-    ld   hl,call_02_7102_SetEntityAction
-    call call_00_1078_FarCall
+    farcall call_02_7102_SetEntityAction
     ret  
 .jr_03_5194:
     cp   a,$09

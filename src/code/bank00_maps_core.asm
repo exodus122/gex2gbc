@@ -28,10 +28,7 @@ call_00_1264_LoadFullMap:
     ld   A, $01                                        ;; 00:12a3 $3e $01
     ld   [wD6F9], A                                    ;; 00:12a5 $ea $f9 $d6
     call call_00_1455_LoadBgMapDirtyRegions                                  ;; 00:12a8 $cd $55 $14
-    ld   [wD59D_ReturnBank], A                                    ;; 00:12ab $ea $9d $d5
-    ld   A, BANK_03                                        ;; 00:12ae $3e $03
-    ld   HL, call_03_6f5e_WriteVRAMBgMap                                     ;; 00:12b0 $21 $5e $6f
-    call call_00_1078_FarCall                                  ;; 00:12b3 $cd $78 $10
+    farcall call_03_6f5e_WriteVRAMBgMap 
     ld   HL, wD6EF_YPositionInMap                                     ;; 00:12b6 $21 $ef $d6
     ld   A, [HL]                                       ;; 00:12b9 $7e
     add  A, $08                                        ;; 00:12ba $c6 $08
@@ -44,14 +41,8 @@ call_00_1264_LoadFullMap:
     dec  A                                             ;; 00:12c3 $3d
     jr   NZ, .jr_00_12a2                               ;; 00:12c4 $20 $dc
     ld   [wD6F9], A                                    ;; 00:12c6 $ea $f9 $d6
-    ld   [wD59D_ReturnBank], A                                    ;; 00:12c9 $ea $9d $d5
-    ld   A, BANK_03                                        ;; 00:12cc $3e $03
-    ld   HL, call_03_66ae                                     ;; 00:12ce $21 $ae $66
-    call call_00_1078_FarCall                                  ;; 00:12d1 $cd $78 $10
-    ld   [wD59D_ReturnBank], A                                    ;; 00:12d4 $ea $9d $d5
-    ld   A, BANK_02                                        ;; 00:12d7 $3e $02
-    ld   HL, call_02_715a_UpdateMapWindow                                     ;; 00:12d9 $21 $5a $71
-    call call_00_1078_FarCall                                  ;; 00:12dc $cd $78 $10
+    farcall call_03_66ae
+    farcall call_02_715a_UpdateMapWindow
     xor  A, A                                          ;; 00:12df $af
     ld   [wD6F9], A                                    ;; 00:12e0 $ea $f9 $d6
     ret                                                ;; 00:12e3 $c9
@@ -219,7 +210,7 @@ call_00_1419_WriteTilesToVRAM: ; this function writes to the tiles part of vram 
     ld   A, [HL+]                                      ;; 00:1422 $2a
     ld   H, [HL]                                       ;; 00:1423 $66
     ld   L, A                                          ;; 00:1424 $6f
-    ld   DE, $9000                                     ;; 00:1425 $11 $00 $90
+    ld   DE, _VRAM+$1000                                     ;; 00:1425 $11 $00 $90
 .jr_00_1428:
     ld   A, [HL+]                                      ;; 00:1428 $2a
     ld   [DE], A                                       ;; 00:1429 $12
@@ -227,7 +218,7 @@ call_00_1419_WriteTilesToVRAM: ; this function writes to the tiles part of vram 
     ld   A, D                                          ;; 00:142b $7a
     cp   A, $98                                        ;; 00:142c $fe $98
     jr   NZ, .jr_00_1428                               ;; 00:142e $20 $f8
-    ld   DE, $8800                                     ;; 00:1430 $11 $00 $88
+    ld   DE, _VRAM+$800                                     ;; 00:1430 $11 $00 $88
 .jr_00_1433:
     ld   A, [HL+]                                      ;; 00:1433 $2a
     ld   [DE], A                                       ;; 00:1434 $12
@@ -237,14 +228,8 @@ call_00_1419_WriteTilesToVRAM: ; this function writes to the tiles part of vram 
     jr   NZ, .jr_00_1433                               ;; 00:1439 $20 $f8
     ;; at this point the tiles have been written
     call call_00_10a3_RestoreBank                                  ;; 00:143b $cd $a3 $10 
-    ld   [wD59D_ReturnBank], A                                    ;; 00:143e $ea $9d $d5
-    ld   A, BANK_0B                                        ;; 00:1441 $3e $0b
-    ld   HL, call_0b_641e                                     ;; 00:1443 $21 $1e $64
-    call call_00_1078_FarCall                                  ;; 00:1446 $cd $78 $10
-    ld   [wD59D_ReturnBank], A                                    ;; 00:1449 $ea $9d $d5
-    ld   A, BANK_03                                        ;; 00:144c $3e $03
-    ld   HL, call_03_723c_SetupAnimatedTile                                     ;; 00:144e $21 $3c $72
-    call call_00_1078_FarCall                                  ;; 00:1451 $cd $78 $10
+    farcall call_0b_641e
+    farcall call_03_723c_SetupAnimatedTile
     ret                                                ;; 00:1454 $c9
 
 call_00_1455_LoadBgMapDirtyRegions:
@@ -1307,10 +1292,7 @@ call_00_1922_LoadSecondaryTileset:
     ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:19dc $21 $0f $d6
     set  2, [HL]                                       ;; 00:19df $cb $d6
     call call_00_10a3_RestoreBank                                  ;; 00:19e1 $cd $a3 $10
-    ld   [wD59D_ReturnBank], A                                    ;; 00:19e4 $ea $9d $d5
-    ld   A, BANK_0B                                        ;; 00:19e7 $3e $0b
-    ld   HL, call_0b_5df8                                     ;; 00:19e9 $21 $f8 $5d
-    call call_00_1078_FarCall                                  ;; 00:19ec $cd $78 $10
+    farcall call_0b_5df8
     ret                                                ;; 00:19ef $c9
 .data_LevelSecondaryTilesetBanks: ; this table contains the secondary tileset bank numbers 
 ; AND the offset into that bank to start getting the tilesets

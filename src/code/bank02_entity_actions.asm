@@ -393,10 +393,7 @@ data_02_51b3:                        ;; Entity_MediaDimension_MovingPlatform
 call_02_51b7:
     call call_00_3b8d                                  ;; 02:51b7 $cd $8d $3b
     push AF                                            ;; 02:51ba $f5
-    ld   [wD59D_ReturnBank], A                                    ;; 02:51bb $ea $9d $d5
-    ld   A, BANK_03                                        ;; 02:51be $3e $03
-    ld   HL, call_03_6584                              ;; 02:51c0 $21 $84 $65
-    call call_00_1078_FarCall                                  ;; 02:51c3 $cd $78 $10
+    farcall call_03_6584
     jr   NZ, .jr_02_51cc                               ;; 02:51c6 $20 $04
     pop  AF                                            ;; 02:51c8 $f1
     jp   call_00_3931                                    ;; 02:51c9 $c3 $31 $39
@@ -537,10 +534,7 @@ call_02_52aa:
 call_02_52ab:
     call call_00_3b8d                                  ;; 02:52ab $cd $8d $3b
     jr   Z, .jr_02_52bc                                ;; 02:52ae $28 $0c
-    ld   [wD59D_ReturnBank], A                                    ;; 02:52b0 $ea $9d $d5
-    ld   A, BANK_03                                        ;; 02:52b3 $3e $03
-    ld   HL, call_03_65f9                              ;; 02:52b5 $21 $f9 $65
-    call call_00_1078_FarCall                                  ;; 02:52b8 $cd $78 $10
+    farcall call_03_65f9
     ret  NZ                                            ;; 02:52bb $c0
 .jr_02_52bc:
     ld   C, $01                                        ;; 02:52bc $0e $01
@@ -728,10 +722,7 @@ call_02_53ad:
     call call_00_3843
     ret  z
     ld   c,$00
-    ld   [wD59D_ReturnBank],a
-    ld   a,$0A
-    ld   hl,call_0a_7b9a
-    call call_00_1078_FarCall
+    farcall call_0a_7b9a
     ld   a,$01
     jp   call_02_7102_SetEntityAction
 
@@ -818,10 +809,7 @@ call_02_5440:
     ld   c,$34
     call call_00_112f
     ld   c,$01
-    ld   [wD59D_ReturnBank],a
-    ld   a,$0A
-    ld   hl,call_0a_7b9a
-    call call_00_1078_FarCall
+    farcall call_0a_7b9a
     ld   a,$02
     jp   call_02_7102_SetEntityAction
 
@@ -840,10 +828,7 @@ call_02_5464:
 call_02_546e:
     call call_00_3b8d
     jp   z,call_00_3931
-    ld   [wD59D_ReturnBank],a
-    ld   a,$03
-    ld   hl,call_03_6549
-    call call_00_1078_FarCall
+    farcall call_03_6549
     ret  
 
 call_02_5480:
@@ -868,10 +853,7 @@ call_02_5480:
     cp   a,$00
     jr   nz,.jr_02_54AF
     ld   c,$02
-    ld   [wD59D_ReturnBank],a
-    ld   a,$0A
-    ld   hl,call_0a_7b9a
-    call call_00_1078_FarCall
+    farcall call_0a_7b9a
 .jr_02_54AF:
     ld   a,$02
     jp   call_02_7102_SetEntityAction
@@ -1584,10 +1566,7 @@ call_02_592d:
     ret  NZ                                            ;; 02:595b $c0
     ld   [HL], $3c                                     ;; 02:595c $36 $3c
     ld   C, $03                                        ;; 02:595e $0e $03
-    ld   [wD59D_ReturnBank], A                                    ;; 02:5960 $ea $9d $d5
-    ld   A, BANK_0A                                        ;; 02:5963 $3e $0a
-    ld   HL, call_0a_7b9a                              ;; 02:5965 $21 $9a $7b
-    call call_00_1078_FarCall                                  ;; 02:5968 $cd $78 $10
+    farcall call_0a_7b9a
     ret                                                ;; 02:596b $c9
 call_02_596c:
     call call_00_3843                                  ;; 02:596c $cd $43 $38
@@ -1622,10 +1601,7 @@ call_02_5993:
     ld   c,$20
     call call_00_112f
     ld   c,$0B
-    ld   [wD59D_ReturnBank],a
-    ld   a,$0A
-    ld   hl,call_0a_7b9a
-    call call_00_1078_FarCall
+    farcall call_0a_7b9a
     ld   a,$01
     jp   call_02_7102_SetEntityAction
 .jr_02_59BE:
@@ -1708,10 +1684,7 @@ call_02_5a28:
     ld   [HL], $02                                     ;; 02:5a3f $36 $02
 .jr_02_5a41:
     ld   C, $08                                        ;; 02:5a41 $0e $08
-    ld   [wD59D_ReturnBank], A                                    ;; 02:5a43 $ea $9d $d5
-    ld   A, BANK_0A                                        ;; 02:5a46 $3e $0a
-    ld   HL, call_0a_7b9a                              ;; 02:5a48 $21 $9a $7b
-    call call_00_1078_FarCall                                  ;; 02:5a4b $cd $78 $10
+    farcall call_0a_7b9a
     call call_00_3985                                  ;; 02:5a4e $cd $85 $39
     ld   H, $d2                                        ;; 02:5a51 $26 $d2
     ld   A, $20                                        ;; 02:5a53 $3e $20
@@ -2200,10 +2173,7 @@ call_02_5d5b:
     call call_00_3b8d
     ld   a,$00
     jp   z,call_02_7102_SetEntityAction
-    ld   [wD59D_ReturnBank],a
-    ld   a,$03
-    ld   hl,call_03_65b8
-    call call_00_1078_FarCall
+    farcall call_03_65b8
     ret  
 
 call_02_5d6f:
@@ -2256,10 +2226,7 @@ call_02_5db2:
     ld   c,$34
     call call_00_112f
     ld   c,$06
-    ld   [wD59D_ReturnBank],a
-    ld   a,$0A
-    ld   hl,call_0a_7b9a
-    call call_00_1078_FarCall
+    farcall call_0a_7b9a
     ld   a,$02
     jp   call_02_7102_SetEntityAction
 
@@ -2278,10 +2245,7 @@ call_02_5ddc:
 call_02_5de6:
     call call_00_3b8d
     jp   z,call_00_3931
-    ld   [wD59D_ReturnBank],a
-    ld   a,$03
-    ld   hl,call_03_663a
-    call call_00_1078_FarCall
+    farcall call_03_663a
     ret  
 
 call_02_5df8:
@@ -2317,10 +2281,7 @@ call_02_5e26:
     call call_00_34ea
     jr   z,.jr_02_5E38
     ld   c,$07
-    ld   [wD59D_ReturnBank],a
-    ld   a,$0A
-    ld   hl,call_0a_7b9a
-    call call_00_1078_FarCall
+    farcall call_0a_7b9a
 .jr_02_5E38:
     ld   c,$08
     call call_00_32e1
@@ -2438,10 +2399,7 @@ call_02_5ebd:
     ld   c,[hl]
     call call_00_3290
     ld   c,$0D
-    ld   [wD59D_ReturnBank],a
-    ld   a,$0A
-    ld   hl,call_0a_7b9a
-    call call_00_1078_FarCall
+    farcall call_0a_7b9a
     ld   c,$30
     call call_00_112f
     ret  
@@ -2541,10 +2499,7 @@ call_02_5f67:
     and  a
     jr   nz,.jr_02_5FA0
     ld   c,$0C
-    ld   [wD59D_ReturnBank],a
-    ld   a,$0A
-    ld   hl,call_0a_7b9a
-    call call_00_1078_FarCall
+    farcall call_0a_7b9a
     ld   c,$2F
     call call_00_112f
 .jr_02_5FA0:
@@ -2838,10 +2793,7 @@ call_02_621c:
     call call_00_3843
     ret  z
     ld   c,$04
-    ld   [wD59D_ReturnBank],a
-    ld   a,$0A
-    ld   hl,call_0a_7b9a
-    call call_00_1078_FarCall
+    farcall call_0a_7b9a
     ld   a,$00
     jp   call_02_7102_SetEntityAction
 
@@ -2860,10 +2812,7 @@ call_02_624c:
     call call_00_34ea
     jr   z,.jr_02_625E
     ld   c,$05
-    ld   [wD59D_ReturnBank],a
-    ld   a,$0A
-    ld   hl,call_0a_7b9a
-    call call_00_1078_FarCall
+    farcall call_0a_7b9a
 .jr_02_625E:
     ld   c,$10
     call call_00_32e1
@@ -3037,10 +2986,7 @@ call_02_635d:
 call_02_6375:
     call call_00_3b8d
     jp   z,call_00_3985
-    ld   [wD59D_ReturnBank],a
-    ld   a,$03
-    ld   hl,call_03_6675
-    call call_00_1078_FarCall
+    farcall call_03_6675
     ret  
 
 call_02_6387:
@@ -3601,10 +3547,7 @@ call_02_666c:
     cp   a,$02
     ret  nc
     ld   c,$0E
-    ld   [wD59D_ReturnBank],a
-    ld   a,$0A
-    ld   hl,call_0a_7b9a
-    call call_00_1078_FarCall
+    farcall call_0a_7b9a
     ld   c,$06
     call call_00_112f
     ret  
@@ -3686,10 +3629,7 @@ call_02_6724:
     call call_00_34ea
     jr   z,.jr_02_6736
     ld   c,$09
-    ld   [wD59D_ReturnBank],a
-    ld   a,$0A
-    ld   hl,call_0a_7b9a
-    call call_00_1078_FarCall
+    farcall call_0a_7b9a
 .jr_02_6736:
     ld   c,$08
     call call_00_32e1
@@ -4324,10 +4264,7 @@ call_02_6c03:
     ld   c,$37
     call call_00_112f
     ld   c,$0A
-    ld   [wD59D_ReturnBank],a
-    ld   a,$0A
-    ld   hl,call_0a_7b9a
-    call call_00_1078_FarCall
+    farcall call_0a_7b9a
     jp   call_00_3910
 
 call_02_6c18:
@@ -4433,10 +4370,7 @@ call_02_6Ca7:
     ld   a,$09
     jp   nz,call_02_7102_SetEntityAction
     ld   c,$11
-    ld   [wD59D_ReturnBank],a
-    ld   a,$0A
-    ld   hl,call_0a_7b9a
-    call call_00_1078_FarCall
+    farcall call_0a_7b9a
     ld   c,$37
     call call_00_112f
     jp   call_00_3985
@@ -4586,10 +4520,7 @@ call_02_6d80:
     jr   z,.jr_02_6D9D
     ld   c,$10
 .jr_02_6D9D:
-    ld   [wD59D_ReturnBank],a
-    ld   a,$0A
-    ld   hl,call_0a_7b9a
-    call call_00_1078_FarCall
+    farcall call_0a_7b9a
     ld   bc,$0005
     call call_00_37d8
     ld   c,$39

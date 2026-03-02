@@ -83,12 +83,12 @@ call_00_0150_Init:
     ldh  [rVBK], A                                     ;; 00:01a7 $e0 $4f
     call call_00_0f9d_UpdateLCDPalettes                ;; 00:01a9 $cd $9d $0f
 .jr_00_01ac:
-    ld   HL, $ef7                                      ;; 00:01ac $21 $f7 $0e
+    ld   HL, call_00_0ef7                                      ;; 00:01ac $21 $f7 $0e
     ld   DE, hFF80                                     ;; 00:01af $11 $80 $ff
     ld   BC, $0a                                       ;; 00:01b2 $01 $0a $00
     call call_00_07b0_MemCopy                                  ;; 00:01b5 $cd $b0 $07
     call call_00_0e87                                  ;; 00:01b8 $cd $87 $0e
-    ld   HL, wD59A                                     ;; 00:01bb $21 $9a $d5
+    ld   HL, wD59A_PtrToBankStackPosition                                     ;; 00:01bb $21 $9a $d5
     ld   DE, wD58A                                     ;; 00:01be $11 $8a $d5
     ld   A, $01                                        ;; 00:01c1 $3e $01
     ld   [HL], E                                       ;; 00:01c3 $73
@@ -113,10 +113,7 @@ call_00_0150_Init:
     call call_00_0f32                                  ;; 00:01e7 $cd $32 $0f
     ld   A, $21                                        ;; 00:01ea $3e $21
     ld   [wD788_CurrentAudioBank], A                                    ;; 00:01ec $ea $88 $d7
-    ld   [wD59D_ReturnBank], A                                    ;; 00:01ef $ea $9d $d5
-    ld   A, BANK_21                                        ;; 00:01f2 $3e $21
-    ld   HL, call_21_4000                              ;; 00:01f4 $21 $00 $40
-    call call_00_1078_FarCall                    ;; 00:01f7 $cd $78 $10
+    farcall call_21_4000                              
     ld   A, $ff                                        ;; 00:01fa $3e $ff
     ld   [wD78A_MusicId], A                                    ;; 00:01fc $ea $8a $d7
     ei                                                 ;; 00:01ff $fb
@@ -131,41 +128,23 @@ call_00_0150_Init:
 .jr_00_0210:
     ld   A, $03                                        ;; 00:0210 $3e $03
     ld   [wD61D], A                                    ;; 00:0212 $ea $1d $d6
-    ld   [wD59D_ReturnBank], A                                    ;; 00:0215 $ea $9d $d5
-    ld   A, BANK_01                                        ;; 00:0218 $3e $01
-    ld   HL, call_01_4f87_LoadEnterPasswordMenu                              ;; 00:021a $21 $87 $4f
-    call call_00_1078_FarCall                    ;; 00:021d $cd $78 $10
+    farcall call_01_4f87_LoadEnterPasswordMenu
 .jp_00_0220:
     ld   A, MENU_TYPE_TITLE_SPLASH                                        ;; 00:0220 $3e $14
-    ld   [wD59D_ReturnBank], A                                    ;; 00:0222 $ea $9d $d5
-    ld   A, BANK_01                                        ;; 00:0225 $3e $01
-    ld   HL, call_01_4000_MenuLoad                              ;; 00:0227 $21 $00 $40
-    call call_00_1078_FarCall                                  ;; 00:022a $cd $78 $10
+    farcall call_01_4000_MenuLoad
     ld   A, MENU_TYPE_TITLE_CRAVE                                        ;; 00:022d $3e $13
-    ld   [wD59D_ReturnBank], A                                    ;; 00:022f $ea $9d $d5
-    ld   A, BANK_01                                        ;; 00:0232 $3e $01
-    ld   HL, call_01_4000_MenuLoad                              ;; 00:0234 $21 $00 $40
-    call call_00_1078_FarCall                                  ;; 00:0237 $cd $78 $10
+    farcall call_01_4000_MenuLoad
     ld   A, MENU_TYPE_TITLE_DAVID                                        ;; 00:023a $3e $16
-    ld   [wD59D_ReturnBank], A                                    ;; 00:023c $ea $9d $d5
-    ld   A, BANK_01                                        ;; 00:023f $3e $01
-    ld   HL, call_01_4000_MenuLoad                              ;; 00:0241 $21 $00 $40
-    call call_00_1078_FarCall                                  ;; 00:0244 $cd $78 $10
+    farcall call_01_4000_MenuLoad
     ld   A, MENU_TYPE_TITLE_SCREEN                                        ;; 00:0247 $3e $10
-    ld   [wD59D_ReturnBank], A                                    ;; 00:0249 $ea $9d $d5
-    ld   A, BANK_01                                        ;; 00:024c $3e $01
-    ld   HL, call_01_4000_MenuLoad                              ;; 00:024e $21 $00 $40
-    call call_00_1078_FarCall                                  ;; 00:0251 $cd $78 $10
+    farcall call_01_4000_MenuLoad
 .jp_00_0254:
     ld   A, MUSIC_MEDIA_DIMENSION                                        ;; 00:0254 $3e $07
     call call_00_120c_SetupMusic                                  ;; 00:0256 $cd $0c $12
     xor  A, A                                          ;; 00:0259 $af
     ld   [wD61E_DemoModeEnabled], A                                    ;; 00:025a $ea $1e $d6
     ld   A, MENU_TYPE_TITLE_OPTIONS                                        ;; 00:025d $3e $07
-    ld   [wD59D_ReturnBank], A                                    ;; 00:025f $ea $9d $d5
-    ld   A, BANK_01                                        ;; 00:0262 $3e $01
-    ld   HL, call_01_4000_MenuLoad                              ;; 00:0264 $21 $00 $40
-    call call_00_1078_FarCall                                  ;; 00:0267 $cd $78 $10
+    farcall call_01_4000_MenuLoad
     cp   A, $30                                        ;; 00:026a $fe $30
     jr   Z, .jr_00_02b8                                ;; 00:026c $28 $4a
     cp   A, $10                                        ;; 00:026e $fe $10
@@ -202,10 +181,7 @@ call_00_0150_Init:
     inc  HL                                            ;; 00:02a9 $23
     dec  B                                             ;; 00:02aa $05
     jr   NZ, .jr_00_02a7                               ;; 00:02ab $20 $fa
-    ld   [wD59D_ReturnBank], A                                    ;; 00:02ad $ea $9d $d5=
-    ld   A, BANK_01 ; Switch to bank 1                                       ;; 00:02b0 $3e $01
-    ld   HL, call_01_4349_LoadEnteringMenu                              ;; 00:02b2 $21 $49 $43
-    call call_00_1078_FarCall                    ;; 00:02b5 $cd $78 $10
+    farcall call_01_4349_LoadEnteringMenu
 .jr_00_02b8:
     ld   A, [wD61E_DemoModeEnabled]                                    ;; 00:02b8 $fa $1e $d6
     and  A, A                                          ;; 00:02bb $a7
@@ -213,16 +189,13 @@ call_00_0150_Init:
     ld   HL, wD61D                                     ;; 00:02be $21 $1d $d6
     ld   L, [HL]                                       ;; 00:02c1 $6e
     ld   H, $00                                        ;; 00:02c2 $26 $00
-    ld   DE, $76d                                      ;; 00:02c4 $11 $6d $07
+    ld   DE, data_00_076d                                      ;; 00:02c4 $11 $6d $07
     add  HL, DE                                        ;; 00:02c7 $19
     ld   A, [HL]                                       ;; 00:02c8 $7e
 .jr_00_02c9:
     ld   [wD624_CurrentLevelId], A                                    ;; 00:02c9 $ea $24 $d6
     ld   A, $08                                        ;; 00:02cc $3e $08
-    ld   [wD59D_ReturnBank], A                                    ;; 00:02ce $ea $9d $d5
-    ld   A, BANK_01                                        ;; 00:02d1 $3e $01
-    ld   HL, call_01_4000_MenuLoad                              ;; 00:02d3 $21 $00 $40
-    call call_00_1078_FarCall                                  ;; 00:02d6 $cd $78 $10
+    farcall call_01_4000_MenuLoad
     xor  A, A                                          ;; 00:02d9 $af
     ld   [wD621], A                                    ;; 00:02da $ea $21 $d6
     ld   [wD628_MediaDimensionRespawnPoint], A         ;; 00:02dd $ea $28 $d6
@@ -238,28 +211,16 @@ call_00_0150_Init:
     ld   A, [wD621]                                    ;; 00:02f4 $fa $21 $d6
     and  A, $04                                        ;; 00:02f7 $e6 $04
     jr   Z, .jr_00_0306                                ;; 00:02f9 $28 $0b
-    ld   [wD59D_ReturnBank], A                                    ;; 00:02fb $ea $9d $d5
-    ld   A, BANK_01                                        ;; 00:02fe $3e $01
-    ld   HL, call_01_42bd_EnterTV                                     ;; 00:0300 $21 $bd $42
-    call call_00_1078_FarCall                                  ;; 00:0303 $cd $78 $10
+    farcall call_01_42bd_EnterTV
 .jr_00_0306:
     call call_00_11e0_PlaySongBasedOnLevel                                  ;; 00:0306 $cd $e0 $11
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:0309 $fa $24 $d6
     and  A, A                                          ;; 00:030c $a7
     jr   Z, .jr_00_0350                                ;; 00:030d $28 $41
     call call_00_0562                                  ;; 00:030f $cd $62 $05
-    ld   [wD59D_ReturnBank], A                                    ;; 00:0312 $ea $9d $d5
-    ld   A, BANK_01                                        ;; 00:0315 $3e $01
-    ld   HL, call_01_4297_LoadMissionSelectMenu                                     ;; 00:0317 $21 $97 $42
-    call call_00_1078_FarCall                                  ;; 00:031a $cd $78 $10
-    ld   [wD59D_ReturnBank], A                                    ;; 00:031d $ea $9d $d5
-    ld   A, BANK_0B                                        ;; 00:0320 $3e $0b
-    ld   HL, call_0b_4000                              ;; 00:0322 $21 $00 $40
-    call call_00_1078_FarCall                                  ;; 00:0325 $cd $78 $10
-    ld   [wD59D_ReturnBank], A                                    ;; 00:0328 $ea $9d $d5
-    ld   A, BANK_02                                        ;; 00:032b $3e $02
-    ld   HL, call_02_6eb1                                     ;; 00:032d $21 $b1 $6e
-    call call_00_1078_FarCall                                  ;; 00:0330 $cd $78 $10
+    farcall call_01_4297_LoadMissionSelectMenu
+    farcall call_0b_4000
+    farcall call_02_6eb1
     call call_00_3c3f                                  ;; 00:0333 $cd $3f $3c
     call call_00_12e4                                  ;; 00:0336 $cd $e4 $12
     ld   A, $0a                                        ;; 00:0339 $3e $0a
@@ -313,14 +274,8 @@ call_00_0150_Init:
     ld   [wD5A5], A                                    ;; 00:03b0 $ea $a5 $d5
     ld   A, $04 ; Set Health to 4                                       ;; 00:03b3 $3e $04
     ld   [wD741_PlayerHealth], A                                    ;; 00:03b5 $ea $41 $d7
-    ld   [wD59D_ReturnBank], A                                    ;; 00:03b8 $ea $9d $d5
-    ld   A, BANK_0B                                        ;; 00:03bb $3e $0b
-    ld   HL, call_0b_4000                              ;; 00:03bd $21 $00 $40
-    call call_00_1078_FarCall                                  ;; 00:03c0 $cd $78 $10
-    ld   [wD59D_ReturnBank], A                                    ;; 00:03c3 $ea $9d $d5
-    ld   A, BANK_02                                        ;; 00:03c6 $3e $02
-    ld   HL, call_02_6eb1                                     ;; 00:03c8 $21 $b1 $6e
-    call call_00_1078_FarCall                                  ;; 00:03cb $cd $78 $10
+    farcall call_0b_4000
+    farcall call_02_6eb1
     call call_00_3c3f                                  ;; 00:03ce $cd $3f $3c
     call call_00_12e4                                  ;; 00:03d1 $cd $e4 $12
     call call_00_0547                                  ;; 00:03d4 $cd $47 $05
@@ -338,23 +293,14 @@ call_00_0150_Init:
     ld   [wD610], A                                    ;; 00:03f1 $ea $10 $d6
     ld   A, $01                                        ;; 00:03f4 $3e $01
     ld   [wD743_DrawGexFlag], A                                    ;; 00:03f6 $ea $43 $d7
-    ld   [wD59D_ReturnBank], A                                    ;; 00:03f9 $ea $9d $d5
-    ld   A, BANK_0B                                        ;; 00:03fc $3e $0b
-    ld   HL, call_0b_4efe_SpawnPositionInMap                                     ;; 00:03fe $21 $fe $4e
-    call call_00_1078_FarCall                                  ;; 00:0401 $cd $78 $10
+    farcall call_0b_4efe_SpawnPositionInMap
     call call_00_1264_LoadFullMap                                  ;; 00:0404 $cd $64 $12
-    ld   [wD59D_ReturnBank], A                                    ;; 00:0407 $ea $9d $d5
-    ld   A, BANK_02                                        ;; 00:040a $3e $02
-    ld   HL, call_02_6e17_InitEntitiesAndSpawnPlayer                                     ;; 00:040c $21 $17 $6e
-    call call_00_1078_FarCall                                  ;; 00:040f $cd $78 $10
+    farcall call_02_6e17_InitEntitiesAndSpawnPlayer
     call call_00_0521_DrawEntitiesWrapper                                  ;; 00:0412 $cd $21 $05
     jr   .jp_00_0428                                   ;; 00:0415 $18 $11
 .jp_00_0417:
     call call_00_1264_LoadFullMap                                  ;; 00:0417 $cd $64 $12
-    ld   [wD59D_ReturnBank], A                                    ;; 00:041a $ea $9d $d5
-    ld   A, BANK_02                                        ;; 00:041d $3e $02
-    ld   HL, call_02_71c8                                     ;; 00:041f $21 $c8 $71
-    call call_00_1078_FarCall                                  ;; 00:0422 $cd $78 $10
+    farcall call_02_71c8
     call call_00_0521_DrawEntitiesWrapper                                  ;; 00:0425 $cd $21 $05
 .jp_00_0428:
     call call_00_0ab4_WaitForInterrupt                                  ;; 00:0428 $cd $b4 $0a
@@ -376,10 +322,7 @@ call_00_0150_Init:
     ld   A, [wD73D_LivesRemaining]                                    ;; 00:044e $fa $3d $d7
     and  A, A                                          ;; 00:0451 $a7
     jp   NZ, .jp_00_0370                               ;; 00:0452 $c2 $70 $03
-    ld   [wD59D_ReturnBank], A                                    ;; 00:0455 $ea $9d $d5
-    ld   A, BANK_01                                        ;; 00:0458 $3e $01
-    ld   HL, call_01_43bd_LoadGameOverMenu                                     ;; 00:045a $21 $bd $43
-    call call_00_1078_FarCall                                  ;; 00:045d $cd $78 $10
+    farcall call_01_43bd_LoadGameOverMenu
     cp   A, $80                                        ;; 00:0460 $fe $80
     jp   Z, .jp_00_029d                                ;; 00:0462 $ca $9d $02
     jp   .jp_00_0254                                   ;; 00:0465 $c3 $54 $02
@@ -400,10 +343,7 @@ call_00_0150_Init:
     jr   Z, .jr_00_04a9                                ;; 00:0482 $28 $25
     ld   A, $05                                        ;; 00:0484 $3e $05
 .jr_00_0486:
-    ld   [wD59D_ReturnBank], A                                    ;; 00:0486 $ea $9d $d5
-    ld   A, BANK_01                                        ;; 00:0489 $3e $01
-    ld   HL, call_01_4000_MenuLoad                              ;; 00:048b $21 $00 $40
-    call call_00_1078_FarCall                                  ;; 00:048e $cd $78 $10
+    farcall call_01_4000_MenuLoad
     cp   A, $60                                        ;; 00:0491 $fe $60
     jp   NZ, .jp_00_0417                               ;; 00:0493 $c2 $17 $04
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:0496 $fa $24 $d6
@@ -443,19 +383,13 @@ call_00_0150_Init:
     ld   C, $14                                        ;; 00:04db $0e $14
     call call_00_112f                                  ;; 00:04dd $cd $2f $11
 .jr_00_04e0:
-    ld   [wD59D_ReturnBank], A                                    ;; 00:04e0 $ea $9d $d5
-    ld   A, BANK_02                                        ;; 00:04e3 $3e $02
-    ld   HL, call_02_6eba_UpdateAllEntities                                     ;; 00:04e5 $21 $ba $6e
-    call call_00_1078_FarCall                                  ;; 00:04e8 $cd $78 $10
+    farcall call_02_6eba_UpdateAllEntities
     call call_00_1455_LoadBgMapDirtyRegions                                  ;; 00:04eb $cd $55 $14
     call call_00_2305                                  ;; 00:04ee $cd $05 $23
     call call_00_1e5b                                  ;; 00:04f1 $cd $5b $1e
     call call_00_05c7                                  ;; 00:04f4 $cd $c7 $05
     call call_00_08fc_SetupEntityVRAMTransfer                                  ;; 00:04f7 $cd $fc $08
-    ld   [wD59D_ReturnBank], A                                    ;; 00:04fa $ea $9d $d5
-    ld   A, BANK_0B                                        ;; 00:04fd $3e $0b
-    ld   HL, call_0b_5ec3                                     ;; 00:04ff $21 $c3 $5e
-    call call_00_1078_FarCall                                  ;; 00:0502 $cd $78 $10
+    farcall call_0b_5ec3
     ld   HL, wD73C                                     ;; 00:0505 $21 $3c $d7
     inc  [HL]                                          ;; 00:0508 $34
     ld   A, [wD73B]                                    ;; 00:0509 $fa $3b $d7
@@ -475,18 +409,12 @@ call_00_0150_Init:
     jp   .jp_00_0428                                   ;; 00:051e $c3 $28 $04
 
 call_00_0521_DrawEntitiesWrapper:
-    ld   [wD59D_ReturnBank], A                                    ;; 00:0521 $ea $9d $d5
-    ld   A, BANK_02                                        ;; 00:0524 $3e $02
-    ld   HL, call_02_6f80                                     ;; 00:0526 $21 $80 $6f
-    call call_00_1078_FarCall                                  ;; 00:0529 $cd $78 $10
+    farcall call_02_6f80
     call call_00_0971                                  ;; 00:052c $cd $71 $09
     ld   A, $03                                        ;; 00:052f $3e $03
     call call_00_0bae                                  ;; 00:0531 $cd $ae $0b
     ld   C, $00                                        ;; 00:0534 $0e $00
-    ld   [wD59D_ReturnBank], A                                    ;; 00:0536 $ea $9d $d5
-    ld   A, BANK_0B                                        ;; 00:0539 $3e $0b
-    ld   HL, call_0b_5537                              ;; 00:053b $21 $37 $55
-    call call_00_1078_FarCall                                  ;; 00:053e $cd $78 $10
+    farcall call_0b_5537
     ld   A, $c7                                        ;; 00:0541 $3e $c7
     call call_00_0f56                                  ;; 00:0543 $cd $56 $0f
     ret                                                ;; 00:0546 $c9
@@ -634,10 +562,7 @@ call_00_0647:
     ld   c,[hl]
     ld   [hl],a
     push bc
-    ld   [wD59D_ReturnBank],a
-    ld   a,$0B
-    ld   hl,call_03_5f1b
-    call call_00_1078_FarCall
+    farcall call_0b_5f1b
     pop  bc
     ld   a,c
     cp   a,$03
@@ -677,10 +602,7 @@ call_00_068a:
 
 call_00_0696:
     ld   A, $10                                        ;; 00:0696 $3e $10
-    ld   [wD59D_ReturnBank], A                                    ;; 00:0698 $ea $9d $d5
-    ld   A, BANK_02                                        ;; 00:069b $3e $02
-    ld   HL, call_02_4ccd                                   ;; 00:069d $21 $cd $4c [BANK 3]
-    call call_00_1078_FarCall                                  ;; 00:06a0 $cd $78 $10
+    farcall call_02_4ccd
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:06a3 $fa $24 $d6
     and  A, A                                          ;; 00:06a6 $a7
     ret  Z                                             ;; 00:06a7 $c8
@@ -714,10 +636,7 @@ call_00_06bf_DealDamageToPlayer: ; Deal damage to Gex
     cp   A, $1c                                        ;; 00:06d7 $fe $1c
     jp   Z, call_00_0629                                 ;; 00:06d9 $ca $29 $06
     ld   A, $0f                                        ;; 00:06dc $3e $0f
-    ld   [wD59D_ReturnBank], A                                    ;; 00:06de $ea $9d $d5
-    ld   A, BANK_02                                        ;; 00:06e1 $3e $02
-    ld   HL, call_02_4ccd                                   ;; 00:06e3 $21 $cd $4c [BANK 3]
-    call call_00_1078_FarCall                                  ;; 00:06e6 $cd $78 $10
+    farcall call_02_4ccd
     jp   call_00_0629                                    ;; 00:06e9 $c3 $29 $06
 
 call_00_06ec:
@@ -747,7 +666,7 @@ call_00_06ec:
     ld   HL, wD648                                     ;; 00:0713 $21 $48 $d6
     ld   L, [HL]                                       ;; 00:0716 $6e
     ld   H, $00                                        ;; 00:0717 $26 $00
-    ld   DE, $74a                                      ;; 00:0719 $11 $4a $07
+    ld   DE, .data_00_074a                                      ;; 00:0719 $11 $4a $07
     add  HL, DE                                        ;; 00:071c $19
     ld   A, [HL]                                       ;; 00:071d $7e
     cp   A, $32                                        ;; 00:071e $fe $32
@@ -774,6 +693,7 @@ call_00_06ec:
     xor  A, A                                          ;; 00:0745 $af
     ld   [wD649_CollectibleAmount], A                                    ;; 00:0746 $ea $49 $d6
     ret                                                ;; 00:0749 $c9
+.data_00_074a:
     db   $1e, $28, $32                                 ;; 00:074a .??
 
 call_00_074d:
@@ -799,7 +719,9 @@ call_00_075b:
     ret  NZ                                            ;; 00:076b $c0
     ret                                                ;; 00:076c $c9
 
+data_00_076d:
     db   $08, $04, $0d, $07
+
 data_00_0771:
     db   $79, $07, $7c, $07        ;; 00:076d ????????
     db   $7f, $07, $9e, $07, $64, $10, $ff, $64        ;; 00:0775 ????????
@@ -809,7 +731,7 @@ data_00_0771:
     db   $20, $20, $10, $22, $50, $20, $a0, $10        ;; 00:0795 ????????
     db   $ff, $64, $10, $ff                            ;; 00:079d ????
 
-call_00_07a1_SwitchBankAndCopyBCBytesFromHLToDE:
+call_00_07a1_FarMemCopy:
     push HL                                            ;; 00:07a1 $e5
     push DE                                            ;; 00:07a2 $d5
     push BC                                            ;; 00:07a3 $c5
@@ -855,7 +777,7 @@ call_00_07c3:
     add  hl,hl
     add  hl,hl
     add  hl,hl
-    ld   de,$8000
+    ld   de,_VRAM
     add  hl,de
     ld   e,l
     ld   d,h
@@ -870,7 +792,7 @@ call_00_07c3:
     ldi  a,[hl]
     ld   h,[hl]
     ld   l,a
-    ld   de,$9800
+    ld   de,_SCRN0
     ld   a,[wD6A8]
     ld   b,a
 .jr_00_07fb:
@@ -939,10 +861,10 @@ call_00_084d:
     ld   A, [HL+]                                      ;; 00:0856 $2a
     ld   H, [HL]                                       ;; 00:0857 $66
     ld   L, A                                          ;; 00:0858 $6f
-    ld   DE, $8000                                     ;; 00:0859 $11 $00 $80
+    ld   DE, _VRAM                                     ;; 00:0859 $11 $00 $80
     ld   BC, $f00                                      ;; 00:085c $01 $00 $0f
     call call_00_07b0_MemCopy                                  ;; 00:085f $cd $b0 $07
-    ld   DE, $9000                                     ;; 00:0862 $11 $00 $90
+    ld   DE, _VRAM+$1000                                     ;; 00:0862 $11 $00 $90
     ld   BC, $780                                      ;; 00:0865 $01 $80 $07
     call call_00_07b0_MemCopy                                  ;; 00:0868 $cd $b0 $07
     ld   A, [wD59E]                                    ;; 00:086b $fa $9e $d5
@@ -950,7 +872,7 @@ call_00_084d:
     jr   Z, .jr_00_0891                                ;; 00:086f $28 $20
     ld   A, $01                                        ;; 00:0871 $3e $01
     ldh  [rVBK], A                                     ;; 00:0873 $e0 $4f
-    ld   DE, $9800                                     ;; 00:0875 $11 $00 $98
+    ld   DE, _SCRN0                                     ;; 00:0875 $11 $00 $98
     ld   C, $12                                        ;; 00:0878 $0e $12
 .jr_00_087a:
     ld   B, $14                                        ;; 00:087a $06 $14
@@ -971,7 +893,7 @@ call_00_084d:
     ld   A, $00                                        ;; 00:088d $3e $00
     ldh  [rVBK], A                                     ;; 00:088f $e0 $4f
 .jr_00_0891:
-    ld   HL, $9800                                     ;; 00:0891 $21 $00 $98
+    ld   HL, _SCRN0                                     ;; 00:0891 $21 $00 $98
     ld   DE, $0c                                       ;; 00:0894 $11 $0c $00
     ld   B, $0c                                        ;; 00:0897 $06 $0c
     ld   A, $02                                        ;; 00:0899 $3e $02
@@ -1125,11 +1047,11 @@ call_00_098f:
     ld   H, A                                          ;; 00:09a4 $67
     ld   L, $00                                        ;; 00:09a5 $2e $00
     push HL                                            ;; 00:09a7 $e5
-    ld   DE, $8000                                     ;; 00:09a8 $11 $00 $80
+    ld   DE, _VRAM                                     ;; 00:09a8 $11 $00 $80
     ld   BC, $100                                      ;; 00:09ab $01 $00 $01
     call call_00_07b0_MemCopy                                  ;; 00:09ae $cd $b0 $07
     pop  HL                                            ;; 00:09b1 $e1
-    ld   DE, $8100                                     ;; 00:09b2 $11 $00 $81
+    ld   DE, _VRAM+$100                                     ;; 00:09b2 $11 $00 $81
     ld   BC, $100                                      ;; 00:09b5 $01 $00 $01
     call call_00_07b0_MemCopy                                  ;; 00:09b8 $cd $b0 $07
     jp   call_00_10a3_RestoreBank                                  ;; 00:09bb $c3 $a3 $10
@@ -1142,11 +1064,11 @@ call_00_09be:
     ld   H, A                                          ;; 00:09c9 $67
     ld   L, $00                                        ;; 00:09ca $2e $00
     push HL                                            ;; 00:09cc $e5
-    ld   DE, $8200                                     ;; 00:09cd $11 $00 $82
+    ld   DE, _VRAM+$200                                     ;; 00:09cd $11 $00 $82
     ld   BC, $100                                      ;; 00:09d0 $01 $00 $01
     call call_00_07b0_MemCopy                                  ;; 00:09d3 $cd $b0 $07
     pop  HL                                            ;; 00:09d6 $e1
-    ld   DE, $8300                                     ;; 00:09d7 $11 $00 $83
+    ld   DE, _VRAM+$300                                     ;; 00:09d7 $11 $00 $83
     ld   BC, $100                                      ;; 00:09da $01 $00 $01
     call call_00_07b0_MemCopy                                  ;; 00:09dd $cd $b0 $07
     jp   call_00_10a3_RestoreBank                                  ;; 00:09e0 $c3 $a3 $10
@@ -1158,7 +1080,7 @@ call_00_09e3:
     ld   A, [wD728_CurrentSecondaryTilesetAddr]                                    ;; 00:09eb $fa $28 $d7
     ld   H, A                                          ;; 00:09ee $67
     ld   L, $00                                        ;; 00:09ef $2e $00
-    ld   DE, $9000                                     ;; 00:09f1 $11 $00 $90
+    ld   DE, _VRAM+$1000                                     ;; 00:09f1 $11 $00 $90
     ld   BC, $240                                      ;; 00:09f4 $01 $40 $02
     call call_00_07b0_MemCopy                                  ;; 00:09f7 $cd $b0 $07
     jp   call_00_10a3_RestoreBank                                  ;; 00:09fa $c3 $a3 $10
@@ -1176,16 +1098,13 @@ call_00_09fd:
     add  A, $40                                        ;; 00:0a10 $c6 $40
     ld   H, A                                          ;; 00:0a12 $67
     ld   L, $00                                        ;; 00:0a13 $2e $00
-    ld   DE, $8600                                     ;; 00:0a15 $11 $00 $86
+    ld   DE, _VRAM+$600                                     ;; 00:0a15 $11 $00 $86
     ld   BC, $100                                      ;; 00:0a18 $01 $00 $01
     call call_00_07b0_MemCopy                                  ;; 00:0a1b $cd $b0 $07
     jp   call_00_10a3_RestoreBank                                  ;; 00:0a1e $c3 $a3 $10
 
 call_00_0a21:
-    ld   [wD59D_ReturnBank], A                                    ;; 00:0a21 $ea $9d $d5
-    ld   A, BANK_02                                        ;; 00:0a24 $3e $02
-    ld   HL, call_02_722c                                     ;; 00:0a26 $21 $2c $72
-    call call_00_1078_FarCall                                  ;; 00:0a29 $cd $78 $10
+    farcall call_02_722c
     ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:0a2c $21 $0f $d6
     bit  3, [HL]                                       ;; 00:0a2f $cb $5e
     ret  Z                                             ;; 00:0a31 $c8
@@ -1651,7 +1570,11 @@ call_00_0bb9:
     ld   [wD6EA], A                                    ;; 00:0dae $ea $ea $d6
     pop  HL                                            ;; 00:0db1 $e1
     jp   call_00_0b6d                                  ;; 00:0db2 $c3 $6d $0b
-    db   $c9, $08, $04, $00, $00, $c0                  ;; 00:0db5 ?.....
+
+    ret 
+
+data_00_0db6:
+    db   $08, $04, $00, $00, $c0                  ;; 00:0db5 ?.....
     dw   $8460                                         ;; 00:0dbb pP
     db   $40, $c0                                      ;; 00:0dbd ..
     dw   $84a0                                         ;; 00:0dbf pP
@@ -1667,6 +1590,7 @@ call_00_0bb9:
     dw   $85e0                                         ;; 00:0dd3 pP
     db   $c0, $c1                                      ;; 00:0dd5 ..
     dw   $8620                                         ;; 00:0dd7 pP
+data_00_0dd9:
     db   $dd, $0d, $f8, $0d, $06, $06, $08, $d0        ;; 00:0dd9 ........
     db   $6f                                           ;; 00:0de1 .
     dw   $8cb0                                         ;; 00:0de2 pP
@@ -1738,7 +1662,7 @@ call_00_0e87:
     ret                                                ;; 00:0eb9 $c9
 
 call_00_0eba_ClearVRAMBgMap:
-    ld   HL, $9800                                     ;; 00:0eba $21 $00 $98
+    ld   HL, _SCRN0                                     ;; 00:0eba $21 $00 $98
     xor  A, A                                          ;; 00:0ebd $af
 .jr_00_0ebe:
     ld   [HL+], A                                      ;; 00:0ebe $22
@@ -1747,7 +1671,7 @@ call_00_0eba_ClearVRAMBgMap:
     ret                                                ;; 00:0ec3 $c9
 
 call_00_0ec4_ClearTileVRAM:
-    ld   HL, $8000                                     ;; 00:0ec4 $21 $00 $80
+    ld   HL, _VRAM                                     ;; 00:0ec4 $21 $00 $80
 .jr_00_0ec7:
     xor  A, A                                          ;; 00:0ec7 $af
     ld   [HL+], A                                      ;; 00:0ec8 $22
@@ -1786,8 +1710,15 @@ call_00_0ee8:
     ld   [HL], $00                                     ;; 00:0ef1 $36 $00
     call call_00_07b0_MemCopy                                  ;; 00:0ef3 $cd $b0 $07
     ret                                                ;; 00:0ef6 $c9
-    db   $3e, $cc, $e0, $46, $3e, $28, $3d, $20        ;; 00:0ef7 ........
-    db   $fd, $c9                                      ;; 00:0eff ..
+
+call_00_0ef7:
+    ld   a,$CC
+    ldh   [rDMA],a
+    ld   a,$28
+.jr_00_0EFD:
+    dec  a
+    jr   nz,.jr_00_0EFD
+    ret  
 
 call_00_0f01:
     ld   A, $00                                        ;; 00:0f01 $3e $00
@@ -1909,7 +1840,7 @@ call_00_0fbc:
     ld   L, A                                          ;; 00:0fc3 $6f
     ld   H, $00                                        ;; 00:0fc4 $26 $00
     add  HL, HL                                        ;; 00:0fc6 $29
-    ld   DE, $fd7                                      ;; 00:0fc7 $11 $d7 $0f
+    ld   DE, .data_00_0fd7                                      ;; 00:0fc7 $11 $d7 $0f
     add  HL, DE                                        ;; 00:0fca $19
     ld   A, [HL+]                                      ;; 00:0fcb $2a
     ld   H, [HL]                                       ;; 00:0fcc $66
@@ -1918,6 +1849,7 @@ call_00_0fbc:
     ld   [wDADA], A                                    ;; 00:0fd0 $ea $da $da
     ld   [wDADB], A                                    ;; 00:0fd3 $ea $db $da
     jp   HL                                            ;; 00:0fd6 $e9
+.data_00_0fd7:
     dw   .data_00_0fdd                                 ;; 00:0fd7 pP
     dw   .data_00_0fed                                 ;; 00:0fd9 pP
     dw   .data_00_0ff8                                 ;; 00:0fdb pP
@@ -1957,7 +1889,7 @@ call_00_1004:
     dec  L                                             ;; 00:1016 $2d
     ld   H, $00                                        ;; 00:1017 $26 $00
     add  HL, HL                                        ;; 00:1019 $29
-    ld   DE, $1043                                     ;; 00:101a $11 $43 $10
+    ld   DE, .data_00_1043                                     ;; 00:101a $11 $43 $10
     add  HL, DE                                        ;; 00:101d $19
     ld   A, [HL+]                                      ;; 00:101e $2a
     ld   H, [HL]                                       ;; 00:101f $66
@@ -1976,6 +1908,7 @@ call_00_1004:
     ld   A, $02                                        ;; 00:103d $3e $02
     call NZ, call_00_104a                              ;; 00:103f $c4 $4a $10
     ret                                                ;; 00:1042 $c9
+.data_00_1043:
     db   $49, $10, $49, $10, $49, $10, $c9             ;; 00:1043 ???????
 
 call_00_104a:
@@ -2025,7 +1958,7 @@ call_00_1078_FarCall:
     ret                                                ;; 00:1088 $c9
 
 call_00_1089_SwitchBank:
-    ld   HL, wD59A                                     ;; 00:1089 $21 $9a $d5
+    ld   HL, wD59A_PtrToBankStackPosition                                     ;; 00:1089 $21 $9a $d5
     ld   E, [HL]                                       ;; 00:108c $5e
     inc  HL                                            ;; 00:108d $23
     ld   D, [HL]                                       ;; 00:108e $56
@@ -2043,7 +1976,7 @@ call_00_1089_SwitchBank:
     ret                                                ;; 00:10a2 $c9
 
 call_00_10a3_RestoreBank:
-    ld   HL, wD59A                                     ;; 00:10a3 $21 $9a $d5
+    ld   HL, wD59A_PtrToBankStackPosition                                     ;; 00:10a3 $21 $9a $d5
     ld   E, [HL]                                       ;; 00:10a6 $5e
     inc  HL                                            ;; 00:10a7 $23
     ld   D, [HL]                                       ;; 00:10a8 $56
@@ -2319,7 +2252,7 @@ call_00_1f46:
     ld   L, C                                          ;; 00:1f73 $69
     ld   H, $00                                        ;; 00:1f74 $26 $00
     add  HL, HL                                        ;; 00:1f76 $29
-    ld   DE, $1ff6                                     ;; 00:1f77 $11 $f6 $1f
+    ld   DE, data_00_1ff6                                     ;; 00:1f77 $11 $f6 $1f
     add  HL, DE                                        ;; 00:1f7a $19
     ld   A, [HL+]                                      ;; 00:1f7b $2a
     ld   H, [HL]                                       ;; 00:1f7c $66
@@ -2410,6 +2343,8 @@ call_00_1f80:
     or   A, H                                          ;; 00:1ff1 $b4
     call NZ, call_00_10bd_JumpHL                              ;; 00:1ff2 $c4 $bd $10
     ret                                                ;; 00:1ff5 $c9
+
+data_00_1ff6:
     db   $74, $20, $d3, $20, $ff, $20, $1c, $21        ;; 00:1ff6 ????????
     db   $39, $21, $56, $21, $ae, $21, $c2, $21        ;; 00:1ffe ????????
     db   $e4, $21, $06, $22, $6e, $21, $00, $00        ;; 00:2006 ????????
@@ -2511,10 +2446,7 @@ jr_00_209a:
     ld   a,$02
     ld   [de],a
 .jr_00_21a2:
-    ld   [wD59D_ReturnBank],a
-    ld   a,$00
-    ld   hl,$3951
-    call call_00_1078_FarCall
+    farcall call_00_3951
     ret  
 
     db   $bc, $21, $01, $00, $ff, $00, $02, $01        ;; 00:21ae ????????

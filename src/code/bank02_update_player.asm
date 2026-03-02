@@ -169,15 +169,9 @@ call_02_4939_PlayerUpdate:
     dec  [HL]                                          ;; 02:49af $35
 .jr_02_49b0:
     call call_02_4a45                                  ;; 02:49b0 $cd $45 $4a
-    ld   [wD59D_ReturnBank], A                                    ;; 02:49b3 $ea $9d $d5
-    ld   A, BANK_03                                        ;; 02:49b6 $3e $03
-    ld   HL, call_03_4900_UpdateBgCollision_MainDispatcher                              ;; 02:49b8 $21 $00 $49
-    call call_00_1078_FarCall                                  ;; 02:49bb $cd $78 $10
+    farcall call_03_4900_UpdateBgCollision_MainDispatcher
     call call_02_4b78                                  ;; 02:49be $cd $78 $4b
-    ld   [wD59D_ReturnBank], A                                    ;; 02:49c1 $ea $9d $d5
-    ld   A, BANK_03                                        ;; 02:49c4 $3e $03
-    ld   HL, call_03_4c0a_CacheNearbyTileValues                              ;; 02:49c6 $21 $0a $4c
-    call call_00_1078_FarCall                                  ;; 02:49c9 $cd $78 $10
+    farcall call_03_4c0a_CacheNearbyTileValues
     call call_02_4c4f                                  ;; 02:49cc $cd $4f $4c
     ld   HL, wD745                                     ;; 02:49cf $21 $45 $d7
     ld   A, [HL]                                       ;; 02:49d2 $7e
@@ -214,10 +208,7 @@ call_02_4939_PlayerUpdate:
     call call_02_6fda                                  ;; 02:4a0d $cd $da $6f
     call call_02_715a_UpdateMapWindow                                  ;; 02:4a10 $cd $5a $71
     call call_02_4c28                                  ;; 02:4a13 $cd $28 $4c
-    ld   [wD59D_ReturnBank], A                                    ;; 02:4a16 $ea $9d $d5
-    ld   A, BANK_03                                        ;; 02:4a19 $3e $03
-    ld   HL, call_03_5ca8                              ;; 02:4a1b $21 $a8 $5c
-    call call_00_1078_FarCall                                  ;; 02:4a1e $cd $78 $10
+    farcall call_03_5ca8
     ld   HL, wD751                                     ;; 02:4a21 $21 $51 $d7
     call call_02_4a30                                  ;; 02:4a24 $cd $30 $4a
     ld   HL, wD755                                     ;; 02:4a27 $21 $55 $d7
