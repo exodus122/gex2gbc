@@ -722,7 +722,7 @@ call_02_53ad:
     call call_00_3843
     ret  z
     ld   c,$00
-    farcall call_0a_7b9a
+    farcall call_0a_7b9a_SpawnEntityRelative
     ld   a,$01
     jp   call_02_7102_SetEntityAction
 
@@ -809,7 +809,7 @@ call_02_5440:
     ld   c,$34
     call call_00_112f
     ld   c,$01
-    farcall call_0a_7b9a
+    farcall call_0a_7b9a_SpawnEntityRelative
     ld   a,$02
     jp   call_02_7102_SetEntityAction
 
@@ -853,7 +853,7 @@ call_02_5480:
     cp   a,$00
     jr   nz,.jr_02_54AF
     ld   c,$02
-    farcall call_0a_7b9a
+    farcall call_0a_7b9a_SpawnEntityRelative
 .jr_02_54AF:
     ld   a,$02
     jp   call_02_7102_SetEntityAction
@@ -1566,7 +1566,7 @@ call_02_592d:
     ret  NZ                                            ;; 02:595b $c0
     ld   [HL], $3c                                     ;; 02:595c $36 $3c
     ld   C, $03                                        ;; 02:595e $0e $03
-    farcall call_0a_7b9a
+    farcall call_0a_7b9a_SpawnEntityRelative
     ret                                                ;; 02:596b $c9
 call_02_596c:
     call call_00_3843                                  ;; 02:596c $cd $43 $38
@@ -1601,7 +1601,7 @@ call_02_5993:
     ld   c,$20
     call call_00_112f
     ld   c,$0B
-    farcall call_0a_7b9a
+    farcall call_0a_7b9a_SpawnEntityRelative
     ld   a,$01
     jp   call_02_7102_SetEntityAction
 .jr_02_59BE:
@@ -1684,7 +1684,7 @@ call_02_5a28:
     ld   [HL], $02                                     ;; 02:5a3f $36 $02
 .jr_02_5a41:
     ld   C, $08                                        ;; 02:5a41 $0e $08
-    farcall call_0a_7b9a
+    farcall call_0a_7b9a_SpawnEntityRelative
     call call_00_3985                                  ;; 02:5a4e $cd $85 $39
     ld   H, $d2                                        ;; 02:5a51 $26 $d2
     ld   A, $20                                        ;; 02:5a53 $3e $20
@@ -2226,7 +2226,7 @@ call_02_5db2:
     ld   c,$34
     call call_00_112f
     ld   c,$06
-    farcall call_0a_7b9a
+    farcall call_0a_7b9a_SpawnEntityRelative
     ld   a,$02
     jp   call_02_7102_SetEntityAction
 
@@ -2281,7 +2281,7 @@ call_02_5e26:
     call call_00_34ea
     jr   z,.jr_02_5E38
     ld   c,$07
-    farcall call_0a_7b9a
+    farcall call_0a_7b9a_SpawnEntityRelative
 .jr_02_5E38:
     ld   c,$08
     call call_00_32e1
@@ -2399,7 +2399,7 @@ call_02_5ebd:
     ld   c,[hl]
     call call_00_3290
     ld   c,$0D
-    farcall call_0a_7b9a
+    farcall call_0a_7b9a_SpawnEntityRelative
     ld   c,$30
     call call_00_112f
     ret  
@@ -2499,7 +2499,7 @@ call_02_5f67:
     and  a
     jr   nz,.jr_02_5FA0
     ld   c,$0C
-    farcall call_0a_7b9a
+    farcall call_0a_7b9a_SpawnEntityRelative
     ld   c,$2F
     call call_00_112f
 .jr_02_5FA0:
@@ -2793,7 +2793,7 @@ call_02_621c:
     call call_00_3843
     ret  z
     ld   c,$04
-    farcall call_0a_7b9a
+    farcall call_0a_7b9a_SpawnEntityRelative
     ld   a,$00
     jp   call_02_7102_SetEntityAction
 
@@ -2812,7 +2812,7 @@ call_02_624c:
     call call_00_34ea
     jr   z,.jr_02_625E
     ld   c,$05
-    farcall call_0a_7b9a
+    farcall call_0a_7b9a_SpawnEntityRelative
 .jr_02_625E:
     ld   c,$10
     call call_00_32e1
@@ -3547,7 +3547,7 @@ call_02_666c:
     cp   a,$02
     ret  nc
     ld   c,$0E
-    farcall call_0a_7b9a
+    farcall call_0a_7b9a_SpawnEntityRelative
     ld   c,$06
     call call_00_112f
     ret  
@@ -3629,7 +3629,7 @@ call_02_6724:
     call call_00_34ea
     jr   z,.jr_02_6736
     ld   c,$09
-    farcall call_0a_7b9a
+    farcall call_0a_7b9a_SpawnEntityRelative
 .jr_02_6736:
     ld   c,$08
     call call_00_32e1
@@ -4264,7 +4264,7 @@ call_02_6c03:
     ld   c,$37
     call call_00_112f
     ld   c,$0A
-    farcall call_0a_7b9a
+    farcall call_0a_7b9a_SpawnEntityRelative
     jp   call_00_3910
 
 call_02_6c18:
@@ -4370,7 +4370,7 @@ call_02_6Ca7:
     ld   a,$09
     jp   nz,call_02_7102_SetEntityAction
     ld   c,$11
-    farcall call_0a_7b9a
+    farcall call_0a_7b9a_SpawnEntityRelative
     ld   c,$37
     call call_00_112f
     jp   call_00_3985
@@ -4520,7 +4520,7 @@ call_02_6d80:
     jr   z,.jr_02_6D9D
     ld   c,$10
 .jr_02_6D9D:
-    farcall call_0a_7b9a
+    farcall call_0a_7b9a_SpawnEntityRelative
     ld   bc,$0005
     call call_00_37d8
     ld   c,$39

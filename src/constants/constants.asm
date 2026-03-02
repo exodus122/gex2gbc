@@ -331,6 +331,15 @@ DEF ENTITY_FIELD_YVEL                       EQU $1D
 DEF ENTITY_FIELD_UNK1E                      EQU $1E ; seems unused, likely would have been used for Y velocity delta
 DEF ENTITY_FIELD_PARENT                     EQU $1F ; stores entity list index of this entity's parent (used for projectiles, flies)
 
+; Player vs Entity interactions
+DEF PLAYER_TOUCHED_ENTITY    EQU $00
+DEF PLAYER_ATTACKED_ENTITY   EQU $01
+DEF PLAYER_STOMPED_ENTITY    EQU $02
+
+DEF PLAYER_CAN_TOUCH_ENTITY  EQU $01
+DEF PLAYER_CAN_ATTACK_ENTITY EQU $02
+DEF PLAYER_CAN_STOMP_ENTITY  EQU $04
+
 ; Player Action Ids
 DEF PLAYER_ACTION_SPAWN_IN_LEVEL             EQU $00
 DEF PLAYER_ACTION_UNK_01                     EQU $01
@@ -365,74 +374,41 @@ DEF PLAYER_ACTION_CLIMB                      EQU $1D ; climbing wall or backgrou
 DEF PLAYER_ACTION_UNK_1E                     EQU $1E
 DEF PLAYER_ACTION_UNK_1F                     EQU $1F ; disables collision updating?
 
-; Entity collision types (0x24 types?)
-DEF EntityColType_None                       EQU $00
-DEF EntityColType_Intangible2                EQU $01
-DEF EntityColType_Fly                        EQU $02
-DEF EntityColType_PushWallAndFloor           EQU $03 ; wall that causes a push animation from gex. also can stand on. (tv button)
-DEF EntityColType_Wall                       EQU $04 ; no push animation
-DEF EntityColType_Floor                      EQU $05 ; floor, but no walls
-DEF EntityColType_Damage                     EQU $06 ; deals damage, no walls or floor - (enemy dies in one hit)
-DEF EntityColType_CollectibleItem            EQU $07
-DEF EntityColType_TVSwitchWarp               EQU $08 ; teleports you and gives a remote. how does it determine which remote? (in media, enters toon town
-DEF EntityColType_PushStuck                  EQU $09 ; ; stuck to pushing it. also messes up collision if walk on ramp nearby?
-DEF EntityColType_Intangible3                EQU $0A
-DEF EntityColType_Damage2                    EQU $0B ; deals damage, no walls or floor, INVINCIBLE?
-DEF EntityColType_DamageAndDisappear         EQU $0C ; damages gex then disappears
-DEF EntityColType_Damage3                    EQU $0D ; deals damage, no walls or floor, INVINCIBLE?
-DEF EntityColType_Damage4                    EQU $0E ; deals damage, no walls or floor
-DEF EntityColType_Intangible4                EQU $0F
-DEF EntityColType_Damage5                    EQU $10 ; deals damage, no walls or floor
-DEF EntityColType_Intangible5                EQU $11
-DEF EntityColType_Intangible6                EQU $12
-DEF EntityColType_Intangible7                EQU $13
-DEF EntityColType_Intangible8                EQU $14
-DEF EntityColType_Damage6                    EQU $15 ; deals damage, no walls or floor
-DEF EntityColType_Damage7                    EQU $16 ; deals damage, no walls or floor
-DEF EntityColType_HighJumpBoost              EQU $17 ; very high jump
-DEF EntityColType_Damage8                    EQU $18 ; deals damage, no walls or floor
-DEF EntityColType_StationaryFlag             EQU $80
+; Entity Collision Types
+DEF COLLISION_TYPE_NONE                       EQU $00
+DEF COLLISION_TYPE_COLLECTIBLE                EQU $01
+DEF COLLISION_TYPE_UNK_02                     EQU $02
+DEF COLLISION_TYPE_UNK_03                     EQU $03
+DEF COLLISION_TYPE_UNK_04                     EQU $04
+DEF COLLISION_TYPE_UNK_05                     EQU $05
+DEF COLLISION_TYPE_GENERIC_ENEMY              EQU $06
+DEF COLLISION_TYPE_SILVER_REMOTE              EQU $07
+DEF COLLISION_TYPE_GOLD_REMOTE                EQU $08
+DEF COLLISION_TYPE_UNK_09                     EQU $09
+DEF COLLISION_TYPE_LANTERN                    EQU $0A
+DEF COLLISION_TYPE_ZOMBIE                     EQU $0B
+DEF COLLISION_TYPE_GHOST_HEAD                 EQU $0C
+DEF COLLISION_TYPE_GHOST                      EQU $0D
+DEF COLLISION_TYPE_ZOMBIE_HEAD                EQU $0E
+DEF COLLISION_TYPE_FALLING_OBJECT             EQU $0F
+DEF COLLISION_TYPE_HUNTER                     EQU $10
+DEF COLLISION_TYPE_MUSHROOM                   EQU $11
+DEF COLLISION_TYPE_PROJECTILE                 EQU $13
+DEF COLLISION_TYPE_JAR                        EQU $14
+DEF COLLISION_TYPE_NINJA                      EQU $15
+DEF COLLISION_TYPE_HANGING_BLADE              EQU $16
+DEF COLLISION_TYPE_SAMURAI_BODY               EQU $18
+DEF COLLISION_TYPE_GEYSER                     EQU $1A
+DEF COLLISION_TYPE_TRICERATOPS                EQU $1B
+DEF COLLISION_TYPE_GEAR                       EQU $1C
+DEF COLLISION_TYPE_ELECTRIC_BALL              EQU $1D
+DEF COLLISION_TYPE_ROCKET                     EQU $1F
+DEF COLLISION_TYPE_CANNON                     EQU $20
+DEF COLLISION_TYPE_POWERED_WALKWAY            EQU $21
+DEF COLLISION_TYPE_POWER_UP                   EQU $22
+DEF COLLISION_TYPE_DRAGON_PROJECTILE          EQU $23
+DEF COLLISION_TYPE_REZ                        EQU $24
+DEF COLLISION_TYPE_UNK_PLATFORM_FLAG          EQU $80
 
 ; Text
-; DEF TEXT_Space            EQU $20
-; DEF TEXT_ExclamationPoint EQU $21
-; DEF TEXT_Apostrophe       EQU $27
-; DEF TEXT_Dash             EQU $2d
-; DEF TEXT_Period           EQU $2e
-; DEF TEXT_0                EQU $30
-; DEF TEXT_1                EQU $31
-; DEF TEXT_2                EQU $32
-; DEF TEXT_3                EQU $33
-; DEF TEXT_4                EQU $34
-; DEF TEXT_5                EQU $35
-; DEF TEXT_6                EQU $36
-; DEF TEXT_7                EQU $37
-; DEF TEXT_8                EQU $38
-; DEF TEXT_9                EQU $39
-; DEF TEXT_A                EQU $41
-; DEF TEXT_B                EQU $42
-; DEF TEXT_C                EQU $43
-; DEF TEXT_D                EQU $44
-; DEF TEXT_E                EQU $45
-; DEF TEXT_F                EQU $46
-; DEF TEXT_G                EQU $47
-; DEF TEXT_H                EQU $48
-; DEF TEXT_I                EQU $49
-; DEF TEXT_J                EQU $4A
-; DEF TEXT_K                EQU $4B
-; DEF TEXT_L                EQU $4C
-; DEF TEXT_M                EQU $4D
-; DEF TEXT_N                EQU $4E
-; DEF TEXT_O                EQU $4F
-; DEF TEXT_P                EQU $50
-; DEF TEXT_Q                EQU $51
-; DEF TEXT_R                EQU $52
-; DEF TEXT_S                EQU $53
-; DEF TEXT_T                EQU $54
-; DEF TEXT_U                EQU $55
-; DEF TEXT_V                EQU $56
-; DEF TEXT_W                EQU $57
-; DEF TEXT_X                EQU $58
-; DEF TEXT_Y                EQU $59
-; DEF TEXT_Z                EQU $5A
 DEF TextTerminator        EQU $80

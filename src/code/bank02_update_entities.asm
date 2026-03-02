@@ -211,7 +211,7 @@ call_02_6e68_InitEntitiesOtherThanPlayer:
 .jr_02_6e93:
     farcall call_0a_4000
 .jr_02_6e9e:
-    farcall call_0a_7a7c
+    farcall call_0a_7a7c_HandleEntitySpawn
     ld   A, [wD338]                                    ;; 02:6ea9 $fa $38 $d3
     cp   A, $01                                        ;; 02:6eac $fe $01
     jr   NZ, .jr_02_6e9e                               ;; 02:6eae $20 $ee
@@ -317,7 +317,7 @@ call_02_6eba_UpdateAllEntities:
     add  A, $20                                        ;; 02:6f5f $c6 $20
     jr   NZ, .jr_02_6f11                               ;; 02:6f61 $20 $ae
     call call_00_1138                                  ;; 02:6f63 $cd $38 $11
-    farcall call_0a_7a7c
+    farcall call_0a_7a7c_HandleEntitySpawn
     call call_02_722c                                  ;; 02:6f71 $cd $2c $72
     farcall call_03_6540
     ret                                                ;; 02:6f7f $c9

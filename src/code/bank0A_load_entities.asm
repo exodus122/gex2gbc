@@ -95,152 +95,152 @@ call_0a_4000:
 data_0a_75fc:
     db   $00                                           ;; 0a:75fc ?
 data_0a_75fd:
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0a:75fd ????????
-    db   $2c, $10, $01, $00, $01, $00, $00, $00        ;; 0a:7605 ????????
-    db   $08, $08, $02, $00, $02, $00, $00, $70        ;; 0a:760d ???????.
-    db   $08, $08, $83, $00, $06, $00, $00, $70        ;; 0a:7615 ....w??.
-    db   $00, $00, $00, $00, $07, $00, $00, $00        ;; 0a:761d ....w???
-    db   $10, $10, $07, $00, $07, $00, $00, $00        ;; 0a:7625 ????????
-    db   $10, $10, $08, $00, $07, $00, $00, $00        ;; 0a:762d ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0a:7635 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $40        ;; 0a:763d ????????
-    db   $10, $10, $83, $01, $05, $00, $00, $70        ;; 0a:7645 ???????.
-    db   $10, $10, $84, $01, $04, $00, $00, $00        ;; 0a:764d ...ww???
-    db   $10, $10, $03, $24, $05, $00, $00, $00        ;; 0a:7655 ???????.
-    db   $10, $10, $06, $00, $07, $00, $00, $28        ;; 0a:765d ....w???
-    db   $0c, $10, $06, $00, $07, $00, $00, $40        ;; 0a:7665 ????????
-    db   $08, $10, $06, $33, $07, $00, $00, $00        ;; 0a:766d ????????
-    db   $10, $10, $0c, $00, $06, $00, $00, $00        ;; 0a:7675 ????????
-    db   $0c, $0c, $06, $00, $07, $00, $00, $00        ;; 0a:767d ????????
-    db   $04, $04, $13, $00, $06, $00, $00, $00        ;; 0a:7685 ????????
-    db   $0c, $10, $0b, $00, $07, $00, $00, $00        ;; 0a:768d ????????
-    db   $10, $10, $0e, $00, $06, $00, $00, $40        ;; 0a:7695 ????????
-    db   $08, $08, $09, $01, $03, $00, $00, $00        ;; 0a:769d ????????
-    db   $20, $40, $0a, $02, $05, $00, $00, $00        ;; 0a:76a5 ????????
-    db   $10, $08, $06, $00, $07, $00, $00, $50        ;; 0a:76ad ????????
-    db   $10, $10, $84, $24, $05, $00, $00, $00        ;; 0a:76b5 ????????
-    db   $00, $00, $00, $00, $07, $00, $00, $10        ;; 0a:76bd ????????
-    db   $0c, $10, $0d, $00, $07, $00, $00, $50        ;; 0a:76c5 ????????
-    db   $0c, $10, $06, $01, $05, $00, $00, $00        ;; 0a:76cd ????????
-    db   $10, $10, $84, $01, $04, $00, $00, $50        ;; 0a:76d5 ????????
-    db   $12, $10, $84, $01, $04, $00, $00, $00        ;; 0a:76dd ???????.
-    db   $10, $10, $0f, $03, $07, $00, $00, $00        ;; 0a:76e5 .w.ww???
-    db   $10, $08, $09, $05, $07, $00, $00, $00        ;; 0a:76ed ????????
-    db   $08, $08, $09, $04, $07, $00, $00, $00        ;; 0a:76f5 ???????.
-    db   $0c, $10, $06, $0f, $07, $00, $00, $88        ;; 0a:76fd ...ww???
-    db   $0c, $10, $0f, $07, $07, $00, $00, $00        ;; 0a:7705 ???????.
-    db   $0c, $10, $06, $06, $07, $00, $00, $00        ;; 0a:770d ...ww???
-    db   $10, $10, $0f, $0e, $05, $00, $00, $00        ;; 0a:7715 ???????.
-    db   $0c, $0a, $06, $0d, $05, $00, $00, $00        ;; 0a:771d ...ww??.
-    db   $10, $10, $00, $08, $07, $00, $00, $00        ;; 0a:7725 ...ww???
-    db   $0a, $10, $10, $00, $07, $00, $00, $00        ;; 0a:772d ???????.
-    db   $0c, $08, $11, $0b, $05, $00, $00, $00        ;; 0a:7735 ...ww???
-    db   $04, $08, $00, $23, $05, $00, $00, $00        ;; 0a:773d ...ww???
-    db   $10, $08, $06, $09, $07, $00, $00, $00        ;; 0a:7745 ???????.
-    db   $0c, $10, $06, $00, $07, $00, $00, $70        ;; 0a:774d ....w???
-    db   $08, $10, $83, $10, $05, $00, $00, $70        ;; 0a:7755 ????????
-    db   $08, $10, $84, $10, $05, $00, $00, $70        ;; 0a:775d ???????.
-    db   $10, $10, $84, $0a, $04, $00, $00, $00        ;; 0a:7765 ...ww??.
-    db   $10, $10, $84, $0c, $05, $00, $00, $00        ;; 0a:776d ...ww???
-    db   $0a, $08, $0f, $00, $06, $00, $00, $00        ;; 0a:7775 .w..w???
-    db   $10, $10, $09, $0a, $06, $00, $00, $00        ;; 0a:777d ????????
-    db   $04, $08, $1f, $34, $05, $00, $00, $00        ;; 0a:7785 ????????
-    db   $0c, $10, $06, $00, $07, $00, $00, $00        ;; 0a:778d ????????
-    db   $10, $10, $06, $00, $07, $00, $00, $00        ;; 0a:7795 ????????
-    db   $08, $08, $06, $00, $07, $00, $00, $00        ;; 0a:779d ????????
-    db   $08, $20, $1a, $25, $07, $00, $00, $00        ;; 0a:77a5 ????????
-    db   $10, $10, $83, $11, $05, $00, $00, $00        ;; 0a:77ad ????????
-    db   $04, $06, $09, $12, $05, $00, $00, $70        ;; 0a:77b5 ????????
-    db   $10, $08, $84, $20, $04, $00, $00, $70        ;; 0a:77bd ????????
-    db   $0c, $0b, $84, $20, $04, $00, $00, $00        ;; 0a:77c5 ????????
-    db   $10, $0c, $84, $20, $04, $00, $00, $00        ;; 0a:77cd ????????
-    db   $0c, $10, $84, $20, $04, $00, $00, $00        ;; 0a:77d5 ????????
-    db   $10, $10, $06, $00, $07, $00, $00, $00        ;; 0a:77dd ????????
-    db   $0c, $10, $0f, $13, $07, $00, $00, $40        ;; 0a:77e5 ????????
-    db   $0c, $10, $0f, $13, $07, $00, $00, $00        ;; 0a:77ed ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0a:77f5 ????????
-    db   $08, $08, $06, $1e, $07, $00, $00, $00        ;; 0a:77fd ????????
-    db   $08, $08, $06, $1e, $07, $00, $00, $00        ;; 0a:7805 ????????
-    db   $08, $0c, $06, $1e, $07, $00, $00, $00        ;; 0a:780d ????????
-    db   $0c, $08, $06, $14, $05, $00, $00, $00        ;; 0a:7815 ????????
-    db   $04, $04, $13, $00, $04, $00, $00, $00        ;; 0a:781d ????????
-    db   $08, $10, $1a, $21, $07, $00, $00, $00        ;; 0a:7825 ????????
-    db   $10, $0c, $84, $20, $04, $00, $00, $00        ;; 0a:782d ????????
-    db   $10, $10, $06, $00, $07, $00, $00, $00        ;; 0a:7835 ????????
-    db   $10, $10, $1b, $22, $07, $00, $00, $00        ;; 0a:783d ????????
-    db   $00, $00, $00, $00, $07, $00, $00, $00        ;; 0a:7845 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0a:784d ????????
-    db   $10, $08, $16, $1a, $05, $00, $00, $00        ;; 0a:7855 ????????
-    db   $10, $08, $20, $18, $06, $00, $00, $00        ;; 0a:785d ????????
-    db   $08, $08, $00, $18, $06, $00, $00, $00        ;; 0a:7865 ????????
-    db   $10, $10, $06, $00, $07, $00, $00, $70        ;; 0a:786d ????????
-    db   $08, $08, $09, $19, $07, $00, $00, $00        ;; 0a:7875 ????????
-    db   $0c, $0c, $09, $00, $07, $00, $00, $00        ;; 0a:787d ????????
-    db   $08, $0c, $09, $1f, $07, $00, $00, $00        ;; 0a:7885 ????????
-    db   $08, $08, $23, $19, $07, $00, $00, $40        ;; 0a:788d ????????
-    db   $0a, $10, $15, $18, $07, $00, $00, $40        ;; 0a:7895 ????????
-    db   $0a, $10, $15, $18, $07, $00, $00, $00        ;; 0a:789d ????????
-    db   $0c, $10, $18, $18, $07, $00, $00, $00        ;; 0a:78a5 ????????
-    db   $06, $06, $00, $00, $06, $00, $00, $00        ;; 0a:78ad ????????
-    db   $10, $08, $06, $17, $07, $00, $00, $00        ;; 0a:78b5 ????????
-    db   $04, $04, $09, $18, $06, $00, $00, $00        ;; 0a:78bd ????????
-    db   $10, $04, $09, $1d, $04, $00, $00, $00        ;; 0a:78c5 ????????
-    db   $0c, $10, $14, $15, $04, $00, $00, $00        ;; 0a:78cd ????????
-    db   $0c, $10, $14, $16, $04, $00, $00, $00        ;; 0a:78d5 ????????
-    db   $18, $08, $09, $1b, $07, $00, $00, $00        ;; 0a:78dd ????????
-    db   $08, $20, $09, $1b, $07, $00, $00, $70        ;; 0a:78e5 ????????
-    db   $10, $08, $84, $1d, $04, $00, $00, $70        ;; 0a:78ed ????????
-    db   $10, $08, $84, $1d, $04, $00, $00, $00        ;; 0a:78f5 ????????
-    db   $10, $08, $84, $1c, $04, $00, $00, $70        ;; 0a:78fd ????????
-    db   $10, $08, $84, $1c, $04, $00, $00, $00        ;; 0a:7905 ????????
-    db   $10, $08, $83, $1c, $04, $00, $00, $00        ;; 0a:790d ????????
-    db   $00, $00, $00, $00, $04, $00, $00, $00        ;; 0a:7915 ????????
-    db   $0c, $08, $84, $26, $04, $00, $00, $70        ;; 0a:791d ????????
-    db   $0c, $08, $84, $26, $04, $00, $00, $70        ;; 0a:7925 ????????
-    db   $0c, $08, $84, $26, $04, $00, $00, $00        ;; 0a:792d ????????
-    db   $0c, $08, $84, $26, $04, $00, $00, $00        ;; 0a:7935 ????????
-    db   $0c, $08, $84, $26, $04, $00, $00, $00        ;; 0a:793d ????????
-    db   $0c, $04, $84, $29, $05, $00, $00, $00        ;; 0a:7945 ????????
-    db   $0c, $08, $1c, $2a, $07, $00, $00, $00        ;; 0a:794d ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0a:7955 ????????
-    db   $08, $10, $09, $27, $05, $00, $00, $00        ;; 0a:795d ????????
-    db   $08, $20, $09, $27, $05, $00, $00, $00        ;; 0a:7965 ????????
-    db   $10, $10, $06, $00, $07, $00, $00, $00        ;; 0a:796d ????????
-    db   $00, $00, $00, $2b, $05, $00, $00, $00        ;; 0a:7975 ????????
-    db   $00, $00, $00, $2b, $05, $00, $00, $40        ;; 0a:797d ????????
-    db   $0c, $0c, $06, $00, $07, $00, $00, $00        ;; 0a:7985 ????????
-    db   $04, $10, $09, $28, $07, $00, $00, $40        ;; 0a:798d ????????
-    db   $10, $08, $06, $00, $07, $00, $00, $00        ;; 0a:7995 ????????
-    db   $0c, $0c, $06, $38, $05, $00, $00, $40        ;; 0a:799d ????????
-    db   $00, $00, $00, $00, $06, $00, $00, $00        ;; 0a:79a5 ????????
-    db   $0c, $0c, $06, $2c, $07, $00, $00, $00        ;; 0a:79ad ????????
-    db   $08, $10, $06, $2d, $05, $00, $00, $60        ;; 0a:79b5 ????????
-    db   $08, $08, $22, $2e, $05, $00, $00, $00        ;; 0a:79bd ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0a:79c5 ????????
-    db   $0c, $08, $06, $2f, $07, $00, $00, $00        ;; 0a:79cd ????????
-    db   $00, $00, $00, $2f, $06, $00, $00, $70        ;; 0a:79d5 ????????
-    db   $08, $08, $1d, $30, $05, $00, $00, $40        ;; 0a:79dd ????????
-    db   $10, $08, $84, $31, $04, $00, $00, $70        ;; 0a:79e5 ????????
-    db   $10, $08, $84, $31, $04, $00, $00, $00        ;; 0a:79ed ????????
-    db   $10, $08, $84, $31, $04, $00, $00, $00        ;; 0a:79f5 ????????
-    db   $0c, $0c, $06, $00, $07, $00, $00, $40        ;; 0a:79fd ????????
-    db   $10, $10, $21, $00, $07, $00, $00, $40        ;; 0a:7a05 ????????
-    db   $10, $08, $85, $00, $07, $00, $00, $60        ;; 0a:7a0d ????????
-    db   $08, $08, $00, $32, $05, $00, $00, $60        ;; 0a:7a15 ????????
-    db   $08, $08, $00, $32, $05, $00, $00, $60        ;; 0a:7a1d ????????
-    db   $08, $08, $00, $32, $05, $00, $00, $10        ;; 0a:7a25 ????????
-    db   $10, $10, $24, $00, $07, $00, $00, $70        ;; 0a:7a2d ????????
-    db   $10, $08, $84, $32, $04, $00, $00, $00        ;; 0a:7a35 ????????
-    db   $10, $08, $84, $32, $04, $00, $00, $00        ;; 0a:7a3d ????????
-    db   $08, $08, $00, $32, $06, $00, $00, $00        ;; 0a:7a45 ????????
-    db   $08, $08, $09, $32, $03, $00, $00, $00        ;; 0a:7a4d ????????
-    db   $10, $10, $00, $37, $05, $00, $00, $40        ;; 0a:7a55 ????????
-    db   $08, $08, $83, $39, $04, $00, $00, $00        ;; 0a:7a5d ????????
-    db   $10, $10, $00, $00, $07, $00, $00, $00        ;; 0a:7a65 ????????
-    db   $00, $00, $00, $00, $07, $00, $00, $70        ;; 0a:7a6d ???????.
-    db   $10, $08, $84, $35, $05, $00, $00             ;; 0a:7a75 ...ww??
+    db   $00, $00, COLLISION_TYPE_NONE, $00, $00, $00, $00      ; 0a:75fd ???????  ; ENTITY_GEX
+    db   $00, $2c, $10, COLLISION_TYPE_COLLECTIBLE, $00, $01, $00, $00 ; 0a:7604 ???????? ; ENTITY_COLLECTIBLE_SPAWN
+    db   $00, $08, $08, COLLISION_TYPE_UNK_02, $00, $02, $00, $00 ; 0a:760c ???????. ; ENTITY_UNK_02
+    db   $70, $08, $08, COLLISION_TYPE_UNK_03 | COLLISION_TYPE_UNK_PLATFORM_FLAG, $00, $06, $00, $00 ; 0a:7614 ....w??. ; ENTITY_TV_BUTTON
+    db   $70, $00, $00, COLLISION_TYPE_NONE, $00, $07, $00, $00 ; 0a:761c ....w??? ; ENTITY_RED_REMOTE
+    db   $00, $10, $10, COLLISION_TYPE_SILVER_REMOTE, $00, $07, $00, $00 ; 0a:7624 ???????? ; ENTITY_SILVER_REMOTE
+    db   $00, $10, $10, COLLISION_TYPE_GOLD_REMOTE, $00, $07, $00, $00 ; 0a:762c ???????? ; ENTITY_GOLD_REMOTE
+    db   $00, $00, $00, COLLISION_TYPE_NONE, $00, $00, $00, $00 ; 0a:7634 ???????? ; ENTITY_ENEMY_DEFEATED
+    db   $00, $00, $00, COLLISION_TYPE_NONE, $00, $00, $00, $00 ; 0a:763c ???????? ; ENTITY_UNK_08
+    db   $40, $10, $10, COLLISION_TYPE_UNK_03 | COLLISION_TYPE_UNK_PLATFORM_FLAG, $01, $05, $00, $00 ; 0a:7644 ???????. ; ENTITY_SCREAM_TV_FALLING_PLATFORM
+    db   $70, $10, $10, COLLISION_TYPE_UNK_04 | COLLISION_TYPE_UNK_PLATFORM_FLAG, $01, $04, $00, $00 ; 0a:764c ...ww??? ; ENTITY_SCREAM_TV_MOVING_PLATFORM
+    db   $00, $10, $10, COLLISION_TYPE_UNK_03, $24, $05, $00, $00 ; 0a:7654 ???????. ; ENTITY_SCREAM_TV_PUSH_BLOCK
+    db   $00, $10, $10, COLLISION_TYPE_GENERIC_ENEMY, $00, $07, $00, $00 ; 0a:765c ....w??? ; ENTITY_SCREAM_TV_PUMPKIN
+    db   $28, $0c, $10, COLLISION_TYPE_GENERIC_ENEMY, $00, $07, $00, $00 ; 0a:7664 ???????? ; ENTITY_SCREAM_TV_FRANKIE
+    db   $40, $08, $10, COLLISION_TYPE_GENERIC_ENEMY, $33, $07, $00, $00 ; 0a:766c ???????? ; ENTITY_SCREAM_TV_HEAD_GHOST
+    db   $00, $10, $10, COLLISION_TYPE_GHOST_HEAD, $00, $06, $00, $00 ; 0a:7674 ???????? ; ENTITY_SCREAM_TV_HEAD_GHOST_HEAD
+    db   $00, $0c, $0c, COLLISION_TYPE_GENERIC_ENEMY, $00, $07, $00, $00 ; 0a:767c ???????? ; ENTITY_SCREAM_TV_FLOATING_SKULL
+    db   $00, $04, $04, COLLISION_TYPE_PROJECTILE, $00, $06, $00, $00 ; 0a:7684 ???????? ; ENTITY_SCREAM_TV_FLOATING_SKULL_PROJECTILE
+    db   $00, $0c, $10, COLLISION_TYPE_ZOMBIE, $00, $07, $00, $00 ; 0a:768c ???????? ; ENTITY_SCREAM_TV_ZOMBIE
+    db   $00, $10, $10, COLLISION_TYPE_ZOMBIE_HEAD, $00, $06, $00, $00 ; 0a:7694 ???????? ; ENTITY_SCREAM_TV_ZOMBIE_HEAD
+    db   $40, $08, $08, COLLISION_TYPE_UNK_09, $01, $03, $00, $00 ; 0a:769c ???????? ; ENTITY_SCREAM_TV_FALLING_AXE
+    db   $00, $20, $40, COLLISION_TYPE_LANTERN, $02, $05, $00, $00 ; 0a:76a4 ???????? ; ENTITY_SCREAM_TV_LANTERN
+    db   $00, $10, $08, COLLISION_TYPE_GENERIC_ENEMY, $00, $07, $00, $00 ; 0a:76ac ???????? ; ENTITY_SCREAM_TV_BAT
+    db   $50, $10, $10, COLLISION_TYPE_UNK_04 | COLLISION_TYPE_UNK_PLATFORM_FLAG, $24, $05, $00, $00 ; 0a:76b4 ???????? ; ENTITY_SCREAM_TV_ORANGE_MOVING_PLATFORM
+    db   $00, $00, $00, COLLISION_TYPE_NONE, $00, $07, $00, $00 ; 0a:76bc ???????? ; ENTITY_SCREAM_TV_DOOR_OPENING
+    db   $10, $0c, $10, COLLISION_TYPE_GHOST, $00, $07, $00, $00 ; 0a:76c4 ???????? ; ENTITY_SCREAM_TV_GHOST
+    db   $50, $0c, $10, COLLISION_TYPE_GENERIC_ENEMY, $01, $05, $00, $00 ; 0a:76cc ???????? ; ENTITY_SCREAM_TV_CLIMB_WALL_SUN_ENEMY
+    db   $00, $10, $10, COLLISION_TYPE_UNK_04 | COLLISION_TYPE_UNK_PLATFORM_FLAG, $01, $04, $00, $00 ; 0a:76d4 ???????? ; ENTITY_SCREAM_TV_VANISHING_PLATFORM
+    db   $50, $12, $10, COLLISION_TYPE_UNK_04 | COLLISION_TYPE_UNK_PLATFORM_FLAG, $01, $04, $00, $00 ; 0a:76dc ???????. ; ENTITY_SCREAM_TV_MONA_LISA_ELEVATOR
+    db   $00, $10, $10, COLLISION_TYPE_FALLING_OBJECT, $03, $07, $00, $00 ; 0a:76e4 .w.ww??? ; ENTITY_TOON_TV_HARD_HEAD_AREA_ENTITY
+    db   $00, $10, $08, COLLISION_TYPE_UNK_09, $05, $07, $00, $00 ; 0a:76ec ???????? ; ENTITY_TOON_TV_STATIONARY_BEAR_TRAP
+    db   $00, $08, $08, COLLISION_TYPE_UNK_09, $04, $07, $00, $00 ; 0a:76f4 ???????. ; ENTITY_TOON_TV_MOVING_BEAR_TRAP
+    db   $00, $0c, $10, COLLISION_TYPE_GENERIC_ENEMY, $0f, $07, $00, $00 ; 0a:76fc ...ww??? ; ENTITY_TOON_TV_BUMBLEBEE
+    db   $88, $0c, $10, COLLISION_TYPE_FALLING_OBJECT, $07, $07, $00, $00 ; 0a:7704 ???????. ; ENTITY_TOON_TV_FALLING_BOWLING_BALL
+    db   $00, $0c, $10, COLLISION_TYPE_GENERIC_ENEMY, $06, $07, $00, $00 ; 0a:770c ...ww??? ; ENTITY_TOON_TV_CACTUS
+    db   $00, $10, $10, COLLISION_TYPE_FALLING_OBJECT, $0e, $05, $00, $00 ; 0a:7714 ???????. ; ENTITY_TOON_TV_DOMINO
+    db   $00, $0c, $0a, COLLISION_TYPE_GENERIC_ENEMY, $0d, $05, $00, $00 ; 0a:771c ...ww??. ; ENTITY_TOON_TV_SHARK
+    db   $00, $10, $10, COLLISION_TYPE_NONE, $08, $07, $00, $00 ; 0a:7724 ...ww??? ; ENTITY_TOON_TV_FLOWER
+    db   $00, $0a, $10, COLLISION_TYPE_HUNTER, $00, $07, $00, $00 ; 0a:772c ???????. ; ENTITY_TOON_TV_HUNTER
+    db   $00, $0c, $08, COLLISION_TYPE_MUSHROOM, $0b, $05, $00, $00 ; 0a:7734 ...ww??? ; ENTITY_TOON_TV_MUSHROOM
+    db   $00, $04, $08, COLLISION_TYPE_NONE, $23, $05, $00, $00 ; 0a:773c ...ww??? ; ENTITY_UNK_28
+    db   $00, $10, $08, COLLISION_TYPE_GENERIC_ENEMY, $09, $07, $00, $00 ; 0a:7744 ???????. ; ENTITY_TOON_TV_LIZARD
+    db   $00, $0c, $10, COLLISION_TYPE_GENERIC_ENEMY, $00, $07, $00, $00 ; 0a:774c ....w??? ; ENTITY_TOON_TV_HAPPY_FACE
+    db   $70, $08, $10, COLLISION_TYPE_UNK_03 | COLLISION_TYPE_UNK_PLATFORM_FLAG, $10, $05, $00, $00 ; 0a:7754 ???????? ; ENTITY_TOON_TV_VANISHING_BLOCK
+    db   $70, $08, $10, COLLISION_TYPE_UNK_04 | COLLISION_TYPE_UNK_PLATFORM_FLAG, $10, $05, $00, $00 ; 0a:775c ???????. ; ENTITY_TOON_TV_MOVING_BLOCK
+    db   $70, $10, $10, COLLISION_TYPE_UNK_04 | COLLISION_TYPE_UNK_PLATFORM_FLAG, $0a, $04, $00, $00 ; 0a:7764 ...ww??. ; ENTITY_TOON_TV_MOVING_LOG_PLATFORM
+    db   $00, $10, $10, COLLISION_TYPE_UNK_04 | COLLISION_TYPE_UNK_PLATFORM_FLAG, $0c, $05, $00, $00 ; 0a:776c ...ww??? ; ENTITY_TOON_TV_STATIONARY_LOG_PLATFORM
+    db   $00, $0a, $08, COLLISION_TYPE_FALLING_OBJECT, $00, $06, $00, $00 ; 0a:7774 .w..w??? ; ENTITY_TOON_TV_FLOWER_HAMMER_ATTACK
+    db   $00, $10, $10, COLLISION_TYPE_UNK_09, $0a, $06, $00, $00 ; 0a:777c ???????? ; ENTITY_TOON_TV_HUNTER_BULLET
+    db   $00, $04, $08, COLLISION_TYPE_ROCKET, $34, $05, $00, $00 ; 0a:7784 ???????? ; ENTITY_TOON_TV_ROCKET
+    db   $00, $0c, $10, COLLISION_TYPE_GENERIC_ENEMY, $00, $07, $00, $00 ; 0a:778c ???????? ; ENTITY_PRE_HISTORY_FAST_DINOSAUR
+    db   $00, $10, $10, COLLISION_TYPE_GENERIC_ENEMY, $00, $07, $00, $00 ; 0a:7794 ???????? ; ENTITY_PRE_HISTORY_DRAGONFLY
+    db   $00, $08, $08, COLLISION_TYPE_GENERIC_ENEMY, $00, $07, $00, $00 ; 0a:779c ???????? ; ENTITY_PRE_HISTORY_EGG
+    db   $00, $08, $20, COLLISION_TYPE_GEYSER, $25, $07, $00, $00 ; 0a:77a4 ???????? ; ENTITY_UNK_35
+    db   $00, $10, $10, COLLISION_TYPE_UNK_03 | COLLISION_TYPE_UNK_PLATFORM_FLAG, $11, $05, $00, $00 ; 0a:77ac ???????? ; ENTITY_UNK_36
+    db   $00, $04, $06, COLLISION_TYPE_UNK_09, $12, $05, $00, $00 ; 0a:77b4 ???????? ; ENTITY_PRE_HISTORY_FALLING_LAVA
+    db   $70, $10, $08, COLLISION_TYPE_UNK_04 | COLLISION_TYPE_UNK_PLATFORM_FLAG, $20, $04, $00, $00 ; 0a:77bc ???????? ; ENTITY_PRE_HISTORY_LAVA_RAFT
+    db   $70, $0c, $0b, COLLISION_TYPE_UNK_04 | COLLISION_TYPE_UNK_PLATFORM_FLAG, $20, $04, $00, $00 ; 0a:77c4 ???????? ; ENTITY_PRE_HISTORY_MOVING_PLATFORM
+    db   $00, $10, $0c, COLLISION_TYPE_UNK_04 | COLLISION_TYPE_UNK_PLATFORM_FLAG, $20, $04, $00, $00 ; 0a:77cc ???????? ; ENTITY_UNK_3A
+    db   $00, $0c, $10, COLLISION_TYPE_UNK_04 | COLLISION_TYPE_UNK_PLATFORM_FLAG, $20, $04, $00, $00 ; 0a:77d4 ???????? ; ENTITY_UNK_3B
+    db   $00, $10, $10, COLLISION_TYPE_GENERIC_ENEMY, $00, $07, $00, $00 ; 0a:77dc ???????? ; ENTITY_PRE_HISTORY_PTEROSAUR
+    db   $00, $0c, $10, COLLISION_TYPE_FALLING_OBJECT, $13, $07, $00, $00 ; 0a:77e4 ???????? ; ENTITY_UNK_3D
+    db   $40, $0c, $10, COLLISION_TYPE_FALLING_OBJECT, $13, $07, $00, $00 ; 0a:77ec ???????? ; ENTITY_PRE_HISTORY_FALLING_BOULDER
+    db   $00, $00, $00, COLLISION_TYPE_NONE, $00, $00, $00, $00 ; 0a:77f4 ???????? ; ENTITY_UNK_3F
+    db   $00, $08, $08, COLLISION_TYPE_GENERIC_ENEMY, $1e, $07, $00, $00 ; 0a:77fc ???????? ; ENTITY_PRE_HISTORY_BEETLE_HORIZONTAL
+    db   $00, $08, $08, COLLISION_TYPE_GENERIC_ENEMY, $1e, $07, $00, $00 ; 0a:7804 ???????? ; ENTITY_PRE_HISTORY_BEETLE_VERTICAL
+    db   $00, $08, $0c, COLLISION_TYPE_GENERIC_ENEMY, $1e, $07, $00, $00 ; 0a:780c ???????? ; ENTITY_PRE_HISTORY_ANT
+    db   $00, $0c, $08, COLLISION_TYPE_GENERIC_ENEMY, $14, $05, $00, $00 ; 0a:7814 ???????? ; ENTITY_PRE_HISTORY_FIRE_PLANT
+    db   $00, $04, $04, COLLISION_TYPE_PROJECTILE, $00, $04, $00, $00 ; 0a:781c ???????? ; ENTITY_PRE_HISTORY_FIRE_PLANT_PROJECTILES
+    db   $00, $08, $10, COLLISION_TYPE_GEYSER, $21, $07, $00, $00 ; 0a:7824 ???????? ; ENTITY_PRE_HISTORY_GEYSER
+    db   $00, $10, $0c, COLLISION_TYPE_UNK_04 | COLLISION_TYPE_UNK_PLATFORM_FLAG, $20, $04, $00, $00 ; 0a:782c ???????? ; ENTITY_UNK_46
+    db   $00, $10, $10, COLLISION_TYPE_GENERIC_ENEMY, $00, $07, $00, $00 ; 0a:7834 ???????? ; ENTITY_PRE_HISTORY_DINOSAUR
+    db   $00, $10, $10, COLLISION_TYPE_TRICERATOPS, $22, $07, $00, $00 ; 0a:783c ???????? ; ENTITY_PRE_HISTORY_TRICERATOPS
+    db   $00, $00, $00, COLLISION_TYPE_NONE, $00, $07, $00, $00 ; 0a:7844 ???????? ; ENTITY_PRE_HISTORY_TRICERATOPS_HORN
+    db   $00, $00, $00, COLLISION_TYPE_NONE, $00, $00, $00, $00 ; 0a:784c ???????? ; ENTITY_UNK_4A
+    db   $00, $10, $08, COLLISION_TYPE_HANGING_BLADE, $1a, $05, $00, $00 ; 0a:7854 ???????? ; ENTITY_KUNG_FU_THEATER_HANGING_BLADE
+    db   $00, $10, $08, COLLISION_TYPE_CANNON, $18, $06, $00, $00 ; 0a:785c ???????? ; ENTITY_KUNG_FU_THEATER_CANNON
+    db   $00, $08, $08, COLLISION_TYPE_NONE, $18, $06, $00, $00 ; 0a:7864 ???????? ; ENTITY_KUNG_FU_THEATER_CANNON_PROJECTILE
+    db   $00, $10, $10, COLLISION_TYPE_GENERIC_ENEMY, $00, $07, $00, $00 ; 0a:786c ???????? ; ENTITY_KUNG_FU_THEATER_DRAGONFLY
+    db   $70, $08, $08, COLLISION_TYPE_UNK_09, $19, $07, $00, $00 ; 0a:7874 ???????? ; ENTITY_KUNG_FU_THEATER_DRAGON_BODY_SEGMENT
+    db   $00, $0c, $0c, COLLISION_TYPE_UNK_09, $00, $07, $00, $00 ; 0a:787c ???????? ; ENTITY_KUNG_FU_THEATER_DRAGON_HEAD
+    db   $00, $08, $0c, COLLISION_TYPE_UNK_09, $1f, $07, $00, $00 ; 0a:7884 ???????? ; ENTITY_UNK_51
+    db   $00, $08, $08, COLLISION_TYPE_DRAGON_PROJECTILE, $19, $07, $00, $00 ; 0a:788c ???????? ; ENTITY_KUNG_FU_THEATER_DRAGON_PROJECTILE
+    db   $40, $0a, $10, COLLISION_TYPE_NINJA, $18, $07, $00, $00 ; 0a:7894 ???????? ; ENTITY_KUNG_FU_THEATER_WALKING_NINJA
+    db   $40, $0a, $10, COLLISION_TYPE_NINJA, $18, $07, $00, $00 ; 0a:789c ???????? ; ENTITY_KUNG_FU_THEATER_JUMPING_NINJA
+    db   $00, $0c, $10, COLLISION_TYPE_SAMURAI_BODY, $18, $07, $00, $00 ; 0a:78a4 ???????? ; ENTITY_KUNG_FU_THEATER_SAMURAI_BODY
+    db   $00, $06, $06, COLLISION_TYPE_NONE, $00, $06, $00, $00 ; 0a:78ac ???????? ; ENTITY_KUNG_FU_THEATER_SAMURAI_HEAD
+    db   $00, $10, $08, COLLISION_TYPE_GENERIC_ENEMY, $17, $07, $00, $00 ; 0a:78b4 ???????? ; ENTITY_KUNG_FU_THEATER_LIZARD
+    db   $00, $04, $04, COLLISION_TYPE_UNK_09, $18, $06, $00, $00 ; 0a:78bc ???????? ; ENTITY_KUNG_FU_THEATER_NINJA_PROJECTILE
+    db   $00, $10, $04, COLLISION_TYPE_UNK_09, $1d, $04, $00, $00 ; 0a:78c4 ???????? ; ENTITY_KUNG_FU_THEATER_SPIKY_LOG
+    db   $00, $0c, $10, COLLISION_TYPE_JAR, $15, $04, $00, $00 ; 0a:78cc ???????? ; ENTITY_KUNG_FU_THEATER_TALL_JAR
+    db   $00, $0c, $10, COLLISION_TYPE_JAR, $16, $04, $00, $00 ; 0a:78d4 ???????? ; ENTITY_KUNG_FU_THEATER_JAR
+    db   $00, $18, $08, COLLISION_TYPE_UNK_09, $1b, $07, $00, $00 ; 0a:78dc ???????? ; ENTITY_UNK_5C
+    db   $00, $08, $20, COLLISION_TYPE_UNK_09, $1b, $07, $00, $00 ; 0a:78e4 ???????? ; ENTITY_UNK_5D
+    db   $70, $10, $08, COLLISION_TYPE_UNK_04 | COLLISION_TYPE_UNK_PLATFORM_FLAG, $1d, $04, $00, $00 ; 0a:78ec ???????? ; ENTITY_KUNG_FU_THEATER_VANISHING_PLATFORM
+    db   $70, $10, $08, COLLISION_TYPE_UNK_04 | COLLISION_TYPE_UNK_PLATFORM_FLAG, $1d, $04, $00, $00 ; 0a:78f4 ???????? ; ENTITY_KUNG_FU_THEATER_MOVING_PLATFORM
+    db   $00, $10, $08, COLLISION_TYPE_UNK_04 | COLLISION_TYPE_UNK_PLATFORM_FLAG, $1c, $04, $00, $00 ; 0a:78fc ???????? ; ENTITY_UNK_60
+    db   $70, $10, $08, COLLISION_TYPE_UNK_04 | COLLISION_TYPE_UNK_PLATFORM_FLAG, $1c, $04, $00, $00 ; 0a:7904 ???????? ; ENTITY_KUNG_FU_THEATER_MOVING_RAFT
+    db   $00, $10, $08, COLLISION_TYPE_UNK_03 | COLLISION_TYPE_UNK_PLATFORM_FLAG, $1c, $04, $00, $00 ; 0a:790c ???????? ; ENTITY_KUNG_FU_THEATER_STATIONARY_RAFT
+    db   $00, $00, $00, COLLISION_TYPE_NONE, $00, $04, $00, $00 ; 0a:7914 ???????? ; ENTITY_UNK_63
+    db   $00, $0c, $08, COLLISION_TYPE_UNK_04 | COLLISION_TYPE_UNK_PLATFORM_FLAG, $26, $04, $00, $00 ; 0a:791c ???????? ; ENTITY_UNK_64
+    db   $70, $0c, $08, COLLISION_TYPE_UNK_04 | COLLISION_TYPE_UNK_PLATFORM_FLAG, $26, $04, $00, $00 ; 0a:7924 ???????? ; ENTITY_REZOPOLIS_SPECIAL_MOVING_PLATFORM
+    db   $70, $0c, $08, COLLISION_TYPE_UNK_04 | COLLISION_TYPE_UNK_PLATFORM_FLAG, $26, $04, $00, $00 ; 0a:792c ???????? ; ENTITY_REZOPOLIS_MOVING_PLATFORM
+    db   $00, $0c, $08, COLLISION_TYPE_UNK_04 | COLLISION_TYPE_UNK_PLATFORM_FLAG, $26, $04, $00, $00 ; 0a:7934 ???????? ; ENTITY_REZOPOLIS_RED_PLATFORM
+    db   $00, $0c, $08, COLLISION_TYPE_UNK_04 | COLLISION_TYPE_UNK_PLATFORM_FLAG, $26, $04, $00, $00 ; 0a:793c ???????? ; ENTITY_REZOPOLIS_ACTIVATED_RED_PLATFORM
+    db   $00, $0c, $04, COLLISION_TYPE_UNK_04 | COLLISION_TYPE_UNK_PLATFORM_FLAG, $29, $05, $00, $00 ; 0a:7944 ???????? ; ENTITY_REZOPOLIS_TAILSPIN_PLATFORM
+    db   $00, $0c, $08, COLLISION_TYPE_GEAR, $2a, $07, $00, $00 ; 0a:794c ???????? ; ENTITY_REZOPOLIS_TAILSPIN_GEAR
+    db   $00, $00, $00, COLLISION_TYPE_NONE, $00, $00, $00, $00 ; 0a:7954 ???????? ; ENTITY_UNK_6B
+    db   $00, $08, $10, COLLISION_TYPE_UNK_09, $27, $05, $00, $00 ; 0a:795c ???????? ; ENTITY_UNK_6C
+    db   $00, $08, $20, COLLISION_TYPE_UNK_09, $27, $05, $00, $00 ; 0a:7964 ???????? ; ENTITY_UNK_6D
+    db   $00, $10, $10, COLLISION_TYPE_GENERIC_ENEMY, $00, $07, $00, $00 ; 0a:796c ???????? ; ENTITY_REZOPOLIS_GREEN_MONSTER
+    db   $00, $00, $00, COLLISION_TYPE_NONE, $2b, $05, $00, $00 ; 0a:7974 ???????? ; ENTITY_UNK_6F
+    db   $00, $00, $00, COLLISION_TYPE_NONE, $2b, $05, $00, $00 ; 0a:797c ???????? ; ENTITY_UNK_70
+    db   $40, $0c, $0c, COLLISION_TYPE_GENERIC_ENEMY, $00, $07, $00, $00 ; 0a:7984 ???????? ; ENTITY_REZOPOLIS_PINCER
+    db   $00, $04, $10, COLLISION_TYPE_UNK_09, $28, $07, $00, $00 ; 0a:798c ???????? ; ENTITY_REZOPOLIS_FLAMETHROWER
+    db   $40, $10, $08, COLLISION_TYPE_GENERIC_ENEMY, $00, $07, $00, $00 ; 0a:7994 ???????? ; ENTITY_REZOPOLIS_UFO
+    db   $00, $0c, $0c, COLLISION_TYPE_GENERIC_ENEMY, $38, $05, $00, $00 ; 0a:799c ???????? ; ENTITY_REZOPOLIS_ANT
+    db   $40, $00, $00, COLLISION_TYPE_NONE, $00, $06, $00, $00 ; 0a:79a4 ???????? ; ENTITY_REZOPOLIS_ANT_SPAWNER
+    db   $00, $0c, $0c, COLLISION_TYPE_GENERIC_ENEMY, $2c, $07, $00, $00 ; 0a:79ac ???????? ; ENTITY_CIRCUIT_CENTRAL_ANT
+    db   $00, $08, $10, COLLISION_TYPE_GENERIC_ENEMY, $2d, $05, $00, $00 ; 0a:79b4 ???????? ; ENTITY_CIRCUIT_CENTRAL_CAPACITOR
+    db   $60, $08, $08, COLLISION_TYPE_POWER_UP, $2e, $05, $00, $00 ; 0a:79bc ???????? ; ENTITY_CIRCUIT_CENTRAL_POWER_UP
+    db   $00, $00, $00, COLLISION_TYPE_NONE, $00, $00, $00, $00 ; 0a:79c4 ???????? ; ENTITY_UNK_79
+    db   $00, $0c, $08, COLLISION_TYPE_GENERIC_ENEMY, $2f, $07, $00, $00 ; 0a:79cc ???????? ; ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT
+    db   $00, $00, $00, COLLISION_TYPE_NONE, $2f, $06, $00, $00 ; 0a:79d4 ???????? ; ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT_GEAR
+    db   $70, $08, $08, COLLISION_TYPE_ELECTRIC_BALL, $30, $05, $00, $00 ; 0a:79dc ???????? ; ENTITY_CIRCUIT_CENTRAL_ELECTRIC_BALL
+    db   $40, $10, $08, COLLISION_TYPE_UNK_04 | COLLISION_TYPE_UNK_PLATFORM_FLAG, $31, $04, $00, $00 ; 0a:79e4 ???????? ; ENTITY_CIRCUIT_CENTRAL_MOVING_PLATFORM
+    db   $70, $10, $08, COLLISION_TYPE_UNK_04 | COLLISION_TYPE_UNK_PLATFORM_FLAG, $31, $04, $00, $00 ; 0a:79ec ???????? ; ENTITY_CIRCUIT_CENTRAL_POWERED_PLAFORM
+    db   $00, $10, $08, COLLISION_TYPE_UNK_04 | COLLISION_TYPE_UNK_PLATFORM_FLAG, $31, $04, $00, $00 ; 0a:79f4 ???????? ; ENTITY_CIRCUIT_CENTRAL_LOWERING_PLATFORM
+    db   $00, $0c, $0c, COLLISION_TYPE_GENERIC_ENEMY, $00, $07, $00, $00 ; 0a:79fc ???????? ; ENTITY_CIRCUIT_CENTRAL_WALKER_ROBOT
+    db   $40, $10, $10, COLLISION_TYPE_POWERED_WALKWAY, $00, $07, $00, $00 ; 0a:7a04 ???????? ; ENTITY_CIRCUIT_CENTRAL_POWERED_WALKWAY
+    db   $40, $10, $08, COLLISION_TYPE_UNK_05 | COLLISION_TYPE_UNK_PLATFORM_FLAG, $00, $07, $00, $00 ; 0a:7a0c ???????? ; ENTITY_CIRCUIT_CENTRAL_WALKWAY_ACTIVATOR
+    db   $60, $08, $08, COLLISION_TYPE_NONE, $32, $05, $00, $00 ; 0a:7a14 ???????? ; ENTITY_CHANNEL_Z_ARCED_GUN_PROJECTILE
+    db   $60, $08, $08, COLLISION_TYPE_NONE, $32, $05, $00, $00 ; 0a:7a1c ???????? ; ENTITY_CHANNEL_Z_ARCED_GUN_PROJECTILE2
+    db   $60, $08, $08, COLLISION_TYPE_NONE, $32, $05, $00, $00 ; 0a:7a24 ???????? ; ENTITY_CHANNEL_Z_GUN_PROJECTILE
+    db   $10, $10, $10, COLLISION_TYPE_REZ, $00, $07, $00, $00 ; 0a:7a2c ???????? ; ENTITY_CHANNEL_Z_REZ
+    db   $70, $10, $08, COLLISION_TYPE_UNK_04 | COLLISION_TYPE_UNK_PLATFORM_FLAG, $32, $04, $00, $00 ; 0a:7a34 ???????? ; ENTITY_UNK_87
+    db   $00, $10, $08, COLLISION_TYPE_UNK_04 | COLLISION_TYPE_UNK_PLATFORM_FLAG, $32, $04, $00, $00 ; 0a:7a3c ???????? ; ENTITY_UNK_88
+    db   $00, $08, $08, COLLISION_TYPE_NONE, $32, $06, $00, $00 ; 0a:7a44 ???????? ; ENTITY_CHANNEL_Z_REZ_FOLLOWING_FIRE
+    db   $00, $08, $08, COLLISION_TYPE_UNK_09, $32, $03, $00, $00 ; 0a:7a4c ???????? ; ENTITY_CHANNEL_Z_GUN_PROJECTILE_EXPLOSION
+    db   $00, $10, $10, COLLISION_TYPE_NONE, $37, $05, $00, $00 ; 0a:7a54 ???????? ; ENTITY_UNK_8B
+    db   $40, $08, $08, COLLISION_TYPE_UNK_03 | COLLISION_TYPE_UNK_PLATFORM_FLAG, $39, $04, $00, $00 ; 0a:7a5c ???????? ; ENTITY_CHANNEL_Z_FINAL_BATTLE_BUTTON
+    db   $00, $10, $10, COLLISION_TYPE_NONE, $00, $07, $00, $00 ; 0a:7a64 ???????? ; ENTITY_UNK_8D
+    db   $00, $00, $00, COLLISION_TYPE_NONE, $00, $07, $00, $00 ; 0a:7a6c ???????. ; ENTITY_UNK_8E
+    db   $70, $10, $08, COLLISION_TYPE_UNK_04 | COLLISION_TYPE_UNK_PLATFORM_FLAG, $35, $05, $00, $00 ; 0a:7a74 ...ww?? ; ENTITY_MEDIA_DIMENSION_MOVING_PLATFORM
 
-call_0a_7a7c:
+call_0a_7a7c_HandleEntitySpawn:
     ld   H, $d2                                        ;; 0a:7a7c $26 $d2
     ld   A, $20                                        ;; 0a:7a7e $3e $20
 .jr_0a_7a80:
@@ -418,7 +418,7 @@ call_0a_7a7c:
     farcall call_0b_5f57
     ret                                                ;; 0a:7b99 $c9
 
-call_0a_7b9a:
+call_0a_7b9a_SpawnEntityRelative:
     ld   D, $d2                                        ;; 0a:7b9a $16 $d2
     ld   A, $20                                        ;; 0a:7b9c $3e $20
 .jr_0a_7b9e:
@@ -479,7 +479,7 @@ call_0a_7b9a:
     add  HL, HL                                        ;; 0a:7be2 $29
     add  HL, HL                                        ;; 0a:7be3 $29
     add  HL, HL                                        ;; 0a:7be4 $29
-    ld   BC, .data_0a_7c92                             ;; 0a:7be5 $01 $92 $7c
+    ld   BC, .data_0a_7c92_EntityChildSpawnData                             ;; 0a:7be5 $01 $92 $7c
     add  HL, BC                                        ;; 0a:7be8 $09
     ld   A, E                                          ;; 0a:7be9 $7b
     xor  A, $0d                                        ;; 0a:7bea $ee $0d
@@ -598,22 +598,22 @@ call_0a_7b9a:
     ld   A, [DE]                                       ;; 0a:7c8f $1a
     ld   [HL], A                                       ;; 0a:7c90 $77
     ret                                                ;; 0a:7c91 $c9
-.data_0a_7c92:
-    db   $0f, $06, $00, $f2, $ff, $00, $00, $00        ;; 0a:7c92 ????????
-    db   $11, $00, $00, $0c, $00, $00, $00, $00        ;; 0a:7c9a ????????
-    db   $13, $00, $00, $ee, $ff, $00, $00, $00        ;; 0a:7ca2 ????????
-    db   $2f, $f5, $ff, $fc, $ff, $00, $00, $00        ;; 0a:7caa w???????
-    db   $58, $08, $00, $00, $00, $00, $00, $00        ;; 0a:7cb2 ????????
-    db   $56, $00, $00, $e8, $ff, $00, $00, $00        ;; 0a:7cba ????????
-    db   $44, $00, $00, $08, $00, $00, $00, $00        ;; 0a:7cc2 ????????
-    db   $49, $14, $00, $00, $00, $00, $00, $00        ;; 0a:7cca ????????
-    db   $28, $00, $00, $f8, $ff, $00, $00, $00        ;; 0a:7cd2 w???????
-    db   $7b, $00, $00, $10, $00, $00, $00, $00        ;; 0a:7cda ????????
-    db   $8a, $00, $00, $00, $00, $00, $00, $00        ;; 0a:7ce2 ????????
-    db   $30, $10, $00, $00, $00, $00, $00, $00        ;; 0a:7cea ????????
-    db   $52, $00, $00, $00, $00, $00, $00, $00        ;; 0a:7cf2 ????????
-    db   $4d, $14, $00, $00, $00, $00, $00, $00        ;; 0a:7cfa ????????
-    db   $74, $00, $00, $08, $00, $00, $00, $00        ;; 0a:7d02 ????????
-    db   $8b, $4c, $00, $68, $ff, $00, $00, $00        ;; 0a:7d0a ????????
-    db   $8b, $b4, $ff, $68, $ff, $00, $00, $00        ;; 0a:7d12 ????????
-    db   $8d                                           ;; 0a:7d1a ?
+.data_0a_7c92_EntityChildSpawnData:
+    db   ENTITY_SCREAM_TV_HEAD_GHOST_HEAD, $06, $00, $f2, $ff, $00, $00, $00        ;; 0a:7c92 ????????
+    db   ENTITY_SCREAM_TV_FLOATING_SKULL_PROJECTILE, $00, $00, $0c, $00, $00, $00, $00        ;; 0a:7c9a ????????
+    db   ENTITY_SCREAM_TV_ZOMBIE_HEAD, $00, $00, $ee, $ff, $00, $00, $00        ;; 0a:7ca2 ????????
+    db   ENTITY_TOON_TV_FLOWER_HAMMER_ATTACK, $f5, $ff, $fc, $ff, $00, $00, $00        ;; 0a:7caa w???????
+    db   ENTITY_KUNG_FU_THEATER_NINJA_PROJECTILE, $08, $00, $00, $00, $00, $00, $00        ;; 0a:7cb2 ????????
+    db   ENTITY_KUNG_FU_THEATER_SAMURAI_HEAD, $00, $00, $e8, $ff, $00, $00, $00        ;; 0a:7cba ????????
+    db   ENTITY_PRE_HISTORY_FIRE_PLANT_PROJECTILES, $00, $00, $08, $00, $00, $00, $00        ;; 0a:7cc2 ????????
+    db   ENTITY_PRE_HISTORY_TRICERATOPS_HORN, $14, $00, $00, $00, $00, $00, $00        ;; 0a:7cca ????????
+    db   ENTITY_UNK_28, $00, $00, $f8, $ff, $00, $00, $00        ;; 0a:7cd2 w???????
+    db   ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT_GEAR, $00, $00, $10, $00, $00, $00, $00        ;; 0a:7cda ????????
+    db   ENTITY_CHANNEL_Z_GUN_PROJECTILE_EXPLOSION, $00, $00, $00, $00, $00, $00, $00        ;; 0a:7ce2 ????????
+    db   ENTITY_TOON_TV_HUNTER_BULLET, $10, $00, $00, $00, $00, $00, $00        ;; 0a:7cea ????????
+    db   ENTITY_KUNG_FU_THEATER_DRAGON_PROJECTILE, $00, $00, $00, $00, $00, $00, $00        ;; 0a:7cf2 ????????
+    db   ENTITY_KUNG_FU_THEATER_CANNON_PROJECTILE, $14, $00, $00, $00, $00, $00, $00        ;; 0a:7cfa ????????
+    db   ENTITY_REZOPOLIS_ANT, $00, $00, $08, $00, $00, $00, $00        ;; 0a:7d02 ????????
+    db   ENTITY_UNK_8B, $4c, $00, $68, $ff, $00, $00, $00        ;; 0a:7d0a ????????
+    db   ENTITY_UNK_8B, $b4, $ff, $68, $ff, $00, $00, $00        ;; 0a:7d12 ????????
+    db   ENTITY_UNK_8D, $00, $00, $00, $00, $00, $00, $00        ;; 0a:7d1a ?
