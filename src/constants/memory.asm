@@ -149,7 +149,7 @@ wD213_PlayerScreenYPosition:
 
     ds 12                                              ;; d213
 
-wD220_OtherLoadedEntitys:
+wD220_OtherLoadedEntities:
     ds 224                                             ;; d220
 
 wD300_CurrentEntityAddrLo:
@@ -336,7 +336,7 @@ wD60B:
 wD60E:
     ds 1                                               ;; d60e
 
-wD60F_BitmapOfThingsToLoad:
+wD60F_HDMATransferFlags:
     ds 1                                               ;; d60f
 
 wD610:
@@ -1296,10 +1296,8 @@ wDADB:
     ds 1233
 
 ; The rest of wram is used for audio-related purposes
-
 wDFAE_AudioBankDataPointer: ; always 60 (as in 0x4460, which is where the audio data begins in all 4 audio banks)
     ds 1                                               ;; dfae
-
 wDFAF_AudioBankDataPointer: ; always 44 (as in 0x4460, which is where the audio data begins in all 4 audio banks)
     ds 1                                               ;; dfaf
 

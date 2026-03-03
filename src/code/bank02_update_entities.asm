@@ -11,7 +11,7 @@ dw   data_02_4ddf        ;; Entity_TVButton
 dw   data_02_4de7        ;; Entity_RedRemote
 dw   data_02_4def        ;; Entity_SilverRemote
 dw   data_02_4df7        ;; Entity_GoldRemote
-dw   data_02_4e03        ;; Entity_EnemyDefeated
+dw   data_02_4e03        ;; Entity_ParticleBurst
 dw   data_02_4e07        ;; Entity_unk_08
 dw   data_02_4e0b        ;; Entity_ScreamTV_FallingPlatform
 dw   data_02_4e0f        ;; Entity_ScreamTV_MovingPlatform
@@ -193,7 +193,7 @@ call_02_6e68_InitEntitiesOtherThanPlayer:
     ld   [wD74D], A                                    ;; 02:6e6c $ea $4d $d7
     ld   [wD74E], A                                    ;; 02:6e6f $ea $4e $d7
     ld   [wD74F], A                                    ;; 02:6e72 $ea $4f $d7
-    ld   HL, wD220_OtherLoadedEntitys                                     ;; 02:6e75 $21 $20 $d2
+    ld   HL, wD220_OtherLoadedEntities                                     ;; 02:6e75 $21 $20 $d2
     ld   DE, $20                                       ;; 02:6e78 $11 $20 $00
     ld   B, $07                                        ;; 02:6e7b $06 $07
 .jr_02_6e7d:
@@ -331,7 +331,7 @@ call_02_6f80:
     ld   A, $00                                        ;; 02:6f8b $3e $00
     ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:6f8d $ea $00 $d3
     farcall call_03_5ca8
-    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 02:6f9b $21 $0f $d6
+    ld   HL, wD60F_HDMATransferFlags                                     ;; 02:6f9b $21 $0f $d6
     set  0, [HL]                                       ;; 02:6f9e $cb $c6
 .jr_02_6fa0:
     ld   A, $20                                        ;; 02:6fa0 $3e $20
@@ -348,7 +348,7 @@ call_02_6f80:
     ld   L, A                                          ;; 02:6fb2 $6f
     bit  7, [HL]                                       ;; 02:6fb3 $cb $7e
     jr   Z, .jr_02_6fbc                                ;; 02:6fb5 $28 $05
-    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 02:6fb7 $21 $0f $d6
+    ld   HL, wD60F_HDMATransferFlags                                     ;; 02:6fb7 $21 $0f $d6
     set  1, [HL]                                       ;; 02:6fba $cb $ce
 .jr_02_6fbc:
     farcall call_03_5ebf
@@ -431,7 +431,7 @@ call_02_7030:
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:7030 $fa $00 $d3
     and  A, A                                          ;; 02:7033 $a7
     jr   NZ, .jr_02_703c                               ;; 02:7034 $20 $06
-    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 02:7036 $21 $0f $d6
+    ld   HL, wD60F_HDMATransferFlags                                     ;; 02:7036 $21 $0f $d6
     set  0, [HL]                                       ;; 02:7039 $cb $c6
     ret                                                ;; 02:703b $c9
 .jr_02_703c:
@@ -454,7 +454,7 @@ call_02_7030:
     add  HL, DE                                        ;; 02:7056 $19
     ld   A, [HL]                                       ;; 02:7057 $7e
     ld   [wD589], A                                    ;; 02:7058 $ea $89 $d5
-    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 02:705b $21 $0f $d6
+    ld   HL, wD60F_HDMATransferFlags                                     ;; 02:705b $21 $0f $d6
     set  1, [HL]                                       ;; 02:705e $cb $ce
     ret                                                ;; 02:7060 $c9
 .data_02_7061:
@@ -697,7 +697,7 @@ call_02_7211:
     ret                                                ;; 02:722b $c9
 
 call_02_722c:
-    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 02:722c $21 $0f $d6
+    ld   HL, wD60F_HDMATransferFlags                                     ;; 02:722c $21 $0f $d6
     bit  3, [HL]                                       ;; 02:722f $cb $5e
     ret  NZ                                            ;; 02:7231 $c0
     ld   HL, wD71E                                     ;; 02:7232 $21 $1e $d7
@@ -730,7 +730,7 @@ call_02_722c:
     ld   [wD724], A                                    ;; 02:725f $ea $24 $d7
     ld   A, [HL+]                                      ;; 02:7262 $2a
     ld   [wD725], A                                    ;; 02:7263 $ea $25 $d7
-    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 02:7266 $21 $0f $d6
+    ld   HL, wD60F_HDMATransferFlags                                     ;; 02:7266 $21 $0f $d6
     set  3, [HL]                                       ;; 02:7269 $cb $de
     ret                                                ;; 02:726b $c9
 .data_02_726c:

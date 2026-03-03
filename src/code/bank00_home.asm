@@ -264,7 +264,7 @@ call_00_0150_Init:
     ld   [wD73C], A                                    ;; 00:0392 $ea $3c $d7
     ld   [wD6F9], A                                    ;; 00:0395 $ea $f9 $d6
     ld   [wD60E], A                                    ;; 00:0398 $ea $0e $d6
-    ld   [wD60F_BitmapOfThingsToLoad], A                                    ;; 00:039b $ea $0f $d6
+    ld   [wD60F_HDMATransferFlags], A                                    ;; 00:039b $ea $0f $d6
     ld   [wD77B], A                                    ;; 00:039e $ea $7b $d7
     ld   [wD77D], A                                    ;; 00:03a1 $ea $7d $d7
     ld   [wD72F], A                                    ;; 00:03a4 $ea $2f $d7
@@ -620,7 +620,7 @@ call_00_06b7:
     jp   call_00_0629
 
 call_00_06bf_DealDamageToPlayer: ; Deal damage to Gex
-    call call_00_075b                                  ;; 00:06bf $cd $5b $07
+    call call_00_075b_Player_CanBeDamaged                                  ;; 00:06bf $cd $5b $07
     ret  NZ                                            ;; 00:06c2 $c0
     ld   HL, wD742_PlayerCurrentFly                                     ;; 00:06c3 $21 $42 $d7
     ld   A, [HL]                                       ;; 00:06c6 $7e
@@ -705,7 +705,7 @@ call_00_074d:
     set  1, [HL]                                       ;; 00:0758 $cb $ce
     ret                                                ;; 00:075a $c9
 
-call_00_075b:
+call_00_075b_Player_CanBeDamaged:
     ld   A, [wD750]                                    ;; 00:075b $fa $50 $d7
     and  A, A                                          ;; 00:075e $a7
     ret  NZ                                            ;; 00:075f $c0
@@ -961,13 +961,13 @@ call_00_08b1:
     db   $00, $79, $00, $40, $00, $73                  ;; 00:08f6 ??????
 
 call_00_08fc_SetupEntityVRAMTransfer: ; this reads secondary tileset information from other banks and writes to a buffer that gets copied to vram
-    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:08fc $21 $0f $d6
+    ld   HL, wD60F_HDMATransferFlags                                     ;; 00:08fc $21 $0f $d6
     bit  7, [HL]                                       ;; 00:08ff $cb $7e
     jr   NZ, call_00_08fc_SetupEntityVRAMTransfer                              ;; 00:0901 $20 $f9
     ld   A, [HL]                                       ;; 00:0903 $7e
     and  A, A                                          ;; 00:0904 $a7
     ret  Z                                             ;; 00:0905 $c8
-    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:0906 $21 $0f $d6
+    ld   HL, wD60F_HDMATransferFlags                                     ;; 00:0906 $21 $0f $d6
     bit  0, [HL]                                       ;; 00:0909 $cb $46
     jr   NZ, .jr_00_091e                               ;; 00:090b $20 $11
     bit  1, [HL]                                       ;; 00:090d $cb $4e
@@ -1016,18 +1016,18 @@ call_00_08fc_SetupEntityVRAMTransfer: ; this reads secondary tileset information
     ld   DE, wD100_TilesToLoadBuffer                                     ;; 00:0961 $11 $00 $d1
     ld   B, $10                                        ;; 00:0964 $06 $10
     call call_00_0b6d                                  ;; 00:0966 $cd $6d $0b ; this reads secondary tileset information from other banks
-    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:0969 $21 $0f $d6
+    ld   HL, wD60F_HDMATransferFlags                                     ;; 00:0969 $21 $0f $d6
     set  7, [HL]                                       ;; 00:096c $cb $fe
     jp   call_00_10a3_RestoreBank                                  ;; 00:096e $c3 $a3 $10
 
 call_00_0971:
-    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:0971 $21 $0f $d6
+    ld   HL, wD60F_HDMATransferFlags                                     ;; 00:0971 $21 $0f $d6
     bit  0, [HL]                                       ;; 00:0974 $cb $46
     call NZ, call_00_098f                              ;; 00:0976 $c4 $8f $09
-    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:0979 $21 $0f $d6
+    ld   HL, wD60F_HDMATransferFlags                                     ;; 00:0979 $21 $0f $d6
     bit  1, [HL]                                       ;; 00:097c $cb $4e
     call NZ, call_00_09be                              ;; 00:097e $c4 $be $09
-    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:0981 $21 $0f $d6
+    ld   HL, wD60F_HDMATransferFlags                                     ;; 00:0981 $21 $0f $d6
     bit  2, [HL]                                       ;; 00:0984 $cb $56
     call NZ, call_00_09e3                              ;; 00:0986 $c4 $e3 $09
     call call_00_09fd                                  ;; 00:0989 $cd $fd $09
@@ -1105,7 +1105,7 @@ call_00_09fd:
 
 call_00_0a21:
     farcall call_02_722c
-    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:0a2c $21 $0f $d6
+    ld   HL, wD60F_HDMATransferFlags                                     ;; 00:0a2c $21 $0f $d6
     bit  3, [HL]                                       ;; 00:0a2f $cb $5e
     ret  Z                                             ;; 00:0a31 $c8
     res  3, [HL]                                       ;; 00:0a32 $cb $9e
@@ -1243,7 +1243,7 @@ call_00_0ac1:
     ld   A, [wD738]                                    ;; 00:0b32 $fa $38 $d7
     and  A, $01                                        ;; 00:0b35 $e6 $01
     jr   Z, .jr_00_0b48                                ;; 00:0b37 $28 $0f
-    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:0b39 $21 $0f $d6
+    ld   HL, wD60F_HDMATransferFlags                                     ;; 00:0b39 $21 $0f $d6
     bit  2, [HL]                                       ;; 00:0b3c $cb $56
     ret  NZ                                            ;; 00:0b3e $c0
     xor  A, A                                          ;; 00:0b3f $af
@@ -1389,7 +1389,7 @@ call_00_0bb9:
 ;    db   $fa, $83, $0d, $ea, $a0, $cc, $d1, $e1        ;; 00:0c07 ........
 ;    db   $f1, $d9                                      ;; 00:0c0f ..
 
-    ld   hl,wD60F_BitmapOfThingsToLoad
+    ld   hl,wD60F_HDMATransferFlags
     res  7,[hl]
     ld   a,[$0D83]
     ld   [wCCA0],a
@@ -1398,7 +1398,7 @@ call_00_0bb9:
     pop  af
     reti 
 
-    ld   HL, wD60F_BitmapOfThingsToLoad                ;; 00:0c11 $21 $0f $d6
+    ld   HL, wD60F_HDMATransferFlags                ;; 00:0c11 $21 $0f $d6
     bit  7, [HL]                                       ;; 00:0c14 $cb $7e
     ret  Z                                             ;; 00:0c16 $c8
     bit  0, [HL]                                       ;; 00:0c17 $cb $46
@@ -1426,7 +1426,7 @@ call_00_0bb9:
     and  A, $01                                        ;; 00:0c47 $e6 $01
     xor  A, $01                                        ;; 00:0c49 $ee $01
     ld   [wD586], A                                    ;; 00:0c4b $ea $86 $d5
-    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:0c4e $21 $0f $d6
+    ld   HL, wD60F_HDMATransferFlags                                     ;; 00:0c4e $21 $0f $d6
     res  0, [HL]                                       ;; 00:0c51 $cb $86
     ret                                                ;; 00:0c53 $c9
 .data_00_0c54:
@@ -1444,7 +1444,7 @@ call_00_0bb9:
     and  A, $01                                        ;; 00:0c6b $e6 $01
     xor  A, $01                                        ;; 00:0c6d $ee $01
     ld   [wD587], A                                    ;; 00:0c6f $ea $87 $d5
-    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:0c72 $21 $0f $d6
+    ld   HL, wD60F_HDMATransferFlags                                     ;; 00:0c72 $21 $0f $d6
     res  1, [HL]                                       ;; 00:0c75 $cb $8e
     ret                                                ;; 00:0c77 $c9
 .jp_00_0c78:
@@ -1462,7 +1462,7 @@ call_00_0bb9:
     ld   A, [wD72B]                                    ;; 00:0c92 $fa $2b $d7
     dec  A                                             ;; 00:0c95 $3d
     ld   [wCCA4], A                                    ;; 00:0c96 $ea $a4 $cc
-    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:0c99 $21 $0f $d6
+    ld   HL, wD60F_HDMATransferFlags                                     ;; 00:0c99 $21 $0f $d6
     res  2, [HL]                                       ;; 00:0c9c $cb $96
     ret                                                ;; 00:0c9e $c9
 .jr_00_0c9f:
@@ -1475,7 +1475,7 @@ call_00_0bb9:
     ld   A, [HL-]                                      ;; 00:0cab $3a
     or   A, [HL]                                       ;; 00:0cac $b6
     ret  NZ                                            ;; 00:0cad $c0
-    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:0cae $21 $0f $d6
+    ld   HL, wD60F_HDMATransferFlags                                     ;; 00:0cae $21 $0f $d6
     res  2, [HL]                                       ;; 00:0cb1 $cb $96
     ret                                                ;; 00:0cb3 $c9
 .jp_00_0cb4:
@@ -1493,7 +1493,7 @@ call_00_0bb9:
     ld   A, [wD724]                                    ;; 00:0cce $fa $24 $d7
     dec  A                                             ;; 00:0cd1 $3d
     ld   [wCCA4], A                                    ;; 00:0cd2 $ea $a4 $cc
-    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:0cd5 $21 $0f $d6
+    ld   HL, wD60F_HDMATransferFlags                                     ;; 00:0cd5 $21 $0f $d6
     res  3, [HL]                                       ;; 00:0cd8 $cb $9e
     ret                                                ;; 00:0cda $c9
 .jr_00_0cdb:
@@ -1506,7 +1506,7 @@ call_00_0bb9:
     ld   A, [HL-]                                      ;; 00:0ce7 $3a
     or   A, [HL]                                       ;; 00:0ce8 $b6
     ret  NZ                                            ;; 00:0ce9 $c0
-    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:0cea $21 $0f $d6
+    ld   HL, wD60F_HDMATransferFlags                                     ;; 00:0cea $21 $0f $d6
     res  3, [HL]                                       ;; 00:0ced $cb $9e
     ret                                                ;; 00:0cef $c9
 .jp_00_0cf0:
@@ -1518,7 +1518,7 @@ call_00_0bb9:
     ld   [HL], $ff                                     ;; 00:0cfc $36 $ff
     ld   A, $86                                        ;; 00:0cfe $3e $86
     ld   [wCCA7], A                                    ;; 00:0d00 $ea $a7 $cc
-    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:0d03 $21 $0f $d6
+    ld   HL, wD60F_HDMATransferFlags                                     ;; 00:0d03 $21 $0f $d6
     res  4, [HL]                                       ;; 00:0d06 $cb $a6
     ret                                                ;; 00:0d08 $c9
     db   $00, $ff, $00, $01, $00, $ff, $00, $01        ;; 00:0d09 ????????
@@ -1726,7 +1726,7 @@ call_00_0f01:
     xor  A, A                                          ;; 00:0f06 $af
     ld   [wD6F9], A                                    ;; 00:0f07 $ea $f9 $d6
     ld   [wD60E], A                                    ;; 00:0f0a $ea $0e $d6
-    ld   [wD60F_BitmapOfThingsToLoad], A                                    ;; 00:0f0d $ea $0f $d6
+    ld   [wD60F_HDMATransferFlags], A                                    ;; 00:0f0d $ea $0f $d6
     ld   [wD77B], A                                    ;; 00:0f10 $ea $7b $d7
     ld   [wD72F], A                                    ;; 00:0f13 $ea $2f $d7
     ld   [wD611_AnimatedTileId], A                                    ;; 00:0f16 $ea $11 $d6

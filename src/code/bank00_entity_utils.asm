@@ -1896,7 +1896,7 @@ call_00_3bf4:
     cp   A, $ff                                        ;; 00:3c14 $fe $ff
     ret  Z                                             ;; 00:3c16 $c8
     ld   [wD610], A                                    ;; 00:3c17 $ea $10 $d6
-    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:3c1a $21 $0f $d6
+    ld   HL, wD60F_HDMATransferFlags                                     ;; 00:3c1a $21 $0f $d6
     set  4, [HL]                                       ;; 00:3c1d $cb $e6
     ret                                                ;; 00:3c1f $c9
 .data_00_3c20:

@@ -27,47 +27,47 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ld   L, A                                          ;; 03:4c99 $6f
     jp   HL                                            ;; 03:4c9a $e9
 .data_03_4c9b_EntityCollisionJumpTable:               ;; 03:4c9b pP ; jump table
-    dw   .jr_03_4ce5_CollisionHandler_None
-    dw   .jr_03_4ce6                                 ;; 03:4c9d pP
-    dw   .jr_03_4d33                                      ;; 03:4c9f ??
-    dw   call_03_52c5                                  ;; 03:4ca1 pP
-    dw   call_03_536f                                  ;; 03:4ca3 pP
-    dw   call_03_5304                                      ;; 03:4ca5 ??
-    dw   .jr_03_4dbc                                 ;; 03:4ca7 pP
-    dw   .jr_03_4d3f
-    dw   .jr_03_4d56
-    dw   .jr_03_4d82
-    dw   .jr_03_4d8c        ;; 03:4ca9 ????????
-    dw   .jr_03_4d9a
-    dw   .jr_03_4dc8
-    dw   .jr_03_4dd4
-    dw   .jr_03_4df4        ;; 03:4cb1 ????????
-    dw   .jr_03_4e20                                 ;; 03:4cb9 pP
-    dw   .jr_03_4e7f                                      ;; 03:4cbb ??
-    dw   .jr_03_4eb4                                 ;; 03:4cbd pP
-    dw   .jr_03_4ec6
-    dw   .jr_03_4ec7
-    dw   .jr_03_4f14
-    dw   .jr_03_4f20        ;; 03:4cbf ????????
-    dw   .jr_03_4fc7
-    dw   .jr_03_4fcf
-    dw   .jr_03_4fd9                  ;; 03:4cc7 ??????
-    dw   .jr_03_5035
-    dw   .jr_03_5049
-    dw   .jr_03_505d
-    dw   .jr_03_50ac        ;; 03:4ccd ????????
-    dw   .jr_03_50c5
-    dw   .jr_03_50d6
-    dw   .jr_03_50e7
-    dw   .jr_03_5109        ;; 03:4cd5 ????????
-    dw   .jr_03_5129
-    dw   .jr_03_514e
-    dw   .jr_03_5163
-    dw   .jr_03_516d        ;; 03:4cdd ????????
+    dw   .jr_03_4ce5_CollisionHandler_None ; COLLISION_TYPE_NONE
+    dw   .jr_03_4ce6_CollisionHandler_Collectible ; COLLISION_TYPE_COLLECTIBLE
+    dw   .jr_03_4d33_CollisionHandler_UNK_02 ; COLLISION_TYPE_UNK_02
+    dw   call_03_52c5_CollisionHandler_StationaryPlatform ; COLLISION_TYPE_STATIONARY_PLATFORM
+    dw   call_03_536f_CollisionHandler_MovingPlatform ; COLLISION_TYPE_MOVING_PLATFORM
+    dw   call_03_5304_CollisionHandler_UNK_05 ; COLLISION_TYPE_UNK_05
+    dw   .jr_03_4dbc_CollisionHandler_GenericEnemy ; COLLISION_TYPE_GENERIC_ENEMY
+    dw   .jr_03_4d3f_CollisionHandler_SilverRemote ; COLLISION_TYPE_SILVER_REMOTE
+    dw   .jr_03_4d56_CollisionHandler_GoldRemote ; COLLISION_TYPE_GOLD_REMOTE
+    dw   .jr_03_4d82_CollisionHandler_UNK_09 ; COLLISION_TYPE_UNK_09
+    dw   .jr_03_4d8c_CollisionHandler_Lantern ; COLLISION_TYPE_LANTERN
+    dw   .jr_03_4d9a_CollisionHandler_Zombie ; COLLISION_TYPE_ZOMBIE
+    dw   .jr_03_4dc8_CollisionHandler_GhostHead ; COLLISION_TYPE_GHOST_HEAD
+    dw   .jr_03_4dd4_CollisionHandler_Ghost ; COLLISION_TYPE_GHOST
+    dw   .jr_03_4df4_CollisionHandler_ZombieHead ; COLLISION_TYPE_ZOMBIE_HEAD
+    dw   .jr_03_4e20_CollisionHandler_FallingObject ; COLLISION_TYPE_FALLING_OBJECT
+    dw   .jr_03_4e7f_CollisionHandler_Hunter ; COLLISION_TYPE_HUNTER
+    dw   .jr_03_4eb4_CollisionHandler_Mushroom ; COLLISION_TYPE_MUSHROOM
+    dw   .jr_03_4ec6_CollisionHandler_UNK_12 ; COLLISION_TYPE_UNK_12
+    dw   .jr_03_4ec7_CollisionHandler_Projectile ; COLLISION_TYPE_PROJECTILE
+    dw   .jr_03_4f14_CollisionHandler_Jar ; COLLISION_TYPE_JAR
+    dw   .jr_03_4f20_CollisionHandler_Ninja ; COLLISION_TYPE_NINJA
+    dw   .jr_03_4fc7_CollisionHandler_HangingBlade ; COLLISION_TYPE_HANGING_BLADE
+    dw   .jr_03_4fcf_CollisionHandler_UNK_17 ; COLLISION_TYPE_UNK_17
+    dw   .jr_03_4fd9_CollisionHandler_SamuraiBody ; COLLISION_TYPE_SAMURAI_BODY
+    dw   .jr_03_5035_CollisionHandler_UNK_19 ; COLLISION_TYPE_UNK_19
+    dw   .jr_03_5049_CollisionHandler_Geyser ; COLLISION_TYPE_GEYSER
+    dw   .jr_03_505d_CollisionHandler_Triceratops ; COLLISION_TYPE_TRICERATOPS
+    dw   .jr_03_50ac_CollisionHandler_Gear ; COLLISION_TYPE_GEAR
+    dw   .jr_03_50c5_CollisionHandler_ElectricBall ; COLLISION_TYPE_ELECTRIC_BALL
+    dw   .jr_03_50d6_CollisionHandler_UNK_1E ; COLLISION_TYPE_UNK_1E
+    dw   .jr_03_50e7_CollisionHandler_Rocket ; COLLISION_TYPE_ROCKET
+    dw   .jr_03_5109_CollisionHandler_Cannon ; COLLISION_TYPE_CANNON
+    dw   .jr_03_5129_CollisionHandler_PoweredWalkway ; COLLISION_TYPE_POWERED_WALKWAY
+    dw   .jr_03_514e_CollisionHandler_PowerUp ; COLLISION_TYPE_POWER_UP
+    dw   .jr_03_5163_CollisionHandler_DragonProjectile ; COLLISION_TYPE_DRAGON_PROJECTILE
+    dw   .jr_03_516d_CollisionHandler_Rez ; COLLISION_TYPE_REZ
 .jr_03_4ce5_CollisionHandler_None:
     ret        	;; 03:4ce5 $c9
-.jr_03_4ce6:
-    call call_03_519b                                  ;; 03:4ce6 $cd $9b $51
+.jr_03_4ce6_CollisionHandler_Collectible:
+    call call_03_519b_Entity_CheckPlayerInteraction                                  ;; 03:4ce6 $cd $9b $51
     ret  NC                                            ;; 03:4ce9 $d0
     ld   H, $d2                                        ;; 03:4cea $26 $d2
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:4cec $fa $00 $d3
@@ -120,14 +120,14 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     pop  BC                                            ;; 03:4d2e $c1
     pop  AF                                            ;; 03:4d2f $f1
     jp   call_00_06ec                                  ;; 03:4d30 $c3 $ec $06
-.jr_03_4d33:
-    call call_03_519b
+.jr_03_4d33_CollisionHandler_UNK_02:
+    call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     call call_00_3931
     ld   a,$04
     jp   call_00_0647
-.jr_03_4d3f:
-    call call_03_519b
+.jr_03_4d3f_CollisionHandler_SilverRemote:
+    call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     ld   a,[wD64C]
     or   a,$10
@@ -136,11 +136,11 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     call call_00_112f
     call call_00_3931
     jp   call_00_393c
-.jr_03_4d56:
+.jr_03_4d56_CollisionHandler_GoldRemote:
     ld   a,[wD621]
     and  a,$10
     ret  nz
-    call call_03_519b
+    call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     ld   hl,wD624_CurrentLevelId
     ld   l,[hl]
@@ -155,26 +155,26 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ld   a,$1E
     farcall call_02_4ccd
     ret  
-.jr_03_4d82:
-    call call_03_519b
+.jr_03_4d82_CollisionHandler_UNK_09:
+    call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     cp   a,$00
-    call z,call_03_52be
+    call z,call_03_52be_Entity_CheckForDamagePlayer
     ret  
-.jr_03_4d8c:
+.jr_03_4d8c_CollisionHandler_Lantern:
     ld   a,$01
     ld   [wD757],a
-    call call_03_519b
+    call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     xor  a
     ld   [wD757],a
     ret  
-.jr_03_4d9a:
-    call call_03_519b
+.jr_03_4d9a_CollisionHandler_Zombie:
+    call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     cp   a,$00
     jr   nz,.jr_03_4DA5
-    jp   call_03_52be
+    jp   call_03_52be_Entity_CheckForDamagePlayer
 .jr_03_4DA5:
     ld   h,$D2
     ld   a,[wD300_CurrentEntityAddrLo]
@@ -192,42 +192,42 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ret  z
     dec  [hl]
     ret  
-.jr_03_4dbc:
-    call call_03_519b                                  ;; 03:4dbc $cd $9b $51
+.jr_03_4dbc_CollisionHandler_GenericEnemy:
+    call call_03_519b_Entity_CheckPlayerInteraction                                  ;; 03:4dbc $cd $9b $51
     ret  NC                                            ;; 03:4dbf $d0
     cp   A, $00                                        ;; 03:4dc0 $fe $00
-    jp   Z, call_03_52be                               ;; 03:4dc2 $ca $be $52
+    jp   Z, call_03_52be_Entity_CheckForDamagePlayer                               ;; 03:4dc2 $ca $be $52
     jp   call_00_3985                                  ;; 03:4dc5 $c3 $85 $39
-.jr_03_4dc8:
-    call call_03_519b
+.jr_03_4dc8_CollisionHandler_GhostHead:
+    call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     cp   a,$00
-    call z,call_03_52be
+    call z,call_03_52be_Entity_CheckForDamagePlayer
     jp   call_00_3931
-.jr_03_4dd4:
-    call call_03_519b
+.jr_03_4dd4_CollisionHandler_Ghost:
+    call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     ld   hl,wD757
     inc  [hl]
     dec  [hl]
     jr   z,.jr_03_4DE5
     cp   a,$00
-    jp   z,call_03_52be
+    jp   z,call_03_52be_Entity_CheckForDamagePlayer
     ret  
 .jr_03_4DE5:
     cp   a,$01
-    jp   nz,call_03_52be
+    jp   nz,call_03_52be_Entity_CheckForDamagePlayer
     ld   h,$D2
     ld   a,[wD300_CurrentEntityAddrLo]
     or   l
     ld   l,a
     set  0,[hl]
     ret  
-.jr_03_4df4:
-    call call_03_519b
+.jr_03_4df4_CollisionHandler_ZombieHead:
+    call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     cp   a,$00
-    jp   z,call_03_52be
+    jp   z,call_03_52be_Entity_CheckForDamagePlayer
     ld   a,[wD300_CurrentEntityAddrLo]
     push af
     ld   h,$D2
@@ -249,7 +249,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     pop  af
     ld   [wD300_CurrentEntityAddrLo],a
     jp   call_00_3931
-.jr_03_4e20:
+.jr_03_4e20_CollisionHandler_FallingObject:
     ld   H, $d2                                        ;; 03:4e20 $26 $d2
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:4e22 $fa $00 $d3
     or   A, $1e                                        ;; 03:4e25 $f6 $1e
@@ -297,25 +297,25 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ld   A, L                                          ;; 03:4e61 $7d
     cp   A, $f4                                        ;; 03:4e62 $fe $f4
     ret  C                                             ;; 03:4e64 $d8
-    call call_00_075b                                  ;; 03:4e65 $cd $5b $07
+    call call_00_075b_Player_CanBeDamaged                                  ;; 03:4e65 $cd $5b $07
     ret  NZ                                            ;; 03:4e68 $c0
-    call call_03_52be                                  ;; 03:4e69 $cd $be $52
+    call call_03_52be_Entity_CheckForDamagePlayer                                  ;; 03:4e69 $cd $be $52
     ld   A, $77                                        ;; 03:4e6c $3e $77
     ld   [wD750], A                                    ;; 03:4e6e $ea $50 $d7
     ld   A, $19                                        ;; 03:4e71 $3e $19
     farcall call_02_4ccd
     ret                                                ;; 03:4e7e $c9
-.jr_03_4e7f:
+.jr_03_4e7f_CollisionHandler_Hunter:
     ld   h,$D2
     ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$17
     ld   l,a
     bit  0,[hl]
     ret  nz
-    call call_03_519b
+    call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     cp   a,$00
-    jp   z,call_03_52be
+    jp   z,call_03_52be_Entity_CheckForDamagePlayer
     call call_00_3817
     jr   z,.jr_03_4EA3
     ld   h,$D2
@@ -334,8 +334,8 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ld   hl,wD799
     ld   [hl],$02
     ret  
-.jr_03_4eb4:
-    call call_03_519b
+.jr_03_4eb4_CollisionHandler_Mushroom:
+    call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     cp   a,$00
     ret  z
@@ -345,9 +345,9 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ld   l,a
     set  0,[hl]
     ret  
-.jr_03_4ec6:
+.jr_03_4ec6_CollisionHandler_UNK_12:
     ret  
-.jr_03_4ec7:
+.jr_03_4ec7_CollisionHandler_Projectile:
     ld   h,$D2
     ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$12
@@ -401,15 +401,15 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     pop  hl
     pop  bc
     pop  af
-    jp   call_03_52be
-.jr_03_4f14:
-    call call_03_519b
+    jp   call_03_52be_Entity_CheckForDamagePlayer
+.jr_03_4f14_CollisionHandler_Jar:
+    call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     cp   a,$01
     ret  nz
     ld   c,$01
     jp   call_00_3802
-.jr_03_4f20:
+.jr_03_4f20_CollisionHandler_Ninja:
     push de
     ld   h,$D2
     ld   a,[wD300_CurrentEntityAddrLo]
@@ -458,13 +458,13 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     cp   a,$0C
     jr   nc,.jr_03_4F6F
     pop  de
-    jp   call_03_52be
+    jp   call_03_52be_Entity_CheckForDamagePlayer
 .jr_03_4F6F:
     pop  de
-    call call_03_519b
+    call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     cp   a,$00
-    jp   z,call_03_52be
+    jp   z,call_03_52be_Entity_CheckForDamagePlayer
     ld   h,$D2
     ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$19
@@ -512,18 +512,18 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
 .data_03_4fbd:
     db   $0d, $07, $08, $05, $05, $00, $05, $06
     db   $08, $ff
-.jr_03_4fc7:
+.jr_03_4fc7_CollisionHandler_HangingBlade:
     push de
-    call .jr_03_4e20
+    call .jr_03_4e20_CollisionHandler_FallingObject
     pop  de
-    jp   .jr_03_4d82
-.jr_03_4fcf:
-    call call_03_519b
+    jp   .jr_03_4d82_CollisionHandler_UNK_09
+.jr_03_4fcf_CollisionHandler_UNK_17:
+    call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     ld   a,$7F
     ld   [wD758],a
     ret  
-.jr_03_4fd9:
+.jr_03_4fd9_CollisionHandler_SamuraiBody:
     push de
     ld   h,$D2
     ld   a,[wD300_CurrentEntityAddrLo]
@@ -567,31 +567,31 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     cp   a,$08
     jr   nc,.jr_03_5020
     pop  de
-    jp   call_03_52be
+    jp   call_03_52be_Entity_CheckForDamagePlayer
 .jr_03_5020:
     pop  de
-    call call_03_519b
+    call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     cp   a,$00
-    jp   z,call_03_52be
+    jp   z,call_03_52be_Entity_CheckForDamagePlayer
     ld   h,$D2
     ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$17
     ld   l,a
     set  0,[hl]
     ret  
-.jr_03_5035:
-    call call_03_519b
+.jr_03_5035_CollisionHandler_UNK_19:
+    call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     cp   a,$00
-    jp   z,call_03_52be
+    jp   z,call_03_52be_Entity_CheckForDamagePlayer
     ld   h,$D2
     ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$17
     ld   l,a
     set  0,[hl]
     ret  
-.jr_03_5049:
+.jr_03_5049_CollisionHandler_Geyser:
     ld   h,$D2
     ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$01
@@ -603,7 +603,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ld   a,$50
     ld   [wD758],a
     ret  
-.jr_03_505d:
+.jr_03_505d_CollisionHandler_Triceratops:
     push de
     ld   h,$D2
     ld   a,[wD300_CurrentEntityAddrLo]
@@ -632,13 +632,13 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     cp   a,$0C
     jr   nc,.jr_03_508E
     pop  de
-    jp   call_03_52be
+    jp   call_03_52be_Entity_CheckForDamagePlayer
 .jr_03_508E:
     pop  de
-    call call_03_519b
+    call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     cp   a,$00
-    jp   z,call_03_52be
+    jp   z,call_03_52be_Entity_CheckForDamagePlayer
     ld   h,$D2
     ld   a,$20
 .jr_03_509C:
@@ -652,8 +652,8 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     add  a,$20
     jr   nz,.jr_03_509C
     jp   call_00_3985
-.jr_03_50ac:
-    call call_03_519b
+.jr_03_50ac_CollisionHandler_Gear:
+    call call_03_519b_Entity_CheckPlayerInteraction
     push af
     ld   h,$D2
     ld   a,[wD300_CurrentEntityAddrLo]
@@ -668,7 +668,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
 .jr_03_50C2:
     res  0,[hl]
     ret  
-.jr_03_50c5:
+.jr_03_50c5_CollisionHandler_ElectricBall:
     ld   h,$D2
     ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$01
@@ -676,23 +676,23 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ld   a,[hl]
     and  a,$1F
     cp   a,$00
-    jp   nz,.jr_03_4d82
+    jp   nz,.jr_03_4d82_CollisionHandler_UNK_09
     ret  
-.jr_03_50d6:
-    call call_03_519b
+.jr_03_50d6_CollisionHandler_UNK_1E:
+    call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     ld   h,$D2
     ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$17
     ld   l,a
     set  7,[hl]
-    jp   call_03_52be
-.jr_03_50e7:
+    jp   call_03_52be_Entity_CheckForDamagePlayer
+.jr_03_50e7_CollisionHandler_Rocket:
     ld   hl,wD755
     ldi  a,[hl]
     or   [hl]
     ret  z
-    call call_03_519b
+    call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     ld   h,$D2
     ld   a,[wD300_CurrentEntityAddrLo]
@@ -702,7 +702,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ld   a,$1F
     farcall call_02_4ccd
     ret  
-.jr_03_5109:
+.jr_03_5109_CollisionHandler_Cannon:
     ld   h,$D2
     ld   a,$20
 .jr_03_510D:
@@ -713,7 +713,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ld   a,l
     add  a,$20
     jr   nz,.jr_03_510D
-    call call_03_519b
+    call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     cp   a,$02
     ret  nz
@@ -723,8 +723,8 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ld   l,a
     set  7,[hl]
     ret  
-.jr_03_5129:
-    call call_03_519b
+.jr_03_5129_CollisionHandler_PoweredWalkway:
+    call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     ld   hl,wD751
     ldi  a,[hl]
@@ -746,8 +746,8 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ld   c,$2B
     call call_00_112f
     ret  
-.jr_03_514e:
-    call call_03_519b
+.jr_03_514e_CollisionHandler_PowerUp:
+    call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     ld   h,$D2
     ld   a,[wD300_CurrentEntityAddrLo]
@@ -758,12 +758,12 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ld   a,[hl]
     ld   [wD752],a
     ret  
-.jr_03_5163:
-    call call_03_519b
+.jr_03_5163_CollisionHandler_DragonProjectile:
+    call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
-    call call_03_52be
+    call call_03_52be_Entity_CheckForDamagePlayer
     jp   call_00_3910
-.jr_03_516d:
+.jr_03_516d_CollisionHandler_Rez:
     ld   h,$D2
     ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$01
@@ -773,10 +773,10 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     cp   a,$04
     ret  z
     jr   nc,.jr_03_5194
-    call call_03_519b
+    call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     cp   a,$00
-    jp   z,call_03_52be
+    jp   z,call_03_52be_Entity_CheckForDamagePlayer
     ld   a,$04
     farcall call_02_7102_SetEntityAction
     ret  
@@ -787,7 +787,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ret  z
     ret  
 
-call_03_519b:
+call_03_519b_Entity_CheckPlayerInteraction:
     ld   H, $d2                                        ;; 03:519b $26 $d2
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:519d $fa $00 $d3
     or   A, $00                                        ;; 03:51a0 $f6 $00
@@ -908,11 +908,11 @@ call_03_519b:
     db   PLAYER_CAN_TOUCH_ENTITY | PLAYER_CAN_ATTACK_ENTITY ; ENTITY_SCREAM_TV_CLIMB_WALL_SUN_ENEMY
     db   $00 ; ENTITY_SCREAM_TV_VANISHING_PLATFORM
     db   $00 ; ENTITY_SCREAM_TV_MONA_LISA_ELEVATOR
-    db   PLAYER_CAN_TOUCH_ENTITY ; ENTITY_TOON_TV_HARD_HEAD_AREA_ENTITY
+    db   PLAYER_CAN_TOUCH_ENTITY ; ENTITY_TOON_TV_HARD_HEAD_AREA_OBJECT
     db   PLAYER_CAN_TOUCH_ENTITY ; ENTITY_TOON_TV_STATIONARY_BEAR_TRAP
     db   PLAYER_CAN_TOUCH_ENTITY ; ENTITY_TOON_TV_MOVING_BEAR_TRAP
     db   PLAYER_CAN_TOUCH_ENTITY | PLAYER_CAN_ATTACK_ENTITY | PLAYER_CAN_STOMP_ENTITY ; ENTITY_TOON_TV_BUMBLEBEE
-    db   PLAYER_CAN_TOUCH_ENTITY ; ENTITY_TOON_TV_FALLING_BOWLING_BALL
+    db   PLAYER_CAN_TOUCH_ENTITY ; ENTITY_TOON_TV_BOWLING_BALL
     db   PLAYER_CAN_TOUCH_ENTITY | PLAYER_CAN_STOMP_ENTITY ; ENTITY_TOON_TV_CACTUS
     db   PLAYER_CAN_TOUCH_ENTITY ; ENTITY_TOON_TV_DOMINO
     db   PLAYER_CAN_TOUCH_ENTITY | PLAYER_CAN_ATTACK_ENTITY | PLAYER_CAN_STOMP_ENTITY ; ENTITY_TOON_TV_SHARK
@@ -924,9 +924,9 @@ call_03_519b:
     db   PLAYER_CAN_TOUCH_ENTITY | PLAYER_CAN_ATTACK_ENTITY | PLAYER_CAN_STOMP_ENTITY ; ENTITY_TOON_TV_HAPPY_FACE
     db   $00 ; ENTITY_TOON_TV_VANISHING_BLOCK
     db   $00 ; ENTITY_TOON_TV_MOVING_BLOCK
-    db   $00 ; ENTITY_TOON_TV_MOVING_LOG_PLATFORM
-    db   $00 ; ENTITY_TOON_TV_STATIONARY_LOG_PLATFORM
-    db   PLAYER_CAN_TOUCH_ENTITY ; ENTITY_TOON_TV_FLOWER_HAMMER_ATTACK
+    db   $00 ; ENTITY_TOON_TV_MOVING_LOG
+    db   $00 ; ENTITY_TOON_TV_STATIONARY_LOG
+    db   PLAYER_CAN_TOUCH_ENTITY ; ENTITY_TOON_TV_FLOWER_HAMMER
     db   PLAYER_CAN_TOUCH_ENTITY ; ENTITY_TOON_TV_HUNTER_BULLET
     db   PLAYER_CAN_TOUCH_ENTITY ; ENTITY_TOON_TV_ROCKET
     db   PLAYER_CAN_TOUCH_ENTITY | PLAYER_CAN_ATTACK_ENTITY | PLAYER_CAN_STOMP_ENTITY ; ENTITY_PRE_HISTORY_FAST_DINOSAUR
@@ -1024,12 +1024,12 @@ call_03_519b:
     db   $00 ; ENTITY_UNK_8E
     db   $00 ; ENTITY_MEDIA_DIMENSION_MOVING_PLATFORM
 
-call_03_52be:
-    call call_00_075b                                  ;; 03:52be $cd $5b $07
+call_03_52be_Entity_CheckForDamagePlayer:
+    call call_00_075b_Player_CanBeDamaged                                  ;; 03:52be $cd $5b $07
     call Z, call_00_06bf_DealDamageToPlayer                               ;; 03:52c1 $cc $bf $06
     ret                                                ;; 03:52c4 $c9
 
-call_03_52c5:
+call_03_52c5_CollisionHandler_StationaryPlatform:
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:52c5 $fa $00 $d3
     or   A, $13                                        ;; 03:52c8 $f6 $13
     ld   L, A                                          ;; 03:52ca $6f
@@ -1037,7 +1037,7 @@ call_03_52c5:
     ld   A, [wD213_PlayerScreenYPosition]                                    ;; 03:52cd $fa $13 $d2
     add  A, $0f                                        ;; 03:52d0 $c6 $0f
     cp   A, [HL]                                       ;; 03:52d2 $be
-    jr   C, call_03_5314                                ;; 03:52d3 $38 $3f
+    jr   C, call_03_5314_StationaryPlatformCollisionHelper2                                ;; 03:52d3 $38 $3f
     sub  A, $1f                                        ;; 03:52d5 $d6 $1f
     ld   C, A                                          ;; 03:52d7 $4f
     ld   A, [HL]                                       ;; 03:52d8 $7e
@@ -1056,20 +1056,20 @@ call_03_52c5:
     jr   C, jr_03_534d                                ;; 03:52eb $38 $60
     ld   HL, wD75D_PlayerXSpeedPrev                                     ;; 03:52ed $21 $5d $d7
     cp   A, [HL]                                       ;; 03:52f0 $be
-    jr   C, call_03_5360                                ;; 03:52f1 $38 $6d
+    jr   C, call_03_5360_StationaryPlatformCollisionHelper                                ;; 03:52f1 $38 $6d
     or   A, [HL]                                       ;; 03:52f3 $b6
-    jr   Z, call_03_5360                                ;; 03:52f4 $28 $6a
+    jr   Z, call_03_5360_StationaryPlatformCollisionHelper                                ;; 03:52f4 $28 $6a
     jr   jr_03_534d                                   ;; 03:52f6 $18 $55
 .jr_03_52f8:
     cpl                                                ;; 03:52f8 $2f
     ld   HL, wD75D_PlayerXSpeedPrev                                     ;; 03:52f9 $21 $5d $d7
     cp   A, [HL]                                       ;; 03:52fc $be
-    jr   C, call_03_5360                                ;; 03:52fd $38 $61
+    jr   C, call_03_5360_StationaryPlatformCollisionHelper                                ;; 03:52fd $38 $61
     or   A, [HL]                                       ;; 03:52ff $b6
-    jr   Z, call_03_5360                                ;; 03:5300 $28 $5e
+    jr   Z, call_03_5360_StationaryPlatformCollisionHelper                                ;; 03:5300 $28 $5e
     jr   jr_03_534d                                   ;; 03:5302 $18 $49
 
-call_03_5304:
+call_03_5304_CollisionHandler_UNK_05:
     ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$13
     ld   l,a
@@ -1079,7 +1079,7 @@ call_03_5304:
     cp   [hl]
     jr   nc,jr_03_534d
 
-call_03_5314:
+call_03_5314_StationaryPlatformCollisionHelper2:
     ld   C, A                                          ;; 03:5314 $4f
     dec  L                                             ;; 03:5315 $2d
     ld   A, [wD212_PlayerScreenXPosition]                                    ;; 03:5316 $fa $12 $d2
@@ -1127,7 +1127,7 @@ jr_03_534d:
     ld   [HL], $00                                     ;; 03:535d $36 $00
     ret                                                ;; 03:535f $c9
 
-call_03_5360:
+call_03_5360_StationaryPlatformCollisionHelper:
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:5360 $fa $00 $d3
     ld   HL, wD74D                                     ;; 03:5363 $21 $4d $d7
     cp   A, [HL]                                       ;; 03:5366 $be
@@ -1137,7 +1137,7 @@ call_03_5360:
     ld   [wD74E], A                                    ;; 03:536b $ea $4e $d7
     ret                                                ;; 03:536e $c9
 
-call_03_536f:
+call_03_536f_CollisionHandler_MovingPlatform:
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:536f $fa $00 $d3
     or   A, $13                                        ;; 03:5372 $f6 $13
     ld   L, A                                          ;; 03:5374 $6f
@@ -1163,7 +1163,7 @@ call_03_536f:
     sub  A, E                                          ;; 03:5394 $93
     jr   C, .jr_03_5405                                ;; 03:5395 $38 $6e
     ld   C, A                                          ;; 03:5397 $4f
-    call call_03_5427                                  ;; 03:5398 $cd $27 $54
+    call call_03_5427_MovingPlatformCollisionHelper                                  ;; 03:5398 $cd $27 $54
     ld   A, C                                          ;; 03:539b $79
     sub  A, B                                          ;; 03:539c $90
     add  A, E                                          ;; 03:539d $83
@@ -1176,7 +1176,7 @@ call_03_536f:
 .jr_03_53a8:
     cpl                                                ;; 03:53a8 $2f
     ld   C, A                                          ;; 03:53a9 $4f
-    call call_03_5427                                  ;; 03:53aa $cd $27 $54
+    call call_03_5427_MovingPlatformCollisionHelper                                  ;; 03:53aa $cd $27 $54
     ld   A, C                                          ;; 03:53ad $79
     add  A, B                                          ;; 03:53ae $80
     sub  A, E                                          ;; 03:53af $93
@@ -1255,7 +1255,7 @@ call_03_536f:
     ld   [wD74F], A                                    ;; 03:5423 $ea $4f $d7
     ret                                                ;; 03:5426 $c9
 
-call_03_5427:
+call_03_5427_MovingPlatformCollisionHelper:
     ld   A, L                                          ;; 03:5427 $7d
     xor  A, $0e                                        ;; 03:5428 $ee $0e
     ld   L, A                                          ;; 03:542a $6f

@@ -1,363 +1,363 @@
-; Entity Action jump tables
-data_02_4ddb:                        ;; Entity_CollectibleSpawn
-    dw   call_02_51b7, data_02_7cce
-data_02_4ddf:                        ;; Entity_TVButton
-    dw   call_02_51ea, data_02_7945
-    dw   call_02_5252, data_02_794b
-data_02_4de7:                        ;; Entity_RedRemote
-    dw   call_02_5253, data_02_7690
-    dw   call_02_526a, data_02_769d
-data_02_4def:                        ;; Entity_SilverRemote
-    dw   call_02_5284, data_02_769d
-    dw   call_02_528d, data_02_769d
-data_02_4df7:                        ;; Entity_GoldRemote
-    dw   call_02_528e, data_02_76a8
-    dw   call_02_5297, data_02_769d
-data_02_4dff:                        ;; Entity_unk_02
-    dw   call_02_52aa, data_02_768a
-data_02_4e03:                        ;; Entity_EnemyDefeated
-    dw   call_02_52ab, data_02_7cd4
-data_02_4e07:                        ;; Entity_unk_08
-    dw   call_02_52e7, data_02_76b5
-data_02_4e0b:                        ;; Entity_ScreamTV_FallingPlatform
-    dw   call_02_52e8, data_02_7963
-data_02_4e0f:                        ;; Entity_ScreamTV_MovingPlatform
-    dw   call_02_5348, data_02_7969
-data_02_4e13:                        ;; Entity_ScreamTV_PushBlock
-    dw   call_02_5373, data_02_796f
-data_02_4e17:                        ;; Entity_ScreamTV_Pumpkin
-    dw   call_02_538b, data_02_76b5
-    dw   call_02_5399, data_02_76bf
-data_02_4e1f:                        ;; Entity_ScreamTV_Frankie
-    dw   call_02_53aa, data_02_76c7
-data_02_4e23:                        ;; Entity_ScreamTV_HeadGhost
-    dw   call_02_53ad, data_02_7920
-    dw   call_02_53d9, data_02_792d
-data_02_4e2b:                        ;; Entity_ScreamTV_HeadGhostHead
-    dw   call_02_53e2, data_02_7933
-data_02_4e2f:                        ;; Entity_ScreamTV_FloatingSkull
-    dw   call_02_5434, data_02_76d0
-    dw   call_02_5440, data_02_76d9
-    dw   call_02_545b, data_02_76df
-data_02_4e3b:                        ;; Entity_ScreamTV_FloatingSkullProjectile
-    dw   call_02_5464, data_02_7b0f
-    dw   call_02_546e, data_02_7ce6
-data_02_4e43:                        ;; Entity_ScreamTV_Zombie
-    dw   call_02_5480, data_02_76e5
-    dw   call_02_5480, data_02_76ee
-    dw   call_02_54b4, data_02_76f7
-data_02_4e4f:                        ;; Entity_ScreamTV_ZombieHead
-    dw   call_02_54c6, data_02_768a
-    dw   call_02_54df, data_02_768a
-    dw   call_02_54fc, data_02_768a
-data_02_4e5b:                        ;; Entity_ScreamTV_FallingAxe
-    dw   call_02_54ff, data_02_7939
-    dw   call_02_5513, data_02_7939
-    dw   call_02_552c, data_02_793f
-    dw   call_02_5535, data_02_7939
-data_02_4e6b:                        ;; Entity_ScreamTV_Lantern
-    dw   call_02_5544, data_02_7951
-    dw   call_02_5551, data_02_7957
-data_02_4e73:                        ;; Entity_ScreamTV_Bat
-    dw   call_02_557c, data_02_76fd
-data_02_4e77:                        ;; Entity_ScreamTV_OrangeMovingPlatform
-    dw   call_02_5589, data_02_7975
-data_02_4e7b:                        ;; Entity_ScreamTV_DoorOpening
-    dw   call_02_559b, data_02_7706
-    dw   call_02_559c, data_02_770f
-data_02_4e83:                        ;; Entity_ScreamTV_Ghost
-    dw   call_02_55a3, data_02_7718
-    dw   call_02_55e8, data_02_7722
-    dw   call_02_55f1, data_02_772c
-    dw   call_02_5612, data_02_7733
-data_02_4e93:                        ;; Entity_ScreamTV_ClimbWallSunEnemy
-    dw   call_02_5628, data_02_795d
-data_02_4e97:                        ;; Entity_ScreamTV_VanishingPlatform
-    dw   call_02_563a, data_02_797b
-    dw   call_02_5652, data_02_797b
-    dw   call_02_56a1, data_02_7981
-data_02_4ea3:                        ;; Entity_ScreamTV_MonaLisaElevator
-    dw   call_02_56af, data_02_7987
-data_02_4ea7:                        ;; Entity_ToonTV_HardHeadAreaEntity
-    dw   call_02_56dc, data_02_798d
-    dw   call_02_576e, data_02_7993
-    dw   call_02_576e, data_02_7999
-data_02_4eb3:                        ;; Entity_ToonTV_StationaryBearTrap
-    dw   call_02_57f3, data_02_79a6
-    dw   call_02_5803, data_02_79ac
-data_02_4ebb:                        ;; Entity_ToonTV_MovingBearTrap
-    dw   call_02_5812, data_02_79b3
-    dw   call_02_5830, data_02_79b9
-data_02_4ec3:                        ;; Entity_ToonTV_Bumblebee
-    dw   call_02_5843, data_02_799f
-    dw   call_02_585e, data_02_799f
-data_02_4ecb:                        ;; Entity_ToonTV_FallingBowlingBall
-    dw   call_02_5871, data_02_79c5
-data_02_4ecf:                        ;; Entity_ToonTV_Cactus
-    dw   call_02_58d3, data_02_79d6
-    dw   call_02_58e8, data_02_79dc
-    dw   call_02_58fa, data_02_79e3
-data_02_4edb:                        ;; Entity_ToonTV_Domino
-    dw   call_02_590b, data_02_79e9
-data_02_4edf:                        ;; Entity_ToonTV_Shark
-    dw   call_02_591c, data_02_79ef
-data_02_4ee3:                        ;; Entity_ToonTV_Flower
-    dw   call_02_592d, data_02_79f6
-    dw   call_02_592d, data_02_79fc
-    dw   call_02_592d, data_02_7a02
-data_02_4eef:                        ;; Entity_ToonTV_Hunter
-    dw   call_02_5993, data_02_774c
-    dw   call_02_59c8, data_02_7759
-    dw   call_02_59d2, data_02_7768
-    dw   call_02_59db, data_02_777c
-    dw   call_02_59e4, data_02_7784
-    dw   call_02_59ed, data_02_778a
-data_02_4f07:                        ;; Entity_ToonTV_Mushroom
-    dw   call_02_5a28, data_02_7a1b
-data_02_4f0b:                        ;; Entity_unk_28
-    dw   call_02_5a73, data_02_7a21
-data_02_4f0f:                        ;; Entity_ToonTV_Lizard
-    dw   call_02_5a7d, data_02_7a3a
-data_02_4f13:                        ;; Entity_ToonTV_HappyFace
-    dw   call_02_5a8c, data_02_773a
-    dw   call_02_5a9a, data_02_7744
-data_02_4f1b:                        ;; Entity_ToonTV_VanishingBlock
-    dw   call_02_5aab, data_02_7a45
-    dw   call_02_5aea, data_02_7a45
-    dw   call_02_5b39, data_02_7a4b
-data_02_4f27:                        ;; Entity_ToonTV_MovingBlock
-    dw   call_02_5b47, data_02_7a51
-    dw   call_02_5b9d, data_02_7a51
-data_02_4f2f:                        ;; Entity_ToonTV_MovingLogPlatform
-    dw   call_02_5bb6, data_02_7a2e
-data_02_4f33:                        ;; Entity_ToonTV_StationaryLogPlatform
-    dw   call_02_5be1, data_02_7a34
-data_02_4f37:                        ;; Entity_ToonTV_FlowerHammerAttack
-    dw   call_02_596c, data_02_7a08
-    dw   call_02_597a, data_02_7a0e
-    dw   call_02_598c, data_02_7a15
-data_02_4f43:                        ;; Entity_ToonTV_HunterBullet
-    dw   call_02_5a10, data_02_79d0
-    dw   call_02_5a1f, data_02_79d0
-data_02_4f4b:                        ;; Entity_ToonTV_Rocket
-    dw   call_02_5be2, data_02_7c7b
-    dw   call_02_5bf7, data_02_7c81
-    dw   call_02_5c00, data_02_7c9a
-data_02_4f57:                        ;; Entity_PreHistory_FastDinosaur
+; Entity Action Pointer table
+data_02_4ddb:                        ;; ENTITY_COLLECTIBLE_SPAWN
+    dw   call_02_51b7_EntityAction_CollectibleSpawn_Update, data_02_7cce
+data_02_4ddf:                        ;; ENTITY_TV_BUTTON
+    dw   call_02_51ea_EntityAction_TVButton_unk0, data_02_7945
+    dw   call_02_5252_EntityAction_TVButton_unk1, data_02_794b
+data_02_4de7:                        ;; ENTITY_RED_REMOTE
+    dw   call_02_5253_EntityAction_RedRemote_unk0, data_02_7690
+    dw   call_02_526a_EntityAction_RedRemote_unk1, data_02_769d
+data_02_4def:                        ;; ENTITY_SILVER_REMOTE
+    dw   call_02_5284_EntityAction_SilverRemote_unk0, data_02_769d
+    dw   call_02_528d_EntityAction_SilverRemote_unk1, data_02_769d
+data_02_4df7:                        ;; ENTITY_GOLD_REMOTE
+    dw   call_02_528e_EntityAction_GoldRemote_unk0, data_02_76a8
+    dw   call_02_5297_EntityAction_GoldRemote_unk1, data_02_769d
+data_02_4dff:                        ;; ENTITY_UNK_02
+    dw   call_02_52aa_EntityAction_Unk02_Update, data_02_768a
+data_02_4e03:                        ;; ENTITY_PARTICLE_BURST
+    dw   call_02_52ab_EntityAction_ParticleBurst_Update, data_02_7cd4
+data_02_4e07:                        ;; ENTITY_UNK_08
+    dw   call_02_52e7_EntityAction_Unk08_Update, data_02_76b5
+data_02_4e0b:                        ;; ENTITY_SCREAM_TV_FALLING_PLATFORM
+    dw   call_02_52e8_EntityAction_ScreamTVFallingPlatform_Update, data_02_7963
+data_02_4e0f:                        ;; ENTITY_SCREAM_TV_MOVING_PLATFORM
+    dw   call_02_5348_EntityAction_ScreamTVMovingPlatform_Update, data_02_7969
+data_02_4e13:                        ;; ENTITY_SCREAM_TV_PUSH_BLOCK
+    dw   call_02_5373_EntityAction_ScreamTVPushBlock_Update, data_02_796f
+data_02_4e17:                        ;; ENTITY_SCREAM_TV_PUMPKIN
+    dw   call_02_5373_EntityAction_Pumpkin_unk0, data_02_76b5
+    dw   call_02_5399_EntityAction_Pumpkin_unk1, data_02_76bf
+data_02_4e1f:                        ;; ENTITY_SCREAM_TV_FRANKIE
+    dw   call_02_53aa_EntityAction_Frankie_Update, data_02_76c7
+data_02_4e23:                        ;; ENTITY_SCREAM_TV_HEAD_GHOST
+    dw   call_02_53ad_EntityAction_HeadGhost_unk0, data_02_7920
+    dw   call_02_53d9_EntityAction_HeadGhost_unk1, data_02_792d
+data_02_4e2b:                        ;; ENTITY_SCREAM_TV_HEAD_GHOST_HEAD
+    dw   call_02_53e2_EntityAction_GhostHead_Update, data_02_7933
+data_02_4e2f:                        ;; ENTITY_SCREAM_TV_FLOATING_SKULL
+    dw   call_02_5434_EntityAction_FloatingSkull_unk0, data_02_76d0
+    dw   call_02_5440_EntityAction_FloatingSkull_unk1, data_02_76d9
+    dw   call_02_545b_EntityAction_FloatingSkull_unk2, data_02_76df
+data_02_4e3b:                        ;; ENTITY_SCREAM_TV_FLOATING_SKULL_PROJECTILE
+    dw   call_02_5464_EntityAction_FloatingSkullProjectile_unk0, data_02_7b0f
+    dw   call_02_546e_EntityAction_FloatingSkullProjectile_unk1, data_02_7ce6
+data_02_4e43:                        ;; ENTITY_SCREAM_TV_ZOMBIE
+    dw   call_02_5480_EntityAction_Zombie_unk0, data_02_76e5
+    dw   call_02_5480_EntityAction_Zombie_unk0, data_02_76ee
+    dw   call_02_54b4_EntityAction_Zombie_unk2, data_02_76f7
+data_02_4e4f:                        ;; ENTITY_SCREAM_TV_ZOMBIE_HEAD
+    dw   call_02_54c6_EntityAction_ZombieHead_unk0, data_02_768a
+    dw   call_02_54df_EntityAction_ZombieHead_unk1, data_02_768a
+    dw   call_02_54fc_EntityAction_ZombieHead_unk2, data_02_768a
+data_02_4e5b:                        ;; ENTITY_SCREAM_TV_FALLING_AXE
+    dw   call_02_54ff_EntityAction_FallingAxe_unk0, data_02_7939
+    dw   call_02_5513_EntityAction_FallingAxe_unk1, data_02_7939
+    dw   call_02_552c_EntityAction_FallingAxe_unk2, data_02_793f
+    dw   call_02_5535_EntityAction_FallingAxe_unk3, data_02_7939
+data_02_4e6b:                        ;; ENTITY_SCREAM_TV_LANTERN
+    dw   call_02_5544_EntityAction_Lantern_unk0, data_02_7951
+    dw   call_02_5551_EntityAction_Lantern_unk1, data_02_7957
+data_02_4e73:                        ;; ENTITY_SCREAM_TV_BAT
+    dw   call_02_557c_EntityAction_Bat_Update, data_02_76fd
+data_02_4e77:                        ;; ENTITY_SCREAM_TV_ORANGE_MOVING_PLATFORM
+    dw   call_02_5589_EntityAction_ScreamTVOrangeMovingPlatform_Update, data_02_7975
+data_02_4e7b:                        ;; ENTITY_SCREAM_TV_DOOR_OPENING
+    dw   call_02_559b_EntityAction_ScreamTVDoorOpening_unk0, data_02_7706
+    dw   call_02_559c_EntityAction_ScreamTVDoorOpening_unk1, data_02_770f
+data_02_4e83:                        ;; ENTITY_SCREAM_TV_GHOST
+    dw   call_02_55a3_EntityAction_Ghost_unk0, data_02_7718
+    dw   call_02_55e8_EntityAction_Ghost_unk1, data_02_7722
+    dw   call_02_55f1_EntityAction_Ghost_unk2, data_02_772c
+    dw   call_02_5612_EntityAction_Ghost_unk3, data_02_7733
+data_02_4e93:                        ;; ENTITY_SCREAM_TV_CLIMB_WALL_SUN_ENEMY
+    dw   call_02_5628_EntityAction_ClimbWallSunEnemy_Update, data_02_795d
+data_02_4e97:                        ;; ENTITY_SCREAM_TV_VANISHING_PLATFORM
+    dw   call_02_563a_EntityAction_ScreamTVVanishingPlatform_unk0, data_02_797b
+    dw   call_02_5652_EntityAction_ScreamTVVanishingPlatform_unk1, data_02_797b
+    dw   call_02_56a1_EntityAction_ScreamTVVanishingPlatform_unk2, data_02_7981
+data_02_4ea3:                        ;; ENTITY_SCREAM_TV_MONA_LISA_ELEVATOR
+    dw   call_02_56af_EntityAction_MonaLisaElevator_Update, data_02_7987
+data_02_4ea7:                        ;; ENTITY_TOON_TV_HARD_HEAD_AREA_OBJECT
+    dw   call_02_56dc_EntityAction_HardHeadAreaObject_unk0, data_02_798d
+    dw   call_02_576e_EntityAction_HardHeadAreaObject_unk1, data_02_7993
+    dw   call_02_576e_EntityAction_HardHeadAreaObject_unk1, data_02_7999
+data_02_4eb3:                        ;; ENTITY_TOON_TV_STATIONARY_BEAR_TRAP
+    dw   call_02_57f3_EntityAction_StationaryBearTrap_unk0, data_02_79a6
+    dw   call_02_5803_EntityAction_StationaryBearTrap_unk1, data_02_79ac
+data_02_4ebb:                        ;; ENTITY_TOON_TV_MOVING_BEAR_TRAP
+    dw   call_02_5812_EntityAction_MovingBearTrap_unk0, data_02_79b3
+    dw   call_02_5830_EntityAction_MovingBearTrap_unk1, data_02_79b9
+data_02_4ec3:                        ;; ENTITY_TOON_TV_BUMBLEBEE
+    dw   call_02_5843_EntityAction_Bumblebee_unk0, data_02_799f
+    dw   call_02_585e_EntityAction_Bumblebee_unk1, data_02_799f
+data_02_4ecb:                        ;; ENTITY_TOON_TV_BOWLING_BALL
+    dw   call_02_5871_EntityAction_BowlingBall_Update, data_02_79c5
+data_02_4ecf:                        ;; ENTITY_TOON_TV_CACTUS
+    dw   call_02_58d3_EntityAction_Cactus_unk0, data_02_79d6
+    dw   call_02_58e8_EntityAction_Cactus_unk1, data_02_79dc
+    dw   call_02_58fa_EntityAction_Cactus_unk2, data_02_79e3
+data_02_4edb:                        ;; ENTITY_TOON_TV_DOMINO
+    dw   call_02_590b_EntityAction_Domino_Update, data_02_79e9
+data_02_4edf:                        ;; ENTITY_TOON_TV_SHARK
+    dw   call_02_591c_EntityAction_Shark_Update, data_02_79ef
+data_02_4ee3:                        ;; ENTITY_TOON_TV_FLOWER
+    dw   call_02_592d_EntityAction_Flower_Update, data_02_79f6
+    dw   call_02_592d_EntityAction_Flower_Update, data_02_79fc
+    dw   call_02_592d_EntityAction_Flower_Update, data_02_7a02
+data_02_4eef:                        ;; ENTITY_TOON_TV_HUNTER
+    dw   call_02_5993_EntityAction_Hunter_unk0, data_02_774c
+    dw   call_02_59c8_EntityAction_Hunter_unk1, data_02_7759
+    dw   call_02_59d2_EntityAction_Hunter_unk2, data_02_7768
+    dw   call_02_59db_EntityAction_Hunter_unk3, data_02_777c
+    dw   call_02_59e4_EntityAction_Hunter_unk4, data_02_7784
+    dw   call_02_59ed_EntityAction_Hunter_unk5, data_02_778a
+data_02_4f07:                        ;; ENTITY_TOON_TV_MUSHROOM
+    dw   call_02_5a28_EntityAction_Mushroom_Update, data_02_7a1b
+data_02_4f0b:                        ;; ENTITY_UNK_28
+    dw   call_02_5a73_EntityAction_Unk28_Update, data_02_7a21
+data_02_4f0f:                        ;; ENTITY_TOON_TV_LIZARD
+    dw   call_02_5a7d_EntityAction_Lizard_Update, data_02_7a3a
+data_02_4f13:                        ;; ENTITY_TOON_TV_HAPPY_FACE
+    dw   call_02_5a8c_EntityAction_HappyFace_unk0, data_02_773a
+    dw   call_02_5a9a_EntityAction_HappyFace_unk1, data_02_7744
+data_02_4f1b:                        ;; ENTITY_TOON_TV_VANISHING_BLOCK
+    dw   call_02_5aab_EntityAction_ToonTVVanishingBlock_unk0, data_02_7a45
+    dw   call_02_5aea_EntityAction_ToonTVVanishingBlock_unk1, data_02_7a45
+    dw   call_02_5b39_EntityAction_ToonTVVanishingBlock_unk2, data_02_7a4b
+data_02_4f27:                        ;; ENTITY_TOON_TV_MOVING_BLOCK
+    dw   call_02_5b47_EntityAction_ToonTVMovingBlock_unk0, data_02_7a51
+    dw   call_02_5b9d_EntityAction_ToonTVMovingBlock_unk1, data_02_7a51
+data_02_4f2f:                        ;; ENTITY_TOON_TV_MOVING_LOG
+    dw   call_02_5bb6_EntityAction_MovingLog_Update, data_02_7a2e
+data_02_4f33:                        ;; ENTITY_TOON_TV_STATIONARY_LOG
+    dw   call_02_5be1_EntityAction_StationaryLog_Update, data_02_7a34
+data_02_4f37:                        ;; ENTITY_TOON_TV_FLOWER_HAMMER
+    dw   call_02_596c_EntityAction_FlowerHammer_unk0, data_02_7a08
+    dw   call_02_597a_EntityAction_FlowerHammer_unk1, data_02_7a0e
+    dw   call_02_598c_EntityAction_FlowerHammer_unk2, data_02_7a15
+data_02_4f43:                        ;; ENTITY_TOON_TV_HUNTER_BULLET
+    dw   call_02_5a10_EntityAction_HunterBullet_unk0, data_02_79d0
+    dw   call_02_5a1f_EntityAction_HunterBullet_unk1, data_02_79d0
+data_02_4f4b:                        ;; ENTITY_TOON_TV_ROCKET
+    dw   call_02_5be2_EntityAction_Rocket_unk0, data_02_7c7b
+    dw   call_02_5bf7_EntityAction_Rocket_unk1, data_02_7c81
+    dw   call_02_5c00_EntityAction_Rocket_unk2, data_02_7c9a
+data_02_4f57:                        ;; ENTITY_PRE_HISTORY_FAST_DINOSAUR
     dw   call_02_5c08, data_02_7790
-data_02_4f5b:                        ;; Entity_PreHistory_Dragonfly
+data_02_4f5b:                        ;; ENTITY_PRE_HISTORY_DRAGONFLY
     dw   call_02_5c10, data_02_77a7
-data_02_4f5f:                        ;; Entity_PreHistory_Egg
+data_02_4f5f:                        ;; ENTITY_PRE_HISTORY_EGG
     dw   call_02_5c18, data_02_77d5
     dw   call_02_5c47, data_02_77e2
     dw   call_02_5c5b, data_02_77ea
-data_02_4f6b:                        ;; Entity_unk_35
+data_02_4f6b:                        ;; ENTITY_UNK_35
     dw   call_02_5c69, data_02_7a62
     dw   call_02_5c73, data_02_7a68
-data_02_4f73:                        ;; Entity_unk_36
+data_02_4f73:                        ;; ENTITY_UNK_36
     dw   call_02_5c7c, data_02_7a57
-data_02_4f77:                        ;; Entity_PreHistory_FallingLava
+data_02_4f77:                        ;; ENTITY_PRE_HISTORY_FALLING_LAVA
     dw   call_02_5c7d, data_02_7a73
     dw   call_02_5c9c, data_02_7a79
-data_02_4f7f:                        ;; Entity_PreHistory_LavaRaft
+data_02_4f7f:                        ;; ENTITY_PRE_HISTORY_LAVA_RAFT
     dw   call_02_5ca8, data_02_7a84
     dw   call_02_5cba, data_02_7a8a
-data_02_4f87:                        ;; Entity_PreHistory_MovingPlatform
+data_02_4f87:                        ;; ENTITY_PRE_HISTORY_MOVING_PLATFORM
     dw   call_02_5cbb, data_02_7a90
-data_02_4f8b:                        ;; Entity_unk_3A
+data_02_4f8b:                        ;; ENTITY_UNK_3A
     dw   call_02_5ccd, data_02_7a96
-data_02_4f8f:                        ;; Entity_unk_3B
+data_02_4f8f:                        ;; ENTITY_UNK_3B
     dw   call_02_5cce, data_02_7a9c
-data_02_4f93:                        ;; Entity_PreHistory_Pterosaur
+data_02_4f93:                        ;; ENTITY_PRE_HISTORY_PTEROSAUR
     dw   call_02_5ccf, data_02_77b2
-data_02_4f97:                        ;; Entity_unk_3D
+data_02_4f97:                        ;; ENTITY_UNK_3D
     dw   call_02_5d0b, data_02_7aa8
-data_02_4f9b:                        ;; Entity_PreHistory_FallingBoulder
+data_02_4f9b:                        ;; ENTITY_PRE_HISTORY_FALLING_BOULDER
     dw   call_02_5d0c, data_02_7aae
     dw   call_02_5d37, data_02_7ab4
     dw   call_02_5d48, data_02_7aba
     dw   call_02_5d5b, data_02_7cda
-data_02_4fab:                        ;; Entity_unk_3F
+data_02_4fab:                        ;; ENTITY_UNK_3F
     dw   call_02_5d6f, data_02_7790
-data_02_4faf:                        ;; Entity_PreHistory_BeetleHorizontal
+data_02_4faf:                        ;; ENTITY_PRE_HISTORY_BEETLE_HORIZONTAL
     dw   call_02_5d81, data_02_7ac1
-data_02_4fb3:                        ;; Entity_PreHistory_BeetleVertical
+data_02_4fb3:                        ;; ENTITY_PRE_HISTORY_BEETLE_VERTICAL
     dw   call_02_5d70, data_02_7ac8
-data_02_4fb7:                        ;; Entity_PreHistory_Ant
+data_02_4fb7:                        ;; ENTITY_PRE_HISTORY_ANT
     dw   call_02_5d81, data_02_7acf
-data_02_4fbb:                        ;; Entity_PreHistory_FirePlant
+data_02_4fbb:                        ;; ENTITY_PRE_HISTORY_FIRE_PLANT
     dw   call_02_5d92, data_02_7aef
     dw   call_02_5db2, data_02_7af8
     dw   call_02_5dd3, data_02_7b01
-data_02_4fc7:                        ;; Entity_PreHistory_FirePlantProjectiles
+data_02_4fc7:                        ;; ENTITY_PRE_HISTORY_FIRE_PLANT_PROJECTILES
     dw   call_02_5ddc, data_02_7b08
     dw   call_02_5de6, data_02_7ce0
-data_02_4fcf:                        ;; Entity_PreHistory_Geyser
+data_02_4fcf:                        ;; ENTITY_PRE_HISTORY_GEYSER
     dw   call_02_5df8, data_02_7ad8
     dw   call_02_5e02, data_02_7ade
-data_02_4fd7:                        ;; Entity_unk_46
+data_02_4fd7:                        ;; ENTITY_UNK_46
     dw   call_02_5e0b, data_02_7aa2
-data_02_4fdb:                        ;; Entity_PreHistory_Dinosaur
+data_02_4fdb:                        ;; ENTITY_PRE_HISTORY_DINOSAUR
     dw   call_02_5e0c, data_02_77bd
-data_02_4fdf:                        ;; Entity_PreHistory_Triceratops
+data_02_4fdf:                        ;; ENTITY_PRE_HISTORY_TRICERATOPS
     dw   call_02_5e26, data_02_77ca
-data_02_4fe3:                        ;; Entity_PreHistory_TriceratopsHorn
+data_02_4fe3:                        ;; ENTITY_PRE_HISTORY_TRICERATOPS_HORN
     dw   call_02_5e90, data_02_7ae9
-data_02_4fe7:                        ;; Entity_unk_4A
+data_02_4fe7:                        ;; ENTITY_UNK_4A
     dw   call_02_5e91, data_02_7790
-data_02_4feb:                        ;; Entity_KungFuTheater_HangingBlade
+data_02_4feb:                        ;; ENTITY_KUNG_FU_THEATER_HANGING_BLADE
     dw   call_02_5e92, data_02_7b15
-data_02_4fef:                        ;; Entity_KungFuTheater_Cannon
+data_02_4fef:                        ;; ENTITY_KUNG_FU_THEATER_CANNON
     dw   call_02_5ebd, data_02_7b1b
-data_02_4ff3:                        ;; Entity_KungFuTheater_CannonProjectile
+data_02_4ff3:                        ;; ENTITY_KUNG_FU_THEATER_CANNON_PROJECTILE
     dw   call_02_5ef0, data_02_7b21
     dw   call_02_5efa, data_02_7b21
-data_02_4ffb:                        ;; Entity_KungFuTheater_Dragonfly
+data_02_4ffb:                        ;; ENTITY_KUNG_FU_THEATER_DRAGONFLY
     dw   call_02_5f48, data_02_77f2
-data_02_4fff:                        ;; Entity_KungFuTheater_DragonBodySegment
+data_02_4fff:                        ;; ENTITY_KUNG_FU_THEATER_DRAGON_BODY_SEGMENT
     dw   call_02_5f50, data_02_7b27
-data_02_5003:                        ;; Entity_KungFuTheater_DragonHead
+data_02_5003:                        ;; ENTITY_KUNG_FU_THEATER_DRAGON_HEAD
     dw   call_02_5f67, data_02_7824
-data_02_5007:                        ;; Entity_unk_51
+data_02_5007:                        ;; ENTITY_UNK_51
     dw   call_02_616d, data_02_7b2d
-data_02_500b:                        ;; Entity_KungFuTheater_DragonProjectile
+data_02_500b:                        ;; ENTITY_KUNG_FU_THEATER_DRAGON_PROJECTILE
     dw   call_02_6152, data_02_7b39
     dw   call_02_615f, data_02_7b39
-data_02_5013:                        ;; Entity_KungFuTheater_WalkingNinja
+data_02_5013:                        ;; ENTITY_KUNG_FU_THEATER_WALKING_NINJA
     dw   call_02_616e, data_02_77fd
     dw   call_02_6213, data_02_7806
     dw   call_02_621c, data_02_7815
-data_02_501f:                        ;; Entity_KungFuTheater_JumpingNinja
+data_02_501f:                        ;; ENTITY_KUNG_FU_THEATER_JUMPING_NINJA
     dw   call_02_616e, data_02_77fd
     dw   call_02_6213, data_02_7806
     dw   call_02_621c, data_02_7815
     dw   call_02_6235, data_02_781e
-data_02_502f:                        ;; Entity_KungFuTheater_SamuraiBody
+data_02_502f:                        ;; ENTITY_KUNG_FU_THEATER_SAMURAI_BODY
     dw   call_02_624c, data_02_782a
     dw   call_02_62c3, data_02_7837
-data_02_5037:                        ;; Entity_KungFuTheater_SamuraiHead
+data_02_5037:                        ;; ENTITY_KUNG_FU_THEATER_SAMURAI_HEAD
     dw   call_02_62db, data_02_7b6c
     dw   call_02_62fc, data_02_7b6c
     dw   call_02_6327, data_02_7b72
-data_02_5043:                        ;; Entity_KungFuTheater_Lizard
+data_02_5043:                        ;; ENTITY_KUNG_FU_THEATER_LIZARD
     dw   call_02_6335, data_02_7b7a
-data_02_5047:                        ;; Entity_KungFuTheater_NinjaProjectile
+data_02_5047:                        ;; ENTITY_KUNG_FU_THEATER_NINJA_PROJECTILE
     dw   call_02_633d, data_02_7b85
     dw   call_02_6347, data_02_7b85
-data_02_504f:                        ;; Entity_KungFuTheater_SpikyLog
+data_02_504f:                        ;; ENTITY_KUNG_FU_THEATER_SPIKY_LOG
     dw   call_02_6355, data_02_7b8c
-data_02_5053:                        ;; Entity_KungFuTheater_TallJar
+data_02_5053:                        ;; ENTITY_KUNG_FU_THEATER_TALL_JAR
     dw   call_02_635d, data_02_7b92
     dw   call_02_6375, data_02_7cec
-data_02_505b:                        ;; Entity_KungFuTheater_Jar
+data_02_505b:                        ;; ENTITY_KUNG_FU_THEATER_JAR
     dw   call_02_635d, data_02_7b92
     dw   call_02_6375, data_02_7cec
-data_02_5063:                        ;; Entity_unk_5C
+data_02_5063:                        ;; ENTITY_UNK_5C
     dw   call_02_6387, data_02_7b98
-data_02_5067:                        ;; Entity_unk_5D
+data_02_5067:                        ;; ENTITY_UNK_5D
     dw   call_02_6388, data_02_7b98
-data_02_506b:                        ;; Entity_KungFuTheater_VanishingPlatform
+data_02_506b:                        ;; ENTITY_KUNG_FU_THEATER_VANISHING_PLATFORM
     dw   call_02_6388, data_02_7b42
     dw   call_02_63ac, data_02_7b42
     dw   call_02_63fb, data_02_7b48
-data_02_5077:                        ;; Entity_KungFuTheater_MovingPlatform
+data_02_5077:                        ;; ENTITY_KUNG_FU_THEATER_MOVING_PLATFORM
     dw   call_02_6409, data_02_7b4e
-data_02_507b:                        ;; Entity_unk_60
+data_02_507b:                        ;; ENTITY_UNK_60
     dw   call_02_6434, data_02_7b54
-data_02_507f:                        ;; Entity_KungFuTheater_MovingRaft
+data_02_507f:                        ;; ENTITY_KUNG_FU_THEATER_MOVING_RAFT
     dw   call_02_6435, data_02_7b5a
-data_02_5083:                        ;; Entity_KungFuTheater_StationaryRaft
+data_02_5083:                        ;; ENTITY_KUNG_FU_THEATER_STATIONARY_RAFT
     dw   call_02_6447, data_02_7b60
-data_02_5087:                        ;; Entity_unk_63
+data_02_5087:                        ;; ENTITY_UNK_63
     dw   call_02_6448, data_02_7b66
-data_02_508b:                        ;; Entity_unk_64
+data_02_508b:                        ;; ENTITY_UNK_64
     dw   call_02_6449, data_02_7b98
-data_02_508f:                        ;; Entity_Rezopolis_SpecialMovingPlatform
+data_02_508f:                        ;; ENTITY_REZOPOLIS_SPECIAL_MOVING_PLATFORM
     dw   call_02_644a, data_02_7b98
-data_02_5093:                        ;; Entity_Rezopolis_MovingPlatform
+data_02_5093:                        ;; ENTITY_REZOPOLIS_MOVING_PLATFORM
     dw   call_02_649c, data_02_7b9e
-data_02_5097:                        ;; Entity_Rezopolis_RedPlatform
+data_02_5097:                        ;; ENTITY_REZOPOLIS_RED_PLATFORM
     dw   call_02_64ae, data_02_7ba4
-data_02_509b:                        ;; Entity_Rezopolis_ActivatedRedPlatform
+data_02_509b:                        ;; ENTITY_REZOPOLIS_ACTIVATED_RED_PLATFORM
     dw   call_02_650f, data_02_7ba4
-data_02_509f:                        ;; Entity_Rezopolis_TailspinPlatform
+data_02_509f:                        ;; ENTITY_REZOPOLIS_TAILSPIN_PLATFORM
     dw   call_02_655d, data_02_7baa
-data_02_50a3:                        ;; Entity_Rezopolis_TailspinGear
+data_02_50a3:                        ;; ENTITY_REZOPOLIS_TAILSPIN_GEAR
     dw   call_02_65b7, data_02_7bbd
     dw   call_02_65c0, data_02_7bc3
     dw   call_02_65c9, data_02_7bcc
     dw   call_02_65d2, data_02_7bd5
     dw   call_02_65db, data_02_7bde
-data_02_50b7:                        ;; Entity_unk_6B
+data_02_50b7:                        ;; ENTITY_UNK_6B
     dw   call_02_6626, data_02_7790
-data_02_50bb:                        ;; Entity_unk_6C
+data_02_50bb:                        ;; ENTITY_UNK_6C
     dw   call_02_6627, data_02_7bb0
-data_02_50bf:                        ;; Entity_unk_6D
+data_02_50bf:                        ;; ENTITY_UNK_6D
     dw   call_02_6628, data_02_7bb0
-data_02_50c3:                        ;; Entity_Rezopolis_GreenMonster
+data_02_50c3:                        ;; ENTITY_REZOPOLIS_GREEN_MONSTER
     dw   call_02_6629, data_02_7865
     dw   call_02_6632, data_02_7872
     dw   call_02_6633, data_02_7879
-data_02_50cf:                        ;; Entity_unk_6F
+data_02_50cf:                        ;; ENTITY_UNK_6F
     dw   call_02_6634, data_02_7bf0
-data_02_50d3:                        ;; Entity_unk_70
+data_02_50d3:                        ;; ENTITY_UNK_70
     dw   call_02_6635, data_02_7bf0
-data_02_50d7:                        ;; Entity_Rezopolis_Pincer
+data_02_50d7:                        ;; ENTITY_REZOPOLIS_PINCER
     dw   call_02_6636, data_02_7880
-data_02_50db:                        ;; Entity_Rezopolis_Flamethrower
+data_02_50db:                        ;; ENTITY_REZOPOLIS_FLAMETHROWER
     dw   call_02_664b, data_02_7bb0
     dw   call_02_664c, data_02_7bb0
-data_02_50e3:                        ;; Entity_Rezopolis_UFO
+data_02_50e3:                        ;; ENTITY_REZOPOLIS_UFO
     dw   call_02_664d, data_02_784d
     dw   call_02_666b, data_02_785c
-data_02_50eb:                        ;; Entity_Rezopolis_Ant
+data_02_50eb:                        ;; ENTITY_REZOPOLIS_ANT
     dw   call_02_66bb, data_02_7be7
-data_02_50ef:                        ;; Entity_Rezopolis_AntSpawner
+data_02_50ef:                        ;; ENTITY_REZOPOLIS_ANT_SPAWNER
     dw   call_02_666c, data_02_7c6f
-data_02_50f3:                        ;; Entity_CircuitCentral_Ant
+data_02_50f3:                        ;; ENTITY_CIRCUIT_CENTRAL_ANT
     dw   call_02_66db, data_02_7bf0
-data_02_50f7:                        ;; Entity_CircuitCentral_Capacitor
+data_02_50f7:                        ;; ENTITY_CIRCUIT_CENTRAL_CAPACITOR
     dw   call_02_66e3, data_02_7bf9
     dw   call_02_66f1, data_02_7c01
-data_02_50ff:                        ;; Entity_CircuitCentral_PowerUp
+data_02_50ff:                        ;; ENTITY_CIRCUIT_CENTRAL_POWER_UP
     dw   call_02_66fd, data_02_7c07
     dw   call_02_6710, data_02_7c07
-data_02_5107:                        ;; Entity_unk_79
+data_02_5107:                        ;; ENTITY_UNK_79
     dw   call_02_6723, data_02_7790
-data_02_510b:                        ;; Entity_CircuitCentral_LittleRobot
+data_02_510b:                        ;; ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT
     dw   call_02_6724, data_02_7c10
     dw   call_02_676c, data_02_7c16
-data_02_5113:                        ;; Entity_CircuitCentral_LittleRobotGear
+data_02_5113:                        ;; ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT_GEAR
     dw   call_02_6775, data_02_7c1d
-data_02_5117:                        ;; Entity_CircuitCentral_ElectricBall
+data_02_5117:                        ;; ENTITY_CIRCUIT_CENTRAL_ELECTRIC_BALL
     dw   call_02_6786, data_02_7c25
     dw   call_02_679e, data_02_7c2b
-data_02_511f:                        ;; Entity_CircuitCentral_MovingPlatform
+data_02_511f:                        ;; ENTITY_CIRCUIT_CENTRAL_MOVING_PLATFORM
     dw   call_02_68c0, data_02_7c42
-data_02_5123:                        ;; Entity_CircuitCentral_PoweredPlaform
+data_02_5123:                        ;; ENTITY_CIRCUIT_CENTRAL_POWERED_PLATFORM
     dw   call_02_696f, data_02_7c34
     dw   call_02_6993, data_02_7c3a
     dw   call_02_69c4, data_02_7c48
-data_02_512f:                        ;; Entity_CircuitCentral_LoweringPlatform
+data_02_512f:                        ;; ENTITY_CIRCUIT_CENTRAL_LOWERING_PLATFORM
     dw   call_02_69d7, data_02_7c50
-data_02_5133:                        ;; Entity_CircuitCentral_WalkerRobot
+data_02_5133:                        ;; ENTITY_CIRCUIT_CENTRAL_WALKER_ROBOT
     dw   call_02_6a33, data_02_7889
-data_02_5137:                        ;; Entity_CircuitCentral_PoweredWalkway
+data_02_5137:                        ;; ENTITY_CIRCUIT_CENTRAL_POWERED_WALKWAY
     dw   call_02_6a3b, data_02_7c56
-data_02_513b:                        ;; Entity_CircuitCentral_WalkwayActivator
+data_02_513b:                        ;; ENTITY_CIRCUIT_CENTRAL_WALKWAY_ACTIVATOR
     dw   call_02_6a3c, data_02_7c5c
-data_02_513f:                        ;; Entity_ChannelZ_ArcedGunProjectile
+data_02_513f:                        ;; ENTITY_CHANNEL_Z_ARCED_GUN_PROJECTILE
     dw   call_02_6a8b, data_02_7c62
     dw   call_02_6aac, data_02_7c68
-data_02_5147:                        ;; Entity_ChannelZ_ArcedGunProjectile2
+data_02_5147:                        ;; ENTITY_CHANNEL_Z_ARCED_GUN_PROJECTILE2
     dw   call_02_6ad3, data_02_7c62
     dw   call_02_6af9, data_02_7c68
     dw   call_02_6b30, data_02_7c68
     dw   call_02_6b43, data_02_7c68
-data_02_5157:                        ;; Entity_ChannelZ_GunProjectile
+data_02_5157:                        ;; ENTITY_CHANNEL_Z_GUN_PROJECTILE
     dw   call_02_6b6a, data_02_7c62
     dw   call_02_6b81, data_02_7c68
-data_02_515f:                        ;; Entity_ChannelZ_Rez
+data_02_515f:                        ;; ENTITY_CHANNEL_Z_REZ
     dw   call_02_6c18, data_02_78a8
     dw   call_02_6c41, data_02_78b5
     dw   call_02_6c4a, data_02_78d7
@@ -369,28 +369,28 @@ data_02_515f:                        ;; Entity_ChannelZ_Rez
     dw   call_02_6c99, data_02_78f1
     dw   call_02_6c9d, data_02_78fc
     dw   call_02_6ca6, data_02_790b
-data_02_518b:                        ;; Entity_unk_87
+data_02_518b:                        ;; ENTITY_UNK_87
     dw   call_02_6d11, data_02_7c75
-data_02_518f:                        ;; Entity_unk_88
+data_02_518f:                        ;; ENTITY_UNK_88
     dw   call_02_6d23, data_02_7c75
-data_02_5193:                        ;; Entity_ChannelZ_RezFollowingFire
+data_02_5193:                        ;; ENTITY_CHANNEL_Z_REZ_FOLLOWING_FIRE
     dw   call_02_6cca, data_02_7ca1
-data_02_5197:                        ;; Entity_ChannelZ_GunProjectileExplosion
+data_02_5197:                        ;; ENTITY_CHANNEL_Z_GUN_PROJECTILE_EXPLOSION
     dw   call_02_6d24, data_02_7caa
-data_02_519b:                        ;; Entity_unk_8B
+data_02_519b:                        ;; ENTITY_UNK_8B
     dw   call_02_6d5d, data_02_7cb6
     dw   call_02_6d7f, data_02_7cb6
-data_02_51a3:                        ;; Entity_ChannelZ_FinalBattleButton
+data_02_51a3:                        ;; ENTITY_CHANNEL_Z_FINAL_BATTLE_BUTTON
     dw   call_02_6d80, data_02_7cbc
     dw   call_02_6db8, data_02_7cc2
-data_02_51ab:                        ;; Entity_unk_8D
+data_02_51ab:                        ;; ENTITY_UNK_8D
     dw   call_02_6de3, data_02_7894
-data_02_51af:                        ;; Entity_unk_8E
+data_02_51af:                        ;; ENTITY_UNK_8E
     dw   call_02_6df0, data_02_791a
-data_02_51b3:                        ;; Entity_MediaDimension_MovingPlatform
+data_02_51b3:                        ;; ENTITY_MEDIA_DIMENSION_MOVING_PLATFORM
     dw   call_02_6df1, data_02_7cc8
 
-call_02_51b7:
+call_02_51b7_EntityAction_CollectibleSpawn_Update:
     call call_00_3b8d                                  ;; 02:51b7 $cd $8d $3b
     push AF                                            ;; 02:51ba $f5
     farcall call_03_6584
@@ -418,7 +418,7 @@ call_02_51b7:
     set  3, [HL]                                       ;; 02:51e7 $cb $de
     ret                                                ;; 02:51e9 $c9
 
-call_02_51ea:
+call_02_51ea_EntityAction_TVButton_unk0:
     call call_00_3878                                  ;; 02:51ea $cd $78 $38
     ld   E, A                                          ;; 02:51ed $5f
     ld   H, $d2                                        ;; 02:51ee $26 $d2
@@ -474,20 +474,20 @@ call_02_51ea:
 .jr_02_524d:
     ld   A, $13                                        ;; 02:524d $3e $13
     jp   call_02_4ccd                                  ;; 02:524f $c3 $cd $4c
-call_02_5252:
+call_02_5252_EntityAction_TVButton_unk1:
     ret                                                ;; 02:5252 $c9
 
-call_02_5253:
+call_02_5253_EntityAction_RedRemote_unk0:
     call call_00_34ea                                  ;; 02:5253 $cd $ea $34
     call NZ, call_00_3bf4                              ;; 02:5256 $c4 $f4 $3b
-    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 02:5259 $21 $0f $d6
+    ld   HL, wD60F_HDMATransferFlags                                     ;; 02:5259 $21 $0f $d6
     bit  4, [HL]                                       ;; 02:525c $cb $66
     call Z, call_00_0634                               ;; 02:525e $cc $34 $06
     ld   A, [wD59E]                                    ;; 02:5261 $fa $9e $d5
     and  A, A                                          ;; 02:5264 $a7
     ld   A, $01                                        ;; 02:5265 $3e $01
     call NZ, call_02_7102_SetEntityAction                              ;; 02:5267 $c4 $02 $71
-call_02_526a:
+call_02_526a_EntityAction_RedRemote_unk1:
     call call_00_38c1                                  ;; 02:526a $cd $c1 $38
     ld   E, A                                          ;; 02:526d $5f
     ld   H, $d2                                        ;; 02:526e $26 $d2
@@ -504,20 +504,20 @@ call_02_526a:
     set  3, [HL]                                       ;; 02:5281 $cb $de
     ret                                                ;; 02:5283 $c9
 
-call_02_5284:
+call_02_5284_EntityAction_SilverRemote_unk0:
     ld   a,[wD59E]
     and  a
     ld   a,$01
     call nz,call_02_7102_SetEntityAction
-call_02_528d:
+call_02_528d_EntityAction_SilverRemote_unk1:
     ret  
 
-call_02_528e:
+call_02_528e_EntityAction_GoldRemote_unk0:
     ld   a,[wD59E]
     and  a
     ld   a,$01
     call nz,call_02_7102_SetEntityAction
-call_02_5297:
+call_02_5297_EntityAction_GoldRemote_unk1:
     ld   a,[wD649_CollectibleAmount]
     and  a
     jp   nz,call_00_3931
@@ -528,10 +528,10 @@ call_02_5297:
     call call_00_112f
     ret  
 
-call_02_52aa:
+call_02_52aa_EntityAction_Unk02_Update:
     ret  
 
-call_02_52ab:
+call_02_52ab_EntityAction_ParticleBurst_Update:
     call call_00_3b8d                                  ;; 02:52ab $cd $8d $3b
     jr   Z, .jr_02_52bc                                ;; 02:52ae $28 $0c
     farcall call_03_65f9
@@ -562,10 +562,10 @@ call_02_52ab:
     xor  A, A                                          ;; 02:52e3 $af
     jp   call_02_7102_SetEntityAction                                  ;; 02:52e4 $c3 $02 $71
 
-call_02_52e7:
+call_02_52e7_EntityAction_Unk08_Update:
     ret  
 
-call_02_52e8:
+call_02_52e8_EntityAction_ScreamTVFallingPlatform_Update:
     call call_00_34f5
     bit  0,[hl]
     jr   nz,.jr_02_52FF
@@ -637,7 +637,7 @@ call_02_52e8:
     ld   bc,$FFFE
     jp   call_00_37d8
 
-call_02_5348:
+call_02_5348_EntityAction_ScreamTVMovingPlatform_Update:
     call call_00_34ea                                  ;; 02:5348 $cd $ea $34
     jr   Z, .jr_02_5354                                ;; 02:534b $28 $07
     ld   A, L                                          ;; 02:534d $7d
@@ -666,7 +666,7 @@ call_02_5348:
     call call_00_3559                                  ;; 02:536d $cd $59 $35
     jp   call_00_318d                                    ;; 02:5370 $c3 $8d $31
 
-call_02_5373:
+call_02_5373_EntityAction_ScreamTVPushBlock_Update:
     ld   h,$D2
     ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$0E
@@ -683,7 +683,7 @@ call_02_5373:
     ld   [hl],$02
     ret  
     
-call_02_538b:
+call_02_5373_EntityAction_Pumpkin_unk0:
     call call_00_3843                                  ;; 02:538b $cd $43 $38
     ret  Z                                             ;; 02:538e $c8
     ld   C, $28                                        ;; 02:538f $0e $28
@@ -691,7 +691,7 @@ call_02_538b:
     ld   A, $01                                        ;; 02:5394 $3e $01
     jp   call_02_7102_SetEntityAction                                  ;; 02:5396 $c3 $02 $71
 
-call_02_5399:
+call_02_5399_EntityAction_Pumpkin_unk1:
     call call_00_30af                                  ;; 02:5399 $cd $af $30
     call call_00_3154                                  ;; 02:539c $cd $54 $31
     ret  C                                             ;; 02:539f $d8
@@ -700,10 +700,10 @@ call_02_5399:
     ld   A, $00                                        ;; 02:53a5 $3e $00
     jp   call_02_7102_SetEntityAction                                  ;; 02:53a7 $c3 $02 $71
 
-call_02_53aa:
+call_02_53aa_EntityAction_Frankie_Update:
     jp   call_00_3364
 
-call_02_53ad:
+call_02_53ad_EntityAction_HeadGhost_unk0:
     call call_00_34ea
     jr   z,.jr_02_53C3
     ld   a,l
@@ -726,13 +726,13 @@ call_02_53ad:
     ld   a,$01
     jp   call_02_7102_SetEntityAction
 
-call_02_53d9:
+call_02_53d9_EntityAction_HeadGhost_unk1:
     call call_00_3843
     ld   a,$00
     call nz,call_02_7102_SetEntityAction
     ret  
 
-call_02_53e2:
+call_02_53e2_EntityAction_GhostHead_Update:
     ld   c,$01
     call call_00_3350
     call call_00_3442
@@ -796,14 +796,14 @@ call_02_53e2:
     ld   c,$28
     jp   call_00_335a
 
-call_02_5434:
+call_02_5434_EntityAction_FloatingSkull_unk0:
     call call_00_3843
     ret  z
     call call_00_36bd
     ld   a,$01
     jp   call_02_7102_SetEntityAction
 
-call_02_5440:
+call_02_5440_EntityAction_FloatingSkull_unk1:
     call call_00_3843
     ret  z
     ld   c,$34
@@ -813,25 +813,25 @@ call_02_5440:
     ld   a,$02
     jp   call_02_7102_SetEntityAction
 
-call_02_545b:
+call_02_545b_EntityAction_FloatingSkull_unk2:
     call call_00_3843
     ld   a,$00
     jp   nz,call_02_7102_SetEntityAction
     ret  
 
-call_02_5464:
+call_02_5464_EntityAction_FloatingSkullProjectile_unk0:
     ld   c,$06
     call call_00_3a23
     ld   a,$01
     jp   call_02_7102_SetEntityAction
 
-call_02_546e:
+call_02_546e_EntityAction_FloatingSkullProjectile_unk1:
     call call_00_3b8d
     jp   z,call_00_3931
     farcall call_03_6549
     ret  
 
-call_02_5480:
+call_02_5480_EntityAction_Zombie_unk0:
     ld   h,$d2
     ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$1A
@@ -858,7 +858,7 @@ call_02_5480:
     ld   a,$02
     jp   call_02_7102_SetEntityAction
 
-call_02_54b4:
+call_02_54b4_EntityAction_Zombie_unk2:
     ld   h,$d2
     ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$18
@@ -870,7 +870,7 @@ call_02_54b4:
     ld   a,$01
     jp   call_02_7102_SetEntityAction
 
-call_02_54c6:
+call_02_54c6_EntityAction_ZombieHead_unk0:
     ld   c,$28
     call call_00_335a
     ld   c,$03
@@ -883,7 +883,7 @@ call_02_54c6:
     ld   a,$01
     jp   call_02_7102_SetEntityAction
 
-call_02_54df:
+call_02_54df_EntityAction_ZombieHead_unk1:
     call call_00_30af
     call call_00_3137
     ret  c
@@ -899,10 +899,10 @@ call_02_54df:
 .data_02_54f9:
     db   $00, $0a, $14
 
-call_02_54fc:
+call_02_54fc_EntityAction_ZombieHead_unk2:
     jp   call_00_36bd
 
-call_02_54ff:
+call_02_54ff_EntityAction_FallingAxe_unk0:
     ld   h,$d2
     ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$19
@@ -914,7 +914,7 @@ call_02_54ff:
     jp   z,call_02_7102_SetEntityAction
     ret  
 
-call_02_5513:
+call_02_5513_EntityAction_FallingAxe_unk1:
     ld   bc,$0002
     call call_00_37d8
     ld   h,$d2
@@ -929,13 +929,13 @@ call_02_5513:
     ld   a,$02
     jp   call_02_7102_SetEntityAction
 
-call_02_552c:
+call_02_552c_EntityAction_FallingAxe_unk2:
     call call_00_3843
     ld   a,$03
     jp   nz,call_02_7102_SetEntityAction
     ret  
 
-call_02_5535:
+call_02_5535_EntityAction_FallingAxe_unk3:
     ld   bc,$FFFF
     call call_00_37d8
     call call_00_3817
@@ -943,7 +943,7 @@ call_02_5535:
     jp   z,call_02_7102_SetEntityAction
     ret  
 
-call_02_5544:
+call_02_5544_EntityAction_Lantern_unk0:
     call call_02_555e
     ld   a,[wD757]
     and  a
@@ -951,7 +951,7 @@ call_02_5544:
     ld   a,$01
     jp   call_02_7102_SetEntityAction
 
-call_02_5551:
+call_02_5551_EntityAction_Lantern_unk1:
     call call_02_555e
     ld   a,[wD757]
     and  a
@@ -976,7 +976,7 @@ call_02_555e:
     ld   bc,$FFFF
     jp   call_00_37d8
 
-call_02_557c:
+call_02_557c_EntityAction_Bat_Update:
     ld   h,$d2
     ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$1C
@@ -984,7 +984,7 @@ call_02_557c:
     ld   [hl],$01
     jp   call_00_3364
 
-call_02_5589:
+call_02_5589_EntityAction_ScreamTVOrangeMovingPlatform_Update:
     call call_00_34ea
     jr   z,.jr_02_5595
     ld   a,l
@@ -997,15 +997,15 @@ call_02_5589:
     call call_00_3559
     jp   call_00_318d
 
-call_02_559b:
+call_02_559b_EntityAction_ScreamTVDoorOpening_unk0:
     ret  
 
-call_02_559c:
+call_02_559c_EntityAction_ScreamTVDoorOpening_unk1:
     call call_00_3843
     call nz,call_00_3931
     ret  
 
-call_02_55a3:
+call_02_55a3_EntityAction_Ghost_unk0:
     call call_00_3843
     ret  z
     ld   h,$d2
@@ -1052,13 +1052,13 @@ call_02_55a3:
     ld   a,$01
     jp   call_02_7102_SetEntityAction
 
-call_02_55e8:
+call_02_55e8_EntityAction_Ghost_unk1:
     call call_00_3843
     ret  z
     ld   a,$02
     jp   call_02_7102_SetEntityAction
 
-call_02_55f1:
+call_02_55f1_EntityAction_Ghost_unk2:
     ld   a,[wD757]
     and  a
     jr   nz,.jr_02_5608
@@ -1077,7 +1077,7 @@ call_02_55f1:
     ld   a,$03
     jp   call_02_7102_SetEntityAction
 
-call_02_5612:
+call_02_5612_EntityAction_Ghost_unk3:
     ld   a,[wD757]
     and  a
     jr   z,.jr_02_5623
@@ -1089,7 +1089,7 @@ call_02_5612:
     ld   a,$00
     jp   call_02_7102_SetEntityAction
 
-call_02_5628:
+call_02_5628_EntityAction_ClimbWallSunEnemy_Update:
     call call_00_34ea
     jr   z,.jr_02_5634
     ld   a,l
@@ -1102,7 +1102,7 @@ call_02_5628:
     call call_00_3559
     jp   call_00_318d
 
-call_02_563a:
+call_02_563a_EntityAction_ScreamTVVanishingPlatform_unk0:
     ld   h,$d2
     ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$1B
@@ -1117,7 +1117,7 @@ call_02_563a:
     ld   a,$01
     jp   call_02_7102_SetEntityAction
 
-call_02_5652:
+call_02_5652_EntityAction_ScreamTVVanishingPlatform_unk1:
     ld   h,$d2
     ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$18
@@ -1163,7 +1163,7 @@ call_02_5652:
 .data_02_5699:
     db   $01, $02, $04, $08, $10, $20, $40, $80
 
-call_02_56a1:
+call_02_56a1_EntityAction_ScreamTVVanishingPlatform_unk2:
     call call_00_3843
     ret  z
     ld   c,$10
@@ -1171,7 +1171,7 @@ call_02_56a1:
     ld   a,$00
     jp   call_02_7102_SetEntityAction
 
-call_02_56af:
+call_02_56af_EntityAction_MonaLisaElevator_Update:
     call call_00_34ea
     jr   z,.jr_02_56BB
     ld   a,l
@@ -1202,7 +1202,7 @@ call_02_56af:
 .jr_02_56D9:
     jp   call_00_318d
 
-call_02_56dc:
+call_02_56dc_EntityAction_HardHeadAreaObject_unk0:
     ld   H, $d2                                        ;; 02:56dc $26 $d2
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:56de $fa $00 $d3
     or   A, $10                                        ;; 02:56e1 $f6 $10
@@ -1293,7 +1293,7 @@ call_02_56dc:
 .data_02_576a:
     db   $01, $02, $01, $02                            ;; 02:576a .??.
 
-call_02_576e:
+call_02_576e_EntityAction_HardHeadAreaObject_unk1:
     ld   H, $d2                                        ;; 02:576e $26 $d2
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:5770 $fa $00 $d3
     or   A, $17                                        ;; 02:5773 $f6 $17
@@ -1370,7 +1370,7 @@ call_02_576e:
 .data_02_57eb:
     db   $01, $02, $04, $08, $10, $20, $40, $80        ;; 02:57eb ........
 
-call_02_57f3:
+call_02_57f3_EntityAction_StationaryBearTrap_unk0:
     call call_00_3817
     ret  nz
     ld   [hl],$FF
@@ -1379,7 +1379,7 @@ call_02_57f3:
     ld   a,$01
     jp   call_02_7102_SetEntityAction
 
-call_02_5803:
+call_02_5803_EntityAction_StationaryBearTrap_unk1:
     call call_00_30af
     ld   bc,$0008
     call call_00_316e
@@ -1387,7 +1387,7 @@ call_02_5803:
     jp   nc,call_02_7102_SetEntityAction
     ret  
 
-call_02_5812:
+call_02_5812_EntityAction_MovingBearTrap_unk0:
     call call_00_34ea
     jr   z,.jr_02_581C
     ld   c,$10
@@ -1402,7 +1402,7 @@ call_02_5812:
     ld   a,$01
     jp   call_02_7102_SetEntityAction
 
-call_02_5830:
+call_02_5830_EntityAction_MovingBearTrap_unk1:
     call call_00_30af
     call call_00_3154
     jp   c,call_00_36f7
@@ -1411,7 +1411,7 @@ call_02_5830:
     ld   a,$00
     jp   call_02_7102_SetEntityAction
 
-call_02_5843:
+call_02_5843_EntityAction_Bumblebee_unk0:
     ld   C, $08                                        ;; 02:5843 $0e $08
     call call_00_32e1                                  ;; 02:5845 $cd $e1 $32
     call call_00_36f7                                  ;; 02:5848 $cd $f7 $36
@@ -1424,7 +1424,7 @@ call_02_5843:
     ld   A, $01                                        ;; 02:5859 $3e $01
     jp   call_02_7102_SetEntityAction                                  ;; 02:585b $c3 $02 $71
 
-call_02_585e:
+call_02_585e_EntityAction_Bumblebee_unk1:
     ld   c,$20
     call call_00_32e1
     call call_00_36f7
@@ -1434,7 +1434,7 @@ call_02_585e:
     ld   a,$00
     jp   call_02_7102_SetEntityAction
 
-call_02_5871:
+call_02_5871_EntityAction_BowlingBall_Update:
     call call_00_30af
     ld   h,$d2
     ld   a,[wD300_CurrentEntityAddrLo]
@@ -1486,7 +1486,7 @@ call_02_5871:
     db   $ff, $80, $ff, $40, $ff, $00, $ff, $c0        ;; 02:58c6 ????????
     db   $fe, $80, $fe, $40, $fe                       ;; 02:58ce ?????
 
-call_02_58d3:
+call_02_58d3_EntityAction_Cactus_unk0:
     ld   C, $40                                        ;; 02:58d3 $0e $40
     call call_00_3859                                  ;; 02:58d5 $cd $59 $38
     ret  NC                                            ;; 02:58d8 $d0
@@ -1498,7 +1498,7 @@ call_02_58d3:
     ld   A, $01                                        ;; 02:58e3 $3e $01
     jp   call_02_7102_SetEntityAction                                  ;; 02:58e5 $c3 $02 $71
 
-call_02_58e8:
+call_02_58e8_EntityAction_Cactus_unk1:
     call call_00_3843                                  ;; 02:58e8 $cd $43 $38
     ret  Z                                             ;; 02:58eb $c8
     call call_00_3817                                  ;; 02:58ec $cd $17 $38
@@ -1508,7 +1508,7 @@ call_02_58e8:
     ld   A, $02                                        ;; 02:58f5 $3e $02
     jp   call_02_7102_SetEntityAction                                  ;; 02:58f7 $c3 $02 $71
 
-call_02_58fa:
+call_02_58fa_EntityAction_Cactus_unk2:
     call call_00_30af                                  ;; 02:58fa $cd $af $30
     call call_00_3154                                  ;; 02:58fd $cd $54 $31
     ret  C                                             ;; 02:5900 $d8
@@ -1517,7 +1517,7 @@ call_02_58fa:
     ld   A, $00                                        ;; 02:5906 $3e $00
     jp   call_02_7102_SetEntityAction                                  ;; 02:5908 $c3 $02 $71
 
-call_02_590b:
+call_02_590b_EntityAction_Domino_Update:
     call call_00_30af
     call call_00_3154
     ret  c
@@ -1526,7 +1526,7 @@ call_02_590b:
     ld   c,$40
     jp   call_00_335a
 
-call_02_591c:
+call_02_591c_EntityAction_Shark_Update:
     ld   C, $30                                        ;; 02:591c $0e $30
     call call_00_3859                                  ;; 02:591e $cd $59 $38
     ld   C, $20                                        ;; 02:5921 $0e $20
@@ -1535,7 +1535,7 @@ call_02_591c:
 .jr_02_5927:
     call call_00_32e1                                  ;; 02:5927 $cd $e1 $32
     jp   call_00_36f7                                  ;; 02:592a $c3 $f7 $36
-call_02_592d:
+call_02_592d_EntityAction_Flower_Update:
     call call_00_36bd                                  ;; 02:592d $cd $bd $36
     ld   C, $20                                        ;; 02:5930 $0e $20
     call call_00_3859                                  ;; 02:5932 $cd $59 $38
@@ -1568,14 +1568,14 @@ call_02_592d:
     ld   C, $03                                        ;; 02:595e $0e $03
     farcall call_0a_7b9a_SpawnEntityRelative
     ret                                                ;; 02:596b $c9
-call_02_596c:
+call_02_596c_EntityAction_FlowerHammer_unk0:
     call call_00_3843                                  ;; 02:596c $cd $43 $38
     ret  Z                                             ;; 02:596f $c8
     ld   C, $1c                                        ;; 02:5970 $0e $1c
     call call_00_112f                                  ;; 02:5972 $cd $2f $11
     ld   A, $01                                        ;; 02:5975 $3e $01
     jp   call_02_7102_SetEntityAction                                  ;; 02:5977 $c3 $02 $71
-call_02_597a:
+call_02_597a_EntityAction_FlowerHammer_unk1:
     call call_00_30af                                  ;; 02:597a $cd $af $30
     call call_00_30af                                  ;; 02:597d $cd $af $30
     ld   BC, $0c                                       ;; 02:5980 $01 $0c $00
@@ -1583,12 +1583,12 @@ call_02_597a:
     ld   A, $02                                        ;; 02:5986 $3e $02
     jp   NC, call_02_7102_SetEntityAction                              ;; 02:5988 $d2 $02 $71
     ret                                                ;; 02:598b $c9
-call_02_598c:
+call_02_598c_EntityAction_FlowerHammer_unk2:
     call call_00_3843                                  ;; 02:598c $cd $43 $38
     jp   NZ, call_00_3910                              ;; 02:598f $c2 $10 $39
     ret                                                ;; 02:5992 $c9
 
-call_02_5993:
+call_02_5993_EntityAction_Hunter_unk0:
     call call_00_34ea
     jr   z,.jr_02_599D
     ld   c,$03
@@ -1610,31 +1610,31 @@ call_02_5993:
     call call_00_36f7
     jr   call_02_5A00
 
-call_02_59c8:
+call_02_59c8_EntityAction_Hunter_unk1:
     call call_00_3843
     jr   z,call_02_5A00
     ld   a,$00
     jp   call_02_7102_SetEntityAction
 
-call_02_59d2:
+call_02_59d2_EntityAction_Hunter_unk2:
     call call_00_3843
     ld   a,$03
     jp   nz,call_02_7102_SetEntityAction
     ret  
 
-call_02_59db:
+call_02_59db_EntityAction_Hunter_unk3:
     call call_00_3843
     ld   a,$04
     jp   nz,call_02_7102_SetEntityAction
     ret  
 
-call_02_59e4:
+call_02_59e4_EntityAction_Hunter_unk4:
     call call_00_3843
     ld   a,$05
     jp   nz,call_02_7102_SetEntityAction
     ret  
 
-call_02_59ed:
+call_02_59ed_EntityAction_Hunter_unk5:
     call call_00_3843
     ret  z
     ld   h,$d2
@@ -1655,7 +1655,7 @@ call_02_5A00:
     ld   a,$02
     jp   call_02_7102_SetEntityAction
 
-call_02_5a10:
+call_02_5a10_EntityAction_HunterBullet_unk0:
     ld   c,$01
     call call_00_3350
     ld   c,$5A
@@ -1663,12 +1663,12 @@ call_02_5a10:
     ld   a,$01
     jp   call_02_7102_SetEntityAction
 
-call_02_5a1f:
+call_02_5a1f_EntityAction_HunterBullet_unk1:
     call call_00_3817
     jp   z,call_00_3910
     jp   call_00_3442
 
-call_02_5a28:
+call_02_5a28_EntityAction_Mushroom_Update:
     ld   H, $d2                                        ;; 02:5a28 $26 $d2
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:5a2a $fa $00 $d3
     or   A, $17                                        ;; 02:5a2d $f6 $17
@@ -1710,13 +1710,13 @@ call_02_5a28:
     add  A, $40                                        ;; 02:5a6f $c6 $40
     ld   [HL], A                                       ;; 02:5a71 $77
     ret                                                ;; 02:5a72 $c9
-call_02_5a73:
+call_02_5a73_EntityAction_Unk28_Update:
     call call_00_30af                                  ;; 02:5a73 $cd $af $30
     call call_00_3154                                  ;; 02:5a76 $cd $54 $31
     jp   NC, call_00_3910                              ;; 02:5a79 $d2 $10 $39
     ret                                                ;; 02:5a7c $c9
 
-call_02_5a7d:
+call_02_5a7d_EntityAction_Lizard_Update:
     ld   a,[wD73B]
     and  a,$3F
     jr   nz,.jr_02_5A84
@@ -1725,14 +1725,14 @@ call_02_5a7d:
     call call_00_32e1
     jp   call_00_36f7
 
-call_02_5a8c:
+call_02_5a8c_EntityAction_HappyFace_unk0:
     call call_00_3843                                  ;; 02:5a8c $cd $43 $38
     ret  Z                                             ;; 02:5a8f $c8
     ld   C, $28                                        ;; 02:5a90 $0e $28
     call call_00_335a                                  ;; 02:5a92 $cd $5a $33
     ld   A, $01                                        ;; 02:5a95 $3e $01
     jp   call_02_7102_SetEntityAction                                  ;; 02:5a97 $c3 $02 $71
-call_02_5a9a:
+call_02_5a9a_EntityAction_HappyFace_unk1:
     call call_00_30af                                  ;; 02:5a9a $cd $af $30
     call call_00_3154                                  ;; 02:5a9d $cd $54 $31
     ret  C                                             ;; 02:5aa0 $d8
@@ -1741,7 +1741,7 @@ call_02_5a9a:
     ld   A, $00                                        ;; 02:5aa6 $3e $00
     jp   call_02_7102_SetEntityAction                                  ;; 02:5aa8 $c3 $02 $71
 
-call_02_5aab:
+call_02_5aab_EntityAction_ToonTVVanishingBlock_unk0:
     call call_00_34ea
     jr   z,.jr_02_5AB7
     ld   a,l
@@ -1782,7 +1782,7 @@ call_02_5aab:
     ld   a,$01
     jp   call_02_7102_SetEntityAction
 
-call_02_5aea:
+call_02_5aea_EntityAction_ToonTVVanishingBlock_unk1:
     ld   h,$D2
     ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$18
@@ -1828,7 +1828,7 @@ call_02_5aea:
 .data_02_5b31:
     db   $01, $02, $04, $08, $10, $20, $40, $80
 
-call_02_5b39:
+call_02_5b39_EntityAction_ToonTVVanishingBlock_unk2:
     call call_00_3843
     ret  z
     ld   c,$08
@@ -1836,7 +1836,7 @@ call_02_5b39:
     ld   a,$00
     jp   call_02_7102_SetEntityAction
 
-call_02_5b47:
+call_02_5b47_EntityAction_ToonTVMovingBlock_unk0:
     call call_00_34ea
     jr   z,.jr_02_5B53
     ld   a,l
@@ -1894,7 +1894,7 @@ call_02_5b47:
     call call_00_3559
     jp   call_00_318d
 
-call_02_5b9d:
+call_02_5b9d_EntityAction_ToonTVMovingBlock_unk1:
     ld   a,[wD73B]
     and  a,$07
     ret  nz
@@ -1908,7 +1908,7 @@ call_02_5b9d:
     ld   a,$00
     jp   call_02_7102_SetEntityAction
 
-call_02_5bb6:
+call_02_5bb6_EntityAction_MovingLog_Update:
     call call_00_34ea                                  ;; 02:5bb6 $cd $ea $34
     jr   Z, .jr_02_5bc2                                ;; 02:5bb9 $28 $07
     ld   A, L                                          ;; 02:5bbb $7d
@@ -1936,10 +1936,10 @@ call_02_5bb6:
 .jr_02_5bdb:
     call call_00_3559                                  ;; 02:5bdb $cd $59 $35
     jp   call_00_318d                                    ;; 02:5bde $c3 $8d $31
-call_02_5be1:
+call_02_5be1_EntityAction_StationaryLog_Update:
     ret                                                ;; 02:5be1 $c9
     
-call_02_5be2:
+call_02_5be2_EntityAction_Rocket_unk0:
     ld   h,$D2
     ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$17
@@ -1951,13 +1951,13 @@ call_02_5be2:
     ld   a,$01
     jp   call_02_7102_SetEntityAction
 
-call_02_5bf7:
+call_02_5bf7_EntityAction_Rocket_unk1:
     call call_00_3843
     ld   a,$02
     jp   nz,call_02_7102_SetEntityAction
     ret  
 
-call_02_5c00:
+call_02_5c00_EntityAction_Rocket_unk2:
     ld   c,$c0
     call call_00_3316
     jp   call_00_3597
@@ -2542,7 +2542,7 @@ call_02_5f67:
     or   a,$0D
     ld   l,a
     ld   [hl],b
-    ld   hl,wD60F_BitmapOfThingsToLoad
+    ld   hl,wD60F_HDMATransferFlags
     set  1,[hl]
 .data_02_5fdf:
     ret  

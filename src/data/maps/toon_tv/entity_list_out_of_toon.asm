@@ -28,7 +28,7 @@
     db   $62, $60, $0c
     db   $0a, $00, $00, $00, $00, $00, $00, $00
 
-    db   ENTITY_TOON_TV_MOVING_LOG_PLATFORM
+    db   ENTITY_TOON_TV_MOVING_LOG
     dw   $08f0, $0088
     db   $48, $46, $06
     db   $03, $52, $ff, $10, $00, $00, $00, $00
@@ -58,12 +58,12 @@
     db   $5d, $5b, $07
     db   $05, $00, $00, $00, $00, $00, $00, $00
 
-    db   ENTITY_TOON_TV_MOVING_LOG_PLATFORM
+    db   ENTITY_TOON_TV_MOVING_LOG
     dw   $0a90, $0100
     db   $55, $4f, $0b
     db   $07, $a0, $ff, $10, $00, $00, $00, $00
 
-    db   ENTITY_TOON_TV_MOVING_LOG_PLATFORM
+    db   ENTITY_TOON_TV_MOVING_LOG
     dw   $0a10, $0140
     db   $55, $4f, $0b
     db   $07, $a0, $ff, $10, $00, $00, $00, $00
@@ -98,12 +98,12 @@
     db   $16, $14, $0e
     db   $0c, $00, $00, $00, $00, $00, $00, $00
 
-    db   ENTITY_TOON_TV_STATIONARY_LOG_PLATFORM
+    db   ENTITY_TOON_TV_STATIONARY_LOG
     dw   $0190, $01d0
     db   $0d, $0b, $0f
     db   $0d, $00, $00, $00, $00, $00, $00, $00
 
-    db   ENTITY_TOON_TV_HARD_HEAD_AREA_ENTITY
+    db   ENTITY_TOON_TV_HARD_HEAD_AREA_OBJECT
     dw   $0910, $01d0
     db   $4e, $42, $0f
     db   $0d, $00, $00, $00, $00, $00, $00, $00
@@ -113,7 +113,7 @@
     db   $55, $4f, $0f
     db   $0d, $00, $00, $00, $00, $00, $00, $00
 
-    db   ENTITY_TOON_TV_STATIONARY_LOG_PLATFORM
+    db   ENTITY_TOON_TV_STATIONARY_LOG
     dw   $0150, $01f0
     db   $0b, $09, $10
     db   $0e, $00, $00, $00, $00, $00, $00, $00
@@ -138,17 +138,17 @@
     db   $30, $2e, $15
     db   $13, $00, $00, $00, $00, $00, $00, $00
 
-    db   ENTITY_TOON_TV_MOVING_LOG_PLATFORM
+    db   ENTITY_TOON_TV_MOVING_LOG
     dw   $07d0, $0380
     db   $3f, $3d, $1f
     db   $1b, $52, $ff, $10, $00, $00, $00, $00
 
-    db   ENTITY_TOON_TV_MOVING_LOG_PLATFORM
+    db   ENTITY_TOON_TV_MOVING_LOG
     dw   $0a10, $0380
     db   $51, $43, $1d
     db   $1b, $a0, $ff, $10, $00, $00, $00, $00
 
-    db   ENTITY_TOON_TV_MOVING_LOG_PLATFORM
+    db   ENTITY_TOON_TV_MOVING_LOG
     dw   $0730, $03b0
     db   $3b, $34, $1e
     db   $1c, $a0, $ff, $10, $00, $00, $00, $00
@@ -163,7 +163,7 @@
     db   $51, $4e, $1f
     db   $1d, $00, $00, $00, $00, $00, $00, $00
 
-    db   ENTITY_TOON_TV_MOVING_LOG_PLATFORM
+    db   ENTITY_TOON_TV_MOVING_LOG
     dw   $0630, $03e0
     db   $33, $2c, $20
     db   $1e, $a0, $ff, $10, $00, $00, $00, $00
@@ -173,7 +173,7 @@
     db   $4e, $4b, $20
     db   $1e, $00, $00, $00, $00, $00, $00, $00
 
-    db   ENTITY_TOON_TV_MOVING_LOG_PLATFORM
+    db   ENTITY_TOON_TV_MOVING_LOG
     dw   $0530, $0420
     db   $2b, $27, $22
     db   $20, $a0, $ff, $10, $00, $00, $00, $00
@@ -198,7 +198,7 @@
     db   $37, $31, $25
     db   $23, $00, $00, $00, $00, $00, $00, $00
 
-    db   ENTITY_TOON_TV_MOVING_LOG_PLATFORM
+    db   ENTITY_TOON_TV_MOVING_LOG
     dw   $0610, $04a0
     db   $31, $2f, $29
     db   $24, $52, $ff, $10, $00, $00, $00, $00
@@ -223,7 +223,7 @@
     db   $6f, $6d, $30
     db   $2e, $00, $00, $00, $00, $00, $00, $00
 
-    db   ENTITY_TOON_TV_STATIONARY_LOG_PLATFORM
+    db   ENTITY_TOON_TV_STATIONARY_LOG
     dw   $0ed0, $05f0
     db   $77, $75, $30
     db   $2e, $00, $00, $00, $00, $00, $00, $00
@@ -233,12 +233,12 @@
     db   $5e, $59, $31
     db   $2f, $00, $00, $00, $00, $00, $00, $00
 
-    db   ENTITY_TOON_TV_STATIONARY_LOG_PLATFORM
+    db   ENTITY_TOON_TV_STATIONARY_LOG
     dw   $0e90, $0610
     db   $75, $73, $31
     db   $2f, $00, $00, $00, $00, $00, $00, $00
 
-    db   ENTITY_TOON_TV_STATIONARY_LOG_PLATFORM
+    db   ENTITY_TOON_TV_STATIONARY_LOG
     dw   $0c70, $0630
     db   $64, $62, $32
     db   $30, $00, $00, $00, $00, $00, $00, $00
@@ -258,7 +258,7 @@
     db   $48, $43, $37
     db   $35, $00, $00, $00, $00, $00, $00, $00
 
-    db   ENTITY_TOON_TV_MOVING_LOG_PLATFORM
+    db   ENTITY_TOON_TV_MOVING_LOG
     dw   $0ad0, $06a0
     db   $57, $55, $39
     db   $30, $52, $ff, $10, $00, $00, $00, $00
@@ -268,7 +268,7 @@
     db   $1e, $18, $37
     db   $35, $00, $00, $00, $00, $00, $00, $00
 
-    db   ENTITY_TOON_TV_MOVING_LOG_PLATFORM
+    db   ENTITY_TOON_TV_MOVING_LOG
     dw   $0410, $06e0
     db   $22, $1e, $38
     db   $36, $a0, $ff, $10, $00, $00, $00, $00
@@ -283,7 +283,7 @@
     db   $6b, $69, $38
     db   $35, $00, $00, $00, $00, $00, $00, $00
 
-    db   ENTITY_TOON_TV_MOVING_LOG_PLATFORM
+    db   ENTITY_TOON_TV_MOVING_LOG
     dw   $0250, $0708
     db   $19, $10, $39
     db   $37, $a0, $ff, $10, $00, $00, $00, $00

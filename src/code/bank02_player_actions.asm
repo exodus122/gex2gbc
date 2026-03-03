@@ -543,7 +543,7 @@ call_02_44f9:
     cp   A, [HL]                                       ;; 02:4528 $be
     jr   Z, .jr_02_4531                                ;; 02:4529 $28 $06
     ld   [HL], A                                       ;; 02:452b $77
-    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 02:452c $21 $0f $d6
+    ld   HL, wD60F_HDMATransferFlags                                     ;; 02:452c $21 $0f $d6
     set  0, [HL]                                       ;; 02:452f $cb $c6
 .jr_02_4531:
     ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:4531 $fa $5a $d7
@@ -597,7 +597,7 @@ call_02_455f:
     ld   [wD20D_PlayerFacingAngle],a
     ld   a,$00
     ld   [wD74B],a
-    ld   hl,wD60F_BitmapOfThingsToLoad
+    ld   hl,wD60F_HDMATransferFlags
     set  0,[hl]
     ld   a,[wD747]
     cp   a,$20
@@ -645,7 +645,7 @@ call_02_45b0:
     cp   [hl]
     jr   z,.jr_02_45F0
     ld   [hl],a
-    ld   hl,wD60F_BitmapOfThingsToLoad
+    ld   hl,wD60F_HDMATransferFlags
     set  0,[hl]
 .jr_02_45F0:
     ld   a,[wD75A_CurrentInputsAlt]
@@ -693,7 +693,7 @@ call_02_4626:
     cp   [hl]
     ret  z
     ld   [hl],a
-    ld   hl,wD60F_BitmapOfThingsToLoad
+    ld   hl,wD60F_HDMATransferFlags
     set  0,[hl]
     ld   a,[wD747]
     cp   a,$20
@@ -819,7 +819,7 @@ call_02_46b8:
     ld   [wD74B],a
     ldi  a,[hl]
     ld   [wD208_PlayerSpriteIndex],a
-    ld   hl,wD60F_BitmapOfThingsToLoad
+    ld   hl,wD60F_HDMATransferFlags
     set  0,[hl]
     ret     
 .data_02_472e:
@@ -924,7 +924,7 @@ call_02_480f:
     cp   A, [HL]                                       ;; 02:4812 $be
     ret  Z                                             ;; 02:4813 $c8
     ld   [HL], A                                       ;; 02:4814 $77
-    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 02:4815 $21 $0f $d6
+    ld   HL, wD60F_HDMATransferFlags                                     ;; 02:4815 $21 $0f $d6
     set  0, [HL]                                       ;; 02:4818 $cb $c6
     ret                                                ;; 02:481a $c9
 

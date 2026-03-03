@@ -1173,7 +1173,7 @@ call_00_18e4:
     jr   call_00_1922_LoadSecondaryTileset                                    ;; 00:1920 $18 $00
 
 call_00_1922_LoadSecondaryTileset:
-    ld   A, [wD60F_BitmapOfThingsToLoad]                                    ;; 00:1922 $fa $0f $d6
+    ld   A, [wD60F_HDMATransferFlags]                                    ;; 00:1922 $fa $0f $d6
     bit  2, A                                          ;; 00:1925 $cb $57
     ret  NZ                                            ;; 00:1927 $c0
     ld   DE, $0b                                       ;; 00:1928 $11 $0b $00
@@ -1289,7 +1289,7 @@ call_00_1922_LoadSecondaryTileset:
     ld   A, H                                          ;; 00:19d8 $7c
     ld   [wD737], A                                    ;; 00:19d9 $ea $37 $d7
 .jr_00_19dc:
-    ld   HL, wD60F_BitmapOfThingsToLoad                                     ;; 00:19dc $21 $0f $d6
+    ld   HL, wD60F_HDMATransferFlags                                     ;; 00:19dc $21 $0f $d6
     set  2, [HL]                                       ;; 00:19df $cb $d6
     call call_00_10a3_RestoreBank                                  ;; 00:19e1 $cd $a3 $10
     farcall call_0b_5df8
