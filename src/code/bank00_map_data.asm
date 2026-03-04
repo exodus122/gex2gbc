@@ -1,19 +1,19 @@
-call_00_2e3a_GetTVPaletteId:
-    call call_00_2eb0_GetLevelDataAddr                                  ;; 00:2e3a $cd $b0 $2e
+call_00_2e3a_GetMapTVPaletteId:
+    call call_00_2eb0_GetMapDataAddr                                  ;; 00:2e3a $cd $b0 $2e
     ld   DE, $00                                       ;; 00:2e3d $11 $00 $00
     add  HL, DE                                        ;; 00:2e40 $19
     ld   A, [HL]                                       ;; 00:2e41 $7e
     ret                                                ;; 00:2e42 $c9
 
-call_00_2e43_GetRemoteProgressId:
-    call call_00_2eb0_GetLevelDataAddr                                  ;; 00:2e43 $cd $b0 $2e
+call_00_2e43_GetMapRemoteProgressId:
+    call call_00_2eb0_GetMapDataAddr                                  ;; 00:2e43 $cd $b0 $2e
     ld   DE, $01                                       ;; 00:2e46 $11 $01 $00
     add  HL, DE                                        ;; 00:2e49 $19
     ld   A, [HL]                                       ;; 00:2e4a $7e
     ret                                                ;; 00:2e4b $c9
 
-call_00_2e4c:
-    call call_00_2eb0_GetLevelDataAddr                                  ;; 00:2e4c $cd $b0 $2e
+call_00_2e4c_GetMapTextPtr:
+    call call_00_2eb0_GetMapDataAddr                                  ;; 00:2e4c $cd $b0 $2e
     ld   DE, $02                                       ;; 00:2e4f $11 $02 $00
     add  HL, DE                                        ;; 00:2e52 $19
     ld   E, [HL]                                       ;; 00:2e53 $5e
@@ -27,8 +27,8 @@ call_00_2e4c:
     ld   L, E                                          ;; 00:2e5d $6b
     ret                                                ;; 00:2e5e $c9
 
-call_00_2e5f:
-    call call_00_2eb0_GetLevelDataAddr                                  ;; 00:2e5f $cd $b0 $2e
+call_00_2e5f_GetMapTextPtr2:
+    call call_00_2eb0_GetMapDataAddr                                  ;; 00:2e5f $cd $b0 $2e
     ld   DE, $02                                       ;; 00:2e62 $11 $02 $00
     add  HL, DE                                        ;; 00:2e65 $19
     ld   E, [HL]                                       ;; 00:2e66 $5e
@@ -46,44 +46,44 @@ call_00_2e5f:
     ld   L, E                                          ;; 00:2e75 $6b ; HL is value in [2 + 0x2-0x3 in the level data + A*2]
     ret                                                ;; 00:2e76 $c9
 
-call_00_2e77_GetCurrentMapBankNumber:
-    call call_00_2eb0_GetLevelDataAddr                                  ;; 00:2e77 $cd $b0 $2e
+call_00_2e77_GetMapBank:
+    call call_00_2eb0_GetMapDataAddr                                  ;; 00:2e77 $cd $b0 $2e
     ld   DE, $04                                       ;; 00:2e7a $11 $04 $00
     add  HL, DE                                        ;; 00:2e7d $19
     ld   A, [HL]                                       ;; 00:2e7e $7e
     ret                                                ;; 00:2e7f $c9
 
-call_00_2e80_GetCurrentSecondaryTilesetBank:
-    call call_00_2eb0_GetLevelDataAddr                                  ;; 00:2e80 $cd $b0 $2e
+call_00_2e80_GetMapBlocksetOverrideBank:
+    call call_00_2eb0_GetMapDataAddr                                  ;; 00:2e80 $cd $b0 $2e
     ld   DE, $05                                       ;; 00:2e83 $11 $05 $00
     add  HL, DE                                        ;; 00:2e86 $19
     ld   A, [HL]                                       ;; 00:2e87 $7e
     ret                                                ;; 00:2e88 $c9
 
-call_00_2e89_GetCurrentBlocksetBank:
-    call call_00_2eb0_GetLevelDataAddr                                  ;; 00:2e89 $cd $b0 $2e
+call_00_2e89_GetMapBlocksetCollisionBank:
+    call call_00_2eb0_GetMapDataAddr                                  ;; 00:2e89 $cd $b0 $2e
     ld   DE, $06                                       ;; 00:2e8c $11 $06 $00
     add  HL, DE                                        ;; 00:2e8f $19
     ld   A, [HL]                                       ;; 00:2e90 $7e
     ret                                                ;; 00:2e91 $c9
     ret                                                ;; 00:2e92 $c9
 
-call_00_2e93_GetBlocksetOverrideBit:
-    call call_00_2eb0_GetLevelDataAddr                                  ;; 00:2e93 $cd $b0 $2e
+call_00_2e93_GetMapBlocksetOverrideBit:
+    call call_00_2eb0_GetMapDataAddr                                  ;; 00:2e93 $cd $b0 $2e
     ld   DE, $08                                       ;; 00:2e96 $11 $08 $00
     add  HL, DE                                        ;; 00:2e99 $19
     ld   A, [HL]                                       ;; 00:2e9a $7e
     ret                                                ;; 00:2e9b $c9
 
-call_00_2e9c_GetCurrentBgTilesetBank:
-    call call_00_2eb0_GetLevelDataAddr                                  ;; 00:2e9c $cd $b0 $2e
+call_00_2e9c_GetMapTilesetBank:
+    call call_00_2eb0_GetMapDataAddr                                  ;; 00:2e9c $cd $b0 $2e
     ld   DE, $09                                       ;; 00:2e9f $11 $09 $00
     add  HL, DE                                        ;; 00:2ea2 $19
     ld   A, [HL]                                       ;; 00:2ea3 $7e
     ret                                                ;; 00:2ea4 $c9
 
-call_00_2ea5:
-    call call_00_2eb0_GetLevelDataAddr                                  ;; 00:2ea5 $cd $b0 $2e
+call_00_2ea5_GetMapTilesetBankOffset:
+    call call_00_2eb0_GetMapDataAddr                                  ;; 00:2ea5 $cd $b0 $2e
     ld   DE, $0a                                       ;; 00:2ea8 $11 $0a $00
     add  HL, DE                                        ;; 00:2eab $19
     ld   E, [HL]                                       ;; 00:2eac $5e
@@ -91,7 +91,7 @@ call_00_2ea5:
     ld   D, [HL]                                       ;; 00:2eae $56
     ret                                                ;; 00:2eaf $c9
 
-call_00_2eb0_GetLevelDataAddr:
+call_00_2eb0_GetMapDataAddr:
     ld   HL, wD624_CurrentLevelId                                     ;; 00:2eb0 $21 $24 $d6
     ld   L, [HL]                                       ;; 00:2eb3 $6e
     ld   H, $00                                        ;; 00:2eb4 $26 $00
@@ -99,11 +99,11 @@ call_00_2eb0_GetLevelDataAddr:
     add  HL, HL                                        ;; 00:2eb7 $29
     add  HL, HL                                        ;; 00:2eb8 $29
     add  HL, HL                                        ;; 00:2eb9 $29
-    ld   DE, .data_LevelData                                     ;; 00:2eba $11 $bf $2e
+    ld   DE, .data_00_2ebf_MapData                                     ;; 00:2eba $11 $bf $2e
     add  HL, DE                                        ;; 00:2ebd $19
     ret                                                ;; 00:2ebe $c9 ; HL is now the pointer to the level data
-.data_LevelData:
-; List of which banks to use for each of the 31 maps. 0x10 bytes each
+.data_00_2ebf_MapData:
+; Bank numbers and pointers for the 31 maps. 0x10 bytes each
 ; 0x0 tv palette number (index into .data_0b_5d62)
 ; 0x1 remote progress related
 ; 0x2-0x3 is a pointer to the level's text (level name, mission names)

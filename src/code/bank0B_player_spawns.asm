@@ -1,4 +1,15 @@
-call_0b_4efe_SpawnPositionInMap:
+call_0b_4efe_Player_SetSpawnPosition:
+; Top-level player spawn handler. Three branches: 
+; (1) Door spawn — if wD621 bit 3 is set (entering through a door), clears the bit, computes 
+; tile coordinates from current player position (world pos − $FFF1, shifted), looks up the 
+; door in the level's .data_LevelDoorSpawnPointerTable list (terminated by $FF), reads the target X/Y 
+; tile coords from the matching door entry, converts to world coords (tile × 32 + $20 for X, 
+; tile × 32 + $10 for Y), stores to wD20E/wD210, calls UpdatePlayerMapWindow. 
+; (2) Media Dimension — if level ID = 0, uses wD628 (respawn point index) 
+; to index .data_MediaDimensionSpawnTable (tile X/Y pairs), converts to world coords 
+; (tile × 32 + $20 X, tile × 32 + $30 Y), updates map window. 
+; (3) Level spawn — uses level ID × 8 + checkpoint ID × 2 to index .data_LevelInitialSpawnTable 
+; (X/Y tile pairs), converts to world coords (tile × 32 + $10 for both X and Y), updates map window
     ld   HL, wD621                                     ;; 0b:4efe $21 $21 $d6
     ld   A, [HL]                                       ;; 0b:4f01 $7e
     and  A, $08                                        ;; 0b:4f02 $e6 $08
@@ -28,7 +39,7 @@ call_0b_4efe_SpawnPositionInMap:
     ld   L, [HL]                                       ;; 0b:4f25 $6e
     ld   H, $00                                        ;; 0b:4f26 $26 $00
     add  HL, HL                                        ;; 0b:4f28 $29
-    ld   DE, .data_LevelDoorSpawns                             ;; 0b:4f29 $11 $f2 $4f
+    ld   DE, .data_LevelDoorSpawnPointerTable                             ;; 0b:4f29 $11 $f2 $4f
     add  HL, DE                                        ;; 0b:4f2c $19
     ld   A, [HL+]                                      ;; 0b:4f2d $2a
     ld   H, [HL]                                       ;; 0b:4f2e $66
@@ -86,7 +97,7 @@ call_0b_4efe_SpawnPositionInMap:
     ld   L, [HL]                                       ;; 0b:4f79 $6e
     ld   H, $00                                        ;; 0b:4f7a $26 $00
     add  HL, HL                                        ;; 0b:4f7c $29
-    ld   DE, .data_MediaDimensionSpawns                             ;; 0b:4f7d $11 $01 $54
+    ld   DE, .data_MediaDimensionSpawnTable                             ;; 0b:4f7d $11 $01 $54
     add  HL, DE                                        ;; 0b:4f80 $19
     ld   C, [HL]                                       ;; 0b:4f81 $4e
     inc  HL                                            ;; 0b:4f82 $23
@@ -130,7 +141,7 @@ call_0b_4efe_SpawnPositionInMap:
     ld   E, A                                          ;; 0b:4fbc $5f
     ld   D, $00                                        ;; 0b:4fbd $16 $00
     add  HL, DE                                        ;; 0b:4fbf $19
-    ld   DE, .data_LevelInitialSpawns                             ;; 0b:4fc0 $11 $3f $54
+    ld   DE, .data_LevelInitialSpawnTable                             ;; 0b:4fc0 $11 $3f $54
     add  HL, DE                                        ;; 0b:4fc3 $19
     ld   C, [HL]                                       ;; 0b:4fc4 $4e
     inc  HL                                            ;; 0b:4fc5 $23
@@ -162,7 +173,11 @@ call_0b_4efe_SpawnPositionInMap:
     ld   A, H                                          ;; 0b:4feb $7c
     ld   [wD211_PlayerYPosition], A                                    ;; 0b:4fec $ea $11 $d2
     jp   call_00_13a6_UpdatePlayerMapWindow                                  ;; 0b:4fef $c3 $a6 $13
-.data_LevelDoorSpawns:
+.data_LevelDoorSpawnPointerTable:
+; 31-entry pointer table mapping level IDs to door spawn lists. Each list is a sequence of 3-byte 
+; records (X tile, Y tile, destination X tile, destination Y tile — the first two identify which 
+; door was used, the last two give the spawn position), terminated by $FF. Media Dimension and hub 
+; levels share .data_0b_5030 (the main Media Dimension door list). Circuit Central's boss level shares a stub
     dw   .data_0b_5030
     dw   .data_0b_5051
     dw   .data_0b_5066
@@ -348,7 +363,10 @@ call_0b_4efe_SpawnPositionInMap:
     db   $2d, $ff
 .data_0b_53fc:
     db   $62, $7d, $70, $7d, $ff             ;; 0b:53fc ???????
-.data_MediaDimensionSpawns:
+.data_MediaDimensionSpawnTable:
+; 38 entries × 2 bytes (tile X, tile Y) for up to 19 distinct respawn points in Media Dimension, 
+; indexed by wD628. Includes hub entrances, TV portals, and inter-area connections. 
+; Zero entries are unused/null spawn points
     db   $25, $0d
     db   $05, $0b
     db   $36, $0b
@@ -360,7 +378,10 @@ call_0b_4efe_SpawnPositionInMap:
     db   $00, $00, $26, $1e, $18, $4c, $1c, $31        ;; 0b:5429 ????????
     db   $1a, $04, $11, $04, $23, $04, $00, $00        ;; 0b:5431 ????????
     db   $00, $00, $00, $00, $48, $31                  ;; 0b:5439 ??????
-.data_LevelInitialSpawns:
+.data_LevelInitialSpawnTable:
+; 31 entries × 8 bytes per level (4 checkpoint spawn positions × 2 bytes each — tile X, tile Y). 
+; Most levels only use checkpoints 0 and 1; longer levels use up to checkpoint 3. 
+; Unused checkpoint slots are zero-padded
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:543f ????????
     db   $2f, $0b, $26, $3a, $00, $00, $00, $00        ;; 0b:5447 ww??????
     db   $03, $0a, $4b, $0a, $00, $00, $00, $00        ;; 0b:544f ww??????

@@ -393,7 +393,7 @@ data_02_51b3:                        ;; ENTITY_MEDIA_DIMENSION_MOVING_PLATFORM
 call_02_51b7_EntityAction_CollectibleSpawn_Update:
     call call_00_3b8d_Entity_TickAnimationFrames                                  ;; 02:51b7 $cd $8d $3b
     push AF                                            ;; 02:51ba $f5
-    farcall call_03_6584
+    farcall call_03_6584_Entity_BuildSprites_BlankTile
     jr   NZ, .jr_02_51cc                               ;; 02:51c6 $20 $04
     pop  AF                                            ;; 02:51c8 $f1
     jp   call_00_3931_Entity_KillSelf                                    ;; 02:51c9 $c3 $31 $39
@@ -525,7 +525,7 @@ call_02_52aa_EntityAction_Unk02_Update:
 call_02_52ab_EntityAction_ParticleBurst_Update:
     call call_00_3b8d_Entity_TickAnimationFrames                                  ;; 02:52ab $cd $8d $3b
     jr   Z, .jr_02_52bc                                ;; 02:52ae $28 $0c
-    farcall call_03_65f9
+    farcall call_03_65f9_Entity_BuildSprites_GemType
     ret  NZ                                            ;; 02:52bb $c0
 .jr_02_52bc:
     ld   C, $01                                        ;; 02:52bc $0e $01
@@ -807,7 +807,7 @@ call_02_5464_EntityAction_FloatingSkullProjectile_unk0:
 call_02_546e_EntityAction_FloatingSkullProjectile_unk1:
     call call_00_3b8d_Entity_TickAnimationFrames
     jp   z,call_00_3931_Entity_KillSelf
-    farcall call_03_6549
+    farcall call_03_6549_Entity_BuildSprites_CoinType
     ret  
 
 call_02_5480_EntityAction_Zombie_unk0:
@@ -2073,7 +2073,7 @@ call_02_5d5b_EntityAction_FallingBoulder_unk3:
     call call_00_3b8d_Entity_TickAnimationFrames
     ld   a,$00
     jp   z,call_02_7102_Entity_SetAction
-    farcall call_03_65b8
+    farcall call_03_65b8_Entity_BuildSprites_FruitType
     ret  
 
 call_02_5d6f_EntityAction_Unk3F_Update:
@@ -2142,7 +2142,7 @@ call_02_5ddc_EntityAction_FirePlantProjectiles_unk0:
 call_02_5de6_EntityAction_FirePlantProjectiles_unk1:
     call call_00_3b8d_Entity_TickAnimationFrames
     jp   z,call_00_3931_Entity_KillSelf
-    farcall call_03_663a
+    farcall call_03_663a_Entity_BuildSprites_CoinType2
     ret  
 
 call_02_5df8_EntityAction_Geyser_unk0:
@@ -2846,7 +2846,7 @@ call_02_635d_EntityAction_Jar_unk0:
 call_02_6375_EntityAction_Jar_unk1:
     call call_00_3b8d_Entity_TickAnimationFrames
     jp   z,call_00_3985_Entity_SpawnProjectileInit
-    farcall call_03_6675
+    farcall call_03_6675_Entity_BuildSprites_CoinType3
     ret  
 
 call_02_6387_EntityAction_Unk5C_Update:

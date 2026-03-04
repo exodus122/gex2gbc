@@ -1,4 +1,16 @@
-call_00_2329_LoadAndRunMissionPreviewCutscene:
+call_00_2329_MissionPreview_LoadAndRun:
+; Runs the animated mission preview cutscene shown when entering a level. Saves B to wD775 (skippable flag). 
+; Uses wD624 (level ID) × 16 + B as an index into .data_00_2472_CutsceneIndexLookupTable (a 512-byte sparse lookup table, 
+; $FF = no cutscene for this level/slot) to get a cutscene script index. Indexes .data_00_2662_CutsceneScriptPointerTable to 
+; get the script pointer. Saves world state (call_00_3628), temporarily moves Gex to the cutscene starting position. 
+; (1) Movement phase: if the script has a movement block, zeroes wD79D (movement accumulator), iterates through movement 
+; commands: writes direction flags to wD75A, duration to wD79B/wD79C, then runs the game loop (wait-for-interrupt, 
+; ProcessCutsceneMovement, map update, entity update, BG map dirty regions, VRAM transfer) until the 
+; duration expires or the player presses a button (if skippable). 
+; (2) Animation phase: if the script has an animation pointer, calls call_00_1f80 (entity animation/dialogue runner), 
+; loops the game loop while wD77D/wD77B are nonzero. 
+; (3) Hold phase: waits 180 frames ($B4) for the player to view the scene. Restores world state, player position, 
+; and map on exit
     ld   A, B                                          ;; 00:2329 $78
     ld   [wD775], A                                    ;; 00:232a $ea $75 $d7
     ld   B, $00                                        ;; 00:232d $06 $00
@@ -9,7 +21,7 @@ call_00_2329_LoadAndRunMissionPreviewCutscene:
     add  HL, HL                                        ;; 00:2336 $29
     add  HL, HL                                        ;; 00:2337 $29
     add  HL, HL                                        ;; 00:2338 $29
-    ld   DE, .data_00_2472                                     ;; 00:2339 $11 $72 $24
+    ld   DE, .data_00_2472_CutsceneIndexLookupTable                                     ;; 00:2339 $11 $72 $24
     add  HL, DE                                        ;; 00:233c $19
     add  HL, BC                                        ;; 00:233d $09
     ld   A, [HL]                                       ;; 00:233e $7e
@@ -18,7 +30,7 @@ call_00_2329_LoadAndRunMissionPreviewCutscene:
     ld   L, A                                          ;; 00:2342 $6f
     ld   H, $00                                        ;; 00:2343 $26 $00
     add  HL, HL                                        ;; 00:2345 $29
-    ld   DE, .data_00_2662                                     ;; 00:2346 $11 $62 $26
+    ld   DE, .data_00_2662_CutsceneScriptPointerTable                                     ;; 00:2346 $11 $62 $26
     add  HL, DE                                        ;; 00:2349 $19
     ld   E, [HL]                                       ;; 00:234a $5e
     inc  HL                                            ;; 00:234b $23
@@ -86,7 +98,7 @@ call_00_2329_LoadAndRunMissionPreviewCutscene:
     jp   .jp_00_2445                                   ;; 00:23ae $c3 $45 $24
 .jr_00_23b1:
     call call_00_0ab4_WaitForInterrupt                                  ;; 00:23b1 $cd $b4 $0a
-    call call_00_2dbf_ProcessCutsceneMovement                                  ;; 00:23b4 $cd $bf $2d
+    call call_00_2dbf_MissionPreview_UpdateMovement                                  ;; 00:23b4 $cd $bf $2d
     farcall call_02_715a_MapWindow_Update
     farcall call_02_6eba_Entities_UpdateAll
     call call_00_1455_LoadBgMapDirtyRegions                                  ;; 00:23cd $cd $55 $14
@@ -171,7 +183,10 @@ call_00_2329_LoadAndRunMissionPreviewCutscene:
     call call_00_1264_LoadFullMap                                  ;; 00:2461 $cd $64 $12
     farcall call_02_71c8_Entities_UpdateSoundsForAll
     jp   call_00_0521_DrawEntitiesWrapper                                  ;; 00:246f $c3 $21 $05
-.data_00_2472:
+.data_00_2472_CutsceneIndexLookupTable:
+; 512-byte sparse table (31 levels × 16 bytes each, $FF = no cutscene). Maps (level ID, cutscene slot) 
+; pairs to cutscene script indices. Most levels have 1–4 cutscene entries; Rezopolis and some late-game 
+; levels have the densest coverage. The script index is used to look up a pointer in .data_00_2662_CutsceneScriptPointerTable
     db   $00, $01, $02, $03, $ff, $ff, $ff, $ff        ;; 00:2472 ????????
     db   $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff        ;; 00:247a ????????
     db   $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff        ;; 00:2482 ????????
@@ -234,7 +249,11 @@ call_00_2329_LoadAndRunMissionPreviewCutscene:
     db   $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff        ;; 00:264a ????????
     db   $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff        ;; 00:2652 ????????
     db   $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff        ;; 00:265a ????????
-.data_00_2662:
+.data_00_2662_CutsceneScriptPointerTable:
+; Pointer table for cutscene scripts, followed by inline script data blocks. Each script block 
+; contains optional movement phase data (direction bytes, duration words) and an optional 
+; animation/dialogue phase pointer. The inline binary data at data_00_26e8–data_00_2dbc represents 
+; all level preview cutscene scripts
     dw   .data_00_26e8
     db   $13, $27, $3e, $27, $69, $27        ;; 00:2662 ????????
     dw   .data_00_2794                                 ;; 00:266a pP
@@ -479,7 +498,12 @@ call_00_2329_LoadAndRunMissionPreviewCutscene:
     db   $b8, $2d, $00, $00, $00, $80, $00, $20        ;; 00:2db4 ????????
     db   $f0, $02, $ff                                 ;; 00:2dbc ???
 
-call_00_2dbf_ProcessCutsceneMovement:
+call_00_2dbf_MissionPreview_UpdateMovement:
+; Per-frame cutscene camera/player movement processor. If wD75A (current direction flags) is zero: 
+; decrements wD79D movement smoothing counter, clamps to 0. If nonzero: ramps wD79D up toward $10 (max speed). 
+; Adds the speed value (low nibble of wD79E) to the accumulator, uses the carry/high nibble as pixel delta C. 
+; Checks bits 4, 5, 7, 6 of wD75A for right/left/down/up movement respectively, adding or subtracting C from 
+; the 16-bit player X/Y position (wD20E/wD20F, wD210/wD211)
     ld   A, [wD75A_CurrentInputsAlt]                                    ;; 00:2dbf $fa $5a $d7
     and  A, A                                          ;; 00:2dc2 $a7
     jr   NZ, .jr_00_2dd1                               ;; 00:2dc3 $20 $0c

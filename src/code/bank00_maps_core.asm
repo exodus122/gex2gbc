@@ -1,16 +1,16 @@
 call_00_1264_LoadFullMap:
     call call_00_0ede                                  ;; 00:1264 $cd $de $0e
-    call call_00_2e77_GetCurrentMapBankNumber                                  ;; 00:1267 $cd $77 $2e
+    call call_00_2e77_GetMapBank                                  ;; 00:1267 $cd $77 $2e
     ld   [wD6F5_CurrentMapBank], A                                    ;; 00:126a $ea $f5 $d6
-    call call_00_2e80_GetCurrentSecondaryTilesetBank                                  ;; 00:126d $cd $80 $2e
+    call call_00_2e80_GetMapBlocksetOverrideBank                                  ;; 00:126d $cd $80 $2e
     ld   [wD6F6_SecondaryTilesetOverrideBank], A                                    ;; 00:1270 $ea $f6 $d6
-    call call_00_2e89_GetCurrentBlocksetBank                                  ;; 00:1273 $cd $89 $2e
+    call call_00_2e89_GetMapBlocksetCollisionBank                                  ;; 00:1273 $cd $89 $2e
     ld   [wD6F7_CurrentBlocksetAndCollisionBank], A                                    ;; 00:1276 $ea $f7 $d6
-    call call_00_2e93_GetBlocksetOverrideBit                                  ;; 00:1279 $cd $93 $2e
+    call call_00_2e93_GetMapBlocksetOverrideBit                                  ;; 00:1279 $cd $93 $2e
     ld   [wD6FE_LevelTileOverrideBit], A                                    ;; 00:127c $ea $fe $d6
-    call call_00_2e9c_GetCurrentBgTilesetBank                                  ;; 00:127f $cd $9c $2e
+    call call_00_2e9c_GetMapTilesetBank                                  ;; 00:127f $cd $9c $2e
     ld   [wD6FF_CurrentBgTilesetBank], A                                    ;; 00:1282 $ea $ff $d6
-    call call_00_2ea5                                  ;; 00:1285 $cd $a5 $2e
+    call call_00_2ea5_GetMapTilesetBankOffset                                  ;; 00:1285 $cd $a5 $2e
     ld   HL, wD700                                     ;; 00:1288 $21 $00 $d7
     ld   [HL], E                                       ;; 00:128b $73
     inc  HL                                            ;; 00:128c $23
@@ -28,7 +28,7 @@ call_00_1264_LoadFullMap:
     ld   A, $01                                        ;; 00:12a3 $3e $01
     ld   [wD6F9], A                                    ;; 00:12a5 $ea $f9 $d6
     call call_00_1455_LoadBgMapDirtyRegions                                  ;; 00:12a8 $cd $55 $14
-    farcall call_03_6f5e_WriteVRAMBgMap 
+    farcall call_03_6f5e_BgMap_WriteScrollColumn 
     ld   HL, wD6EF_YPositionInMap                                     ;; 00:12b6 $21 $ef $d6
     ld   A, [HL]                                       ;; 00:12b9 $7e
     add  A, $08                                        ;; 00:12ba $c6 $08
@@ -41,7 +41,7 @@ call_00_1264_LoadFullMap:
     dec  A                                             ;; 00:12c3 $3d
     jr   NZ, .jr_00_12a2                               ;; 00:12c4 $20 $dc
     ld   [wD6F9], A                                    ;; 00:12c6 $ea $f9 $d6
-    farcall call_03_66ae
+    farcall call_03_66ae_HUD_LoadTiles
     farcall call_02_715a_MapWindow_Update
     xor  A, A                                          ;; 00:12df $af
     ld   [wD6F9], A                                    ;; 00:12e0 $ea $f9 $d6
@@ -228,8 +228,8 @@ call_00_1419_WriteTilesToVRAM: ; this function writes to the tiles part of vram 
     jr   NZ, .jr_00_1433                               ;; 00:1439 $20 $f8
     ;; at this point the tiles have been written
     call call_00_10a3_RestoreBank                                  ;; 00:143b $cd $a3 $10 
-    farcall call_0b_641e
-    farcall call_03_723c_SetupAnimatedTile
+    farcall call_0b_641e_TilesetPaletteIds_Load
+    farcall call_03_723c_AnimatedTile_Init
     ret                                                ;; 00:1454 $c9
 
 call_00_1455_LoadBgMapDirtyRegions:
@@ -1292,7 +1292,7 @@ call_00_1922_LoadSecondaryTileset:
     ld   HL, wD60F_HDMATransferFlags                                     ;; 00:19dc $21 $0f $d6
     set  2, [HL]                                       ;; 00:19df $cb $d6
     call call_00_10a3_RestoreBank                                  ;; 00:19e1 $cd $a3 $10
-    farcall call_0b_5df8
+    farcall call_0b_5df8_MediaDimension_LoadActiveTVPalette
     ret                                                ;; 00:19ef $c9
 .data_LevelSecondaryTilesetBanks: ; this table contains the secondary tileset bank numbers 
 ; AND the offset into that bank to start getting the tilesets

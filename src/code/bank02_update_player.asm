@@ -208,7 +208,7 @@ call_02_4939_PlayerUpdateMain:
     call call_02_6fda_Entity_TickAction                                  ;; 02:4a0d $cd $da $6f
     call call_02_715a_MapWindow_Update                                  ;; 02:4a10 $cd $5a $71
     call call_02_4c28                                  ;; 02:4a13 $cd $28 $4c
-    farcall call_03_5ca8
+    farcall call_03_5ca8_Player_BuildBodySprites
     ld   HL, wD751                                     ;; 02:4a21 $21 $51 $d7
     call call_02_4a30                                  ;; 02:4a24 $cd $30 $4a
     ld   HL, wD755                                     ;; 02:4a27 $21 $55 $d7

@@ -1,4 +1,11 @@
-call_0b_4000:
+call_0b_4000_Collectibles_Init:
+; Initializes the collectible system for the current level. First clears all 256 entries of 
+; wC400–wC6FF (sets wC4xx=$FF, wC5xx=$00, wC6xx=$00 per slot). Then uses wD624 (level ID) 
+; to index .data_0b_4062_LevelCollectibleListPointerTable and load the level's collectible coordinate list into wC400/wC500 
+; (X in wC4xx, Y in wC5xx, interleaved pairs, terminated by Y=$00). Then builds a sorted index 
+; table at wC600: for each of 256 slots, scans wC400 to find the last X coordinate less than 
+; slot's E value, stores that position index. Finally builds wC700: for each slot, counts how 
+; many X coords fall within an $0B-wide window around that slot's position
     xor  A, A                                          ;; 0b:4000 $af
     ld   L, A                                          ;; 0b:4001 $6f
 .jr_0b_4002:
@@ -16,7 +23,7 @@ call_0b_4000:
     ld   L, [HL]                                       ;; 0b:4012 $6e
     ld   H, $00                                        ;; 0b:4013 $26 $00
     add  HL, HL                                        ;; 0b:4015 $29
-    ld   DE, .data_0b_4062                             ;; 0b:4016 $11 $62 $40
+    ld   DE, .data_0b_4062_LevelCollectibleListPointerTable                             ;; 0b:4016 $11 $62 $40
     add  HL, DE                                        ;; 0b:4019 $19
     ld   A, [HL+]                                      ;; 0b:401a $2a
     ld   H, [HL]                                       ;; 0b:401b $66
@@ -74,7 +81,9 @@ call_0b_4000:
     inc  E                                             ;; 0b:405e $1c
     jr   NZ, .jr_0b_4040                               ;; 0b:405f $20 $df
     ret                                                ;; 0b:4061 $c9
-.data_0b_4062:
+.data_0b_4062_LevelCollectibleListPointerTable:
+; 31-entry pointer table mapping level IDs to per-level collectible coordinate lists. 
+; Media Dimension and hub levels share a stub entry. The 19 non-hub playable levels each have unique lists
     dw   .data_40a0_media_dimension_collectible_coords
     dw   .data_40a4_out_of_toon_collectible_coords
     dw   .data_41b8_smellraiser_collectible_coords

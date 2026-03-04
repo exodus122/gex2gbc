@@ -20,9 +20,9 @@ INCBIN "data/maps/bg_collision_data.bin"
 INCLUDE "code/bank03_bg_collision.asm"
 INCLUDE "code/bank03_entity_collision.asm"
 INCLUDE "code/bank03_entity_graphics.asm"
-INCLUDE "code/bank03_update_misc_sprites.asm"
-INCLUDE "code/bank03_update_vram.asm"
-INCLUDE "code/bank03_update_animated_tiles.asm"
+INCLUDE "code/bank03_hud_graphics.asm"
+INCLUDE "code/bank03_vram_copy.asm"
+INCLUDE "code/bank03_animated_tiles.asm"
 
 SECTION "bank04", ROMX[$4000], BANK[$04]
 image_004_4000.bin:

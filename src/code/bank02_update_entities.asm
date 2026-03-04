@@ -317,7 +317,7 @@ call_02_6eba_Entities_UpdateAll:
     inc  L                                             ;; 02:6f4b $2c
     res  6, [HL]                                       ;; 02:6f4c $cb $b6
     call call_02_6fda_Entity_TickAction                                  ;; 02:6f4e $cd $da $6f
-    farcall call_03_5ebf
+    farcall call_03_5ebf_Entity_BuildSprites
 .jr_02_6f5c:
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:6f5c $fa $00 $d3
     add  A, $20                                        ;; 02:6f5f $c6 $20
@@ -325,7 +325,7 @@ call_02_6eba_Entities_UpdateAll:
     call call_00_1138                                  ;; 02:6f63 $cd $38 $11
     farcall call_0a_7a7c_EntitySpawn_SpawnNextFromList
     call call_02_722c_SoundQueue_PlayNext                                  ;; 02:6f71 $cd $2c $72
-    farcall call_03_6540
+    farcall call_03_6540_Entity_BuildAllSprites
     ret                                                ;; 02:6f7f $c9
     
 call_02_6f80_Entities_DrawAll:
@@ -339,7 +339,7 @@ call_02_6f80_Entities_DrawAll:
     jr   Z, .jr_02_6fa0                                ;; 02:6f89 $28 $15
     ld   A, $00                                        ;; 02:6f8b $3e $00
     ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:6f8d $ea $00 $d3
-    farcall call_03_5ca8
+    farcall call_03_5ca8_Player_BuildBodySprites
     ld   HL, wD60F_HDMATransferFlags                                     ;; 02:6f9b $21 $0f $d6
     set  0, [HL]                                       ;; 02:6f9e $cb $c6
 .jr_02_6fa0:
@@ -360,12 +360,12 @@ call_02_6f80_Entities_DrawAll:
     ld   HL, wD60F_HDMATransferFlags                                     ;; 02:6fb7 $21 $0f $d6
     set  1, [HL]                                       ;; 02:6fba $cb $ce
 .jr_02_6fbc:
-    farcall call_03_5ebf
+    farcall call_03_5ebf_Entity_BuildSprites
 .jr_02_6fc7:
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:6fc7 $fa $00 $d3
     add  A, $20                                        ;; 02:6fca $c6 $20
     jr   NZ, .jr_02_6fa2                               ;; 02:6fcc $20 $d4
-    farcall call_03_6540
+    farcall call_03_6540_Entity_BuildAllSprites
     ret                                                ;; 02:6fd9 $c9
 
 call_02_6fda_Entity_TickAction:
@@ -658,7 +658,7 @@ call_02_7196_MapScroll_CheckHorizontal:
 call_02_71c8_Entities_UpdateSoundsForAll:
 ; Iterates all 7 NPC slots; for each active entity looks up its entity ID in data_02_743c to get 
 ; a (sound-id, bank) pair, calls call_02_7211_SoundQueue_Enqueue to queue the sound if non-zero, then optionally calls 
-; a sound-play farCall if wD59E is set. After the loop, calls call_0b_5f1b (sound flush)
+; a sound-play farCall if wD59E is set. After the loop, calls call_0b_5f1b_FlyPowerup_LoadParticlePalette (sound flush)
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:71c8 $fa $00 $d3
     push AF                                            ;; 02:71cb $f5
     ld   A, $20                                        ;; 02:71cc $3e $20
@@ -683,12 +683,12 @@ call_02_71c8_Entities_UpdateSoundsForAll:
     and  A, A                                          ;; 02:71eb $a7
     jr   Z, .jr_02_71fa                                ;; 02:71ec $28 $0c
     ld   C, [HL]                                       ;; 02:71ee $4e
-    farcall call_0b_5f57
+    farcall call_0b_5f57_Entity_LoadGBCPalette
 .jr_02_71fa:
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:71fa $fa $00 $d3
     add  A, $20                                        ;; 02:71fd $c6 $20
     jr   NZ, .jr_02_71ce                               ;; 02:71ff $20 $cd
-    farcall call_0b_5f1b
+    farcall call_0b_5f1b_FlyPowerup_LoadParticlePalette
     pop  AF                                            ;; 02:720c $f1
     ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:720d $ea $00 $d3
     ret                                                ;; 02:7210 $c9

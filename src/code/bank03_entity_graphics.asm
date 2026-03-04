@@ -1,7 +1,12 @@
-data_03_5446:
+data_03_5446_SpriteCountTable:
+; Single byte ($18 = 24), likely a count or max value used by the sprite building system
     db   $18                                           ;; 03:5446 ?
 
-data_03_5447:
+data_03_5447_EntitySpriteMetaTable:
+; Paired 2-byte entries per entity type: byte 0 is a flags/index byte (bit 7 = use alternate 
+; frame table data_03_5a8a_SpriteFrameTable_Alt, else use data_03_5566_SpriteFrameTable_Main), byte 1 is an animation frame offset/index. 
+; One entry per entity type, used by the main sprite builder to select which frame data to use 
+; and which sub-table to index into
     db   $00, $08, $00, $80, $66, $1a, $00, $08        ;; 03:5447 ????????
     db   $20, $08, $20, $08, $20, $08, $00, $18        ;; 03:544f .???????
     db   $20, $26, $00, $26, $00, $1e, $00, $18        ;; 03:5457 ????????
@@ -39,7 +44,11 @@ data_03_5447:
     db   $00, $0a, $00, $0a, $00, $0a, $00, $1a        ;; 03:5557 ????????
     db   $00, $18, $20, $18, $20, $1e, $00             ;; 03:555f ???????
 
-data_03_5566:
+data_03_5566_SpriteFrameTable_Main:
+; Large table of 4-byte sprite descriptor records indexed by frame number. 
+; Each record: (signed Y offset, signed X offset, tile ID, attribute flags). 
+; Used for standard multi-tile entity sprite layouts. Entries are grouped into 
+; animation frames, with a pointer subtable at the start
     db   $16, $56, $1f, $56, $28, $56, $31, $56        ;; 03:5566 ????????
     db   $16, $56, $1f, $56, $28, $56, $31, $56        ;; 03:556e ????????
     db   $3a, $56, $4b, $56, $5c, $56, $6d, $56        ;; 03:5576 ....????
@@ -206,7 +215,9 @@ data_03_5566:
     db   $00, $04, $06, $20, $00, $fc, $0a, $20        ;; 03:5a7e ????????
     db   $00, $f4, $0e, $20                            ;; 03:5a86 ????
 
-data_03_5a8a:
+data_03_5a8a_SpriteFrameTable_Alt:
+; Alternate sprite frame table with same 4-byte record format as above, used for 
+; entities whose meta entry has bit 7 set. Appears to cover smaller or simpler sprite layouts
     db   $a0, $5a, $a5, $5a, $ae, $5a, $bb, $5a        ;; 03:5a8a ????????
     db   $cc, $5a, $d5, $5a, $e6, $5a, $ff, $5a        ;; 03:5a92 ????????
     db   $20, $5b, $29, $5b, $3a, $5b, $01, $00        ;; 03:5a9a ????????
@@ -235,7 +246,13 @@ data_03_5a8a:
     db   $20, $00, $10, $02, $20, $00, $18, $00        ;; 03:5b52 ????????
     db   $20                                           ;; 03:5b5a ?
 
-call_03_5b5b:
+call_03_5b5b_HUD_BuildSprites:
+; Builds the OAM entries for the player HUD/status display (health hearts etc.) into wCC80. 
+; Selects one of 5 different 3-byte data layouts depending on game state: level 0 uses .data_03_5beb, 
+; other levels use .data_03_5bd3, demo mode uses a specific layout, and if a special condition 
+; (wD623 set, wD770/wD771 in range) uses .data_03_5c1b (a "low health" or special display variant). 
+; Writes 8 OAM entries as (palette, tile, bank) triplets to wCC80. If wD687 bit 7 is set, falls into 
+; .jp_03_5c33_HUD_BuildSprites_HealthBased (health-based tile select path)
     ld   A, [wD688]                                    ;; 03:5b5b $fa $88 $d6
     ld   C, A                                          ;; 03:5b5e $4f
     ld   DE, .data_03_5beb                             ;; 03:5b5f $11 $eb $5b
@@ -267,7 +284,7 @@ call_03_5b5b:
 .jr_03_5b98:
     ld   A, [wD687]                                    ;; 03:5b98 $fa $87 $d6
     and  A, $80                                        ;; 03:5b9b $e6 $80
-    jp   NZ, .jp_03_5c33                               ;; 03:5b9d $c2 $33 $5c
+    jp   NZ, .jp_03_5c33_HUD_BuildSprites_HealthBased                               ;; 03:5b9d $c2 $33 $5c
     ld   A, [wD688]                                    ;; 03:5ba0 $fa $88 $d6
     ld   C, A                                          ;; 03:5ba3 $4f
     ld   DE, .data_03_5bbb                             ;; 03:5ba4 $11 $bb $5b
@@ -309,7 +326,10 @@ call_03_5b5b:
     db   $00, $74, $10, $00, $68, $10, $00, $76        ;; 03:5c1b ????????
     db   $10, $00, $78, $10, $80, $7e, $11, $88        ;; 03:5c23 ????????
     db   $7a, $10, $90, $7c, $10, $00, $70, $10        ;; 03:5c2b ????????
-.jp_03_5c33:
+.jp_03_5c33_HUD_BuildSprites_HealthBased:
+; Alternate HUD builder path: uses wD741 (player health) as an index into a lookup table 
+; (health × 16 + $58) to select which tile pair to use, then writes 8 OAM entries with 
+; those tiles at fixed palette $CC using wD688
     ld   A, [wD741_PlayerHealth]                                    ;; 03:5c33 $fa $41 $d7
     swap A                                             ;; 03:5c36 $cb $37
     add  A, $58                                        ;; 03:5c38 $c6 $58
@@ -346,7 +366,14 @@ call_03_5b5b:
     db   $2c, $68, $34, $6a, $44, $68, $4c, $6a        ;; 03:5c98 ........
     db   $5c, $68, $64, $6a, $74, $68, $7c, $6a        ;; 03:5ca0 ........
 
-call_03_5ca8:
+call_03_5ca8_Player_BuildBodySprites:
+; Main Gex sprite builder. Reads wD586 (base sprite state index), adjusts by +2 if facing 
+; left (bit 5 of wD20D), +4 if climbing (bit 6 of wD74B). Uses this to index .data_03_5d6f 
+; via call_00_07b9 to get the frame pointer. Computes player screen X/Y from world position 
+; minus map scroll origin (wD6ED/wD6EF) plus offsets ($08/$10), stores into wD212/wD213. 
+; Checks action ID for $11 (special state), invincibility flags (wD755/wD753/wD751), 
+; and wD73B bit 3 — if any special condition is active, substitutes .data_03_5e7f 
+; (invincible/stunned sprite). Writes up to 8 OAM entries into wCC00, each as (Y+B, X+C, tile+wD73A, attr
     ld   A, [wD586]                                    ;; 03:5ca8 $fa $86 $d5
     ld   HL, wD20D_PlayerFacingAngle                                     ;; 03:5cab $21 $0d $d2
     bit  5, [HL]                                       ;; 03:5cae $cb $6e
@@ -358,7 +385,7 @@ call_03_5ca8:
     jr   Z, .jr_03_5cbd                                ;; 03:5cb9 $28 $02
     add  A, $04                                        ;; 03:5cbb $c6 $04
 .jr_03_5cbd:
-    ld   DE, .data_03_5d6f                             ;; 03:5cbd $11 $6f $5d
+    ld   DE, .data_03_5d6f_GexSpriteFramePointerTable                             ;; 03:5cbd $11 $6f $5d
     call call_00_07b9                                  ;; 03:5cc0 $cd $b9 $07
     ld   A, [wD6ED_XPositionInMap]                                    ;; 03:5cc3 $fa $ed $d6
     ld   C, A                                          ;; 03:5cc6 $4f
@@ -396,7 +423,7 @@ call_03_5ca8:
     and  A, $08                                        ;; 03:5d07 $e6 $08
     jr   Z, .jr_03_5d11                                ;; 03:5d09 $28 $06
 .jr_03_5d0b:
-    ld   HL, .data_03_5e7f                             ;; 03:5d0b $21 $7f $5e
+    ld   HL, .data_03_5e7f_SpriteData_Invincible                             ;; 03:5d0b $21 $7f $5e
     ld   BC, $00                                       ;; 03:5d0e $01 $00 $00
 .jr_03_5d11:
     ld   DE, wCC00                                     ;; 03:5d11 $11 $00 $cc
@@ -444,7 +471,7 @@ call_03_5ca8:
     add  A, A                                          ;; 03:5d52 $87
     ld   L, A                                          ;; 03:5d53 $6f
     ld   H, $00                                        ;; 03:5d54 $26 $00
-    ld   BC, .data_03_5e9f                             ;; 03:5d56 $01 $9f $5e
+    ld   BC, .data_03_5e9f_FlyParticleOffsetTable                             ;; 03:5d56 $01 $9f $5e
     add  HL, BC                                        ;; 03:5d59 $09
     ld   A, [wD76D]                                    ;; 03:5d5a $fa $6d $d7
     add  A, [HL]                                       ;; 03:5d5d $86
@@ -461,7 +488,10 @@ call_03_5ca8:
     ld   A, $02                                        ;; 03:5d6b $3e $02
     ld   [DE], A                                       ;; 03:5d6d $12
     ret                                                ;; 03:5d6e $c9
-.data_03_5d6f:
+.data_03_5d6f_GexSpriteFramePointerTable:
+; 8 pointer pairs (16 entries) pointing into the large Gex-specific sprite layout data blocks 
+; that follow. Indexed by a combined state value (facing × 4 + climbing/action modifier). 
+; Each pointer leads to a block of 4-byte sprite records
     db   $7f, $5d, $9f, $5d, $bf, $5d, $df, $5d        ;; 03:5d6f ........
     db   $ff, $5d, $1f, $5e, $3f, $5e, $5f, $5e        ;; 03:5d77 ????....
     db   $f0, $f0, $10, $10, $f0, $f8, $14, $10        ;; 03:5d7f ...?...?
@@ -496,18 +526,32 @@ call_03_5ca8:
     db   $00, $f8, $08, $70, $00, $f0, $0c, $70        ;; 03:5e67 ...?...?
     db   $f0, $08, $02, $70, $f0, $00, $06, $70        ;; 03:5e6f ...?...?
     db   $f0, $f8, $0a, $70, $f0, $f0, $0e, $70        ;; 03:5e77 ...?...?
-.data_03_5e7f:
+.data_03_5e7f_SpriteData_Invincible:
+; 8 identical 4-byte records all pointing to tile $7E (a flashing/invincibility sprite), 
+; used to replace normal sprite output while player is invincible/stunned
     db   $00, $00, $7e, $10, $00, $00, $7e, $10        ;; 03:5e7f ...?...?
     db   $00, $00, $7e, $10, $00, $00, $7e, $10        ;; 03:5e87 ...?...?
     db   $00, $00, $7e, $10, $00, $00, $7e, $10        ;; 03:5e8f ...?...?
     db   $00, $00, $7e, $10, $00, $00, $7e, $10        ;; 03:5e97 ...?...?
-.data_03_5e9f:
+.data_03_5e9f_FlyParticleOffsetTable:
+; 16 pairs of signed (Y, X) offsets for the fly/firefly particle effect that orbits above 
+; Gex when he has the fly power-up. Forms a circular path sampled via a counter
     db   $00, $fe, $fe, $fc, $fc, $fe, $fc, $00        ;; 03:5e9f ????????
     db   $fa, $02, $fc, $04, $fe, $02, $00, $04        ;; 03:5ea7 ????????
     db   $00, $02, $fe, $00, $fe, $fe, $fc, $fc        ;; 03:5eaf ????????
     db   $fa, $fa, $fc, $f8, $fe, $fa, $00, $fc        ;; 03:5eb7 ????????
     
-call_03_5ebf:
+call_03_5ebf_Entity_BuildSprites:
+; Per-entity sprite builder entry point. Derives a slot index from wD300 (current entity address low byte), 
+; uses it to look up a facing/attribute byte from wD32D table, ORs with the entity's own facing field 
+; and stores in wD335 (combined attribute for OAM). Clears bit 5 of UNK_0A (on-screen flag). 
+; Computes entity screen X/Y relative to map scroll (wD6ED/wD6EF), stored into entity fields +12/+$13. 
+; Does a 16-bit range check on both axes (X in [D8..B8],Yin[B8], Y in [B8],Yin[F0..$F0]). 
+; If out of range → calls Entity_CheckIfPlayerInRoomBounds and despawns if out of room. 
+; If in range → sets bit 5 of UNK_0A (entity is visible on screen), then dispatches to 
+; the appropriate sprite path based on UNK_0A flags: bit 3 → EntityCollision_Dispatch, 
+; bit 0 → .jp_03_6451_Entity_BuildSprites_PrimaryData (primary data sprite path), bit 7 → .jr_03_5fcb_Entity_BuildSprites_FacingBased (facing-based NPC path), 
+; bit 4 → .jp_03_602e_Entity_BuildSprites_ActionIndexed (action-indexed layout path), else → standard UNK_07-indexed path
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:5ebf $fa $00 $d3
     rlca                                               ;; 03:5ec2 $07
     rlca                                               ;; 03:5ec3 $07
@@ -539,17 +583,17 @@ call_03_5ebf:
     sbc  A, [HL]                                       ;; 03:5ef5 $9e
     jr   C, .jr_03_5f02                                ;; 03:5ef6 $38 $0a
     and  A, A                                          ;; 03:5ef8 $a7
-    jr   NZ, call_03_5f2b                               ;; 03:5ef9 $20 $30
+    jr   NZ, .jr_03_5f2b                               ;; 03:5ef9 $20 $30
     ld   A, C                                          ;; 03:5efb $79
     cp   A, $b8                                        ;; 03:5efc $fe $b8
     jr   C, .jr_03_5f0b                                ;; 03:5efe $38 $0b
-    jr   call_03_5f2b                                   ;; 03:5f00 $18 $29
+    jr   .jr_03_5f2b                                   ;; 03:5f00 $18 $29
 .jr_03_5f02:
     cp   A, $ff                                        ;; 03:5f02 $fe $ff
-    jr   NZ, call_03_5f2b                               ;; 03:5f04 $20 $25
+    jr   NZ, .jr_03_5f2b                               ;; 03:5f04 $20 $25
     ld   A, C                                          ;; 03:5f06 $79
     cp   A, $d8                                        ;; 03:5f07 $fe $d8
-    jr   C, call_03_5f2b                                ;; 03:5f09 $38 $20
+    jr   C, .jr_03_5f2b                                ;; 03:5f09 $38 $20
 .jr_03_5f0b:
     inc  E                                             ;; 03:5f0b $1c
     ld   HL, wD6EF_YPositionInMap                                     ;; 03:5f0c $21 $ef $d6
@@ -560,28 +604,24 @@ call_03_5ebf:
     inc  DE                                            ;; 03:5f13 $13
     ld   A, [DE]                                       ;; 03:5f14 $1a
     sbc  A, [HL]                                       ;; 03:5f15 $9e
-    jr   C, call_03_5f22                                ;; 03:5f16 $38 $0a
+    jr   C, .jr_03_5f22                                ;; 03:5f16 $38 $0a
     and  A, A                                          ;; 03:5f18 $a7
-    jr   NZ, call_03_5f2b                               ;; 03:5f19 $20 $10
+    jr   NZ, .jr_03_5f2b                               ;; 03:5f19 $20 $10
     ld   A, B                                          ;; 03:5f1b $78
     cp   A, $f0                                        ;; 03:5f1c $fe $f0
-    jr   NC, call_03_5f2b                               ;; 03:5f1e $30 $0b
-    jr   call_03_5f32                                   ;; 03:5f20 $18 $10
-
-call_03_5f22:
+    jr   NC, .jr_03_5f2b                               ;; 03:5f1e $30 $0b
+    jr   .jr_03_5f32                                   ;; 03:5f20 $18 $10
+.jr_03_5f22:
     cp   A, $ff                                        ;; 03:5f22 $fe $ff
-    jr   NZ, call_03_5f2b                               ;; 03:5f24 $20 $05
+    jr   NZ, .jr_03_5f2b                               ;; 03:5f24 $20 $05
     ld   A, B                                          ;; 03:5f26 $78
     cp   A, $f0                                        ;; 03:5f27 $fe $f0
-    jr   NC, call_03_5f32                               ;; 03:5f29 $30 $07
-
-call_03_5f2b:
+    jr   NC, .jr_03_5f32                               ;; 03:5f29 $30 $07
+.jr_03_5f2b:
     call call_00_350c_Entity_CheckIfPlayerInRoomBounds                                  ;; 03:5f2b $cd $0c $35
     call C, call_00_3910_Entity_DespawnSlot                               ;; 03:5f2e $dc $10 $39
     ret                                                ;; 03:5f31 $c9
-
-call_03_5f32:
-; updates sprites? in entity instances
+.jr_03_5f32:
     inc  E                                             ;; 03:5f32 $1c
     ld   A, C                                          ;; 03:5f33 $79
     add  A, $08                                        ;; 03:5f34 $c6 $08
@@ -597,27 +637,29 @@ call_03_5f32:
     ld   E, A                                          ;; 03:5f41 $5f
     ld   A, C                                          ;; 03:5f42 $79
     cp   A, $08                                        ;; 03:5f43 $fe $08
-    jr   C, .jr_03_5f58                                ;; 03:5f45 $38 $11
+    jr   C, .jr_03_5f58_Entity_WriteSpritesAndDispatch                                ;; 03:5f45 $38 $11
     cp   A, $a8                                        ;; 03:5f47 $fe $a8
-    jr   NC, .jr_03_5f58                               ;; 03:5f49 $30 $0d
+    jr   NC, .jr_03_5f58_Entity_WriteSpritesAndDispatch                               ;; 03:5f49 $30 $0d
     ld   A, B                                          ;; 03:5f4b $78
     cp   A, $10                                        ;; 03:5f4c $fe $10
-    jr   C, .jr_03_5f58                                ;; 03:5f4e $38 $08
+    jr   C, .jr_03_5f58_Entity_WriteSpritesAndDispatch                                ;; 03:5f4e $38 $08
     cp   A, $a0                                        ;; 03:5f50 $fe $a0
-    jr   NC, .jr_03_5f58                               ;; 03:5f52 $30 $04
+    jr   NC, .jr_03_5f58_Entity_WriteSpritesAndDispatch                               ;; 03:5f52 $30 $04
     ld   A, [DE]                                       ;; 03:5f54 $1a
     set  5, A                                          ;; 03:5f55 $cb $ef
     ld   [DE], A                                       ;; 03:5f57 $12
-.jr_03_5f58:
+.jr_03_5f58_Entity_WriteSpritesAndDispatch:
+; Shared tail used by multiple sprite paths: checks on-screen flag, writes N OAM entries from 
+; HL into wCC OAM buffer at wD739 offset (capped at $A0), each entry: (Y+B, X+C, tile+wD73A, attr
     ld   A, [DE]                                       ;; 03:5f58 $1a
     bit  3, A                                          ;; 03:5f59 $cb $5f
     jp   NZ, call_03_4c76_EntityCollision_Dispatch                                ;; 03:5f5b $c2 $76 $4c
     bit  0, A                                          ;; 03:5f5e $cb $47
-    jp   NZ, .jp_03_6451                               ;; 03:5f60 $c2 $51 $64
+    jp   NZ, .jp_03_6451_Entity_BuildSprites_PrimaryData                               ;; 03:5f60 $c2 $51 $64
     bit  7, A                                          ;; 03:5f63 $cb $7f
-    jr   NZ, .jr_03_5fcb                               ;; 03:5f65 $20 $64
+    jr   NZ, .jr_03_5fcb_Entity_BuildSprites_FacingBased                               ;; 03:5f65 $20 $64
     bit  4, A                                          ;; 03:5f67 $cb $67
-    jp   NZ, .jp_03_602e                               ;; 03:5f69 $c2 $2e $60
+    jp   NZ, .jp_03_602e_Entity_BuildSprites_ActionIndexed                               ;; 03:5f69 $c2 $2e $60
     ld   A, E                                          ;; 03:5f6c $7b
     xor  A, $07                                        ;; 03:5f6d $ee $07
     ld   E, A                                          ;; 03:5f6f $5f
@@ -633,7 +675,7 @@ call_03_5f32:
     ld   L, A                                          ;; 03:5f7d $6f
     ld   H, $00                                        ;; 03:5f7e $26 $00
     add  HL, HL                                        ;; 03:5f80 $29
-    ld   DE, data_03_5447                              ;; 03:5f81 $11 $47 $54
+    ld   DE, data_03_5447_EntitySpriteMetaTable                              ;; 03:5f81 $11 $47 $54
     add  HL, DE                                        ;; 03:5f84 $19
     ld   A, [HL-]                                      ;; 03:5f85 $3a
     ld   [wD73A], A                                    ;; 03:5f86 $ea $3a $d7
@@ -642,11 +684,11 @@ call_03_5f32:
     jr   Z, .jr_03_5f96                                ;; 03:5f8c $28 $08
     ld   A, [HL]                                       ;; 03:5f8e $7e
     sub  A, $80                                        ;; 03:5f8f $d6 $80
-    ld   DE, data_03_5a8a                              ;; 03:5f91 $11 $8a $5a
+    ld   DE, data_03_5a8a_SpriteFrameTable_Alt                              ;; 03:5f91 $11 $8a $5a
     jr   .jr_03_5f9a                                   ;; 03:5f94 $18 $04
 .jr_03_5f96:
     add  A, [HL]                                       ;; 03:5f96 $86
-    ld   DE, data_03_5566                              ;; 03:5f97 $11 $66 $55
+    ld   DE, data_03_5566_SpriteFrameTable_Main                              ;; 03:5f97 $11 $66 $55
 .jr_03_5f9a:
     call call_00_07b9                                  ;; 03:5f9a $cd $b9 $07
     ld   A, [wD739]                                    ;; 03:5f9d $fa $39 $d7
@@ -683,7 +725,11 @@ call_03_5f32:
     ld   A, E                                          ;; 03:5fc4 $7b
     ld   [wD739], A                                    ;; 03:5fc5 $ea $39 $d7
     jp   call_03_4c76_EntityCollision_Dispatch                                    ;; 03:5fc8 $c3 $76 $4c
-.jr_03_5fcb:
+.jr_03_5fcb_Entity_BuildSprites_FacingBased:
+; Sprite path for entities with UNK_0A bit 7 set. Reads FACING_DIRECTION field directly 
+; (instead of UNK_0A) for the palette/flip byte, swaps nibbles and ORs with wD587, 
+; then proceeds identically to the standard path: looks up sprite count and frame data 
+; from data_03_5447/data_03_5566/data_03_5a8a, writes OAM entries
     LOAD_OBJ_FIELD_TO_DE ENTITY_FIELD_FACING_DIRECTION
     ld   A, [DE]                                       ;; 03:5fd3 $1a
     swap A                                             ;; 03:5fd4 $cb $37
@@ -697,7 +743,7 @@ call_03_5f32:
     ld   L, A                                          ;; 03:5fe0 $6f
     ld   H, $00                                        ;; 03:5fe1 $26 $00
     add  HL, HL                                        ;; 03:5fe3 $29
-    ld   DE, data_03_5447                              ;; 03:5fe4 $11 $47 $54
+    ld   DE, data_03_5447_EntitySpriteMetaTable                              ;; 03:5fe4 $11 $47 $54
     add  HL, DE                                        ;; 03:5fe7 $19
     ld   A, [HL-]                                      ;; 03:5fe8 $3a
     ld   [wD73A], A                                    ;; 03:5fe9 $ea $3a $d7
@@ -706,11 +752,11 @@ call_03_5f32:
     jr   Z, .jr_03_5ff9                                ;; 03:5fef $28 $08
     ld   A, [HL]                                       ;; 03:5ff1 $7e
     sub  A, $80                                        ;; 03:5ff2 $d6 $80
-    ld   DE, data_03_5a8a                              ;; 03:5ff4 $11 $8a $5a
+    ld   DE, data_03_5a8a_SpriteFrameTable_Alt                              ;; 03:5ff4 $11 $8a $5a
     jr   .jr_03_5ffd                                   ;; 03:5ff7 $18 $04
 .jr_03_5ff9:
     add  A, [HL]                                       ;; 03:5ff9 $86
-    ld   DE, data_03_5566                              ;; 03:5ffa $11 $66 $55
+    ld   DE, data_03_5566_SpriteFrameTable_Main                              ;; 03:5ffa $11 $66 $55
 .jr_03_5ffd:
     call call_00_07b9                                  ;; 03:5ffd $cd $b9 $07
     ld   A, [wD739]                                    ;; 03:6000 $fa $39 $d7
@@ -747,7 +793,12 @@ call_03_5f32:
     ld   A, E                                          ;; 03:6027 $7b
     ld   [wD739], A                                    ;; 03:6028 $ea $39 $d7
     jp   call_03_4c76_EntityCollision_Dispatch                                    ;; 03:602b $c3 $76 $4c
-.jp_03_602e:
+.jp_03_602e_Entity_BuildSprites_ActionIndexed:
+; Sprite path for entities with UNK_0A bit 4 set. Reads SPRITE_ID field directly, uses it 
+; as a base index into data_03_5446 (adjusted by ACTION_ID direction), double-indexes 
+; through .data_03_608e pointer table to get a variable-length sprite layout block. 
+; Writes OAM entries from that block. Used for entities whose sprite layout changes 
+; based on current action rather than animation frame
     push BC                                            ;; 03:602e $c5
     LOAD_OBJ_FIELD_TO_DE ENTITY_FIELD_SPRITE_ID
     ld   A, [DE]                                       ;; 03:6037 $1a
@@ -759,7 +810,7 @@ call_03_5f32:
     ld   L, A                                          ;; 03:6040 $6f
     ld   H, $00                                        ;; 03:6041 $26 $00
     add  HL, HL                                        ;; 03:6043 $29
-    ld   BC, data_03_5446                              ;; 03:6044 $01 $46 $54
+    ld   BC, data_03_5446_SpriteCountTable                              ;; 03:6044 $01 $46 $54
     add  HL, BC                                        ;; 03:6047 $09
     ld   A, E                                          ;; 03:6048 $7b
     xor  A, $0d                                        ;; 03:6049 $ee $0d
@@ -773,7 +824,7 @@ call_03_5f32:
     ld   L, A                                          ;; 03:6054 $6f
     ld   H, $00                                        ;; 03:6055 $26 $00
     add  HL, HL                                        ;; 03:6057 $29
-    ld   DE, .data_03_608e                             ;; 03:6058 $11 $8e $60
+    ld   DE, .data_03_608e_EntitySpriteLayoutPointerTable                             ;; 03:6058 $11 $8e $60
     add  HL, DE                                        ;; 03:605b $19
     ld   A, [HL+]                                      ;; 03:605c $2a
     ld   H, [HL]                                       ;; 03:605d $66
@@ -813,7 +864,11 @@ call_03_5f32:
     ld   A, E                                          ;; 03:6087 $7b
     ld   [wD739], A                                    ;; 03:6088 $ea $39 $d7
     jp   call_03_4c76_EntityCollision_Dispatch                                    ;; 03:608b $c3 $76 $4c
-.data_03_608e:
+.data_03_608e_EntitySpriteLayoutPointerTable:
+; 58-entry pointer table, one entry per multi-tile entity sprite variant. Each pointer 
+; leads to a variable-length sprite record block (first byte = tile count, then N×4-byte 
+; records of signed Y offset, signed X offset, tile base, attribute). Covers all entity 
+; types and their directional/size variants
     dw   .data_03_6102
     dw   .data_03_610b
     dw   .data_03_6114
@@ -1072,7 +1127,11 @@ call_03_5f32:
     db   $00, $00, $f8, $08, $00, $00, $00, $0c
     db   $00, $10, $f8, $0a, $00, $10, $00, $0e
     db   $00
-.jp_03_6451:
+.jp_03_6451_Entity_BuildSprites_PrimaryData:
+; Sprite path for entities with UNK_0A bit 0 set. Reads sprite records directly from the 
+; entity's primary data pointer (Entity_GetPrimaryDataPtr). First byte is tile count; 
+; if zero, skips to collision dispatch. Each 4-byte record: (Y offset, X offset, tile, attr). 
+; Writes into OAM buffer. Used for entities with fully custom/embedded sprite data rather than a shared table
     call call_00_39e0_Entity_GetPrimaryDataPtr                                  ;; 03:6451 $cd $e0 $39
     ld   L, E                                          ;; 03:6454 $6b
     ld   H, D                                          ;; 03:6455 $62
@@ -1111,7 +1170,9 @@ call_03_5f32:
     ld   [wD739], A                                    ;; 03:647e $ea $39 $d7
     jp   call_03_4c76_EntityCollision_Dispatch                                    ;; 03:6481 $c3 $76 $4c
 
-call_03_6484:
+call_03_6484_OAM_ClearUnusedEntries:
+; Clears all OAM entries from wD739 (current write cursor) up to $5F (end of NPC OAM region) 
+; by writing $00 to every Y byte (stride 4). Effectively hides any sprite slots not written this frame
     ld   A, $5f                                        ;; 03:6484 $3e $5f
     ld   HL, wD739                                     ;; 03:6486 $21 $39 $d7
     ld   L, [HL]                                       ;; 03:6489 $6e
@@ -1127,7 +1188,14 @@ call_03_6484:
     jr   NC, .jr_03_6493                               ;; 03:6496 $30 $fb
     ret                                                ;; 03:6498 $c9
 
-call_03_6499:
+call_03_6499_Collectible_BuildSprites:
+; Builds OAM entries for collectible sub-hitbox sparkle/coin sprites into wCC60. 
+; Reads map scroll position (wD6ED/wD6EF), computes sub-pixel offsets into wD64D/wD64E. 
+; Reads collectible slot data from wC4xx/wC5xx (two parallel arrays of X and Y positions). 
+; For each active slot: computes screen position, writes tile 7E with attribute $01 (a sparkle tile). 
+; If Gex is drawn and the player overlaps the 18×36 collection window, marks the slot as 
+; collected (FF) and calls call_00_06ec (collect/score). Clears remaining OAM entries after 
+; the last active collectible
     ld   HL, wD6ED_XPositionInMap                                     ;; 03:6499 $21 $ed $d6
     ld   A, [HL]                                       ;; 03:649c $7e
     and  A, $0f                                        ;; 03:649d $e6 $0f
@@ -1241,12 +1309,16 @@ call_03_6499:
     inc  E                                             ;; 03:653d $1c
     jr   .jr_03_652a                                   ;; 03:653e $18 $ea
 
-call_03_6540:
-    call call_03_6499                                  ;; 03:6540 $cd $99 $64
-    call call_03_5b5b                                  ;; 03:6543 $cd $5b $5b
-    jp   call_03_6484                                    ;; 03:6546 $c3 $84 $64
+call_03_6540_Entity_BuildAllSprites:
+; Top-level per-frame sprite pipeline. Calls Collectible_BuildSprites, then Player_BuildHUDSprites, 
+; then OAM_ClearUnusedEntries. The three-step frame sprite update
+    call call_03_6499_Collectible_BuildSprites                                  ;; 03:6540 $cd $99 $64
+    call call_03_5b5b_HUD_BuildSprites                                  ;; 03:6543 $cd $5b $5b
+    jp   call_03_6484_OAM_ClearUnusedEntries                                    ;; 03:6546 $c3 $84 $64
 
-call_03_6549:
+call_03_6549_Entity_BuildSprites_CoinType:
+; Active flag = bit 0. Tile = (wD73B >> 2) & 2 + $2C (alternates between $2C/$2E 
+; based on a global timer bit — a two-frame coin animation). Attribute = $04
     call call_00_3a0a_Entity_GetBothDataPtrs
     push de
     inc  de
@@ -1295,7 +1367,9 @@ call_03_6549:
     inc  hl
     jr   .jr_03_6575
 
-call_03_6584:
+call_03_6584_Entity_BuildSprites_BlankTile:
+; Active flag = bit 7. Tile = fixed $7E (blank/flash tile), attribute = $01. 
+; Used for invincibility flash or generic item-collected sparkle effects
     call call_00_3a0a_Entity_GetBothDataPtrs                                  ;; 03:6584 $cd $0a $3a
     push DE                                            ;; 03:6587 $d5
     inc  DE                                            ;; 03:6588 $13
@@ -1340,7 +1414,9 @@ call_03_6584:
     inc  HL                                            ;; 03:65b5 $23
     jr   .jr_03_65a9                                   ;; 03:65b6 $18 $f1
 
-call_03_65b8:
+call_03_65b8_Entity_BuildSprites_FruitType:
+; Active flag = bit 0. Tile base = (SPRITE_ID_high_nibble clamped to 5) * 2 + $44. 
+; Attribute = $07. Selects one of 6 fruit tile pairs based on sprite ID nibble
     call call_00_3a0a_Entity_GetBothDataPtrs
     push de
     inc  de
@@ -1394,7 +1470,9 @@ call_03_65b8:
     inc  hl
     jr   .jr_03_65ea
 
-call_03_65f9:
+call_03_65f9_Entity_BuildSprites_GemType:
+; Active flag = bit 0. Tile base = (SPRITE_ID_high_nibble clamped to 2) * 2 + $60. 
+; Attribute = $01. Selects one of 3 gem tile pairs (ruby/emerald/diamond)
     call call_00_3a0a_Entity_GetBothDataPtrs                                  ;; 03:65f9 $cd $0a $3a
     push DE                                            ;; 03:65fc $d5
     inc  DE                                            ;; 03:65fd $13
@@ -1448,7 +1526,9 @@ call_03_65f9:
     inc  HL                                            ;; 03:6637 $23
     jr   .jr_03_662b                                   ;; 03:6638 $18 $f1
 
-call_03_663a:
+call_03_663a_Entity_BuildSprites_CoinType2:
+; Identical to CoinType but tile base = $58 instead of $2C. 
+; A second coin-style animation used in a different TV world
     call call_00_3a0a_Entity_GetBothDataPtrs
     push de
     inc  de
@@ -1497,7 +1577,9 @@ call_03_663a:
     inc  hl
     jr   .jr_03_6666
 
-call_03_6675:
+call_03_6675_Entity_BuildSprites_CoinType3:
+; Like CoinType but tile selection uses (bit 7 of SPRITE_ID >> 6) & 2 + $5C. 
+; Another coin variant, possibly for Kung Fu / Rezopolis worlds
     call call_00_3a0a_Entity_GetBothDataPtrs
     push de
     inc  de

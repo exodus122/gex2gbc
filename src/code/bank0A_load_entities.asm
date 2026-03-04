@@ -422,7 +422,7 @@ call_0a_7a7c_EntitySpawn_SpawnNextFromList:
     and  A, A                                          ;; 0a:7b8b $a7
     ret  Z                                             ;; 0a:7b8c $c8
     ld   C, [HL]                                       ;; 0a:7b8d $4e
-    farcall call_0b_5f57
+    farcall call_0b_5f57_Entity_LoadGBCPalette
     ret                                                ;; 0a:7b99 $c9
 
 call_0a_7b9a_EntitySpawn_SpawnChildEntity:
@@ -570,7 +570,7 @@ call_0a_7b9a_EntitySpawn_SpawnChildEntity:
     and  A, A                                          ;; 0a:7c47 $a7
     jr   Z, .jr_0a_7c56                                ;; 0a:7c48 $28 $0c
     ld   C, [HL]                                       ;; 0a:7c4a $4e
-    farcall call_0b_5f57
+    farcall call_0b_5f57_Entity_LoadGBCPalette
 .jr_0a_7c56:
     call call_00_34d8_Entity_ClearSlotCounter                                  ;; 0a:7c56 $cd $d8 $34
     xor  A, A                                          ;; 0a:7c59 $af

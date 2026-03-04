@@ -1,9 +1,12 @@
-call_03_723c_SetupAnimatedTile:
+call_03_723c_AnimatedTile_Init:
+; Initializes the animated tile system for the current level. Uses wD624 (level ID) to index 
+; data_03_72ab_AnimatedTileBlockPointerTable and get a pointer to the level's animated tile descriptor block. Reads the first 
+; byte of that block (tile frame count) into wD611_AnimatedTileId, and zeros the frame counter wD612
     ld   HL, wD624_CurrentLevelId                                     ;; 03:723c $21 $24 $d6
     ld   L, [HL]                                       ;; 03:723f $6e
     ld   H, $00                                        ;; 03:7240 $26 $00
     add  HL, HL                                        ;; 03:7242 $29
-    ld   DE, data_03_72ab                              ;; 03:7243 $11 $ab $72
+    ld   DE, data_03_72ab_AnimatedTileBlockPointerTable                              ;; 03:7243 $11 $ab $72
     add  HL, DE                                        ;; 03:7246 $19
     ld   A, [HL+]                                      ;; 03:7247 $2a
     ld   H, [HL]                                       ;; 03:7248 $66
@@ -14,7 +17,15 @@ call_03_723c_SetupAnimatedTile:
     ld   [wD612_AnimatedTileId], A                                    ;; 03:724f $ea $12 $d6
     ret                                                ;; 03:7252 $c9
 
-call_03_7253_UpdateAnimatedTile:
+call_03_7253_AnimatedTile_Update:
+; Per-frame animated tile updater. Returns immediately if wD611 is zero (no animated tiles this level). 
+; Looks up the level's animated tile block, reads the frame count, increments wD612 (frame counter) 
+; and wraps it. Uses the frame index × 8 to index into the block's per-frame descriptor records. 
+; Each record: (tile count B, VRAM dest lo C, VRAM dest hi, source bank E, source address D/+1, 
+; tile data pointer HL). If bit 7 of C is set (conditional tile flag): checks wD72D (secondary tileset index) 
+; and wD5A3–wD5A5 (conveyor states) — if the relevant conveyor is inactive, substitutes data_03_7bfd_AnimatedTile_BlankTileData 
+; (blank/off tile) instead. Calls call_03_6f2d B times to copy B tiles of 32 bytes each to the 
+; specified VRAM destination
     ld   A, [wD611_AnimatedTileId]                                    ;; 03:7253 $fa $11 $d6
     and  A, A                                          ;; 03:7256 $a7
     ret  Z                                             ;; 03:7257 $c8
@@ -22,7 +33,7 @@ call_03_7253_UpdateAnimatedTile:
     ld   L, [HL]                                       ;; 03:725b $6e
     ld   H, $00                                        ;; 03:725c $26 $00
     add  HL, HL                                        ;; 03:725e $29
-    ld   DE, data_03_72ab                              ;; 03:725f $11 $ab $72
+    ld   DE, data_03_72ab_AnimatedTileBlockPointerTable                              ;; 03:725f $11 $ab $72
     add  HL, DE                                        ;; 03:7262 $19
     ld   E, [HL]                                       ;; 03:7263 $5e
     inc  HL                                            ;; 03:7264 $23
@@ -68,50 +79,57 @@ call_03_7253_UpdateAnimatedTile:
 .jr_03_729e:
     and  A, A                                          ;; 03:729e $a7
     jr   NZ, .jr_03_72a4                               ;; 03:729f $20 $03
-    ld   HL, data_03_7bfd                              ;; 03:72a1 $21 $fd $7b
+    ld   HL, data_03_7bfd_AnimatedTile_BlankTileData                              ;; 03:72a1 $21 $fd $7b
 .jr_03_72a4:
-    call call_03_6f2d                                  ;; 03:72a4 $cd $2d $6f
+    call call_03_6f2d_VRAM_Copy32Bytes                                  ;; 03:72a4 $cd $2d $6f
     dec  B                                             ;; 03:72a7 $05
     jr   NZ, .jr_03_72a4                               ;; 03:72a8 $20 $fa
     ret                                                ;; 03:72aa $c9
 
-data_03_72ab:
-    dw   .data_03_72e8_media_dimension_animated_tiles                                  ;; 03:72ab pP
-    dw   .data_03_72e9_toon_tv_animated_tiles                                  ;; 03:72ad pP
-    dw   .data_03_734a_scream_tv_animated_tiles                                  ;; 03:72af pP
-    dw   .data_03_734a_scream_tv_animated_tiles
-    dw   .data_03_73bb_circuit_central_animated_tiles
-    dw   .data_03_72e8_media_dimension_animated_tiles
-    dw   .data_03_72e8_media_dimension_animated_tiles
-    dw   .data_03_72e8_media_dimension_animated_tiles
-    dw   .data_03_72e9_toon_tv_animated_tiles
-    dw   .data_03_72e8_media_dimension_animated_tiles
-    dw   .data_03_73bb_circuit_central_animated_tiles
-    dw   .data_03_734a_scream_tv_animated_tiles
-    dw   .data_03_72e8_media_dimension_animated_tiles
-    dw   .data_03_72e8_media_dimension_animated_tiles
-    dw   .data_03_741c_rezopolis_animated_tiles
-    dw   .data_03_72e8_media_dimension_animated_tiles
-    dw   .data_03_734a_scream_tv_animated_tiles
-    dw   .data_03_72e8_media_dimension_animated_tiles
-    dw   .data_03_72e8_media_dimension_animated_tiles
-    dw   .data_03_72e8_media_dimension_animated_tiles
-    dw   .data_03_72e8_media_dimension_animated_tiles
-    dw   .data_03_72e8_media_dimension_animated_tiles
-    dw   .data_03_741c_rezopolis_animated_tiles
-    dw   .data_03_73bb_circuit_central_animated_tiles
-    dw   .data_03_72e8_media_dimension_animated_tiles
-    dw   .data_03_734a_scream_tv_animated_tiles
-    dw   .data_03_741c_rezopolis_animated_tiles
-    dw   .data_03_72e8_media_dimension_animated_tiles
-    dw   .data_03_72e8_media_dimension_animated_tiles
-    dw   .data_03_72e8_media_dimension_animated_tiles
+data_03_72ab_AnimatedTileBlockPointerTable:
+; 31-entry pointer table mapping level IDs to animated tile descriptor blocks. 
+; Points to one of 5 blocks: media_dimension ($00 = none), toon_tv (12 frames, 3 tile groups), 
+; scream_tv (14 frames, 4 tile groups), circuit_central (12 frames, 3 conditional conveyor 
+; belt tile groups), rezopolis (12 frames, 3 tile groups). Media Dimension and most hub/transition 
+; levels use the null entry
+    dw   .data_03_72e8_AnimatedTileBlock_None                                  ;; 03:72ab pP
+    dw   .data_03_72e9_AnimatedTileBlock_ToonTV                                  ;; 03:72ad pP
+    dw   .data_03_734a_AnimatedTileBlock_ScreamTV                                  ;; 03:72af pP
+    dw   .data_03_734a_AnimatedTileBlock_ScreamTV
+    dw   .data_03_73bb_AnimatedTileBlock_CircuitCentral
+    dw   .data_03_72e8_AnimatedTileBlock_None
+    dw   .data_03_72e8_AnimatedTileBlock_None
+    dw   .data_03_72e8_AnimatedTileBlock_None
+    dw   .data_03_72e9_AnimatedTileBlock_ToonTV
+    dw   .data_03_72e8_AnimatedTileBlock_None
+    dw   .data_03_73bb_AnimatedTileBlock_CircuitCentral
+    dw   .data_03_734a_AnimatedTileBlock_ScreamTV
+    dw   .data_03_72e8_AnimatedTileBlock_None
+    dw   .data_03_72e8_AnimatedTileBlock_None
+    dw   .data_03_741c_AnimatedTileBlock_Rezopolis
+    dw   .data_03_72e8_AnimatedTileBlock_None
+    dw   .data_03_734a_AnimatedTileBlock_ScreamTV
+    dw   .data_03_72e8_AnimatedTileBlock_None
+    dw   .data_03_72e8_AnimatedTileBlock_None
+    dw   .data_03_72e8_AnimatedTileBlock_None
+    dw   .data_03_72e8_AnimatedTileBlock_None
+    dw   .data_03_72e8_AnimatedTileBlock_None
+    dw   .data_03_741c_AnimatedTileBlock_Rezopolis
+    dw   .data_03_73bb_AnimatedTileBlock_CircuitCentral
+    dw   .data_03_72e8_AnimatedTileBlock_None
+    dw   .data_03_734a_AnimatedTileBlock_ScreamTV
+    dw   .data_03_741c_AnimatedTileBlock_Rezopolis
+    dw   .data_03_72e8_AnimatedTileBlock_None
+    dw   .data_03_72e8_AnimatedTileBlock_None
+    dw   .data_03_72e8_AnimatedTileBlock_None
     db   $e8
-
-.data_03_72e8_media_dimension_animated_tiles:
+.data_03_72e8_AnimatedTileBlock_None:
+; Single byte $00 — no animated tiles. Used for Media Dimension and levels without tile animation
     db   $00                                           ;; 03:72e8 .
-
-.data_03_72e9_toon_tv_animated_tiles:
+.data_03_72e9_AnimatedTileBlock_ToonTV:
+; 12-frame animated tile block for Toon TV. 3 parallel tile groups animating 4 frames each: 
+; group 1 writes 4 tiles to $8B30, group 2 writes 2 tiles to $8A50, group 3 writes 4 tiles to $8C40. 
+; Used for the water/pool/cartoon environment animations
     db   $0c
     
     db   $04, $00                                 ;; 03:72e9 ...
@@ -173,8 +191,9 @@ data_03_72ab:
     dw   $8c40                                         ;; 03:7344 pP
     dw   .data_03_76bd
     db   $00, $00                            ;; 03:7346 ..??
-
-.data_03_734a_scream_tv_animated_tiles:
+.data_03_734a_AnimatedTileBlock_ScreamTV:
+; 14-frame animated tile block for Scream TV. 4 tile groups: 2 tiles to $97E0, 6 tiles to $96A0, 
+; 4 tiles to $8AC0, 4 tiles to $8B00. Used for the haunted/horror environment animations (candles, lightning, etc.)
     db   $0e
     
     db   $02, $00                                 ;; 03:734a ...
@@ -246,7 +265,11 @@ data_03_72ab:
     dw   $8b00                                         ;; 03:73b5 pP
     dw   .data_03_7a7d
     db   $00, $00
-.data_03_73bb_circuit_central_animated_tiles:
+.data_03_73bb_AnimatedTileBlock_CircuitCentral:
+; 12-frame animated tile block for Circuit Central. 3 tile groups each writing 2 tiles with conditional 
+; conveyor belt logic (bit 7 of dest byte set): groups at $81E0/$91, $8200/$92, $8320/$92, cycling 
+; through 4 frame sets. If the corresponding conveyor slot (wD5A3–wD5A5) is inactive, substitutes 
+; blank tiles from data_03_7bfd_AnimatedTile_BlankTileData
     db   $0c
     
     db   $02, $81, $e0        ;; 03:73bb ..??????
@@ -308,7 +331,9 @@ data_03_72ab:
     db   $92
     dw   .data_03_7bdd
     db   $00, $00
-.data_03_741c_rezopolis_animated_tiles:
+.data_03_741c_AnimatedTileBlock_Rezopolis:
+; 12-frame animated tile block for Rezopolis. 3 tile groups: 2 tiles to $8CB0, 1 tile to $8E00, 
+; 1 tile to $8F00, cycling through 4 frame sets. Used for the neon/electric environment animations
     db   $0c
     
     db   $02, $00        ;; 03:7417 ????????
@@ -370,7 +395,6 @@ data_03_72ab:
     db   $00, $8f
     dw   .data_03_7b6d
     db   $00, $00                  ;; 03:7477 ??????
-
 .data_03_747d:
     INCBIN ".gfx/animated_tiles/image_003_747d.bin"
 .data_03_74bd:
@@ -452,7 +476,9 @@ data_03_72ab:
 .data_03_7bdd:
     INCBIN ".gfx/animated_tiles/image_003_7bdd.bin"
 
-data_03_7bfd:
+data_03_7bfd_AnimatedTile_BlankTileData:
+; 32-byte buffer of zeros (with $FF sentinel bytes at start and end) used as a substitute 
+; tile when a conditional animated tile slot is inactive (e.g. conveyor belt is off in Circuit Central)
     db   $ff, $00, $00, $00, $00, $00, $00, $00        ;; 03:7bfd ????????
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 03:7c05 ????????
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 03:7c0d ????????

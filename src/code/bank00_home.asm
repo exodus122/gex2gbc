@@ -219,7 +219,7 @@ call_00_0150_Init:
     jr   Z, .jr_00_0350                                ;; 00:030d $28 $41
     call call_00_0562                                  ;; 00:030f $cd $62 $05
     farcall call_01_4297_LoadMissionSelectMenu
-    farcall call_0b_4000
+    farcall call_0b_4000_Collectibles_Init
     farcall call_02_6eb1_Entities_ClearFlagsTable
     call call_00_3c3f                                  ;; 00:0333 $cd $3f $3c
     call call_00_12e4                                  ;; 00:0336 $cd $e4 $12
@@ -232,7 +232,7 @@ call_00_0150_Init:
     add  A, $0a                                        ;; 00:0348 $c6 $0a
     ld   C, A                                          ;; 00:034a $4f
     ld   B, $01                                        ;; 00:034b $06 $01
-    call call_00_2329_LoadAndRunMissionPreviewCutscene                                  ;; 00:034d $cd $29 $23
+    call call_00_2329_MissionPreview_LoadAndRun                                  ;; 00:034d $cd $29 $23
 .jr_00_0350:
     xor  A, A                                          ;; 00:0350 $af
     ld   [wD618_CheckpointSpawnId], A                                    ;; 00:0351 $ea $18 $d6
@@ -274,7 +274,7 @@ call_00_0150_Init:
     ld   [wD5A5], A                                    ;; 00:03b0 $ea $a5 $d5
     ld   A, $04 ; Set Health to 4                                       ;; 00:03b3 $3e $04
     ld   [wD741_PlayerHealth], A                                    ;; 00:03b5 $ea $41 $d7
-    farcall call_0b_4000
+    farcall call_0b_4000_Collectibles_Init
     farcall call_02_6eb1_Entities_ClearFlagsTable
     call call_00_3c3f                                  ;; 00:03ce $cd $3f $3c
     call call_00_12e4                                  ;; 00:03d1 $cd $e4 $12
@@ -293,7 +293,7 @@ call_00_0150_Init:
     ld   [wD610], A                                    ;; 00:03f1 $ea $10 $d6
     ld   A, $01                                        ;; 00:03f4 $3e $01
     ld   [wD743_DrawGexFlag], A                                    ;; 00:03f6 $ea $43 $d7
-    farcall call_0b_4efe_SpawnPositionInMap
+    farcall call_0b_4efe_Player_SetSpawnPosition
     call call_00_1264_LoadFullMap                                  ;; 00:0404 $cd $64 $12
     farcall call_02_6e17_Entities_InitAndSpawnAll
     call call_00_0521_DrawEntitiesWrapper                                  ;; 00:0412 $cd $21 $05
@@ -389,7 +389,7 @@ call_00_0150_Init:
     call call_00_1e5b                                  ;; 00:04f1 $cd $5b $1e
     call call_00_05c7                                  ;; 00:04f4 $cd $c7 $05
     call call_00_08fc_SetupEntityVRAMTransfer                                  ;; 00:04f7 $cd $fc $08
-    farcall call_0b_5ec3
+    farcall call_0b_5ec3_Player_UpdateGBCPalette
     ld   HL, wD73C                                     ;; 00:0505 $21 $3c $d7
     inc  [HL]                                          ;; 00:0508 $34
     ld   A, [wD73B]                                    ;; 00:0509 $fa $3b $d7
@@ -414,7 +414,7 @@ call_00_0521_DrawEntitiesWrapper:
     ld   A, $03                                        ;; 00:052f $3e $03
     call call_00_0bae                                  ;; 00:0531 $cd $ae $0b
     ld   C, $00                                        ;; 00:0534 $0e $00
-    farcall call_0b_5537
+    farcall call_0b_5537_BgPalette_LoadMonoOrGetSpriteParams
     ld   A, $c7                                        ;; 00:0541 $3e $c7
     call call_00_0f56                                  ;; 00:0543 $cd $56 $0f
     ret                                                ;; 00:0546 $c9
@@ -562,7 +562,7 @@ call_00_0647:
     ld   c,[hl]
     ld   [hl],a
     push bc
-    farcall call_0b_5f1b
+    farcall call_0b_5f1b_FlyPowerup_LoadParticlePalette
     pop  bc
     ld   a,c
     cp   a,$03
@@ -923,7 +923,7 @@ call_00_08b1:
     push HL                                            ;; 00:08b4 $e5
     ld   A, $13                                        ;; 00:08b5 $3e $13
     call call_00_1089_SwitchBank                                  ;; 00:08b7 $cd $89 $10
-    call call_00_2e3a_GetTVPaletteId                                  ;; 00:08ba $cd $3a $2e
+    call call_00_2e3a_GetMapTVPaletteId                                  ;; 00:08ba $cd $3a $2e
     ld   DE, .data_00_08e6                                      ;; 00:08bd $11 $e6 $08
     call call_00_07b9                                  ;; 00:08c0 $cd $b9 $07
     ld   DE, $240                                      ;; 00:08c3 $11 $40 $02
@@ -1201,10 +1201,10 @@ call_00_0ac1:
     and  A, $0f                                        ;; 00:0ada $e6 $0f
     jr   Z, .jr_00_0af0                                ;; 00:0adc $28 $12
     and  A, $03                                        ;; 00:0ade $e6 $03
-    call NZ, call_03_6f5e_WriteVRAMBgMap                              ;; 00:0ae0 $c4 $5e $6f
+    call NZ, call_03_6f5e_BgMap_WriteScrollColumn                              ;; 00:0ae0 $c4 $5e $6f
     ld   A, [wD6F9]                                    ;; 00:0ae3 $fa $f9 $d6
     and  A, $0c                                        ;; 00:0ae6 $e6 $0c
-    call NZ, call_03_708d                              ;; 00:0ae8 $c4 $8d $70
+    call NZ, call_03_708d_BgMap_WriteScrollRow                              ;; 00:0ae8 $c4 $8d $70
     xor  A, A                                          ;; 00:0aeb $af
     ld   [wD6F9], A                                    ;; 00:0aec $ea $f9 $d6
     ret                                                ;; 00:0aef $c9
@@ -1226,13 +1226,13 @@ call_00_0ac1:
 .jr_00_0b0c:
     ld   A, [wD60E]                                    ;; 00:0b0c $fa $0e $d6
     bit  3, A                                          ;; 00:0b0f $cb $5f
-    call NZ, call_03_6941                              ;; 00:0b11 $c4 $41 $69
+    call NZ, call_03_6941_HUD_LoadCollectibleIcon                              ;; 00:0b11 $c4 $41 $69
     ld   A, [wD60E]                                    ;; 00:0b14 $fa $0e $d6
     bit  1, A                                          ;; 00:0b17 $cb $4f
-    jp   NZ, call_03_6d13                              ;; 00:0b19 $c2 $13 $6d
+    jp   NZ, call_03_6d13_HUD_LoadLivesDigits                              ;; 00:0b19 $c2 $13 $6d
     bit  2, A                                          ;; 00:0b1c $cb $57
-    jp   NZ, call_03_6ceb                                ;; 00:0b1e $c2 $eb $6c
-    jp   call_03_7253_UpdateAnimatedTile                                    ;; 00:0b21 $c3 $53 $72
+    jp   NZ, call_03_6ceb_HUD_LoadTimerDigits                                ;; 00:0b1e $c2 $eb $6c
+    jp   call_03_7253_AnimatedTile_Update                                    ;; 00:0b21 $c3 $53 $72
 .jp_00_0b24:
     ld   A, [wD72E]                                    ;; 00:0b24 $fa $2e $d7
     ld   [MBC1RomBank], A                                    ;; 00:0b27 $ea $01 $20
