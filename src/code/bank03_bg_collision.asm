@@ -13,7 +13,7 @@ call_03_4900_UpdateBgCollision_MainDispatcher:
     ret                                                ;; 03:4914 $c9
 
 call_03_4915_BgCollisionHandler_Sidescroller:
-    ld   A, [wD74D]                                    ;; 03:4915 $fa $4d $d7
+    ld   A, [wD74D_PlayerRoom]                                    ;; 03:4915 $fa $4d $d7
     and  A, A                                          ;; 03:4918 $a7
     jr   Z, .jr_03_491d                                ;; 03:4919 $28 $02
     set  7, [HL]                                       ;; 03:491b $cb $fe ; set 0x80

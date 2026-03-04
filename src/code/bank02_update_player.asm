@@ -80,8 +80,8 @@ data_02_4900:
     ld   A, [DE]                                       ;; 02:490c $1a
     ld   [HL], A                                       ;; 02:490d $77
     pop  AF                                            ;; 02:490e $f1
-    call call_02_7102_SetEntityAction                                  ;; 02:490f $cd $02 $71
-    call call_00_34d8                                  ;; 02:4912 $cd $d8 $34
+    call call_02_7102_Entity_SetAction                                  ;; 02:490f $cd $02 $71
+    call call_00_34d8_Entity_ClearSlotCounter                                  ;; 02:4912 $cd $d8 $34
     xor  A, A                                          ;; 02:4915 $af
     ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:4916 $ea $00 $d3
     ret                                                ;; 02:4919 $c9
@@ -178,7 +178,7 @@ call_02_4939_PlayerUpdateMain:
     ld   [HL], $ff                                     ;; 02:49d3 $36 $ff
     cp   A, $ff                                        ;; 02:49d5 $fe $ff
     jr   Z, .jr_02_49e6                                ;; 02:49d7 $28 $0d
-    call call_02_7102_SetEntityAction                                  ;; 02:49d9 $cd $02 $71
+    call call_02_7102_Entity_SetAction                                  ;; 02:49d9 $cd $02 $71
     ld   A, $ff                                        ;; 02:49dc $3e $ff
     ld   [wD746_PlayerClimbingState], A                                    ;; 02:49de $ea $46 $d7
     ld   A, $00                                        ;; 02:49e1 $3e $00
@@ -205,8 +205,8 @@ call_02_4939_PlayerUpdateMain:
     res  5, [HL]                                       ;; 02:4a06 $cb $ae
     ld   HL, wD20A                                     ;; 02:4a08 $21 $0a $d2
     res  6, [HL]                                       ;; 02:4a0b $cb $b6
-    call call_02_6fda                                  ;; 02:4a0d $cd $da $6f
-    call call_02_715a_UpdateMapWindow                                  ;; 02:4a10 $cd $5a $71
+    call call_02_6fda_Entity_TickAction                                  ;; 02:4a0d $cd $da $6f
+    call call_02_715a_MapWindow_Update                                  ;; 02:4a10 $cd $5a $71
     call call_02_4c28                                  ;; 02:4a13 $cd $28 $4c
     farcall call_03_5ca8
     ld   HL, wD751                                     ;; 02:4a21 $21 $51 $d7

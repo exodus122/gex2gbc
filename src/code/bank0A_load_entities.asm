@@ -3,7 +3,10 @@
 ; This file handles loading entities (other than Gex).
 ; It contains a list of entities to load on each level.
 
-call_0a_4000:
+call_0a_4000_EntityList_LoadForCurrentLevel:
+; Indexes into a level→entity-list pointer table using wD624_CurrentLevelId, 
+; writes the resulting pointer into wD336/wD337 (the "current entity to load" cursor), 
+; and sets wD338=1 to signal that loading should begin
     ld   HL, wD624_CurrentLevelId                                     ;; 0a:4000 $21 $24 $d6
     ld   L, [HL]                                       ;; 0a:4003 $6e ; L = current level
     ld   H, $00                                        ;; 0a:4004 $26 $00
@@ -94,7 +97,10 @@ call_0a_4000:
 
 data_0a_75fc:
     db   $00                                           ;; 0a:75fc ?
-data_0a_75fd:
+data_0a_75fd_EntityAttributeTable:
+; 8-byte records for every entity type (indexed by entity ID × 8). 
+; Fields are: flags byte, width, height, collision type, animation type index, action count/max, and two zero bytes. 
+; Used during spawn to initialize the new entity slot's physical properties
     db   $00, $00, COLLISION_TYPE_NONE, $00, $00, $00, $00      ; 0a:75fd ???????  ; ENTITY_GEX
     db   $00, $2c, $10, COLLISION_TYPE_COLLECTIBLE, $00, $01, $00, $00 ; 0a:7604 ???????? ; ENTITY_COLLECTIBLE_SPAWN
     db   $00, $08, $08, COLLISION_TYPE_UNK_02, $00, $02, $00, $00 ; 0a:760c ???????. ; ENTITY_UNK_02
@@ -240,7 +246,14 @@ data_0a_75fd:
     db   $00, $00, $00, COLLISION_TYPE_NONE, $00, $07, $00, $00 ; 0a:7a6c ???????. ; ENTITY_UNK_8E
     db   $70, $10, $08, COLLISION_TYPE_MOVING_PLATFORM | COLLISION_TYPE_UNK_PLATFORM_FLAG, $35, $05, $00, $00 ; 0a:7a74 ...ww?? ; ENTITY_MEDIA_DIMENSION_MOVING_PLATFORM
 
-call_0a_7a7c_HandleEntitySpawn:
+call_0a_7a7c_EntitySpawn_SpawnNextFromList:
+; Scans $D220–D3E0 (step $20) for a free slot (ID=FF); reads the next entry from the entity list pointer, 
+; checks if the list is exhausted (restarts via call_0a_4000 if $FF terminator hit), 
+; increments the list cursor by $10, looks up the corresponding D0xx flags entry and skips if 
+; already occupied, writes X/Y position and room bounds, calls Entity_CheckIfPlayerInRoomBounds and 
+; aborts if out of range, then fully initializes the slot: writes entity ID, copies the entity-type 
+; attribute record (flags, width, height, collision type etc.) from data_0a_75fd_EntityAttributeTable using a bitmask from 
+; the entity table, loads animation type, sets action 0, optionally calls a sound/init farCall
     ld   H, $d2                                        ;; 0a:7a7c $26 $d2
     ld   A, $20                                        ;; 0a:7a7e $3e $20
 .jr_0a_7a80:
@@ -265,7 +278,7 @@ call_0a_7a7c_HandleEntitySpawn:
     ld   D, [HL]                                       ;; 0a:7a9b $56
     ld   A, [DE]                                       ;; 0a:7a9c $1a ; load first byte from data
     cp   A, $ff                                        ;; 0a:7a9d $fe $ff
-    jp   Z, call_0a_4000                                 ;; 0a:7a9f $ca $00 $40
+    jp   Z, call_0a_4000_EntityList_LoadForCurrentLevel                                 ;; 0a:7a9f $ca $00 $40
     ld   [wD33B], A                                    ;; 0a:7aa2 $ea $3b $d3 ; first byte from data
     ld   HL, $10                                       ;; 0a:7aa5 $21 $10 $00
     add  HL, DE                                        ;; 0a:7aa8 $19
@@ -316,7 +329,7 @@ call_0a_7a7c_HandleEntitySpawn:
     ld   [HL+], A                                      ;; 0a:7aea $22
     inc  DE                                            ;; 0a:7aeb $13
     push DE                                            ;; 0a:7aec $d5
-    farcall call_00_350c
+    farcall call_00_350c_Entity_CheckIfPlayerInRoomBounds
     pop  DE                                            ;; 0a:7af8 $d1
     ret  C                                             ;; 0a:7af9 $d8
     push DE                                            ;; 0a:7afa $d5
@@ -385,7 +398,7 @@ call_0a_7a7c_HandleEntitySpawn:
     ld   H, $d0                                        ;; 0a:7b55 $26 $d0
     ld   [HL], $01                                     ;; 0a:7b57 $36 $01
     xor  A, A                                          ;; 0a:7b59 $af
-    farcall call_02_7102_SetEntityAction
+    farcall call_02_7102_Entity_SetAction
     ld   HL, wD339                                     ;; 0a:7b65 $21 $39 $d3
     ld   L, [HL]                                       ;; 0a:7b68 $6e
     ld   H, $00                                        ;; 0a:7b69 $26 $00
@@ -402,7 +415,7 @@ call_0a_7a7c_HandleEntitySpawn:
     push HL                                            ;; 0a:7b78 $e5
     and  A, A                                          ;; 0a:7b79 $a7
     jr   Z, .jr_0a_7b87                                ;; 0a:7b7a $28 $0b
-    farcall call_02_7211
+    farcall call_02_7211_SoundQueue_Enqueue
 .jr_0a_7b87:
     pop  HL                                            ;; 0a:7b87 $e1
     ld   A, [wD59E]                                    ;; 0a:7b88 $fa $9e $d5
@@ -412,7 +425,12 @@ call_0a_7a7c_HandleEntitySpawn:
     farcall call_0b_5f57
     ret                                                ;; 0a:7b99 $c9
 
-call_0a_7b9a_SpawnEntityRelative:
+call_0a_7b9a_EntitySpawn_SpawnChildEntity:
+; Finds a free NPC slot, then copies position fields from the calling entity into the new slot 
+; (preserving the parent's wD300 address around the operation), applies a signed X or Y offset 
+; from .data_0a_7c92_EntityChildSpawnData based on child entity type (add or subtract depending 
+; on a direction flag), copies collision/size attributes from data_0a_75fd_EntityAttributeTable, calls the init farCall, 
+; clears the slot counter, sets action 0, and copies room bounds from the parent's slot into the child's slot
     ld   D, $d2                                        ;; 0a:7b9a $16 $d2
     ld   A, $20                                        ;; 0a:7b9c $3e $20
 .jr_0a_7b9e:
@@ -526,7 +544,7 @@ call_0a_7b9a_SpawnEntityRelative:
     add  HL, HL                                        ;; 0a:7c1e $29
     add  HL, HL                                        ;; 0a:7c1f $29
     add  HL, HL                                        ;; 0a:7c20 $29
-    ld   BC, data_0a_75fd                             ;; 0a:7c21 $01 $fd $75
+    ld   BC, data_0a_75fd_EntityAttributeTable                             ;; 0a:7c21 $01 $fd $75
     add  HL, BC                                        ;; 0a:7c24 $09
     ld   A, [HL+]                                      ;; 0a:7c25 $2a
     ld   [DE], A                                       ;; 0a:7c26 $12
@@ -545,7 +563,7 @@ call_0a_7b9a_SpawnEntityRelative:
     push HL                                            ;; 0a:7c34 $e5
     and  A, A                                          ;; 0a:7c35 $a7
     jr   Z, .jr_0a_7c43                                ;; 0a:7c36 $28 $0b
-    farcall call_02_7211
+    farcall call_02_7211_SoundQueue_Enqueue
 .jr_0a_7c43:
     pop  HL                                            ;; 0a:7c43 $e1
     ld   A, [wD59E]                                    ;; 0a:7c44 $fa $9e $d5
@@ -554,9 +572,9 @@ call_0a_7b9a_SpawnEntityRelative:
     ld   C, [HL]                                       ;; 0a:7c4a $4e
     farcall call_0b_5f57
 .jr_0a_7c56:
-    call call_00_34d8                                  ;; 0a:7c56 $cd $d8 $34
+    call call_00_34d8_Entity_ClearSlotCounter                                  ;; 0a:7c56 $cd $d8 $34
     xor  A, A                                          ;; 0a:7c59 $af
-    farcall call_02_7102_SetEntityAction
+    farcall call_02_7102_Entity_SetAction
     pop  AF                                            ;; 0a:7c65 $f1
     ld   HL, wD300_CurrentEntityAddrLo                                     ;; 0a:7c66 $21 $00 $d3
     ld   C, [HL]                                       ;; 0a:7c69 $4e
@@ -593,6 +611,8 @@ call_0a_7b9a_SpawnEntityRelative:
     ld   [HL], A                                       ;; 0a:7c90 $77
     ret                                                ;; 0a:7c91 $c9
 .data_0a_7c92_EntityChildSpawnData:
+; 8-byte records (child entity ID + signed 16-bit X offset + signed 16-bit Y offset + padding) 
+; defining where each spawnable child appears relative to its parent.
     db   ENTITY_SCREAM_TV_HEAD_GHOST_HEAD, $06, $00, $f2, $ff, $00, $00, $00        ;; 0a:7c92 ????????
     db   ENTITY_SCREAM_TV_FLOATING_SKULL_PROJECTILE, $00, $00, $0c, $00, $00, $00, $00        ;; 0a:7c9a ????????
     db   ENTITY_SCREAM_TV_ZOMBIE_HEAD, $00, $00, $ee, $ff, $00, $00, $00        ;; 0a:7ca2 ????????

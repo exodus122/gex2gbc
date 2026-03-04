@@ -38,7 +38,7 @@ call_02_41a0_PlayerAction_unk0:
     and  A, $20                                        ;; 02:41a3 $e6 $20
     jr   Z, .jr_02_41ac                                ;; 02:41a5 $28 $05
     ld   C, $11                                        ;; 02:41a7 $0e $11
-    call call_00_112f                                  ;; 02:41a9 $cd $2f $11
+    call call_00_112f_QueueSFX                                  ;; 02:41a9 $cd $2f $11
 .jr_02_41ac:
     ret                                                ;; 02:41ac $c9
     
@@ -46,7 +46,7 @@ call_02_41ad_PlayerAction_LevelInit:
     ld   A, [wD624_CurrentLevelId]                                    ;; 02:41ad $fa $24 $d6
     and  A, A                                          ;; 02:41b0 $a7
     call NZ, call_00_0634                              ;; 02:41b1 $c4 $34 $06
-    jp   call_02_70f1                                    ;; 02:41b4 $c3 $f1 $70
+    jp   call_02_70f1_Entity_HandleActionSequenceEnd                                    ;; 02:41b4 $c3 $f1 $70
     
 call_02_41b7_PlayerAction_Idle:
     ld   A, [wD209]                                    ;; 02:41b7 $fa $09 $d2
@@ -173,7 +173,7 @@ call_02_4275_PlayerAction_Jump:
     ld   [wD762_PlayerInitialYVelocity], A                                    ;; 02:4284 $ea $62 $d7
     call call_02_4a3a                                  ;; 02:4287 $cd $3a $4a
     ld   C, $0c                                        ;; 02:428a $0e $0c
-    call call_00_112f                                  ;; 02:428c $cd $2f $11
+    call call_00_112f_QueueSFX                                  ;; 02:428c $cd $2f $11
     ld   A, [wD75E_PlayerXSpeed]                                    ;; 02:428f $fa $5e $d7
     and  A, A                                          ;; 02:4292 $a7
     jr   NZ, .jr_02_429a                               ;; 02:4293 $20 $05
@@ -200,7 +200,7 @@ call_02_42ac_PlayerAction_DoubleJump:
     ld   [wD762_PlayerInitialYVelocity], A                                    ;; 02:42bb $ea $62 $d7
     call call_02_4a3a                                  ;; 02:42be $cd $3a $4a
     ld   C, $0d                                        ;; 02:42c1 $0e $0d
-    call call_00_112f                                  ;; 02:42c3 $cd $2f $11
+    call call_00_112f_QueueSFX                                  ;; 02:42c3 $cd $2f $11
     ld   A, [wD75E_PlayerXSpeed]                                    ;; 02:42c6 $fa $5e $d7
     and  A, A                                          ;; 02:42c9 $a7
     jr   NZ, .jr_02_42d1                               ;; 02:42ca $20 $05
@@ -287,7 +287,7 @@ call_02_435b:
     and  a,$20
     jr   z,.jr_02_4367
     ld   c,$10
-    call call_00_112f
+    call call_00_112f_QueueSFX
 .jr_02_4367:
     xor  a
     ld   [wD75E_PlayerXSpeed],a
@@ -310,7 +310,7 @@ call_02_437b:
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:4383 $ea $5e $d7
     call call_00_0f5d                                  ;; 02:4386 $cd $5d $0f
     ld   C, $0f                                        ;; 02:4389 $0e $0f
-    call call_00_112f                                  ;; 02:438b $cd $2f $11
+    call call_00_112f_QueueSFX                                  ;; 02:438b $cd $2f $11
 .jr_02_438e:
     ld   A, $77                                        ;; 02:438e $3e $77
     ld   [wD750], A                                    ;; 02:4390 $ea $50 $d7
@@ -329,7 +329,7 @@ call_02_43a7:
     and  A, $20                                        ;; 02:43aa $e6 $20
     jr   Z, .jr_02_43b3                                ;; 02:43ac $28 $05
     ld   C, $11                                        ;; 02:43ae $0e $11
-    call call_00_112f                                  ;; 02:43b0 $cd $2f $11
+    call call_00_112f_QueueSFX                                  ;; 02:43b0 $cd $2f $11
 .jr_02_43b3:
     xor  A, A                                          ;; 02:43b3 $af
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:43b4 $ea $5e $d7
@@ -346,7 +346,7 @@ call_02_43c6:
     and  a,$20
     jr   z,.jr_02_43D2
     ld   c,$11
-    call call_00_112f
+    call call_00_112f_QueueSFX
 .jr_02_43D2:
     xor  a
     ld   [wD75E_PlayerXSpeed],a
@@ -363,7 +363,7 @@ call_02_43e5:
     and  A, $20                                        ;; 02:43e8 $e6 $20
     jr   Z, .jr_02_43f1                                ;; 02:43ea $28 $05
     ld   C, $11                                        ;; 02:43ec $0e $11
-    call call_00_112f                                  ;; 02:43ee $cd $2f $11
+    call call_00_112f_QueueSFX                                  ;; 02:43ee $cd $2f $11
 .jr_02_43f1:
     xor  A, A                                          ;; 02:43f1 $af
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:43f2 $ea $5e $d7
@@ -421,7 +421,7 @@ call_02_4448:
     and  A, $20                                        ;; 02:444b $e6 $20
     jr   Z, .jr_02_4454                                ;; 02:444d $28 $05
     ld   C, $0e                                        ;; 02:444f $0e $0e
-    call call_00_112f                                  ;; 02:4451 $cd $2f $11
+    call call_00_112f_QueueSFX                                  ;; 02:4451 $cd $2f $11
 .jr_02_4454:
     xor  A, A                                          ;; 02:4454 $af
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:4455 $ea $5e $d7
@@ -443,7 +443,7 @@ call_02_4459_PlayerAction_EnterDoor:
     ld   [wD621],a
     ld   a,$1B
     ld   [wD744],a
-    call call_00_38f0
+    call call_00_38f0_Entity_DespawnAll
     ret  
 
 call_02_447e_PlayerAction_LeaveDoor:
@@ -456,7 +456,7 @@ call_02_4483:
     and  a,$20
     jr   z,.jr_02_44A5
     ld   c,$12
-    call call_00_112f
+    call call_00_112f_QueueSFX
     call call_00_06bf_DealDamageToPlayer
     ld   a,$50
     ld   [wD760_PlayerYVelocity],a
@@ -997,7 +997,7 @@ call_02_4856:
     or   A, [HL]                                       ;; 02:487a $b6
     jr   Z, .jr_02_486e                                ;; 02:487b $28 $f1
     ld   C, $2a                                        ;; 02:487d $0e $2a
-    call call_00_112f                                  ;; 02:487f $cd $2f $11
+    call call_00_112f_QueueSFX                                  ;; 02:487f $cd $2f $11
     ld   A, $4c                                        ;; 02:4882 $3e $4c
     ret                                                ;; 02:4884 $c9
 .jr_02_4885:
@@ -1006,7 +1006,7 @@ call_02_4856:
     or   A, [HL]                                       ;; 02:4889 $b6
     jr   Z, .jr_02_486e                                ;; 02:488a $28 $e2
     ld   C, $2a                                        ;; 02:488c $0e $2a
-    call call_00_112f                                  ;; 02:488e $cd $2f $11
+    call call_00_112f_QueueSFX                                  ;; 02:488e $cd $2f $11
     ld   A, $60                                        ;; 02:4891 $3e $60
     ret                                                ;; 02:4893 $c9
 

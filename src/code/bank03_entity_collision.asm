@@ -1,6 +1,9 @@
 ; This file handles gex's collision with entities [enemies, tv switches, remotes, etc.]
 
-call_03_4c76_UpdateEntityCollision_Dispatch:
+call_03_4c76_EntityCollision_Dispatch:
+; Entry point for all entity–player collision. Returns immediately if Gex isn't drawn (wD743=0) or 
+; if the entity's UNK_0A bit 5 is clear (collision disabled). Otherwise reads the collision type 
+; from the entity's data, indexes into .data_03_4c9b_EntityCollisionJumpTable, and jumps to the appropriate handler
     ld   A, [wD743_DrawGexFlag]                                    ;; 03:4c76 $fa $43 $d7
     and  A, A                                          ;; 03:4c79 $a7
     ret  Z                                             ;; 03:4c7a $c8 ; return if [D743] is 0
@@ -23,13 +26,14 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ld   H, [HL]                                       ;; 03:4c98 $66
     ld   L, A                                          ;; 03:4c99 $6f
     jp   HL                                            ;; 03:4c9a $e9
-.data_03_4c9b_EntityCollisionJumpTable:               ;; 03:4c9b pP ; jump table
+.data_03_4c9b_EntityCollisionJumpTable:               ;; 03:4c9b pP
+; 37-entry pointer table, one handler address per collision type
     dw   .jr_03_4ce5_CollisionHandler_None ; COLLISION_TYPE_NONE
     dw   .jr_03_4ce6_CollisionHandler_Collectible ; COLLISION_TYPE_COLLECTIBLE
     dw   .jr_03_4d33_CollisionHandler_UNK_02 ; COLLISION_TYPE_UNK_02
     dw   call_03_52c5_CollisionHandler_StationaryPlatform ; COLLISION_TYPE_STATIONARY_PLATFORM
     dw   call_03_536f_CollisionHandler_MovingPlatform ; COLLISION_TYPE_MOVING_PLATFORM
-    dw   call_03_5304_CollisionHandler_UNK_05 ; COLLISION_TYPE_UNK_05
+    dw   call_03_5304_CollisionHandler_OneWayPlatform ; COLLISION_TYPE_UNK_05
     dw   .jr_03_4dbc_CollisionHandler_GenericEnemy ; COLLISION_TYPE_GENERIC_ENEMY
     dw   .jr_03_4d3f_CollisionHandler_SilverRemote ; COLLISION_TYPE_SILVER_REMOTE
     dw   .jr_03_4d56_CollisionHandler_GoldRemote ; COLLISION_TYPE_GOLD_REMOTE
@@ -43,13 +47,13 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     dw   .jr_03_4e7f_CollisionHandler_Hunter ; COLLISION_TYPE_HUNTER
     dw   .jr_03_4eb4_CollisionHandler_Mushroom ; COLLISION_TYPE_MUSHROOM
     dw   .jr_03_4ec6_CollisionHandler_UNK_12 ; COLLISION_TYPE_UNK_12
-    dw   .jr_03_4ec7_CollisionHandler_Projectile ; COLLISION_TYPE_PROJECTILE
+    dw   .jr_03_4ec7_CollisionHandler_Projectile_SubHitbox ; COLLISION_TYPE_PROJECTILE
     dw   .jr_03_4f14_CollisionHandler_Jar ; COLLISION_TYPE_JAR
     dw   .jr_03_4f20_CollisionHandler_Ninja ; COLLISION_TYPE_NINJA
     dw   .jr_03_4fc7_CollisionHandler_HangingBlade ; COLLISION_TYPE_HANGING_BLADE
     dw   .jr_03_4fcf_CollisionHandler_UNK_17 ; COLLISION_TYPE_UNK_17
     dw   .jr_03_4fd9_CollisionHandler_SamuraiBody ; COLLISION_TYPE_SAMURAI_BODY
-    dw   .jr_03_5035_CollisionHandler_UNK_19 ; COLLISION_TYPE_UNK_19
+    dw   .jr_03_5035_CollisionHandler_GenericEnemy_SetHitFlag ; COLLISION_TYPE_UNK_19
     dw   .jr_03_5049_CollisionHandler_Geyser ; COLLISION_TYPE_GEYSER
     dw   .jr_03_505d_CollisionHandler_Triceratops ; COLLISION_TYPE_TRICERATOPS
     dw   .jr_03_50ac_CollisionHandler_Gear ; COLLISION_TYPE_GEAR
@@ -64,13 +68,17 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
 .jr_03_4ce5_CollisionHandler_None:
     ret        	;; 03:4ce5 $c9
 .jr_03_4ce6_CollisionHandler_Collectible:
+; Checks overlap; if hit, iterates up to 8 sub-hitbox records from the secondary data pointer. 
+; Each record has a bit-7 active flag, Y offset, and X offset; checks if player screen position 
+; falls within an 8×16-pixel window around each sub-hitbox. On match, clears the record's active 
+; bit and calls call_00_06ec (collect item/score)
     call call_03_519b_Entity_CheckPlayerInteraction                                  ;; 03:4ce6 $cd $9b $51
     ret  NC                                            ;; 03:4ce9 $d0
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS_ON_SCREEN
     ld   C, [HL]                                       ;; 03:4cf2 $4e
     inc  L                                             ;; 03:4cf3 $2c
     ld   B, [HL]                                       ;; 03:4cf4 $46
-    call call_00_39f5                                  ;; 03:4cf5 $cd $f5 $39
+    call call_00_39f5_Entity_GetSecondaryDataPtr                                  ;; 03:4cf5 $cd $f5 $39
     ld   L, E                                          ;; 03:4cf8 $6b
     ld   H, D                                          ;; 03:4cf9 $62
     ld   A, $08                                        ;; 03:4cfa $3e $08
@@ -117,20 +125,25 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
 .jr_03_4d33_CollisionHandler_UNK_02:
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
-    call call_00_3931
+    call call_00_3931_Entity_KillSelf
     ld   a,$04
     jp   call_00_0647
 .jr_03_4d3f_CollisionHandler_SilverRemote:
+; Overlap check; sets bit 4 of wD64C (silver remote collected flag), 
+; plays SFX $03, kills entity and clears its flag slot
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     ld   a,[wD64C]
     or   a,$10
     ld   [wD64C],a
     ld   c,$03
-    call call_00_112f
-    call call_00_3931
-    jp   call_00_393c
+    call call_00_112f_QueueSFX
+    call call_00_3931_Entity_KillSelf
+    jp   call_00_393c_Entity_ClearEntityFlagSlot
 .jr_03_4d56_CollisionHandler_GoldRemote:
+; Guards against double-collection (checks wD621 bit 4). On overlap, sets bit 5 in the 
+; level's wD629 remote progress flag byte, kills entity, clears flag slot, then triggers 
+; action $1E on the player (likely a cutscene/celebration)
     ld   a,[wD621]
     and  a,$10
     ret  nz
@@ -144,31 +157,37 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ld   a,[hl]
     or   a,$20
     ld   [hl],a
-    call call_00_3931
-    call call_00_393c
+    call call_00_3931_Entity_KillSelf
+    call call_00_393c_Entity_ClearEntityFlagSlot
     ld   a,$1E
     farcall call_02_4ccd
     ret  
 .jr_03_4d82_CollisionHandler_UNK_09:
+; Overlap check; A=$00 → damage player; otherwise no effect (hazard that can be survived by attacking)
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     cp   a,$00
-    call z,call_03_52be_Entity_CheckForDamagePlayer
+    call z,call_03_52be_Entity_DamagePlayerIfVulnerable
     ret  
 .jr_03_4d8c_CollisionHandler_Lantern:
+; Sets wD757=1 before the overlap check (enabling lantern-light mode for the ghost handler), 
+; clears it back to 0 on hit — essentially a "player is standing near a lit lantern" proximity flag toggle
     ld   a,$01
-    ld   [wD757],a
+    ld   [wD757_LanternLitFlag],a
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     xor  a
-    ld   [wD757],a
+    ld   [wD757_LanternLitFlag],a
     ret  
 .jr_03_4d9a_CollisionHandler_Zombie:
+; Touch → damage player. On attack/stomp: checks UNK_17 bit 0 (already hit flag); 
+; if not set, sets it, loads a $3C countdown into UNK_18, and decrements a counter —
+; the zombie has a stagger/death delay before fully dying
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     cp   a,$00
     jr   nz,.jr_03_4DA5
-    jp   call_03_52be_Entity_CheckForDamagePlayer
+    jp   call_03_52be_Entity_DamagePlayerIfVulnerable
 .jr_03_4DA5:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     bit  0,[hl]
@@ -184,30 +203,37 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     dec  [hl]
     ret  
 .jr_03_4dbc_CollisionHandler_GenericEnemy:
+; Overlap check; 
+; A=$00 (touch) → damage player; 
+; A=$01 or $02 (attack/stomp) → spawn defeat particle via Entity_SpawnProjectileInit
     call call_03_519b_Entity_CheckPlayerInteraction                                  ;; 03:4dbc $cd $9b $51
     ret  NC                                            ;; 03:4dbf $d0
     cp   A, $00                                        ;; 03:4dc0 $fe $00
-    jp   Z, call_03_52be_Entity_CheckForDamagePlayer                               ;; 03:4dc2 $ca $be $52
-    jp   call_00_3985                                  ;; 03:4dc5 $c3 $85 $39
+    jp   Z, call_03_52be_Entity_DamagePlayerIfVulnerable                               ;; 03:4dc2 $ca $be $52
+    jp   call_00_3985_Entity_SpawnProjectileInit                                  ;; 03:4dc5 $c3 $85 $39
 .jr_03_4dc8_CollisionHandler_GhostHead:
+; Touch → damage player; attack/stomp → also kills entity (ghost head has no "survive attack" behavior)
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     cp   a,$00
-    call z,call_03_52be_Entity_CheckForDamagePlayer
-    jp   call_00_3931
+    call z,call_03_52be_Entity_DamagePlayerIfVulnerable
+    jp   call_00_3931_Entity_KillSelf
 .jr_03_4dd4_CollisionHandler_Ghost:
+; Checks wD757_LanternLitFlag (lantern light flag): if zero, touch → damage; 
+; attack/stomp → sets bit 0 of entity's D2xx slot (signals the ghost entity it was lit). 
+; If lantern is on, attack/stomp sets the D2xx hit flag directly without damage
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
-    ld   hl,wD757
+    ld   hl,wD757_LanternLitFlag
     inc  [hl]
     dec  [hl]
     jr   z,.jr_03_4DE5
     cp   a,$00
-    jp   z,call_03_52be_Entity_CheckForDamagePlayer
+    jp   z,call_03_52be_Entity_DamagePlayerIfVulnerable
     ret  
 .jr_03_4DE5:
     cp   a,$01
-    jp   nz,call_03_52be_Entity_CheckForDamagePlayer
+    jp   nz,call_03_52be_Entity_DamagePlayerIfVulnerable
     ld   h,$D2
     ld   a,[wD300_CurrentEntityAddrLo]
     or   l
@@ -215,10 +241,12 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     set  0,[hl]
     ret  
 .jr_03_4df4_CollisionHandler_ZombieHead:
+; Touch → damage player. Attack/stomp: scans all slots for an active Zombie (ID=$12); 
+; if found, spawns a particle on it via Entity_SpawnProjectileInit. Then kills this head entity
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     cp   a,$00
-    jp   z,call_03_52be_Entity_CheckForDamagePlayer
+    jp   z,call_03_52be_Entity_DamagePlayerIfVulnerable
     ld   a,[wD300_CurrentEntityAddrLo]
     push af
     ld   h,$D2
@@ -235,12 +263,17 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
 .jr_03_4E12:
     ld   a,l
     ld   [wD300_CurrentEntityAddrLo],a
-    call call_00_3985
+    call call_00_3985_Entity_SpawnProjectileInit
 .jr_03_4E19:
     pop  af
     ld   [wD300_CurrentEntityAddrLo],a
-    jp   call_00_3931
+    jp   call_00_3931_Entity_KillSelf
 .jr_03_4e20_CollisionHandler_FallingObject:
+; Only active when Y velocity is negative (object is moving downward; bit 7 set). 
+; Computes horizontal overlap against entity width E. If in range, computes vertical overlap 
+; using the entity's action data pointer + height + $10 offset; checks against wD211/wD210 (world Y). 
+; If all checks pass and player is vulnerable, damages and sets wD750=$77 then triggers 
+; player action $19 (crushed animation)
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YVEL
     bit  7, [HL]                                       ;; 03:4e28 $cb $7e
     ret  Z                                             ;; 03:4e2a $c8
@@ -287,27 +320,31 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ret  C                                             ;; 03:4e64 $d8
     call call_00_075b_Player_CanBeDamaged                                  ;; 03:4e65 $cd $5b $07
     ret  NZ                                            ;; 03:4e68 $c0
-    call call_03_52be_Entity_CheckForDamagePlayer                                  ;; 03:4e69 $cd $be $52
+    call call_03_52be_Entity_DamagePlayerIfVulnerable                                  ;; 03:4e69 $cd $be $52
     ld   A, $77                                        ;; 03:4e6c $3e $77
     ld   [wD750], A                                    ;; 03:4e6e $ea $50 $d7
     ld   A, $19                                        ;; 03:4e71 $3e $19
     farcall call_02_4ccd
     ret                                                ;; 03:4e7e $c9
 .jr_03_4e7f_CollisionHandler_Hunter:
+; Checks UNK_17 bit 0 first (already shooting, skip). Touch → damage player. 
+; Attack/stomp: decrements UNK_18 timer; if not zero, sets the "shooting" bit and returns. 
+; When timer hits zero, spawns a projectile, increments wD773 (hunter shot count), 
+; and if count reaches 2 sets wD799=$02 (likely triggers a level flag)
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     bit  0,[hl]
     ret  nz
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     cp   a,$00
-    jp   z,call_03_52be_Entity_CheckForDamagePlayer
-    call call_00_3817
+    jp   z,call_03_52be_Entity_DamagePlayerIfVulnerable
+    call call_00_3817_Entity_DecrementMiscTimer
     jr   z,.jr_03_4EA3
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     set  0,[hl]
     ret  
 .jr_03_4EA3:
-    call call_00_3985
+    call call_00_3985_Entity_SpawnProjectileInit
     ld   hl,wD773
     inc  [hl]
     ld   a,[hl]
@@ -317,6 +354,8 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ld   [hl],$02
     ret  
 .jr_03_4eb4_CollisionHandler_Mushroom:
+; Overlap check; touch → no effect (returns Z). 
+; Attack/stomp → sets UNK_17 bit 0 (marks mushroom as pressed/activated)
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     cp   a,$00
@@ -326,7 +365,10 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ret  
 .jr_03_4ec6_CollisionHandler_UNK_12:
     ret  
-.jr_03_4ec7_CollisionHandler_Projectile:
+.jr_03_4ec7_CollisionHandler_Projectile_SubHitbox:
+; Like the collectible handler, iterates 8 sub-hitboxes from the secondary data pointer. 
+; For each active record, checks a 12×8-pixel window at screen position; 
+; on hit, damages player directly (no death check bypass)
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS_ON_SCREEN
     ldi  a,[hl]
     add  a,$04
@@ -334,7 +376,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ld   a,[hl]
     add  a,$08
     ld   b,a
-    call call_00_39f5
+    call call_00_39f5_Entity_GetSecondaryDataPtr
     ld   l,e
     ld   h,d
     ld   a,$08
@@ -377,15 +419,22 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     pop  hl
     pop  bc
     pop  af
-    jp   call_03_52be_Entity_CheckForDamagePlayer
+    jp   call_03_52be_Entity_DamagePlayerIfVulnerable
 .jr_03_4f14_CollisionHandler_Jar:
+; Overlap check; only reacts to A=$01 (attack, not stomp); 
+; calls Entity_SetMiscTimer with C=1 — arms a break timer on the jar
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     cp   a,$01
     ret  nz
     ld   c,$01
-    jp   call_00_3802
+    jp   call_00_3802_Entity_SetMiscTimer
 .jr_03_4f20_CollisionHandler_Ninja:
+; Two-phase handler. First checks if the ninja's sword hitbox (derived from action ID, frame counter, 
+; and screen position adjusted for facing) overlaps the player — if so, damages directly without going 
+; through standard overlap. Otherwise falls through to standard overlap: touch → damage; 
+; attack/stomp → checks UNK_19 parry counter; if >0 decrements and returns; if 0, 
+; checks a hardcoded level/slot table (.data_03_4fbd) for a special unlock flag to set, then spawns defeat particle
     push de
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_ACTION_ID
     ld   a,[hl]
@@ -431,13 +480,13 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     cp   a,$0C
     jr   nc,.jr_03_4F6F
     pop  de
-    jp   call_03_52be_Entity_CheckForDamagePlayer
+    jp   call_03_52be_Entity_DamagePlayerIfVulnerable
 .jr_03_4F6F:
     pop  de
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     cp   a,$00
-    jp   z,call_03_52be_Entity_CheckForDamagePlayer
+    jp   z,call_03_52be_Entity_DamagePlayerIfVulnerable
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_19
     ld   a,[hl]
     and  a
@@ -470,7 +519,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ld   a,[hl]
     cp   a,$FF
     jr   nz,.jr_03_4F9B
-    jp   call_00_3985
+    jp   call_00_3985_Entity_SpawnProjectileInit
 .jr_03_4FB0:
     inc  hl
     ld   l,[hl]
@@ -478,22 +527,27 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ld   de,wD78B
     add  hl,de
     ld   [hl],$02
-    jp   call_00_3985
+    jp   call_00_3985_Entity_SpawnProjectileInit
 .data_03_4fbd:
     db   $0d, $07, $08, $05, $05, $00, $05, $06
     db   $08, $ff
 .jr_03_4fc7_CollisionHandler_HangingBlade:
+; Chains: first runs the FallingObject handler (damage if falling), then unconditionally 
+; runs the UNK_09/hazard handler (damage if touching)
     push de
     call .jr_03_4e20_CollisionHandler_FallingObject
     pop  de
     jp   .jr_03_4d82_CollisionHandler_UNK_09
 .jr_03_4fcf_CollisionHandler_UNK_17:
+; Overlap check; on hit, sets wD758=$7F (likely a slide/ice friction override value)
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     ld   a,$7F
     ld   [wD758],a
     ret  
 .jr_03_4fd9_CollisionHandler_SamuraiBody:
+; Nearly identical to Ninja: if action is $01 (attacking) and frame is ≥2, checks sword hitbox overlap 
+; directly → damages player. Otherwise standard overlap: touch → damage; stomp/attack → sets UNK_17 bit 0
     push de
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_ACTION_ID
     ld   a,[hl]
@@ -534,25 +588,28 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     cp   a,$08
     jr   nc,.jr_03_5020
     pop  de
-    jp   call_03_52be_Entity_CheckForDamagePlayer
+    jp   call_03_52be_Entity_DamagePlayerIfVulnerable
 .jr_03_5020:
     pop  de
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     cp   a,$00
-    jp   z,call_03_52be_Entity_CheckForDamagePlayer
+    jp   z,call_03_52be_Entity_DamagePlayerIfVulnerable
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     set  0,[hl]
     ret  
-.jr_03_5035_CollisionHandler_UNK_19:
+.jr_03_5035_CollisionHandler_GenericEnemy_SetHitFlag:
+; Touch → damage player; attack/stomp → sets UNK_17 bit 0 (generic "set hit flag" pattern shared by some enemies)
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     cp   a,$00
-    jp   z,call_03_52be_Entity_CheckForDamagePlayer
+    jp   z,call_03_52be_Entity_DamagePlayerIfVulnerable
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     set  0,[hl]
     ret  
 .jr_03_5049_CollisionHandler_Geyser:
+; Only active in action $01 (geyser erupting). Sets wD758=$50 (likely an upward launch velocity 
+; applied to the player) — no damage, just launches
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_ACTION_ID
     ld   a,[hl]
     and  a,$1F
@@ -562,6 +619,9 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ld   [wD758],a
     ret  
 .jr_03_505d_CollisionHandler_Triceratops:
+; Checks the horn hitbox first (X offset adjusted for facing direction), within a 12×12 window — 
+; if player is in horn range, damages directly. Otherwise standard overlap: touch → damage; 
+; attack/stomp → scans all slots for TRICERATOPS_HORN entity (ID=$49) and kills it, then spawns defeat particle
     push de
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS_ON_SCREEN
     ld   e,[hl]
@@ -587,13 +647,13 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     cp   a,$0C
     jr   nc,.jr_03_508E
     pop  de
-    jp   call_03_52be_Entity_CheckForDamagePlayer
+    jp   call_03_52be_Entity_DamagePlayerIfVulnerable
 .jr_03_508E:
     pop  de
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     cp   a,$00
-    jp   z,call_03_52be_Entity_CheckForDamagePlayer
+    jp   z,call_03_52be_Entity_DamagePlayerIfVulnerable
     ld   h,$D2
     ld   a,$20
 .jr_03_509C:
@@ -606,8 +666,10 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ld   a,l
     add  a,$20
     jr   nz,.jr_03_509C
-    jp   call_00_3985
+    jp   call_00_3985_Entity_SpawnProjectileInit
 .jr_03_50ac_CollisionHandler_Gear:
+; Overlap check with result saved. If overlapping AND stomp (A=$01), sets UNK_17 bit 0 (gear activated). 
+; If not overlapping or not stomp, clears UNK_17 bit 0 (gear released) — models a pressure-activated gear/button
     call call_03_519b_Entity_CheckPlayerInteraction
     push af
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
@@ -621,6 +683,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     res  0,[hl]
     ret  
 .jr_03_50c5_CollisionHandler_ElectricBall:
+; Only dangerous in action $00 (charged state); otherwise falls through to standard UNK_09 hazard handler
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_ACTION_ID
     ld   a,[hl]
     and  a,$1F
@@ -628,12 +691,15 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     jp   nz,.jr_03_4d82_CollisionHandler_UNK_09
     ret  
 .jr_03_50d6_CollisionHandler_UNK_1E:
+; Overlap check; sets UNK_17 bit 7 and damages player — appears to be a capture/grab collision type
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     set  7,[hl]
-    jp   call_03_52be_Entity_CheckForDamagePlayer
+    jp   call_03_52be_Entity_DamagePlayerIfVulnerable
 .jr_03_50e7_CollisionHandler_Rocket:
+; Checks wD755/wD756 (speed registers) are non-zero (rocket is moving). Overlap check; 
+; sets UNK_17 bit 7, then triggers player action $1F (rocket ride/capture)
     ld   hl,wD755
     ldi  a,[hl]
     or   [hl]
@@ -646,6 +712,8 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     farcall call_02_4ccd
     ret  
 .jr_03_5109_CollisionHandler_Cannon:
+; Scans all slots for an active cannon projectile (ID=$4D); if one exists, returns (already firing). 
+; Otherwise standard overlap; A=$02 (stomp only) sets UNK_17 bit 7 (fire the cannon)
     ld   h,$D2
     ld   a,$20
 .jr_03_510D:
@@ -664,6 +732,9 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     set  7,[hl]
     ret  
 .jr_03_5129_CollisionHandler_PoweredWalkway:
+; Overlap check; if wD751/wD752 are non-zero (walkway is powered), reads UNK_19 as an index 
+; into wD5A3 conveyor state table, writes $06 to that slot; if the previous value was 0, 
+; plays SFX $2B (activation sound)
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     ld   hl,wD751
@@ -681,9 +752,10 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     and  a
     ret  nz
     ld   c,$2B
-    call call_00_112f
+    call call_00_112f_QueueSFX
     ret  
 .jr_03_514e_CollisionHandler_PowerUp:
+; Overlap check; on hit, copies UNK_19 and the following byte into wD751/wD752 (power-up type/value registers)
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_19
@@ -693,11 +765,18 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ld   [wD752],a
     ret  
 .jr_03_5163_CollisionHandler_DragonProjectile:
+; Standard overlap; always damages player if hit, then despawns the projectile slot entirely
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
-    call call_03_52be_Entity_CheckForDamagePlayer
-    jp   call_00_3910
+    call call_03_52be_Entity_DamagePlayerIfVulnerable
+    jp   call_00_3910_Entity_DespawnSlot
 .jr_03_516d_CollisionHandler_Rez:
+; Guards specific action IDs: 
+; action $04 → no collision (defeated state); 
+; actions $09/$0A → no collision (special states). 
+; Below $04: touch → damage; 
+; attack → transitions Rez to action $04 (defeat). 
+; Above $04 (but not $09/$0A): falls through silently
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_ACTION_ID
     ld   a,[hl]
     and  a,$1F
@@ -707,9 +786,9 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     cp   a,$00
-    jp   z,call_03_52be_Entity_CheckForDamagePlayer
+    jp   z,call_03_52be_Entity_DamagePlayerIfVulnerable
     ld   a,$04
-    farcall call_02_7102_SetEntityAction
+    farcall call_02_7102_Entity_SetAction
     ret  
 .jr_03_5194:
     cp   a,$09
@@ -719,10 +798,17 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ret  
 
 call_03_519b_Entity_CheckPlayerInteraction:
+; The shared AABB overlap test used by nearly every handler. Loads the entity's height/width (D/E), 
+; computes Y overlap using player screen Y vs entity Y + half-height, then X overlap similarly. 
+; Returns carry clear = no overlap. If overlapping, checks wD753/wD755 (invincibility/stun timers) 
+; and the entity's interaction flags byte from .data_03_522e_EntityInteractionFlagsTable: bit 1 = requires player NOT to be 
+; climbing/tail-whipping (returns A=$01, "touch"), bit 2 = stomping valid — if player is in jump/fall 
+; action AND Y velocity is negative, bounces player upward (sets wD760=$2A) and returns A=$02 ("stomp"); 
+; otherwise returns A=$01 ("touch")
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_ENTITY_ID
     ld   L, [HL]                                       ;; 03:51a3 $6e
     ld   H, $00                                        ;; 03:51a4 $26 $00
-    ld   BC, .data_03_522e                             ;; 03:51a6 $01 $2e $52
+    ld   BC, .data_03_522e_EntityInteractionFlagsTable                             ;; 03:51a6 $01 $2e $52
     add  HL, BC                                        ;; 03:51a9 $09
     ld   B, [HL]                                       ;; 03:51aa $46
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS_ON_SCREEN
@@ -803,7 +889,9 @@ call_03_519b_Entity_CheckPlayerInteraction:
     ld   A, $ff                                        ;; 03:5229 $3e $ff
     add  A, $01                                        ;; 03:522b $c6 $01
     ret                                                ;; 03:522d $c9
-.data_03_522e:
+.data_03_522e_EntityInteractionFlagsTable:
+; Per-entity-type flags byte table: bit 0 unused, bit 1 = PLAYER_CAN_TOUCH_ENTITY (touch damage), 
+; bit 2 = PLAYER_CAN_ATTACK_ENTITY (tail whip/attack kills), bit 3 = PLAYER_CAN_STOMP_ENTITY (jump-stomp kills)
     db   $00 ; ENTITY_GEX
     db   PLAYER_CAN_TOUCH_ENTITY | PLAYER_CAN_ATTACK_ENTITY ; ENTITY_COLLECTIBLE_SPAWN
     db   PLAYER_CAN_TOUCH_ENTITY ; ENTITY_UNK_02
@@ -949,24 +1037,31 @@ call_03_519b_Entity_CheckPlayerInteraction:
     db   $00 ; ENTITY_UNK_8E
     db   $00 ; ENTITY_MEDIA_DIMENSION_MOVING_PLATFORM
 
-call_03_52be_Entity_CheckForDamagePlayer:
+call_03_52be_Entity_DamagePlayerIfVulnerable:
+; Calls Player_CanBeDamaged; if Z (player is vulnerable), calls DealDamageToPlayer. 
+; Simple two-instruction wrapper used by every damaging handler
     call call_00_075b_Player_CanBeDamaged                                  ;; 03:52be $cd $5b $07
     call Z, call_00_06bf_DealDamageToPlayer                               ;; 03:52c1 $cc $bf $06
     ret                                                ;; 03:52c4 $c9
 
 call_03_52c5_CollisionHandler_StationaryPlatform:
+; Full top-surface landing check. Compares player bottom (Y+$0F) against platform Y 
+; to determine approach direction. For top-landing: checks X overlap, then compares 
+; horizontal approach speed against wD75D (prev X speed) to filter out wall sliding; 
+; if valid landing, writes entity address to wD74D (player's current platform) and 
+; manages wD74E (secondary platform slot). For side/bottom hits: clears platform tracking vars
     LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_YPOS_ON_SCREEN
     ld   A, [wD213_PlayerScreenYPosition]                                    ;; 03:52cd $fa $13 $d2
     add  A, $0f                                        ;; 03:52d0 $c6 $0f
     cp   A, [HL]                                       ;; 03:52d2 $be
-    jr   C, call_03_5314_StationaryPlatformCollisionHelper2                                ;; 03:52d3 $38 $3f
+    jr   C, call_03_5314_Platform_LandingCheck                                ;; 03:52d3 $38 $3f
     sub  A, $1f                                        ;; 03:52d5 $d6 $1f
     ld   C, A                                          ;; 03:52d7 $4f
     ld   A, [HL]                                       ;; 03:52d8 $7e
     add  A, D                                          ;; 03:52d9 $82
     dec  A                                             ;; 03:52da $3d
     cp   A, C                                          ;; 03:52db $b9
-    jr   C, jr_03_534d                                ;; 03:52dc $38 $6f
+    jr   C, call_03_534d_Platform_ClearPlatformSlots                                ;; 03:52dc $38 $6f
     dec  L                                             ;; 03:52de $2d
     ld   A, [wD212_PlayerScreenXPosition]                                    ;; 03:52df $fa $12 $d2
     sub  A, [HL]                                       ;; 03:52e2 $96
@@ -975,30 +1070,36 @@ call_03_52c5_CollisionHandler_StationaryPlatform:
     jr   NZ, .jr_03_52f8                               ;; 03:52e6 $20 $10
     sla  E                                             ;; 03:52e8 $cb $23
     sub  A, E                                          ;; 03:52ea $93
-    jr   C, jr_03_534d                                ;; 03:52eb $38 $60
+    jr   C, call_03_534d_Platform_ClearPlatformSlots                                ;; 03:52eb $38 $60
     ld   HL, wD75D_PlayerXSpeedPrev                                     ;; 03:52ed $21 $5d $d7
     cp   A, [HL]                                       ;; 03:52f0 $be
-    jr   C, call_03_5360_StationaryPlatformCollisionHelper                                ;; 03:52f1 $38 $6d
+    jr   C, call_03_5360_Platform_SetSecondarySlot                                ;; 03:52f1 $38 $6d
     or   A, [HL]                                       ;; 03:52f3 $b6
-    jr   Z, call_03_5360_StationaryPlatformCollisionHelper                                ;; 03:52f4 $28 $6a
-    jr   jr_03_534d                                   ;; 03:52f6 $18 $55
+    jr   Z, call_03_5360_Platform_SetSecondarySlot                                ;; 03:52f4 $28 $6a
+    jr   call_03_534d_Platform_ClearPlatformSlots                                   ;; 03:52f6 $18 $55
 .jr_03_52f8:
     cpl                                                ;; 03:52f8 $2f
     ld   HL, wD75D_PlayerXSpeedPrev                                     ;; 03:52f9 $21 $5d $d7
     cp   A, [HL]                                       ;; 03:52fc $be
-    jr   C, call_03_5360_StationaryPlatformCollisionHelper                                ;; 03:52fd $38 $61
+    jr   C, call_03_5360_Platform_SetSecondarySlot                                ;; 03:52fd $38 $61
     or   A, [HL]                                       ;; 03:52ff $b6
-    jr   Z, call_03_5360_StationaryPlatformCollisionHelper                                ;; 03:5300 $28 $5e
-    jr   jr_03_534d                                   ;; 03:5302 $18 $49
+    jr   Z, call_03_5360_Platform_SetSecondarySlot                                ;; 03:5300 $28 $5e
+    jr   call_03_534d_Platform_ClearPlatformSlots                                   ;; 03:5302 $18 $49
 
-call_03_5304_CollisionHandler_UNK_05:
+call_03_5304_CollisionHandler_OneWayPlatform:
+; Simplified platform — only handles the "approaching from below" path (player Y+$0F < platform Y), 
+; then falls through into StationaryPlatformCollisionHelper2. Effectively a one-way/pass-through platform
     LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_YPOS_ON_SCREEN
     ld   a,[wD213_PlayerScreenYPosition]
     add  a,$0F
     cp   [hl]
-    jr   nc,jr_03_534d
+    jr   nc,call_03_534d_Platform_ClearPlatformSlots
 
-call_03_5314_StationaryPlatformCollisionHelper2:
+call_03_5314_Platform_LandingCheck:
+; Shared landing sub-routine: checks X overlap against full width (2×E), then computes the 
+; penetration depth C = platformY − (playerY+$0F+1); if depth ≥ $80 (too deep, tunneled through) 
+; rejects. Compares Y velocity/16 against depth to decide if landing is valid; if so, writes 
+; entity to wD74D, clears wD74E if it matches
     ld   C, A                                          ;; 03:5314 $4f
     dec  L                                             ;; 03:5315 $2d
     ld   A, [wD212_PlayerScreenXPosition]                                    ;; 03:5316 $fa $12 $d2
@@ -1006,14 +1107,14 @@ call_03_5314_StationaryPlatformCollisionHelper2:
     add  A, E                                          ;; 03:531a $83
     sla  E                                             ;; 03:531b $cb $23
     cp   A, E                                          ;; 03:531d $bb
-    jr   NC, jr_03_534d                               ;; 03:531e $30 $2d
+    jr   NC, call_03_534d_Platform_ClearPlatformSlots                               ;; 03:531e $30 $2d
     inc  L                                             ;; 03:5320 $2c
     inc  C                                             ;; 03:5321 $0c
     ld   A, [HL]                                       ;; 03:5322 $7e
     sub  A, C                                          ;; 03:5323 $91
     ld   C, A                                          ;; 03:5324 $4f
     cp   A, $80                                        ;; 03:5325 $fe $80
-    jr   NC, jr_03_534d                               ;; 03:5327 $30 $24
+    jr   NC, call_03_534d_Platform_ClearPlatformSlots                               ;; 03:5327 $30 $24
     ld   A, [wD760_PlayerYVelocity]                                    ;; 03:5329 $fa $60 $d7
     sra  A                                             ;; 03:532c $cb $2f
     sra  A                                             ;; 03:532e $cb $2f
@@ -1024,18 +1125,21 @@ call_03_5314_StationaryPlatformCollisionHelper2:
     jr   NZ, .jr_03_533f                               ;; 03:5337 $20 $06
     cp   A, $02                                        ;; 03:5339 $fe $02
     jr   C, .jr_03_533f                                ;; 03:533b $38 $02
-    jr   jr_03_534d                                   ;; 03:533d $18 $0e
+    jr   call_03_534d_Platform_ClearPlatformSlots                                   ;; 03:533d $18 $0e
 .jr_03_533f:
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:533f $fa $00 $d3
-    ld   [wD74D], A                                    ;; 03:5342 $ea $4d $d7
+    ld   [wD74D_PlayerRoom], A                                    ;; 03:5342 $ea $4d $d7
     ld   HL, wD74E                                     ;; 03:5345 $21 $4e $d7
     cp   A, [HL]                                       ;; 03:5348 $be
     ret  NZ                                            ;; 03:5349 $c0
     ld   [HL], $00                                     ;; 03:534a $36 $00
     ret                                                ;; 03:534c $c9
-jr_03_534d:
+
+call_03_534d_Platform_ClearPlatformSlots:
+; Called when platform overlap is definitely false; clears both wD74D and wD74E 
+; if they currently reference this entity
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:534d $fa $00 $d3
-    ld   HL, wD74D                                     ;; 03:5350 $21 $4d $d7
+    ld   HL, wD74D_PlayerRoom                                     ;; 03:5350 $21 $4d $d7
     cp   A, [HL]                                       ;; 03:5353 $be
     jr   NZ, .jr_03_5358                               ;; 03:5354 $20 $02
     ld   [HL], $00                                     ;; 03:5356 $36 $00
@@ -1046,9 +1150,11 @@ jr_03_534d:
     ld   [HL], $00                                     ;; 03:535d $36 $00
     ret                                                ;; 03:535f $c9
 
-call_03_5360_StationaryPlatformCollisionHelper:
+call_03_5360_Platform_SetSecondarySlot:
+; Clears wD74D if it currently points to this entity (player left primary platform), 
+; then writes entity address to wD74E (secondary/adjacent platform tracking)
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:5360 $fa $00 $d3
-    ld   HL, wD74D                                     ;; 03:5363 $21 $4d $d7
+    ld   HL, wD74D_PlayerRoom                                     ;; 03:5363 $21 $4d $d7
     cp   A, [HL]                                       ;; 03:5366 $be
     jr   NZ, .jr_03_536b                               ;; 03:5367 $20 $02
     ld   [HL], $00                                     ;; 03:5369 $36 $00
@@ -1057,6 +1163,11 @@ call_03_5360_StationaryPlatformCollisionHelper:
     ret                                                ;; 03:536e $c9
 
 call_03_536f_CollisionHandler_MovingPlatform:
+; Same structure as stationary platform but additionally reads the platform's X velocity (UNK_0E), 
+; right-shifts 4×, stores in B, then calls MovingPlatformCollisionHelper to get a corrected 
+; relative X speed accounting for platform motion. Landing validity is then checked against 
+; (relativeX − B + E + D) instead of raw speed. On landing writes to wD74D/wD74F 
+; (moving platform uses wD74F instead of wD74E); on miss clears both
     LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_YPOS_ON_SCREEN
     ld   A, [wD213_PlayerScreenYPosition]                                    ;; 03:5377 $fa $13 $d2
     add  A, $0f                                        ;; 03:537a $c6 $0f
@@ -1079,7 +1190,7 @@ call_03_536f_CollisionHandler_MovingPlatform:
     sub  A, E                                          ;; 03:5394 $93
     jr   C, .jr_03_5405                                ;; 03:5395 $38 $6e
     ld   C, A                                          ;; 03:5397 $4f
-    call call_03_5427_MovingPlatformCollisionHelper                                  ;; 03:5398 $cd $27 $54
+    call call_03_5427_MovingPlatform_GetRelativeXSpeed                                  ;; 03:5398 $cd $27 $54
     ld   A, C                                          ;; 03:539b $79
     sub  A, B                                          ;; 03:539c $90
     add  A, E                                          ;; 03:539d $83
@@ -1092,7 +1203,7 @@ call_03_536f_CollisionHandler_MovingPlatform:
 .jr_03_53a8:
     cpl                                                ;; 03:53a8 $2f
     ld   C, A                                          ;; 03:53a9 $4f
-    call call_03_5427_MovingPlatformCollisionHelper                                  ;; 03:53aa $cd $27 $54
+    call call_03_5427_MovingPlatform_GetRelativeXSpeed                                  ;; 03:53aa $cd $27 $54
     ld   A, C                                          ;; 03:53ad $79
     add  A, B                                          ;; 03:53ae $80
     sub  A, E                                          ;; 03:53af $93
@@ -1143,7 +1254,7 @@ call_03_536f_CollisionHandler_MovingPlatform:
     jr   .jr_03_5405                                   ;; 03:53f5 $18 $0e
 .jr_03_53f7:
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:53f7 $fa $00 $d3
-    ld   [wD74D], A                                    ;; 03:53fa $ea $4d $d7
+    ld   [wD74D_PlayerRoom], A                                    ;; 03:53fa $ea $4d $d7
     ld   HL, wD74F                                     ;; 03:53fd $21 $4f $d7
     cp   A, [HL]                                       ;; 03:5400 $be
     ret  NZ                                            ;; 03:5401 $c0
@@ -1151,7 +1262,7 @@ call_03_536f_CollisionHandler_MovingPlatform:
     ret                                                ;; 03:5404 $c9
 .jr_03_5405:
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:5405 $fa $00 $d3
-    ld   HL, wD74D                                     ;; 03:5408 $21 $4d $d7
+    ld   HL, wD74D_PlayerRoom                                     ;; 03:5408 $21 $4d $d7
     cp   A, [HL]                                       ;; 03:540b $be
     jr   NZ, .jr_03_5410                               ;; 03:540c $20 $02
     ld   [HL], $00                                     ;; 03:540e $36 $00
@@ -1163,7 +1274,7 @@ call_03_536f_CollisionHandler_MovingPlatform:
     ret                                                ;; 03:5417 $c9
 .jr_03_5418:
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:5418 $fa $00 $d3
-    ld   HL, wD74D                                     ;; 03:541b $21 $4d $d7
+    ld   HL, wD74D_PlayerRoom                                     ;; 03:541b $21 $4d $d7
     cp   A, [HL]                                       ;; 03:541e $be
     jr   NZ, .jr_03_5423                               ;; 03:541f $20 $02
     ld   [HL], $00                                     ;; 03:5421 $36 $00
@@ -1171,7 +1282,11 @@ call_03_536f_CollisionHandler_MovingPlatform:
     ld   [wD74F], A                                    ;; 03:5423 $ea $4f $d7
     ret                                                ;; 03:5426 $c9
 
-call_03_5427_MovingPlatformCollisionHelper:
+call_03_5427_MovingPlatform_GetRelativeXSpeed:
+; Reads the platform's X subpixel velocity (UNK_0E), shifts right 4× into B (pixel speed). 
+; Loads wD75C/wD75D (player X delta and prev speed) into D/E. Checks bit 5 of player facing angle; 
+; if set (facing left), negates A and stores into E. Returns B=platform pixel speed, D=player X delta, 
+; E=adjusted player speed for relative motion comparison
     ld   A, L                                          ;; 03:5427 $7d
     xor  A, $0e                                        ;; 03:5428 $ee $0e
     ld   L, A                                          ;; 03:542a $6f

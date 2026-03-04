@@ -42,7 +42,7 @@ call_00_1264_LoadFullMap:
     jr   NZ, .jr_00_12a2                               ;; 00:12c4 $20 $dc
     ld   [wD6F9], A                                    ;; 00:12c6 $ea $f9 $d6
     farcall call_03_66ae
-    farcall call_02_715a_UpdateMapWindow
+    farcall call_02_715a_MapWindow_Update
     xor  A, A                                          ;; 00:12df $af
     ld   [wD6F9], A                                    ;; 00:12e0 $ea $f9 $d6
     ret                                                ;; 00:12e3 $c9

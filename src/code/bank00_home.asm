@@ -220,7 +220,7 @@ call_00_0150_Init:
     call call_00_0562                                  ;; 00:030f $cd $62 $05
     farcall call_01_4297_LoadMissionSelectMenu
     farcall call_0b_4000
-    farcall call_02_6eb1
+    farcall call_02_6eb1_Entities_ClearFlagsTable
     call call_00_3c3f                                  ;; 00:0333 $cd $3f $3c
     call call_00_12e4                                  ;; 00:0336 $cd $e4 $12
     ld   A, $0a                                        ;; 00:0339 $3e $0a
@@ -275,7 +275,7 @@ call_00_0150_Init:
     ld   A, $04 ; Set Health to 4                                       ;; 00:03b3 $3e $04
     ld   [wD741_PlayerHealth], A                                    ;; 00:03b5 $ea $41 $d7
     farcall call_0b_4000
-    farcall call_02_6eb1
+    farcall call_02_6eb1_Entities_ClearFlagsTable
     call call_00_3c3f                                  ;; 00:03ce $cd $3f $3c
     call call_00_12e4                                  ;; 00:03d1 $cd $e4 $12
     call call_00_0547                                  ;; 00:03d4 $cd $47 $05
@@ -295,12 +295,12 @@ call_00_0150_Init:
     ld   [wD743_DrawGexFlag], A                                    ;; 00:03f6 $ea $43 $d7
     farcall call_0b_4efe_SpawnPositionInMap
     call call_00_1264_LoadFullMap                                  ;; 00:0404 $cd $64 $12
-    farcall call_02_6e17_InitEntitiesAndSpawnPlayer
+    farcall call_02_6e17_Entities_InitAndSpawnAll
     call call_00_0521_DrawEntitiesWrapper                                  ;; 00:0412 $cd $21 $05
     jr   .jp_00_0428                                   ;; 00:0415 $18 $11
 .jp_00_0417:
     call call_00_1264_LoadFullMap                                  ;; 00:0417 $cd $64 $12
-    farcall call_02_71c8
+    farcall call_02_71c8_Entities_UpdateSoundsForAll
     call call_00_0521_DrawEntitiesWrapper                                  ;; 00:0425 $cd $21 $05
 .jp_00_0428:
     call call_00_0ab4_WaitForInterrupt                                  ;; 00:0428 $cd $b4 $0a
@@ -310,7 +310,7 @@ call_00_0150_Init:
     ld   A, [wD621]                                    ;; 00:0433 $fa $21 $d6
     and  A, $08                                        ;; 00:0436 $e6 $08
     jr   Z, .jr_00_043f                                ;; 00:0438 $28 $05
-    call call_00_38f0                                  ;; 00:043a $cd $f0 $38
+    call call_00_38f0_Entity_DespawnAll                                  ;; 00:043a $cd $f0 $38
     jr   .jr_00_03da                                   ;; 00:043d $18 $9b
 .jr_00_043f:
     ld   A, [wD621]                                    ;; 00:043f $fa $21 $d6
@@ -371,7 +371,7 @@ call_00_0150_Init:
     cp   A, $01                                        ;; 00:04c4 $fe $01
     jr   NZ, .jr_00_04cd                               ;; 00:04c6 $20 $05
     ld   C, $15                                        ;; 00:04c8 $0e $15
-    call call_00_112f                                  ;; 00:04ca $cd $2f $11
+    call call_00_112f_QueueSFX                                  ;; 00:04ca $cd $2f $11
 .jr_00_04cd:
     ld   HL, wD751                                     ;; 00:04cd $21 $51 $d7
     ld   A, [HL+]                                      ;; 00:04d0 $2a
@@ -381,9 +381,9 @@ call_00_0150_Init:
     and  A, $7f                                        ;; 00:04d7 $e6 $7f
     jr   NZ, .jr_00_04e0                               ;; 00:04d9 $20 $05
     ld   C, $14                                        ;; 00:04db $0e $14
-    call call_00_112f                                  ;; 00:04dd $cd $2f $11
+    call call_00_112f_QueueSFX                                  ;; 00:04dd $cd $2f $11
 .jr_00_04e0:
-    farcall call_02_6eba_UpdateAllEntities
+    farcall call_02_6eba_Entities_UpdateAll
     call call_00_1455_LoadBgMapDirtyRegions                                  ;; 00:04eb $cd $55 $14
     call call_00_2305                                  ;; 00:04ee $cd $05 $23
     call call_00_1e5b                                  ;; 00:04f1 $cd $5b $1e
@@ -409,7 +409,7 @@ call_00_0150_Init:
     jp   .jp_00_0428                                   ;; 00:051e $c3 $28 $04
 
 call_00_0521_DrawEntitiesWrapper:
-    farcall call_02_6f80
+    farcall call_02_6f80_Entities_DrawAll
     call call_00_0971                                  ;; 00:052c $cd $71 $09
     ld   A, $03                                        ;; 00:052f $3e $03
     call call_00_0bae                                  ;; 00:0531 $cd $ae $0b
@@ -641,7 +641,7 @@ call_00_06bf_DealDamageToPlayer: ; Deal damage to Gex
 
 call_00_06ec:
     ld   C, $06                                        ;; 00:06ec $0e $06
-    call call_00_112f                                  ;; 00:06ee $cd $2f $11
+    call call_00_112f_QueueSFX                                  ;; 00:06ee $cd $2f $11
     call call_00_074d                                  ;; 00:06f1 $cd $4d $07
     call call_00_0634                                  ;; 00:06f4 $cd $34 $06
     ld   A, [wD623]                                    ;; 00:06f7 $fa $23 $d6
@@ -1104,7 +1104,7 @@ call_00_09fd:
     jp   call_00_10a3_RestoreBank                                  ;; 00:0a1e $c3 $a3 $10
 
 call_00_0a21:
-    farcall call_02_722c
+    farcall call_02_722c_SoundQueue_PlayNext
     ld   HL, wD60F_HDMATransferFlags                                     ;; 00:0a2c $21 $0f $d6
     bit  3, [HL]                                       ;; 00:0a2f $cb $5e
     ret  Z                                             ;; 00:0a31 $c8
@@ -2091,7 +2091,7 @@ call_00_1129_CheckInputB:
     and  A, PADF_B                                        ;; 00:112c $e6 $02
     ret                                                ;; 00:112e $c9
 
-call_00_112f:
+call_00_112f_QueueSFX:
     ld   HL, wD789                                     ;; 00:112f $21 $89 $d7
     ld   A, [HL]                                       ;; 00:1132 $7e
     cp   A, $ff                                        ;; 00:1133 $fe $ff
@@ -2446,7 +2446,7 @@ jr_00_209a:
     ld   a,$02
     ld   [de],a
 .jr_00_21a2:
-    farcall call_00_3951
+    farcall call_00_3951_Entity_SpawnPlayerClone
     ret  
 
     db   $bc, $21, $01, $00, $ff, $00, $02, $01        ;; 00:21ae ????????

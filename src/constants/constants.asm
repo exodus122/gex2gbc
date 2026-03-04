@@ -321,7 +321,7 @@ DEF ENTITY_FIELD_WIDTH                      EQU $14
 DEF ENTITY_FIELD_HEIGHT                     EQU $15
 DEF ENTITY_FIELD_COLLISION_TYPE             EQU $16
 DEF ENTITY_FIELD_UNK_17                     EQU $17
-DEF ENTITY_FIELD_UNK_18                     EQU $18
+DEF ENTITY_FIELD_MISC_TIMER                     EQU $18
 DEF ENTITY_FIELD_UNK_19                     EQU $19
 DEF ENTITY_FIELD_MISC_FLAGS                 EQU $1A ; used by tv buttons, etc.
 DEF ENTITY_FIELD_UNK_1B                     EQU $1B

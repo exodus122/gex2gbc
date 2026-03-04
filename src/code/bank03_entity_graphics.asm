@@ -576,8 +576,8 @@ call_03_5f22:
     jr   NC, call_03_5f32                               ;; 03:5f29 $30 $07
 
 call_03_5f2b:
-    call call_00_350c                                  ;; 03:5f2b $cd $0c $35
-    call C, call_00_3910                               ;; 03:5f2e $dc $10 $39
+    call call_00_350c_Entity_CheckIfPlayerInRoomBounds                                  ;; 03:5f2b $cd $0c $35
+    call C, call_00_3910_Entity_DespawnSlot                               ;; 03:5f2e $dc $10 $39
     ret                                                ;; 03:5f31 $c9
 
 call_03_5f32:
@@ -611,7 +611,7 @@ call_03_5f32:
 .jr_03_5f58:
     ld   A, [DE]                                       ;; 03:5f58 $1a
     bit  3, A                                          ;; 03:5f59 $cb $5f
-    jp   NZ, call_03_4c76_UpdateEntityCollision_Dispatch                                ;; 03:5f5b $c2 $76 $4c
+    jp   NZ, call_03_4c76_EntityCollision_Dispatch                                ;; 03:5f5b $c2 $76 $4c
     bit  0, A                                          ;; 03:5f5e $cb $47
     jp   NZ, .jp_03_6451                               ;; 03:5f60 $c2 $51 $64
     bit  7, A                                          ;; 03:5f63 $cb $7f
@@ -682,7 +682,7 @@ call_03_5f32:
     jr   NZ, .jr_03_5fa4                               ;; 03:5fc2 $20 $e0
     ld   A, E                                          ;; 03:5fc4 $7b
     ld   [wD739], A                                    ;; 03:5fc5 $ea $39 $d7
-    jp   call_03_4c76_UpdateEntityCollision_Dispatch                                    ;; 03:5fc8 $c3 $76 $4c
+    jp   call_03_4c76_EntityCollision_Dispatch                                    ;; 03:5fc8 $c3 $76 $4c
 .jr_03_5fcb:
     LOAD_OBJ_FIELD_TO_DE ENTITY_FIELD_FACING_DIRECTION
     ld   A, [DE]                                       ;; 03:5fd3 $1a
@@ -746,7 +746,7 @@ call_03_5f32:
     jr   NZ, .jr_03_6007                               ;; 03:6025 $20 $e0
     ld   A, E                                          ;; 03:6027 $7b
     ld   [wD739], A                                    ;; 03:6028 $ea $39 $d7
-    jp   call_03_4c76_UpdateEntityCollision_Dispatch                                    ;; 03:602b $c3 $76 $4c
+    jp   call_03_4c76_EntityCollision_Dispatch                                    ;; 03:602b $c3 $76 $4c
 .jp_03_602e:
     push BC                                            ;; 03:602e $c5
     LOAD_OBJ_FIELD_TO_DE ENTITY_FIELD_SPRITE_ID
@@ -812,7 +812,7 @@ call_03_5f32:
     jr   NZ, .jr_03_6067                               ;; 03:6085 $20 $e0
     ld   A, E                                          ;; 03:6087 $7b
     ld   [wD739], A                                    ;; 03:6088 $ea $39 $d7
-    jp   call_03_4c76_UpdateEntityCollision_Dispatch                                    ;; 03:608b $c3 $76 $4c
+    jp   call_03_4c76_EntityCollision_Dispatch                                    ;; 03:608b $c3 $76 $4c
 .data_03_608e:
     dw   .data_03_6102
     dw   .data_03_610b
@@ -1073,7 +1073,7 @@ call_03_5f32:
     db   $00, $10, $f8, $0a, $00, $10, $00, $0e
     db   $00
 .jp_03_6451:
-    call call_00_39e0                                  ;; 03:6451 $cd $e0 $39
+    call call_00_39e0_Entity_GetPrimaryDataPtr                                  ;; 03:6451 $cd $e0 $39
     ld   L, E                                          ;; 03:6454 $6b
     ld   H, D                                          ;; 03:6455 $62
     ld   A, [wD739]                                    ;; 03:6456 $fa $39 $d7
@@ -1081,7 +1081,7 @@ call_03_5f32:
     ld   D, $cc                                        ;; 03:645a $16 $cc
     ld   A, [HL+]                                      ;; 03:645c $2a
     and  A, A                                          ;; 03:645d $a7
-    jp   Z, call_03_4c76_UpdateEntityCollision_Dispatch                                 ;; 03:645e $ca $76 $4c
+    jp   Z, call_03_4c76_EntityCollision_Dispatch                                 ;; 03:645e $ca $76 $4c
 .jr_03_6461:
     push AF                                            ;; 03:6461 $f5
     ld   A, E                                          ;; 03:6462 $7b
@@ -1109,7 +1109,7 @@ call_03_5f32:
     jr   NZ, .jr_03_6461                               ;; 03:647b $20 $e4
     ld   A, E                                          ;; 03:647d $7b
     ld   [wD739], A                                    ;; 03:647e $ea $39 $d7
-    jp   call_03_4c76_UpdateEntityCollision_Dispatch                                    ;; 03:6481 $c3 $76 $4c
+    jp   call_03_4c76_EntityCollision_Dispatch                                    ;; 03:6481 $c3 $76 $4c
 
 call_03_6484:
     ld   A, $5f                                        ;; 03:6484 $3e $5f
@@ -1247,7 +1247,7 @@ call_03_6540:
     jp   call_03_6484                                    ;; 03:6546 $c3 $84 $64
 
 call_03_6549:
-    call call_00_3a0a
+    call call_00_3a0a_Entity_GetBothDataPtrs
     push de
     inc  de
     ld   c,$00
@@ -1296,7 +1296,7 @@ call_03_6549:
     jr   .jr_03_6575
 
 call_03_6584:
-    call call_00_3a0a                                  ;; 03:6584 $cd $0a $3a
+    call call_00_3a0a_Entity_GetBothDataPtrs                                  ;; 03:6584 $cd $0a $3a
     push DE                                            ;; 03:6587 $d5
     inc  DE                                            ;; 03:6588 $13
     ld   C, $00                                        ;; 03:6589 $0e $00
@@ -1341,7 +1341,7 @@ call_03_6584:
     jr   .jr_03_65a9                                   ;; 03:65b6 $18 $f1
 
 call_03_65b8:
-    call call_00_3a0a
+    call call_00_3a0a_Entity_GetBothDataPtrs
     push de
     inc  de
     ld   c,$00
@@ -1395,7 +1395,7 @@ call_03_65b8:
     jr   .jr_03_65ea
 
 call_03_65f9:
-    call call_00_3a0a                                  ;; 03:65f9 $cd $0a $3a
+    call call_00_3a0a_Entity_GetBothDataPtrs                                  ;; 03:65f9 $cd $0a $3a
     push DE                                            ;; 03:65fc $d5
     inc  DE                                            ;; 03:65fd $13
     ld   C, $00                                        ;; 03:65fe $0e $00
@@ -1449,7 +1449,7 @@ call_03_65f9:
     jr   .jr_03_662b                                   ;; 03:6638 $18 $f1
 
 call_03_663a:
-    call call_00_3a0a
+    call call_00_3a0a_Entity_GetBothDataPtrs
     push de
     inc  de
     ld   c,$00
@@ -1498,7 +1498,7 @@ call_03_663a:
     jr   .jr_03_6666
 
 call_03_6675:
-    call call_00_3a0a
+    call call_00_3a0a_Entity_GetBothDataPtrs
     push de
     inc  de
     ld   c,$00

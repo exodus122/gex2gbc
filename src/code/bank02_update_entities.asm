@@ -1,9 +1,7 @@
-;; Disassembled with BadBoy Disassembler: https://github.com/daid/BadBoy
-
-; This file updates all entities.
-; Below is a list of jump tables, one for each entity, starting with Player
-
-data_02_4000_EntityDataTables:
+data_02_4000_EntityActionJumpTable:
+; Array of pointers (one per entity type) into per-entity action sub-tables. 
+; Each sub-table has 4-byte records per action: lo/hi of action function pointer, lo/hi of action data pointer. 
+; Indexed by entity ID then action index inside call_02_7102_Entity_SetAction
 dw   data_02_4120        ;; Entity_Gex
 dw   data_02_4ddb        ;; Entity_CollectibleSpawn
 dw   data_02_4dff        ;; Entity_unk_02
@@ -155,13 +153,16 @@ INCLUDE "code/bank02_update_player.asm"
 
 INCLUDE "code/bank02_entity_actions.asm"
     
-call_02_6e17_InitEntitiesAndSpawnPlayer:
+call_02_6e17_Entities_InitAndSpawnAll:
+; Full level-start initialization: zeros player entity state (velocities, flags, climbing, collision), 
+; resets all 7 NPC slots to $FF, conditionally spawns Gex via call_02_48b7, then calls EntityList_LoadForCurrentLevel 
+; and loops EntitySpawn_SpawnNextFromList until wD338 returns to 1
     xor  A, A                                          ;; 02:6e17 $af
     ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:6e18 $ea $00 $d3
     ld   A, $00                                        ;; 02:6e1b $3e $00
     ld   [wD200_PlayerEntity_Id], A                                    ;; 02:6e1d $ea $00 $d2
     ld   A, [wD744]                                    ;; 02:6e20 $fa $44 $d7
-    call call_02_7102_SetEntityAction                                  ;; 02:6e23 $cd $02 $71
+    call call_02_7102_Entity_SetAction                                  ;; 02:6e23 $cd $02 $71
     xor  A, A                                          ;; 02:6e26 $af
     ld   [wD621], A                                    ;; 02:6e27 $ea $21 $d6
     xor  A, A                                          ;; 02:6e2a $af
@@ -187,10 +188,12 @@ call_02_6e17_InitEntitiesAndSpawnPlayer:
     ld   [wD74B], A                                    ;; 02:6e60 $ea $4b $d7
     ld   A, $00                                        ;; 02:6e63 $3e $00
     ld   [wD20D_PlayerFacingAngle], A                                    ;; 02:6e65 $ea $0d $d2
-call_02_6e68_InitEntitiesOtherThanPlayer:
+call_02_6e68_Entities_InitNPCSlots:
+; Subset of above — only zeros room-tracking vars (wD74D–wD74F, wD587) and 
+; fills the 7 NPC slots (D220–D3E0) with $FF
     xor  A, A                                          ;; 02:6e68 $af
     ld   [wD587], A                                    ;; 02:6e69 $ea $87 $d5
-    ld   [wD74D], A                                    ;; 02:6e6c $ea $4d $d7
+    ld   [wD74D_PlayerRoom], A                                    ;; 02:6e6c $ea $4d $d7
     ld   [wD74E], A                                    ;; 02:6e6f $ea $4e $d7
     ld   [wD74F], A                                    ;; 02:6e72 $ea $4f $d7
     ld   HL, wD220_OtherLoadedEntities                                     ;; 02:6e75 $21 $20 $d2
@@ -209,15 +212,16 @@ call_02_6e68_InitEntitiesOtherThanPlayer:
     ld   A, $01                                        ;; 02:6e8e $3e $01
     call Z, call_02_48b7                               ;; 02:6e90 $cc $b7 $48
 .jr_02_6e93:
-    farcall call_0a_4000
+    farcall call_0a_4000_EntityList_LoadForCurrentLevel
 .jr_02_6e9e:
-    farcall call_0a_7a7c_HandleEntitySpawn
+    farcall call_0a_7a7c_EntitySpawn_SpawnNextFromList
     ld   A, [wD338]                                    ;; 02:6ea9 $fa $38 $d3
     cp   A, $01                                        ;; 02:6eac $fe $01
     jr   NZ, .jr_02_6e9e                               ;; 02:6eae $20 $ee
     ret                                                ;; 02:6eb0 $c9
 
-call_02_6eb1:
+call_02_6eb1_Entities_ClearFlagsTable:
+; Zeroes the entire 256-byte wD000 entity-flags table
     xor  A, A                                          ;; 02:6eb1 $af
     ld   HL, wD000_EntityFlags                                     ;; 02:6eb2 $21 $00 $d0
 .jr_02_6eb5:
@@ -226,7 +230,12 @@ call_02_6eb1:
     jr   NZ, .jr_02_6eb5                               ;; 02:6eb7 $20 $fc
     ret                                                ;; 02:6eb9 $c9
 
-call_02_6eba_UpdateAllEntities:
+call_02_6eba_Entities_UpdateAll:
+; Main per-frame update loop. First handles the two "adjacent room" entities (wD74D, wD74F) by calling their 
+; action functions and adjusting player Y by $10 (room transition offset). Then calls call_02_4939_PlayerUpdateMain. 
+; Then iterates all 7 NPC slots: skips entities not in the active or adjacent room (calls their despawn-check 
+; function instead), clears collision bits 5/6, calls call_02_6fda_Entity_TickAction (action tick), calls the sprite/draw farCall. 
+; After the loop, calls sound queue flush, EntitySpawn_SpawnNextFromList, collision resolution, and draw farCall
     xor  A, A                                          ;; 02:6eba $af
     ld   [wD75C], A                                    ;; 02:6ebb $ea $5c $d7
     ld   A, $20                                        ;; 02:6ebe $3e $20
@@ -234,7 +243,7 @@ call_02_6eba_UpdateAllEntities:
     ld   A, [wD743_DrawGexFlag]                                    ;; 02:6ec3 $fa $43 $d7
     and  A, A                                          ;; 02:6ec6 $a7
     jr   Z, .jr_02_6f0f                                ;; 02:6ec7 $28 $46
-    ld   A, [wD74D]                                    ;; 02:6ec9 $fa $4d $d7
+    ld   A, [wD74D_PlayerRoom]                                    ;; 02:6ec9 $fa $4d $d7
     and  A, A                                          ;; 02:6ecc $a7
     jr   Z, .jr_02_6ef3                                ;; 02:6ecd $28 $24
     ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:6ecf $ea $00 $d3
@@ -246,7 +255,7 @@ call_02_6eba_UpdateAllEntities:
     ld   L, A                                          ;; 02:6ed9 $6f
     call call_00_10bd_JumpHL                                  ;; 02:6eda $cd $bd $10
     ld   H, $d2                                        ;; 02:6edd $26 $d2
-    ld   A, [wD74D]                                    ;; 02:6edf $fa $4d $d7
+    ld   A, [wD74D_PlayerRoom]                                    ;; 02:6edf $fa $4d $d7
     and  A, $e0                                        ;; 02:6ee2 $e6 $e0
     or   A, $10                                        ;; 02:6ee4 $f6 $10
     ld   L, A                                          ;; 02:6ee6 $6f
@@ -283,7 +292,7 @@ call_02_6eba_UpdateAllEntities:
     cp   A, $ff                                        ;; 02:6f1a $fe $ff
     jr   Z, .jr_02_6f5c                                ;; 02:6f1c $28 $3e
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:6f1e $fa $00 $d3
-    ld   HL, wD74D                                     ;; 02:6f21 $21 $4d $d7
+    ld   HL, wD74D_PlayerRoom                                     ;; 02:6f21 $21 $4d $d7
     cp   A, [HL]                                       ;; 02:6f24 $be
     jr   Z, .jr_02_6f38                                ;; 02:6f25 $28 $11
     ld   HL, wD74F                                     ;; 02:6f27 $21 $4f $d7
@@ -307,19 +316,22 @@ call_02_6eba_UpdateAllEntities:
     res  5, [HL]                                       ;; 02:6f49 $cb $ae
     inc  L                                             ;; 02:6f4b $2c
     res  6, [HL]                                       ;; 02:6f4c $cb $b6
-    call call_02_6fda                                  ;; 02:6f4e $cd $da $6f
+    call call_02_6fda_Entity_TickAction                                  ;; 02:6f4e $cd $da $6f
     farcall call_03_5ebf
 .jr_02_6f5c:
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:6f5c $fa $00 $d3
     add  A, $20                                        ;; 02:6f5f $c6 $20
     jr   NZ, .jr_02_6f11                               ;; 02:6f61 $20 $ae
     call call_00_1138                                  ;; 02:6f63 $cd $38 $11
-    farcall call_0a_7a7c_HandleEntitySpawn
-    call call_02_722c                                  ;; 02:6f71 $cd $2c $72
+    farcall call_0a_7a7c_EntitySpawn_SpawnNextFromList
+    call call_02_722c_SoundQueue_PlayNext                                  ;; 02:6f71 $cd $2c $72
     farcall call_03_6540
     ret                                                ;; 02:6f7f $c9
     
-call_02_6f80:
+call_02_6f80_Entities_DrawAll:
+; Draw-only pass (no logic update): optionally calls player sprite farCall and sets HDMA bit 0, 
+; then iterates all 7 NPC slots, checks bit 7 of UNK_0A (palette-swap flag) to set HDMA bit 1, 
+; and calls the sprite draw farCall for each active entity
     ld   A, $20                                        ;; 02:6f80 $3e $20
     ld   [wD739], A                                    ;; 02:6f82 $ea $39 $d7
     ld   A, [wD743_DrawGexFlag]                                    ;; 02:6f85 $fa $43 $d7
@@ -356,7 +368,12 @@ call_02_6f80:
     farcall call_03_6540
     ret                                                ;; 02:6fd9 $c9
 
-call_02_6fda:
+call_02_6fda_Entity_TickAction:
+; Per-entity action tick called each frame. Clears bit 2 of UNK_0A (collision result flag), 
+; decrements the frame duration counter at UNK_06; if it hits zero, increments the animation frame index 
+; and checks if the sequence is complete (via bit 6 of UNK_0A → call_02_70f1_Entity_HandleActionSequenceEnd). 
+; On frame advance: reads the next action function pointer from the action data table (using UNK_07 as index), 
+; writes it to UNK_08, sets bit 6 of UNK_0A, then falls through into call_02_7030
     ld   H, $d2                                        ;; 02:6fda $26 $d2
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:6fdc $fa $00 $d3
     ld   C, A                                          ;; 02:6fdf $4f
@@ -385,7 +402,7 @@ call_02_6fda:
     inc  L                                             ;; 02:6ffc $2c
     inc  L                                             ;; 02:6ffd $2c
     bit  6, [HL]                                       ;; 02:6ffe $cb $76
-    jp   NZ, call_02_70f1                                ;; 02:7000 $c2 $f1 $70
+    jp   NZ, call_02_70f1_Entity_HandleActionSequenceEnd                                ;; 02:7000 $c2 $f1 $70
     inc  L                                             ;; 02:7003 $2c
     ld   B, [HL]                                       ;; 02:7004 $46
     dec  L                                             ;; 02:7005 $2d
@@ -424,7 +441,10 @@ call_02_6fda:
     ld   H, $d2                                        ;; 02:702d $26 $d2
     ld   [HL], B                                       ;; 02:702f $70
 
-call_02_7030_CheckIfPlayerActorUpdatedAction:
+call_02_7030_Entity_NotifyActionChanged:
+; Called after an action change. If the current entity is the player (address 0), sets HDMA bit 0 and returns. 
+; Otherwise checks bit 7 of UNK_0A; if set, reads entity ID, looks it up in .data_02_7061 to get a sound ID, 
+; writes it to wD589/wD588, and sets HDMA bit 1 to trigger a sound update
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:7030 $fa $00 $d3
     and  A, A                                          ;; 02:7033 $a7
     jr   NZ, .jr_02_703c                               ;; 02:7034 $20 $06
@@ -474,7 +494,9 @@ call_02_7030_CheckIfPlayerActorUpdatedAction:
     db   $1a, $00, $00, $00, $00, $00, $1c, $00        ;; 02:70e1 ????????
     db   $00, $00, $00, $00, $00, $1b, $00, $00        ;; 02:70e9 ????????
 
-call_02_70f1:
+call_02_70f1_Entity_HandleActionSequenceEnd:
+; Called when an animation sequence finishes. Reads UNK_09, checks bit 7; if clear, returns (sequence loops). 
+; If set, masks to low 5 bits and calls call_02_4ccd (likely a state-machine transition or death/reset handler)
     LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_UNK_09
     ld   A, [HL]                                       ;; 02:70f9 $7e
     bit  7, A                                          ;; 02:70fa $cb $7f
@@ -482,10 +504,13 @@ call_02_70f1:
     and  A, $1f                                        ;; 02:70fd $e6 $1f
     jp   call_02_4ccd                                  ;; 02:70ff $c3 $cd $4c
 
-call_02_7102_SetEntityAction:
-; gets a jump table value from data_02_4000_EntityDataTables
-; updates the entity instances at D200-D300
-; sets action id, action pointer, data_0c, unknown_pointer_04_05, and more?
+call_02_7102_Entity_SetAction:
+; Sets a new action on the current entity. Masks action index to 5 bits, writes to ACTION_ID field, 
+; then double-indexes data_02_4000_EntityDataTables (by entity ID, then by action index × 4) to get 
+; the action function pointer and data pointer. Writes function pointer to ACTION_FUNC, reads 4 bytes 
+; from the data block: byte 0 → UNK_09 | $20, byte 1 → UNK_0A | $40, byte 2 → SPRITE_FRAME_COUNTER_MAX 
+; and SPRITE_FRAME_COUNTER, byte 3 → SPRITE_COUNTER_MAX; sets SPRITE_IDS_PTR to 4 bytes into the data block; 
+; zeroes SPRITE_COUNTER; writes byte 4 to SPRITE_ID; then falls into Entity_NotifyActionChanged
     and  A, $1f                                        ;; 02:7102 $e6 $1f
     ld   C, A                                          ;; 02:7104 $4f
     LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_ACTION_ID
@@ -494,8 +519,8 @@ call_02_7102_SetEntityAction:
     ld   L, [HL]                                       ;; 02:710f $6e
     ld   H, $00                                        ;; 02:7110 $26 $00
     add  HL, HL                                        ;; 02:7112 $29
-    ld   DE, data_02_4000_EntityDataTables             ;; 02:7113 $11 $00 $40
-    add  HL, DE                                        ;; 02:7116 $19 ; HL = data_02_4000_EntityDataTables + 2*ENTITY_FIELD_ENTITY_ID
+    ld   DE, data_02_4000_EntityActionJumpTable             ;; 02:7113 $11 $00 $40
+    add  HL, DE                                        ;; 02:7116 $19 ; HL = data_02_4000_EntityActionJumpTable + 2*ENTITY_FIELD_ENTITY_ID
     ld   E, [HL]                                       ;; 02:7117 $5e
     inc  HL                                            ;; 02:7118 $23
     ld   D, [HL]                                       ;; 02:7119 $56
@@ -543,15 +568,19 @@ call_02_7102_SetEntityAction:
     inc  E                                             ;; 02:7154 $1c ; DE = ENTITY_FIELD_SPRITE_ID
     ld   A, [HL]                                       ;; 02:7155 $7e
     ld   [DE], A                                       ;; 02:7156 $12 ; ENTITY_FIELD_SPRITE_ID = fifth byte in data table
-    jp   call_02_7030_CheckIfPlayerActorUpdatedAction                                    ;; 02:7157 $c3 $30 $70
+    jp   call_02_7030_Entity_NotifyActionChanged                                    ;; 02:7157 $c3 $30 $70
 
-call_02_715a_UpdateMapWindow:
+call_02_715a_MapWindow_Update:
+; Calls all three map-window update routines: player window update, vertical scroll check, 
+; horizontal scroll check
     call call_00_13a6_UpdatePlayerMapWindow                                  ;; 02:715a $cd $a6 $13
-    call call_02_7164_CheckVerticalMapScroll                                  ;; 02:715d $cd $64 $71
-    call call_02_7196_CheckHorizontalMapScroll                                  ;; 02:7160 $cd $96 $71
+    call call_02_7164_MapScroll_CheckVertical                                  ;; 02:715d $cd $64 $71
+    call call_02_7196_MapScroll_CheckHorizontal                                  ;; 02:7160 $cd $96 $71
     ret                                                ;; 02:7163 $c9
 
-call_02_7164_CheckVerticalMapScroll:
+call_02_7164_MapScroll_CheckVertical:
+; Reads wD6EF (Y position in map, 16-bit), right-shifts 3 to get tile row, compares against previously stored row in wD6F3; 
+; if changed, sets bit 0 (scroll down) or bit 1 (scroll up) in wD6F9 scroll-request flags
     ld   HL, wD6EF_YPositionInMap                                     ;; 02:7164 $21 $ef $d6
     ld   A, [HL+]                                      ;; 02:7167 $2a
     ld   D, [HL]                                       ;; 02:7168 $56
@@ -588,7 +617,8 @@ call_02_7164_CheckVerticalMapScroll:
     ld   [HL], A                                       ;; 02:7194 $77
     ret                                                ;; 02:7195 $c9
 
-call_02_7196_CheckHorizontalMapScroll:
+call_02_7196_MapScroll_CheckHorizontal:
+; Same logic as above for wD6ED (X position in map); sets bit 2 (scroll right) or bit 3 (scroll left) in wD6F9
     ld   HL, wD6ED_XPositionInMap                                     ;; 02:7196 $21 $ed $d6
     ld   A, [HL+]                                      ;; 02:7199 $2a
     ld   D, [HL]                                       ;; 02:719a $56
@@ -625,7 +655,10 @@ call_02_7196_CheckHorizontalMapScroll:
     ld   [HL], A                                       ;; 02:71c6 $77
     ret                                                ;; 02:71c7 $c9
     
-call_02_71c8:
+call_02_71c8_Entities_UpdateSoundsForAll:
+; Iterates all 7 NPC slots; for each active entity looks up its entity ID in data_02_743c to get 
+; a (sound-id, bank) pair, calls call_02_7211_SoundQueue_Enqueue to queue the sound if non-zero, then optionally calls 
+; a sound-play farCall if wD59E is set. After the loop, calls call_0b_5f1b (sound flush)
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:71c8 $fa $00 $d3
     push AF                                            ;; 02:71cb $f5
     ld   A, $20                                        ;; 02:71cc $3e $20
@@ -639,12 +672,12 @@ call_02_71c8:
     ld   L, A                                          ;; 02:71d9 $6f
     ld   H, $00                                        ;; 02:71da $26 $00
     add  HL, HL                                        ;; 02:71dc $29
-    ld   DE, data_02_743c                              ;; 02:71dd $11 $3c $74
+    ld   DE, data_02_743c_EntitySoundTable                              ;; 02:71dd $11 $3c $74
     add  HL, DE                                        ;; 02:71e0 $19
     ld   A, [HL+]                                      ;; 02:71e1 $2a
     push HL                                            ;; 02:71e2 $e5
     and  A, A                                          ;; 02:71e3 $a7
-    call NZ, call_02_7211                              ;; 02:71e4 $c4 $11 $72
+    call NZ, call_02_7211_SoundQueue_Enqueue                              ;; 02:71e4 $c4 $11 $72
     pop  HL                                            ;; 02:71e7 $e1
     ld   A, [wD59E]                                    ;; 02:71e8 $fa $9e $d5
     and  A, A                                          ;; 02:71eb $a7
@@ -660,7 +693,10 @@ call_02_71c8:
     ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:720d $ea $00 $d3
     ret                                                ;; 02:7210 $c9
 
-call_02_7211:
+call_02_7211_SoundQueue_Enqueue:
+; Checks if A (sound ID) is already present in the 4-entry queue at wD71A–wD71D; 
+; if found, returns without duplication. If the queue has space (checked via wD71E count), 
+; writes A into the next free slot and increments the count
     ld   HL, wD71E                                     ;; 02:7211 $21 $1e $d7
     ld   E, [HL]                                       ;; 02:7214 $5e
     ld   HL, wD71A                                     ;; 02:7215 $21 $1a $d7
@@ -681,7 +717,11 @@ call_02_7211:
     inc  [HL]                                          ;; 02:722a $34
     ret                                                ;; 02:722b $c9
 
-call_02_722c:
+call_02_722c_SoundQueue_PlayNext:
+; If HDMA bit 3 is set, returns immediately (DMA busy). Otherwise decrements the queue count in wD71E, 
+; reads the next sound ID from wD71A, indexes into .data_02_726c (7-byte sound parameter records: 
+; VRAM dest, tile count, source bank, source address, priority, and two more), writes the 7 bytes into wD71F–wD725, 
+; and sets HDMA bit 3 to trigger the sound transfer
     ld   HL, wD60F_HDMATransferFlags                                     ;; 02:722c $21 $0f $d6
     bit  3, [HL]                                       ;; 02:722f $cb $5e
     ret  NZ                                            ;; 02:7231 $c0
@@ -783,7 +823,9 @@ call_02_722c:
     db   $00, $02, $00, $11, $00, $59, $00, $85        ;; 02:7431 ????????
     db   $00, $01, $00                                 ;; 02:7439 ???
 
-data_02_743c:
+data_02_743c_EntitySoundTable:
+; Parallel array to the entity type list; each 2-byte entry is (sound-id, sound-bank) 
+; used when spawning or re-initializing an entity to trigger the appropriate sound effect
     db   $00, $00, $00, $01, $00, $02, $00, $06        ;; 02:743c ??????.w
     db   $00, $07, $00, $07, $00, $07, $00, $00        ;; 02:7444 .w??????
     db   $00, $00, $01, $05, $01, $04, $24, $05        ;; 02:744c ????ww??

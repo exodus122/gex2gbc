@@ -946,7 +946,7 @@ wD74B:
 wD74C:
     ds 1                                               ;; d74c
 
-wD74D:
+wD74D_PlayerRoom:
     ds 1                                               ;; d74d
 
 wD74E:
@@ -976,7 +976,7 @@ wD755:
 wD756:
     ds 1                                               ;; d756
 
-wD757:
+wD757_LanternLitFlag:
     ds 1                                               ;; d757
 
 wD758:
