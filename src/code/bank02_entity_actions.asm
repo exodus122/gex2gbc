@@ -400,10 +400,7 @@ call_02_51b7_EntityAction_CollectibleSpawn_Update:
 .jr_02_51cc:
     pop  AF                                            ;; 02:51cc $f1
     ret  NZ                                            ;; 02:51cd $c0
-    ld   H, $d2                                        ;; 02:51ce $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:51d0 $fa $00 $d3
-    or   A, $18                                        ;; 02:51d3 $f6 $18
-    ld   L, A                                          ;; 02:51d5 $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_18
     dec  [HL]                                          ;; 02:51d6 $35
     jp   Z, call_00_3931                                 ;; 02:51d7 $ca $31 $39
     ld   C, [HL]                                       ;; 02:51da $4e
@@ -421,10 +418,7 @@ call_02_51b7_EntityAction_CollectibleSpawn_Update:
 call_02_51ea_EntityAction_TVButton_unk0:
     call call_00_3878                                  ;; 02:51ea $cd $78 $38
     ld   E, A                                          ;; 02:51ed $5f
-    ld   H, $d2                                        ;; 02:51ee $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:51f0 $fa $00 $d3
-    or   A, $0a                                        ;; 02:51f3 $f6 $0a
-    ld   L, A                                          ;; 02:51f5 $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_0A
     res  3, [HL]                                       ;; 02:51f6 $cb $9e
     inc  E                                             ;; 02:51f8 $1c
     dec  E                                             ;; 02:51f9 $1d
@@ -490,10 +484,7 @@ call_02_5253_EntityAction_RedRemote_unk0:
 call_02_526a_EntityAction_RedRemote_unk1:
     call call_00_38c1                                  ;; 02:526a $cd $c1 $38
     ld   E, A                                          ;; 02:526d $5f
-    ld   H, $d2                                        ;; 02:526e $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:5270 $fa $00 $d3
-    or   A, $0a                                        ;; 02:5273 $f6 $0a
-    ld   L, A                                          ;; 02:5275 $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_0A
     res  3, [HL]                                       ;; 02:5276 $cb $9e
     inc  E                                             ;; 02:5278 $1c
     dec  E                                             ;; 02:5279 $1d
@@ -539,10 +530,7 @@ call_02_52ab_EntityAction_ParticleBurst_Update:
 .jr_02_52bc:
     ld   C, $01                                        ;; 02:52bc $0e $01
     call call_00_37e7                                  ;; 02:52be $cd $e7 $37
-    ld   H, $d2                                        ;; 02:52c1 $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:52c3 $fa $00 $d3
-    or   A, $18                                        ;; 02:52c6 $f6 $18
-    ld   L, A                                          ;; 02:52c8 $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_18
     ld   [HL], $ff                                     ;; 02:52c9 $36 $ff
     ld   A, L                                          ;; 02:52cb $7d
     xor  A, $18                                        ;; 02:52cc $ee $18
@@ -647,10 +635,7 @@ call_02_5348_EntityAction_ScreamTVMovingPlatform_Update:
     dec  L                                             ;; 02:5352 $2d
     ld   [HL], A                                       ;; 02:5353 $77
 .jr_02_5354:
-    ld   H, $d2                                        ;; 02:5354 $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:5356 $fa $00 $d3
-    or   A, $1a                                        ;; 02:5359 $f6 $1a
-    ld   L, A                                          ;; 02:535b $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     ld   A, [HL]                                       ;; 02:535c $7e
     cp   A, $ff                                        ;; 02:535d $fe $ff
     jr   Z, .jr_02_536d                                ;; 02:535f $28 $0c
@@ -667,10 +652,7 @@ call_02_5348_EntityAction_ScreamTVMovingPlatform_Update:
     jp   call_00_318d                                    ;; 02:5370 $c3 $8d $31
 
 call_02_5373_EntityAction_ScreamTVPushBlock_Update:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$0E
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
     ldi  a,[hl]
     sub  a,$A0
     ld   a,[hl]
@@ -737,10 +719,7 @@ call_02_53e2_EntityAction_GhostHead_Update:
     call call_00_3350
     call call_00_3442
     call call_00_30af
-    ld   h,$d2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$18
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_18
     ld   e,[hl]
     inc  l
     ld   d,[hl]
@@ -832,10 +811,7 @@ call_02_546e_EntityAction_FloatingSkullProjectile_unk1:
     ret  
 
 call_02_5480_EntityAction_Zombie_unk0:
-    ld   h,$d2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$1A
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     ld   [hl],$02
     inc  l
     inc  l
@@ -859,10 +835,7 @@ call_02_5480_EntityAction_Zombie_unk0:
     jp   call_02_7102_SetEntityAction
 
 call_02_54b4_EntityAction_Zombie_unk2:
-    ld   h,$d2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$18
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_18
     dec  [hl]
     ret  nz
     dec  l
@@ -875,10 +848,7 @@ call_02_54c6_EntityAction_ZombieHead_unk0:
     call call_00_335a
     ld   c,$03
     call call_00_3802
-    ld   h,$d2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$0D
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_DIRECTION
     ld   [hl],$00
     ld   a,$01
     jp   call_02_7102_SetEntityAction
@@ -903,10 +873,7 @@ call_02_54fc_EntityAction_ZombieHead_unk2:
     jp   call_00_36bd
 
 call_02_54ff_EntityAction_FallingAxe_unk0:
-    ld   h,$d2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$19
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_19
     ld   a,[wD73B]
     and  a,$7F
     cp   [hl]
@@ -917,10 +884,7 @@ call_02_54ff_EntityAction_FallingAxe_unk0:
 call_02_5513_EntityAction_FallingAxe_unk1:
     ld   bc,$0002
     call call_00_37d8
-    ld   h,$d2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$18
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_18
     inc  [hl]
     inc  [hl]
     ld   a,[hl]
@@ -960,10 +924,7 @@ call_02_5551_EntityAction_Lantern_unk1:
     jp   call_02_7102_SetEntityAction
 
 call_02_555e_Lantern_Sub:
-    ld   h,$d2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$18
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_18
     inc  [hl]
     ld   a,[hl]
     and  a,$01
@@ -977,10 +938,7 @@ call_02_555e_Lantern_Sub:
     jp   call_00_37d8
 
 call_02_557c_EntityAction_Bat_Update:
-    ld   h,$d2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$1C
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XVEL
     ld   [hl],$01
     jp   call_00_3364
 
@@ -1103,10 +1061,7 @@ call_02_5628_EntityAction_ClimbWallSunEnemy_Update:
     jp   call_00_318d
 
 call_02_563a_EntityAction_ScreamTVVanishingPlatform_unk0:
-    ld   h,$d2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$1B
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_1B
     ld   a,[wD73B]
     cp   [hl]
     ret  nz
@@ -1118,10 +1073,7 @@ call_02_563a_EntityAction_ScreamTVVanishingPlatform_unk0:
     jp   call_02_7102_SetEntityAction
 
 call_02_5652_EntityAction_ScreamTVVanishingPlatform_unk1:
-    ld   h,$d2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$18
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_18
     dec  [hl]
     ld   c,[hl]
     ld   a,l
@@ -1203,10 +1155,7 @@ call_02_56af_EntityAction_MonaLisaElevator_Update:
     jp   call_00_318d
 
 call_02_56dc_EntityAction_HardHeadAreaObject_unk0:
-    ld   H, $d2                                        ;; 02:56dc $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:56de $fa $00 $d3
-    or   A, $10                                        ;; 02:56e1 $f6 $10
-    ld   L, A                                          ;; 02:56e3 $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
     ld   A, [wD6EF_YPositionInMap]                                    ;; 02:56e4 $fa $ef $d6
     sub  A, $18                                        ;; 02:56e7 $d6 $18
     ld   [HL+], A                                      ;; 02:56e9 $22
@@ -1257,10 +1206,7 @@ call_02_56dc_EntityAction_HardHeadAreaObject_unk0:
     ld   A, D                                          ;; 02:572b $7a
     cp   A, H                                          ;; 02:572c $bc
     ret  C                                             ;; 02:572d $d8
-    ld   H, $d2                                        ;; 02:572e $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:5730 $fa $00 $d3
-    or   A, $0e                                        ;; 02:5733 $f6 $0e
-    ld   L, A                                          ;; 02:5735 $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
     ld   [HL], C                                       ;; 02:5736 $71
     inc  L                                             ;; 02:5737 $2c
     ld   [HL], B                                       ;; 02:5738 $70
@@ -1294,10 +1240,7 @@ call_02_56dc_EntityAction_HardHeadAreaObject_unk0:
     db   $01, $02, $01, $02                            ;; 02:576a .??.
 
 call_02_576e_EntityAction_HardHeadAreaObject_unk1:
-    ld   H, $d2                                        ;; 02:576e $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:5770 $fa $00 $d3
-    or   A, $17                                        ;; 02:5773 $f6 $17
-    ld   L, A                                          ;; 02:5775 $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     bit  0, [HL]                                       ;; 02:5776 $cb $46
     jr   NZ, .jr_02_5794                               ;; 02:5778 $20 $1a
     call call_00_30af                                  ;; 02:577a $cd $af $30
@@ -1305,10 +1248,7 @@ call_02_576e_EntityAction_HardHeadAreaObject_unk1:
     ret  C                                             ;; 02:5780 $d8
     ld   C, $1a                                        ;; 02:5781 $0e $1a
     call call_00_112f                                  ;; 02:5783 $cd $2f $11
-    ld   H, $d2                                        ;; 02:5786 $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:5788 $fa $00 $d3
-    or   A, $17                                        ;; 02:578b $f6 $17
-    ld   L, A                                          ;; 02:578d $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     set  0, [HL]                                       ;; 02:578e $cb $c6
     inc  L                                             ;; 02:5790 $2c
     ld   [HL], $80                                     ;; 02:5791 $36 $80
@@ -1436,10 +1376,7 @@ call_02_585e_EntityAction_Bumblebee_unk1:
 
 call_02_5871_EntityAction_BowlingBall_Update:
     call call_00_30af
-    ld   h,$d2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$18
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_18
     push hl
     bit  7,[hl]
     call nz,call_00_36f7
@@ -1457,10 +1394,7 @@ call_02_5871_EntityAction_BowlingBall_Update:
     ret  c
     ld   c,$1A
     call call_00_112f
-    ld   h,$d2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$18
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_18
     dec  [hl]
     ld   a,[hl]
     and  a,$7F
@@ -1535,6 +1469,7 @@ call_02_591c_EntityAction_Shark_Update:
 .jr_02_5927:
     call call_00_32e1                                  ;; 02:5927 $cd $e1 $32
     jp   call_00_36f7                                  ;; 02:592a $c3 $f7 $36
+
 call_02_592d_EntityAction_Flower_Update:
     call call_00_36bd                                  ;; 02:592d $cd $bd $36
     ld   C, $20                                        ;; 02:5930 $0e $20
@@ -1549,10 +1484,7 @@ call_02_592d_EntityAction_Flower_Update:
 .jr_02_5944:
     push AF                                            ;; 02:5944 $f5
     call call_02_7102_SetEntityAction                                  ;; 02:5945 $cd $02 $71
-    ld   H, $d2                                        ;; 02:5948 $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:594a $fa $00 $d3
-    or   A, $18                                        ;; 02:594d $f6 $18
-    ld   L, A                                          ;; 02:594f $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_18
     inc  [HL]                                          ;; 02:5950 $34
     dec  [HL]                                          ;; 02:5951 $35
     jr   Z, .jr_02_5955                                ;; 02:5952 $28 $01
@@ -1568,6 +1500,7 @@ call_02_592d_EntityAction_Flower_Update:
     ld   C, $03                                        ;; 02:595e $0e $03
     farcall call_0a_7b9a_SpawnEntityRelative
     ret                                                ;; 02:596b $c9
+
 call_02_596c_EntityAction_FlowerHammer_unk0:
     call call_00_3843                                  ;; 02:596c $cd $43 $38
     ret  Z                                             ;; 02:596f $c8
@@ -1575,6 +1508,7 @@ call_02_596c_EntityAction_FlowerHammer_unk0:
     call call_00_112f                                  ;; 02:5972 $cd $2f $11
     ld   A, $01                                        ;; 02:5975 $3e $01
     jp   call_02_7102_SetEntityAction                                  ;; 02:5977 $c3 $02 $71
+
 call_02_597a_EntityAction_FlowerHammer_unk1:
     call call_00_30af                                  ;; 02:597a $cd $af $30
     call call_00_30af                                  ;; 02:597d $cd $af $30
@@ -1583,6 +1517,7 @@ call_02_597a_EntityAction_FlowerHammer_unk1:
     ld   A, $02                                        ;; 02:5986 $3e $02
     jp   NC, call_02_7102_SetEntityAction                              ;; 02:5988 $d2 $02 $71
     ret                                                ;; 02:598b $c9
+
 call_02_598c_EntityAction_FlowerHammer_unk2:
     call call_00_3843                                  ;; 02:598c $cd $43 $38
     jp   NZ, call_00_3910                              ;; 02:598f $c2 $10 $39
@@ -1637,19 +1572,13 @@ call_02_59e4_EntityAction_Hunter_unk4:
 call_02_59ed_EntityAction_Hunter_unk5:
     call call_00_3843
     ret  z
-    ld   h,$d2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$17
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     res  0,[hl]
     ld   a,$00
     jp   call_02_7102_SetEntityAction
 
 call_02_5A00_Hunter_Sub:
-    ld   h,$d2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$17
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     bit  0,[hl]
     ret  z
     ld   a,$02
@@ -1669,10 +1598,7 @@ call_02_5a1f_EntityAction_HunterBullet_unk1:
     jp   call_00_3442
 
 call_02_5a28_EntityAction_Mushroom_Update:
-    ld   H, $d2                                        ;; 02:5a28 $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:5a2a $fa $00 $d3
-    or   A, $17                                        ;; 02:5a2d $f6 $17
-    ld   L, A                                          ;; 02:5a2f $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     bit  0, [HL]                                       ;; 02:5a30 $cb $46
     ret  Z                                             ;; 02:5a32 $c8
     ld   HL, wD774                                     ;; 02:5a33 $21 $74 $d7
@@ -1710,6 +1636,7 @@ call_02_5a28_EntityAction_Mushroom_Update:
     add  A, $40                                        ;; 02:5a6f $c6 $40
     ld   [HL], A                                       ;; 02:5a71 $77
     ret                                                ;; 02:5a72 $c9
+
 call_02_5a73_EntityAction_Unk28_Update:
     call call_00_30af                                  ;; 02:5a73 $cd $af $30
     call call_00_3154                                  ;; 02:5a76 $cd $54 $31
@@ -1751,10 +1678,7 @@ call_02_5aab_EntityAction_ToonTVVanishingBlock_unk0:
     dec  l
     ld   [hl],a
 .jr_02_5AB7:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$17
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     bit  0,[hl]
     jr   z,.jr_02_5AD2
     inc  l
@@ -1768,10 +1692,7 @@ call_02_5aab_EntityAction_ToonTVVanishingBlock_unk0:
     and  a
     jp   z,call_00_3910
 .jr_02_5AD2:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$1B
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_1B
     ld   a,[wD73B]
     cp   [hl]
     ret  nz
@@ -1783,10 +1704,7 @@ call_02_5aab_EntityAction_ToonTVVanishingBlock_unk0:
     jp   call_02_7102_SetEntityAction
 
 call_02_5aea_EntityAction_ToonTVVanishingBlock_unk1:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$18
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_18
     dec  [hl]
     ld   c,[hl]
     ld   a,l
@@ -1846,10 +1764,7 @@ call_02_5b47_EntityAction_ToonTVMovingBlock_unk0:
     dec  l
     ld   [hl],a
 .jr_02_5B53:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$1A
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     ldd  a,[hl]
     cp   a,$FF
     jr   z,.jr_02_5B97
@@ -1900,10 +1815,7 @@ call_02_5b9d_EntityAction_ToonTVMovingBlock_unk1:
     ret  nz
     call call_00_3817
     ret  nz
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$17
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     set  0,[hl]
     ld   a,$00
     jp   call_02_7102_SetEntityAction
@@ -1918,10 +1830,7 @@ call_02_5bb6_EntityAction_MovingLog_Update:
     dec  L                                             ;; 02:5bc0 $2d
     ld   [HL], A                                       ;; 02:5bc1 $77
 .jr_02_5bc2:
-    ld   H, $d2                                        ;; 02:5bc2 $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:5bc4 $fa $00 $d3
-    or   A, $1a                                        ;; 02:5bc7 $f6 $1a
-    ld   L, A                                          ;; 02:5bc9 $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     ld   A, [HL]                                       ;; 02:5bca $7e
     cp   A, $ff                                        ;; 02:5bcb $fe $ff
     jr   Z, .jr_02_5bdb                                ;; 02:5bcd $28 $0c
@@ -1940,10 +1849,7 @@ call_02_5be1_EntityAction_StationaryLog_Update:
     ret                                                ;; 02:5be1 $c9
     
 call_02_5be2_EntityAction_Rocket_unk0:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$17
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     bit  7,[hl]
     ret  z
     ld   c,$1E
@@ -2031,10 +1937,7 @@ call_02_5c7c_EntityAction_Unk36_Update:
 
 call_02_5c7d_EntityAction_FallingLava_unk0:
     call call_00_349c
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$10
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
     ld   [hl],e
     inc  l
     ld   [hl],d
@@ -2132,10 +2035,7 @@ call_02_5d0c_EntityAction_FallingBoulder_unk0:
     add  hl,de
     ld   e,l
     ld   d,h
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$10
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
     ld   [hl],e
     inc  l
     ld   [hl],d
@@ -2204,10 +2104,7 @@ call_02_5d92_EntityAction_FirePlant_unk0:
     ret  z
     call call_00_3817
     ret  nz
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$19
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_19
     dec  [hl]
     ld   a,[hl]
     dec  l
@@ -2356,10 +2253,7 @@ call_02_5e91_EntityAction_Unk4A_Update:
     ret  
 
 call_02_5e92_EntityAction_HangingBlade_Update:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$17
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     bit  0,[hl]
     jr   nz,.jr_02_5EAF
     call call_00_30af
@@ -2378,11 +2272,7 @@ call_02_5e92_EntityAction_HangingBlade_Update:
     jp   call_00_335a
 
 call_02_5ebd_EntityAction_Cannon_Update:
-    ld   h,$D2
-    data_02_5ebf:
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$17
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     bit  7,[hl]
     ret  z
     res  7,[hl]
@@ -2416,10 +2306,7 @@ call_02_5efa_EntityAction_CannonProjectile_unk1:
     ld   c,$02
     call call_00_3350
     call call_00_3442
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$0A
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_0A
     bit  5,[hl]
     ret  z
     ld   a,$20
@@ -2485,10 +2372,7 @@ call_02_5f67_EntityAction_DragonHead_Update:
     ld   [wD78F],a
     jp   call_00_3985
 .jr_02_5F79:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$1A
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     ldd  a,[hl]
     cp   a,$01
     jr   z,.jr_02_5F8A
@@ -2504,10 +2388,7 @@ call_02_5f67_EntityAction_DragonHead_Update:
     call call_00_112f
 .jr_02_5FA0:
     call call_02_6029_DragonHead_Sub1
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$1A
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     ldd  a,[hl]
     add  a
     add  a
@@ -2537,10 +2418,7 @@ call_02_5f67_EntityAction_DragonHead_Update:
     cp   [hl]
     ret  z
     ld   [hl],a
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$0D
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_DIRECTION
     ld   [hl],b
     ld   hl,wD60F_HDMATransferFlags
     set  1,[hl]
@@ -2560,10 +2438,7 @@ call_02_5f67_EntityAction_DragonHead_Update:
     db   $01, $40
     
 call_02_6029_DragonHead_Sub1:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$19
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_19
     inc  [hl]
     ld   a,[hl]
     sub  a,$52
@@ -2634,10 +2509,7 @@ call_02_6029_DragonHead_Sub1:
     add  hl,bc
     ld   c,l
     ld   b,h
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$0E
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
     ld   [hl],e
     inc  l
     ld   [hl],d
@@ -2670,10 +2542,7 @@ call_02_6029_DragonHead_Sub1:
     db   $39, $fd, $39, $fe, $39, $ff, $39, $00        ;; 02:6137 ????????
 
 call_02_613f_DragonHead_Sub2:    
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$0A
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_0A
     res  3,[hl]
     ld   a,[wD614]
     and  a,$02
@@ -2699,10 +2568,7 @@ call_02_616d_EntityAction_Unk51_Update:
     ret  
 
 call_02_616e_EntityAction_Ninja_unk0:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$17
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     bit  0,[hl]
     jr   nz,.jr_02_61BC
     bit  1,[hl]
@@ -2713,10 +2579,7 @@ call_02_616e_EntityAction_Ninja_unk0:
     ld   c,$14
     call call_00_3859
     jr   c,.jr_02_61AC
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$00
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_ENTITY_ID
     ld   a,[hl]
     cp   a,$54
     jr   nz,.jr_02_61A4
@@ -2940,10 +2803,7 @@ call_02_62fc_EntityAction_SamuraiHead_unk1:
     db   $00, $00, $00, $00, $96, $6e, $78, $77
 
 call_02_6327_EntityAction_SamuraiHead_unk2:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$17
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     bit  0,[hl]
     jp   nz,call_00_3985
     ret  
@@ -3002,10 +2862,7 @@ call_02_6388_EntityAction_KungFuVanishingPlatform_unk0:
     dec  l
     ld   [hl],a
 .jr_02_6394:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$1B
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_1B
     ld   a,[wD73B]
     cp   [hl]
     ret  nz
@@ -3017,10 +2874,7 @@ call_02_6388_EntityAction_KungFuVanishingPlatform_unk0:
     jp   call_02_7102_SetEntityAction
 
 call_02_63ac_EntityAction_KungFuVanishingPlatform_unk1:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$18
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_18
     dec  [hl]
     ld   c,[hl]
     ld   a,l
@@ -3080,10 +2934,7 @@ call_02_6409_EntityAction_KungFuMovingPlatform_Update:
     dec  l
     ld   [hl],a
 .jr_02_6415:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$1A
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     ld   a,[hl]
     cp   a,$ff
     jr   z,.jr_02_642E
@@ -3147,10 +2998,7 @@ call_02_644a_EntityAction_RezopolisSpecialMovingPlatform_Update:
     call call_00_34f5
     bit  0,b
     jr   nz,.jr_02_648A
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$18
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_18
     ld   a,[hl]
     cp   a,$10
     jr   z,.jr_02_647F
@@ -3165,10 +3013,7 @@ call_02_644a_EntityAction_RezopolisSpecialMovingPlatform_Update:
     call call_00_3559
     jp   call_00_318d
 .jr_02_648A:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$18
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_18
     ld   a,[hl]
     and  a
     ret  z
@@ -3262,10 +3107,7 @@ call_02_64ae_EntityAction_RedPlatform_Update:
 call_02_650f_EntityAction_ActivatedRedPlatform_Update:
     ld   c,$80
     call call_00_3290
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$17
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     bit  0,[hl]
     jr   z,.jr_02_654F
     bit  1,[hl]
@@ -3318,10 +3160,7 @@ call_02_655d_EntityAction_TailspinPlatform_Update:
     and  a,$1F
     cp   a,$0D
     jr   nz,.jr_02_65A2
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$10
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
     ldi  a,[hl]
     ld   h,[hl]
     ld   l,a
@@ -3341,10 +3180,7 @@ call_02_655d_EntityAction_TailspinPlatform_Update:
     ld   a,[hl]
     cp   c
     ret  nc
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$19
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_19
     ld   a,[hl]
     add  a,$01
     ldi  [hl],a
@@ -3398,10 +3234,7 @@ call_02_65db_EntityAction_TailspinGear_unk4:
     ld   c,$03
     ld   b,$04
 call_02_65E2_TailSpinGear_Sub1:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$17
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     bit  0,[hl]
     jr   z,.jr_02_65F4
     ld   c,b
@@ -3414,10 +3247,7 @@ call_02_65E2_TailSpinGear_Sub1:
     pop  bc
     ret  z
 .jr_02_65fa:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$01
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_ACTION_ID
     ld   a,[hl]
     and  a,$1F
     cp   c
@@ -3472,10 +3302,7 @@ call_02_6635_EntityAction_Unk6F_Update:
     ret  
     
 call_02_6636_EntityAction_Pincer_Update:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$19
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_19
     ld   c,$00
     bit  0,[hl]
     jr   z,.jr_02_6646
@@ -3493,10 +3320,7 @@ call_02_664c_EntityAction_Flamethrower_unk1:
     ret  
     
 call_02_664d_EntityAction_UFO_unk0:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$19
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_19
     bit  0,[hl]
     jr   nz,.jr_02_6662
     ld   c,$08
@@ -3513,10 +3337,7 @@ call_02_666b_EntityAction_UFO_unk1:
     ret  
 
 call_02_666c_EntityAction_AntSpawner_Update:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$0D
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_DIRECTION
     ld   [hl],$20
     xor  a,$1A
     ld   l,a
@@ -3560,10 +3381,7 @@ call_02_666c_EntityAction_AntSpawner_Update:
     ret  
 
 call_02_66bb_EntityAction_Ant_Update:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$0E
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
     ldi  a,[hl]
     ld   h,[hl]
     ld   l,a
@@ -3603,10 +3421,7 @@ call_02_66f1_EntityAction_Capacitor_unk1:
 call_02_66fd_EntityAction_PowerUp_unk0:
     call call_00_3843
     ret  z
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$0D
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_DIRECTION
     ld   [hl],$60
     ld   a,$01
     jp   call_02_7102_SetEntityAction
@@ -3614,10 +3429,7 @@ call_02_66fd_EntityAction_PowerUp_unk0:
 call_02_6710_EntityAction_PowerUp_unk1:
     call call_00_3843
     ret  z
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$0D
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_DIRECTION
     ld   [hl],$00
     ld   a,$00
     jp   call_02_7102_SetEntityAction
@@ -3636,10 +3448,7 @@ call_02_6724_EntityAction_LittleRobot_unk0:
     call call_00_36f7
     ld   a,$01
     call nz,call_02_7102_SetEntityAction
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$0E
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
     ld   e,[hl]
     inc  l
     ld   d,[hl]
@@ -3688,10 +3497,7 @@ call_02_6775_EntityAction_LittleRobotGear_Update:
     jp   call_00_3910
 
 call_02_6786_EntityAction_ElectricBall_unk0:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$1B
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_1B
     ld   a,[wD73B]
     cp   [hl]
     ret  nz
@@ -3702,10 +3508,7 @@ call_02_6786_EntityAction_ElectricBall_unk0:
     jp   call_02_7102_SetEntityAction
 
 call_02_679e_EntityAction_ElectricBall_unk1:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$17
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     ld   a,[hl]
     rrca 
     rrca 
@@ -3725,10 +3528,7 @@ call_02_679e_EntityAction_ElectricBall_unk1:
     call call_00_37d8
     pop  bc
     call call_00_37c9
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$18
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_18
     dec  [hl]
     call z,call_02_680e_ElectricBall_Sub
     ret  
@@ -3744,10 +3544,7 @@ call_02_679e_EntityAction_ElectricBall_unk1:
     db   $00, $02, $00, $02, $00
 
 call_02_680e_ElectricBall_Sub:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$1A
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     ld   c,[hl]
     inc  [hl]
     dec  l
@@ -3763,10 +3560,7 @@ call_02_680e_ElectricBall_Sub:
     ld   h,$00
     add  hl,hl
     add  hl,de
-    ld   d,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$17
-    ld   e,a
+    LOAD_OBJ_FIELD_TO_DE ENTITY_FIELD_UNK_17
     ldi  a,[hl]
     cp   a,$ff
     jp   z,call_00_3910
@@ -3798,18 +3592,12 @@ call_02_68c0_EntityAction_CircuitCentralMovingPlatform_Update:
     call call_00_34ea
     call nz,.jr_02_68D6
     call call_00_3559
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$1B
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_1B
     dec  [hl]
     call z,.jr_02_68D6
     ret  
 .jr_02_68D6:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$1A
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     ld   c,[hl]
     inc  [hl]
     dec  l
@@ -3827,10 +3615,7 @@ call_02_68c0_EntityAction_CircuitCentralMovingPlatform_Update:
     add  hl,hl
     add  hl,bc
     add  hl,de
-    ld   d,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$1B
-    ld   e,a
+    LOAD_OBJ_FIELD_TO_DE ENTITY_FIELD_UNK_1B
     ldi  a,[hl]
     cp   a,$ff
     jr   z,.jr_02_6909
@@ -3845,10 +3630,7 @@ call_02_68c0_EntityAction_CircuitCentralMovingPlatform_Update:
     ld   [de],a
     ret  
 .jr_02_6909:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$1A
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     ld   [hl],$00
     jr   .jr_02_68D6
 .data_02_6915:
@@ -3889,10 +3671,7 @@ call_02_696f_EntityAction_CircuitCentralPoweredPlatform_unk0:
     jp   call_02_7102_SetEntityAction
 
 call_02_6993_EntityAction_CircuitCentralPoweredPlatform_unk1:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$17
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     bit  3,[hl]
     jr   z,.jr_02_69BE
     bit  0,[hl]
@@ -3921,10 +3700,7 @@ call_02_6993_EntityAction_CircuitCentralPoweredPlatform_unk1:
 call_02_69c4_EntityAction_CircuitCentralPoweredPlatform_unk2:
     call call_00_3817
     ret  nz
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$17
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     set  0,[hl]
     ld   a,$01
     jp   call_02_7102_SetEntityAction
@@ -4006,10 +3782,7 @@ call_02_6a3b_EntityAction_PoweredWalkway_Update:
     ret  
 
 call_02_6a3c_EntityAction_WalkwayActivator_Update:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$19
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_19
     ld   l,[hl]
     dec  l
     ld   h,$00
@@ -4021,10 +3794,7 @@ call_02_6a3c_EntityAction_WalkwayActivator_Update:
     jr   z,.jr_02_6A54
     ld   c,$10
 .jr_02_6A54:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$14
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WIDTH
     ld   [hl],c
     ld   hl,wD20E_PlayerXPosition
     ldi  a,[hl]
@@ -4048,10 +3818,7 @@ call_02_6a3c_EntityAction_WalkwayActivator_Update:
     ld   a,c
     cp   [hl]
     ret  c
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$0E
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
     ld   a,[wD20E_PlayerXPosition]
     ldi  [hl],a
     ld   a,[wD20F_PlayerXPosition]
@@ -4059,10 +3826,7 @@ call_02_6a3c_EntityAction_WalkwayActivator_Update:
     ret  
 
 call_02_6a8b_EntityAction_ArcedGunProjectile_unk0:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$19
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_19
     ld   a,[wD73B]
     and  a,$3F
     cp   [hl]
@@ -4077,10 +3841,7 @@ call_02_6a8b_EntityAction_ArcedGunProjectile_unk0:
 
 call_02_6aac_EntityAction_ArcedGunProjectile_unk1:
     call call_00_3442
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$1A
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     bit  0,[hl]
     jr   nz,.jr_02_6AC4
     call call_00_30da
@@ -4094,10 +3855,7 @@ call_02_6aac_EntityAction_ArcedGunProjectile_unk1:
     jp   call_02_6bf8_GunProjectile_Sub2
 
 call_02_6ad3_EntityAction_ArcedGunProjectile2_unk0:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$19
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_19
     ld   a,[wD73B]
     and  a,$3F
     cp   [hl]
@@ -4116,10 +3874,7 @@ call_02_6af9_EntityAction_ArcedGunProjectile2_unk1:
     call call_00_3442
     call call_00_3817
     jp   z,call_02_6c03_GunProjectile_Sub
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$1A
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     bit  0,[hl]
     jr   nz,.jr_02_6B17
     call call_00_30da
@@ -4149,10 +3904,7 @@ call_02_6b30_EntityAction_ArcedGunProjectile2_unk2:
 
 call_02_6b43_EntityAction_ArcedGunProjectile2_unk3:
     call call_00_3442
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$1A
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     bit  0,[hl]
     jr   nz,.jr_02_6B5B
     call call_00_30da
@@ -4166,10 +3918,7 @@ call_02_6b43_EntityAction_ArcedGunProjectile2_unk3:
     jp   call_02_6bf8_GunProjectile_Sub2
 
 call_02_6b6a_EntityAction_GunProjectile_unk0:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$19
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_19
     ld   a,[wD73B]
     and  a,$3F
     cp   [hl]
@@ -4179,10 +3928,7 @@ call_02_6b6a_EntityAction_GunProjectile_unk0:
     jp   call_02_7102_SetEntityAction
 
 call_02_6b81_EntityAction_GunProjectile_unk1:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$1A
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     ld   c,[hl]
     xor  a,$0A
     ld   l,a
@@ -4233,10 +3979,7 @@ call_02_6bcd_GunProjectile_Sub3:
     call call_00_112f
     ld   c,$1E
     call call_00_3825
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$1C
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XVEL
     xor  a
     ldi  [hl],a
     ldi  [hl],a
@@ -4254,10 +3997,7 @@ call_02_6bcd_GunProjectile_Sub3:
     jp   call_00_37d8
 
 call_02_6bf8_GunProjectile_Sub2:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$17
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     bit  7,[hl]
     ret  z
 call_02_6c03_GunProjectile_Sub:
@@ -4272,10 +4012,7 @@ call_02_6c18_EntityAction_Rez_unk0:
     jr   z,.jr_02_6C38
     ld   a,$0A
     ld   [wD616],a
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$0E
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
     ldi  a,[hl]
     ld   h,[hl]
     ld   l,a
@@ -4303,10 +4040,7 @@ call_02_6c4a_EntityAction_Rez_unk2:
     ld   a,[wD73B]
     and  a,$03
     jr   nz,.jr_02_6C7C
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$10
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
     ld   e,[hl]
     inc  l
     ld   d,[hl]
@@ -4338,10 +4072,7 @@ call_02_6c82_EntityAction_Rez_unk4:
     ret  z
     ld   a,$03
     call call_02_7102_SetEntityAction
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$1B
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_1B
     ld   a,[hl]
     cp   a,$19
     ret  c
@@ -4451,10 +4182,7 @@ call_02_6d23_EntityAction_Unk88_Update:
 call_02_6d24_EntityAction_GunProjectileExplosion_Update:
     call call_00_3843
     jp   nz,call_00_3910
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$07
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_SPRITE_COUNTER
     ld   l,[hl]
     ld   h,$00
     add  hl,hl
@@ -4463,10 +4191,7 @@ call_02_6d24_EntityAction_GunProjectileExplosion_Update:
     ld   e,[hl]
     inc  hl
     ld   d,[hl]
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$0D
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_DIRECTION
     ld   [hl],e
     xor  a,$07
     ld   l,a
@@ -4481,10 +4206,7 @@ call_02_6d24_EntityAction_GunProjectileExplosion_Update:
 
 call_02_6d5d_EntityAction_Unk8B_unk0:
     call call_00_30af
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$10
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
     ldi  a,[hl]
     ld   h,[hl]
     ld   l,a
@@ -4510,10 +4232,7 @@ call_02_6d80_EntityAction_FinalBattleButton_unk0:
     ld   a,[wD616]
     and  a,$7F
     ret  z
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$19
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_19
     ld   a,[hl]
     cp   a,$01
     ld   c,$0F
@@ -4578,10 +4297,7 @@ call_02_6df1_EntityAction_MediaDimensionMovingPlatform_Update:
     dec  L                                             ;; 02:6dfb $2d
     ld   [HL], A                                       ;; 02:6dfc $77
 .jr_02_6dfd:
-    ld   H, $d2                                        ;; 02:6dfd $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:6dff $fa $00 $d3
-    or   A, $1a                                        ;; 02:6e02 $f6 $1a
-    ld   L, A                                          ;; 02:6e04 $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     ld   A, [HL]                                       ;; 02:6e05 $7e
     cp   A, $ff                                        ;; 02:6e06 $fe $ff
     jr   Z, .jr_02_6e11                                ;; 02:6e08 $28 $07

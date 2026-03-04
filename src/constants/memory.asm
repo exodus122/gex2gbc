@@ -77,76 +77,42 @@ wD100_TilesToLoadBuffer:
 ; From D200 to D300 is the loaded entities space
 ; Each entity takes up 0x20 of space, and there can be up to 8 entities. 
 ; Gex occupies the first slot. The first byte of each entity is the id
-
-; Entity Instance Struct
-; 0x00 entity id
-; 0x01 current action id (index into action jump table)
-; 0x02-0x03 pointer to current action function
-; 0x04-0x05 ? pointer to some data in bank 2, whose value is set to 0x0C
-; 0x06 ? animation timer, how many frames are in this animation?
-; 0x07 ? animation timer/index?, which frame of animation?
-; 0x08 sprite index (for example gex's 4 standing sprites are 0x14-0x17, and that's the index to those sprites in bank 4
-; 0x09 ? bitfield
-; 0x0A ? bitfield
-; 0x0B ? gets its value from table pointed to by 0x04-0x05
-; 0x0C ? unknown byte whose value comes from pointer in 0x04-0x05
-; 0x0D facing angle. right: 0x00, left: 0x20 
-; 0x0E-0x0F x position on map
-; 0x10-0x11 y position on map
-; 0x12 x position on screen
-; 0x13 y position on screen
-; 0x14-0x15 is ? 
-; 0x16 is index into bank 3 graphics jump table
-; 
-; 
-
+; Entity Instance Struct is defined in constants.asm
+wD200_EntityMemory:
 wD200_PlayerEntity_Id:
     ds 1                                               ;; d200
-
 wD201_PlayerEntity_ActionId:
     ds 1                                               ;; d201
-
 wD202_PlayerEntity_ActionFunc:
     ds 2                                               ;; d202
 
     ds 3
-
-wD207:
+wD207_Player_SpriteCounter:
     ds 1                                               ;; d207
-
 wD208_PlayerSpriteIndex:
     ds 1                                               ;; d208
-
 wD209:
     ds 1                                               ;; d209
-
 wD20A:
     ds 3                                               ;; d20a
-
 wD20D_PlayerFacingAngle:
     ds 1                                               ;; d20d
-
 ; wD20E_PlayerXPosition and wD20F_PlayerXPosition_PlayerXPosition control gex's x coordinate position (can freeze wD20F_PlayerXPosition_PlayerXPosition to sometimes fall through floors)
 wD20E_PlayerXPosition:
     ds 1                                               ;; d20e
 
 wD20F_PlayerXPosition:
     ds 1                                               ;; d20f
-
 ; wD210_PlayerYPosition and wD211_PlayerYPosition control gex's y coordinate position (can freeze both to hover at fixed height)
 ; can also set to 0000 to warp to top of map for example
 wD210_PlayerYPosition:
     ds 1                                               ;; d210
-
 wD211_PlayerYPosition:
     ds 1                                               ;; d211
-
 wD212_PlayerScreenXPosition:
     ds 1                                               ;; d212
-
 wD213_PlayerScreenYPosition:
     ds 1
-
     ds 12                                              ;; d213
 
 wD220_OtherLoadedEntities:

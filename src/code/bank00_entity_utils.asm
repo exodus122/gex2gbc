@@ -1,8 +1,5 @@
 call_00_30af:
-    ld   H, $d2                                        ;; 00:30af $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:30b1 $fa $00 $d3
-    or   A, $1e                                        ;; 00:30b4 $f6 $1e
-    ld   L, A                                          ;; 00:30b6 $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YVEL
     ld   A, [HL]                                       ;; 00:30b7 $7e
     sub  A, $02                                        ;; 00:30b8 $d6 $02
     bit  7, A                                          ;; 00:30ba $cb $7f
@@ -26,10 +23,7 @@ call_00_30af:
     jp   call_00_37d8                                  ;; 00:30d7 $c3 $d8 $37
     
 call_00_30da:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$1E
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YVEL
     ld   a,[hl]
     sub  a,$02
     bit  7,a
@@ -58,10 +52,7 @@ call_00_30da:
     adc  b
     ld   [hl],a
     call call_00_349c
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$10
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
     ld   a,e
     sub  [hl]
     inc  hl
@@ -77,10 +68,7 @@ call_00_30da:
     xor  a
     ld   [hl],a
     ret  
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$10
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
     ld   e,[hl]
     inc  l
     ld   d,[hl]
@@ -92,10 +80,7 @@ call_00_30da:
     ret  
 
 call_00_3137:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$1A
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     ld   e,[hl]
     inc  l
     ld   d,[hl]
@@ -118,10 +103,7 @@ call_00_3137:
 
 call_00_3154:
     call call_00_34ba                                  ;; 00:3154 $cd $ba $34
-    ld   H, $d2                                        ;; 00:3157 $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3159 $fa $00 $d3
-    or   A, $10                                        ;; 00:315c $f6 $10
-    ld   L, A                                          ;; 00:315e $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
     ld   A, [HL+]                                      ;; 00:315f $2a
     sub  A, E                                          ;; 00:3160 $93
     ld   A, [HL]                                       ;; 00:3161 $7e
@@ -144,10 +126,7 @@ call_00_316e:
     add  HL, DE                                        ;; 00:3173 $19
     ld   E, L                                          ;; 00:3174 $5d
     ld   D, H                                          ;; 00:3175 $54
-    ld   H, $d2                                        ;; 00:3176 $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3178 $fa $00 $d3
-    or   A, $10                                        ;; 00:317b $f6 $10
-    ld   L, A                                          ;; 00:317d $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
     ld   A, [HL+]                                      ;; 00:317e $2a
     sub  A, E                                          ;; 00:317f $93
     ld   A, [HL]                                       ;; 00:3180 $7e
@@ -164,10 +143,7 @@ call_00_316e:
     ret                                                ;; 00:318c $c9
 
 call_00_318d:
-    ld   H, $d2                                        ;; 00:318d $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:318f $fa $00 $d3
-    or   A, $17                                        ;; 00:3192 $f6 $17
-    ld   L, A                                          ;; 00:3194 $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     bit  3, [HL]                                       ;; 00:3195 $cb $5e
     jr   Z, .jr_00_319c                                ;; 00:3197 $28 $03
     bit  0, [HL]                                       ;; 00:3199 $cb $46
@@ -178,10 +154,7 @@ call_00_318d:
     bit  7, [HL]                                       ;; 00:31a0 $cb $7e
     jr   NZ, .jr_00_31de                               ;; 00:31a2 $20 $3a
     call call_00_347e                                  ;; 00:31a4 $cd $7e $34
-    ld   H, $d2                                        ;; 00:31a7 $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:31a9 $fa $00 $d3
-    or   A, $0e                                        ;; 00:31ac $f6 $0e
-    ld   L, A                                          ;; 00:31ae $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
     ld   A, [HL+]                                      ;; 00:31af $2a
     sub  A, E                                          ;; 00:31b0 $93
     ld   A, [HL]                                       ;; 00:31b1 $7e
@@ -224,10 +197,7 @@ call_00_318d:
     ret                                                ;; 00:31dd $c9
 .jr_00_31de:
     call call_00_3460                                  ;; 00:31de $cd $60 $34
-    ld   H, $d2                                        ;; 00:31e1 $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:31e3 $fa $00 $d3
-    or   A, $0e                                        ;; 00:31e6 $f6 $0e
-    ld   L, A                                          ;; 00:31e8 $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
     ld   A, [HL+]                                      ;; 00:31e9 $2a
     sub  A, E                                          ;; 00:31ea $93
     ld   A, [HL]                                       ;; 00:31eb $7e
@@ -253,10 +223,7 @@ call_00_318d:
     bit  6, [HL]                                       ;; 00:3202 $cb $76
     jr   NZ, .jr_00_322a                               ;; 00:3204 $20 $24
     call call_00_34ba                                  ;; 00:3206 $cd $ba $34
-    ld   H, $d2                                        ;; 00:3209 $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:320b $fa $00 $d3
-    or   A, $10                                        ;; 00:320e $f6 $10
-    ld   L, A                                          ;; 00:3210 $6f
+   LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
     ld   A, [HL+]                                      ;; 00:3211 $2a
     sub  A, E                                          ;; 00:3212 $93
     ld   A, [HL]                                       ;; 00:3213 $7e
@@ -280,10 +247,7 @@ call_00_318d:
     jr   .jp_00_31c4                                   ;; 00:3228 $18 $9a
 .jr_00_322a:
     call call_00_349c                                  ;; 00:322a $cd $9c $34
-    ld   H, $d2                                        ;; 00:322d $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:322f $fa $00 $d3
-    or   A, $10                                        ;; 00:3232 $f6 $10
-    ld   L, A                                          ;; 00:3234 $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
     ld   A, [HL+]                                      ;; 00:3235 $2a
     sub  A, E                                          ;; 00:3236 $93
     ld   A, [HL]                                       ;; 00:3237 $7e
@@ -309,10 +273,7 @@ call_00_318d:
     jp   .jp_00_31c4                                   ;; 00:324e $c3 $c4 $31
 
 call_00_3251:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$0D
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_DIRECTION
     ld   c,[hl]
     xor  a,$16
     ld   l,a
@@ -357,18 +318,12 @@ call_00_3251:
     ret  
 
 call_00_3290:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$0D
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_DIRECTION
     ld   [hl],c
     ret  
 
 call_00_329a:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$0D
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_DIRECTION
     ld   c,[hl]
     ld   a,l
     xor  a,$11
@@ -418,10 +373,7 @@ call_00_329a:
     jp   call_00_37c9
 
 call_00_32e1:
-    ld   H, $d2                                        ;; 00:32e1 $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:32e3 $fa $00 $d3
-    or   A, $1c                                        ;; 00:32e6 $f6 $1c
-    ld   L, A                                          ;; 00:32e8 $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XVEL
     ld   A, [HL]                                       ;; 00:32e9 $7e
     cp   A, C                                          ;; 00:32ea $b9
     ret  Z                                             ;; 00:32eb $c8
@@ -432,10 +384,7 @@ call_00_32e1:
     inc  [HL]                                          ;; 00:32f0 $34
     ret                                                ;; 00:32f1 $c9
 
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$1C
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XVEL
     bit  7,c
     jr   nz,.jr_02_3309
     bit  7,[hl]
@@ -460,10 +409,7 @@ call_00_32e1:
     ret  
 
 call_00_3316:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$1E
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YVEL
     bit  7,c
     jr   nz,.jr_02_332D
     bit  7,[hl]
@@ -486,36 +432,24 @@ call_00_3316:
 .jr_02_3338:
     inc  [hl]
     ret  
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$1C
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XVEL
     ld   a,[hl]
     and  a
     ret  
 
 call_00_3345:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$1E
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YVEL
     ld   a,[hl]
     and  a
     ret  
 
 call_00_3350:  
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$1C
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XVEL
     ld   [hl],c
     ret  
 
 call_00_335a:
-    ld   H, $d2                                        ;; 00:335a $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:335c $fa $00 $d3
-    or   A, $1e                                        ;; 00:335f $f6 $1e
-    ld   L, A                                          ;; 00:3361 $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YVEL
     ld   [HL], C                                       ;; 00:3362 $71
     ret                                                ;; 00:3363 $c9
 
@@ -534,10 +468,7 @@ call_00_3364:
     inc  hl
     ld   c,[hl]
     inc  c
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$0E
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
     ldi  a,[hl]
     ld   h,[hl]
     ld   l,a
@@ -559,16 +490,10 @@ call_00_3364:
     jr   c,.jr_02_339C
     ld   d,$20
 .jr_02_339C:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$0D
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_DIRECTION
     ld   [hl],d
 .jr_02_33A5:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$0D
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_DIRECTION
     bit  5,[hl]
     jr   z,.jr_02_33C7
     ld   a,e
@@ -609,10 +534,7 @@ call_00_3364:
     ld   [hl],a
     ret  
 
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$0A
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_0A
     bit  5,[hl]
     ret  z
     ld   a,l
@@ -622,10 +544,7 @@ call_00_3364:
     jr   z,.jr_02_33F2
     jr   .jr_02_341B
 .jr_02_33F2:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$1C
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XVEL
     ld   c,[hl]
     dec  l
     bit  7,[hl]
@@ -655,10 +574,7 @@ call_00_3364:
     ld   [hl],a
     ret  
 .jr_02_341B:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$1C
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XVEL
     ld   c,[hl]
     dec  l
     bit  7,[hl]
@@ -687,10 +603,7 @@ call_00_3364:
     ret  
 
 call_00_3442:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$0D
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_DIRECTION
     ld   c,[hl]
     xor  a,$11
     ld   l,a
@@ -813,18 +726,12 @@ call_00_34d8:
     ret                                                ;; 00:34e9 $c9
 
 call_00_34ea:
-    ld   H, $d2                                        ;; 00:34ea $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:34ec $fa $00 $d3
-    or   A, $09                                        ;; 00:34ef $f6 $09
-    ld   L, A                                          ;; 00:34f1 $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_09
     bit  5, [HL]                                       ;; 00:34f2 $cb $6e
     ret                                                ;; 00:34f4 $c9
 
 call_00_34f5:
-    ld   H, $d2                                        ;; 00:34f5 $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:34f7 $fa $00 $d3
-    or   A, $17                                        ;; 00:34fa $f6 $17
-    ld   L, A                                          ;; 00:34fc $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     ld   A, [wD74D]                                    ;; 00:34fd $fa $4d $d7
     ld   B, A                                          ;; 00:3500 $47
     and  A, A                                          ;; 00:3501 $a7
@@ -884,10 +791,7 @@ call_00_3531:
     inc  hl
     ld   c,[hl]
     inc  c
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$0E
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
     ldi  a,[hl]
     ld   h,[hl]
     ld   l,a
@@ -902,10 +806,7 @@ call_00_3531:
     ret  
 
 call_00_3559:
-    ld   H, $d2                                        ;; 00:3559 $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:355b $fa $00 $d3
-    or   A, $1c                                        ;; 00:355e $f6 $1c
-    ld   L, A                                          ;; 00:3560 $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XVEL
     ld   A, [HL+]                                      ;; 00:3561 $2a
     ld   C, A                                          ;; 00:3562 $4f
     ld   A, [HL]                                       ;; 00:3563 $7e
@@ -942,10 +843,7 @@ call_00_3559:
     jp   call_00_35d5                                   ;; 00:3594 $c3 $d5 $35
 
 call_00_3597:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$1C
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XVEL
     ldi  a,[hl]
     ld   c,a
     ld   a,[hl]
@@ -982,10 +880,7 @@ call_00_3597:
     jp   call_00_37c9
 
 call_00_35d5:
-    ld   H, $d2                                        ;; 00:35d5 $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:35d7 $fa $00 $d3
-    or   A, $0e                                        ;; 00:35da $f6 $0e
-    ld   L, A                                          ;; 00:35dc $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
     ld   A, [HL]                                       ;; 00:35dd $7e
     add  A, C                                          ;; 00:35de $81
     ld   [HL+], A                                      ;; 00:35df $22
@@ -1006,10 +901,7 @@ call_00_35d5:
     ld   HL, wD74F                                     ;; 00:35f3 $21 $4f $d7
     cp   A, [HL]                                       ;; 00:35f6 $be
     ret  NZ                                            ;; 00:35f7 $c0
-    ld   H, $d2                                        ;; 00:35f8 $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:35fa $fa $00 $d3
-    or   A, $12                                        ;; 00:35fd $f6 $12
-    ld   L, A                                          ;; 00:35ff $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS_ON_SCREEN
     ld   A, [wD212_PlayerScreenXPosition]                                    ;; 00:3600 $fa $12 $d2
     cp   A, [HL]                                       ;; 00:3603 $be
     jr   C, .jr_00_3616                                ;; 00:3604 $38 $10
@@ -1092,10 +984,7 @@ call_00_3675:
     jp   call_00_07b0_MemCopy                                  ;; 00:36ba $c3 $b0 $07
 
 call_00_36bd:
-    ld   H, $d2                                        ;; 00:36bd $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:36bf $fa $00 $d3
-    or   A, $0e                                        ;; 00:36c2 $f6 $0e
-    ld   L, A                                          ;; 00:36c4 $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
     ld   A, [wD20E_PlayerXPosition]                                    ;; 00:36c5 $fa $0e $d2
     sub  A, [HL]                                       ;; 00:36c8 $96
     inc  HL                                            ;; 00:36c9 $23
@@ -1112,10 +1001,7 @@ call_00_36bd:
     ret                                                ;; 00:36d9 $c9
     
 call_00_36da:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$0E
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
     ld   a,[wD20E_PlayerXPosition]
     sub  [hl]
     inc  hl
@@ -1132,10 +1018,7 @@ call_00_36da:
     ret  
 
 call_00_36f7:
-    ld   H, $d2                                        ;; 00:36f7 $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:36f9 $fa $00 $d3
-    or   A, $0d                                        ;; 00:36fc $f6 $0d
-    ld   L, A                                          ;; 00:36fe $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_DIRECTION
     ld   C, [HL]                                       ;; 00:36ff $4e
     ld   A, L                                          ;; 00:3700 $7d
     xor  A, $11                                        ;; 00:3701 $ee $11
@@ -1201,20 +1084,14 @@ call_00_36f7:
     xor  A, A                                          ;; 00:3752 $af
     ret                                                ;; 00:3753 $c9
 .jr_00_3754:
-    ld   H, $d2                                        ;; 00:3754 $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3756 $fa $00 $d3
-    or   A, $0d                                        ;; 00:3759 $f6 $0d
-    ld   L, A                                          ;; 00:375b $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_DIRECTION
     ld   A, [HL]                                       ;; 00:375c $7e
     ld   [HL], C                                       ;; 00:375d $71
     cp   A, C                                          ;; 00:375e $b9
     ret                                                ;; 00:375f $c9
     
 call_00_3760:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$0D
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_DIRECTION
     ld   c,[hl]
     ld   a,l
     xor  a,$11
@@ -1280,20 +1157,14 @@ call_00_3760:
     xor  a
     ret  
 .jr_02_37BD:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$0D
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_DIRECTION
     ld   a,[hl]
     ld   [hl],c
     cp   c
     ret  
 
 call_00_37c9:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$0E
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
     ld   a,[hl]
     add  c
     ldi  [hl],a
@@ -1303,10 +1174,7 @@ call_00_37c9:
     ret  
 
 call_00_37d8:
-    ld   H, $d2                                        ;; 00:37d8 $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:37da $fa $00 $d3
-    or   A, $10                                        ;; 00:37dd $f6 $10
-    ld   L, A                                          ;; 00:37df $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
     ld   A, [HL]                                       ;; 00:37e0 $7e
     add  A, C                                          ;; 00:37e1 $81
     ld   [HL+], A                                      ;; 00:37e2 $22
@@ -1329,35 +1197,23 @@ call_00_37e7:
     ret                                                ;; 00:37f7 $c9
 
 call_00_37f8:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$17
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     ld   [hl],c
     ret  
 
 call_00_3802:
-    ld   H, $d2                                        ;; 00:3802 $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3804 $fa $00 $d3
-    or   A, $18                                        ;; 00:3807 $f6 $18
-    ld   L, A                                          ;; 00:3809 $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_18
     ld   [HL], C                                       ;; 00:380a $71
     ret                                                ;; 00:380b $c9
     
 call_00_380c:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$18
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_18
     ld   a,[hl]
     and  a
     ret  
 
 call_00_3817:
-    ld   H, $d2                                        ;; 00:3817 $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3819 $fa $00 $d3
-    or   A, $18                                        ;; 00:381c $f6 $18
-    ld   L, A                                          ;; 00:381e $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_18
     ld   A, [HL]                                       ;; 00:381f $7e
     and  A, A                                          ;; 00:3820 $a7
     ret  Z                                             ;; 00:3821 $c8
@@ -1366,48 +1222,30 @@ call_00_3817:
     ret                                                ;; 00:3824 $c9
 
 call_00_3825:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$16
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_COLLISION_TYPE
     ld   [hl],c
     ret  
 
 call_00_382f:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$14
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WIDTH
     ld   [hl],c
     ret  
 
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$07
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_SPRITE_COUNTER
     ld   a,[hl]
     ret  
 
 call_00_3843:
-    ld   H, $d2                                        ;; 00:3843 $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3845 $fa $00 $d3
-    or   A, $0a                                        ;; 00:3848 $f6 $0a
-    ld   L, A                                          ;; 00:384a $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_0A
     bit  2, [HL]                                       ;; 00:384b $cb $56
     ret                                                ;; 00:384d $c9
 
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$0A
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_0A
     bit  6,[hl]
     ret  
 
 call_00_3859:
-    ld   H, $d2                                        ;; 00:3859 $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:385b $fa $00 $d3
-    or   A, $0e                                        ;; 00:385e $f6 $0e
-    ld   L, A                                          ;; 00:3860 $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
     ld   A, [wD20E_PlayerXPosition]                                    ;; 00:3861 $fa $0e $d2
     sub  A, [HL]                                       ;; 00:3864 $96
     ld   E, A                                          ;; 00:3865 $5f
@@ -1428,7 +1266,7 @@ call_00_3859:
 call_00_3878:
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:3878 $fa $24 $d6
     and  A, A                                          ;; 00:387b $a7
-    jr   Z, jr_00_3899                                 ;; 00:387c $28 $1b
+    jr   Z, call_00_3899                                 ;; 00:387c $28 $1b
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:387e $fa $00 $d3
     rlca                                               ;; 00:3881 $07
     rlca                                               ;; 00:3882 $07
@@ -1448,11 +1286,8 @@ call_00_3878:
     and  A, A                                          ;; 00:3897 $a7
     ret                                                ;; 00:3898 $c9
 
-jr_00_3899:
-    ld   H, $d2                                        ;; 00:3899 $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:389b $fa $00 $d3
-    or   A, $19                                        ;; 00:389e $f6 $19
-    ld   L, A                                          ;; 00:38a0 $6f
+call_00_3899:
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_19
     ld   A, [wD64F]                                    ;; 00:38a1 $fa $4f $d6
     and  A, $7f                                        ;; 00:38a4 $e6 $7f
     cp   A, [HL]                                       ;; 00:38a6 $be
@@ -1477,7 +1312,7 @@ jr_00_3899:
 call_00_38c1:
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:38c1 $fa $24 $d6
     and  A, A                                          ;; 00:38c4 $a7
-    jr   Z, jr_00_3899                                 ;; 00:38c5 $28 $d2
+    jr   Z, call_00_3899                                 ;; 00:38c5 $28 $d2
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:38c7 $fa $00 $d3
     rlca                                               ;; 00:38ca $07
     rlca                                               ;; 00:38cb $07
@@ -1525,10 +1360,7 @@ call_00_38f0:
     ret                                                ;; 00:390f $c9
 
 call_00_3910:
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3910 $fa $00 $d3
-    or   A, $00                                        ;; 00:3913 $f6 $00
-    ld   L, A                                          ;; 00:3915 $6f
-    ld   H, $d2                                        ;; 00:3916 $26 $d2
+    LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_ENTITY_ID
     ld   [HL], $ff                                     ;; 00:3918 $36 $ff
     ld   A, L                                          ;; 00:391a $7d
     rlca                                               ;; 00:391b $07
@@ -1548,10 +1380,7 @@ call_00_3910:
     ret                                                ;; 00:3930 $c9
 
 call_00_3931:
-    ld   H, $d2                                        ;; 00:3931 $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3933 $fa $00 $d3
-    or   A, $00                                        ;; 00:3936 $f6 $00
-    ld   L, A                                          ;; 00:3938 $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_ENTITY_ID
     ld   [HL], $ff                                     ;; 00:3939 $36 $ff
     ret                                                ;; 00:393b $c9
 
@@ -1610,10 +1439,7 @@ call_00_3951:
 call_00_3985:
     ld   C, $01                                        ;; 00:3985 $0e $01
     call call_00_37e7                                  ;; 00:3987 $cd $e7 $37
-    ld   H, $d2                                        ;; 00:398a $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:398c $fa $00 $d3
-    or   A, $16                                        ;; 00:398f $f6 $16
-    ld   L, A                                          ;; 00:3991 $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_COLLISION_TYPE
     ld   [HL], $00                                     ;; 00:3992 $36 $00
     ld   A, L                                          ;; 00:3994 $7d
     xor  A, $16                                        ;; 00:3995 $ee $16
@@ -1746,10 +1572,7 @@ call_00_3a23:
     inc  DE                                            ;; 00:3a58 $13
     dec  B                                             ;; 00:3a59 $05
     jr   NZ, .jr_00_3a4a                               ;; 00:3a5a $20 $ee
-    ld   H, $d2                                        ;; 00:3a5c $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3a5e $fa $00 $d3
-    or   A, $0a                                        ;; 00:3a61 $f6 $0a
-    ld   L, A                                          ;; 00:3a63 $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_0A
     set  0, [HL]                                       ;; 00:3a64 $cb $c6
     ret                                                ;; 00:3a66 $c9
 .data_00_3a67:

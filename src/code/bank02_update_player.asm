@@ -92,7 +92,7 @@ data_02_491a:
     db   $18, $00, $00, $00, $00, $00, $00, $00        ;; 02:492a ????????
     db   $00, $18, $00, $00, $00, $00, $00             ;; 02:4932 ???????
 
-call_02_4939_PlayerUpdate:
+call_02_4939_PlayerUpdateMain:
     ld   A, [wD61E_DemoModeEnabled]                                    ;; 02:4939 $fa $1e $d6
     and  A, A                                          ;; 02:493c $a7
     jr   Z, .jr_02_4965                                ;; 02:493d $28 $26

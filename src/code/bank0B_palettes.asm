@@ -436,10 +436,7 @@ call_0b_5f57:
     add  HL, DE                                        ;; 0b:5f71 $19
     ld   E, L                                          ;; 0b:5f72 $5d
     ld   D, H                                          ;; 0b:5f73 $54
-    ld   H, $d2                                        ;; 0b:5f74 $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 0b:5f76 $fa $00 $d3
-    or   A, $00                                        ;; 0b:5f79 $f6 $00
-    ld   L, A                                          ;; 0b:5f7b $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_ENTITY_ID
     ld   L, [HL]                                       ;; 0b:5f7c $6e
     ld   H, $00                                        ;; 0b:5f7d $26 $00
     add  HL, HL                                        ;; 0b:5f7f $29

@@ -187,7 +187,7 @@ DEF ENTITY_TOON_TV_HARD_HEAD_AREA_OBJECT    EQU $1D
 DEF ENTITY_TOON_TV_STATIONARY_BEAR_TRAP     EQU $1E
 DEF ENTITY_TOON_TV_MOVING_BEAR_TRAP         EQU $1F
 DEF ENTITY_TOON_TV_BUMBLEBEE                EQU $20
-DEF ENTITY_TOON_TV_BOWLING_BALL     EQU $21
+DEF ENTITY_TOON_TV_BOWLING_BALL              EQU $21
 DEF ENTITY_TOON_TV_CACTUS                    EQU $22
 DEF ENTITY_TOON_TV_DOMINO                    EQU $23
 DEF ENTITY_TOON_TV_SHARK                     EQU $24
@@ -199,9 +199,9 @@ DEF ENTITY_TOON_TV_LIZARD                    EQU $29
 DEF ENTITY_TOON_TV_HAPPY_FACE                EQU $2A
 DEF ENTITY_TOON_TV_VANISHING_BLOCK           EQU $2B
 DEF ENTITY_TOON_TV_MOVING_BLOCK              EQU $2C
-DEF ENTITY_TOON_TV_MOVING_LOG       EQU $2D
-DEF ENTITY_TOON_TV_STATIONARY_LOG   EQU $2E
-DEF ENTITY_TOON_TV_FLOWER_HAMMER      EQU $2F
+DEF ENTITY_TOON_TV_MOVING_LOG                EQU $2D
+DEF ENTITY_TOON_TV_STATIONARY_LOG            EQU $2E
+DEF ENTITY_TOON_TV_FLOWER_HAMMER             EQU $2F
 DEF ENTITY_TOON_TV_HUNTER_BULLET             EQU $30
 DEF ENTITY_TOON_TV_ROCKET                    EQU $31
 DEF ENTITY_PRE_HISTORY_FAST_DINOSAUR         EQU $32 ; in pangaea 90210 above the happy face on map
@@ -300,36 +300,35 @@ DEF ENTITY_UNK_8E                            EQU $8E ; not in level ENTITY lists
 DEF ENTITY_MEDIA_DIMENSION_MOVING_PLATFORM   EQU $8F
 DEF ENTITY_LIST_TERMINATOR                   EQU $FF
 
-; Entity Instance Struct - these are copied from gex3 and are not all verified
+; Entity Instance Struct
 DEF ENTITY_FIELD_ENTITY_ID                  EQU $00
 DEF ENTITY_FIELD_ACTION_ID                  EQU $01
 DEF ENTITY_FIELD_ACTION_FUNC                EQU $02
-DEF ENTITY_FIELD_SPRITE_FLAGS2              EQU $04
-DEF ENTITY_FIELD_GRAPHICS_FLAGS             EQU $05
-DEF ENTITY_FIELD_SPRITE_FRAME_COUNTER_MAX   EQU $06 ; how many frames to use this sprite
-DEF ENTITY_FIELD_SPRITE_FRAME_COUNTER       EQU $07 ; counter for the above
-DEF ENTITY_FIELD_SPRITE_COUNTER_MAX         EQU $08 ; total sprite frames for current action
-DEF ENTITY_FIELD_SPRITE_COUNTER             EQU $09 ; counter for above
-DEF ENTITY_FIELD_SPRITE_ID                  EQU $0A ; current sprite id
-DEF ENTITY_FIELD_SPRITE_IDS_PTR             EQU $0B ; ptr to sprite data (in entity_animation_data.asm)
+DEF ENTITY_FIELD_SPRITE_IDS_PTR             EQU $04
+DEF ENTITY_FIELD_SPRITE_FRAME_COUNTER       EQU $06
+DEF ENTITY_FIELD_SPRITE_COUNTER             EQU $07
+DEF ENTITY_FIELD_SPRITE_ID                  EQU $08
+DEF ENTITY_FIELD_UNK_09                     EQU $09
+DEF ENTITY_FIELD_UNK_0A                     EQU $0A
+DEF ENTITY_FIELD_SPRITE_FRAME_COUNTER_MAX   EQU $0B
+DEF ENTITY_FIELD_SPRITE_COUNTER_MAX         EQU $0C
 DEF ENTITY_FIELD_FACING_DIRECTION           EQU $0D
 DEF ENTITY_FIELD_XPOS                       EQU $0E
 DEF ENTITY_FIELD_YPOS                       EQU $10
-DEF ENTITY_FIELD_WIDTH                      EQU $12 ; set to [1] into data_00_3258
-DEF ENTITY_FIELD_HEIGHT                     EQU $13 ; set to [2] into data_00_3258
-DEF ENTITY_FIELD_COLLISION_TYPE             EQU $14 ; set to [3] into data_00_3258
-DEF ENTITY_FIELD_COOLDOWN_TIMER             EQU $15 ; defaults to 0, but might get set to $3c (same value as gex's cooldown timer)
-DEF ENTITY_FIELD_DAMAGE_STATE               EQU $16 ; stores current health or other damage states
-DEF ENTITY_FIELD_SPRITE_BANK                EQU $17
-DEF ENTITY_FIELD_UNK18                      EQU $18 ; seems unused
-DEF ENTITY_FIELD_MISC_FLAGS                 EQU $19 ; only used by moving platforms, skating elf health, and sec bot?
-                                                    ; initially set to data_00_3258[entity_id*8][5]
-DEF ENTITY_FIELD_MISC_TIMER                 EQU $1A ; timer which can be used for various purposes
-DEF ENTITY_FIELD_XVEL                       EQU $1B
-DEF ENTITY_FIELD_XVEL_RELATED               EQU $1C ; used with XVEL to calculate X delta
-DEF ENTITY_FIELD_YVEL                       EQU $1D
-DEF ENTITY_FIELD_UNK1E                      EQU $1E ; seems unused, likely would have been used for Y velocity delta
-DEF ENTITY_FIELD_PARENT                     EQU $1F ; stores entity list index of this entity's parent (used for projectiles, flies)
+DEF ENTITY_FIELD_XPOS_ON_SCREEN             EQU $12
+DEF ENTITY_FIELD_YPOS_ON_SCREEN             EQU $13
+DEF ENTITY_FIELD_WIDTH                      EQU $14
+DEF ENTITY_FIELD_HEIGHT                     EQU $15
+DEF ENTITY_FIELD_COLLISION_TYPE             EQU $16
+DEF ENTITY_FIELD_UNK_17                     EQU $17
+DEF ENTITY_FIELD_UNK_18                     EQU $18
+DEF ENTITY_FIELD_UNK_19                     EQU $19
+DEF ENTITY_FIELD_MISC_FLAGS                 EQU $1A ; used by tv buttons, etc.
+DEF ENTITY_FIELD_UNK_1B                     EQU $1B
+DEF ENTITY_FIELD_XVEL                       EQU $1C
+DEF ENTITY_FIELD_XVEL_RELATED               EQU $1D
+DEF ENTITY_FIELD_YVEL                       EQU $1E
+DEF ENTITY_FIELD_UNK_1F                     EQU $1F ; unused?
 
 ; Player vs Entity interactions
 DEF PLAYER_TOUCHED_ENTITY    EQU $00
@@ -344,7 +343,7 @@ DEF PLAYER_CAN_STOMP_ENTITY  EQU $04
 DEF PLAYER_ACTION_SPAWN_IN_LEVEL             EQU $00
 DEF PLAYER_ACTION_UNK_01                     EQU $01
 DEF PLAYER_ACTION_STAND                      EQU $02
-DEF PLAYER_ACTION_IDLE_TONGUE_FLICK          EQU $03
+DEF PLAYER_ACTION_IDLE_ANIMATION             EQU $03
 DEF PLAYER_ACTION_WALK                       EQU $04
 DEF PLAYER_ACTION_RUN                        EQU $05
 DEF PLAYER_ACTION_UNK_06                     EQU $06
@@ -378,8 +377,8 @@ DEF PLAYER_ACTION_UNK_1F                     EQU $1F ; disables collision updati
 DEF COLLISION_TYPE_NONE                       EQU $00
 DEF COLLISION_TYPE_COLLECTIBLE                EQU $01
 DEF COLLISION_TYPE_UNK_02                     EQU $02
-DEF COLLISION_TYPE_STATIONARY_PLATFORM                     EQU $03
-DEF COLLISION_TYPE_MOVING_PLATFORM                     EQU $04
+DEF COLLISION_TYPE_STATIONARY_PLATFORM        EQU $03
+DEF COLLISION_TYPE_MOVING_PLATFORM            EQU $04
 DEF COLLISION_TYPE_UNK_05                     EQU $05
 DEF COLLISION_TYPE_GENERIC_ENEMY              EQU $06
 DEF COLLISION_TYPE_SILVER_REMOTE              EQU $07

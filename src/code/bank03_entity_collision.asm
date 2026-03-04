@@ -4,10 +4,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ld   A, [wD743_DrawGexFlag]                                    ;; 03:4c76 $fa $43 $d7
     and  A, A                                          ;; 03:4c79 $a7
     ret  Z                                             ;; 03:4c7a $c8 ; return if [D743] is 0
-    ld   H, $d2                                        ;; 03:4c7b $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:4c7d $fa $00 $d3
-    or   A, $0a                                        ;; 03:4c80 $f6 $0a
-    ld   L, A                                          ;; 03:4c82 $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_0A
     bit  5, [HL]                                       ;; 03:4c83 $cb $6e
     ret  Z                                             ;; 03:4c85 $c8
     xor  A, $1e                                        ;; 03:4c86 $ee $1e
@@ -69,10 +66,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
 .jr_03_4ce6_CollisionHandler_Collectible:
     call call_03_519b_Entity_CheckPlayerInteraction                                  ;; 03:4ce6 $cd $9b $51
     ret  NC                                            ;; 03:4ce9 $d0
-    ld   H, $d2                                        ;; 03:4cea $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:4cec $fa $00 $d3
-    or   A, $12                                        ;; 03:4cef $f6 $12
-    ld   L, A                                          ;; 03:4cf1 $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS_ON_SCREEN
     ld   C, [HL]                                       ;; 03:4cf2 $4e
     inc  L                                             ;; 03:4cf3 $2c
     ld   B, [HL]                                       ;; 03:4cf4 $46
@@ -176,10 +170,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     jr   nz,.jr_03_4DA5
     jp   call_03_52be_Entity_CheckForDamagePlayer
 .jr_03_4DA5:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$17
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     bit  0,[hl]
     ret  nz
     set  0,[hl]
@@ -250,10 +241,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ld   [wD300_CurrentEntityAddrLo],a
     jp   call_00_3931
 .jr_03_4e20_CollisionHandler_FallingObject:
-    ld   H, $d2                                        ;; 03:4e20 $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:4e22 $fa $00 $d3
-    or   A, $1e                                        ;; 03:4e25 $f6 $1e
-    ld   L, A                                          ;; 03:4e27 $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YVEL
     bit  7, [HL]                                       ;; 03:4e28 $cb $7e
     ret  Z                                             ;; 03:4e2a $c8
     xor  A, $10                                        ;; 03:4e2b $ee $10
@@ -306,10 +294,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     farcall call_02_4ccd
     ret                                                ;; 03:4e7e $c9
 .jr_03_4e7f_CollisionHandler_Hunter:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$17
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     bit  0,[hl]
     ret  nz
     call call_03_519b_Entity_CheckPlayerInteraction
@@ -318,10 +303,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     jp   z,call_03_52be_Entity_CheckForDamagePlayer
     call call_00_3817
     jr   z,.jr_03_4EA3
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$17
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     set  0,[hl]
     ret  
 .jr_03_4EA3:
@@ -339,19 +321,13 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ret  nc
     cp   a,$00
     ret  z
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$17
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     set  0,[hl]
     ret  
 .jr_03_4ec6_CollisionHandler_UNK_12:
     ret  
 .jr_03_4ec7_CollisionHandler_Projectile:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$12
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS_ON_SCREEN
     ldi  a,[hl]
     add  a,$04
     ld   c,a
@@ -411,10 +387,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     jp   call_00_3802
 .jr_03_4f20_CollisionHandler_Ninja:
     push de
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$01
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_ACTION_ID
     ld   a,[hl]
     and  a,$1F
     cp   a,$00
@@ -465,10 +438,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ret  nc
     cp   a,$00
     jp   z,call_03_52be_Entity_CheckForDamagePlayer
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$19
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_19
     ld   a,[hl]
     and  a
     jr   z,.jr_03_4F87
@@ -525,10 +495,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ret  
 .jr_03_4fd9_CollisionHandler_SamuraiBody:
     push de
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$01
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_ACTION_ID
     ld   a,[hl]
     and  a,$1F
     cp   a,$01
@@ -574,10 +541,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ret  nc
     cp   a,$00
     jp   z,call_03_52be_Entity_CheckForDamagePlayer
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$17
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     set  0,[hl]
     ret  
 .jr_03_5035_CollisionHandler_UNK_19:
@@ -585,17 +549,11 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ret  nc
     cp   a,$00
     jp   z,call_03_52be_Entity_CheckForDamagePlayer
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$17
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     set  0,[hl]
     ret  
 .jr_03_5049_CollisionHandler_Geyser:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$01
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_ACTION_ID
     ld   a,[hl]
     and  a,$1F
     cp   a,$01
@@ -605,10 +563,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ret  
 .jr_03_505d_CollisionHandler_Triceratops:
     push de
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$12
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS_ON_SCREEN
     ld   e,[hl]
     inc  l
     ld   c,[hl]
@@ -655,10 +610,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
 .jr_03_50ac_CollisionHandler_Gear:
     call call_03_519b_Entity_CheckPlayerInteraction
     push af
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$17
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     pop  af
     jr   nc,.jr_03_50C2
     cp   a,$01
@@ -669,10 +621,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     res  0,[hl]
     ret  
 .jr_03_50c5_CollisionHandler_ElectricBall:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$01
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_ACTION_ID
     ld   a,[hl]
     and  a,$1F
     cp   a,$00
@@ -681,10 +630,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
 .jr_03_50d6_CollisionHandler_UNK_1E:
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$17
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     set  7,[hl]
     jp   call_03_52be_Entity_CheckForDamagePlayer
 .jr_03_50e7_CollisionHandler_Rocket:
@@ -694,10 +640,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ret  z
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$17
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     set  7,[hl]
     ld   a,$1F
     farcall call_02_4ccd
@@ -717,10 +660,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ret  nc
     cp   a,$02
     ret  nz
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$17
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     set  7,[hl]
     ret  
 .jr_03_5129_CollisionHandler_PoweredWalkway:
@@ -730,10 +670,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ldi  a,[hl]
     or   [hl]
     ret  z
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$19
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_19
     ld   l,[hl]
     dec  l
     ld   h,$00
@@ -749,10 +686,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
 .jr_03_514e_CollisionHandler_PowerUp:
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$19
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_19
     ldi  a,[hl]
     ld   [wD751],a
     ld   a,[hl]
@@ -764,10 +698,7 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     call call_03_52be_Entity_CheckForDamagePlayer
     jp   call_00_3910
 .jr_03_516d_CollisionHandler_Rez:
-    ld   h,$D2
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$01
-    ld   l,a
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_ACTION_ID
     ld   a,[hl]
     and  a,$1F
     cp   a,$04
@@ -788,19 +719,13 @@ call_03_4c76_UpdateEntityCollision_Dispatch:
     ret  
 
 call_03_519b_Entity_CheckPlayerInteraction:
-    ld   H, $d2                                        ;; 03:519b $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:519d $fa $00 $d3
-    or   A, $00                                        ;; 03:51a0 $f6 $00
-    ld   L, A                                          ;; 03:51a2 $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_ENTITY_ID
     ld   L, [HL]                                       ;; 03:51a3 $6e
     ld   H, $00                                        ;; 03:51a4 $26 $00
     ld   BC, .data_03_522e                             ;; 03:51a6 $01 $2e $52
     add  HL, BC                                        ;; 03:51a9 $09
     ld   B, [HL]                                       ;; 03:51aa $46
-    ld   H, $d2                                        ;; 03:51ab $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:51ad $fa $00 $d3
-    or   A, $13                                        ;; 03:51b0 $f6 $13
-    ld   L, A                                          ;; 03:51b2 $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS_ON_SCREEN
     ld   A, E                                          ;; 03:51b3 $7b
     add  A, $08                                        ;; 03:51b4 $c6 $08
     ld   E, A                                          ;; 03:51b6 $5f
@@ -1030,10 +955,7 @@ call_03_52be_Entity_CheckForDamagePlayer:
     ret                                                ;; 03:52c4 $c9
 
 call_03_52c5_CollisionHandler_StationaryPlatform:
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:52c5 $fa $00 $d3
-    or   A, $13                                        ;; 03:52c8 $f6 $13
-    ld   L, A                                          ;; 03:52ca $6f
-    ld   H, $d2                                        ;; 03:52cb $26 $d2
+    LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_YPOS_ON_SCREEN
     ld   A, [wD213_PlayerScreenYPosition]                                    ;; 03:52cd $fa $13 $d2
     add  A, $0f                                        ;; 03:52d0 $c6 $0f
     cp   A, [HL]                                       ;; 03:52d2 $be
@@ -1070,10 +992,7 @@ call_03_52c5_CollisionHandler_StationaryPlatform:
     jr   jr_03_534d                                   ;; 03:5302 $18 $49
 
 call_03_5304_CollisionHandler_UNK_05:
-    ld   a,[wD300_CurrentEntityAddrLo]
-    or   a,$13
-    ld   l,a
-    ld   h,$D2
+    LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_YPOS_ON_SCREEN
     ld   a,[wD213_PlayerScreenYPosition]
     add  a,$0F
     cp   [hl]
@@ -1138,10 +1057,7 @@ call_03_5360_StationaryPlatformCollisionHelper:
     ret                                                ;; 03:536e $c9
 
 call_03_536f_CollisionHandler_MovingPlatform:
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:536f $fa $00 $d3
-    or   A, $13                                        ;; 03:5372 $f6 $13
-    ld   L, A                                          ;; 03:5374 $6f
-    ld   H, $d2                                        ;; 03:5375 $26 $d2
+    LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_YPOS_ON_SCREEN
     ld   A, [wD213_PlayerScreenYPosition]                                    ;; 03:5377 $fa $13 $d2
     add  A, $0f                                        ;; 03:537a $c6 $0f
     cp   A, [HL]                                       ;; 03:537c $be

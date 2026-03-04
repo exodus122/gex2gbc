@@ -283,10 +283,7 @@ call_0a_7a7c_HandleEntitySpawn:
     ld   A, C                                          ;; 0a:7abb $79
     ld   [wD33A], A                                    ;; 0a:7abc $ea $3a $d3
     inc  DE                                            ;; 0a:7abf $13
-    ld   H, $d2                                        ;; 0a:7ac0 $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 0a:7ac2 $fa $00 $d3
-    or   A, $0e                                        ;; 0a:7ac5 $f6 $0e
-    ld   L, A                                          ;; 0a:7ac7 $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
     ld   A, [DE]                                       ;; 0a:7ac8 $1a
     ld   [HL+], A                                      ;; 0a:7ac9 $22 ; this is where the x and y coords of the entity are read and written
     inc  DE                                            ;; 0a:7aca $13
@@ -323,10 +320,7 @@ call_0a_7a7c_HandleEntitySpawn:
     pop  DE                                            ;; 0a:7af8 $d1
     ret  C                                             ;; 0a:7af9 $d8
     push DE                                            ;; 0a:7afa $d5
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 0a:7afb $fa $00 $d3
-    or   A, $00                                        ;; 0a:7afe $f6 $00
-    ld   E, A                                          ;; 0a:7b00 $5f
-    ld   D, $d2                                        ;; 0a:7b01 $16 $d2
+    LOAD_OBJ_FIELD_TO_DE_ALT ENTITY_FIELD_ENTITY_ID
     ld   A, [wD33B]                                    ;; 0a:7b03 $fa $3b $d3
     ld   [DE], A                                       ;; 0a:7b06 $12
     ld   L, A                                          ;; 0a:7b07 $6f

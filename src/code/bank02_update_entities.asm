@@ -271,7 +271,7 @@ call_02_6eba_UpdateAllEntities:
 .jr_02_6f07:
     ld   A, $00                                        ;; 02:6f07 $3e $00
     ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:6f09 $ea $00 $d3
-    call call_02_4939_PlayerUpdate                                  ;; 02:6f0c $cd $39 $49
+    call call_02_4939_PlayerUpdateMain                                  ;; 02:6f0c $cd $39 $49
 .jr_02_6f0f:
     ld   A, $20                                        ;; 02:6f0f $3e $20
 .jr_02_6f11:
@@ -297,10 +297,7 @@ call_02_6eba_UpdateAllEntities:
     ld   L, A                                          ;; 02:6f34 $6f
     call call_00_10bd_JumpHL                                  ;; 02:6f35 $cd $bd $10
 .jr_02_6f38:
-    ld   H, $d2                                        ;; 02:6f38 $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:6f3a $fa $00 $d3
-    or   A, $00                                        ;; 02:6f3d $f6 $00
-    ld   L, A                                          ;; 02:6f3f $6f
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_ENTITY_ID
     ld   A, [HL]                                       ;; 02:6f40 $7e
     cp   A, $ff                                        ;; 02:6f41 $fe $ff
     jr   Z, .jr_02_6f5c                                ;; 02:6f43 $28 $17
@@ -427,7 +424,7 @@ call_02_6fda:
     ld   H, $d2                                        ;; 02:702d $26 $d2
     ld   [HL], B                                       ;; 02:702f $70
 
-call_02_7030:
+call_02_7030_CheckIfPlayerActorUpdatedAction:
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:7030 $fa $00 $d3
     and  A, A                                          ;; 02:7033 $a7
     jr   NZ, .jr_02_703c                               ;; 02:7034 $20 $06
@@ -478,10 +475,7 @@ call_02_7030:
     db   $00, $00, $00, $00, $00, $1b, $00, $00        ;; 02:70e9 ????????
 
 call_02_70f1:
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:70f1 $fa $00 $d3
-    or   A, $09                                        ;; 02:70f4 $f6 $09
-    ld   L, A                                          ;; 02:70f6 $6f
-    ld   H, $d2                                        ;; 02:70f7 $26 $d2
+    LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_UNK_09
     ld   A, [HL]                                       ;; 02:70f9 $7e
     bit  7, A                                          ;; 02:70fa $cb $7f
     ret  Z                                             ;; 02:70fc $c8
@@ -494,17 +488,14 @@ call_02_7102_SetEntityAction:
 ; sets action id, action pointer, data_0c, unknown_pointer_04_05, and more?
     and  A, $1f                                        ;; 02:7102 $e6 $1f
     ld   C, A                                          ;; 02:7104 $4f
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:7105 $fa $00 $d3
-    or   A, $01                                        ;; 02:7108 $f6 $01
-    ld   L, A                                          ;; 02:710a $6f
-    ld   H, $d2                                        ;; 02:710b $26 $d2
+    LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_ACTION_ID
     ld   [HL], C                                       ;; 02:710d $71
     dec  L                                             ;; 02:710e $2d
     ld   L, [HL]                                       ;; 02:710f $6e
     ld   H, $00                                        ;; 02:7110 $26 $00
     add  HL, HL                                        ;; 02:7112 $29
-    ld   DE, data_02_4000_EntityDataTables                              ;; 02:7113 $11 $00 $40
-    add  HL, DE                                        ;; 02:7116 $19
+    ld   DE, data_02_4000_EntityDataTables             ;; 02:7113 $11 $00 $40
+    add  HL, DE                                        ;; 02:7116 $19 ; HL = data_02_4000_EntityDataTables + 2*ENTITY_FIELD_ENTITY_ID
     ld   E, [HL]                                       ;; 02:7117 $5e
     inc  HL                                            ;; 02:7118 $23
     ld   D, [HL]                                       ;; 02:7119 $56
@@ -513,52 +504,46 @@ call_02_7102_SetEntityAction:
     add  HL, HL                                        ;; 02:711d $29
     add  HL, HL                                        ;; 02:711e $29
     add  HL, DE                                        ;; 02:711f $19
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:7120 $fa $00 $d3
-    or   A, $02                                        ;; 02:7123 $f6 $02
-    ld   E, A                                          ;; 02:7125 $5f
-    ld   D, $d2                                        ;; 02:7126 $16 $d2
+    LOAD_OBJ_FIELD_TO_DE_ALT ENTITY_FIELD_ACTION_FUNC
     ld   A, [HL+]                                      ;; 02:7128 $2a
     ld   [DE], A                                       ;; 02:7129 $12 ; sets current action pointer in entity instance
     inc  E                                             ;; 02:712a $1c
     ld   A, [HL+]                                      ;; 02:712b $2a
     ld   [DE], A                                       ;; 02:712c $12 ; sets current action pointer in entity instance
-    inc  E                                             ;; 02:712d $1c
+    inc  E                                             ;; 02:712d $1c ; DE = ENTITY_FIELD_SPRITE_IDS_PTR
     ld   A, [HL+]                                      ;; 02:712e $2a
     ld   H, [HL]                                       ;; 02:712f $66
-    ld   L, A                                          ;; 02:7130 $6f
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:7131 $fa $00 $d3
-    or   A, $09                                        ;; 02:7134 $f6 $09
-    ld   C, A                                          ;; 02:7136 $4f
-    ld   B, $d2                                        ;; 02:7137 $06 $d2
+    ld   L, A                                          ;; 02:7130 $6f ; HL = action data ptr
+    LOAD_OBJ_FIELD_TO_BC_ALT ENTITY_FIELD_UNK_09
     ld   A, [HL+]                                      ;; 02:7139 $2a
     or   A, $20                                        ;; 02:713a $f6 $20
-    ld   [BC], A                                       ;; 02:713c $02
-    inc  C                                             ;; 02:713d $0c
+    ld   [BC], A                                       ;; 02:713c $02 ; ENTITY_FIELD_UNK_09 = first byte in data table | 0x20
+    inc  C                                             ;; 02:713d $0c ; BC = ENTITY_FIELD_UNK_0A
     ld   A, [HL+]                                      ;; 02:713e $2a
     or   A, $40                                        ;; 02:713f $f6 $40
-    ld   [BC], A                                       ;; 02:7141 $02
-    inc  C                                             ;; 02:7142 $0c
+    ld   [BC], A                                       ;; 02:7141 $02 ; ENTITY_FIELD_UNK_0A = second byte in data table | 0x40
+    inc  C                                             ;; 02:7142 $0c ; BC = ENTITY_FIELD_SPRITE_FRAME_COUNTER_MAX
     ld   A, [HL+]                                      ;; 02:7143 $2a
-    ld   [BC], A                                       ;; 02:7144 $02
-    inc  C                                             ;; 02:7145 $0c
+    ld   [BC], A                                       ;; 02:7144 $02 ; ENTITY_FIELD_SPRITE_FRAME_COUNTER_MAX = third byte in data table
+    inc  C                                             ;; 02:7145 $0c ; BC = ENTITY_FIELD_SPRITE_COUNTER_MAX
     push AF                                            ;; 02:7146 $f5
     ld   A, [HL+]                                      ;; 02:7147 $2a
-    ld   [BC], A                                       ;; 02:7148 $02
+    ld   [BC], A                                       ;; 02:7148 $02 ; ENTITY_FIELD_SPRITE_COUNTER_MAX = fourth byte in data table
     ld   A, L                                          ;; 02:7149 $7d
-    ld   [DE], A                                       ;; 02:714a $12
-    inc  E                                             ;; 02:714b $1c
+    ld   [DE], A                                       ;; 02:714a $12 ; ENTITY_FIELD_SPRITE_IDS_PTR = ptr to 4 bytes after start of data table
+    inc  E                                             ;; 02:714b $1c ; DE = ENTITY_FIELD_SPRITE_IDS_PTR+1
     ld   A, H                                          ;; 02:714c $7c
-    ld   [DE], A                                       ;; 02:714d $12
-    inc  E                                             ;; 02:714e $1c
+    ld   [DE], A                                       ;; 02:714d $12 ; ENTITY_FIELD_SPRITE_IDS_PTR+1 = ptr to 5 bytes after start of data table
+    inc  E                                             ;; 02:714e $1c ; DE = ENTITY_FIELD_SPRITE_FRAME_COUNTER
     pop  AF                                            ;; 02:714f $f1
-    ld   [DE], A                                       ;; 02:7150 $12
-    inc  E                                             ;; 02:7151 $1c
+    ld   [DE], A                                       ;; 02:7150 $12 ; ENTITY_FIELD_UNK_06 = third byte in data table
+    inc  E                                             ;; 02:7151 $1c ; DE = ENTITY_FIELD_SPRITE_COUNTER
     xor  A, A                                          ;; 02:7152 $af
-    ld   [DE], A                                       ;; 02:7153 $12
-    inc  E                                             ;; 02:7154 $1c
+    ld   [DE], A                                       ;; 02:7153 $12 ; ENTITY_FIELD_SPRITE_COUNTER = 0
+    inc  E                                             ;; 02:7154 $1c ; DE = ENTITY_FIELD_SPRITE_ID
     ld   A, [HL]                                       ;; 02:7155 $7e
-    ld   [DE], A                                       ;; 02:7156 $12
-    jp   call_02_7030                                    ;; 02:7157 $c3 $30 $70
+    ld   [DE], A                                       ;; 02:7156 $12 ; ENTITY_FIELD_SPRITE_ID = fifth byte in data table
+    jp   call_02_7030_CheckIfPlayerActorUpdatedAction                                    ;; 02:7157 $c3 $30 $70
 
 call_02_715a_UpdateMapWindow:
     call call_00_13a6_UpdatePlayerMapWindow                                  ;; 02:715a $cd $a6 $13

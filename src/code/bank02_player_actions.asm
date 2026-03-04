@@ -141,7 +141,7 @@ call_02_4248_PlayerAction_Run:
     ret                                                ;; 02:4259 $c9
 
 call_02_425a_PlayerAction_SkidDecel:
-    ld   A, [wD207]                                    ;; 02:425a $fa $07 $d2
+    ld   A, [wD207_Player_SpriteCounter]                                    ;; 02:425a $fa $07 $d2
     inc  A                                             ;; 02:425d $3c
     srl  A                                             ;; 02:425e $cb $3f
     ld   C, A                                          ;; 02:4260 $4f
