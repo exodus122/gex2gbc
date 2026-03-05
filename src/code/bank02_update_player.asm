@@ -1,4 +1,7 @@
-call_02_489a:
+call_02_489a_Player_SetLandingAction:
+; Called on landing. Sets bit 6 of wD759. Chooses action ID: default 2 (light landing); 
+; if directional input ($30) is held and X speed ≥ 2, uses 5 (running landing); 
+; if directional input but speed < 2, uses 4 (soft landing). Jumps to Player_RequestAction
     ld   HL, wD759                                     ;; 02:489a $21 $59 $d7
     set  6, [HL]                                       ;; 02:489d $cb $f6
     ld   C, $02                                        ;; 02:489f $0e $02
@@ -12,14 +15,19 @@ call_02_489a:
     ld   C, $04                                        ;; 02:48b1 $0e $04
 .jr_02_48b3:
     ld   A, C                                          ;; 02:48b3 $79
-    jp   call_02_4ccd                                  ;; 02:48b4 $c3 $cd $4c
+    jp   call_02_4ccd_Player_RequestAction                                  ;; 02:48b4 $c3 $cd $4c
 
-call_02_48b7:
+call_02_48b7_Player_SpawnLevelSpecificDoor:
+; Looks up the current level ID in .data_02_491a_LevelSpecificEntityIdTable to get an entity ID (0 = no entity for this level). 
+; Scans the entity slot table at $D220 for a free slot (value $FF), initializes it with the entity ID, 
+; clears two entity fields, then copies the player's X/Y position (snapped to $E0 boundary, with a 
+; $0F offset and $10 Y flag) into the slot's position fields. Calls Entity_SetAction and Entity_ClearSlotCounter. 
+; Used to spawn a level-specific companion/effect entity tied to the player's position
     push AF                                            ;; 02:48b7 $f5
     ld   HL, wD624_CurrentLevelId                                     ;; 02:48b8 $21 $24 $d6
     ld   L, [HL]                                       ;; 02:48bb $6e
     ld   H, $00                                        ;; 02:48bc $26 $00
-    ld   DE, data_02_491a                              ;; 02:48be $11 $1a $49
+    ld   DE, .data_02_491a_LevelSpecificEntityIdTable                              ;; 02:48be $11 $1a $49
     add  HL, DE                                        ;; 02:48c1 $19
     ld   A, [HL]                                       ;; 02:48c2 $7e
     and  A, A                                          ;; 02:48c3 $a7
@@ -66,8 +74,6 @@ call_02_48b7:
     ld   B, A                                          ;; 02:48fd $47
     inc  DE                                            ;; 02:48fe $13
     ld   A, C                                          ;; 02:48ff $79
-
-data_02_4900:
     and  A, $e0                                        ;; 02:4900 $e6 $e0
     ld   [HL+], A                                      ;; 02:4902 $22
     ld   A, B                                          ;; 02:4903 $78
@@ -85,14 +91,25 @@ data_02_4900:
     xor  A, A                                          ;; 02:4915 $af
     ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:4916 $ea $00 $d3
     ret                                                ;; 02:4919 $c9
+.data_02_491a_LevelSpecificEntityIdTable:
+; 31-byte table indexed by level ID. Non-zero entries ($18) indicate which levels spawn a special 
+; entity via call_02_48b7. Entries $18 appear at indices 2, 3, 11, 16, 25
+    db   $00, $00, ENTITY_SCREAM_TV_DOOR_OPENING, ENTITY_SCREAM_TV_DOOR_OPENING, $00, $00, $00, $00        ;; 02:491a ????????
+    db   $00, $00, $00, ENTITY_SCREAM_TV_DOOR_OPENING, $00, $00, $00, $00        ;; 02:4922 ????????
+    db   ENTITY_SCREAM_TV_DOOR_OPENING, $00, $00, $00, $00, $00, $00, $00        ;; 02:492a ????????
+    db   $00, ENTITY_SCREAM_TV_DOOR_OPENING, $00, $00, $00, $00, $00             ;; 02:4932 ???????
 
-data_02_491a:
-    db   $00, $00, $18, $18, $00, $00, $00, $00        ;; 02:491a ????????
-    db   $00, $00, $00, $18, $00, $00, $00, $00        ;; 02:4922 ????????
-    db   $18, $00, $00, $00, $00, $00, $00, $00        ;; 02:492a ????????
-    db   $00, $18, $00, $00, $00, $00, $00             ;; 02:4932 ???????
-
-call_02_4939_PlayerUpdateMain:
+call_02_4939_Player_UpdateMain:
+; Master per-frame player update. Handles demo mode input replay (advances through run-length encoded 
+; input stream wD61B, loads current input byte into wD620; if stream ends, clears demo mode flag). 
+; For live play reads wD59F. Processes input through wD759 button-lock flags: bit 0 suppresses A button until 
+; released; bit 6 suppresses B button (jump) unless already held; bit 7 suppresses jump during upward Y velocity, 
+; with a bit-4 latch for re-press tracking. Writes filtered input to wD75A. Decrements wD750 timer if nonzero. 
+; Calls: Player_UpdateFacing, bg collision update, Player_ApplyYVelocity, bg tile cache, Player_CheckTileInteractions, 
+; then dispatches wD745 pending action change (resets climb state to $FF, clears wD74B), calls the current action 
+; function pointer at wD202, Player_ApplyXMovement, clears wD758, computes wD76A (block X = world X >> 5 high byte), 
+; clears two entity flags in wD209/wD20A, ticks action frame counter, updates map window, checks water/conveyor tiles, 
+; builds body sprites, and decrements three 16-bit timers at wD751, wD755, wD753
     ld   A, [wD61E_DemoModeEnabled]                                    ;; 02:4939 $fa $1e $d6
     and  A, A                                          ;; 02:493c $a7
     jr   Z, .jr_02_4965                                ;; 02:493d $28 $26
@@ -168,11 +185,11 @@ call_02_4939_PlayerUpdateMain:
     jr   Z, .jr_02_49b0                                ;; 02:49ad $28 $01
     dec  [HL]                                          ;; 02:49af $35
 .jr_02_49b0:
-    call call_02_4a45                                  ;; 02:49b0 $cd $45 $4a
+    call call_02_4a45_Player_UpdateFacing                                  ;; 02:49b0 $cd $45 $4a
     farcall call_03_4900_BgCollision_Update
-    call call_02_4b78                                  ;; 02:49be $cd $78 $4b
+    call call_02_4b78_Player_ApplyYVelocity                                  ;; 02:49be $cd $78 $4b
     farcall call_03_4c0a_BgCollision_CacheAdjacentTiles
-    call call_02_4c4f                                  ;; 02:49cc $cd $4f $4c
+    call call_02_4c4f_Player_CheckTileInteractions                                  ;; 02:49cc $cd $4f $4c
     ld   HL, wD745                                     ;; 02:49cf $21 $45 $d7
     ld   A, [HL]                                       ;; 02:49d2 $7e
     ld   [HL], $ff                                     ;; 02:49d3 $36 $ff
@@ -189,7 +206,7 @@ call_02_4939_PlayerUpdateMain:
     ld   H, [HL]                                       ;; 02:49ea $66
     ld   L, A                                          ;; 02:49eb $6f
     call call_00_10bd_JumpHL                                  ;; 02:49ec $cd $bd $10
-    call call_02_4a77                                  ;; 02:49ef $cd $77 $4a
+    call call_02_4a77_Player_ApplyXMovement                                  ;; 02:49ef $cd $77 $4a
     xor  A, A                                          ;; 02:49f2 $af
     ld   [wD758], A                                    ;; 02:49f3 $ea $58 $d7
     ld   HL, wD20E_PlayerXPosition                                     ;; 02:49f6 $21 $0e $d2
@@ -207,15 +224,16 @@ call_02_4939_PlayerUpdateMain:
     res  6, [HL]                                       ;; 02:4a0b $cb $b6
     call call_02_6fda_Entity_TickAction                                  ;; 02:4a0d $cd $da $6f
     call call_02_715a_MapWindow_Update                                  ;; 02:4a10 $cd $5a $71
-    call call_02_4c28                                  ;; 02:4a13 $cd $28 $4c
+    call call_02_4c28_Player_CheckConveyorWaterTiles                                  ;; 02:4a13 $cd $28 $4c
     farcall call_03_5ca8_Player_BuildBodySprites
     ld   HL, wD751                                     ;; 02:4a21 $21 $51 $d7
-    call call_02_4a30                                  ;; 02:4a24 $cd $30 $4a
+    call call_02_4a30_Player_DecrementTimer16                                  ;; 02:4a24 $cd $30 $4a
     ld   HL, wD755                                     ;; 02:4a27 $21 $55 $d7
-    call call_02_4a30                                  ;; 02:4a2a $cd $30 $4a
+    call call_02_4a30_Player_DecrementTimer16                                  ;; 02:4a2a $cd $30 $4a
     ld   HL, wD753                                     ;; 02:4a2d $21 $53 $d7
 
-call_02_4a30:
+call_02_4a30_Player_DecrementTimer16:
+; Decrements a 16-bit timer at HL (little-endian). Returns immediately if already zero
     ld   A, [HL+]                                      ;; 02:4a30 $2a
     ld   D, [HL]                                       ;; 02:4a31 $56
     ld   E, A                                          ;; 02:4a32 $5f
@@ -227,14 +245,18 @@ call_02_4a30:
     ld   [HL], E                                       ;; 02:4a38 $73
     ret                                                ;; 02:4a39 $c9
 
-call_02_4a3a:
+call_02_4a3a_Player_SetWallJumpFlag:
+; Preserves low nibble of wD759, sets bit 7. Used to mark that Gex is in a wall-jump eligible state
     ld   A, [wD759]                                    ;; 02:4a3a $fa $59 $d7
     and  A, $0f                                        ;; 02:4a3d $e6 $0f
     or   A, $80                                        ;; 02:4a3f $f6 $80
     ld   [wD759], A                                    ;; 02:4a41 $ea $59 $d7
     ret                                                ;; 02:4a44 $c9
 
-call_02_4a45:
+call_02_4a45_Player_UpdateFacing:
+; Only runs if not climbing ($FF). Reads directional input bits $30 from wD75A: bit 4 = right, else left (C=$20). 
+; Writes the new facing to wD20D. If facing changed, resets wD75D (X speed accumulator) to 0 and returns. 
+; If facing unchanged, ramps wD75D up toward wD75E (max X speed), incrementing by 1 per frame
     ld   A, [wD746_PlayerClimbingState]                                    ;; 02:4a45 $fa $46 $d7
     cp   A, $ff                                        ;; 02:4a48 $fe $ff
     ret  NZ                                            ;; 02:4a4a $c0
@@ -267,7 +289,15 @@ call_02_4a45:
     ld   [wD75D_PlayerXSpeedPrev], A                                    ;; 02:4a73 $ea $5d $d7
     ret                                                ;; 02:4a76 $c9
 
-call_02_4a77:
+call_02_4a77_Player_ApplyXMovement:
+; Only runs if not climbing. Takes wD75D (previous X speed), negates if facing left, adds wD75C sub-pixel 
+; accumulator. Returns if zero. If collision flags low nibble is set (wall hit), applies an equal Y nudge 
+; (upward, B=$FF) before the X move. Then applies the X delta: if moving left, calls the left-push path; 
+; if moving right, calls the right-push path. Both paths check wD74E/wD74F (scroll lock flags): 
+; if both clear, applies delta directly to wD20E/wD20F. If wD74E is set, reads the entity's scroll 
+; constraint field (bit 7 = hard lock or soft lock), compares player screen X (wD212) to the constraint 
+; threshold, and either clamps to the saved world X or applies the delta with the constraint offset 
+; subtracted/added
     ld   A, [wD746_PlayerClimbingState]                                    ;; 02:4a77 $fa $46 $d7
     cp   A, $ff                                        ;; 02:4a7a $fe $ff
     ret  NZ                                            ;; 02:4a7c $c0
@@ -289,7 +319,7 @@ call_02_4a77:
     inc  A                                             ;; 02:4a97 $3c
     ld   C, A                                          ;; 02:4a98 $4f
     ld   B, $ff                                        ;; 02:4a99 $06 $ff
-    call call_02_4c19_UpdatePlayerYPosition                                  ;; 02:4a9b $cd $19 $4c
+    call call_02_4c19_Player_AddToYPosition                                  ;; 02:4a9b $cd $19 $4c
 .jr_02_4a9e:
     pop  AF                                            ;; 02:4a9e $f1
     ld   C, A                                          ;; 02:4a9f $4f
@@ -450,7 +480,20 @@ call_02_4a77:
     ld   [HL], A                                       ;; 02:4b76 $77
     ret                                                ;; 02:4b77 $c9
 
-call_02_4b78:
+call_02_4b78_Player_ApplyYVelocity:
+; Only runs if not climbing. If Y velocity is positive (falling) or zero, skips to landing check. 
+; If falling (velocity > 0): clears wD763 (fall distance counter), then applies gravity: 
+; subtracts 2 from Y velocity, clamps to $C0 (max fall speed); while falling, increments wD763 
+; (capped at $7F→$80). Converts velocity to a pixel delta (negate, swap nibbles, low 4 bits = pixel count, 
+; bit 3 = sign for larger values), calls UpdatePlayerYPosition. Landing check: if bit 7 of collision 
+; flags is set (on ground): reads wD761 (floor snap distance). If nonzero: if previous frame was also 
+; grounded or snap distance ≥ current velocity, applies snap; otherwise continues falling. 
+; If wD761 = 0 (exactly on floor): zeroes Y velocity, reads fall distance wD763. 
+; If < 8: clears wD762 (jump velocity). 
+; If 8–$0F: calls Player_SetLandingAction (light/run landing). 
+; If ≥ $10: sets action $19 (hard landing). 
+; If not grounded this frame but was last frame (just walked off edge): if fall distance < $10, 
+; sets action $17 (stumble/fall start), then continues applying gravity
     ld   A, [wD746_PlayerClimbingState]                                    ;; 02:4b78 $fa $46 $d7
     cp   A, $ff                                        ;; 02:4b7b $fe $ff
     ret  NZ                                            ;; 02:4b7d $c0
@@ -483,11 +526,11 @@ call_02_4b78:
     ld   C, A                                          ;; 02:4bad $4f
     ld   B, $00                                        ;; 02:4bae $06 $00
     bit  3, A                                          ;; 02:4bb0 $cb $5f
-    jp   Z, call_02_4c19_UpdatePlayerYPosition                               ;; 02:4bb2 $ca $19 $4c
+    jp   Z, call_02_4c19_Player_AddToYPosition                               ;; 02:4bb2 $ca $19 $4c
     or   A, $f0                                        ;; 02:4bb5 $f6 $f0
     ld   C, A                                          ;; 02:4bb7 $4f
     dec  B                                             ;; 02:4bb8 $05
-    jp   call_02_4c19_UpdatePlayerYPosition                                  ;; 02:4bb9 $c3 $19 $4c
+    jp   call_02_4c19_Player_AddToYPosition                                  ;; 02:4bb9 $c3 $19 $4c
 .jr_02_4bbc:
     ld   A, [wD585_CollisionFlags]                                    ;; 02:4bbc $fa $85 $d5
     and  A, $80                                        ;; 02:4bbf $e6 $80
@@ -511,7 +554,7 @@ call_02_4b78:
     jr   C, .jr_02_4b8c                                ;; 02:4be4 $38 $a6
 .jr_02_4be6:
     ld   A, $17                                        ;; 02:4be6 $3e $17
-    call call_02_4ccd                                  ;; 02:4be8 $cd $cd $4c
+    call call_02_4ccd_Player_RequestAction                                  ;; 02:4be8 $cd $cd $4c
     jr   .jr_02_4b8c                                   ;; 02:4beb $18 $9f
 .jr_02_4bed:
     xor  A, A                                          ;; 02:4bed $af
@@ -526,11 +569,12 @@ call_02_4b78:
     ret                                                ;; 02:4bff $c9
 .jr_02_4c00:
     cp   A, $10                                        ;; 02:4c00 $fe $10
-    jp   C, call_02_489a                                 ;; 02:4c02 $da $9a $48
+    jp   C, call_02_489a_Player_SetLandingAction                                 ;; 02:4c02 $da $9a $48
     ld   A, $19                                        ;; 02:4c05 $3e $19
-    jp   call_02_4ccd                                  ;; 02:4c07 $c3 $cd $4c
+    jp   call_02_4ccd_Player_RequestAction                                  ;; 02:4c07 $c3 $cd $4c
 
-call_02_4c0a_UpdatePlayerXPosition:
+call_02_4c0a_Player_AddToXPosition:
+; Adds signed 16-bit (C, B) to wD20E/wD20F (player world X)
     ld   A, [wD20E_PlayerXPosition]                                    ;; 02:4c0a $fa $0e $d2
     add  A, C                                          ;; 02:4c0d $81
     ld   [wD20E_PlayerXPosition], A                                    ;; 02:4c0e $ea $0e $d2
@@ -539,7 +583,8 @@ call_02_4c0a_UpdatePlayerXPosition:
     ld   [wD20F_PlayerXPosition], A                                    ;; 02:4c15 $ea $0f $d2
     ret                                                ;; 02:4c18 $c9
 
-call_02_4c19_UpdatePlayerYPosition:
+call_02_4c19_Player_AddToYPosition:
+; Adds signed 16-bit (C, B) to wD210/wD211 (player world Y)
     ld   A, [wD210_PlayerYPosition]                                    ;; 02:4c19 $fa $10 $d2
     add  A, C                                          ;; 02:4c1c $81
     ld   [wD210_PlayerYPosition], A                                    ;; 02:4c1d $ea $10 $d2
@@ -548,7 +593,10 @@ call_02_4c19_UpdatePlayerYPosition:
     ld   [wD211_PlayerYPosition], A                                    ;; 02:4c24 $ea $11 $d2
     ret                                                ;; 02:4c27 $c9
 
-call_02_4c28:
+call_02_4c28_Player_CheckConveyorWaterTiles:
+; Checks tile types cached in wD765/wD767 against $25 (conveyor?) and $24 (water?). 
+; If any match, sets wD74A = 0 (flag active), otherwise $80 (inactive). 
+; If wD765 = $24 specifically, triggers action $1C (enter water)
     ld   A, [wD765_TileTypeBehindGexsBody]                                    ;; 02:4c28 $fa $65 $d7
     sub  A, $25                                        ;; 02:4c2b $d6 $25
     jr   Z, .jr_02_4c3f                                ;; 02:4c2d $28 $10
@@ -565,10 +613,17 @@ call_02_4c28:
     ld   A, [wD765_TileTypeBehindGexsBody]                                    ;; 02:4c44 $fa $65 $d7
     cp   A, $24                                        ;; 02:4c47 $fe $24
     ld   A, $1c                                        ;; 02:4c49 $3e $1c
-    call Z, call_02_4ccd                               ;; 02:4c4b $cc $cd $4c
+    call Z, call_02_4ccd_Player_RequestAction                               ;; 02:4c4b $cc $cd $4c
     ret                                                ;; 02:4c4e $c9
 
-call_02_4c4f:
+call_02_4c4f_Player_CheckTileInteractions:
+; Checks for kill tiles and climb entry. If action is $10 or $11 (already dying/dead), skips kill check. 
+; Otherwise if wD764 or wD765 = $23 (instant-kill tile), jumps to call_00_0696 (player death). 
+; Then if down/crouch input (bit 6 of wD75A) is pressed: checks wD764 for tile $22 → action $1A (enter door); 
+; tile $26 → action $1D (enter climb); checks wD766 (face tile) for $2C/$2D (directional ladder entry, 
+; facing-direction validated) → action $1D. If none of those, looks up current action ID in data_02_4d15_ActionInputTransitionTable 
+; for an input→action transition table, scans it for matching input (with $FE = "any nonzero" wildcard), 
+; and calls Player_RequestAction with the found action
     ld   A, [wD201_PlayerEntity_ActionId]                                    ;; 02:4c4f $fa $01 $d2
     cp   A, $10                                        ;; 02:4c52 $fe $10
     jr   Z, .jr_02_4c6a                                ;; 02:4c54 $28 $14
@@ -587,7 +642,7 @@ call_02_4c4f:
     ld   A, [wD764_TileTypeBehindGexsBody]                                    ;; 02:4c71 $fa $64 $d7
     cp   A, $22                                        ;; 02:4c74 $fe $22
     ld   A, $1a                                        ;; 02:4c76 $3e $1a
-    jr   Z, call_02_4ccd                               ;; 02:4c78 $28 $53
+    jr   Z, call_02_4ccd_Player_RequestAction                               ;; 02:4c78 $28 $53
     ld   A, [wD764_TileTypeBehindGexsBody]                                    ;; 02:4c7a $fa $64 $d7
     ld   [wD769], A                                    ;; 02:4c7d $ea $69 $d7
     cp   A, $26                                        ;; 02:4c80 $fe $26
@@ -608,13 +663,13 @@ call_02_4c4f:
     jr   NZ, .jr_02_4ca6                               ;; 02:4ca0 $20 $04
 .jr_02_4ca2:
     ld   A, $1d                                        ;; 02:4ca2 $3e $1d
-    jr   call_02_4ccd                                  ;; 02:4ca4 $18 $27
+    jr   call_02_4ccd_Player_RequestAction                                  ;; 02:4ca4 $18 $27
 .jr_02_4ca6:
     ld   HL, wD201_PlayerEntity_ActionId                                     ;; 02:4ca6 $21 $01 $d2
     ld   L, [HL]                                       ;; 02:4ca9 $6e
     ld   H, $00                                        ;; 02:4caa $26 $00
     add  HL, HL                                        ;; 02:4cac $29
-    ld   DE, data_02_4d15                              ;; 02:4cad $11 $15 $4d
+    ld   DE, data_02_4d15_ActionInputTransitionTable                              ;; 02:4cad $11 $15 $4d
     add  HL, DE                                        ;; 02:4cb0 $19
     ld   A, [HL+]                                      ;; 02:4cb1 $2a
     ld   H, [HL]                                       ;; 02:4cb2 $66
@@ -640,13 +695,18 @@ call_02_4c4f:
 .jr_02_4ccc:
     ld   A, [HL+]                                      ;; 02:4ccc $2a
 
-call_02_4ccd:
+call_02_4ccd_Player_RequestAction:
+; Sets a pending action change. Compares requested action A against current wD201 — returns if same. 
+; Looks up the requested action in .data_02_4cf5_ActionTransitionFlagsTable (32-byte flags table). 
+; Bit 0 set = "instant" (always allowed, stores directly to wD745). 
+; Bit 0 clear: checks bit 7 of wD745 — if set (action already pending), reads the pending action's flags instead of current; 
+; bit 1 of that = "locked" (can't be overridden), returns without storing. Otherwise stores new action to wD745
     ld   HL, wD201_PlayerEntity_ActionId                                     ;; 02:4ccd $21 $01 $d2
     cp   A, [HL]                                       ;; 02:4cd0 $be
     ret  Z                                             ;; 02:4cd1 $c8
     ld   L, A                                          ;; 02:4cd2 $6f
     ld   H, $00                                        ;; 02:4cd3 $26 $00
-    ld   DE, .data_02_4cf5                             ;; 02:4cd5 $11 $f5 $4c
+    ld   DE, .data_02_4cf5_ActionTransitionFlagsTable                             ;; 02:4cd5 $11 $f5 $4c
     add  HL, DE                                        ;; 02:4cd8 $19
     bit  0, [HL]                                       ;; 02:4cd9 $cb $46
     jr   NZ, .jr_02_4cf1                               ;; 02:4cdb $20 $14
@@ -657,20 +717,30 @@ call_02_4ccd:
 .jr_02_4ce7:
     ld   L, [HL]                                       ;; 02:4ce7 $6e
     ld   H, $00                                        ;; 02:4ce8 $26 $00
-    ld   DE, .data_02_4cf5                             ;; 02:4cea $11 $f5 $4c
+    ld   DE, .data_02_4cf5_ActionTransitionFlagsTable                             ;; 02:4cea $11 $f5 $4c
     add  HL, DE                                        ;; 02:4ced $19
     bit  1, [HL]                                       ;; 02:4cee $cb $4e
     ret  NZ                                            ;; 02:4cf0 $c0
 .jr_02_4cf1:
     ld   [wD745], A                                    ;; 02:4cf1 $ea $45 $d7
     ret                                                ;; 02:4cf4 $c9
-.data_02_4cf5:
+.data_02_4cf5_ActionTransitionFlagsTable:
+; 32-byte table, one entry per action ID. Bit 0 = instant transition (bypasses lock check). 
+; Bit 1 = transition-locked (cannot be overridden once queued). 
+; Actions 
+; $0F = instant; 
+; $10–$13 = instant+locked (death/hurt states); 
+; $14 = instant only
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 02:4cf5 ????????
     db   $00, $00, $00, $00, $00, $00, $00, $01        ;; 02:4cfd ????????
     db   $03, $03, $03, $03, $01, $00, $00, $00        ;; 02:4d05 ????????
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 02:4d0d ????????
 
-data_02_4d15:
+data_02_4d15_ActionInputTransitionTable:
+; 32-entry pointer table (one per action ID), pointing to input→action lists used by call_02_4c4f. 
+; Each list is pairs of (input byte, action ID) terminated by $FF. $FE = wildcard (any nonzero input). 
+; Null pointers = no transitions for that action. Covers idle, walk, run, jump, tail-whip, 
+; wall-slide, and other states
     dw   .data_02_4d55, $0000, .data_02_4d58, .data_02_4d58        ;; 02:4d15 ........
     dw   .data_02_4d65, .data_02_4d78, .data_02_4d8b, .data_02_4d92        ;; 02:4d1d ......??
     dw   .data_02_4d9b, .data_02_4da2, .data_02_4da9, .data_02_4db0        ;; 02:4d25 ......??
@@ -679,7 +749,6 @@ data_02_4d15:
     dw   $0000, .data_02_4db4, .data_02_4dc5, $0000        ;; 02:4d3d ..??....
     dw   $0000, $0000, $0000, $0000        ;; 02:4d45 ??..????
     dw   $0000, $0000, $0000, $0000        ;; 02:4d4d ??..????
-
 .data_02_4d55:
     db   $fe, $01, $ff
 .data_02_4d58:
@@ -725,6 +794,7 @@ data_02_4d15:
     db   $90, $08, $a0, $08, $14, $0e, $24, $0e        ;; 02:4dcd .?.?.?.?
     db   $00, $02, $ff                                 ;; 02:4dd5 .?.
 
-call_02_4dd8:
+call_02_4dd8_Player_GetMaxHealth:
+; Returns $7D (125) in A — the player's maximum health value
     ld   A, $7d                                        ;; 02:4dd8 $3e $7d
     ret                                                ;; 02:4dda $c9

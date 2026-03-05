@@ -464,10 +464,10 @@ call_02_51ea_EntityAction_TVButton_unk0:
     srl  A                                             ;; 02:5243 $cb $3f
     ld   [wD628_MediaDimensionRespawnPoint], A                                    ;; 02:5245 $ea $28 $d6
     ld   A, $12                                        ;; 02:5248 $3e $12
-    jp   call_02_4ccd                                  ;; 02:524a $c3 $cd $4c
+    jp   call_02_4ccd_Player_RequestAction                                  ;; 02:524a $c3 $cd $4c
 .jr_02_524d:
     ld   A, $13                                        ;; 02:524d $3e $13
-    jp   call_02_4ccd                                  ;; 02:524f $c3 $cd $4c
+    jp   call_02_4ccd_Player_RequestAction                                  ;; 02:524f $c3 $cd $4c
 call_02_5252_EntityAction_TVButton_unk1:
     ret                                                ;; 02:5252 $c9
 
@@ -4282,7 +4282,7 @@ call_02_6de3_EntityAction_Unk8D_Update:
     xor  a
     ld   [wD647],a
     ld   a,$13
-    jp   call_02_4ccd
+    jp   call_02_4ccd_Player_RequestAction
 
 call_02_6df0_EntityAction_Unk8E_Update:
     ret  

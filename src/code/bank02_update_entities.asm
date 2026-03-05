@@ -155,7 +155,7 @@ INCLUDE "code/bank02_entity_actions.asm"
     
 call_02_6e17_Entities_InitAndSpawnAll:
 ; Full level-start initialization: zeros player entity state (velocities, flags, climbing, collision), 
-; resets all 7 NPC slots to $FF, conditionally spawns Gex via call_02_48b7, then calls EntityList_LoadForCurrentLevel 
+; resets all 7 NPC slots to $FF, conditionally spawns Gex via call_02_48b7_Player_SpawnLevelSpecificDoor, then calls EntityList_LoadForCurrentLevel 
 ; and loops EntitySpawn_SpawnNextFromList until wD338 returns to 1
     xor  A, A                                          ;; 02:6e17 $af
     ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:6e18 $ea $00 $d3
@@ -210,7 +210,7 @@ call_02_6e68_Entities_InitNPCSlots:
     ld   A, [wD744]                                    ;; 02:6e89 $fa $44 $d7
     cp   A, $1b                                        ;; 02:6e8c $fe $1b
     ld   A, $01                                        ;; 02:6e8e $3e $01
-    call Z, call_02_48b7                               ;; 02:6e90 $cc $b7 $48
+    call Z, call_02_48b7_Player_SpawnLevelSpecificDoor                               ;; 02:6e90 $cc $b7 $48
 .jr_02_6e93:
     farcall call_0a_4000_EntityList_LoadForCurrentLevel
 .jr_02_6e9e:
@@ -232,7 +232,7 @@ call_02_6eb1_Entities_ClearFlagsTable:
 
 call_02_6eba_Entities_UpdateAll:
 ; Main per-frame update loop. First handles the two "adjacent room" entities (wD74D, wD74F) by calling their 
-; action functions and adjusting player Y by $10 (room transition offset). Then calls call_02_4939_PlayerUpdateMain. 
+; action functions and adjusting player Y by $10 (room transition offset). Then calls call_02_4939_Player_UpdateMain. 
 ; Then iterates all 7 NPC slots: skips entities not in the active or adjacent room (calls their despawn-check 
 ; function instead), clears collision bits 5/6, calls call_02_6fda_Entity_TickAction (action tick), calls the sprite/draw farCall. 
 ; After the loop, calls sound queue flush, EntitySpawn_SpawnNextFromList, collision resolution, and draw farCall
@@ -280,7 +280,7 @@ call_02_6eba_Entities_UpdateAll:
 .jr_02_6f07:
     ld   A, $00                                        ;; 02:6f07 $3e $00
     ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:6f09 $ea $00 $d3
-    call call_02_4939_PlayerUpdateMain                                  ;; 02:6f0c $cd $39 $49
+    call call_02_4939_Player_UpdateMain                                  ;; 02:6f0c $cd $39 $49
 .jr_02_6f0f:
     ld   A, $20                                        ;; 02:6f0f $3e $20
 .jr_02_6f11:
@@ -496,13 +496,13 @@ call_02_7030_Entity_NotifyActionChanged:
 
 call_02_70f1_Entity_HandleActionSequenceEnd:
 ; Called when an animation sequence finishes. Reads UNK_09, checks bit 7; if clear, returns (sequence loops). 
-; If set, masks to low 5 bits and calls call_02_4ccd (likely a state-machine transition or death/reset handler)
+; If set, masks to low 5 bits and calls call_02_4ccd_Player_RequestAction (likely a state-machine transition or death/reset handler)
     LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_UNK_09
     ld   A, [HL]                                       ;; 02:70f9 $7e
     bit  7, A                                          ;; 02:70fa $cb $7f
     ret  Z                                             ;; 02:70fc $c8
     and  A, $1f                                        ;; 02:70fd $e6 $1f
-    jp   call_02_4ccd                                  ;; 02:70ff $c3 $cd $4c
+    jp   call_02_4ccd_Player_RequestAction                                  ;; 02:70ff $c3 $cd $4c
 
 call_02_7102_Entity_SetAction:
 ; Sets a new action on the current entity. Masks action index to 5 bits, writes to ACTION_ID field, 
@@ -573,7 +573,7 @@ call_02_7102_Entity_SetAction:
 call_02_715a_MapWindow_Update:
 ; Calls all three map-window update routines: player window update, vertical scroll check, 
 ; horizontal scroll check
-    call call_00_13a6_UpdatePlayerMapWindow                                  ;; 02:715a $cd $a6 $13
+    call call_00_13a6_MapWindow_UpdateFromPlayerPos                                  ;; 02:715a $cd $a6 $13
     call call_02_7164_MapScroll_CheckVertical                                  ;; 02:715d $cd $64 $71
     call call_02_7196_MapScroll_CheckHorizontal                                  ;; 02:7160 $cd $96 $71
     ret                                                ;; 02:7163 $c9

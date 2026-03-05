@@ -222,7 +222,7 @@ call_00_0150_Init:
     farcall call_0b_4000_Collectibles_Init
     farcall call_02_6eb1_Entities_ClearFlagsTable
     call call_00_3c3f                                  ;; 00:0333 $cd $3f $3c
-    call call_00_12e4                                  ;; 00:0336 $cd $e4 $12
+    call call_00_12e4_Map_InitBgTileOverrides                                  ;; 00:0336 $cd $e4 $12
     ld   A, $0a                                        ;; 00:0339 $3e $0a
     ld   [wD613], A                                    ;; 00:033b $ea $13 $d6
     xor  A, A                                          ;; 00:033e $af
@@ -277,7 +277,7 @@ call_00_0150_Init:
     farcall call_0b_4000_Collectibles_Init
     farcall call_02_6eb1_Entities_ClearFlagsTable
     call call_00_3c3f                                  ;; 00:03ce $cd $3f $3c
-    call call_00_12e4                                  ;; 00:03d1 $cd $e4 $12
+    call call_00_12e4_Map_InitBgTileOverrides                                  ;; 00:03d1 $cd $e4 $12
     call call_00_0547                                  ;; 00:03d4 $cd $47 $05
     call call_00_0562                                  ;; 00:03d7 $cd $62 $05
 .jr_00_03da:
@@ -294,12 +294,12 @@ call_00_0150_Init:
     ld   A, $01                                        ;; 00:03f4 $3e $01
     ld   [wD743_DrawGexFlag], A                                    ;; 00:03f6 $ea $43 $d7
     farcall call_0b_4efe_Player_SetSpawnPosition
-    call call_00_1264_LoadFullMap                                  ;; 00:0404 $cd $64 $12
+    call call_00_1264_Map_LoadFull                                  ;; 00:0404 $cd $64 $12
     farcall call_02_6e17_Entities_InitAndSpawnAll
     call call_00_0521_DrawEntitiesWrapper                                  ;; 00:0412 $cd $21 $05
     jr   .jp_00_0428                                   ;; 00:0415 $18 $11
 .jp_00_0417:
-    call call_00_1264_LoadFullMap                                  ;; 00:0417 $cd $64 $12
+    call call_00_1264_Map_LoadFull                                  ;; 00:0417 $cd $64 $12
     farcall call_02_71c8_Entities_UpdateSoundsForAll
     call call_00_0521_DrawEntitiesWrapper                                  ;; 00:0425 $cd $21 $05
 .jp_00_0428:
@@ -384,9 +384,9 @@ call_00_0150_Init:
     call call_00_112f_QueueSFX                                  ;; 00:04dd $cd $2f $11
 .jr_00_04e0:
     farcall call_02_6eba_Entities_UpdateAll
-    call call_00_1455_LoadBgMapDirtyRegions                                  ;; 00:04eb $cd $55 $14
+    call call_00_1455_BgMap_LoadDirtyRegions                                  ;; 00:04eb $cd $55 $14
     call call_00_2305                                  ;; 00:04ee $cd $05 $23
-    call call_00_1e5b                                  ;; 00:04f1 $cd $5b $1e
+    call call_00_1e5b_BgMap_TickOverrideAnimation                                  ;; 00:04f1 $cd $5b $1e
     call call_00_05c7                                  ;; 00:04f4 $cd $c7 $05
     call call_00_08fc_SetupEntityVRAMTransfer                                  ;; 00:04f7 $cd $fc $08
     farcall call_0b_5ec3_Player_UpdateGBCPalette
@@ -602,7 +602,7 @@ call_00_068a:
 
 call_00_0696:
     ld   A, $10                                        ;; 00:0696 $3e $10
-    farcall call_02_4ccd
+    farcall call_02_4ccd_Player_RequestAction
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:06a3 $fa $24 $d6
     and  A, A                                          ;; 00:06a6 $a7
     ret  Z                                             ;; 00:06a7 $c8
@@ -636,7 +636,7 @@ call_00_06bf_DealDamageToPlayer: ; Deal damage to Gex
     cp   A, $1c                                        ;; 00:06d7 $fe $1c
     jp   Z, call_00_0629                                 ;; 00:06d9 $ca $29 $06
     ld   A, $0f                                        ;; 00:06dc $3e $0f
-    farcall call_02_4ccd
+    farcall call_02_4ccd_Player_RequestAction
     jp   call_00_0629                                    ;; 00:06e9 $c3 $29 $06
 
 call_00_06ec:
@@ -1213,7 +1213,7 @@ call_00_0ac1:
     ld   A, [HL]                                       ;; 00:0af3 $7e
     res  0, [HL]                                       ;; 00:0af4 $cb $86
     bit  0, A                                          ;; 00:0af6 $cb $47
-    jp   NZ, call_00_1779                                ;; 00:0af8 $c2 $79 $17
+    jp   NZ, call_00_1779_BgMap_WriteGBCPaletteAttributes                                ;; 00:0af8 $c2 $79 $17
     ld   A, [wD72F]                                    ;; 00:0afb $fa $2f $d7
     and  A, A                                          ;; 00:0afe $a7
     jr   Z, .jr_00_0b0c                                ;; 00:0aff $28 $0b

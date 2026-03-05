@@ -160,7 +160,7 @@ call_03_4c76_EntityCollision_Dispatch:
     call call_00_3931_Entity_KillSelf
     call call_00_393c_Entity_ClearEntityFlagSlot
     ld   a,$1E
-    farcall call_02_4ccd
+    farcall call_02_4ccd_Player_RequestAction
     ret  
 .jr_03_4d82_CollisionHandler_UNK_09:
 ; Overlap check; A=$00 → damage player; otherwise no effect (hazard that can be survived by attacking)
@@ -324,7 +324,7 @@ call_03_4c76_EntityCollision_Dispatch:
     ld   A, $77                                        ;; 03:4e6c $3e $77
     ld   [wD750], A                                    ;; 03:4e6e $ea $50 $d7
     ld   A, $19                                        ;; 03:4e71 $3e $19
-    farcall call_02_4ccd
+    farcall call_02_4ccd_Player_RequestAction
     ret                                                ;; 03:4e7e $c9
 .jr_03_4e7f_CollisionHandler_Hunter:
 ; Checks UNK_17 bit 0 first (already shooting, skip). Touch → damage player. 
@@ -709,7 +709,7 @@ call_03_4c76_EntityCollision_Dispatch:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     set  7,[hl]
     ld   a,$1F
-    farcall call_02_4ccd
+    farcall call_02_4ccd_Player_RequestAction
     ret  
 .jr_03_5109_CollisionHandler_Cannon:
 ; Scans all slots for an active cannon projectile (ID=$4D); if one exists, returns (already firing). 
