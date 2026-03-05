@@ -1,48 +1,48 @@
 ; Player action jump table
 data_02_4120:
-    dw   call_02_41a0_PlayerAction_unk0, data_02_755c
-    dw   call_02_41ad_PlayerAction_LevelInit, data_02_756d
+    dw   call_02_41a0_PlayerAction_Spawn, data_02_755c
+    dw   call_02_41ad_PlayerAction_Unk01, data_02_756d
     dw   call_02_41b7_PlayerAction_Idle, data_02_7573
     dw   call_02_422b_PlayerAction_None, data_02_757c
     dw   call_02_422c_PlayerAction_Walk, data_02_7582
     dw   call_02_4248_PlayerAction_Run, data_02_758f
     dw   call_02_425a_PlayerAction_SkidDecel, data_02_759c
-    dw   call_02_426b_PlayerAction_StopQuick, data_02_75a4
+    dw   call_02_426b_PlayerAction_StopOnCertainFloor, data_02_75a4
     dw   call_02_4270_PlayerAction_Crouch, data_02_75ad
     dw   call_02_4275_PlayerAction_Jump, data_02_75b3
     dw   call_02_42ac_PlayerAction_DoubleJump, data_02_75bb
     dw   call_02_42e0_PlayerAction_None, data_02_75c1
-    dw   call_02_42e1, data_02_75c7
+    dw   call_02_42e1_PlayerAction_KarateKick, data_02_75c7
     dw   call_02_42f7_PlayerAction_TailSpin, data_02_75ce
-    dw   call_02_434d, data_02_75d9
-    dw   call_02_435b, data_02_75df
+    dw   call_02_434d_PlayerAction_EatFly, data_02_75d9
+    dw   call_02_435b_PlayerAction_TakeDamage, data_02_75df
     dw   call_02_4371_PlayerAction_Death, data_02_75e9
-    dw   call_02_437b, data_02_75f2
-    dw   call_02_43a7, data_02_75f9
-    dw   call_02_43c6, data_02_75f9
-    dw   call_02_43e5, data_02_7608
-    dw   call_02_43f6, data_02_7617
-    dw   call_02_4407, data_02_761d
-    dw   call_02_4418, data_02_762a
-    dw   call_02_4443, data_02_7633
-    dw   call_02_4448, data_02_7639
+    dw   call_02_437b_PlayerAction_DeathSetUpWarp, data_02_75f2
+    dw   call_02_43a7_PlayerAction_EnterTV, data_02_75f9
+    dw   call_02_43c6_PlayerAction_Unk13, data_02_75f9
+    dw   call_02_43e5_PlayerAction_ExitTV, data_02_7608
+    dw   call_02_43f6_PlayerAction_StandingPush, data_02_7617
+    dw   call_02_4407_PlayerAction_WalkingPush, data_02_761d
+    dw   call_02_4418_PlayerAction_Fall, data_02_762a
+    dw   call_02_4443_PlayerAction_StopImmediate, data_02_7633
+    dw   call_02_4448_PlayerAction_Collapse, data_02_7639
     dw   call_02_4459_PlayerAction_EnterDoor, data_02_7647
     dw   call_02_447e_PlayerAction_LeaveDoor, data_02_7658
-    dw   call_02_4483, data_02_7665
-    dw   call_02_44af, data_02_766d
-    dw   call_02_481b, data_02_7673
-    dw   call_02_4828, data_02_7684
+    dw   call_02_4483_PlayerAction_Unk1C, data_02_7665
+    dw   call_02_44af_PlayerAction_Climb, data_02_766d
+    dw   call_02_481b_PlayerAction_Unk1E, data_02_7673
+    dw   call_02_4828_PlayerAction_Unk1F, data_02_7684
     
-call_02_41a0_PlayerAction_unk0:
+call_02_41a0_PlayerAction_Spawn:
     ld   A, [wD209]                                    ;; 02:41a0 $fa $09 $d2
     and  A, $20                                        ;; 02:41a3 $e6 $20
     jr   Z, .jr_02_41ac                                ;; 02:41a5 $28 $05
-    ld   C, $11                                        ;; 02:41a7 $0e $11
+    ld   C, SFX_GEX_SPAWN                                        ;; 02:41a7 $0e $11
     call call_00_112f_QueueSFX                                  ;; 02:41a9 $cd $2f $11
 .jr_02_41ac:
     ret                                                ;; 02:41ac $c9
     
-call_02_41ad_PlayerAction_LevelInit:
+call_02_41ad_PlayerAction_Unk01:
     ld   A, [wD624_CurrentLevelId]                                    ;; 02:41ad $fa $24 $d6
     and  A, A                                          ;; 02:41b0 $a7
     call NZ, call_00_0634                              ;; 02:41b1 $c4 $34 $06
@@ -89,7 +89,7 @@ call_02_41b7_PlayerAction_Idle:
     ld   A, $03                                        ;; 02:41ff $3e $03
     jp   call_02_4ccd_Player_RequestAction                                  ;; 02:4201 $c3 $cd $4c
 
-call_02_4204:
+call_02_4204_Player_WalkingRelated:
     ld   A, [wD74E]                                    ;; 02:4204 $fa $4e $d7
     and  A, A                                          ;; 02:4207 $a7
     jr   NZ, .jr_02_4215                               ;; 02:4208 $20 $0b
@@ -100,11 +100,11 @@ call_02_4204:
     jr   .jr_02_4227                                   ;; 02:4213 $18 $12
 .jr_02_4215:
     ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:4215 $fa $5a $d7
-    and  A, $30                                        ;; 02:4218 $e6 $30
+    and  A, PADF_RIGHT | PADF_LEFT                                        ;; 02:4218 $e6 $30
     jr   Z, .jr_02_4227                                ;; 02:421a $28 $0b
     ld   C, $15                                        ;; 02:421c $0e $15
     ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:421e $fa $5a $d7
-    and  A, $30                                        ;; 02:4221 $e6 $30
+    and  A, PADF_RIGHT | PADF_LEFT                                        ;; 02:4221 $e6 $30
     jr   Z, .jr_02_4227                                ;; 02:4223 $28 $02
     ld   C, $16                                        ;; 02:4225 $0e $16
 .jr_02_4227:
@@ -122,7 +122,7 @@ call_02_422c_PlayerAction_Walk:
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:4235 $ea $5e $d7
 .jr_02_4238:
     ld   C, $04                                        ;; 02:4238 $0e $04
-    call call_02_4204                                  ;; 02:423a $cd $04 $42
+    call call_02_4204_Player_WalkingRelated                                  ;; 02:423a $cd $04 $42
     ld   A, [wD20A]                                    ;; 02:423d $fa $0a $d2
     and  A, $04                                        ;; 02:4240 $e6 $04
     ld   A, $05                                        ;; 02:4242 $3e $05
@@ -137,7 +137,7 @@ call_02_4248_PlayerAction_Run:
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:4251 $ea $5e $d7
 .jr_02_4254:
     ld   C, $05                                        ;; 02:4254 $0e $05
-    call call_02_4204                                  ;; 02:4256 $cd $04 $42
+    call call_02_4204_Player_WalkingRelated                                  ;; 02:4256 $cd $04 $42
     ret                                                ;; 02:4259 $c9
 
 call_02_425a_PlayerAction_SkidDecel:
@@ -153,7 +153,7 @@ call_02_425a_PlayerAction_SkidDecel:
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:4267 $ea $5e $d7
     ret                                                ;; 02:426a $c9
 
-call_02_426b_PlayerAction_StopQuick:
+call_02_426b_PlayerAction_StopOnCertainFloor:
     xor a
     ld [wD75E_PlayerXSpeed], a
     ret
@@ -172,7 +172,7 @@ call_02_4275_PlayerAction_Jump:
     ld   [wD760_PlayerYVelocity], A                                    ;; 02:4281 $ea $60 $d7
     ld   [wD762_PlayerInitialYVelocity], A                                    ;; 02:4284 $ea $62 $d7
     call call_02_4a3a_Player_SetWallJumpFlag                                  ;; 02:4287 $cd $3a $4a
-    ld   C, $0c                                        ;; 02:428a $0e $0c
+    ld   C, SFX_GEX_JUMP                                        ;; 02:428a $0e $0c
     call call_00_112f_QueueSFX                                  ;; 02:428c $cd $2f $11
     ld   A, [wD75E_PlayerXSpeed]                                    ;; 02:428f $fa $5e $d7
     and  A, A                                          ;; 02:4292 $a7
@@ -184,7 +184,7 @@ call_02_4275_PlayerAction_Jump:
     and  A, A                                          ;; 02:429d $a7
     ret  NZ                                            ;; 02:429e $c0
     ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:429f $fa $5a $d7
-    and  A, $02                                        ;; 02:42a2 $e6 $02
+    and  A, PADF_B                                        ;; 02:42a2 $e6 $02
     ld   A, $0a                                        ;; 02:42a4 $3e $0a
     jp   NZ, call_02_4ccd_Player_RequestAction                              ;; 02:42a6 $c2 $cd $4c
     jp   call_02_489a_Player_SetLandingAction                                    ;; 02:42a9 $c3 $9a $48
@@ -199,7 +199,7 @@ call_02_42ac_PlayerAction_DoubleJump:
     ld   [wD760_PlayerYVelocity], A                                    ;; 02:42b8 $ea $60 $d7
     ld   [wD762_PlayerInitialYVelocity], A                                    ;; 02:42bb $ea $62 $d7
     call call_02_4a3a_Player_SetWallJumpFlag                                  ;; 02:42be $cd $3a $4a
-    ld   C, $0d                                        ;; 02:42c1 $0e $0d
+    ld   C, SFX_GEX_DOUBLE_JUMP                                        ;; 02:42c1 $0e $0d
     call call_00_112f_QueueSFX                                  ;; 02:42c3 $cd $2f $11
     ld   A, [wD75E_PlayerXSpeed]                                    ;; 02:42c6 $fa $5e $d7
     and  A, A                                          ;; 02:42c9 $a7
@@ -211,14 +211,14 @@ call_02_42ac_PlayerAction_DoubleJump:
     and  A, A                                          ;; 02:42d4 $a7
     ret  NZ                                            ;; 02:42d5 $c0
     ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:42d6 $fa $5a $d7
-    and  A, $02                                        ;; 02:42d9 $e6 $02
+    and  A, PADF_B                                        ;; 02:42d9 $e6 $02
     jr   NZ, .jr_02_42b3                               ;; 02:42db $20 $d6
     jp   call_02_489a_Player_SetLandingAction                                    ;; 02:42dd $c3 $9a $48
 
 call_02_42e0_PlayerAction_None:                             ;; 02:42e0
     ret
 
-call_02_42e1:
+call_02_42e1_PlayerAction_KarateKick:
     ld a, [wD209]
     and $20
     jr z, .jr_02_42ed
@@ -263,7 +263,7 @@ call_02_42f7_PlayerAction_TailSpin:
     jr   Z, .jr_02_4349                                ;; 02:4333 $28 $14
     ld   C, $02                                        ;; 02:4335 $0e $02
     ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:4337 $fa $5a $d7
-    and  A, $30                                        ;; 02:433a $e6 $30
+    and  A, PADF_RIGHT | PADF_LEFT                                        ;; 02:433a $e6 $30
     jr   Z, .jr_02_4349                                ;; 02:433c $28 $0b
     ld   C, $05                                        ;; 02:433e $0e $05
     ld   A, [wD75E_PlayerXSpeed]                                    ;; 02:4340 $fa $5e $d7
@@ -274,7 +274,7 @@ call_02_42f7_PlayerAction_TailSpin:
     ld   A, C                                          ;; 02:4349 $79
     jp   call_02_4ccd_Player_RequestAction                                  ;; 02:434a $c3 $cd $4c
 
-call_02_434d:
+call_02_434d_PlayerAction_EatFly:
     xor  a
     ld   [wD75E_PlayerXSpeed],a
     ld   a,[wD209]
@@ -282,11 +282,11 @@ call_02_434d:
     ret  z
     xor  a
     jp   call_00_0647
-call_02_435b:
+call_02_435b_PlayerAction_TakeDamage:
     ld   a,[wD209]
     and  a,$20
     jr   z,.jr_02_4367
-    ld   c,$10
+    ld   c,SFX_GEX_EAT_FLY
     call call_00_112f_QueueSFX
 .jr_02_4367:
     xor  a
@@ -302,14 +302,14 @@ call_02_4371_PlayerAction_Death:
     ld   [wD750], A                                    ;; 02:4377 $ea $50 $d7
     ret                                                ;; 02:437a $c9
 
-call_02_437b:
+call_02_437b_PlayerAction_DeathSetUpWarp:
     ld   A, [wD209]                                    ;; 02:437b $fa $09 $d2
     and  A, $20                                        ;; 02:437e $e6 $20
     jr   Z, .jr_02_438e                                ;; 02:4380 $28 $0c
     xor  A, A                                          ;; 02:4382 $af
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:4383 $ea $5e $d7
     call call_00_0f5d                                  ;; 02:4386 $cd $5d $0f
-    ld   C, $0f                                        ;; 02:4389 $0e $0f
+    ld   C, SFX_GEX_DEATH                                        ;; 02:4389 $0e $0f
     call call_00_112f_QueueSFX                                  ;; 02:438b $cd $2f $11
 .jr_02_438e:
     ld   A, $77                                        ;; 02:438e $3e $77
@@ -324,11 +324,11 @@ call_02_437b:
     ld   [wD621], A                                    ;; 02:43a3 $ea $21 $d6
     ret                                                ;; 02:43a6 $c9
 
-call_02_43a7:
+call_02_43a7_PlayerAction_EnterTV:
     ld   A, [wD209]                                    ;; 02:43a7 $fa $09 $d2
     and  A, $20                                        ;; 02:43aa $e6 $20
     jr   Z, .jr_02_43b3                                ;; 02:43ac $28 $05
-    ld   C, $11                                        ;; 02:43ae $0e $11
+    ld   C, SFX_GEX_SPAWN                                        ;; 02:43ae $0e $11
     call call_00_112f_QueueSFX                                  ;; 02:43b0 $cd $2f $11
 .jr_02_43b3:
     xor  A, A                                          ;; 02:43b3 $af
@@ -341,11 +341,11 @@ call_02_43a7:
     ld   [wD621], A                                    ;; 02:43c2 $ea $21 $d6
     ret                                                ;; 02:43c5 $c9
 
-call_02_43c6:
+call_02_43c6_PlayerAction_Unk13:
     ld   a,[wD209]
     and  a,$20
     jr   z,.jr_02_43D2
-    ld   c,$11
+    ld   c,SFX_GEX_SPAWN
     call call_00_112f_QueueSFX
 .jr_02_43D2:
     xor  a
@@ -358,18 +358,18 @@ call_02_43c6:
     ld   [wD621],a
     ret
 
-call_02_43e5:
+call_02_43e5_PlayerAction_ExitTV:
     ld   A, [wD209]                                    ;; 02:43e5 $fa $09 $d2
     and  A, $20                                        ;; 02:43e8 $e6 $20
     jr   Z, .jr_02_43f1                                ;; 02:43ea $28 $05
-    ld   C, $11                                        ;; 02:43ec $0e $11
+    ld   C, SFX_GEX_SPAWN                                        ;; 02:43ec $0e $11
     call call_00_112f_QueueSFX                                  ;; 02:43ee $cd $2f $11
 .jr_02_43f1:
     xor  A, A                                          ;; 02:43f1 $af
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:43f2 $ea $5e $d7
     ret                                                ;; 02:43f5 $c9
 
-call_02_43f6:
+call_02_43f6_PlayerAction_StandingPush:
     ld   a,[wD209]
     and  a,$20
     jr   z,.jr_02_4402
@@ -377,9 +377,9 @@ call_02_43f6:
     ld   [wD75E_PlayerXSpeed],a
 .jr_02_4402:
     ld   c,$02
-    jp   call_02_4204
+    jp   call_02_4204_Player_WalkingRelated
 
-call_02_4407:
+call_02_4407_PlayerAction_WalkingPush:
     ld   A, [wD209]                                    ;; 02:4407 $fa $09 $d2
     and  A, $20                                        ;; 02:440a $e6 $20
     jr   Z, .jr_02_4413                                ;; 02:440c $28 $05
@@ -387,9 +387,9 @@ call_02_4407:
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:4410 $ea $5e $d7
 .jr_02_4413:
     ld   C, $02                                        ;; 02:4413 $0e $02
-    jp   call_02_4204                                  ;; 02:4415 $c3 $04 $42
+    jp   call_02_4204_Player_WalkingRelated                                  ;; 02:4415 $c3 $04 $42
 
-call_02_4418:
+call_02_4418_PlayerAction_Fall:
     ld   A, [wD209]                                    ;; 02:4418 $fa $09 $d2
     and  A, $20                                        ;; 02:441b $e6 $20
     jr   Z, .jr_02_442f                                ;; 02:441d $28 $10
@@ -405,22 +405,22 @@ call_02_4418:
     and  A, A                                          ;; 02:4432 $a7
     ret  NZ                                            ;; 02:4433 $c0
     ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:4434 $fa $5a $d7
-    and  A, $30                                        ;; 02:4437 $e6 $30
+    and  A, PADF_RIGHT | PADF_LEFT                                        ;; 02:4437 $e6 $30
     ld   A, $04                                        ;; 02:4439 $3e $04
     jp   NZ, call_02_4ccd_Player_RequestAction                              ;; 02:443b $c2 $cd $4c
     ld   A, $02                                        ;; 02:443e $3e $02
     jp   call_02_4ccd_Player_RequestAction                                  ;; 02:4440 $c3 $cd $4c
 
-call_02_4443:
+call_02_4443_PlayerAction_StopImmediate:
     xor  a
     ld   [wD75E_PlayerXSpeed],a
     ret  
 
-call_02_4448:
+call_02_4448_PlayerAction_Collapse:
     ld   A, [wD209]                                    ;; 02:4448 $fa $09 $d2
     and  A, $20                                        ;; 02:444b $e6 $20
     jr   Z, .jr_02_4454                                ;; 02:444d $28 $05
-    ld   C, $0e                                        ;; 02:444f $0e $0e
+    ld   C, SFX_GEX_COLLAPSE                                        ;; 02:444f $0e $0e
     call call_00_112f_QueueSFX                                  ;; 02:4451 $cd $2f $11
 .jr_02_4454:
     xor  A, A                                          ;; 02:4454 $af
@@ -451,11 +451,11 @@ call_02_447e_PlayerAction_LeaveDoor:
     ld   [wD75E_PlayerXSpeed],a
     ret  
 
-call_02_4483:
+call_02_4483_PlayerAction_Unk1C:
     ld   a,[wD209]
     and  a,$20
     jr   z,.jr_02_44A5
-    ld   c,$12
+    ld   c,SFX_GEX_UNK1C
     call call_00_112f_QueueSFX
     call call_00_06bf_DealDamageToPlayer
     ld   a,$50
@@ -473,7 +473,7 @@ call_02_4483:
     ld   a,$02
     jp   call_02_4ccd_Player_RequestAction
 
-call_02_44af:
+call_02_44af_PlayerAction_Climb:
     ld   A, [wD209]                                    ;; 02:44af $fa $09 $d2
     and  A, $20                                        ;; 02:44b2 $e6 $20
     jr   Z, .jr_02_44d6                                ;; 02:44b4 $28 $20
@@ -547,13 +547,13 @@ call_02_44f9:
     set  0, [HL]                                       ;; 02:452f $cb $c6
 .jr_02_4531:
     ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:4531 $fa $5a $d7
-    and  A, $02                                        ;; 02:4534 $e6 $02
+    and  A, PADF_B                                        ;; 02:4534 $e6 $02
     jr   Z, .jr_02_453d                                ;; 02:4536 $28 $05
     ld   A, $17                                        ;; 02:4538 $3e $17
     call call_02_4ccd_Player_RequestAction                                  ;; 02:453a $cd $cd $4c
 .jr_02_453d:
     ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:453d $fa $5a $d7
-    and  A, $01                                        ;; 02:4540 $e6 $01
+    and  A, PADF_A                                        ;; 02:4540 $e6 $01
     jr   Z, .jr_02_454e                                ;; 02:4542 $28 $0a
     ld   A, $01                                        ;; 02:4544 $3e $01
     ld   [wD746_PlayerClimbingState], A                                    ;; 02:4546 $ea $46 $d7
@@ -649,13 +649,13 @@ call_02_45b0:
     set  0,[hl]
 .jr_02_45F0:
     ld   a,[wD75A_CurrentInputsAlt]
-    and  a,$02
+    and  a,PADF_B
     jr   z,.jr_02_45FC
     ld   a,$17
     call call_02_4ccd_Player_RequestAction
 .jr_02_45FC:
     ld   a,[wD75A_CurrentInputsAlt]
-    and  a,$01
+    and  a,PADF_A
     jr   z,.jr_02_460D
     ld   a,$03
     ld   [wD746_PlayerClimbingState],a
@@ -840,7 +840,7 @@ call_02_46b8:
 
 call_02_4777:
     ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:4777 $fa $5a $d7
-    and  A, $f0                                        ;; 02:477a $e6 $f0
+    and  A, PADF_RIGHT | PADF_LEFT | PADF_UP | PADF_DOWN                                        ;; 02:477a $e6 $f0
     jr   Z, .jr_02_478d                                ;; 02:477c $28 $0f
     ld   HL, .data_02_47a5                             ;; 02:477e $21 $a5 $47
     ld   DE, $06                                       ;; 02:4781 $11 $06 $00
@@ -882,7 +882,7 @@ call_02_4777:
 
 call_02_47d5:
     ld   a,[wD75A_CurrentInputsAlt]
-    and  a,$C0
+    and  a,PADF_UP | PADF_DOWN
     jr   z,.jr_02_47EB
     ld   hl, .data_02_4803
     ld   de,$0006
@@ -928,7 +928,7 @@ call_02_480f:
     set  0, [HL]                                       ;; 02:4818 $cb $c6
     ret                                                ;; 02:481a $c9
 
-call_02_481b:
+call_02_481b_PlayerAction_Unk1E:
     call call_02_4894
     ret  z
     ld   a,[wD621]
@@ -936,7 +936,7 @@ call_02_481b:
     ld   [wD621],a
     ret  
 
-call_02_4828:
+call_02_4828_PlayerAction_Unk1F:
     xor  a
     ld   [wD75E_PlayerXSpeed],a
     ld   h,$D2
@@ -996,7 +996,7 @@ call_02_4856:
     ld   A, [HL+]                                      ;; 02:4879 $2a
     or   A, [HL]                                       ;; 02:487a $b6
     jr   Z, .jr_02_486e                                ;; 02:487b $28 $f1
-    ld   C, $2a                                        ;; 02:487d $0e $2a
+    ld   C, SFX_GEX_JUMP_UNK                                        ;; 02:487d $0e $2a
     call call_00_112f_QueueSFX                                  ;; 02:487f $cd $2f $11
     ld   A, $4c                                        ;; 02:4882 $3e $4c
     ret                                                ;; 02:4884 $c9
@@ -1005,7 +1005,7 @@ call_02_4856:
     ld   A, [HL+]                                      ;; 02:4888 $2a
     or   A, [HL]                                       ;; 02:4889 $b6
     jr   Z, .jr_02_486e                                ;; 02:488a $28 $e2
-    ld   C, $2a                                        ;; 02:488c $0e $2a
+    ld   C, SFX_GEX_JUMP_UNK                                        ;; 02:488c $0e $2a
     call call_00_112f_QueueSFX                                  ;; 02:488e $cd $2f $11
     ld   A, $60                                        ;; 02:4891 $3e $60
     ret                                                ;; 02:4893 $c9

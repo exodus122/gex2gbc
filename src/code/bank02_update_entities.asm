@@ -322,7 +322,7 @@ call_02_6eba_Entities_UpdateAll:
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:6f5c $fa $00 $d3
     add  A, $20                                        ;; 02:6f5f $c6 $20
     jr   NZ, .jr_02_6f11                               ;; 02:6f61 $20 $ae
-    call call_00_1138                                  ;; 02:6f63 $cd $38 $11
+    call call_00_1138_NoSFXIsQueued                                  ;; 02:6f63 $cd $38 $11
     farcall call_0a_7a7c_EntitySpawn_SpawnNextFromList
     call call_02_722c_SoundQueue_PlayNext                                  ;; 02:6f71 $cd $2c $72
     farcall call_03_6540_Entity_BuildAllSprites

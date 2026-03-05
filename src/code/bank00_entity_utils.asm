@@ -1562,7 +1562,7 @@ call_00_3985_Entity_SpawnProjectileInit:
     call call_00_393c_Entity_ClearEntityFlagSlot                                  ;; 00:39ab $cd $3c $39
     xor  A, A                                          ;; 00:39ae $af
     farcall call_02_7102_Entity_SetAction
-    ld   C, $17                                        ;; 00:39ba $0e $17
+    ld   C, SFX_PROJECTILE                                        ;; 00:39ba $0e $17
     call call_00_112f_QueueSFX                                  ;; 00:39bc $cd $2f $11
     ret                                                ;; 00:39bf $c9
 

@@ -86,14 +86,14 @@ call_01_4000_MenuLoad: ; this is the primary menu loading and updating function
     and  A, $02                                        ;; 01:4092 $e6 $02
     jp   Z, .jp_01_413a                                ;; 01:4094 $ca $3a $41
     ld   A, [wD59F_CurrentInputs]                                    ;; 01:4097 $fa $9f $d5
-    and  A, $03                                        ;; 01:409a $e6 $03
+    and  A, PADF_A | PADF_B                                        ;; 01:409a $e6 $03
     jr   Z, .jr_01_40d0                                ;; 01:409c $28 $32
     ld   A, [wD59F_CurrentInputs]                                    ;; 01:409e $fa $9f $d5
     and  A, $f0                                        ;; 01:40a1 $e6 $f0
     swap A                                             ;; 01:40a3 $cb $37
     ld   E, A                                          ;; 01:40a5 $5f
     ld   A, [wD59F_CurrentInputs]                                    ;; 01:40a6 $fa $9f $d5
-    and  A, $01                                        ;; 01:40a9 $e6 $01
+    and  A, PADF_A                                        ;; 01:40a9 $e6 $01
     jr   NZ, .jr_01_40af                               ;; 01:40ab $20 $02
     set  4, E                                          ;; 01:40ad $cb $e3
 .jr_01_40af:
@@ -407,7 +407,7 @@ call_01_42bd_EnterTV:
     or   A, [HL]                                       ;; 01:4306 $b6
     ld   [HL], A                                       ;; 01:4307 $77
     ld   A, [wD624_CurrentLevelId]                                    ;; 01:4308 $fa $24 $d6
-    cp   A, $1e                                        ;; 01:430b $fe $1e
+    cp   A, MAP_BOSS_TV_CHANNEL_Z                                        ;; 01:430b $fe $1e
     jr   NZ, .jr_01_4314                               ;; 01:430d $20 $05
     call call_01_43c7_LoadCreditsMenus                                  ;; 01:430f $cd $c7 $43
     jr   .jr_01_4319                                   ;; 01:4312 $18 $05
@@ -485,7 +485,7 @@ call_01_4349_LoadEnteringMenu:
     ld   A, [wD624_CurrentLevelId]                                    ;; 01:4392 $fa $24 $d6
     inc  A                                             ;; 01:4395 $3c
     ld   [wD624_CurrentLevelId], A                                    ;; 01:4396 $ea $24 $d6
-    cp   A, $1e                                        ;; 01:4399 $fe $1e
+    cp   A, MAP_BOSS_TV_CHANNEL_Z                                        ;; 01:4399 $fe $1e
     jr   NZ, .jr_01_4360                               ;; 01:439b $20 $c3
     pop  AF                                            ;; 01:439d $f1
     ld   [wD624_CurrentLevelId], A                                    ;; 01:439e $ea $24 $d6
@@ -511,7 +511,7 @@ call_01_43bd_LoadGameOverMenu:
     jp call_01_4000_MenuLoad                                        ;; 01:43c6 ?
 
 call_01_43c7_LoadCreditsMenus:
-    ld   A, MENU_TYPE_TITLE_OPTIONS                                        ;; 01:43c7 $3e $07
+    ld   A, MUSIC_MEDIA_DIMENSION                                        ;; 01:43c7 $3e $07
     call call_00_120c_SetupMusic                                  ;; 01:43c9 $cd $0c $12
     ld   A, MENU_TYPE_CREDITS_GREAT_JOB                                        ;; 01:43cc $3e $12
     call call_01_4000_MenuLoad                                  ;; 01:43ce $cd $00 $40
@@ -2031,7 +2031,7 @@ call_01_4e94:
     and  A, $02                                        ;; 01:4ea4 $e6 $02
     ld   A, [wD59F_CurrentInputs]                                    ;; 01:4ea6 $fa $9f $d5
     jr   Z, .jr_01_4ead                                ;; 01:4ea9 $28 $02
-    and  A, $fc                                        ;; 01:4eab $e6 $fc
+    and  A, PADF_A | PADF_B | PADF_START | PADF_RIGHT | PADF_LEFT | PADF_UP | PADF_DOWN                                        ;; 01:4eab $e6 $fc
 .jr_01_4ead:
     and  A, A                                          ;; 01:4ead $a7
     jr   NZ, call_01_4e94                              ;; 01:4eae $20 $e4
@@ -2412,7 +2412,7 @@ call_01_5271_ProcessPassword: ; handles setting save data from password
     ld   A, [wD624_CurrentLevelId]                                    ;; 01:5308 $fa $24 $d6
     inc  A                                             ;; 01:530b $3c
     ld   [wD624_CurrentLevelId], A                                    ;; 01:530c $ea $24 $d6
-    cp   A, $1e                                        ;; 01:530f $fe $1e
+    cp   A, MAP_BOSS_TV_CHANNEL_Z                                        ;; 01:530f $fe $1e
     jr   NZ, .jr_01_52d6                               ;; 01:5311 $20 $c3
     pop  AF                                            ;; 01:5313 $f1
     ld   [wD624_CurrentLevelId], A ; set current level to 0                                   ;; 01:5314 $ea $24 $d6

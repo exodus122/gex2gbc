@@ -533,7 +533,7 @@ call_00_2dbf_MissionPreview_UpdateMovement:
     and  A, $0f                                        ;; 00:2de8 $e6 $0f
     ld   C, A                                          ;; 00:2dea $4f
     ld   HL, wD75A_CurrentInputsAlt                                     ;; 00:2deb $21 $5a $d7
-    bit  4, [HL]                                       ;; 00:2dee $cb $66
+    bit  PADF_RIGHT_BIT, [HL]                                       ;; 00:2dee $cb $66
     jr   Z, .jr_00_2e01                                ;; 00:2df0 $28 $0f
     ld   A, [wD20E_PlayerXPosition]                                    ;; 00:2df2 $fa $0e $d2
     add  A, C                                          ;; 00:2df5 $81
@@ -542,7 +542,7 @@ call_00_2dbf_MissionPreview_UpdateMovement:
     adc  A, $00                                        ;; 00:2dfc $ce $00
     ld   [wD20F_PlayerXPosition], A                                    ;; 00:2dfe $ea $0f $d2
 .jr_00_2e01:
-    bit  5, [HL]                                       ;; 00:2e01 $cb $6e
+    bit  PADF_LEFT_BIT, [HL]                                       ;; 00:2e01 $cb $6e
     jr   Z, .jr_00_2e14                                ;; 00:2e03 $28 $0f
     ld   A, [wD20E_PlayerXPosition]                                    ;; 00:2e05 $fa $0e $d2
     sub  A, C                                          ;; 00:2e08 $91
@@ -551,7 +551,7 @@ call_00_2dbf_MissionPreview_UpdateMovement:
     sbc  A, $00                                        ;; 00:2e0f $de $00
     ld   [wD20F_PlayerXPosition], A                                    ;; 00:2e11 $ea $0f $d2
 .jr_00_2e14:
-    bit  7, [HL]                                       ;; 00:2e14 $cb $7e
+    bit  PADF_DOWN_BIT, [HL]                                       ;; 00:2e14 $cb $7e
     jr   Z, .jr_00_2e27                                ;; 00:2e16 $28 $0f
     ld   A, [wD210_PlayerYPosition]                                    ;; 00:2e18 $fa $10 $d2
     add  A, C                                          ;; 00:2e1b $81
@@ -560,7 +560,7 @@ call_00_2dbf_MissionPreview_UpdateMovement:
     adc  A, $00                                        ;; 00:2e22 $ce $00
     ld   [wD211_PlayerYPosition], A                                    ;; 00:2e24 $ea $11 $d2
 .jr_00_2e27:
-    bit  6, [HL]                                       ;; 00:2e27 $cb $76
+    bit  PADF_UP_BIT, [HL]                                       ;; 00:2e27 $cb $76
     ret  Z                                             ;; 00:2e29 $c8
     ld   A, [wD210_PlayerYPosition]                                    ;; 00:2e2a $fa $10 $d2
     sub  A, C                                          ;; 00:2e2d $91

@@ -515,7 +515,7 @@ call_02_5297_EntityAction_GoldRemote_unk1:
     ld   a,[wD73B]
     and  a,$1F
     ret  nz
-    ld   c,$04
+    ld   c,SFX_GOLD_REMOTE
     call call_00_112f_QueueSFX
     ret  
 
@@ -575,7 +575,7 @@ call_02_52e8_EntityAction_ScreamTVFallingPlatform_Update:
     jr   z,.jr_02_530C
     dec  [hl]
     ret  nz
-    ld   c,$27
+    ld   c,SFX_FALLING_PLATFORM
     call call_00_112f_QueueSFX
     ret  
 .jr_02_530C:
@@ -677,7 +677,7 @@ call_02_5399_EntityAction_Pumpkin_unk1:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped                                  ;; 02:5399 $cd $af $30
     call call_00_3154_Entity_MoveYDownWithFloorBound                                  ;; 02:539c $cd $54 $31
     ret  C                                             ;; 02:539f $d8
-    ld   C, $24                                        ;; 02:53a0 $0e $24
+    ld   C, SFX_BOUNCE                                        ;; 02:53a0 $0e $24
     call call_00_112f_QueueSFX                                  ;; 02:53a2 $cd $2f $11
     ld   A, $00                                        ;; 02:53a5 $3e $00
     jp   call_02_7102_Entity_SetAction                                  ;; 02:53a7 $c3 $02 $71
@@ -785,7 +785,7 @@ call_02_5434_EntityAction_FloatingSkull_unk0:
 call_02_5440_EntityAction_FloatingSkull_unk1:
     call call_00_3843_Entity_CheckAnimFlag_Bit2
     ret  z
-    ld   c,$34
+    ld   c,SFX_MULTI_PROJECTILE
     call call_00_112f_QueueSFX
     ld   c,$01
     farcall call_0a_7b9a_EntitySpawn_SpawnChildEntity
@@ -1230,7 +1230,7 @@ call_02_56dc_EntityAction_HardHeadAreaObject_unk0:
     add  HL, DE                                        ;; 02:5753 $19
     ld   A, [HL]                                       ;; 02:5754 $7e
     call call_02_7102_Entity_SetAction                                  ;; 02:5755 $cd $02 $71
-    ld   C, $19                                        ;; 02:5758 $0e $19
+    ld   C, SFX_HARD_HEAD_AREA_OBJECT                                        ;; 02:5758 $0e $19
     call call_00_112f_QueueSFX                                  ;; 02:575a $cd $2f $11
     ret                                                ;; 02:575d $c9
 .data_02_575e:
@@ -1246,7 +1246,7 @@ call_02_576e_EntityAction_HardHeadAreaObject_unk1:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped                                  ;; 02:577a $cd $af $30
     call call_00_3154_Entity_MoveYDownWithFloorBound                                  ;; 02:577d $cd $54 $31
     ret  C                                             ;; 02:5780 $d8
-    ld   C, $1a                                        ;; 02:5781 $0e $1a
+    ld   C, SFX_FALLING_OBJECT                                        ;; 02:5781 $0e $1a
     call call_00_112f_QueueSFX                                  ;; 02:5783 $cd $2f $11
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     set  0, [HL]                                       ;; 02:578e $cb $c6
@@ -1359,7 +1359,7 @@ call_02_5843_EntityAction_Bumblebee_unk0:
     call call_00_3859_Entity_CheckPlayerXProximity                                  ;; 02:584d $cd $59 $38
     ret  NC                                            ;; 02:5850 $d0
     call call_00_36bd_Entity_FaceTowardsPlayer                                  ;; 02:5851 $cd $bd $36
-    ld   C, $1d                                        ;; 02:5854 $0e $1d
+    ld   C, SFX_BUMBLEBEE                                        ;; 02:5854 $0e $1d
     call call_00_112f_QueueSFX                                  ;; 02:5856 $cd $2f $11
     ld   A, $01                                        ;; 02:5859 $3e $01
     jp   call_02_7102_Entity_SetAction                                  ;; 02:585b $c3 $02 $71
@@ -1392,7 +1392,7 @@ call_02_5871_EntityAction_BowlingBall_Update:
     ld   b,[hl]
     call call_00_316e_Entity_MoveYDownWithOffsetFloorBound
     ret  c
-    ld   c,$1A
+    ld   c,SFX_FALLING_OBJECT
     call call_00_112f_QueueSFX
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER
     dec  [hl]
@@ -1446,7 +1446,7 @@ call_02_58fa_EntityAction_Cactus_unk2:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped                                  ;; 02:58fa $cd $af $30
     call call_00_3154_Entity_MoveYDownWithFloorBound                                  ;; 02:58fd $cd $54 $31
     ret  C                                             ;; 02:5900 $d8
-    ld   C, $24                                        ;; 02:5901 $0e $24
+    ld   C, SFX_BOUNCE                                        ;; 02:5901 $0e $24
     call call_00_112f_QueueSFX                                  ;; 02:5903 $cd $2f $11
     ld   A, $00                                        ;; 02:5906 $3e $00
     jp   call_02_7102_Entity_SetAction                                  ;; 02:5908 $c3 $02 $71
@@ -1455,7 +1455,7 @@ call_02_590b_EntityAction_Domino_Update:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
     call call_00_3154_Entity_MoveYDownWithFloorBound
     ret  c
-    ld   c,$1A
+    ld   c,SFX_FALLING_OBJECT
     call call_00_112f_QueueSFX
     ld   c,$40
     jp   call_00_335a_Entity_SetYVelocity
@@ -1504,7 +1504,7 @@ call_02_592d_EntityAction_Flower_Update:
 call_02_596c_EntityAction_FlowerHammer_unk0:
     call call_00_3843_Entity_CheckAnimFlag_Bit2                                  ;; 02:596c $cd $43 $38
     ret  Z                                             ;; 02:596f $c8
-    ld   C, $1c                                        ;; 02:5970 $0e $1c
+    ld   C, SFX_FLOWER_HAMMER                                        ;; 02:5970 $0e $1c
     call call_00_112f_QueueSFX                                  ;; 02:5972 $cd $2f $11
     ld   A, $01                                        ;; 02:5975 $3e $01
     jp   call_02_7102_Entity_SetAction                                  ;; 02:5977 $c3 $02 $71
@@ -1533,7 +1533,7 @@ call_02_5993_EntityAction_Hunter_unk0:
     and  a,$7F
     jr   nz,.jr_02_59BE
     call call_00_36bd_Entity_FaceTowardsPlayer
-    ld   c,$20
+    ld   c,SFX_HUNTER
     call call_00_112f_QueueSFX
     ld   c,$0B
     farcall call_0a_7b9a_EntitySpawn_SpawnChildEntity
@@ -1663,7 +1663,7 @@ call_02_5a9a_EntityAction_HappyFace_unk1:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped                                  ;; 02:5a9a $cd $af $30
     call call_00_3154_Entity_MoveYDownWithFloorBound                                  ;; 02:5a9d $cd $54 $31
     ret  C                                             ;; 02:5aa0 $d8
-    ld   C, $24                                        ;; 02:5aa1 $0e $24
+    ld   C, SFX_BOUNCE                                        ;; 02:5aa1 $0e $24
     call call_00_112f_QueueSFX                                  ;; 02:5aa3 $cd $2f $11
     ld   A, $00                                        ;; 02:5aa6 $3e $00
     jp   call_02_7102_Entity_SetAction                                  ;; 02:5aa8 $c3 $02 $71
@@ -1852,7 +1852,7 @@ call_02_5be2_EntityAction_Rocket_unk0:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     bit  7,[hl]
     ret  z
-    ld   c,$1E
+    ld   c,SFX_ROCKET
     call call_00_112f_QueueSFX
     ld   a,$01
     jp   call_02_7102_Entity_SetAction
@@ -2013,7 +2013,7 @@ call_02_5ccf_EntityAction_Pterosaur_Update:
     call call_00_3802_Entity_SetMiscTimer
     ld   c,$38
     call call_00_335a_Entity_SetYVelocity
-    ld   c,$33
+    ld   c,SFX_PTEROSAUR
     call call_00_112f_QueueSFX
 .jr_02_5CFF:
     ld   c,$0C
@@ -2054,7 +2054,7 @@ call_02_5d37_EntityAction_FallingBoulder_unk1:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
     call call_00_3154_Entity_MoveYDownWithFloorBound
     ret  c
-    ld   c,$31
+    ld   c,SFX_FALLING_BOULDER
     call call_00_112f_QueueSFX
     ld   a,$02
     jp   call_02_7102_Entity_SetAction
@@ -2120,7 +2120,7 @@ call_02_5db2_EntityAction_FirePlant_unk1:
     ld   bc,$0008
     call call_00_316e_Entity_MoveYDownWithOffsetFloorBound
     ret  c
-    ld   c,$34
+    ld   c,SFX_MULTI_PROJECTILE
     call call_00_112f_QueueSFX
     ld   c,$06
     farcall call_0a_7b9a_EntitySpawn_SpawnChildEntity
@@ -2290,7 +2290,7 @@ call_02_5ebd_EntityAction_Cannon_Update:
     call call_00_3290_Entity_SetFacingDirection
     ld   c,$0D
     farcall call_0a_7b9a_EntitySpawn_SpawnChildEntity
-    ld   c,$30
+    ld   c,SFX_CANNON
     call call_00_112f_QueueSFX
     ret  
 
@@ -2384,7 +2384,7 @@ call_02_5f67_EntityAction_DragonHead_Update:
     jr   nz,.jr_02_5FA0
     ld   c,$0C
     farcall call_0a_7b9a_EntitySpawn_SpawnChildEntity
-    ld   c,$2F
+    ld   c,SFX_DRAGON
     call call_00_112f_QueueSFX
 .jr_02_5FA0:
     call call_02_6029_DragonHead_Sub1
@@ -2834,7 +2834,7 @@ call_02_6355_EntityAction_SpikyLog_Update:
 call_02_635d_EntityAction_Jar_unk0:
     call call_00_380c_Entity_CheckMiscTimerZero
     ret  z
-    ld   c,$2D
+    ld   c,SFX_JAR
     call call_00_112f_QueueSFX
     ld   c,$00
     call call_00_3825_Entity_SetCollisionType
@@ -3254,7 +3254,7 @@ call_02_65E2_TailSpinGear_Sub1:
     ld   a,c
     ret  z
     call call_02_7102_Entity_SetAction
-    ld   c,$35
+    ld   c,SFX_GEAR
     call call_00_112f_QueueSFX
     ret  
 
@@ -3369,7 +3369,7 @@ call_02_666c_EntityAction_AntSpawner_Update:
     ret  nc
     ld   c,$0E
     farcall call_0a_7b9a_EntitySpawn_SpawnChildEntity
-    ld   c,$06
+    ld   c,SFX_COLLECTIBLE
     call call_00_112f_QueueSFX
     ret  
 .jr_02_66B4:
@@ -3975,7 +3975,7 @@ call_02_6b81_EntityAction_GunProjectile_unk1:
     jp   call_02_6bf8_GunProjectile_Sub2
 
 call_02_6bcd_GunProjectile_Sub3:
-    ld   c,$36
+    ld   c,SFX_GUN_PROJECTILE
     call call_00_112f_QueueSFX
     ld   c,$1E
     call call_00_3825_Entity_SetCollisionType
@@ -4001,7 +4001,7 @@ call_02_6bf8_GunProjectile_Sub2:
     bit  7,[hl]
     ret  z
 call_02_6c03_GunProjectile_Sub:
-    ld   c,$37
+    ld   c,SFX_REZ_PROJECTILE
     call call_00_112f_QueueSFX
     ld   c,$0A
     farcall call_0a_7b9a_EntitySpawn_SpawnChildEntity
@@ -4102,7 +4102,7 @@ call_02_6Ca7_Rez_Unk5Sub:
     jp   nz,call_02_7102_Entity_SetAction
     ld   c,$11
     farcall call_0a_7b9a_EntitySpawn_SpawnChildEntity
-    ld   c,$37
+    ld   c,SFX_REZ_PROJECTILE
     call call_00_112f_QueueSFX
     jp   call_00_3985_Entity_SpawnProjectileInit
 
@@ -4218,7 +4218,7 @@ call_02_6d5d_EntityAction_Unk8B_unk0:
     ret  c
     ld   hl,wD616
     set  7,[hl]
-    ld   c,$38
+    ld   c,SFX_UNK8B
     call call_00_112f_QueueSFX
     jp   call_00_3931_Entity_KillSelf
 
@@ -4242,7 +4242,7 @@ call_02_6d80_EntityAction_FinalBattleButton_unk0:
     farcall call_0a_7b9a_EntitySpawn_SpawnChildEntity
     ld   bc,$0005
     call call_00_37d8_Entity_MoveY
-    ld   c,$39
+    ld   c,SFX_REZ_BUTTON
     call call_00_112f_QueueSFX
     ld   a,$01
     jp   call_02_7102_Entity_SetAction

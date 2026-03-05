@@ -1,7 +1,7 @@
 ;; Disassembled with BadBoy Disassembler: https://github.com/daid/BadBoy
 
 ; Note: All of the code in this file is identical in banks 0x21, 0x22, 0x23, and 0x24. This is a duplicated 
-; audio engine. The data that follows the code is different and contains different songs or sound effects.
+; audio engine. The data that follows the code is different and contains different music or sound effects.
 
 SECTION "bank23", ROMX[$4000], BANK[$23]
 

@@ -257,7 +257,7 @@ wD59D_ReturnBank:
 wD59E:
     ds 1                                               ;; d59e
 
-wD59F_CurrentInputs: ; A = 01, B = 02, Select = 04, Start = 08, Right = 0x10, Left = 0x20, Up = 0x40, Down = 0x80
+wD59F_CurrentInputs: ; inputs defined in hardware.inc
     ds 1                                               ;; d59f
 
 wD5A0:
@@ -987,7 +987,7 @@ wD759:
 
 wD75A_CurrentInputsAlt:
 ; button bits are only set for 1 frame. d-pad stays set while held
-; A = 01, B = 02, Select = 04, Start = 08, Right = 0x10, Left = 0x20, Up = 0x40, Down = 0x80
+; inputs defined in hardware.inc
     ds 1                                               ;; d75a
 
 wD75B_IdleTimer:

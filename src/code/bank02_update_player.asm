@@ -1,12 +1,12 @@
 call_02_489a_Player_SetLandingAction:
 ; Called on landing. Sets bit 6 of wD759. Chooses action ID: default 2 (light landing); 
-; if directional input ($30) is held and X speed ≥ 2, uses 5 (running landing); 
+; if directional input (LEFT or RIGHT) is held and X speed ≥ 2, uses 5 (running landing); 
 ; if directional input but speed < 2, uses 4 (soft landing). Jumps to Player_RequestAction
     ld   HL, wD759                                     ;; 02:489a $21 $59 $d7
     set  6, [HL]                                       ;; 02:489d $cb $f6
     ld   C, $02                                        ;; 02:489f $0e $02
     ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:48a1 $fa $5a $d7
-    and  A, $30                                        ;; 02:48a4 $e6 $30
+    and  A, PADF_RIGHT | PADF_LEFT                                        ;; 02:48a4 $e6 $30
     jr   Z, .jr_02_48b3                                ;; 02:48a6 $28 $0b
     ld   C, $05                                        ;; 02:48a8 $0e $05
     ld   A, [wD75E_PlayerXSpeed]                                    ;; 02:48aa $fa $5e $d7
@@ -261,7 +261,7 @@ call_02_4a45_Player_UpdateFacing:
     cp   A, $ff                                        ;; 02:4a48 $fe $ff
     ret  NZ                                            ;; 02:4a4a $c0
     ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:4a4b $fa $5a $d7
-    and  A, $30                                        ;; 02:4a4e $e6 $30
+    and  A, PADF_RIGHT | PADF_LEFT                                        ;; 02:4a4e $e6 $30
     jr   Z, .jr_02_4a62                                ;; 02:4a50 $28 $10
     ld   C, $00                                        ;; 02:4a52 $0e $00
     and  A, $10                                        ;; 02:4a54 $e6 $10
@@ -637,7 +637,7 @@ call_02_4c4f_Player_CheckTileInteractions:
     jp   Z, call_00_0696                                 ;; 02:4c67 $ca $96 $06
 .jr_02_4c6a:
     ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:4c6a $fa $5a $d7
-    and  A, $40                                        ;; 02:4c6d $e6 $40
+    and  A, PADF_UP                                        ;; 02:4c6d $e6 $40
     jr   Z, .jr_02_4ca6                                ;; 02:4c6f $28 $35
     ld   A, [wD764_TileTypeBehindGexsBody]                                    ;; 02:4c71 $fa $64 $d7
     cp   A, $22                                        ;; 02:4c74 $fe $22

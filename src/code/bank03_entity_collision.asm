@@ -136,7 +136,7 @@ call_03_4c76_EntityCollision_Dispatch:
     ld   a,[wD64C]
     or   a,$10
     ld   [wD64C],a
-    ld   c,$03
+    ld   c,SFX_SILVER_REMOTE
     call call_00_112f_QueueSFX
     call call_00_3931_Entity_KillSelf
     jp   call_00_393c_Entity_ClearEntityFlagSlot
@@ -751,7 +751,7 @@ call_03_4c76_EntityCollision_Dispatch:
     ld   [hl],$06
     and  a
     ret  nz
-    ld   c,$2B
+    ld   c,SFX_POWERED_WALKWAY
     call call_00_112f_QueueSFX
     ret  
 .jr_03_514e_CollisionHandler_PowerUp:

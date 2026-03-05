@@ -213,7 +213,7 @@ call_00_0150_Init:
     jr   Z, .jr_00_0306                                ;; 00:02f9 $28 $0b
     farcall call_01_42bd_EnterTV
 .jr_00_0306:
-    call call_00_11e0_PlaySongBasedOnLevel                                  ;; 00:0306 $cd $e0 $11
+    call call_00_11e0_PlayMusicBasedOnLevel                                  ;; 00:0306 $cd $e0 $11
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:0309 $fa $24 $d6
     and  A, A                                          ;; 00:030c $a7
     jr   Z, .jr_00_0350                                ;; 00:030d $28 $41
@@ -305,7 +305,7 @@ call_00_0150_Init:
 .jp_00_0428:
     call call_00_0ab4_WaitForInterrupt                                  ;; 00:0428 $cd $b4 $0a
     ld   A, [wD59F_CurrentInputs]                                    ;; 00:042b $fa $9f $d5
-    cp   A, $0f                                        ;; 00:042e $fe $0f
+    cp   A, PADF_A | PADF_B | PADF_SELECT | PADF_START                                        ;; 00:042e $fe $0f
     jp   Z, .jp_00_0220                                ;; 00:0430 $ca $20 $02
     ld   A, [wD621]                                    ;; 00:0433 $fa $21 $d6
     and  A, $08                                        ;; 00:0436 $e6 $08
@@ -370,7 +370,7 @@ call_00_0150_Init:
     ld   A, [wD751]                                    ;; 00:04c1 $fa $51 $d7
     cp   A, $01                                        ;; 00:04c4 $fe $01
     jr   NZ, .jr_00_04cd                               ;; 00:04c6 $20 $05
-    ld   C, $15                                        ;; 00:04c8 $0e $15
+    ld   C, SFX_MENU_UNK_2                                        ;; 00:04c8 $0e $15
     call call_00_112f_QueueSFX                                  ;; 00:04ca $cd $2f $11
 .jr_00_04cd:
     ld   HL, wD751                                     ;; 00:04cd $21 $51 $d7
@@ -380,7 +380,7 @@ call_00_0150_Init:
     ld   A, [wD73B]                                    ;; 00:04d4 $fa $3b $d7
     and  A, $7f                                        ;; 00:04d7 $e6 $7f
     jr   NZ, .jr_00_04e0                               ;; 00:04d9 $20 $05
-    ld   C, $14                                        ;; 00:04db $0e $14
+    ld   C, SFX_MENU_UNK_1                                        ;; 00:04db $0e $14
     call call_00_112f_QueueSFX                                  ;; 00:04dd $cd $2f $11
 .jr_00_04e0:
     farcall call_02_6eba_Entities_UpdateAll
@@ -640,7 +640,7 @@ call_00_06bf_DealDamageToPlayer: ; Deal damage to Gex
     jp   call_00_0629                                    ;; 00:06e9 $c3 $29 $06
 
 call_00_06ec:
-    ld   C, $06                                        ;; 00:06ec $0e $06
+    ld   C, SFX_COLLECTIBLE                                        ;; 00:06ec $0e $06
     call call_00_112f_QueueSFX                                  ;; 00:06ee $cd $2f $11
     call call_00_074d                                  ;; 00:06f1 $cd $4d $07
     call call_00_0634                                  ;; 00:06f4 $cd $34 $06
@@ -2094,14 +2094,14 @@ call_00_1129_CheckInputB:
 call_00_112f_QueueSFX:
     ld   HL, wD789                                     ;; 00:112f $21 $89 $d7
     ld   A, [HL]                                       ;; 00:1132 $7e
-    cp   A, $ff                                        ;; 00:1133 $fe $ff
+    cp   A, SFX_NONE                                        ;; 00:1133 $fe $ff
     ret  NZ                                            ;; 00:1135 $c0
     ld   [HL], C                                       ;; 00:1136 $71
     ret                                                ;; 00:1137 $c9
 
-call_00_1138:
+call_00_1138_NoSFXIsQueued:
     ld   A, [wD789]                                    ;; 00:1138 $fa $89 $d7
-    cp   A, $ff                                        ;; 00:113b $fe $ff
+    cp   A, SFX_NONE                                        ;; 00:113b $fe $ff
     ret  Z                                             ;; 00:113d $c8
 
 call_00_113e:
@@ -2151,16 +2151,16 @@ call_00_113e:
     db   $01, $38, $01, $39, $01, $3a, $01, $3b        ;; 00:11d4 ????????
     db   $01, $3c, $01, $3d                            ;; 00:11dc ????
 
-call_00_11e0_PlaySongBasedOnLevel:
+call_00_11e0_PlayMusicBasedOnLevel:
     ld   HL, wD624_CurrentLevelId                                     ;; 00:11e0 $21 $24 $d6
     ld   L, [HL]                                       ;; 00:11e3 $6e
     ld   H, $00                                        ;; 00:11e4 $26 $00
-    ld   DE, .data_00_11ed_LevelSongs                                     ;; 00:11e6 $11 $ed $11
+    ld   DE, .data_00_11ed_LevelMusic                                     ;; 00:11e6 $11 $ed $11
     add  HL, DE                                        ;; 00:11e9 $19
     ld   A, [HL]                                       ;; 00:11ea $7e
     jr   call_00_120c_SetupMusic                                  ;; 00:11eb $18 $1f
-.data_00_11ed_LevelSongs:
-; this determines which song to use for each level
+.data_00_11ed_LevelMusic:
+; this determines which music to use for each level
     db   MUSIC_MEDIA_DIMENSION, MUSIC_TOON_TV, MUSIC_SCREAM_TV, MUSIC_SCREAM_TV
     db   MUSIC_CIRCUIT_CENTRAL, MUSIC_KUNG_FU_THEATER, MUSIC_MEDIA_DIMENSION, MUSIC_PREHISTORY_CHANNEL      ;; 00:11ed www?????
     db   MUSIC_TOON_TV, MUSIC_PREHISTORY_CHANNEL, MUSIC_CIRCUIT_CENTRAL, MUSIC_SCREAM_TV
@@ -2207,7 +2207,7 @@ call_00_120c_SetupMusic:
     ld   A, $00                                        ;; 00:123f $3e $00
     jp   call_00_113e                                  ;; 00:1241 $c3 $3e $11
 .data_00_1244_MusicList:
-; this is the list of songs [first byte is bank number]
+; this is the list of music [first byte is bank number]
     db   BANK_21, $04, $0f, $00
     db   BANK_21, $00, $0f, $00        ;; 00:1244 ????????
     db   BANK_21, $08, $0f, $00
@@ -2435,7 +2435,7 @@ jr_00_209a:
     ld   c,$05
     ld   de,$D799
     ld   a,[wD624_CurrentLevelId]
-    cp   a,$02
+    cp   a,MAP_SCREAM_TV_SMELLRAISER
     jr   z,.jr_00_219b
     ld   c,$08
     ld   de,wD79A
@@ -2527,7 +2527,7 @@ jr_00_209a:
     ld   b,[hl]
     ld   hl,.data_00_22a7
     ld   a,[wD624_CurrentLevelId]
-    cp   a,$05
+    cp   a,MAP_KUNG_FU_THEATER_MAO_TSE_TONGUE
     jr   z,.jr_00_2289
     ld   hl,.data_00_22b8
 .jr_00_2289:

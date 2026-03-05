@@ -71,14 +71,14 @@ DEF BANK_3E      EQU $3E
 DEF BANK_3F      EQU $3F
 
 ; Inputs
-;DEF Input_A        EQU $01
-;DEF Input_B        EQU $02
-;DEF Input_Select   EQU $04
-;DEF Input_Start    EQU $08
-;DEF Input_Right    EQU $10
-;DEF Input_Left     EQU $20
-;DEF Input_Up       EQU $40
-;DEF Input_Down     EQU $80
+DEF PADF_DOWN_BIT   EQU 7
+DEF PADF_UP_BIT     EQU 6
+DEF PADF_LEFT_BIT   EQU 5
+DEF PADF_RIGHT_BIT  EQU 4
+DEF PADF_START_BIT  EQU 3
+DEF PADF_SELECT_BIT EQU 2
+DEF PADF_B_BIT      EQU 1
+DEF PADF_A_BIT      EQU 0
 
 ; Menu Types
 DEF MENU_TYPE_PAUSED_IN_MEDIA_DIMENSION   EQU $00
@@ -119,6 +119,67 @@ DEF MUSIC_UNK_04                          EQU $04
 DEF MUSIC_SCREAM_TV                       EQU $05
 DEF MUSIC_TOON_TV                         EQU $06
 DEF MUSIC_MEDIA_DIMENSION                 EQU $07
+
+; Sound Effects
+DEF SFX_EMPTY                              EQU $00
+DEF SFX_01                                 EQU $01 ; unused?
+DEF SFX_02                                 EQU $02 ; unused?
+DEF SFX_SILVER_REMOTE                      EQU $03
+DEF SFX_GOLD_REMOTE                        EQU $04
+DEF SFX_05                                 EQU $05 ; unused?
+DEF SFX_COLLECTIBLE                        EQU $06 ; also used for ant spawner
+DEF SFX_07                                 EQU $07 ; unused?
+DEF SFX_08                                 EQU $08 ; unused?
+DEF SFX_09                                 EQU $09 ; unused?
+DEF SFX_0A                                 EQU $0A ; unused?
+DEF SFX_0B                                 EQU $0B ; unused?
+DEF SFX_GEX_JUMP                           EQU $0C
+DEF SFX_GEX_DOUBLE_JUMP                    EQU $0D
+DEF SFX_GEX_COLLAPSE                       EQU $0E
+DEF SFX_GEX_DEATH                          EQU $0F
+DEF SFX_GEX_EAT_FLY                        EQU $10
+DEF SFX_GEX_SPAWN                          EQU $11
+DEF SFX_GEX_UNK1C                          EQU $12
+DEF SFX_13                                 EQU $13 ; unused?
+DEF SFX_MENU_UNK_1                         EQU $14
+DEF SFX_MENU_UNK_2                         EQU $15
+DEF SFX_16                                 EQU $16 ; unused?
+DEF SFX_PROJECTILE                         EQU $17
+DEF SFX_18                                 EQU $18 ; unused?
+DEF SFX_HARD_HEAD_AREA_OBJECT              EQU $19
+DEF SFX_FALLING_OBJECT                     EQU $1A
+DEF SFX_1B                                 EQU $1B ; unused?
+DEF SFX_FLOWER_HAMMER                      EQU $1C
+DEF SFX_BUMBLEBEE                          EQU $1D
+DEF SFX_ROCKET                             EQU $1E
+DEF SFX_1F                                 EQU $1F ; unused?
+DEF SFX_HUNTER                             EQU $20
+DEF SFX_21                                 EQU $21 ; unused?
+DEF SFX_22                                 EQU $22 ; unused?
+DEF SFX_23                                 EQU $23 ; unused?
+DEF SFX_BOUNCE                             EQU $24
+DEF SFX_25                                 EQU $25 ; unused?
+DEF SFX_26                                 EQU $26 ; unused?
+DEF SFX_FALLING_PLATFORM                   EQU $27
+DEF SFX_28                                 EQU $28 ; unused?
+DEF SFX_29                                 EQU $29 ; unused?
+DEF SFX_GEX_JUMP_UNK                       EQU $2A ; unknown, but related to gex jumping
+DEF SFX_POWERED_WALKWAY                    EQU $2B
+DEF SFX_2C                                 EQU $2C ; unused?
+DEF SFX_JAR                                EQU $2D
+DEF SFX_2E                                 EQU $2E ; unused?
+DEF SFX_DRAGON                             EQU $2F
+DEF SFX_CANNON                             EQU $30
+DEF SFX_FALLING_BOULDER                    EQU $31
+DEF SFX_32                                 EQU $32 ; unused?
+DEF SFX_PTEROSAUR                          EQU $33
+DEF SFX_MULTI_PROJECTILE                   EQU $34
+DEF SFX_GEAR                               EQU $35
+DEF SFX_GUN_PROJECTILE                     EQU $36
+DEF SFX_REZ_PROJECTILE                     EQU $37
+DEF SFX_UNK8B                              EQU $38 ; used by entity_unk8b
+DEF SFX_REZ_BUTTON                         EQU $39
+DEF SFX_NONE                               EQU $FF ; no sfx queued
 
 ; Maps
 DEF MAP_MEDIA_DIMENSION                           EQU $00
@@ -340,36 +401,36 @@ DEF PLAYER_CAN_ATTACK_ENTITY EQU $02
 DEF PLAYER_CAN_STOMP_ENTITY  EQU $04
 
 ; Player Action Ids
-DEF PLAYER_ACTION_SPAWN_IN_LEVEL             EQU $00
+DEF PLAYER_ACTION_SPAWN                      EQU $00
 DEF PLAYER_ACTION_UNK_01                     EQU $01
 DEF PLAYER_ACTION_STAND                      EQU $02
 DEF PLAYER_ACTION_IDLE_ANIMATION             EQU $03
 DEF PLAYER_ACTION_WALK                       EQU $04
 DEF PLAYER_ACTION_RUN                        EQU $05
-DEF PLAYER_ACTION_UNK_06                     EQU $06
-DEF PLAYER_ACTION_UNK_07                     EQU $07
+DEF PLAYER_ACTION_SKID                       EQU $06
+DEF PLAYER_ACTION_STOP_ON_CERTAIN_FLOOR      EQU $07
 DEF PLAYER_ACTION_CROUCH                     EQU $08
 DEF PLAYER_ACTION_JUMP                       EQU $09
 DEF PLAYER_ACTION_DOUBLE_JUMP                EQU $0A
-DEF PLAYER_ACTION_UNK_0B                     EQU $0B
+DEF PLAYER_ACTION_NONE                       EQU $0B
 DEF PLAYER_ACTION_KARATE_KICK                EQU $0C
-DEF PLAYER_ACTION_TAILSPIN                   EQU $0D
-DEF PLAYER_ACTION_MANUAL_TONGUE_FLICK        EQU $0E
-DEF PLAYER_ACTION_DAMAGED                    EQU $0F
-DEF PLAYER_ACTION_DYING                      EQU $10
-DEF PLAYER_ACTION_DEAD                       EQU $11
+DEF PLAYER_ACTION_TAIL_SPIN                  EQU $0D
+DEF PLAYER_ACTION_EAT_FLY                    EQU $0E
+DEF PLAYER_ACTION_TAKE_DAMAGE                EQU $0F
+DEF PLAYER_ACTION_DEATH                      EQU $10
+DEF PLAYER_ACTION_DEATH_SET_UP_WARP          EQU $11
 DEF PLAYER_ACTION_ENTER_TV                   EQU $12
 DEF PLAYER_ACTION_UNK_13                     EQU $13
 DEF PLAYER_ACTION_EXIT_TV                    EQU $14
-DEF PLAYER_ACTION_PUSH_BG_WALL               EQU $15
-DEF PLAYER_ACTION_PUSH_ENTITY_WALL           EQU $16 ; such as tv button
+DEF PLAYER_ACTION_STANDING_PUSH              EQU $15 ; pushing bg wall
+DEF PLAYER_ACTION_WALKING_PUSH               EQU $16 ; pushing entity, such as tv button
 DEF PLAYER_ACTION_FREEFALL                   EQU $17
-DEF PLAYER_ACTION_UNK_18                     EQU $18
-DEF PLAYER_ACTION_COLLAPSE                   EQU $19 ; crushed / large fall
+DEF PLAYER_ACTION_STOP_IMMEDIATE             EQU $18
+DEF PLAYER_ACTION_COLLAPSE                   EQU $19 ; crushed by enemy, or landed from large fall
 DEF PLAYER_ACTION_ENTER_DOOR                 EQU $1A
-DEF PLAYER_ACTION_UNK_1B                     EQU $1B
+DEF PLAYER_ACTION_LEAVE_DOOR                 EQU $1B
 DEF PLAYER_ACTION_UNK_1C                     EQU $1C
-DEF PLAYER_ACTION_CLIMB                      EQU $1D ; climbing wall or background
+DEF PLAYER_ACTION_CLIMB                      EQU $1D ; used for both types of climbing
 DEF PLAYER_ACTION_UNK_1E                     EQU $1E
 DEF PLAYER_ACTION_UNK_1F                     EQU $1F ; disables collision updating?
 
