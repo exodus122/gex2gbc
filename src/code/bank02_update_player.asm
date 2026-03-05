@@ -169,9 +169,9 @@ call_02_4939_PlayerUpdateMain:
     dec  [HL]                                          ;; 02:49af $35
 .jr_02_49b0:
     call call_02_4a45                                  ;; 02:49b0 $cd $45 $4a
-    farcall call_03_4900_UpdateBgCollision_MainDispatcher
+    farcall call_03_4900_BgCollision_Update
     call call_02_4b78                                  ;; 02:49be $cd $78 $4b
-    farcall call_03_4c0a_CacheNearbyTileValues
+    farcall call_03_4c0a_BgCollision_CacheAdjacentTiles
     call call_02_4c4f                                  ;; 02:49cc $cd $4f $4c
     ld   HL, wD745                                     ;; 02:49cf $21 $45 $d7
     ld   A, [HL]                                       ;; 02:49d2 $7e

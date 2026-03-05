@@ -1,6 +1,9 @@
 ; This file handles gex's collision with background walls, floors, ceilings, etc.
 
-call_03_4900_UpdateBgCollision_MainDispatcher:
+call_03_4900_BgCollision_Update:
+; Top-level entry point. Saves wD585 (collision flags) to wD584 (prev) and clears it. Checks wD201 action ID: 
+; if bits $1F are all set (special action state), sets bit 7 of collision flags and returns early (no collision). 
+; Otherwise falls through to the sidescroller handler
     ld   HL, wD585_CollisionFlags                                     ;; 03:4900 $21 $85 $d5
     ld   A, [HL]                                       ;; 03:4903 $7e
     ld   [HL], $00                                     ;; 03:4904 $36 $00
@@ -8,11 +11,22 @@ call_03_4900_UpdateBgCollision_MainDispatcher:
     ld   A, [wD201_PlayerEntity_ActionId]                                    ;; 03:4909 $fa $01 $d2
     and  A, PLAYER_ACTION_UNK_1F                                        ;; 03:490c $e6 $1f
     cp   A, PLAYER_ACTION_UNK_1F                                        ;; 03:490e $fe $1f
-    jr   NZ, call_03_4915_BgCollisionHandler_Sidescroller                                ;; 03:4910 $20 $03
+    jr   NZ, call_03_4915_BgCollision_Sidescroller                                ;; 03:4910 $20 $03
     set  7, [HL]                                       ;; 03:4912 $cb $fe
     ret                                                ;; 03:4914 $c9
 
-call_03_4915_BgCollisionHandler_Sidescroller:
+call_03_4915_BgCollision_Sidescroller:
+; Main sidescroller collision dispatcher. Sets bit 7 of collision flags if wD74D (player room) is nonzero 
+; (indoor/special room = no normal collision). If wD746 (climbing state) ≠ $FF, jumps to the climb collision 
+; handler instead. Otherwise: computes a Y-velocity-derived lookahead value (Y velocity − 2, clamped to $C0, 
+; then arithmetic right-shifted 4) stored in wD75F. Calls call_03_4ab3_BgCollision_GetXOffset to get the X offset. 
+; (1) Wall check: samples 4 tile rows at the leading edge above the player (moving up at the predicted speed), 
+; ORs all 4 tile collision bytes together into C. If bit 0 of C is set (solid wall), sets wD74C=$01, 
+; zeros wD75C/wD75D, sets bit 6 of collision flags (wall hit). 
+; (2) Horizontal push check: if no bit-7 collision, calls call_03_4ab3_BgCollision_GetXOffset again and walks either right (C=+1) 
+; or left (C=−1) through successive tiles calling TileCollisionCheck_Raw, counting how many are solid into B. 
+; Negates B, ORs into collision flags; if any of the low nibble bits are set, also sets bit 7. 
+; Falls through to the floor/ceiling check
     ld   A, [wD74D_PlayerRoom]                                    ;; 03:4915 $fa $4d $d7
     and  A, A                                          ;; 03:4918 $a7
     jr   Z, .jr_03_491d                                ;; 03:4919 $28 $02
@@ -20,7 +34,7 @@ call_03_4915_BgCollisionHandler_Sidescroller:
 .jr_03_491d:
     ld   A, [wD746_PlayerClimbingState]                                    ;; 03:491d $fa $46 $d7
     cp   A, $ff                                        ;; 03:4920 $fe $ff
-    jp   NZ, call_03_4ac4_ProcessClimbCollision        ; 03:4922 $c2 $c4 $4a ; if climb state byte is not ff, run alternate collision func
+    jp   NZ, call_03_4ac4_BgCollision_Climb        ; 03:4922 $c2 $c4 $4a ; if climb state byte is not ff, run alternate collision func
     ld   A, [wD760_PlayerYVelocity]                                    ;; 03:4925 $fa $60 $d7
     sub  A, $02                                        ;; 03:4928 $d6 $02
     bit  7, A                                          ;; 03:492a $cb $7f
@@ -34,8 +48,8 @@ call_03_4915_BgCollisionHandler_Sidescroller:
     sra  A                                             ;; 03:4938 $cb $2f
     sra  A                                             ;; 03:493a $cb $2f
     ld   [wD75F_PlayerYVelocityRelated], A                                    ;; 03:493c $ea $5f $d7
-    call call_03_4ab3                                  ;; 03:493f $cd $b3 $4a
-    jp   Z, .jp_03_4a05                                ;; 03:4942 $ca $05 $4a
+    call call_03_4ab3_BgCollision_GetXOffset                                  ;; 03:493f $cd $b3 $4a
+    jp   Z, .jp_03_4a05_FloorCeilingCheck                                ;; 03:4942 $ca $05 $4a
     ld   E, A                                          ;; 03:4945 $5f
     bit  7, E                                          ;; 03:4946 $cb $7b
     jr   Z, .jr_03_4954                                ;; 03:4948 $28 $0a
@@ -116,9 +130,9 @@ call_03_4915_BgCollisionHandler_Sidescroller:
 .jr_03_49bd:
     ld   HL, wD585_CollisionFlags                                     ;; 03:49bd $21 $85 $d5
     bit  7, [HL]                                       ;; 03:49c0 $cb $7e
-    jr   NZ, .jp_03_4a05                               ;; 03:49c2 $20 $41
-    call call_03_4ab3                                  ;; 03:49c4 $cd $b3 $4a
-    jr   Z, .jp_03_4a05                                ;; 03:49c7 $28 $3c
+    jr   NZ, .jp_03_4a05_FloorCeilingCheck                               ;; 03:49c2 $20 $41
+    call call_03_4ab3_BgCollision_GetXOffset                                  ;; 03:49c4 $cd $b3 $4a
+    jr   Z, .jp_03_4a05_FloorCeilingCheck                                ;; 03:49c7 $28 $3c
     bit  7, A                                          ;; 03:49c9 $cb $7f
     jr   NZ, .jr_03_49e2                               ;; 03:49cb $20 $15
     ld   B, $00                                        ;; 03:49cd $06 $00
@@ -126,7 +140,7 @@ call_03_4915_BgCollisionHandler_Sidescroller:
 .jr_03_49d1:
     push AF                                            ;; 03:49d1 $f5
     push BC                                            ;; 03:49d2 $c5
-    call call_03_4bd4_TileCollisionCheck_Raw                                  ;; 03:49d3 $cd $d4 $4b
+    call call_03_4bd4_BgCollision_TestTile                                  ;; 03:49d3 $cd $d4 $4b
     pop  BC                                            ;; 03:49d6 $c1
     and  A, A                                          ;; 03:49d7 $a7
     jr   Z, .jr_03_49db                                ;; 03:49d8 $28 $01
@@ -143,7 +157,7 @@ call_03_4915_BgCollisionHandler_Sidescroller:
 .jr_03_49e6:
     push AF                                            ;; 03:49e6 $f5
     push BC                                            ;; 03:49e7 $c5
-    call call_03_4bd4_TileCollisionCheck_Raw                                  ;; 03:49e8 $cd $d4 $4b
+    call call_03_4bd4_BgCollision_TestTile                                  ;; 03:49e8 $cd $d4 $4b
     pop  BC                                            ;; 03:49eb $c1
     and  A, A                                          ;; 03:49ec $a7
     jr   Z, .jr_03_49f0                                ;; 03:49ed $28 $01
@@ -161,10 +175,16 @@ call_03_4915_BgCollisionHandler_Sidescroller:
     or   A, [HL]                                       ;; 03:49fb $b6
     ld   [HL], A                                       ;; 03:49fc $77
     and  A, $0f                                        ;; 03:49fd $e6 $0f
-    jr   Z, .jp_03_4a05                                ;; 03:49ff $28 $04
+    jr   Z, .jp_03_4a05_FloorCeilingCheck                                ;; 03:49ff $28 $04
     set  7, [HL]                                       ;; 03:4a01 $cb $fe
-    jr   .jp_03_4a05                                   ;; 03:4a03 $18 $00
-.jp_03_4a05:
+    jr   .jp_03_4a05_FloorCeilingCheck                                   ;; 03:4a03 $18 $00
+.jp_03_4a05_FloorCeilingCheck:
+; Clears wD761 (falling flag). Returns early if bit 7 of collision flags is set. 
+; (1) Floor landing check (Y velocity = 0 or upward): samples the tile at player Y+$10 (feet), 
+; reads the next collision row too for the second tile type. Uses the X sub-pixel and a bitmask 
+; table at $4AAB to find how many pixels above the floor surface Gex is; writes the snapped offset to wD761. 
+; (2) Ceiling check (falling, Y velocity > 0): samples tile at player Y − (velocity high nibble + $11) above 
+; the head. If bit 1 of the tile's collision byte is set (ceiling), zeroes wD760 (Y velocity)
     xor  A, A                                          ;; 03:4a05 $af
     ld   [wD761_PlayerFallingFlag], A                                    ;; 03:4a06 $ea $61 $d7
     ld   HL, wD585_CollisionFlags                                     ;; 03:4a09 $21 $85 $d5
@@ -177,7 +197,7 @@ call_03_4915_BgCollisionHandler_Sidescroller:
     jr   Z, .jr_03_4a7c                                ;; 03:4a17 $28 $63
 .jr_03_4a19:
     ld   B, $00                                        ;; 03:4a19 $06 $00
-    call call_03_4ab3                                  ;; 03:4a1b $cd $b3 $4a
+    call call_03_4ab3_BgCollision_GetXOffset                                  ;; 03:4a1b $cd $b3 $4a
     ld   C, A                                          ;; 03:4a1e $4f
     ld   A, [wD210_PlayerYPosition]                                    ;; 03:4a1f $fa $10 $d2
     add  A, $10                                        ;; 03:4a22 $c6 $10
@@ -245,7 +265,7 @@ call_03_4915_BgCollisionHandler_Sidescroller:
     ld   [wD761_PlayerFallingFlag], A                                    ;; 03:4a78 $ea $61 $d7
     ret                                                ;; 03:4a7b $c9
 .jr_03_4a7c:
-    call call_03_4ab3                                  ;; 03:4a7c $cd $b3 $4a
+    call call_03_4ab3_BgCollision_GetXOffset                                  ;; 03:4a7c $cd $b3 $4a
     ld   C, A                                          ;; 03:4a7f $4f
     ld   A, [wD760_PlayerYVelocity]                                    ;; 03:4a80 $fa $60 $d7
     swap A                                             ;; 03:4a83 $cb $37
@@ -276,7 +296,10 @@ call_03_4915_BgCollisionHandler_Sidescroller:
     ret                                                ;; 03:4aaa $c9
     db   $80, $40, $20, $10, $08, $04, $02, $01        ;; 03:4aab ........
 
-call_03_4ab3:
+call_03_4ab3_BgCollision_GetXOffset:
+; Helper. Loads wD75D (previous X speed). If bit 5 of wD20D (facing angle) is set (facing left), 
+; negates the value. Adds wD75C (X sub-pixel accumulator) and returns the result in A. Used to 
+; compute the forward-facing horizontal probe offset
     ld   A, [wD75D_PlayerXSpeedPrev]                                    ;; 03:4ab3 $fa $5d $d7
     ld   HL, wD20D_PlayerFacingAngle                                     ;; 03:4ab6 $21 $0d $d2
     bit  5, [HL]                                       ;; 03:4ab9 $cb $6e
@@ -288,7 +311,17 @@ call_03_4ab3:
     add  A, [HL]                                       ;; 03:4ac2 $86
     ret                                                ;; 03:4ac3 $c9
 
-call_03_4ac4_ProcessClimbCollision:
+call_03_4ac4_BgCollision_Climb:
+; Handles collision while Gex is climbing (ladder/pole). Always sets bit 7 of collision flags 
+; (no normal movement collision). Returns immediately if climb state ≥ 6 (dismounting). 
+; Computes an index = (climb state × 2) + facing-left bit, looks up a climb script pointer 
+; in .data_03_4b66_ClimbCollisionScriptTable. Masks wD75A (input) against the script's input mask — returns if no relevant 
+; input. Iterates through the script's tile-check entries searching for a matching current input byte. 
+; On no match, masks wD75A to low nibble (suppresses directional input). On match: reads two (C, B) offset pairs. 
+; First pair: calls FetchTileValue; if bit 6 of result is set (exit tile), checks for jump input ($80) 
+; and transitions climb state to 6 or 7 (drop off). If bit 6 not set: second pair: calls FetchTileValue again; 
+; if bit 7 set, checks for tile IDs $30–$33 (pipe entry), stores offset in wD749, sets climb state 9. 
+; Otherwise, if down input ($40) is pressed and climb state ≥ 2, sets climb state 8 (step down)
     ld   HL, wD585_CollisionFlags                                     ;; 03:4ac4 $21 $85 $d5
     set  7, [HL]                                       ;; 03:4ac7 $cb $fe
     ld   A, [wD746_PlayerClimbingState]                                    ;; 03:4ac9 $fa $46 $d7
@@ -305,7 +338,7 @@ call_03_4ac4_ProcessClimbCollision:
     ld   L, A                                          ;; 03:4adc $6f
     ld   H, $00                                        ;; 03:4add $26 $00
     add  HL, HL                                        ;; 03:4adf $29
-    ld   DE, .data_03_4b66                             ;; 03:4ae0 $11 $66 $4b
+    ld   DE, .data_03_4b66_ClimbCollisionScriptTable                             ;; 03:4ae0 $11 $66 $4b
     add  HL, DE                                        ;; 03:4ae3 $19
     ld   A, [HL+]                                      ;; 03:4ae4 $2a
     ld   H, [HL]                                       ;; 03:4ae5 $66
@@ -338,7 +371,7 @@ call_03_4ac4_ProcessClimbCollision:
     ld   A, [HL+]                                      ;; 03:4b06 $2a
     ld   B, A                                          ;; 03:4b07 $47
     push HL                                            ;; 03:4b08 $e5
-    call call_03_4c5a_FetchTileValue                                  ;; 03:4b09 $cd $5a $4c
+    call call_03_4c5a_BgCollision_FetchTile                                  ;; 03:4b09 $cd $5a $4c
     pop  HL                                            ;; 03:4b0c $e1
     bit  6, B                                          ;; 03:4b0d $cb $70
     jr   Z, .jr_03_4b2b                                ;; 03:4b0f $28 $1a
@@ -360,7 +393,7 @@ call_03_4ac4_ProcessClimbCollision:
     ld   C, A                                          ;; 03:4b2c $4f
     ld   A, [HL+]                                      ;; 03:4b2d $2a
     ld   B, A                                          ;; 03:4b2e $47
-    call call_03_4c5a_FetchTileValue                                  ;; 03:4b2f $cd $5a $4c
+    call call_03_4c5a_BgCollision_FetchTile                                  ;; 03:4b2f $cd $5a $4c
     bit  7, B                                          ;; 03:4b32 $cb $78
     jr   NZ, .jr_03_4b4a                               ;; 03:4b34 $20 $14
     ld   A, [wD746_PlayerClimbingState]                                    ;; 03:4b36 $fa $46 $d7
@@ -388,7 +421,11 @@ call_03_4ac4_ProcessClimbCollision:
     xor  A, A                                          ;; 03:4b61 $af
     ld   [wD747], A                                    ;; 03:4b62 $ea $47 $d7
     ret                                                ;; 03:4b65 $c9
-.data_03_4b66:
+.data_03_4b66_ClimbCollisionScriptTable:
+; 12-entry pointer table (climb state 0–5 × 2 facing directions). States 0–3 (all facings) share 
+; .data_03_4b7e (full ladder script, 5 entries, input mask $F0). States 4/6 facing right share 
+; .data_03_4baa, 5/7 facing left share .data_03_4bb8 (pole scripts, 2 entries each, input mask $C0). 
+; States 8–11 all share .data_03_4bc6 (dismount script, 2 entries, input mask $30)
     dw   .data_03_4b7e, .data_03_4b7e, .data_03_4b7e, .data_03_4b7e     ;; 03:4b66 pP
     dw   .data_03_4baa, .data_03_4bb8, .data_03_4baa, .data_03_4bb8,
     dw   .data_03_4bc6, .data_03_4bc6, .data_03_4bc6, .data_03_4bc6
@@ -412,7 +449,12 @@ call_03_4ac4_ProcessClimbCollision:
     db   $20, $f7, $f7, $ff, $f7, $10, $09, $f7        ;; 03:4bca ????????
     db   $01, $f7                                      ;; 03:4bd2 ??
 
-call_03_4bd4_TileCollisionCheck_Raw:
+call_03_4bd4_BgCollision_TestTile:
+; Low-level tile collision probe. Takes B (Y offset) and C (X offset) relative to the player. 
+; Computes (player Y + $0F + B) for the tile row, (player X + C) for the tile column, looks up 
+; the tile ID from wC800 collision data at $3200-based address. Uses (Y & 7) to index into $4000-page 
+; tile collision bytes, (X & 7) to index .data_03_4c02_TileCollision_BitMasks (bit mask $80/$40/$20…$01) and ANDs them. 
+; Returns nonzero if that exact sub-tile pixel is solid
     ld   A, [wD210_PlayerYPosition]                                    ;; 03:4bd4 $fa $10 $d2
     add  A, $0f                                        ;; 03:4bd7 $c6 $0f
     add  A, B                                          ;; 03:4bd9 $80
@@ -440,15 +482,22 @@ call_03_4bd4_TileCollisionCheck_Raw:
     and  A, $07                                        ;; 03:4bf6 $e6 $07
     ld   L, A                                          ;; 03:4bf8 $6f
     ld   H, $00                                        ;; 03:4bf9 $26 $00
-    ld   BC, .data_03_4c02                             ;; 03:4bfb $01 $02 $4c
+    ld   BC, .data_03_4c02_TileCollision_BitMasks                             ;; 03:4bfb $01 $02 $4c
     add  HL, BC                                        ;; 03:4bfe $09
     ld   A, [DE]                                       ;; 03:4bff $1a
     and  A, [HL]                                       ;; 03:4c00 $a6
     ret                                                ;; 03:4c01 $c9
-.data_03_4c02:
+.data_03_4c02_TileCollision_BitMasks:
+; 8-byte table of descending power-of-2 bitmasks ($80, $40, $20, $10, $08, $04, $02, $01) 
+; used to isolate the specific horizontal pixel bit within a tile collision byte
     db   $80, $40, $20, $10, $08, $04, $02, $01        ;; 03:4c02 ????????
 
-call_03_4c0a_CacheNearbyTileValues:
+call_03_4c0a_BgCollision_CacheAdjacentTiles:
+; Samples and caches three tile type values around Gex's current position into RAM. At player Y (body row): 
+; stores tile to wD764; one row down: wD765; two rows down (floor): wD767. Then samples the tile one row 
+; above and one tile ahead (direction-aware: C=09rightorC=09 right or C=09 right or C=F7 left) and stores to
+; wD766 (tile in front of Gex's face). Used by game logic to determine environmental effects (water, lava, etc.) 
+; without re-querying the map
     ld   A, [wD210_PlayerYPosition]                                    ;; 03:4c0a $fa $10 $d2
     and  A, $f8                                        ;; 03:4c0d $e6 $f8
     ld   L, A                                          ;; 03:4c0f $6f
@@ -498,7 +547,11 @@ call_03_4c0a_CacheNearbyTileValues:
     ld   [wD766_TileTypeBehindGexsFace], A                                    ;; 03:4c56 $ea $66 $d7
     ret                                                ;; 03:4c59 $c9
 
-call_03_4c5a_FetchTileValue:
+call_03_4c5a_BgCollision_FetchTile:
+; Core tile lookup primitive. Takes B (Y offset) and C (X offset) relative to player position. 
+; Computes the tile row address in wC800 collision data using (player Y + B) & $F8 as row, 
+; (player X + C) >> 3 as column index. Reads the tile type byte from wC800, then reads the tile's 
+; collision property byte from $4800-page. Returns the collision byte in B
     ld   A, [wD210_PlayerYPosition]                                    ;; 03:4c5a $fa $10 $d2
     add  A, B                                          ;; 03:4c5d $80
     and  A, $f8                                        ;; 03:4c5e $e6 $f8
