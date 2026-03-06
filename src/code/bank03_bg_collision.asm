@@ -9,7 +9,7 @@ call_03_4900_BgCollision_Update:
     ld   [HL], $00                                     ;; 03:4904 $36 $00
     ld   [wD584_CollisionFlagsPrev], A                                    ;; 03:4906 $ea $84 $d5
     ld   A, [wD201_PlayerEntity_ActionId]                                    ;; 03:4909 $fa $01 $d2
-    and  A, PLAYER_ACTION_UNK_1F                                        ;; 03:490c $e6 $1f
+    and  A, PLAYER_ACTION_MASK                                        ;; 03:490c $e6 $1f
     cp   A, PLAYER_ACTION_UNK_1F                                        ;; 03:490e $fe $1f
     jr   NZ, call_03_4915_BgCollision_Sidescroller                                ;; 03:4910 $20 $03
     set  7, [HL]                                       ;; 03:4912 $cb $fe

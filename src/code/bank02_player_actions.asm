@@ -80,13 +80,13 @@ call_02_41b7_PlayerAction_Idle:
     cp   A, $20                                        ;; 02:41f1 $fe $20
     jr   NZ, .jr_02_41fa                               ;; 02:41f3 $20 $05
 .jr_02_41f5:
-    ld   A, $07                                        ;; 02:41f5 $3e $07
+    ld   A, PLAYER_ACTION_STOP_ON_CERTAIN_FLOOR                                        ;; 02:41f5 $3e $07
     jp   call_02_4ccd_Player_RequestAction                                  ;; 02:41f7 $c3 $cd $4c
 .jr_02_41fa:
     ld   HL, wD75B_IdleTimer                                     ;; 02:41fa $21 $5b $d7
     dec  [HL]                                          ;; 02:41fd $35
     ret  NZ                                            ;; 02:41fe $c0
-    ld   A, $03                                        ;; 02:41ff $3e $03
+    ld   A, PLAYER_ACTION_IDLE_ANIMATION                                        ;; 02:41ff $3e $03
     jp   call_02_4ccd_Player_RequestAction                                  ;; 02:4201 $c3 $cd $4c
 
 call_02_4204_Player_WalkingRelated:
@@ -96,17 +96,17 @@ call_02_4204_Player_WalkingRelated:
     ld   HL, wD585_CollisionFlags                                     ;; 02:420a $21 $85 $d5
     bit  6, [HL]                                       ;; 02:420d $cb $76
     jr   Z, .jr_02_4227                                ;; 02:420f $28 $16
-    ld   C, $15                                        ;; 02:4211 $0e $15
+    ld   C, PLAYER_ACTION_STANDING_PUSH                                        ;; 02:4211 $0e $15
     jr   .jr_02_4227                                   ;; 02:4213 $18 $12
 .jr_02_4215:
     ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:4215 $fa $5a $d7
     and  A, PADF_RIGHT | PADF_LEFT                                        ;; 02:4218 $e6 $30
     jr   Z, .jr_02_4227                                ;; 02:421a $28 $0b
-    ld   C, $15                                        ;; 02:421c $0e $15
+    ld   C, PLAYER_ACTION_STANDING_PUSH                                        ;; 02:421c $0e $15
     ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:421e $fa $5a $d7
     and  A, PADF_RIGHT | PADF_LEFT                                        ;; 02:4221 $e6 $30
     jr   Z, .jr_02_4227                                ;; 02:4223 $28 $02
-    ld   C, $16                                        ;; 02:4225 $0e $16
+    ld   C, PLAYER_ACTION_WALKING_PUSH                                        ;; 02:4225 $0e $16
 .jr_02_4227:
     ld   A, C                                          ;; 02:4227 $79
     jp   call_02_4ccd_Player_RequestAction                                  ;; 02:4228 $c3 $cd $4c
@@ -125,7 +125,7 @@ call_02_422c_PlayerAction_Walk:
     call call_02_4204_Player_WalkingRelated                                  ;; 02:423a $cd $04 $42
     ld   A, [wD20A]                                    ;; 02:423d $fa $0a $d2
     and  A, $04                                        ;; 02:4240 $e6 $04
-    ld   A, $05                                        ;; 02:4242 $3e $05
+    ld   A, PLAYER_ACTION_RUN                                        ;; 02:4242 $3e $05
     call NZ, call_02_4ccd_Player_RequestAction                              ;; 02:4244 $c4 $cd $4c
     ret                                                ;; 02:4247 $c9
 
@@ -185,7 +185,7 @@ call_02_4275_PlayerAction_Jump:
     ret  NZ                                            ;; 02:429e $c0
     ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:429f $fa $5a $d7
     and  A, PADF_B                                        ;; 02:42a2 $e6 $02
-    ld   A, $0a                                        ;; 02:42a4 $3e $0a
+    ld   A, PLAYER_ACTION_DOUBLE_JUMP                                        ;; 02:42a4 $3e $0a
     jp   NZ, call_02_4ccd_Player_RequestAction                              ;; 02:42a6 $c2 $cd $4c
     jp   call_02_489a_Player_SetLandingAction                                    ;; 02:42a9 $c3 $9a $48
 
@@ -228,7 +228,7 @@ call_02_42e1_PlayerAction_KarateKick:
     ld hl, wD74C
     dec [hl]
     ret nz
-    ld a, $02
+    ld a, PLAYER_ACTION_STAND
     jp call_02_4ccd_Player_RequestAction
 
 call_02_42f7_PlayerAction_TailSpin:
@@ -257,19 +257,19 @@ call_02_42f7_PlayerAction_TailSpin:
     ld   [wD76B_TailSpinningFlagMaybe], A                                    ;; 02:4324 $ea $6b $d7
     ld   HL, wD759                                     ;; 02:4327 $21 $59 $d7
     set  6, [HL]                                       ;; 02:432a $cb $f6
-    ld   C, $17                                        ;; 02:432c $0e $17
+    ld   C, PLAYER_ACTION_FREEFALL                                        ;; 02:432c $0e $17
     ld   HL, wD585_CollisionFlags                                     ;; 02:432e $21 $85 $d5
     bit  7, [HL]                                       ;; 02:4331 $cb $7e
     jr   Z, .jr_02_4349                                ;; 02:4333 $28 $14
-    ld   C, $02                                        ;; 02:4335 $0e $02
+    ld   C, PLAYER_ACTION_STAND                                        ;; 02:4335 $0e $02
     ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:4337 $fa $5a $d7
     and  A, PADF_RIGHT | PADF_LEFT                                        ;; 02:433a $e6 $30
     jr   Z, .jr_02_4349                                ;; 02:433c $28 $0b
-    ld   C, $05                                        ;; 02:433e $0e $05
+    ld   C, PLAYER_ACTION_RUN                                        ;; 02:433e $0e $05
     ld   A, [wD75E_PlayerXSpeed]                                    ;; 02:4340 $fa $5e $d7
     cp   A, $02                                        ;; 02:4343 $fe $02
     jr   NC, .jr_02_4349                               ;; 02:4345 $30 $02
-    ld   C, $04                                        ;; 02:4347 $0e $04
+    ld   C, PLAYER_ACTION_WALK                                        ;; 02:4347 $0e $04
 .jr_02_4349:
     ld   A, C                                          ;; 02:4349 $79
     jp   call_02_4ccd_Player_RequestAction                                  ;; 02:434a $c3 $cd $4c
@@ -406,9 +406,9 @@ call_02_4418_PlayerAction_Fall:
     ret  NZ                                            ;; 02:4433 $c0
     ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:4434 $fa $5a $d7
     and  A, PADF_RIGHT | PADF_LEFT                                        ;; 02:4437 $e6 $30
-    ld   A, $04                                        ;; 02:4439 $3e $04
+    ld   A, PLAYER_ACTION_WALK                                        ;; 02:4439 $3e $04
     jp   NZ, call_02_4ccd_Player_RequestAction                              ;; 02:443b $c2 $cd $4c
-    ld   A, $02                                        ;; 02:443e $3e $02
+    ld   A, PLAYER_ACTION_STAND                                        ;; 02:443e $3e $02
     jp   call_02_4ccd_Player_RequestAction                                  ;; 02:4440 $c3 $cd $4c
 
 call_02_4443_PlayerAction_StopImmediate:
@@ -470,7 +470,7 @@ call_02_4483_PlayerAction_Unk1C:
     ld   a,[wD762_PlayerInitialYVelocity]
     and  a
     ret  nz
-    ld   a,$02
+    ld   a,PLAYER_ACTION_STAND
     jp   call_02_4ccd_Player_RequestAction
 
 call_02_44af_PlayerAction_Climb:
@@ -549,7 +549,7 @@ call_02_44f9:
     ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:4531 $fa $5a $d7
     and  A, PADF_B                                        ;; 02:4534 $e6 $02
     jr   Z, .jr_02_453d                                ;; 02:4536 $28 $05
-    ld   A, $17                                        ;; 02:4538 $3e $17
+    ld   A, PLAYER_ACTION_FREEFALL                                        ;; 02:4538 $3e $17
     call call_02_4ccd_Player_RequestAction                                  ;; 02:453a $cd $cd $4c
 .jr_02_453d:
     ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:453d $fa $5a $d7
@@ -651,7 +651,7 @@ call_02_45b0:
     ld   a,[wD75A_CurrentInputsAlt]
     and  a,PADF_B
     jr   z,.jr_02_45FC
-    ld   a,$17
+    ld   a,PLAYER_ACTION_FREEFALL
     call call_02_4ccd_Player_RequestAction
 .jr_02_45FC:
     ld   a,[wD75A_CurrentInputsAlt]
@@ -723,7 +723,7 @@ call_02_4667:
     ld   A, [HL]                                       ;; 02:4680 $7e
     jp   call_02_480f                                    ;; 02:4681 $c3 $0f $48
 .jr_02_4684:
-    ld   A, $02                                        ;; 02:4684 $3e $02
+    ld   A, PLAYER_ACTION_STAND                                        ;; 02:4684 $3e $02
     jp   call_02_4ccd_Player_RequestAction                                  ;; 02:4686 $c3 $cd $4c
 .data_02_4689:
     db   $c2, $c3, $c4, $c5, $c6, $c7
@@ -745,13 +745,13 @@ call_02_468f:
     ld   a,[hl]
     jp   call_02_480f
 .jr_02_46AC:
-    ld   a,$02
+    ld   a,PLAYER_ACTION_STAND
     jp   call_02_4ccd_Player_RequestAction
 .data_02_46b1:
     db   $c8, $c9
 
 call_02_46b3:  
-    ld   a,$09
+    ld   a,PLAYER_ACTION_JUMP
     jp   call_02_4ccd_Player_RequestAction
 
 call_02_46b8:  
@@ -966,7 +966,7 @@ call_02_4828_PlayerAction_Unk1F:
     ld   a,h
     cp   a,$55
     ret  nc
-    ld   a,$09
+    ld   a,PLAYER_ACTION_JUMP
     jp   call_02_4ccd_Player_RequestAction
 
 call_02_4856:

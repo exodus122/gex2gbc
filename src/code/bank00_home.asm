@@ -601,7 +601,7 @@ call_00_068a:
     jr   call_00_0634                                  ;; 00:0694 $18 $9e
 
 call_00_0696:
-    ld   A, $10                                        ;; 00:0696 $3e $10
+    ld   A, PLAYER_ACTION_DEATH                                        ;; 00:0696 $3e $10
     farcall call_02_4ccd_Player_RequestAction
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:06a3 $fa $24 $d6
     and  A, A                                          ;; 00:06a6 $a7
@@ -632,10 +632,10 @@ call_00_06bf_DealDamageToPlayer: ; Deal damage to Gex
     jr   Z, call_00_0696                                 ;; 00:06d0 $28 $c4
 .jr_00_06d2:
     ld   A, [wD201_PlayerEntity_ActionId]                                    ;; 00:06d2 $fa $01 $d2
-    and  A, $1f                                        ;; 00:06d5 $e6 $1f
-    cp   A, $1c                                        ;; 00:06d7 $fe $1c
+    and  A, PLAYER_ACTION_MASK                                        ;; 00:06d5 $e6 $1f
+    cp   A, PLAYER_ACTION_UNK_1C                                        ;; 00:06d7 $fe $1c
     jp   Z, call_00_0629                                 ;; 00:06d9 $ca $29 $06
-    ld   A, $0f                                        ;; 00:06dc $3e $0f
+    ld   A, PLAYER_ACTION_TAKE_DAMAGE                                        ;; 00:06dc $3e $0f
     farcall call_02_4ccd_Player_RequestAction
     jp   call_00_0629                                    ;; 00:06e9 $c3 $29 $06
 

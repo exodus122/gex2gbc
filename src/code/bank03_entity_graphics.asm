@@ -402,8 +402,8 @@ call_03_5ca8_Player_BuildBodySprites:
     ld   B, A                                          ;; 03:5cdb $47
     ld   [wD213_PlayerScreenYPosition], A                                    ;; 03:5cdc $ea $13 $d2
     ld   A, [wD201_PlayerEntity_ActionId]                                    ;; 03:5cdf $fa $01 $d2
-    and  A, $1f                                        ;; 03:5ce2 $e6 $1f
-    cp   A, $11                                        ;; 03:5ce4 $fe $11
+    and  A, PLAYER_ACTION_MASK                                        ;; 03:5ce2 $e6 $1f
+    cp   A, PLAYER_ACTION_DEATH_SET_UP_WARP                                        ;; 03:5ce4 $fe $11
     jr   Z, .jr_03_5d11                                ;; 03:5ce6 $28 $29
     ld   A, [wD750]                                    ;; 03:5ce8 $fa $50 $d7
     and  A, $08                                        ;; 03:5ceb $e6 $08

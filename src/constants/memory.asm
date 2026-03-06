@@ -1,5 +1,3 @@
-;; Disassembled with BadBoy Disassembler: https://github.com/daid/BadBoy
-
 SECTION "wram0", WRAM0[$c000]
 
 wC000_BgMapTileIds:

@@ -70,7 +70,15 @@ DEF BANK_3D      EQU $3D
 DEF BANK_3E      EQU $3E
 DEF BANK_3F      EQU $3F
 
-; Inputs
+; Inputs (defined in hardware.inc)
+; DEF PADF_DOWN   EQU $80
+; DEF PADF_UP     EQU $40
+; DEF PADF_LEFT   EQU $20
+; DEF PADF_RIGHT  EQU $10
+; DEF PADF_START  EQU $08
+; DEF PADF_SELECT EQU $04
+; DEF PADF_B      EQU $02
+; DEF PADF_A      EQU $01
 DEF PADF_DOWN_BIT   EQU 7
 DEF PADF_UP_BIT     EQU 6
 DEF PADF_LEFT_BIT   EQU 5
@@ -382,7 +390,7 @@ DEF ENTITY_FIELD_WIDTH                      EQU $14
 DEF ENTITY_FIELD_HEIGHT                     EQU $15
 DEF ENTITY_FIELD_COLLISION_TYPE             EQU $16
 DEF ENTITY_FIELD_UNK_17                     EQU $17
-DEF ENTITY_FIELD_MISC_TIMER                     EQU $18
+DEF ENTITY_FIELD_MISC_TIMER                 EQU $18
 DEF ENTITY_FIELD_UNK_19                     EQU $19
 DEF ENTITY_FIELD_MISC_FLAGS                 EQU $1A ; used by tv buttons, etc.
 DEF ENTITY_FIELD_UNK_1B                     EQU $1B
@@ -433,6 +441,7 @@ DEF PLAYER_ACTION_UNK_1C                     EQU $1C
 DEF PLAYER_ACTION_CLIMB                      EQU $1D ; used for both types of climbing
 DEF PLAYER_ACTION_UNK_1E                     EQU $1E
 DEF PLAYER_ACTION_UNK_1F                     EQU $1F ; disables collision updating?
+DEF PLAYER_ACTION_MASK                       EQU $1F
 
 ; Entity Collision Types
 DEF COLLISION_TYPE_NONE                       EQU $00

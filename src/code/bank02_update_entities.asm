@@ -501,7 +501,7 @@ call_02_70f1_Entity_HandleActionSequenceEnd:
     ld   A, [HL]                                       ;; 02:70f9 $7e
     bit  7, A                                          ;; 02:70fa $cb $7f
     ret  Z                                             ;; 02:70fc $c8
-    and  A, $1f                                        ;; 02:70fd $e6 $1f
+    and  A, PLAYER_ACTION_UNK_1F                                        ;; 02:70fd $e6 $1f
     jp   call_02_4ccd_Player_RequestAction                                  ;; 02:70ff $c3 $cd $4c
 
 call_02_7102_Entity_SetAction:

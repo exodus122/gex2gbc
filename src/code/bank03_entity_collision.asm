@@ -159,7 +159,7 @@ call_03_4c76_EntityCollision_Dispatch:
     ld   [hl],a
     call call_00_3931_Entity_KillSelf
     call call_00_393c_Entity_ClearEntityFlagSlot
-    ld   a,$1E
+    ld   a,PLAYER_ACTION_UNK_1E
     farcall call_02_4ccd_Player_RequestAction
     ret  
 .jr_03_4d82_CollisionHandler_UNK_09:
@@ -323,7 +323,7 @@ call_03_4c76_EntityCollision_Dispatch:
     call call_03_52be_Entity_DamagePlayerIfVulnerable                                  ;; 03:4e69 $cd $be $52
     ld   A, $77                                        ;; 03:4e6c $3e $77
     ld   [wD750], A                                    ;; 03:4e6e $ea $50 $d7
-    ld   A, $19                                        ;; 03:4e71 $3e $19
+    ld   A, PLAYER_ACTION_COLLAPSE                                        ;; 03:4e71 $3e $19
     farcall call_02_4ccd_Player_RequestAction
     ret                                                ;; 03:4e7e $c9
 .jr_03_4e7f_CollisionHandler_Hunter:
@@ -708,7 +708,7 @@ call_03_4c76_EntityCollision_Dispatch:
     ret  nc
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
     set  7,[hl]
-    ld   a,$1F
+    ld   a,PLAYER_ACTION_UNK_1F
     farcall call_02_4ccd_Player_RequestAction
     ret  
 .jr_03_5109_CollisionHandler_Cannon:
@@ -840,10 +840,10 @@ call_03_519b_Entity_CheckPlayerInteraction:
     bit  1, B                                          ;; 03:51d9 $cb $48
     jr   Z, .jr_03_51fa                                ;; 03:51db $28 $1d
     ld   A, [wD201_PlayerEntity_ActionId]                                    ;; 03:51dd $fa $01 $d2
-    and  A, $1f                                        ;; 03:51e0 $e6 $1f
-    cp   A, $0d                                        ;; 03:51e2 $fe $0d
+    and  A, PLAYER_ACTION_MASK                                        ;; 03:51e0 $e6 $1f
+    cp   A, PLAYER_ACTION_TAIL_SPIN                                        ;; 03:51e2 $fe $0d
     jr   Z, .jr_03_51f5                                ;; 03:51e4 $28 $0f
-    cp   A, $0c                                        ;; 03:51e6 $fe $0c
+    cp   A, PLAYER_ACTION_KARATE_KICK                                        ;; 03:51e6 $fe $0c
     jr   Z, .jr_03_51f5                                ;; 03:51e8 $28 $0b
     ld   A, [wD746_PlayerClimbingState]                                    ;; 03:51ea $fa $46 $d7
     cp   A, $01                                        ;; 03:51ed $fe $01
@@ -872,10 +872,10 @@ call_03_519b_Entity_CheckPlayerInteraction:
     bit  2, B                                          ;; 03:520a $cb $50
     jr   Z, .jr_03_5229                                ;; 03:520c $28 $1b
     ld   A, [wD201_PlayerEntity_ActionId]                                    ;; 03:520e $fa $01 $d2
-    and  A, $1f                                        ;; 03:5211 $e6 $1f
-    cp   A, $09                                        ;; 03:5213 $fe $09
+    and  A, PLAYER_ACTION_MASK                                        ;; 03:5211 $e6 $1f
+    cp   A, PLAYER_ACTION_JUMP                                        ;; 03:5213 $fe $09
     jr   Z, .jr_03_521b                                ;; 03:5215 $28 $04
-    cp   A, $0a                                        ;; 03:5217 $fe $0a
+    cp   A, PLAYER_ACTION_DOUBLE_JUMP                                        ;; 03:5217 $fe $0a
     jr   NZ, .jr_03_5229                               ;; 03:5219 $20 $0e
 .jr_03_521b:
     ld   HL, wD760_PlayerYVelocity                                     ;; 03:521b $21 $60 $d7

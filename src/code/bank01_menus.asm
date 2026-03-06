@@ -2031,7 +2031,7 @@ call_01_4e94:
     and  A, $02                                        ;; 01:4ea4 $e6 $02
     ld   A, [wD59F_CurrentInputs]                                    ;; 01:4ea6 $fa $9f $d5
     jr   Z, .jr_01_4ead                                ;; 01:4ea9 $28 $02
-    and  A, PADF_A | PADF_B | PADF_START | PADF_RIGHT | PADF_LEFT | PADF_UP | PADF_DOWN                                        ;; 01:4eab $e6 $fc
+    and  A, PADF_SELECT | PADF_START | PADF_RIGHT | PADF_LEFT | PADF_UP | PADF_DOWN                                        ;; 01:4eab $e6 $fc
 .jr_01_4ead:
     and  A, A                                          ;; 01:4ead $a7
     jr   NZ, call_01_4e94                              ;; 01:4eae $20 $e4

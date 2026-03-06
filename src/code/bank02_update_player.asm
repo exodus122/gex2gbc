@@ -4,15 +4,15 @@ call_02_489a_Player_SetLandingAction:
 ; if directional input but speed < 2, uses 4 (soft landing). Jumps to Player_RequestAction
     ld   HL, wD759                                     ;; 02:489a $21 $59 $d7
     set  6, [HL]                                       ;; 02:489d $cb $f6
-    ld   C, $02                                        ;; 02:489f $0e $02
+    ld   C, PLAYER_ACTION_STAND                                        ;; 02:489f $0e $02
     ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:48a1 $fa $5a $d7
     and  A, PADF_RIGHT | PADF_LEFT                                        ;; 02:48a4 $e6 $30
     jr   Z, .jr_02_48b3                                ;; 02:48a6 $28 $0b
-    ld   C, $05                                        ;; 02:48a8 $0e $05
+    ld   C, PLAYER_ACTION_RUN                                        ;; 02:48a8 $0e $05
     ld   A, [wD75E_PlayerXSpeed]                                    ;; 02:48aa $fa $5e $d7
     cp   A, $02                                        ;; 02:48ad $fe $02
     jr   NC, .jr_02_48b3                               ;; 02:48af $30 $02
-    ld   C, $04                                        ;; 02:48b1 $0e $04
+    ld   C, PLAYER_ACTION_WALK                                        ;; 02:48b1 $0e $04
 .jr_02_48b3:
     ld   A, C                                          ;; 02:48b3 $79
     jp   call_02_4ccd_Player_RequestAction                                  ;; 02:48b4 $c3 $cd $4c
@@ -145,37 +145,37 @@ call_02_4939_Player_UpdateMain:
     ld   HL, wD759                                     ;; 02:496a $21 $59 $d7
     bit  0, [HL]                                       ;; 02:496d $cb $46
     jr   Z, .jr_02_4979                                ;; 02:496f $28 $08
-    bit  0, E                                          ;; 02:4971 $cb $43
+    bit  PADF_A_BIT, E                                          ;; 02:4971 $cb $43
     jr   NZ, .jr_02_4977                               ;; 02:4973 $20 $02
     res  0, [HL]                                       ;; 02:4975 $cb $86
 .jr_02_4977:
-    res  0, C                                          ;; 02:4977 $cb $81
+    res  PADF_A_BIT, C                                          ;; 02:4977 $cb $81
 .jr_02_4979:
     bit  6, [HL]                                       ;; 02:4979 $cb $76
     jr   Z, .jr_02_4989                                ;; 02:497b $28 $0c
-    bit  1, E                                          ;; 02:497d $cb $4b
+    bit  PADF_B_BIT, E                                          ;; 02:497d $cb $4b
     jr   NZ, .jr_02_4985                               ;; 02:497f $20 $04
     ld   A, [HL]                                       ;; 02:4981 $7e
     and  A, $0f                                        ;; 02:4982 $e6 $0f
     ld   [HL], A                                       ;; 02:4984 $77
 .jr_02_4985:
-    res  1, C                                          ;; 02:4985 $cb $89
+    res  PADF_B_BIT, C                                          ;; 02:4985 $cb $89
     jr   .jr_02_49a4                                   ;; 02:4987 $18 $1b
 .jr_02_4989:
     bit  7, [HL]                                       ;; 02:4989 $cb $7e
     jr   Z, .jr_02_49a4                                ;; 02:498b $28 $17
-    res  1, C                                          ;; 02:498d $cb $89
+    res  PADF_B_BIT, C                                          ;; 02:498d $cb $89
     ld   A, [wD760_PlayerYVelocity]                                    ;; 02:498f $fa $60 $d7
     bit  7, A                                          ;; 02:4992 $cb $7f
     jr   Z, .jr_02_49a4                                ;; 02:4994 $28 $0e
-    bit  1, E                                          ;; 02:4996 $cb $4b
+    bit  PADF_B_BIT, E                                          ;; 02:4996 $cb $4b
     jr   NZ, .jr_02_499e                               ;; 02:4998 $20 $04
     set  4, [HL]                                       ;; 02:499a $cb $e6
     jr   .jr_02_49a4                                   ;; 02:499c $18 $06
 .jr_02_499e:
     bit  4, [HL]                                       ;; 02:499e $cb $66
     jr   Z, .jr_02_49a4                                ;; 02:49a0 $28 $02
-    set  1, C                                          ;; 02:49a2 $cb $c9
+    set  PADF_B_BIT, C                                          ;; 02:49a2 $cb $c9
 .jr_02_49a4:
     ld   HL, wD75A_CurrentInputsAlt                                     ;; 02:49a4 $21 $5a $d7
     ld   [HL], C                                       ;; 02:49a7 $71
@@ -553,7 +553,7 @@ call_02_4b78_Player_ApplyYVelocity:
     cp   A, $10                                        ;; 02:4be2 $fe $10
     jr   C, .jr_02_4b8c                                ;; 02:4be4 $38 $a6
 .jr_02_4be6:
-    ld   A, $17                                        ;; 02:4be6 $3e $17
+    ld   A, PLAYER_ACTION_FREEFALL                                        ;; 02:4be6 $3e $17
     call call_02_4ccd_Player_RequestAction                                  ;; 02:4be8 $cd $cd $4c
     jr   .jr_02_4b8c                                   ;; 02:4beb $18 $9f
 .jr_02_4bed:
@@ -570,7 +570,7 @@ call_02_4b78_Player_ApplyYVelocity:
 .jr_02_4c00:
     cp   A, $10                                        ;; 02:4c00 $fe $10
     jp   C, call_02_489a_Player_SetLandingAction                                 ;; 02:4c02 $da $9a $48
-    ld   A, $19                                        ;; 02:4c05 $3e $19
+    ld   A, PLAYER_ACTION_COLLAPSE                                        ;; 02:4c05 $3e $19
     jp   call_02_4ccd_Player_RequestAction                                  ;; 02:4c07 $c3 $cd $4c
 
 call_02_4c0a_Player_AddToXPosition:
@@ -612,7 +612,7 @@ call_02_4c28_Player_CheckConveyorWaterTiles:
     ld   [wD74A], A                                    ;; 02:4c41 $ea $4a $d7
     ld   A, [wD765_TileTypeBehindGexsBody]                                    ;; 02:4c44 $fa $65 $d7
     cp   A, $24                                        ;; 02:4c47 $fe $24
-    ld   A, $1c                                        ;; 02:4c49 $3e $1c
+    ld   A, PLAYER_ACTION_UNK_1C                                        ;; 02:4c49 $3e $1c
     call Z, call_02_4ccd_Player_RequestAction                               ;; 02:4c4b $cc $cd $4c
     ret                                                ;; 02:4c4e $c9
 
@@ -625,9 +625,9 @@ call_02_4c4f_Player_CheckTileInteractions:
 ; for an input→action transition table, scans it for matching input (with $FE = "any nonzero" wildcard), 
 ; and calls Player_RequestAction with the found action
     ld   A, [wD201_PlayerEntity_ActionId]                                    ;; 02:4c4f $fa $01 $d2
-    cp   A, $10                                        ;; 02:4c52 $fe $10
+    cp   A, PLAYER_ACTION_DEATH                                        ;; 02:4c52 $fe $10
     jr   Z, .jr_02_4c6a                                ;; 02:4c54 $28 $14
-    cp   A, $11                                        ;; 02:4c56 $fe $11
+    cp   A, PLAYER_ACTION_DEATH_SET_UP_WARP                                        ;; 02:4c56 $fe $11
     jr   Z, .jr_02_4c6a                                ;; 02:4c58 $28 $10
     ld   A, [wD764_TileTypeBehindGexsBody]                                    ;; 02:4c5a $fa $64 $d7
     cp   A, $23                                        ;; 02:4c5d $fe $23
@@ -641,7 +641,7 @@ call_02_4c4f_Player_CheckTileInteractions:
     jr   Z, .jr_02_4ca6                                ;; 02:4c6f $28 $35
     ld   A, [wD764_TileTypeBehindGexsBody]                                    ;; 02:4c71 $fa $64 $d7
     cp   A, $22                                        ;; 02:4c74 $fe $22
-    ld   A, $1a                                        ;; 02:4c76 $3e $1a
+    ld   A, PLAYER_ACTION_ENTER_DOOR                                        ;; 02:4c76 $3e $1a
     jr   Z, call_02_4ccd_Player_RequestAction                               ;; 02:4c78 $28 $53
     ld   A, [wD764_TileTypeBehindGexsBody]                                    ;; 02:4c7a $fa $64 $d7
     ld   [wD769], A                                    ;; 02:4c7d $ea $69 $d7
@@ -662,7 +662,7 @@ call_02_4c4f_Player_CheckTileInteractions:
     cp   A, $20                                        ;; 02:4c9e $fe $20
     jr   NZ, .jr_02_4ca6                               ;; 02:4ca0 $20 $04
 .jr_02_4ca2:
-    ld   A, $1d                                        ;; 02:4ca2 $3e $1d
+    ld   A, PLAYER_ACTION_CLIMB                                        ;; 02:4ca2 $3e $1d
     jr   call_02_4ccd_Player_RequestAction                                  ;; 02:4ca4 $18 $27
 .jr_02_4ca6:
     ld   HL, wD201_PlayerEntity_ActionId                                     ;; 02:4ca6 $21 $01 $d2
