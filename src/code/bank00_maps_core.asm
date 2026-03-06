@@ -34,7 +34,7 @@ call_00_1264_Map_LoadFull:
     ld   A, $01                                        ;; 00:12a3 $3e $01
     ld   [wD6F9], A                                    ;; 00:12a5 $ea $f9 $d6
     call call_00_1455_BgMap_LoadDirtyRegions                                  ;; 00:12a8 $cd $55 $14
-    farcall call_03_6f5e_BgMap_WriteScrollColumn 
+    FARCALL call_03_6f5e_BgMap_WriteScrollColumn 
     ld   HL, wD6EF_YPositionInMap                                     ;; 00:12b6 $21 $ef $d6
     ld   A, [HL]                                       ;; 00:12b9 $7e
     add  A, $08                                        ;; 00:12ba $c6 $08
@@ -47,8 +47,8 @@ call_00_1264_Map_LoadFull:
     dec  A                                             ;; 00:12c3 $3d
     jr   NZ, .jr_00_12a2                               ;; 00:12c4 $20 $dc
     ld   [wD6F9], A                                    ;; 00:12c6 $ea $f9 $d6
-    farcall call_03_66ae_HUD_LoadTiles
-    farcall call_02_715a_MapWindow_Update
+    FARCALL call_03_66ae_HUD_LoadTiles
+    FARCALL call_02_715a_MapWindow_Update
     xor  A, A                                          ;; 00:12df $af
     ld   [wD6F9], A                                    ;; 00:12e0 $ea $f9 $d6
     ret                                                ;; 00:12e3 $c9
@@ -254,8 +254,8 @@ call_00_1419_Tileset_WriteToVRAM:
     cp   A, $90                                        ;; 00:1437 $fe $90
     jr   NZ, .jr_00_1433                               ;; 00:1439 $20 $f8
     call call_00_10a3_RestoreBank                                  ;; 00:143b $cd $a3 $10 
-    farcall call_0b_641e_TilesetPaletteIds_Load
-    farcall call_03_723c_AnimatedTile_Init
+    FARCALL call_0b_641e_TilesetPaletteIds_Load
+    FARCALL call_03_723c_AnimatedTile_Init
     ret                                                ;; 00:1454 $c9
 
 call_00_1455_BgMap_LoadDirtyRegions:
@@ -1363,7 +1363,7 @@ call_00_1922_SecondaryTileset_Load:
     ld   HL, wD60F_HDMATransferFlags                                     ;; 00:19dc $21 $0f $d6
     set  2, [HL]                                       ;; 00:19df $cb $d6
     call call_00_10a3_RestoreBank                                  ;; 00:19e1 $cd $a3 $10
-    farcall call_0b_5df8_MediaDimension_LoadActiveTVPalette
+    FARCALL call_0b_5df8_MediaDimension_LoadActiveTVPalette
     ret                                                ;; 00:19ef $c9
 .data_LevelSecondaryTilesetBankTable:
 ; 62-byte table (31 levels × 2 bytes): each pair is (base offset byte, bank number) for the level's secondary 

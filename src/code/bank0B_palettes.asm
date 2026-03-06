@@ -82,7 +82,7 @@ call_0b_561b_GBC_LoadLevelBgPalette:
     ld   DE, wDA0B_Obj_Palettes                                     ;; 0b:563c $11 $0b $da
     ld   BC, $08                                       ;; 0b:563f $01 $08 $00
     call call_00_07b0_MemCopy                                  ;; 0b:5642 $cd $b0 $07
-    farcall call_03_6be5_HUD_LoadCollectiblePalette
+    FARCALL call_03_6be5_HUD_LoadCollectiblePalette
     ret                                                ;; 0b:5650 $c9
 .jr_0b_5651:
     ld   L, C                                          ;; 0b:5651 $69

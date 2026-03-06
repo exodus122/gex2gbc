@@ -1316,9 +1316,9 @@ call_03_6540_Entity_BuildAllSprites:
     call call_03_5b5b_HUD_BuildSprites                                  ;; 03:6543 $cd $5b $5b
     jp   call_03_6484_OAM_ClearUnusedEntries                                    ;; 03:6546 $c3 $84 $64
 
-call_03_6549_Entity_BuildSprites_CoinType:
+call_03_6549_Entity_BuildSprites_FloatingSkullProjectile:
 ; Active flag = bit 0. Tile = (wD73B >> 2) & 2 + $2C (alternates between $2C/$2E 
-; based on a global timer bit — a two-frame coin animation). Attribute = $04
+; based on a global timer bit — a two-frame animation). Attribute = $04
     call call_00_3a0a_Entity_GetBothDataPtrs
     push de
     inc  de
@@ -1367,7 +1367,7 @@ call_03_6549_Entity_BuildSprites_CoinType:
     inc  hl
     jr   .jr_03_6575
 
-call_03_6584_Entity_BuildSprites_BlankTile:
+call_03_6584_Entity_BuildSprites_CollectibleSpawn:
 ; Active flag = bit 7. Tile = fixed $7E (blank/flash tile), attribute = $01. 
 ; Used for invincibility flash or generic item-collected sparkle effects
     call call_00_3a0a_Entity_GetBothDataPtrs                                  ;; 03:6584 $cd $0a $3a
@@ -1414,9 +1414,9 @@ call_03_6584_Entity_BuildSprites_BlankTile:
     inc  HL                                            ;; 03:65b5 $23
     jr   .jr_03_65a9                                   ;; 03:65b6 $18 $f1
 
-call_03_65b8_Entity_BuildSprites_FruitType:
+call_03_65b8_Entity_BuildSprites_FallingBoulder:
 ; Active flag = bit 0. Tile base = (SPRITE_ID_high_nibble clamped to 5) * 2 + $44. 
-; Attribute = $07. Selects one of 6 fruit tile pairs based on sprite ID nibble
+; Attribute = $07. Selects one of 6 tile pairs based on sprite ID nibble
     call call_00_3a0a_Entity_GetBothDataPtrs
     push de
     inc  de
@@ -1470,9 +1470,9 @@ call_03_65b8_Entity_BuildSprites_FruitType:
     inc  hl
     jr   .jr_03_65ea
 
-call_03_65f9_Entity_BuildSprites_GemType:
+call_03_65f9_Entity_BuildSprites_ParticleBurst:
 ; Active flag = bit 0. Tile base = (SPRITE_ID_high_nibble clamped to 2) * 2 + $60. 
-; Attribute = $01. Selects one of 3 gem tile pairs (ruby/emerald/diamond)
+; Attribute = $01. Selects one of 3 tile pairs
     call call_00_3a0a_Entity_GetBothDataPtrs                                  ;; 03:65f9 $cd $0a $3a
     push DE                                            ;; 03:65fc $d5
     inc  DE                                            ;; 03:65fd $13
@@ -1526,9 +1526,8 @@ call_03_65f9_Entity_BuildSprites_GemType:
     inc  HL                                            ;; 03:6637 $23
     jr   .jr_03_662b                                   ;; 03:6638 $18 $f1
 
-call_03_663a_Entity_BuildSprites_CoinType2:
-; Identical to CoinType but tile base = $58 instead of $2C. 
-; A second coin-style animation used in a different TV world
+call_03_663a_Entity_BuildSprites_FirePlantProjectiles:
+; Identical to above but tile base = $58 instead of $2C. 
     call call_00_3a0a_Entity_GetBothDataPtrs
     push de
     inc  de
@@ -1577,9 +1576,8 @@ call_03_663a_Entity_BuildSprites_CoinType2:
     inc  hl
     jr   .jr_03_6666
 
-call_03_6675_Entity_BuildSprites_CoinType3:
-; Like CoinType but tile selection uses (bit 7 of SPRITE_ID >> 6) & 2 + $5C. 
-; Another coin variant, possibly for Kung Fu / Rezopolis worlds
+call_03_6675_Entity_BuildSprites_Jar:
+; Like above but tile selection uses (bit 7 of SPRITE_ID >> 6) & 2 + $5C. 
     call call_00_3a0a_Entity_GetBothDataPtrs
     push de
     inc  de

@@ -638,7 +638,7 @@ call_01_446f_LoadMenuGraphics:
     ld   A, [HL+]                                      ;; 01:44aa $2a
     ld   [wD6E1], A                                    ;; 01:44ab $ea $e1 $d6
     ld   C, [HL]                                       ;; 01:44ae $4e
-    farcall call_0b_5537_BgPalette_LoadMonoOrGetSpriteParams
+    FARCALL call_0b_5537_BgPalette_LoadMonoOrGetSpriteParams
     ld   A, $ff                                        ;; 01:44ba $3e $ff
     ld   [wD6EB], A                                    ;; 01:44bc $ea $eb $d6
     call call_01_43e6                                  ;; 01:44bf $cd $e6 $43
@@ -900,7 +900,7 @@ call_01_466b:
     ld   DE, wDA4B                                     ;; 01:466e $11 $4b $da
     ld   BC, $80                                       ;; 01:4671 $01 $80 $00
     call call_00_07b0_MemCopy                                  ;; 01:4674 $cd $b0 $07
-    farcall call_0b_5d4b_MediaDimension_LoadTVPalette
+    FARCALL call_0b_5d4b_MediaDimension_LoadTVPalette
     call call_00_2e3a_GetMapTVPaletteId                                  ;; 01:4682 $cd $3a $2e
     ld   DE, data_01_5cb9                              ;; 01:4685 $11 $b9 $5c
     call call_00_07b9                                  ;; 01:4688 $cd $b9 $07

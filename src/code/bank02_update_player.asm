@@ -186,9 +186,9 @@ call_02_4939_Player_UpdateMain:
     dec  [HL]                                          ;; 02:49af $35
 .jr_02_49b0:
     call call_02_4a45_Player_UpdateFacing                                  ;; 02:49b0 $cd $45 $4a
-    farcall call_03_4900_BgCollision_Update
+    FARCALL call_03_4900_BgCollision_Update
     call call_02_4b78_Player_ApplyYVelocity                                  ;; 02:49be $cd $78 $4b
-    farcall call_03_4c0a_BgCollision_CacheAdjacentTiles
+    FARCALL call_03_4c0a_BgCollision_CacheAdjacentTiles
     call call_02_4c4f_Player_CheckTileInteractions                                  ;; 02:49cc $cd $4f $4c
     ld   HL, wD745                                     ;; 02:49cf $21 $45 $d7
     ld   A, [HL]                                       ;; 02:49d2 $7e
@@ -225,7 +225,7 @@ call_02_4939_Player_UpdateMain:
     call call_02_6fda_Entity_TickAction                                  ;; 02:4a0d $cd $da $6f
     call call_02_715a_MapWindow_Update                                  ;; 02:4a10 $cd $5a $71
     call call_02_4c28_Player_CheckConveyorWaterTiles                                  ;; 02:4a13 $cd $28 $4c
-    farcall call_03_5ca8_Player_BuildBodySprites
+    FARCALL call_03_5ca8_Player_BuildBodySprites
     ld   HL, wD751                                     ;; 02:4a21 $21 $51 $d7
     call call_02_4a30_Player_DecrementTimer16                                  ;; 02:4a24 $cd $30 $4a
     ld   HL, wD755                                     ;; 02:4a27 $21 $55 $d7

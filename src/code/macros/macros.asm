@@ -1,5 +1,5 @@
 ; Calls a function in a different bank
-MACRO farcall
+MACRO FARCALL
     ld   [wD59D_ReturnBank], a
 	ld   a, BANK(\1)
 	ld   hl, \1
@@ -7,7 +7,7 @@ MACRO farcall
 ENDM
 
 ; Store an address and the associated bank.
-macro farpointer
+macro FARPOINTER
     db   BANK(\1)
     dw   \1
 endm
@@ -52,4 +52,9 @@ MACRO LOAD_OBJ_FIELD_TO_BC_ALT
     or   a, \1
     ld   c, a
     ld   b, HIGH(wD200_EntityMemory)
+ENDM
+
+MACRO SET_ACTION
+    ld a, \1
+    jp call_02_7102_Entity_SetAction
 ENDM

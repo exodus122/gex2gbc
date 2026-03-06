@@ -1,36 +1,68 @@
 ; Player action jump table
 data_02_4120:
+    DEF  PLAYER_ACTION_SPAWN                      EQU $00
     dw   call_02_41a0_PlayerAction_Spawn, data_02_755c
+    DEF  PLAYER_ACTION_UNK_01                     EQU $01
     dw   call_02_41ad_PlayerAction_Unk01, data_02_756d
-    dw   call_02_41b7_PlayerAction_Idle, data_02_7573
+    DEF  PLAYER_ACTION_STAND                      EQU $02
+    dw   call_02_41b7_PlayerAction_Stand, data_02_7573
+    DEF  PLAYER_ACTION_IDLE_ANIMATION             EQU $03
     dw   call_02_422b_PlayerAction_None, data_02_757c
+    DEF  PLAYER_ACTION_WALK                       EQU $04
     dw   call_02_422c_PlayerAction_Walk, data_02_7582
+    DEF  PLAYER_ACTION_RUN                        EQU $05
     dw   call_02_4248_PlayerAction_Run, data_02_758f
+    DEF  PLAYER_ACTION_SKID                       EQU $06
     dw   call_02_425a_PlayerAction_SkidDecel, data_02_759c
+    DEF  PLAYER_ACTION_STOP_ON_CERTAIN_FLOOR      EQU $07
     dw   call_02_426b_PlayerAction_StopOnCertainFloor, data_02_75a4
+    DEF  PLAYER_ACTION_CROUCH                     EQU $08
     dw   call_02_4270_PlayerAction_Crouch, data_02_75ad
+    DEF  PLAYER_ACTION_JUMP                       EQU $09
     dw   call_02_4275_PlayerAction_Jump, data_02_75b3
+    DEF  PLAYER_ACTION_DOUBLE_JUMP                EQU $0A
     dw   call_02_42ac_PlayerAction_DoubleJump, data_02_75bb
+    DEF  PLAYER_ACTION_NONE                       EQU $0B
     dw   call_02_42e0_PlayerAction_None, data_02_75c1
+    DEF  PLAYER_ACTION_KARATE_KICK                EQU $0C
     dw   call_02_42e1_PlayerAction_KarateKick, data_02_75c7
+    DEF  PLAYER_ACTION_TAIL_SPIN                  EQU $0D
     dw   call_02_42f7_PlayerAction_TailSpin, data_02_75ce
+    DEF  PLAYER_ACTION_EAT_FLY                    EQU $0E
     dw   call_02_434d_PlayerAction_EatFly, data_02_75d9
+    DEF  PLAYER_ACTION_TAKE_DAMAGE                EQU $0F
     dw   call_02_435b_PlayerAction_TakeDamage, data_02_75df
+    DEF  PLAYER_ACTION_DEATH                      EQU $10
     dw   call_02_4371_PlayerAction_Death, data_02_75e9
+    DEF  PLAYER_ACTION_DEATH_SET_UP_WARP          EQU $11
     dw   call_02_437b_PlayerAction_DeathSetUpWarp, data_02_75f2
+    DEF  PLAYER_ACTION_ENTER_TV                   EQU $12
     dw   call_02_43a7_PlayerAction_EnterTV, data_02_75f9
+    DEF  PLAYER_ACTION_UNK_13                     EQU $13
     dw   call_02_43c6_PlayerAction_Unk13, data_02_75f9
+    DEF  PLAYER_ACTION_EXIT_TV                    EQU $14
     dw   call_02_43e5_PlayerAction_ExitTV, data_02_7608
+    DEF  PLAYER_ACTION_STANDING_PUSH              EQU $15 ; pushing bg wall
     dw   call_02_43f6_PlayerAction_StandingPush, data_02_7617
+    DEF  PLAYER_ACTION_WALKING_PUSH               EQU $16 ; pushing entity, such as tv button
     dw   call_02_4407_PlayerAction_WalkingPush, data_02_761d
+    DEF  PLAYER_ACTION_FREEFALL                   EQU $17
     dw   call_02_4418_PlayerAction_Fall, data_02_762a
+    DEF  PLAYER_ACTION_STOP_IMMEDIATE             EQU $18
     dw   call_02_4443_PlayerAction_StopImmediate, data_02_7633
+    DEF  PLAYER_ACTION_COLLAPSE                   EQU $19 ; crushed by enemy, or landed from large fall
     dw   call_02_4448_PlayerAction_Collapse, data_02_7639
+    DEF  PLAYER_ACTION_ENTER_DOOR                 EQU $1A
     dw   call_02_4459_PlayerAction_EnterDoor, data_02_7647
+    DEF  PLAYER_ACTION_LEAVE_DOOR                 EQU $1B
     dw   call_02_447e_PlayerAction_LeaveDoor, data_02_7658
+    DEF  PLAYER_ACTION_UNK_1C                     EQU $1C
     dw   call_02_4483_PlayerAction_Unk1C, data_02_7665
+    DEF  PLAYER_ACTION_CLIMB                      EQU $1D ; used for both types of climbing
     dw   call_02_44af_PlayerAction_Climb, data_02_766d
+    DEF  PLAYER_ACTION_UNK_1E                     EQU $1E
     dw   call_02_481b_PlayerAction_Unk1E, data_02_7673
+    DEF  PLAYER_ACTION_UNK_1F                     EQU $1F ; disables collision updating?
     dw   call_02_4828_PlayerAction_Unk1F, data_02_7684
     
 call_02_41a0_PlayerAction_Spawn:
@@ -48,7 +80,7 @@ call_02_41ad_PlayerAction_Unk01:
     call NZ, call_00_0634                              ;; 02:41b1 $c4 $34 $06
     jp   call_02_70f1_Entity_HandleActionSequenceEnd                                    ;; 02:41b4 $c3 $f1 $70
     
-call_02_41b7_PlayerAction_Idle:
+call_02_41b7_PlayerAction_Stand:
     ld   A, [wD209]                                    ;; 02:41b7 $fa $09 $d2
     and  A, $20                                        ;; 02:41ba $e6 $20
     jr   Z, .jr_02_41da                                ;; 02:41bc $28 $1c

@@ -113,7 +113,7 @@ call_00_0150_Init:
     call call_00_0f32                                  ;; 00:01e7 $cd $32 $0f
     ld   A, $21                                        ;; 00:01ea $3e $21
     ld   [wD788_CurrentAudioBank], A                                    ;; 00:01ec $ea $88 $d7
-    farcall call_21_4000                              
+    FARCALL call_21_4000                              
     ld   A, $ff                                        ;; 00:01fa $3e $ff
     ld   [wD78A_MusicId], A                                    ;; 00:01fc $ea $8a $d7
     ei                                                 ;; 00:01ff $fb
@@ -128,23 +128,23 @@ call_00_0150_Init:
 .jr_00_0210:
     ld   A, $03                                        ;; 00:0210 $3e $03
     ld   [wD61D], A                                    ;; 00:0212 $ea $1d $d6
-    farcall call_01_4f87_LoadEnterPasswordMenu
+    FARCALL call_01_4f87_LoadEnterPasswordMenu
 .jp_00_0220:
     ld   A, MENU_TYPE_TITLE_SPLASH                                        ;; 00:0220 $3e $14
-    farcall call_01_4000_MenuLoad
+    FARCALL call_01_4000_MenuLoad
     ld   A, MENU_TYPE_TITLE_CRAVE                                        ;; 00:022d $3e $13
-    farcall call_01_4000_MenuLoad
+    FARCALL call_01_4000_MenuLoad
     ld   A, MENU_TYPE_TITLE_DAVID                                        ;; 00:023a $3e $16
-    farcall call_01_4000_MenuLoad
+    FARCALL call_01_4000_MenuLoad
     ld   A, MENU_TYPE_TITLE_SCREEN                                        ;; 00:0247 $3e $10
-    farcall call_01_4000_MenuLoad
+    FARCALL call_01_4000_MenuLoad
 .jp_00_0254:
     ld   A, MUSIC_MEDIA_DIMENSION                                        ;; 00:0254 $3e $07
     call call_00_120c_SetupMusic                                  ;; 00:0256 $cd $0c $12
     xor  A, A                                          ;; 00:0259 $af
     ld   [wD61E_DemoModeEnabled], A                                    ;; 00:025a $ea $1e $d6
     ld   A, MENU_TYPE_TITLE_OPTIONS                                        ;; 00:025d $3e $07
-    farcall call_01_4000_MenuLoad
+    FARCALL call_01_4000_MenuLoad
     cp   A, $30                                        ;; 00:026a $fe $30
     jr   Z, .jr_00_02b8                                ;; 00:026c $28 $4a
     cp   A, $10                                        ;; 00:026e $fe $10
@@ -181,7 +181,7 @@ call_00_0150_Init:
     inc  HL                                            ;; 00:02a9 $23
     dec  B                                             ;; 00:02aa $05
     jr   NZ, .jr_00_02a7                               ;; 00:02ab $20 $fa
-    farcall call_01_4349_LoadEnteringMenu
+    FARCALL call_01_4349_LoadEnteringMenu
 .jr_00_02b8:
     ld   A, [wD61E_DemoModeEnabled]                                    ;; 00:02b8 $fa $1e $d6
     and  A, A                                          ;; 00:02bb $a7
@@ -195,7 +195,7 @@ call_00_0150_Init:
 .jr_00_02c9:
     ld   [wD624_CurrentLevelId], A                                    ;; 00:02c9 $ea $24 $d6
     ld   A, $08                                        ;; 00:02cc $3e $08
-    farcall call_01_4000_MenuLoad
+    FARCALL call_01_4000_MenuLoad
     xor  A, A                                          ;; 00:02d9 $af
     ld   [wD621], A                                    ;; 00:02da $ea $21 $d6
     ld   [wD628_MediaDimensionRespawnPoint], A         ;; 00:02dd $ea $28 $d6
@@ -211,16 +211,16 @@ call_00_0150_Init:
     ld   A, [wD621]                                    ;; 00:02f4 $fa $21 $d6
     and  A, $04                                        ;; 00:02f7 $e6 $04
     jr   Z, .jr_00_0306                                ;; 00:02f9 $28 $0b
-    farcall call_01_42bd_EnterTV
+    FARCALL call_01_42bd_EnterTV
 .jr_00_0306:
     call call_00_11e0_PlayMusicBasedOnLevel                                  ;; 00:0306 $cd $e0 $11
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:0309 $fa $24 $d6
     and  A, A                                          ;; 00:030c $a7
     jr   Z, .jr_00_0350                                ;; 00:030d $28 $41
     call call_00_0562                                  ;; 00:030f $cd $62 $05
-    farcall call_01_4297_LoadMissionSelectMenu
-    farcall call_0b_4000_Collectibles_Init
-    farcall call_02_6eb1_Entities_ClearFlagsTable
+    FARCALL call_01_4297_LoadMissionSelectMenu
+    FARCALL call_0b_4000_Collectibles_Init
+    FARCALL call_02_6eb1_Entities_ClearFlagsTable
     call call_00_3c3f                                  ;; 00:0333 $cd $3f $3c
     call call_00_12e4_Map_InitBgTileOverrides                                  ;; 00:0336 $cd $e4 $12
     ld   A, $0a                                        ;; 00:0339 $3e $0a
@@ -274,8 +274,8 @@ call_00_0150_Init:
     ld   [wD5A5], A                                    ;; 00:03b0 $ea $a5 $d5
     ld   A, $04 ; Set Health to 4                                       ;; 00:03b3 $3e $04
     ld   [wD741_PlayerHealth], A                                    ;; 00:03b5 $ea $41 $d7
-    farcall call_0b_4000_Collectibles_Init
-    farcall call_02_6eb1_Entities_ClearFlagsTable
+    FARCALL call_0b_4000_Collectibles_Init
+    FARCALL call_02_6eb1_Entities_ClearFlagsTable
     call call_00_3c3f                                  ;; 00:03ce $cd $3f $3c
     call call_00_12e4_Map_InitBgTileOverrides                                  ;; 00:03d1 $cd $e4 $12
     call call_00_0547                                  ;; 00:03d4 $cd $47 $05
@@ -293,14 +293,14 @@ call_00_0150_Init:
     ld   [wD610], A                                    ;; 00:03f1 $ea $10 $d6
     ld   A, $01                                        ;; 00:03f4 $3e $01
     ld   [wD743_DrawGexFlag], A                                    ;; 00:03f6 $ea $43 $d7
-    farcall call_0b_4efe_Player_SetSpawnPosition
+    FARCALL call_0b_4efe_Player_SetSpawnPosition
     call call_00_1264_Map_LoadFull                                  ;; 00:0404 $cd $64 $12
-    farcall call_02_6e17_Entities_InitAndSpawnAll
+    FARCALL call_02_6e17_Entities_InitAndSpawnAll
     call call_00_0521_DrawEntitiesWrapper                                  ;; 00:0412 $cd $21 $05
     jr   .jp_00_0428                                   ;; 00:0415 $18 $11
 .jp_00_0417:
     call call_00_1264_Map_LoadFull                                  ;; 00:0417 $cd $64 $12
-    farcall call_02_71c8_Entities_UpdateSoundsForAll
+    FARCALL call_02_71c8_Entities_UpdateSoundsForAll
     call call_00_0521_DrawEntitiesWrapper                                  ;; 00:0425 $cd $21 $05
 .jp_00_0428:
     call call_00_0ab4_WaitForInterrupt                                  ;; 00:0428 $cd $b4 $0a
@@ -322,7 +322,7 @@ call_00_0150_Init:
     ld   A, [wD73D_LivesRemaining]                                    ;; 00:044e $fa $3d $d7
     and  A, A                                          ;; 00:0451 $a7
     jp   NZ, .jp_00_0370                               ;; 00:0452 $c2 $70 $03
-    farcall call_01_43bd_LoadGameOverMenu
+    FARCALL call_01_43bd_LoadGameOverMenu
     cp   A, $80                                        ;; 00:0460 $fe $80
     jp   Z, .jp_00_029d                                ;; 00:0462 $ca $9d $02
     jp   .jp_00_0254                                   ;; 00:0465 $c3 $54 $02
@@ -343,7 +343,7 @@ call_00_0150_Init:
     jr   Z, .jr_00_04a9                                ;; 00:0482 $28 $25
     ld   A, $05                                        ;; 00:0484 $3e $05
 .jr_00_0486:
-    farcall call_01_4000_MenuLoad
+    FARCALL call_01_4000_MenuLoad
     cp   A, $60                                        ;; 00:0491 $fe $60
     jp   NZ, .jp_00_0417                               ;; 00:0493 $c2 $17 $04
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:0496 $fa $24 $d6
@@ -383,13 +383,13 @@ call_00_0150_Init:
     ld   C, SFX_MENU_UNK_1                                        ;; 00:04db $0e $14
     call call_00_112f_QueueSFX                                  ;; 00:04dd $cd $2f $11
 .jr_00_04e0:
-    farcall call_02_6eba_Entities_UpdateAll
+    FARCALL call_02_6eba_Entities_UpdateAll
     call call_00_1455_BgMap_LoadDirtyRegions                                  ;; 00:04eb $cd $55 $14
     call call_00_2305                                  ;; 00:04ee $cd $05 $23
     call call_00_1e5b_BgMap_TickOverrideAnimation                                  ;; 00:04f1 $cd $5b $1e
     call call_00_05c7                                  ;; 00:04f4 $cd $c7 $05
     call call_00_08fc_SetupEntityVRAMTransfer                                  ;; 00:04f7 $cd $fc $08
-    farcall call_0b_5ec3_Player_UpdateGBCPalette
+    FARCALL call_0b_5ec3_Player_UpdateGBCPalette
     ld   HL, wD73C                                     ;; 00:0505 $21 $3c $d7
     inc  [HL]                                          ;; 00:0508 $34
     ld   A, [wD73B]                                    ;; 00:0509 $fa $3b $d7
@@ -409,12 +409,12 @@ call_00_0150_Init:
     jp   .jp_00_0428                                   ;; 00:051e $c3 $28 $04
 
 call_00_0521_DrawEntitiesWrapper:
-    farcall call_02_6f80_Entities_DrawAll
+    FARCALL call_02_6f80_Entities_DrawAll
     call call_00_0971                                  ;; 00:052c $cd $71 $09
     ld   A, $03                                        ;; 00:052f $3e $03
     call call_00_0bae                                  ;; 00:0531 $cd $ae $0b
     ld   C, $00                                        ;; 00:0534 $0e $00
-    farcall call_0b_5537_BgPalette_LoadMonoOrGetSpriteParams
+    FARCALL call_0b_5537_BgPalette_LoadMonoOrGetSpriteParams
     ld   A, $c7                                        ;; 00:0541 $3e $c7
     call call_00_0f56                                  ;; 00:0543 $cd $56 $0f
     ret                                                ;; 00:0546 $c9
@@ -562,7 +562,7 @@ call_00_0647:
     ld   c,[hl]
     ld   [hl],a
     push bc
-    farcall call_0b_5f1b_FlyPowerup_LoadParticlePalette
+    FARCALL call_0b_5f1b_FlyPowerup_LoadParticlePalette
     pop  bc
     ld   a,c
     cp   a,$03
@@ -602,7 +602,7 @@ call_00_068a:
 
 call_00_0696:
     ld   A, PLAYER_ACTION_DEATH                                        ;; 00:0696 $3e $10
-    farcall call_02_4ccd_Player_RequestAction
+    FARCALL call_02_4ccd_Player_RequestAction
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:06a3 $fa $24 $d6
     and  A, A                                          ;; 00:06a6 $a7
     ret  Z                                             ;; 00:06a7 $c8
@@ -636,7 +636,7 @@ call_00_06bf_DealDamageToPlayer: ; Deal damage to Gex
     cp   A, PLAYER_ACTION_UNK_1C                                        ;; 00:06d7 $fe $1c
     jp   Z, call_00_0629                                 ;; 00:06d9 $ca $29 $06
     ld   A, PLAYER_ACTION_TAKE_DAMAGE                                        ;; 00:06dc $3e $0f
-    farcall call_02_4ccd_Player_RequestAction
+    FARCALL call_02_4ccd_Player_RequestAction
     jp   call_00_0629                                    ;; 00:06e9 $c3 $29 $06
 
 call_00_06ec:
@@ -1104,7 +1104,7 @@ call_00_09fd:
     jp   call_00_10a3_RestoreBank                                  ;; 00:0a1e $c3 $a3 $10
 
 call_00_0a21:
-    farcall call_02_722c_SoundQueue_PlayNext
+    FARCALL call_02_722c_SoundQueue_PlayNext
     ld   HL, wD60F_HDMATransferFlags                                     ;; 00:0a2c $21 $0f $d6
     bit  3, [HL]                                       ;; 00:0a2f $cb $5e
     ret  Z                                             ;; 00:0a31 $c8
@@ -2446,7 +2446,7 @@ jr_00_209a:
     ld   a,$02
     ld   [de],a
 .jr_00_21a2:
-    farcall call_00_3951_Entity_SpawnPlayerClone
+    FARCALL call_00_3951_Entity_SpawnPlayerClone
     ret  
 
     db   $bc, $21, $01, $00, $ff, $00, $02, $01        ;; 00:21ae ????????

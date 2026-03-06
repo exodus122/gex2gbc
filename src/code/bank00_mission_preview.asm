@@ -62,7 +62,7 @@ call_00_2329_MissionPreview_LoadAndRun:
     xor  A, A                                          ;; 00:236b $af
     ld   [wD743_DrawGexFlag], A                                    ;; 00:236c $ea $43 $d7
     call call_00_1264_Map_LoadFull                                  ;; 00:236f $cd $64 $12
-    farcall call_02_6e68_Entities_InitNPCSlots
+    FARCALL call_02_6e68_Entities_InitNPCSlots
     call call_00_0521_DrawEntitiesWrapper                                  ;; 00:237d $cd $21 $05
     pop  HL                                            ;; 00:2380 $e1
     ld   E, [HL]                                       ;; 00:2381 $5e
@@ -99,8 +99,8 @@ call_00_2329_MissionPreview_LoadAndRun:
 .jr_00_23b1:
     call call_00_0ab4_WaitForInterrupt                                  ;; 00:23b1 $cd $b4 $0a
     call call_00_2dbf_MissionPreview_UpdateMovement                                  ;; 00:23b4 $cd $bf $2d
-    farcall call_02_715a_MapWindow_Update
-    farcall call_02_6eba_Entities_UpdateAll
+    FARCALL call_02_715a_MapWindow_Update
+    FARCALL call_02_6eba_Entities_UpdateAll
     call call_00_1455_BgMap_LoadDirtyRegions                                  ;; 00:23cd $cd $55 $14
     call call_00_08fc_SetupEntityVRAMTransfer                                  ;; 00:23d0 $cd $fc $08
     ld   HL, wD79B_MissionPreviewCutsceneRelated                                     ;; 00:23d3 $21 $9b $d7
@@ -135,7 +135,7 @@ call_00_2329_MissionPreview_LoadAndRun:
 .jr_00_23fe:
     call call_00_0ab4_WaitForInterrupt                                  ;; 00:23fe $cd $b4 $0a
     call call_00_1e5b_BgMap_TickOverrideAnimation                                  ;; 00:2401 $cd $5b $1e
-    farcall call_02_6eba_Entities_UpdateAll
+    FARCALL call_02_6eba_Entities_UpdateAll
     call call_00_08fc_SetupEntityVRAMTransfer                                  ;; 00:240f $cd $fc $08
     ld   A, [wD77D]                                    ;; 00:2412 $fa $7d $d7
     and  A, A                                          ;; 00:2415 $a7
@@ -148,7 +148,7 @@ call_00_2329_MissionPreview_LoadAndRun:
 .jr_00_2420:
     push AF                                            ;; 00:2420 $f5
     call call_00_0ab4_WaitForInterrupt                                  ;; 00:2421 $cd $b4 $0a
-    farcall call_02_6eba_Entities_UpdateAll
+    FARCALL call_02_6eba_Entities_UpdateAll
     call call_00_08fc_SetupEntityVRAMTransfer                                  ;; 00:242f $cd $fc $08
     ld   A, [wD775]                                    ;; 00:2432 $fa $75 $d7
     and  A, A                                          ;; 00:2435 $a7
@@ -181,7 +181,7 @@ call_00_2329_MissionPreview_LoadAndRun:
     ret  NZ                                            ;; 00:245d $c0
     call call_00_13a6_MapWindow_UpdateFromPlayerPos                                  ;; 00:245e $cd $a6 $13
     call call_00_1264_Map_LoadFull                                  ;; 00:2461 $cd $64 $12
-    farcall call_02_71c8_Entities_UpdateSoundsForAll
+    FARCALL call_02_71c8_Entities_UpdateSoundsForAll
     jp   call_00_0521_DrawEntitiesWrapper                                  ;; 00:246f $c3 $21 $05
 .data_00_2472_CutsceneIndexLookupTable:
 ; 512-byte sparse table (31 levels × 16 bytes each, $FF = no cutscene). Maps (level ID, cutscene slot) 

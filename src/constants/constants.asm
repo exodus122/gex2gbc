@@ -408,39 +408,6 @@ DEF PLAYER_CAN_TOUCH_ENTITY  EQU $01
 DEF PLAYER_CAN_ATTACK_ENTITY EQU $02
 DEF PLAYER_CAN_STOMP_ENTITY  EQU $04
 
-; Player Action Ids
-DEF PLAYER_ACTION_SPAWN                      EQU $00
-DEF PLAYER_ACTION_UNK_01                     EQU $01
-DEF PLAYER_ACTION_STAND                      EQU $02
-DEF PLAYER_ACTION_IDLE_ANIMATION             EQU $03
-DEF PLAYER_ACTION_WALK                       EQU $04
-DEF PLAYER_ACTION_RUN                        EQU $05
-DEF PLAYER_ACTION_SKID                       EQU $06
-DEF PLAYER_ACTION_STOP_ON_CERTAIN_FLOOR      EQU $07
-DEF PLAYER_ACTION_CROUCH                     EQU $08
-DEF PLAYER_ACTION_JUMP                       EQU $09
-DEF PLAYER_ACTION_DOUBLE_JUMP                EQU $0A
-DEF PLAYER_ACTION_NONE                       EQU $0B
-DEF PLAYER_ACTION_KARATE_KICK                EQU $0C
-DEF PLAYER_ACTION_TAIL_SPIN                  EQU $0D
-DEF PLAYER_ACTION_EAT_FLY                    EQU $0E
-DEF PLAYER_ACTION_TAKE_DAMAGE                EQU $0F
-DEF PLAYER_ACTION_DEATH                      EQU $10
-DEF PLAYER_ACTION_DEATH_SET_UP_WARP          EQU $11
-DEF PLAYER_ACTION_ENTER_TV                   EQU $12
-DEF PLAYER_ACTION_UNK_13                     EQU $13
-DEF PLAYER_ACTION_EXIT_TV                    EQU $14
-DEF PLAYER_ACTION_STANDING_PUSH              EQU $15 ; pushing bg wall
-DEF PLAYER_ACTION_WALKING_PUSH               EQU $16 ; pushing entity, such as tv button
-DEF PLAYER_ACTION_FREEFALL                   EQU $17
-DEF PLAYER_ACTION_STOP_IMMEDIATE             EQU $18
-DEF PLAYER_ACTION_COLLAPSE                   EQU $19 ; crushed by enemy, or landed from large fall
-DEF PLAYER_ACTION_ENTER_DOOR                 EQU $1A
-DEF PLAYER_ACTION_LEAVE_DOOR                 EQU $1B
-DEF PLAYER_ACTION_UNK_1C                     EQU $1C
-DEF PLAYER_ACTION_CLIMB                      EQU $1D ; used for both types of climbing
-DEF PLAYER_ACTION_UNK_1E                     EQU $1E
-DEF PLAYER_ACTION_UNK_1F                     EQU $1F ; disables collision updating?
 DEF PLAYER_ACTION_MASK                       EQU $1F
 
 ; Entity Collision Types
@@ -484,4 +451,4 @@ DEF COLLISION_TYPE_REZ                        EQU $24
 DEF COLLISION_TYPE_UNK_PLATFORM_FLAG          EQU $80
 
 ; Text
-DEF TextTerminator        EQU $80
+DEF END_TEXT        EQU $80
