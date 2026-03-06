@@ -222,11 +222,10 @@ wD55C:
 wD584_CollisionFlagsPrev:
 ; copy of the value that wD585_CollisionFlags had at the start of the frame
     ds 1                                               ;; d584
-
 wD585_CollisionFlags:
     ds 1                                               ;; d585
 
-wD586:
+wD586_GexSpriteStateFlags:
     ds 1                                               ;; d586
 
 wD587:
@@ -244,10 +243,8 @@ wD58A:
 wD59A_PtrToBankStackPosition:
 ; used to switch back to previous bank after loaded asset from a new bank (or ran code?)
     ds 2                                               ;; d59a
-
 wD59C_CurrentROMBank:
     ds 1                                               ;; d59c
-
 wD59D_ReturnBank:
 ; bank to return to after the upcoming bank switch
     ds 1                                               ;; d59d
@@ -333,37 +330,39 @@ wD618_CheckpointSpawnId:
 wD619_TitleScreenCounter:
 ; frame count used for starting demo
     ds 1                                               ;; d619
-
 wD61A_TitleScreenCounter:
 ; frame count used for starting demo
     ds 1                                               ;; d61a
-
 wD61B_DemoInputsPointer:
 ; pointer to current demo mode inputs
     ds 1                                               ;; d61b
-
 wD61C_DemoInputsPointer:
 ; pointer to current demo mode inputs
     ds 1                                               ;; d61c
-
-wD61D:
+wD61D_DemoUnk:
     ds 1                                               ;; d61d
-
 wD61E_DemoModeEnabled:
     ds 1                                               ;; d61e
-
 wD61F_DemoRelatedCounter:
 ; counter of how many frames to input the demo inputs?
     ds 1                                               ;; d61f
-
 wD620_DemoInputs:
 ; demo inputs that are being played currently
     ds 1                                               ;; d620
 
-wD621:
+wD621_WarpFlags:
+; bit 7 (80) = 
+; bit 6 (40) = 
+; bit 5 (20) = 
+; bit 4 (10) = collected gold remote
+; bit 3 (08) = entered door
+; bit 2 (04) = entered tv
+; bit 1 (02) = died
+; bit 0 (01) = 
     ds 1                                               ;; d621
 
 wD622_InterruptFlag:
+; gets set when an interrupt occurs. used when waiting for an interrupt
     ds 1                                               ;; d622
 
 wD623:
@@ -371,23 +370,18 @@ wD623:
 
 wD624_CurrentLevelId:
     ds 1                                               ;; d624
-
 wD625_TotalsMenuPage:
 ; which page you are on in the totals menu
     ds 1                                               ;; d625
-
 wD626: ; unknown but related to the level you enter. 1 for smellraiser, 3 for out of toon, 2 for kung fu?, 3 for franken, 1 for thursday
     ds 1                                               ;; d626
-
 wD627_CurrentMission:
 ; which mission you selected when entered a level
     ds 1                                               ;; d627
-
 wD628_MediaDimensionRespawnPoint:
 ; which tv you respawn at if you die in media dimension
 ; also where you go if you quit current level
     ds 1                                               ;; d628
-
 wD629_RemoteProgressFlags: 
     ds 30                                              ;; d629
 ; D62A : out of toon obtained remotes bitfield (1F = all)
@@ -468,7 +462,6 @@ wD665:
 
 wD667_PasswordExitButton: ; Password exit button (value 49)
     ds 1                                               ;; d667
-
 wD668_PasswordValues: ; password on call screen and in game
 ; 20 is blank
 ; solid color arrows: 45 right, 46 left, 47 up, 48 down
@@ -476,7 +469,6 @@ wD668_PasswordValues: ; password on call screen and in game
 ; bug: the first time you enter a value after going into the "enter password" screen, 
 ; it updates the value, but not visually
     ds 28                                              ;; d668
-
 wD684_PasswordGoButton: ; Password go button (value 4a)
     ds 1                                               ;; d684
 
@@ -498,25 +490,18 @@ wD689:
 ; start data related to current menu (8 bytes from data_01_5574 for a particular menu type)
 wD68A_MenuTypeDataPointer:
     ds 2                                               ;; d68a
-
 wD68C:
     ds 1                                               ;; d68c
-
 wD68D:
     ds 1                                               ;; d68d
-
 wD68E:
     ds 1                                               ;; d68e
-
 wD68F:
     ds 1                                               ;; d68f
-
 wD690:
     ds 1                                               ;; d690
-
 wD691:
     ds 1                                               ;; d691
-
 ; end data related to current menu
 
 wD692:
@@ -570,210 +555,148 @@ wD6A3:
 wD6A4:
     ds 1                                              ;; d6a4
 
+; Password related memory
 wD6A5_PasswordTilesBank:
     ds 1
-
 wD6A6:
-    ds 1
-    
+    ds 1 
 wD6A7:
-    ds 1
-    
+    ds 1 
 wD6A8:
     ds 1
-    
 wD6A9:
     ds 2
-    
 wD6AB:
     ds 2
-    
 wD6AD:
     ds 2
-    
 wD6AF:
     ds 1
 
+; Menu related memory starts here
 wD6B0:
     ds 1                                               ;; d6b0
-
 wD6B1:
     ds 2                                               ;; d6b1
-
 wD6B3:
     ds 1                                               ;; d6b3
-
 wD6B4:
     ds 1                                               ;; d6b4
-
 wD6B5:
     ds 1                                               ;; d6b5
-
 wD6B6:
     ds 1                                               ;; d6b6
-
 wD6B7:
     ds 1                                               ;; d6b7
-
 wD6B8:
     ds 1                                               ;; d6b8
-
 wD6B9:
     ds 1                                               ;; d6b9
-
 wD6BA:
     ds 1                                               ;; d6ba
-
 wD6BB:
     ds 1                                               ;; d6bb
-
 wD6BC:
     ds 1                                               ;; d6bc
-
 wD6BD:
     ds 1                                               ;; d6bd
-
 wD6BE:
     ds 1                                               ;; d6be
-
 wD6BF:
     ds 1                                               ;; d6bf
-
 wD6C0:
     ds 1                                               ;; d6c0
-
 wD6C1:
     ds 1                                               ;; d6c1
-
 wD6C2:
     ds 1                                               ;; d6c2
-
 wD6C3:
     ds 1                                               ;; d6c3
-
 wD6C4:
     ds 1                                               ;; d6c4
-
 wD6C5:
     ds 16                                              ;; d6c5
-
 wD6D5:
     ds 1                                               ;; d6d5
-
 wD6D6:
     ds 1                                               ;; d6d6
-
 wD6D7:
     ds 1                                               ;; d6d7
-
 wD6D8:
     ds 1                                               ;; d6d8
-
 wD6D9:
     ds 1                                               ;; d6d9
-
 wD6DA:
     ds 1                                               ;; d6da
-
 wD6DB:
     ds 1                                               ;; d6db
-
 wD6DC: ; menu related
     ds 1                                               ;; d6dc
-
 wD6DD: ; menu related
     ds 1                                               ;; d6dd
-
 wD6DE_MenuType: 
 ; 0 = pause in media dimension, 1 = exit game, 2 = pause in world, 3 = exit to map
 ; 5 = view totals, 6 = current password, B = mission select, F = enter password
     ds 1                                               ;; d6de
-
 wD6DF_MenuSelectedColumn: ; used for password call, but not totals screen
     ds 1                                               ;; d6df
-
 wD6E0_MenuSelectedRow: ; used for password call, title screen, mission select, and leaving maps
     ds 1                                               ;; d6e0
-
 wD6E1:
     ds 1                                               ;; d6e1
-
 wD6E2:
     ds 1                                               ;; d6e2
-
 wD6E3:
     ds 1                                               ;; d6e3
-
 wD6E4:
     ds 1                                               ;; d6e4
-
 wD6E5_PasswordArrowSprites:
     ds 1                                               ;; d6e5
-
 wD6E6_PasswordArrowSprites:
     ds 1                                               ;; d6e6
-
 wD6E7_PasswordArrowSprites:
     ds 1                                               ;; d6e7
-
 wD6E8_PasswordArrowSprites:
     ds 1                                               ;; d6e8
-
 wD6E9:
     ds 1                                               ;; d6e9
-
 wD6EA:
     ds 1                                               ;; d6ea
-
 wD6EB:
     ds 1                                               ;; d6eb
-
 wD6EC:
     ds 1                                               ;; d6ec
 
+; BgMap related memory starts here
 wD6ED_XPositionInMap: ; current x position in map of screen/player?
     ds 2                                               ;; d6ed
-
 wD6EF_YPositionInMap: ; current y position in map of screen/player?
     ds 1                                               ;; d6ef
-
-wD6F0:
+wD6F0_BgMap_HardHeadAreaObjectRelated:
     ds 1                                               ;; d6f0
-
-wD6F1:
+wD6F1_BgMap_PrevColumn:
     ds 2                                               ;; d6f1
-
-wD6F3:
+wD6F3_BgMap_PrevRow:
     ds 2                                               ;; d6f3
-
-wD6F5_CurrentMapBank:
+wD6F5_MapBank:
     ds 1                                               ;; d6f5
-
-wD6F6_SecondaryTilesetOverrideBank:
+wD6F6_BlocksetOverrideBank:
     ds 1                                               ;; d6f6
-
-wD6F7_CurrentBlocksetAndCollisionBank:
+wD6F7_BlocksetAndCollisionBank:
     ds 2                                               ;; d6f7
-
-wD6F9:
+wD6F9_BgMapLoadingFlags:
     ds 1                                               ;; d6f9
-
-wD6FA:
+wD6FA_BgMap_ColumnScrollPosition:
     ds 1                                               ;; d6fa
-
-wD6FB:
+wD6FB_BgMap_ColumnUnk:
     ds 1                                               ;; d6fb
-
-wD6FC:
+wD6FC_BgMap_RowScrollPosition:
     ds 1                                               ;; d6fc
-
-wD6FD:
+wD6FD_BgMap_RowUnk:
     ds 1                                               ;; d6fd
-
 wD6FE_LevelTileOverrideBit:
     ds 1                                               ;; d6fe
-
-wD6FF_CurrentBgTilesetBank:
+wD6FF_BgTilesetBank:
     ds 1                                               ;; d6ff
 
 wD700: ; where block ids get written temporarily. also where override bits are set temporarily
@@ -824,7 +747,7 @@ wD726_SecondaryTilesetBank:
 wD727:
     ds 1                                               ;; d727
 
-wD728_CurrentSecondaryTilesetAddr: ; this determines which secondary tilset to load (and is loading)
+wD728_SecondaryTilesetAddr: ; this determines which secondary tilset to load (and is loading)
     ds 1                                               ;; d728
 
 wD729:
@@ -839,10 +762,10 @@ wD72B:
 wD72C:
     ds 1                                               ;; d72c
 
-wD72D_CurrentSecondaryTilesetIndex:
+wD72D_SecondaryTilesetIndex:
     ds 1                                               ;; d72d
 
-wD72E:
+wD72E_SecondaryTilesetBank2:
     ds 1                                               ;; d72e
 
 wD72F:
@@ -889,19 +812,14 @@ wD73C:
 
 wD73D_LivesRemaining:
     ds 1                                               ;; d73d
-
 wD73E_PlayerLivesHundreds: ; the hundreds unit of your lives
     ds 1                                               ;; d73e
-
 wD73F_PlayerLivesTens: ; the tens unit of your lives
     ds 1                                               ;; d73f
-
 wD740_PlayerLivesOnes: ; the ones unit of your lives
     ds 1                                               ;; d740
-
 wD741_PlayerHealth:
     ds 1                                               ;; d741
-
 wD742_PlayerCurrentFly:
     ds 1                                               ;; d742
 
@@ -944,13 +862,11 @@ wD74B:
 wD74C:
     ds 1                                               ;; d74c
 
-wD74D_PlayerRoom:
+wD74D_PlayerInteractedEntityLo:
     ds 1                                               ;; d74d
-
-wD74E:
+wD74E_PlayerPlatformRelated:
     ds 1                                               ;; d74e
-
-wD74F:
+wD74F_PlayerPlatformRelated2:
     ds 1                                               ;; d74f
 
 wD750:
@@ -991,59 +907,43 @@ wD75A_CurrentInputsAlt:
 wD75B_IdleTimer:
 ; counter used to determine if gex has been idle long enough to do the tongue flick
     ds 1                                               ;; d75b
-
 wD75C:
     ds 1                                               ;; d75c
-
 wD75D_PlayerXSpeedPrev:
 ; (1 = walk, 2 = run)
     ds 1                                               ;; d75d
-
 wD75E_PlayerXSpeed:
 ; how fast gex runs (1 = walk, 2 = run)
 ; can freeze to change how fast you run, but doesn't make you move by itself
     ds 1                                               ;; d75e
-
 wD75F_PlayerYVelocityRelated:
     ds 1                                               ;; d75f
-
 wD760_PlayerYVelocity:
 ; signed byte (positive = up, negative = down)
 ; can freeze this to levitate
     ds 1                                               ;; d760
-
 wD761_PlayerFallingFlag:
 ; set to c0 when gex is falling, 0 otherwise?
     ds 1                                               ;; d761
-
 wD762_PlayerInitialYVelocity:
 ; y velocity when first entered the air (2a = jump, 36 = double jump). also set to 1 if fall off ledge
     ds 1                                               ;; d762
-
 wD763_PlayerMovementFlags:
     ds 1                                               ;; d763
-
 wD764_TileTypeBehindGexsBody:
     ds 1                                               ;; d764
-
 wD765_TileTypeBehindGexsBody:
     ds 1                                               ;; d765
-
 wD766_TileTypeBehindGexsFace: ; also set to 22 in front of doors?
     ds 1                                               ;; d766
-
 wD767_FloorTileType:
     ds 1                                               ;; d767
-
     ds 1
-
 wD769:
     ds 1                                               ;; d769
-
 wD76A_PlayerXPositionBlock:
     ds 1                                               ;; d76a
-
-wD76B_TailSpinningFlagMaybe:
+wD76B_Player_IsAttacking:
     ds 1                                               ;; d76b
 
 wD76C:

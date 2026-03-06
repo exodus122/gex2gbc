@@ -1,6 +1,6 @@
-call_03_6efd_VRAM_Copy16Bytes:
-; Unrolled copy of exactly 16 bytes from HL to DE, incrementing both. 
-; Falls into call_03_6f2d_VRAM_Copy32Bytes for the second 16 bytes, totaling 32 bytes. 
+call_03_6efd_VRAM_Copy32Bytes:
+; Unrolled copy of exactly 32 bytes from HL to DE, incrementing both. 
+; Falls into VRAM_Copy32Bytes for the second 16 bytes, totaling 32 bytes. 
 ; Used to DMA a single 8×8 tile (16 bytes per plane × 2 for GBC) into VRAM
     ld   A, [HL+]                                      ;; 03:6efd $2a
     ld   [DE], A                                       ;; 03:6efe $12
@@ -50,10 +50,9 @@ call_03_6efd_VRAM_Copy16Bytes:
     ld   A, [HL+]                                      ;; 03:6f2a $2a
     ld   [DE], A                                       ;; 03:6f2b $12
     inc  DE                                            ;; 03:6f2c $13
-
-call_03_6f2d_VRAM_Copy32Bytes:
-; Unrolled copy of exactly 32 bytes from HL to DE, incrementing E only (D stays fixed 
-; within a VRAM page). Returns after 32 bytes. The fundamental tile-write primitive 
+call_03_6f2d_VRAM_Copy16Bytes:
+; Unrolled copy of exactly 16 bytes from HL to DE, incrementing E only (D stays fixed 
+; within a VRAM page). Returns after 16 bytes. The fundamental tile-write primitive 
 ; used throughout the HUD system
     ld   A, [HL+]                                      ;; 03:6f2d $2a
     ld   [DE], A                                       ;; 03:6f2e $12
@@ -106,7 +105,7 @@ call_03_6f2d_VRAM_Copy32Bytes:
     ret                                                ;; 03:6f5d $c9
 
 call_03_6f5e_BgMap_WriteScrollColumn:
-; Writes one column (31 tiles) of BG map attribute/tile data to VRAM. Reads wD6FA (scroll position) 
+; Writes one column (31 tiles) of BG map attribute/tile data to VRAM. Reads wD6FA_BgMap_ColumnScrollPosition (scroll position) 
 ; to compute the target BG map address in 9800/9800/9800/C000 space. If wD59E is set (GBC mode): 
 ; switches to VRAM bank 1 (rVBK=$01), reads 31 tile attribute bytes from the $CF00 bank (attribute data), 
 ; writes them to $9800 address space via the $CF indirect read pattern (ld B,$CF; ld C,[HL]; ld A,[BC]), 
@@ -117,7 +116,7 @@ call_03_6f5e_BgMap_WriteScrollColumn:
     jp   Z, .jp_03_701d                                ;; 03:6f62 $ca $1d $70
     ld   A, $01                                        ;; 03:6f65 $3e $01
     ldh  [rVBK], A                                     ;; 03:6f67 $e0 $4f
-    ld   HL, wD6FA                                     ;; 03:6f69 $21 $fa $d6
+    ld   HL, wD6FA_BgMap_ColumnScrollPosition                                     ;; 03:6f69 $21 $fa $d6
     ld   A, [HL+]                                      ;; 03:6f6c $2a
     and  A, $e0                                        ;; 03:6f6d $e6 $e0
     ld   E, A                                          ;; 03:6f6f $5f
@@ -290,7 +289,7 @@ call_03_6f5e_BgMap_WriteScrollColumn:
     ld   A, $00                                        ;; 03:7019 $3e $00
     ldh  [rVBK], A                                     ;; 03:701b $e0 $4f
 .jp_03_701d:
-    ld   HL, wD6FA                                     ;; 03:701d $21 $fa $d6
+    ld   HL, wD6FA_BgMap_ColumnScrollPosition                                     ;; 03:701d $21 $fa $d6
     ld   A, [HL+]                                      ;; 03:7020 $2a
     and  A, $e0                                        ;; 03:7021 $e6 $e0
     ld   E, A                                          ;; 03:7023 $5f
@@ -400,7 +399,7 @@ call_03_6f5e_BgMap_WriteScrollColumn:
 
 call_03_708d_BgMap_WriteScrollRow:
 ; Writes one row (32 tiles) of BG map data to VRAM. Same structure as BgMap_WriteScrollColumn — 
-; reads wD6FC (row scroll position) to compute $9800 address, uses the same $CF indirect attribute 
+; reads wD6FC_BgMap_RowScrollPosition (row scroll position) to compute $9800 address, uses the same $CF indirect attribute 
 ; read pattern for GBC bank 1 attributes (32 tiles across 4 VRAM rows with inc D/inc H to cross 
 ; page boundaries at rows 8, 16, 24), then copies tile indices in bank 0. The inc D/inc H pairs 
 ; handle the GBC BG map layout where attribute and tile data are in different VRAM banks but share 
@@ -410,7 +409,7 @@ call_03_708d_BgMap_WriteScrollRow:
     jp   Z, .jp_03_71ab                                ;; 03:7091 $ca $ab $71
     ld   A, $01                                        ;; 03:7094 $3e $01
     ldh  [rVBK], A                                     ;; 03:7096 $e0 $4f
-    ld   HL, wD6FC                                     ;; 03:7098 $21 $fc $d6
+    ld   HL, wD6FC_BgMap_RowScrollPosition                                     ;; 03:7098 $21 $fc $d6
     ld   A, [HL]                                       ;; 03:709b $7e
     and  A, $1f                                        ;; 03:709c $e6 $1f
     ld   E, A                                          ;; 03:709e $5f
@@ -647,7 +646,7 @@ call_03_708d_BgMap_WriteScrollRow:
     ld   A, $00                                        ;; 03:71a7 $3e $00
     ldh  [rVBK], A                                     ;; 03:71a9 $e0 $4f
 .jp_03_71ab:
-    ld   HL, wD6FC                                     ;; 03:71ab $21 $fc $d6
+    ld   HL, wD6FC_BgMap_RowScrollPosition                                     ;; 03:71ab $21 $fc $d6
     ld   A, [HL]                                       ;; 03:71ae $7e
     and  A, $1f                                        ;; 03:71af $e6 $1f
     ld   E, A                                          ;; 03:71b1 $5f

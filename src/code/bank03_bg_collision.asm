@@ -16,7 +16,7 @@ call_03_4900_BgCollision_Update:
     ret                                                ;; 03:4914 $c9
 
 call_03_4915_BgCollision_Sidescroller:
-; Main sidescroller collision dispatcher. Sets bit 7 of collision flags if wD74D (player room) is nonzero 
+; Main sidescroller collision dispatcher. Sets bit 7 of collision flags if wD74D (interacted entity) is nonzero 
 ; (indoor/special room = no normal collision). If wD746 (climbing state) ≠ $FF, jumps to the climb collision 
 ; handler instead. Otherwise: computes a Y-velocity-derived lookahead value (Y velocity − 2, clamped to $C0, 
 ; then arithmetic right-shifted 4) stored in wD75F. Calls call_03_4ab3_BgCollision_GetXOffset to get the X offset. 
@@ -27,7 +27,7 @@ call_03_4915_BgCollision_Sidescroller:
 ; or left (C=−1) through successive tiles calling TileCollisionCheck_Raw, counting how many are solid into B. 
 ; Negates B, ORs into collision flags; if any of the low nibble bits are set, also sets bit 7. 
 ; Falls through to the floor/ceiling check
-    ld   A, [wD74D_PlayerRoom]                                    ;; 03:4915 $fa $4d $d7
+    ld   A, [wD74D_PlayerInteractedEntityLo]                                    ;; 03:4915 $fa $4d $d7
     and  A, A                                          ;; 03:4918 $a7
     jr   Z, .jr_03_491d                                ;; 03:4919 $28 $02
     set  7, [HL]                                       ;; 03:491b $cb $fe ; set 0x80

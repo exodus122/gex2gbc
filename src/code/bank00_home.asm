@@ -90,7 +90,7 @@ call_00_0150_Init:
     call call_00_0e87                                  ;; 00:01b8 $cd $87 $0e
     ld   HL, wD59A_PtrToBankStackPosition                                     ;; 00:01bb $21 $9a $d5
     ld   DE, wD58A                                     ;; 00:01be $11 $8a $d5
-    ld   A, $01                                        ;; 00:01c1 $3e $01
+    ld   A, BANK_01                                        ;; 00:01c1 $3e $01
     ld   [HL], E                                       ;; 00:01c3 $73
     inc  HL                                            ;; 00:01c4 $23
     ld   [HL], D                                       ;; 00:01c5 $72
@@ -127,7 +127,7 @@ call_00_0150_Init:
     stop                                               ;; 00:020e $10 $00
 .jr_00_0210:
     ld   A, $03                                        ;; 00:0210 $3e $03
-    ld   [wD61D], A                                    ;; 00:0212 $ea $1d $d6
+    ld   [wD61D_DemoUnk], A                                    ;; 00:0212 $ea $1d $d6
     FARCALL call_01_4f87_LoadEnterPasswordMenu
 .jp_00_0220:
     ld   A, MENU_TYPE_TITLE_SPLASH                                        ;; 00:0220 $3e $14
@@ -151,7 +151,7 @@ call_00_0150_Init:
     jr   Z, .jp_00_029d                                ;; 00:0270 $28 $2b
     cp   A, $70                                        ;; 00:0272 $fe $70
     jr   NZ, .jp_00_0254                               ;; 00:0274 $20 $de
-    ld   HL, wD61D                                     ;; 00:0276 $21 $1d $d6
+    ld   HL, wD61D_DemoUnk                                     ;; 00:0276 $21 $1d $d6
     ld   A, [HL]                                       ;; 00:0279 $7e
     inc  A                                             ;; 00:027a $3c
     and  A, $03                                        ;; 00:027b $e6 $03
@@ -159,7 +159,7 @@ call_00_0150_Init:
     ld   [HL], A                                       ;; 00:027f $77
     ld   A, $01                                        ;; 00:0280 $3e $01
     ld   [wD61E_DemoModeEnabled], A                                    ;; 00:0282 $ea $1e $d6
-    ld   HL, wD61D                                     ;; 00:0285 $21 $1d $d6
+    ld   HL, wD61D_DemoUnk                                     ;; 00:0285 $21 $1d $d6
     ld   L, [HL]                                       ;; 00:0288 $6e
     ld   H, $00                                        ;; 00:0289 $26 $00
     add  HL, HL                                        ;; 00:028b $29
@@ -186,7 +186,7 @@ call_00_0150_Init:
     ld   A, [wD61E_DemoModeEnabled]                                    ;; 00:02b8 $fa $1e $d6
     and  A, A                                          ;; 00:02bb $a7
     jr   Z, .jr_00_02c9                                ;; 00:02bc $28 $0b
-    ld   HL, wD61D                                     ;; 00:02be $21 $1d $d6
+    ld   HL, wD61D_DemoUnk                                     ;; 00:02be $21 $1d $d6
     ld   L, [HL]                                       ;; 00:02c1 $6e
     ld   H, $00                                        ;; 00:02c2 $26 $00
     ld   DE, data_00_076d                                      ;; 00:02c4 $11 $6d $07
@@ -197,7 +197,7 @@ call_00_0150_Init:
     ld   A, $08                                        ;; 00:02cc $3e $08
     FARCALL call_01_4000_MenuLoad
     xor  A, A                                          ;; 00:02d9 $af
-    ld   [wD621], A                                    ;; 00:02da $ea $21 $d6
+    ld   [wD621_WarpFlags], A                                    ;; 00:02da $ea $21 $d6
     ld   [wD628_MediaDimensionRespawnPoint], A         ;; 00:02dd $ea $28 $d6
     ld   [wD64F], A                                    ;; 00:02e0 $ea $4f $d6
     ld   [wD650], A                                    ;; 00:02e3 $ea $50 $d6
@@ -208,7 +208,7 @@ call_00_0150_Init:
     ld   A, [wD61E_DemoModeEnabled]                                    ;; 00:02ee $fa $1e $d6
     and  A, A                                          ;; 00:02f1 $a7
     jr   NZ, .jr_00_0350                               ;; 00:02f2 $20 $5c
-    ld   A, [wD621]                                    ;; 00:02f4 $fa $21 $d6
+    ld   A, [wD621_WarpFlags]                                    ;; 00:02f4 $fa $21 $d6
     and  A, $04                                        ;; 00:02f7 $e6 $04
     jr   Z, .jr_00_0306                                ;; 00:02f9 $28 $0b
     FARCALL call_01_42bd_EnterTV
@@ -262,7 +262,7 @@ call_00_0150_Init:
     ld   [wD773], A                                    ;; 00:038c $ea $73 $d7
     ld   [wD774], A                                    ;; 00:038f $ea $74 $d7
     ld   [wD73C], A                                    ;; 00:0392 $ea $3c $d7
-    ld   [wD6F9], A                                    ;; 00:0395 $ea $f9 $d6
+    ld   [wD6F9_BgMapLoadingFlags], A                                    ;; 00:0395 $ea $f9 $d6
     ld   [wD60E], A                                    ;; 00:0398 $ea $0e $d6
     ld   [wD60F_HDMATransferFlags], A                                    ;; 00:039b $ea $0f $d6
     ld   [wD77B], A                                    ;; 00:039e $ea $7b $d7
@@ -307,16 +307,16 @@ call_00_0150_Init:
     ld   A, [wD59F_CurrentInputs]                                    ;; 00:042b $fa $9f $d5
     cp   A, PADF_A | PADF_B | PADF_SELECT | PADF_START                                        ;; 00:042e $fe $0f
     jp   Z, .jp_00_0220                                ;; 00:0430 $ca $20 $02
-    ld   A, [wD621]                                    ;; 00:0433 $fa $21 $d6
+    ld   A, [wD621_WarpFlags]                                    ;; 00:0433 $fa $21 $d6
     and  A, $08                                        ;; 00:0436 $e6 $08
     jr   Z, .jr_00_043f                                ;; 00:0438 $28 $05
     call call_00_38f0_Entity_DespawnAll                                  ;; 00:043a $cd $f0 $38
     jr   .jr_00_03da                                   ;; 00:043d $18 $9b
 .jr_00_043f:
-    ld   A, [wD621]                                    ;; 00:043f $fa $21 $d6
+    ld   A, [wD621_WarpFlags]                                    ;; 00:043f $fa $21 $d6
     and  A, $04                                        ;; 00:0442 $e6 $04
     jp   NZ, .jp_00_02ee                               ;; 00:0444 $c2 $ee $02
-    ld   A, [wD621]                                    ;; 00:0447 $fa $21 $d6
+    ld   A, [wD621_WarpFlags]                                    ;; 00:0447 $fa $21 $d6
     and  A, $02                                        ;; 00:044a $e6 $02
     jr   Z, .jr_00_0468                                ;; 00:044c $28 $1a
     ld   A, [wD73D_LivesRemaining]                                    ;; 00:044e $fa $3d $d7
@@ -448,10 +448,37 @@ call_00_0562:
     ld   [HL], $01                                     ;; 00:0576 $36 $01
     ret                                                ;; 00:0578 $c9
 .data_00_0579:
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:0579 .ww?????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:0581 ????????
-    db   $32, $00, $00, $00, $00, $1f, $32, $32        ;; 00:0589 ????????
-    db   $00, $00, $00, $00, $00, $00, $00             ;; 00:0591 ???????
+    db   $00 ; MAP_MEDIA_DIMENSION
+    db   $00 ; MAP_TOON_TV_OUT_OF_TOON
+    db   $00 ; MAP_SCREAM_TV_SMELLRAISER
+    db   $00 ; MAP_SCREAM_TV_FRANKENSTEINFELD
+    db   $00 ; MAP_CIRCUIT_CENTRAL_WWWDOTCOMCOM
+    db   $00 ; MAP_KUNG_FU_THEATER_MAO_TSE_TONGUE
+    db   $00 ; MAP_UNUSED_04
+    db   $00 ; MAP_PRE_HISTORY_CHANNEL_PANGAEA_90210
+    db   $00 ; MAP_TOON_TV_FINE_TOONING
+    db   $00 ; MAP_PRE_HISTORY_CHANNEL_THIS_OLD_CAVE
+    db   $00 ; MAP_CIRCUIT_CENTRAL_HONEY_I_SHRUNK_THE_GECKO
+    db   $00 ; MAP_SCREAM_TV_POLTERGEX
+    db   $00 ; MAP_UNUSED_0C
+    db   $00 ; MAP_KUNG_FU_THEATER_SAMURAI_NIGHT_FEVER
+    db   $00 ; MAP_REZOPOLIS_NO_WEDDINGS_AND_A_FUNERAL
+    db   $00 ; MAP_UNUSED_0F
+    db   $32 ; MAP_SCREAM_TV_THURSDAY_THE_12TH
+    db   $00 ; MAP_UNUSED_11
+    db   $00 ; MAP_UNUSED_12
+    db   $00 ; MAP_UNUSED_13
+    db   $00 ; MAP_UNUSED_14
+    db   $1f ; MAP_KUNG_FU_THEATER_LIZARD_IN_A_CHINA_SHOP
+    db   $32 ; MAP_REZOPOLIS_BUGGED_OUT
+    db   $32 ; MAP_CIRCUIT_CENTRAL_CHIPS_AND_DIPS
+    db   $00 ; MAP_PRE_HISTORY_CHANNEL_LAVA_DABBA_DOO
+    db   $00 ; MAP_SCREAM_TV_TEXAS_CHAINSAW_MANICURE
+    db   $00 ; MAP_REZOPOLIS_MAZED_AND_CONFUSED
+    db   $00 ; MAP_UNUSED_1B
+    db   $00 ; MAP_UNUSED_1C
+    db   $00 ; MAP_UNUSED_1D
+    db   $00 ; MAP_BOSS_TV_CHANNEL_Z
 
 call_00_0598:
     ld   HL, wD771                                     ;; 00:0598 $21 $71 $d7
@@ -475,9 +502,9 @@ call_00_0598:
     ld   [HL], $00                                     ;; 00:05b8 $36 $00
     xor  A, A                                          ;; 00:05ba $af
     ld   [wD770], A                                    ;; 00:05bb $ea $70 $d7
-    ld   A, [wD621]                                    ;; 00:05be $fa $21 $d6
+    ld   A, [wD621_WarpFlags]                                    ;; 00:05be $fa $21 $d6
     or   A, $14                                        ;; 00:05c1 $f6 $14
-    ld   [wD621], A                                    ;; 00:05c3 $ea $21 $d6
+    ld   [wD621_WarpFlags], A                                    ;; 00:05c3 $ea $21 $d6
     ret                                                ;; 00:05c6 $c9
 
 call_00_05c7:
@@ -566,7 +593,7 @@ call_00_0647:
     pop  bc
     ld   a,c
     cp   a,$03
-    jr   z,call_00_06b7
+    jr   z,call_00_06b7_Player_ResetHealth
     cp   a,$04
     jr   z,call_00_068a
     cp   a,$01
@@ -614,7 +641,7 @@ call_00_0696:
     dec  [HL]                                          ;; 00:06b3 $35
     jp   call_00_0634                                  ;; 00:06b4 $c3 $34 $06
 
-call_00_06b7:
+call_00_06b7_Player_ResetHealth:
     ld   hl, wD741_PlayerHealth
     ld   [hl], $04
     jp   call_00_0629
@@ -639,7 +666,7 @@ call_00_06bf_DealDamageToPlayer: ; Deal damage to Gex
     FARCALL call_02_4ccd_Player_RequestAction
     jp   call_00_0629                                    ;; 00:06e9 $c3 $29 $06
 
-call_00_06ec:
+call_00_06ec_Player_ObtainedCollectible:
     ld   C, SFX_COLLECTIBLE                                        ;; 00:06ec $0e $06
     call call_00_112f_QueueSFX                                  ;; 00:06ee $cd $2f $11
     call call_00_074d                                  ;; 00:06f1 $cd $4d $07
@@ -647,7 +674,7 @@ call_00_06ec:
     ld   A, [wD623]                                    ;; 00:06f7 $fa $23 $d6
     and  A, A                                          ;; 00:06fa $a7
     jr   Z, .jr_00_070b                                ;; 00:06fb $28 $0e
-    ld   A, [wD621]                                    ;; 00:06fd $fa $21 $d6
+    ld   A, [wD621_WarpFlags]                                    ;; 00:06fd $fa $21 $d6
     and  A, $10                                        ;; 00:0700 $e6 $10
     ret  NZ                                            ;; 00:0702 $c0
     ld   HL, wD649_CollectibleAmount                                     ;; 00:0703 $21 $49 $d6
@@ -923,7 +950,7 @@ call_00_08b1:
     push HL                                            ;; 00:08b4 $e5
     ld   A, $13                                        ;; 00:08b5 $3e $13
     call call_00_1089_SwitchBank                                  ;; 00:08b7 $cd $89 $10
-    call call_00_2e3a_GetMapTVPaletteId                                  ;; 00:08ba $cd $3a $2e
+    call call_00_2e3a_MapData_GetTVPaletteId                                  ;; 00:08ba $cd $3a $2e
     ld   DE, .data_00_08e6                                      ;; 00:08bd $11 $e6 $08
     call call_00_07b9                                  ;; 00:08c0 $cd $b9 $07
     ld   DE, $240                                      ;; 00:08c3 $11 $40 $02
@@ -998,7 +1025,7 @@ call_00_08fc_SetupEntityVRAMTransfer: ; this reads secondary tileset information
 .jr_00_093e:
     ld   A, [wD726_SecondaryTilesetBank]                                    ;; 00:093e $fa $26 $d7 ; this is where it went when loading seconda tileset info
     call call_00_1089_SwitchBank                                  ;; 00:0941 $cd $89 $10
-    ld   A, [wD728_CurrentSecondaryTilesetAddr]                                    ;; 00:0944 $fa $28 $d7
+    ld   A, [wD728_SecondaryTilesetAddr]                                    ;; 00:0944 $fa $28 $d7
     jr   .jr_00_095e                                   ;; 00:0947 $18 $15
 .jr_00_0949:
     ld   A, [wD71F]                                    ;; 00:0949 $fa $1f $d7
@@ -1077,7 +1104,7 @@ call_00_09e3:
     res  2, [HL]                                       ;; 00:09e3 $cb $96
     ld   A, [wD726_SecondaryTilesetBank]                                    ;; 00:09e5 $fa $26 $d7
     call call_00_1089_SwitchBank                                  ;; 00:09e8 $cd $89 $10
-    ld   A, [wD728_CurrentSecondaryTilesetAddr]                                    ;; 00:09eb $fa $28 $d7
+    ld   A, [wD728_SecondaryTilesetAddr]                                    ;; 00:09eb $fa $28 $d7
     ld   H, A                                          ;; 00:09ee $67
     ld   L, $00                                        ;; 00:09ef $2e $00
     ld   DE, _VRAM+$1000                                     ;; 00:09f1 $11 $00 $90
@@ -1187,26 +1214,26 @@ call_00_0ab4_WaitForInterrupt: ; updates tiles in VRAM
     ret                                                ;; 00:0ac0 $c9
 
 call_00_0ac1:
-    ld   A, $03                                        ;; 00:0ac1 $3e $03
+    ld   A, BANK_03   ;; 00:0ac1 $3e $03
     ld   [MBC1RomBank], A                                    ;; 00:0ac3 $ea $01 $20
     swap A                                             ;; 00:0ac6 $cb $37
     rrca                                               ;; 00:0ac8 $0f
     and  A, $01                                        ;; 00:0ac9 $e6 $01
     ld   [MBC1SRamBank], A                                    ;; 00:0acb $ea $01 $40
-    ld   HL, wD6F9                                     ;; 00:0ace $21 $f9 $d6
+    ld   HL, wD6F9_BgMapLoadingFlags                                     ;; 00:0ace $21 $f9 $d6
     bit  7, [HL]                                       ;; 00:0ad1 $cb $7e
     jr   Z, .jr_00_0af0                                ;; 00:0ad3 $28 $1b
     res  7, [HL]                                       ;; 00:0ad5 $cb $be
-    ld   A, [wD6F9]                                    ;; 00:0ad7 $fa $f9 $d6
+    ld   A, [wD6F9_BgMapLoadingFlags]                                    ;; 00:0ad7 $fa $f9 $d6
     and  A, $0f                                        ;; 00:0ada $e6 $0f
     jr   Z, .jr_00_0af0                                ;; 00:0adc $28 $12
     and  A, $03                                        ;; 00:0ade $e6 $03
     call NZ, call_03_6f5e_BgMap_WriteScrollColumn                              ;; 00:0ae0 $c4 $5e $6f
-    ld   A, [wD6F9]                                    ;; 00:0ae3 $fa $f9 $d6
+    ld   A, [wD6F9_BgMapLoadingFlags]                                    ;; 00:0ae3 $fa $f9 $d6
     and  A, $0c                                        ;; 00:0ae6 $e6 $0c
     call NZ, call_03_708d_BgMap_WriteScrollRow                              ;; 00:0ae8 $c4 $8d $70
     xor  A, A                                          ;; 00:0aeb $af
-    ld   [wD6F9], A                                    ;; 00:0aec $ea $f9 $d6
+    ld   [wD6F9_BgMapLoadingFlags], A                                    ;; 00:0aec $ea $f9 $d6
     ret                                                ;; 00:0aef $c9
 .jr_00_0af0:
     ld   HL, wD77B                                     ;; 00:0af0 $21 $7b $d7
@@ -1226,7 +1253,7 @@ call_00_0ac1:
 .jr_00_0b0c:
     ld   A, [wD60E]                                    ;; 00:0b0c $fa $0e $d6
     bit  3, A                                          ;; 00:0b0f $cb $5f
-    call NZ, call_03_6941_HUD_LoadCollectibleIcon                              ;; 00:0b11 $c4 $41 $69
+    call NZ, call_03_6941_HUD_LoadCollectibleSprites                              ;; 00:0b11 $c4 $41 $69
     ld   A, [wD60E]                                    ;; 00:0b14 $fa $0e $d6
     bit  1, A                                          ;; 00:0b17 $cb $4f
     jp   NZ, call_03_6d13_HUD_LoadLivesDigits                              ;; 00:0b19 $c2 $13 $6d
@@ -1234,7 +1261,7 @@ call_00_0ac1:
     jp   NZ, call_03_6ceb_HUD_LoadTimerDigits                                ;; 00:0b1e $c2 $eb $6c
     jp   call_03_7253_AnimatedTile_Update                                    ;; 00:0b21 $c3 $53 $72
 .jp_00_0b24:
-    ld   A, [wD72E]                                    ;; 00:0b24 $fa $2e $d7
+    ld   A, [wD72E_SecondaryTilesetBank2]                                    ;; 00:0b24 $fa $2e $d7
     ld   [MBC1RomBank], A                                    ;; 00:0b27 $ea $01 $20
     swap A                                             ;; 00:0b2a $cb $37
     rrca                                               ;; 00:0b2c $0f
@@ -1420,12 +1447,12 @@ call_00_0bb9:
     ld   A, $d1                                        ;; 00:0c3a $3e $d1
     ld   [HL-], A                                      ;; 00:0c3c $32
     ld   [HL], $ff                                     ;; 00:0c3d $36 $ff
-    ld   A, [wD586]                                    ;; 00:0c3f $fa $86 $d5
+    ld   A, [wD586_GexSpriteStateFlags]                                    ;; 00:0c3f $fa $86 $d5
     add  A, $80                                        ;; 00:0c42 $c6 $80
     ld   [wCCA7], A                                    ;; 00:0c44 $ea $a7 $cc
     and  A, $01                                        ;; 00:0c47 $e6 $01
     xor  A, $01                                        ;; 00:0c49 $ee $01
-    ld   [wD586], A                                    ;; 00:0c4b $ea $86 $d5
+    ld   [wD586_GexSpriteStateFlags], A                                    ;; 00:0c4b $ea $86 $d5
     ld   HL, wD60F_HDMATransferFlags                                     ;; 00:0c4e $21 $0f $d6
     res  0, [HL]                                       ;; 00:0c51 $cb $86
     ret                                                ;; 00:0c53 $c9
@@ -1466,7 +1493,7 @@ call_00_0bb9:
     res  2, [HL]                                       ;; 00:0c9c $cb $96
     ret                                                ;; 00:0c9e $c9
 .jr_00_0c9f:
-    ld   HL, wD728_CurrentSecondaryTilesetAddr                                     ;; 00:0c9f $21 $28 $d7
+    ld   HL, wD728_SecondaryTilesetAddr                                     ;; 00:0c9f $21 $28 $d7
     inc  [HL]                                          ;; 00:0ca2 $34
     ld   HL, wD72A                                     ;; 00:0ca3 $21 $2a $d7
     inc  [HL]                                          ;; 00:0ca6 $34
@@ -1724,7 +1751,7 @@ call_00_0f01:
     ld   A, $00                                        ;; 00:0f01 $3e $00
     ld   [wCCFD], A                                    ;; 00:0f03 $ea $fd $cc
     xor  A, A                                          ;; 00:0f06 $af
-    ld   [wD6F9], A                                    ;; 00:0f07 $ea $f9 $d6
+    ld   [wD6F9_BgMapLoadingFlags], A                                    ;; 00:0f07 $ea $f9 $d6
     ld   [wD60E], A                                    ;; 00:0f0a $ea $0e $d6
     ld   [wD60F_HDMATransferFlags], A                                    ;; 00:0f0d $ea $0f $d6
     ld   [wD77B], A                                    ;; 00:0f10 $ea $7b $d7
@@ -2161,14 +2188,37 @@ call_00_11e0_PlayMusicBasedOnLevel:
     jr   call_00_120c_SetupMusic                                  ;; 00:11eb $18 $1f
 .data_00_11ed_LevelMusic:
 ; this determines which music to use for each level
-    db   MUSIC_MEDIA_DIMENSION, MUSIC_TOON_TV, MUSIC_SCREAM_TV, MUSIC_SCREAM_TV
-    db   MUSIC_CIRCUIT_CENTRAL, MUSIC_KUNG_FU_THEATER, MUSIC_MEDIA_DIMENSION, MUSIC_PREHISTORY_CHANNEL      ;; 00:11ed www?????
-    db   MUSIC_TOON_TV, MUSIC_PREHISTORY_CHANNEL, MUSIC_CIRCUIT_CENTRAL, MUSIC_SCREAM_TV
-    db   MUSIC_MEDIA_DIMENSION, MUSIC_KUNG_FU_THEATER, MUSIC_REZOPOLIS, MUSIC_MEDIA_DIMENSION      ;; 00:11f5 ????????
-    db   MUSIC_SCREAM_TV, MUSIC_MEDIA_DIMENSION, MUSIC_MEDIA_DIMENSION, MUSIC_MEDIA_DIMENSION
-    db   MUSIC_MEDIA_DIMENSION, MUSIC_KUNG_FU_THEATER, MUSIC_REZOPOLIS, MUSIC_CIRCUIT_CENTRAL      ;; 00:11fd ????????
-    db   MUSIC_PREHISTORY_CHANNEL, MUSIC_SCREAM_TV, MUSIC_REZOPOLIS, MUSIC_MEDIA_DIMENSION
-    db   MUSIC_MEDIA_DIMENSION, MUSIC_MEDIA_DIMENSION, MUSIC_REZOPOLIS             ;; 00:1205 ???????
+    db   MUSIC_MEDIA_DIMENSION ; MAP_MEDIA_DIMENSION
+    db   MUSIC_TOON_TV ; MAP_TOON_TV_OUT_OF_TOON
+    db   MUSIC_SCREAM_TV ; MAP_SCREAM_TV_SMELLRAISER
+    db   MUSIC_SCREAM_TV ; MAP_SCREAM_TV_FRANKENSTEINFELD
+    db   MUSIC_CIRCUIT_CENTRAL ; MAP_CIRCUIT_CENTRAL_WWWDOTCOMCOM
+    db   MUSIC_KUNG_FU_THEATER ; MAP_KUNG_FU_THEATER_MAO_TSE_TONGUE
+    db   MUSIC_MEDIA_DIMENSION ; MAP_UNUSED_04
+    db   MUSIC_PREHISTORY_CHANNEL ; MAP_PRE_HISTORY_CHANNEL_PANGAEA_90210
+    db   MUSIC_TOON_TV ; MAP_TOON_TV_FINE_TOONING
+    db   MUSIC_PREHISTORY_CHANNEL ; MAP_PRE_HISTORY_CHANNEL_THIS_OLD_CAVE
+    db   MUSIC_CIRCUIT_CENTRAL ; MAP_CIRCUIT_CENTRAL_HONEY_I_SHRUNK_THE_GECKO
+    db   MUSIC_SCREAM_TV ; MAP_SCREAM_TV_POLTERGEX
+    db   MUSIC_MEDIA_DIMENSION ; MAP_UNUSED_0C
+    db   MUSIC_KUNG_FU_THEATER ; MAP_KUNG_FU_THEATER_SAMURAI_NIGHT_FEVER
+    db   MUSIC_REZOPOLIS ; MAP_REZOPOLIS_NO_WEDDINGS_AND_A_FUNERAL
+    db   MUSIC_MEDIA_DIMENSION ; MAP_UNUSED_0F
+    db   MUSIC_SCREAM_TV ; MAP_SCREAM_TV_THURSDAY_THE_12TH
+    db   MUSIC_MEDIA_DIMENSION ; MAP_UNUSED_11
+    db   MUSIC_MEDIA_DIMENSION ; MAP_UNUSED_12
+    db   MUSIC_MEDIA_DIMENSION ; MAP_UNUSED_13
+    db   MUSIC_MEDIA_DIMENSION ; MAP_UNUSED_14
+    db   MUSIC_KUNG_FU_THEATER ; MAP_KUNG_FU_THEATER_LIZARD_IN_A_CHINA_SHOP
+    db   MUSIC_REZOPOLIS ; MAP_REZOPOLIS_BUGGED_OUT
+    db   MUSIC_CIRCUIT_CENTRAL ; MAP_CIRCUIT_CENTRAL_CHIPS_AND_DIPS
+    db   MUSIC_PREHISTORY_CHANNEL ; MAP_PRE_HISTORY_CHANNEL_LAVA_DABBA_DOO
+    db   MUSIC_SCREAM_TV ; MAP_SCREAM_TV_TEXAS_CHAINSAW_MANICURE
+    db   MUSIC_REZOPOLIS ; MAP_REZOPOLIS_MAZED_AND_CONFUSED
+    db   MUSIC_MEDIA_DIMENSION ; MAP_UNUSED_1B
+    db   MUSIC_MEDIA_DIMENSION ; MAP_UNUSED_1C
+    db   MUSIC_MEDIA_DIMENSION ; MAP_UNUSED_1D
+    db   MUSIC_REZOPOLIS ; MAP_BOSS_TV_CHANNEL_Z
 
 call_00_120c_SetupMusic:
     push AF                                            ;; 00:120c $f5
@@ -2226,11 +2276,11 @@ call_00_1f46:
     ld   A, [wD77B]                                    ;; 00:1f4b $fa $7b $d7
     and  A, A                                          ;; 00:1f4e $a7
     ret  NZ                                            ;; 00:1f4f $c0
-    ld   A, [wD76B_TailSpinningFlagMaybe]                                    ;; 00:1f50 $fa $6b $d7
+    ld   A, [wD76B_Player_IsAttacking]                                    ;; 00:1f50 $fa $6b $d7
     and  A, A                                          ;; 00:1f53 $a7
     ret  Z                                             ;; 00:1f54 $c8
     xor  A, A                                          ;; 00:1f55 $af
-    ld   [wD76B_TailSpinningFlagMaybe], A                                    ;; 00:1f56 $ea $6b $d7
+    ld   [wD76B_Player_IsAttacking], A                                    ;; 00:1f56 $ea $6b $d7
     ld   HL, wD20E_PlayerXPosition                                     ;; 00:1f59 $21 $0e $d2
     ld   A, [HL+]                                      ;; 00:1f5c $2a
     ld   H, [HL]                                       ;; 00:1f5d $66

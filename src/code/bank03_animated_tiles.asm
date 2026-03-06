@@ -24,7 +24,7 @@ call_03_7253_AnimatedTile_Update:
 ; Each record: (tile count B, VRAM dest lo C, VRAM dest hi, source bank E, source address D/+1, 
 ; tile data pointer HL). If bit 7 of C is set (conditional tile flag): checks wD72D (secondary tileset index) 
 ; and wD5A3–wD5A5 (conveyor states) — if the relevant conveyor is inactive, substitutes data_03_7bfd_AnimatedTile_BlankTileData 
-; (blank/off tile) instead. Calls call_03_6f2d B times to copy B tiles of 32 bytes each to the 
+; (blank/off tile) instead. Calls call_03_6f2d B times to copy B tiles of 16 bytes each to the 
 ; specified VRAM destination
     ld   A, [wD611_AnimatedTileId]                                    ;; 03:7253 $fa $11 $d6
     and  A, A                                          ;; 03:7256 $a7
@@ -65,7 +65,7 @@ call_03_7253_AnimatedTile_Update:
     ld   L, A                                          ;; 03:7282 $6f
     bit  7, C                                          ;; 03:7283 $cb $79
     jr   Z, .jr_03_72a4                                ;; 03:7285 $28 $1d
-    ld   A, [wD72D_CurrentSecondaryTilesetIndex]                                    ;; 03:7287 $fa $2d $d7
+    ld   A, [wD72D_SecondaryTilesetIndex]                                    ;; 03:7287 $fa $2d $d7
     cp   A, $00                                        ;; 03:728a $fe $00
     ret  NZ                                            ;; 03:728c $c0
     res  7, C                                          ;; 03:728d $cb $b9
@@ -81,7 +81,7 @@ call_03_7253_AnimatedTile_Update:
     jr   NZ, .jr_03_72a4                               ;; 03:729f $20 $03
     ld   HL, data_03_7bfd_AnimatedTile_BlankTileData                              ;; 03:72a1 $21 $fd $7b
 .jr_03_72a4:
-    call call_03_6f2d_VRAM_Copy32Bytes                                  ;; 03:72a4 $cd $2d $6f
+    call call_03_6f2d_VRAM_Copy16Bytes                                  ;; 03:72a4 $cd $2d $6f
     dec  B                                             ;; 03:72a7 $05
     jr   NZ, .jr_03_72a4                               ;; 03:72a8 $20 $fa
     ret                                                ;; 03:72aa $c9
@@ -128,141 +128,141 @@ data_03_72ab_AnimatedTileBlockPointerTable:
     db   $00                                           ;; 03:72e8 .
 .data_03_72e9_AnimatedTileBlock_ToonTV:
 ; 12-frame animated tile block for Toon TV. 3 parallel tile groups animating 4 frames each: 
-; group 1 writes 4 tiles to $8B30, group 2 writes 2 tiles to $8A50, group 3 writes 4 tiles to $8C40. 
+; group 1 writes 4 tiles to VRAM_ANIMATED_TILE_TOON_TV_GROUP_1, group 2 writes 2 tiles to VRAM_ANIMATED_TILE_TOON_TV_GROUP_2, group 3 writes 4 tiles to VRAM_ANIMATED_TILE_TOON_TV_GROUP_3. 
 ; Used for the water/pool/cartoon environment animations
     db   $0c
     
     db   $04, $00                                 ;; 03:72e9 ...
-    dw   $8b30                                         ;; 03:72ec pP
+    dw   VRAM_ANIMATED_TILE_TOON_TV_GROUP_1
     dw   .data_03_747d
     db   $00, $00
     
     db   $02, $00                  ;; 03:72ee ..??..
-    dw   $8a50                                         ;; 03:72f4 pP
+    dw   VRAM_ANIMATED_TILE_TOON_TV_GROUP_2
     dw   .data_03_757d
     db   $00, $00
     
     db   $04, $00                  ;; 03:72f6 ..??..
-    dw   $8c40                                         ;; 03:72fc pP
+    dw   VRAM_ANIMATED_TILE_TOON_TV_GROUP_3
     dw   .data_03_75fd
     db   $00, $00
     
     db   $04, $00                  ;; 03:72fe ..??..
-    dw   $8b30                                         ;; 03:7304 pP
+    dw   VRAM_ANIMATED_TILE_TOON_TV_GROUP_1
     dw   .data_03_74bd
     db   $00, $00
     
     db   $02, $00                  ;; 03:7306 ..??..
-    dw   $8a50                                         ;; 03:730c pP
+    dw   VRAM_ANIMATED_TILE_TOON_TV_GROUP_2
     dw   .data_03_759d
     db   $00, $00
     
     db   $04, $00                  ;; 03:730e ..??..
-    dw   $8c40                                         ;; 03:7314 pP
+    dw   VRAM_ANIMATED_TILE_TOON_TV_GROUP_3
     dw   .data_03_763d
     db   $00, $00
     
     db   $04, $00                  ;; 03:7316 ..??..
-    dw   $8b30                                         ;; 03:731c pP
+    dw   VRAM_ANIMATED_TILE_TOON_TV_GROUP_1
     dw   .data_03_74fd
     db   $00, $00
     
     db   $02, $00                  ;; 03:731e ..??..
-    dw   $8a50                                         ;; 03:7324 pP
+    dw   VRAM_ANIMATED_TILE_TOON_TV_GROUP_2
     dw   .data_03_75bd
     db   $00, $00
     
     db   $04, $00                  ;; 03:7326 ..??..
-    dw   $8c40                                         ;; 03:732c pP
+    dw   VRAM_ANIMATED_TILE_TOON_TV_GROUP_3
     dw   .data_03_767d
     db   $00, $00
     
     db   $04, $00                  ;; 03:732e ..??..
-    dw   $8b30                                         ;; 03:7334 pP
+    dw   VRAM_ANIMATED_TILE_TOON_TV_GROUP_1
     dw   .data_03_753d
     db   $00, $00
     
     db   $02, $00                  ;; 03:7336 ..??..
-    dw   $8a50                                         ;; 03:733c pP
+    dw   VRAM_ANIMATED_TILE_TOON_TV_GROUP_2
     dw   .data_03_75dd
     db   $00, $00
     
     db   $04, $00                  ;; 03:733e ..??..
-    dw   $8c40                                         ;; 03:7344 pP
+    dw   VRAM_ANIMATED_TILE_TOON_TV_GROUP_3
     dw   .data_03_76bd
     db   $00, $00                            ;; 03:7346 ..??
 .data_03_734a_AnimatedTileBlock_ScreamTV:
-; 14-frame animated tile block for Scream TV. 4 tile groups: 2 tiles to $97E0, 6 tiles to $96A0, 
-; 4 tiles to $8AC0, 4 tiles to $8B00. Used for the haunted/horror environment animations (candles, lightning, etc.)
+; 14-frame animated tile block for Scream TV. 4 tile groups: 2 tiles to VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_1, 6 tiles to VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_2, 
+; 4 tiles to VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_3, 4 tiles to VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_4. Used for the haunted/horror environment animations (candles, lightning, etc.)
     db   $0e
     
     db   $02, $00                                 ;; 03:734a ...
-    dw   $97e0                                         ;; 03:734d pP
+    dw   VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_1
     dw   .data_03_787d
     db   $00, $00
     
     db   $06, $00                  ;; 03:734f ..??..
-    dw   $96a0                                         ;; 03:7355 pP
+    dw   VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_2
     dw   .data_03_76fd
     db   $00, $00
     
     db   $04, $00                  ;; 03:7357 ..??..
-    dw   $8ac0                                         ;; 03:735d pP
+    dw   VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_3
     dw   .data_03_78bd
     db   $00, $00
     
     db   $04, $00                  ;; 03:735f ..??..
-    dw   $8b00                                         ;; 03:7365 pP
+    dw   VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_4
     dw   .data_03_78fd
     db   $00, $00
     
     db   $06, $00                  ;; 03:7367 ..??..
-    dw   $96a0                                         ;; 03:736d pP
+    dw   VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_2
     dw   .data_03_775d
     db   $00, $00
     
     db   $04, $00                  ;; 03:736f ..??..
-    dw   $8ac0                                         ;; 03:7375 pP
+    dw   VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_3
     dw   .data_03_793d
     db   $00, $00
     
     db   $04, $00                  ;; 03:7377 ..??..
-    dw   $8b00                                         ;; 03:737d pP
+    dw   VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_4
     dw   .data_03_797d
     db   $00, $00
     
     db   $02, $00                  ;; 03:737f ..??..
-    dw   $97e0                                         ;; 03:7385 pP
+    dw   VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_1
     dw   .data_03_789d
     db   $00, $00
     
     db   $06, $00                  ;; 03:7387 ..??..
-    dw   $96a0                                         ;; 03:738d pP
+    dw   VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_2
     dw   .data_03_77bd
     db   $00, $00
     
     db   $04, $00                  ;; 03:738f ..??..
-    dw   $8ac0                                         ;; 03:7395 pP
+    dw   VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_3
     dw   .data_03_79bd
     db   $00, $00
     
     db   $04, $00                  ;; 03:7397 ..??..
-    dw   $8b00                                         ;; 03:739d pP
+    dw   VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_4
     dw   .data_03_79fd
     db   $00, $00
     
     db   $06, $00                  ;; 03:739f ..??..
-    dw   $96a0                                         ;; 03:73a5 pP
+    dw   VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_2
     dw   .data_03_781d
     db   $00, $00
     
     db   $04, $00                  ;; 03:73a7 ..??..
-    dw   $8ac0                                         ;; 03:73ad pP
+    dw   VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_3
     dw   .data_03_7a3d
     db   $00, $00
     
     db   $04, $00                  ;; 03:73af ..??..
-    dw   $8b00                                         ;; 03:73b5 pP
+    dw   VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_4
     dw   .data_03_7a7d
     db   $00, $00
 .data_03_73bb_AnimatedTileBlock_CircuitCentral:
@@ -272,63 +272,63 @@ data_03_72ab_AnimatedTileBlockPointerTable:
 ; blank tiles from data_03_7bfd_AnimatedTile_BlankTileData
     db   $0c
     
-    db   $02, $81, $e0        ;; 03:73bb ..??????
-    db   $91
+    db   $02, $81        ;; 03:73bb ..??????
+    dw   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_1     
     dw   .data_03_7b7d
     db   $00, $00
     
-    db   $02, $82, $00        ;; 03:73bf ????????
-    db   $92
+    db   $02, $82        ;; 03:73bf ????????
+    dw   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_2
     dw   .data_03_7b7d
     db   $00, $00
     
-    db   $02, $83, $20        ;; 03:73c7 ????????
-    db   $92
+    db   $02, $83        ;; 03:73c7 ????????
+    dw   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_3
     dw   .data_03_7b7d
     db   $00, $00
     
-    db   $02, $81, $e0        ;; 03:73cf ????????
-    db   $91
+    db   $02, $81        ;; 03:73cf ????????
+    dw   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_1 
     dw   .data_03_7b9d
     db   $00, $00
     
-    db   $02, $82, $00        ;; 03:73d7 ????????
-    db   $92
+    db   $02, $82        ;; 03:73d7 ????????
+    dw   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_2
     dw   .data_03_7b9d
     db   $00, $00
     
-    db   $02, $83, $20        ;; 03:73df ????????
-    db   $92
+    db   $02, $83        ;; 03:73df ????????
+    dw   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_3
     dw   .data_03_7b9d
     db   $00, $00
     
-    db   $02, $81, $e0        ;; 03:73e7 ????????
-    db   $91
+    db   $02, $81        ;; 03:73e7 ????????
+    dw   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_1 
     dw   .data_03_7bbd
     db   $00, $00
     
-    db   $02, $82, $00        ;; 03:73ef ????????
-    db   $92
+    db   $02, $82        ;; 03:73ef ????????
+    dw   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_2
     dw   .data_03_7bbd
     db   $00, $00
     
-    db   $02, $83, $20        ;; 03:73f7 ????????
-    db   $92
+    db   $02, $83        ;; 03:73f7 ????????
+    dw   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_3
     dw   .data_03_7bbd
     db   $00, $00
     
-    db   $02, $81, $e0        ;; 03:73ff ????????
-    db   $91
+    db   $02, $81        ;; 03:73ff ????????
+    dw   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_1 
     dw   .data_03_7bdd
     db   $00, $00
     
-    db   $02, $82, $00        ;; 03:7407 ????????
-    db   $92
+    db   $02, $82        ;; 03:7407 ????????
+    dw   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_2
     dw   .data_03_7bdd
     db   $00, $00
     
-    db   $02, $83, $20        ;; 03:740f ????????
-    db   $92
+    db   $02, $83        ;; 03:740f ????????
+    dw   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_3
     dw   .data_03_7bdd
     db   $00, $00
 .data_03_741c_AnimatedTileBlock_Rezopolis:
@@ -337,62 +337,62 @@ data_03_72ab_AnimatedTileBlockPointerTable:
     db   $0c
     
     db   $02, $00        ;; 03:7417 ????????
-    db   $b0, $8c
+    dw   VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_1
     dw   .data_03_7abd
     db   $00
     
     db   $00, $01, $00        ;; 03:741f ????????
-    db   $00, $8e
+    dw   VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_2
     dw   .data_03_7afd
     db   $00
     
     db   $00, $01, $00        ;; 03:7427 ????????
-    db   $00, $8f
+    dw   VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_3
     dw   .data_03_7b3d
     db   $00
     
     db   $00, $02, $00        ;; 03:742f ????????
-    db   $b0, $8c
+    dw   VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_1
     dw   .data_03_7add
     db   $00
     
     db   $00, $01, $00        ;; 03:7437 ????????
-    db   $00, $8e
+    dw   VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_2
     dw   .data_03_7b0d
     db   $00
     
     db   $00, $01, $00        ;; 03:743f ????????
-    db   $00, $8f
+    dw   VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_3
     dw   .data_03_7b4d
     db   $00
     
     db   $00, $02, $00        ;; 03:7447 ????????
-    db   $b0, $8c
+    dw   VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_1
     dw   .data_03_7abd
     db   $00
     
     db   $00, $01, $00        ;; 03:744f ????????
-    db   $00, $8e
+    dw   VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_2
     dw   .data_03_7b1d
     db   $00
     
     db   $00, $01, $00        ;; 03:7457 ????????
-    db   $00, $8f
+    dw   VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_3
     dw   .data_03_7b5d
     db   $00
     
     db   $00, $02, $00        ;; 03:745f ????????
-    db   $b0, $8c
+    dw   VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_1
     dw   .data_03_7add
     db   $00
     
     db   $00, $01, $00        ;; 03:7467 ????????
-    db   $00, $8e
+    dw   VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_2
     dw   .data_03_7b2d
     db   $00
     
     db   $00, $01, $00        ;; 03:746f ????????
-    db   $00, $8f
+    dw   VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_3
     dw   .data_03_7b6d
     db   $00, $00                  ;; 03:7477 ??????
 .data_03_747d:
@@ -482,4 +482,4 @@ data_03_7bfd_AnimatedTile_BlankTileData:
     db   $ff, $00, $00, $00, $00, $00, $00, $00        ;; 03:7bfd ????????
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 03:7c05 ????????
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 03:7c0d ????????
-    db   $00, $00, $00, $00, $00, $00, $ff             ;; 03:7c15 ???????
+    db   $00, $00, $00, $00, $00, $00, $ff, $00        ;; 03:7c15 ???????

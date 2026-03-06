@@ -435,7 +435,7 @@ call_02_51ea_EntityAction_TVButton_unk0:
     jr   NC, .jr_02_5207                               ;; 02:5203 $30 $02
     set  3, [HL]                                       ;; 02:5205 $cb $de
 .jr_02_5207:
-    call call_00_34f5_Entity_CheckPlayerRoomMatch                                  ;; 02:5207 $cd $f5 $34
+    call call_00_34f5_Entity_CheckPlayerInteracting                                  ;; 02:5207 $cd $f5 $34
     bit  0, B                                          ;; 02:520a $cb $40
     ret  Z                                             ;; 02:520c $c8
     call call_00_3878_Entity_CheckIfVisibleOrInRange                                  ;; 02:520d $cd $78 $38
@@ -446,7 +446,7 @@ call_02_51ea_EntityAction_TVButton_unk0:
     ld   HL, wD647                                     ;; 02:5217 $21 $47 $d6
     ld   [HL], E                                       ;; 02:521a $73
 .jr_02_521b:
-    call call_00_34f5_Entity_CheckPlayerRoomMatch                                  ;; 02:521b $cd $f5 $34
+    call call_00_34f5_Entity_CheckPlayerInteracting                                  ;; 02:521b $cd $f5 $34
     bit  0, B                                          ;; 02:521e $cb $40
     ret  Z                                             ;; 02:5220 $c8
     ld   BC, $05                                       ;; 02:5221 $01 $05 $00
@@ -560,7 +560,7 @@ call_02_52e7_EntityAction_Unk08_Update:
     ret  
 
 call_02_52e8_EntityAction_ScreamTVFallingPlatform_Update:
-    call call_00_34f5_Entity_CheckPlayerRoomMatch
+    call call_00_34f5_Entity_CheckPlayerInteracting
     bit  0,[hl]
     jr   nz,.jr_02_52FF
     bit  1,[hl]
@@ -1143,7 +1143,7 @@ call_02_56af_EntityAction_MonaLisaElevator_Update:
     and  a
     ret  z
     call call_00_3559_Entity_ApplyVelocityXY_SubpixelBoth
-    call call_00_34f5_Entity_CheckPlayerRoomMatch
+    call call_00_34f5_Entity_CheckPlayerInteracting
     bit  0,[hl]
     jr   nz,.jr_02_56D9
     bit  0,b
@@ -1165,7 +1165,7 @@ call_02_56dc_EntityAction_HardHeadAreaObject_unk0:
     ld   A, [wD6EF_YPositionInMap]                                    ;; 02:56e4 $fa $ef $d6
     sub  A, $18                                        ;; 02:56e7 $d6 $18
     ld   [HL+], A                                      ;; 02:56e9 $22
-    ld   A, [wD6F0]                                    ;; 02:56ea $fa $f0 $d6
+    ld   A, [wD6F0_BgMap_HardHeadAreaObjectRelated]                                    ;; 02:56ea $fa $f0 $d6
     sbc  A, $00                                        ;; 02:56ed $de $00
     ld   [HL], A                                       ;; 02:56ef $77
     ld   A, [wD75D_PlayerXSpeedPrev]                                    ;; 02:56f0 $fa $5d $d7
@@ -1299,7 +1299,7 @@ call_02_576e_EntityAction_HardHeadAreaObject_unk1:
     ld   A, [wD6EF_YPositionInMap]                                    ;; 02:57c6 $fa $ef $d6
     sub  A, $18                                        ;; 02:57c9 $d6 $18
     ld   [HL+], A                                      ;; 02:57cb $22
-    ld   A, [wD6F0]                                    ;; 02:57cc $fa $f0 $d6
+    ld   A, [wD6F0_BgMap_HardHeadAreaObjectRelated]                                    ;; 02:57cc $fa $f0 $d6
     sbc  A, $00                                        ;; 02:57cf $de $00
     ld   [HL], A                                       ;; 02:57d1 $77
     ld   A, L                                          ;; 02:57d2 $7d
@@ -3001,7 +3001,7 @@ call_02_644a_EntityAction_RezopolisSpecialMovingPlatform_Update:
     ld   a,h
     cp   a,$0A
     jr   z,.jr_02_6484
-    call call_00_34f5_Entity_CheckPlayerRoomMatch
+    call call_00_34f5_Entity_CheckPlayerInteracting
     bit  0,b
     jr   nz,.jr_02_648A
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER
@@ -3012,7 +3012,7 @@ call_02_644a_EntityAction_RezopolisSpecialMovingPlatform_Update:
     ld   bc,$0001
     call call_00_37d8_Entity_MoveY
 .jr_02_647F:
-    ld   a,[wD74D_PlayerRoom]
+    ld   a,[wD74D_PlayerInteractedEntityLo]
     and  a
     ret  z
 .jr_02_6484:
@@ -3043,7 +3043,7 @@ call_02_649c_EntityAction_RezopolisMovingPlatform_Update:
 call_02_64ae_EntityAction_RedPlatform_Update:
     ld   c,$80
     call call_00_3290_Entity_SetFacingDirection
-    call call_00_34f5_Entity_CheckPlayerRoomMatch
+    call call_00_34f5_Entity_CheckPlayerInteracting
     bit  1,[hl]
     jr   nz,.jr_02_64DA
     bit  0,[hl]
@@ -3136,8 +3136,7 @@ call_02_650f_EntityAction_ActivatedRedPlatform_Update:
     dec  l
     set  1,[hl]
 .jr_02_653E:
-    db   01,$ff
-    rst  $38
+    ld   bc,$ffff
     jp   call_00_37d8_Entity_MoveY
 .jr_02_6544:
     inc  l
@@ -3159,7 +3158,7 @@ call_02_650f_EntityAction_ActivatedRedPlatform_Update:
     ret  
 
 call_02_655d_EntityAction_TailspinPlatform_Update:
-    call call_00_34f5_Entity_CheckPlayerRoomMatch
+    call call_00_34f5_Entity_CheckPlayerInteracting
     bit  0,b
     jr   z,.jr_02_65A2
     ld   a,[wD201_PlayerEntity_ActionId]
@@ -3663,7 +3662,7 @@ call_02_696f_EntityAction_CircuitCentralPoweredPlatform_unk0:
     dec  l
     ld   [hl],a
 .jr_02_697B:
-    call call_00_34f5_Entity_CheckPlayerRoomMatch
+    call call_00_34f5_Entity_CheckPlayerInteracting
     bit  0,b
     ret  z
     ld   a,[wD751]
@@ -3712,7 +3711,7 @@ call_02_69c4_EntityAction_CircuitCentralPoweredPlatform_unk2:
     jp   call_02_7102_Entity_SetAction
 
 call_02_69d7_EntityAction_CircuitCentralLoweringPlatform_Update:
-    call call_00_34f5_Entity_CheckPlayerRoomMatch
+    call call_00_34f5_Entity_CheckPlayerInteracting
     bit  1,[hl]
     jr   nz,.jr_02_69FE
     bit  0,[hl]
@@ -4232,7 +4231,7 @@ call_02_6d7f_EntityAction_Unk8B_unk1:
     ret  
 
 call_02_6d80_EntityAction_FinalBattleButton_unk0:
-    call call_00_34f5_Entity_CheckPlayerRoomMatch
+    call call_00_34f5_Entity_CheckPlayerInteracting
     bit  0,b
     ret  z
     ld   a,[wD616]

@@ -2,21 +2,21 @@ call_00_1264_Map_LoadFull:
 ; Top-level map initialization. Queries all map metadata (bank numbers for map data, blockset override, 
 ; blockset+collision, tileset; tileset offset; override bit) and stores them to wD6F5–wD700. 
 ; Calls call_00_0f38 (unknown init), then WriteTilesToVRAM. Resets secondary tileset index to $FF, 
-; clears wD77B/wD77D. Then loops 22 ($16) times: sets wD6F9=$01 (dirty flag), calls LoadBgMapDirtyRegions 
+; clears wD77B/wD77D. Then loops 22 ($16) times: sets wD6F9_BgMapLoadingFlags=$01 (dirty flag), calls LoadBgMapDirtyRegions 
 ; and BgMap_WriteScrollColumn, advances wD6EF (Y map position) by 8 each iteration — effectively rendering 
 ; the full visible map column by column. Clears dirty flag, loads HUD tiles, updates map window
     call call_00_0ede                                  ;; 00:1264 $cd $de $0e
-    call call_00_2e77_GetMapBank                                  ;; 00:1267 $cd $77 $2e
-    ld   [wD6F5_CurrentMapBank], A                                    ;; 00:126a $ea $f5 $d6
-    call call_00_2e80_GetMapBlocksetOverrideBank                                  ;; 00:126d $cd $80 $2e
-    ld   [wD6F6_SecondaryTilesetOverrideBank], A                                    ;; 00:1270 $ea $f6 $d6
-    call call_00_2e89_GetMapBlocksetCollisionBank                                  ;; 00:1273 $cd $89 $2e
-    ld   [wD6F7_CurrentBlocksetAndCollisionBank], A                                    ;; 00:1276 $ea $f7 $d6
-    call call_00_2e93_GetMapBlocksetOverrideBit                                  ;; 00:1279 $cd $93 $2e
+    call call_00_2e77_MapData_GetMapBank                                  ;; 00:1267 $cd $77 $2e
+    ld   [wD6F5_MapBank], A                                    ;; 00:126a $ea $f5 $d6
+    call call_00_2e80_MapData_GetBlocksetOverrideBank                                  ;; 00:126d $cd $80 $2e
+    ld   [wD6F6_BlocksetOverrideBank], A                                    ;; 00:1270 $ea $f6 $d6
+    call call_00_2e89_MapData_GetBlocksetAndCollisionBank                                  ;; 00:1273 $cd $89 $2e
+    ld   [wD6F7_BlocksetAndCollisionBank], A                                    ;; 00:1276 $ea $f7 $d6
+    call call_00_2e93_MapData_GetBlocksetOverrideBit                                  ;; 00:1279 $cd $93 $2e
     ld   [wD6FE_LevelTileOverrideBit], A                                    ;; 00:127c $ea $fe $d6
-    call call_00_2e9c_GetMapTilesetBank                                  ;; 00:127f $cd $9c $2e
-    ld   [wD6FF_CurrentBgTilesetBank], A                                    ;; 00:1282 $ea $ff $d6
-    call call_00_2ea5_GetMapTilesetBankOffset                                  ;; 00:1285 $cd $a5 $2e
+    call call_00_2e9c_MapData_GetTilesetBank                                  ;; 00:127f $cd $9c $2e
+    ld   [wD6FF_BgTilesetBank], A                                    ;; 00:1282 $ea $ff $d6
+    call call_00_2ea5_MapData_GetTilesetBankOffset                                  ;; 00:1285 $cd $a5 $2e
     ld   HL, wD700                                     ;; 00:1288 $21 $00 $d7
     ld   [HL], E                                       ;; 00:128b $73
     inc  HL                                            ;; 00:128c $23
@@ -24,7 +24,7 @@ call_00_1264_Map_LoadFull:
     call call_00_0f38                                  ;; 00:128e $cd $38 $0f
     call call_00_1419_Tileset_WriteToVRAM                                  ;; 00:1291 $cd $19 $14
     ld   A, $ff                                        ;; 00:1294 $3e $ff
-    ld   [wD72D_CurrentSecondaryTilesetIndex], A                                    ;; 00:1296 $ea $2d $d7
+    ld   [wD72D_SecondaryTilesetIndex], A                                    ;; 00:1296 $ea $2d $d7
     xor  A, A                                          ;; 00:1299 $af
     ld   [wD77B], A                                    ;; 00:129a $ea $7b $d7
     ld   [wD77D], A                                    ;; 00:129d $ea $7d $d7
@@ -32,7 +32,7 @@ call_00_1264_Map_LoadFull:
 .jr_00_12a2:
     push AF                                            ;; 00:12a2 $f5
     ld   A, $01                                        ;; 00:12a3 $3e $01
-    ld   [wD6F9], A                                    ;; 00:12a5 $ea $f9 $d6
+    ld   [wD6F9_BgMapLoadingFlags], A                                    ;; 00:12a5 $ea $f9 $d6
     call call_00_1455_BgMap_LoadDirtyRegions                                  ;; 00:12a8 $cd $55 $14
     FARCALL call_03_6f5e_BgMap_WriteScrollColumn 
     ld   HL, wD6EF_YPositionInMap                                     ;; 00:12b6 $21 $ef $d6
@@ -46,11 +46,11 @@ call_00_1264_Map_LoadFull:
     pop  AF                                            ;; 00:12c2 $f1
     dec  A                                             ;; 00:12c3 $3d
     jr   NZ, .jr_00_12a2                               ;; 00:12c4 $20 $dc
-    ld   [wD6F9], A                                    ;; 00:12c6 $ea $f9 $d6
+    ld   [wD6F9_BgMapLoadingFlags], A                                    ;; 00:12c6 $ea $f9 $d6
     FARCALL call_03_66ae_HUD_LoadTiles
     FARCALL call_02_715a_MapWindow_Update
     xor  A, A                                          ;; 00:12df $af
-    ld   [wD6F9], A                                    ;; 00:12e0 $ea $f9 $d6
+    ld   [wD6F9_BgMapLoadingFlags], A                                    ;; 00:12e0 $ea $f9 $d6
     ret                                                ;; 00:12e3 $c9
 
 call_00_12e4_Map_InitBgTileOverrides:
@@ -231,7 +231,7 @@ call_00_1419_Tileset_WriteToVRAM:
 ; Copies tiles sequentially: first fills VRAM $9000–$9800 (256 tiles), then fills 
 ; $8800–$9000 (another 256 tiles). Restores bank, then calls TilesetPaletteIds_Load 
 ; and AnimatedTile_Init
-    ld   A, [wD6FF_CurrentBgTilesetBank]                                    ;; 00:1419 $fa $ff $d6
+    ld   A, [wD6FF_BgTilesetBank]                                    ;; 00:1419 $fa $ff $d6
     call call_00_1089_SwitchBank                                  ;; 00:141c $cd $89 $10
     ld   HL, wD700                                     ;; 00:141f $21 $00 $d7
     ld   A, [HL+]                                      ;; 00:1422 $2a
@@ -259,25 +259,25 @@ call_00_1419_Tileset_WriteToVRAM:
     ret                                                ;; 00:1454 $c9
 
 call_00_1455_BgMap_LoadDirtyRegions:
-; Spin-waits while bit 7 of wD6F9 is set (VBLANK transfer in progress). Checks bits 0–1 of wD6F9 — if set, 
+; Spin-waits while bit 7 of wD6F9_BgMapLoadingFlags is set (VBLANK transfer in progress). Checks bits 0–1 of wD6F9_BgMapLoadingFlags — if set, 
 ; calls LoadVerticalBgStrip (camera moved vertically). Checks bits 2–3 — if set, calls LoadHorizontalBgStrip 
-; (camera moved horizontally). Sets bit 7 of wD6F9 to signal a pending VRAM transfer is ready
-    ld   HL, wD6F9                                     ;; 00:1455 $21 $f9 $d6
+; (camera moved horizontally). Sets bit 7 of wD6F9_BgMapLoadingFlags to signal a pending VRAM transfer is ready
+    ld   HL, wD6F9_BgMapLoadingFlags                                     ;; 00:1455 $21 $f9 $d6
     bit  7, [HL]                                       ;; 00:1458 $cb $7e
     jr   NZ, call_00_1455_BgMap_LoadDirtyRegions                              ;; 00:145a $20 $f9
-    ld   A, [wD6F9]                                    ;; 00:145c $fa $f9 $d6
+    ld   A, [wD6F9_BgMapLoadingFlags]                                    ;; 00:145c $fa $f9 $d6
     and  A, $03                                        ;; 00:145f $e6 $03
     call NZ, call_00_1472_BgMap_LoadVerticalStrip                              ;; 00:1461 $c4 $72 $14
-    ld   A, [wD6F9]                                    ;; 00:1464 $fa $f9 $d6
+    ld   A, [wD6F9_BgMapLoadingFlags]                                    ;; 00:1464 $fa $f9 $d6
     and  A, $0c                                        ;; 00:1467 $e6 $0c
     call NZ, call_00_157a_BgMap_LoadHorizontalStrip                              ;; 00:1469 $c4 $7a $15
-    ld   HL, wD6F9                                     ;; 00:146c $21 $f9 $d6
+    ld   HL, wD6F9_BgMapLoadingFlags                                     ;; 00:146c $21 $f9 $d6
     set  7, [HL]                                       ;; 00:146f $cb $fe
     ret                                                ;; 00:1471 $c9
 
 call_00_1472_BgMap_LoadVerticalStrip:
 ; Loads one horizontal row of 6 metatiles into the BG tilemap for vertical camera scrolling. 
-; Determines whether to load the top or bottom edge row based on wD6F9 bit 1. 
+; Determines whether to load the top or bottom edge row based on wD6F9_BgMapLoadingFlags bit 1. 
 ; Computes map data addresses from current X/Y scroll positions (wD6ED/wD6EF). 
 ; Reads 6 metatile IDs from the map bank (wD6F5) into wD702–wD70C (every other byte), 
 ; reads corresponding override flags from the secondary bank (wD6F6) into wD703–wD70D. 
@@ -291,7 +291,7 @@ call_00_1472_BgMap_LoadVerticalStrip:
     ld   A, [HL+]                                      ;; 00:1477 $2a
     ld   B, A                                          ;; 00:1478 $47 ; after this point BC is equal to [wD6EF_YPositionInMap]
     ld   HL, $90                                       ;; 00:1479 $21 $90 $00 ; HL = $90
-    ld   A, [wD6F9]                                    ;; 00:147c $fa $f9 $d6
+    ld   A, [wD6F9_BgMapLoadingFlags]                                    ;; 00:147c $fa $f9 $d6
     and  A, $02                                        ;; 00:147f $e6 $02
     jr   NZ, .jr_00_1486                               ;; 00:1481 $20 $03
     ld   HL, $ffff                                       ;; 00:1483 $21 $ff $ff (FFFF is -1 basically)
@@ -332,9 +332,9 @@ call_00_1472_BgMap_LoadVerticalStrip:
     or   A, L                                          ;; 00:14b0 $b5
     ld   L, A                                          ;; 00:14b1 $6f
     push HL                                            ;; 00:14b2 $e5
-    ld   [wD6FA], A                                    ;; 00:14b3 $ea $fa $d6
+    ld   [wD6FA_BgMap_ColumnScrollPosition], A                                    ;; 00:14b3 $ea $fa $d6
     ld   A, H                                          ;; 00:14b6 $7c
-    ld   [wD6FB], A                                    ;; 00:14b7 $ea $fb $d6
+    ld   [wD6FB_BgMap_ColumnUnk], A                                    ;; 00:14b7 $ea $fb $d6
     ld   A, C                                          ;; 00:14ba $79
     rrca                                               ;; 00:14bb $0f
     and  A, $0c                                        ;; 00:14bc $e6 $0c
@@ -359,7 +359,7 @@ call_00_1472_BgMap_LoadVerticalStrip:
     ld   H, A                                          ;; 00:14d4 $67
     push HL                                            ;; 00:14d5 $e5
     push HL                                            ;; 00:14d6 $e5
-    ld   A, [wD6F5_CurrentMapBank]                     ;; 00:14d7 $fa $f5 $d6
+    ld   A, [wD6F5_MapBank]                     ;; 00:14d7 $fa $f5 $d6
     call call_00_1089_SwitchBank                       ;; 00:14da $cd $89 $10 switch to map file bank
     pop  HL                                            ;; 00:14dd $e1
     ld   DE, wD702                                     ;; 00:14de $11 $02 $d7
@@ -386,7 +386,7 @@ call_00_1472_BgMap_LoadVerticalStrip:
     ld   A, [HL+]                                      ;; 00:14f5 $2a
     ld   [DE], A                                       ;; 00:14f6 $12
     call call_00_10a3_RestoreBank                                  ;; 00:14f7 $cd $a3 $10
-    ld   A, [wD6F6_SecondaryTilesetOverrideBank]                                    ;; 00:14fa $fa $f6 $d6
+    ld   A, [wD6F6_BlocksetOverrideBank]                                    ;; 00:14fa $fa $f6 $d6
     call call_00_1089_SwitchBank                       ;; 00:14fd $cd $89 $10 switch to map data file 34/35
     pop  HL                                            ;; 00:1500 $e1 hl = 44b4
     ld   DE, wD703                                     ;; 00:1501 $11 $03 $d7 de = d703
@@ -415,7 +415,7 @@ call_00_1472_BgMap_LoadVerticalStrip:
     call call_00_10a3_RestoreBank                                  ;; 00:151a $cd $a3 $10
     ld   HL, wD702                                     ;; 00:151d $21 $02 $d7
     call call_00_18a7_BgMap_ResolveVerticalSecondaryTileset                                  ;; 00:1520 $cd $a7 $18
-    ld   A, [wD6F7_CurrentBlocksetAndCollisionBank]                                    ;; 00:1523 $fa $f7 $d6
+    ld   A, [wD6F7_BlocksetAndCollisionBank]                                    ;; 00:1523 $fa $f7 $d6
     call call_00_1089_SwitchBank                       ;; 00:1526 $cd $89 $10
     pop  AF                                            ;; 00:1529 $f1
     pop  HL                                            ;; 00:152a $e1
@@ -483,7 +483,7 @@ call_00_1472_BgMap_LoadVerticalStrip:
 
 call_00_157a_BgMap_LoadHorizontalStrip:
 ; Loads one vertical column of 6 metatiles for horizontal camera scrolling. Mirrors the 
-; structure of LoadVerticalBgStrip: determines left or right edge column from wD6F9 bit 3, 
+; structure of LoadVerticalBgStrip: determines left or right edge column from wD6F9_BgMapLoadingFlags bit 3, 
 ; reads 6 metatile IDs (stepping $80 bytes = one map row apart) from the map bank and override 
 ; bank into wD70E–wD71C. Calls call_00_18e4_BgMap_ResolveHorizontalSecondaryTileset for secondary tileset resolution. Expands each metatile 
 ; into 8 tile IDs and writes to VRAM column-wise, advancing HL by $20 (one tilemap row) per pair, 
@@ -495,7 +495,7 @@ call_00_157a_BgMap_LoadHorizontalStrip:
     ld   A, [HL+]                                      ;; 00:157f $2a
     ld   D, A                                          ;; 00:1580 $57
     ld   HL, $a0                                       ;; 00:1581 $21 $a0 $00
-    ld   A, [wD6F9]                                    ;; 00:1584 $fa $f9 $d6
+    ld   A, [wD6F9_BgMapLoadingFlags]                                    ;; 00:1584 $fa $f9 $d6
     and  A, $08                                        ;; 00:1587 $e6 $08
     jr   NZ, .jr_00_158e                               ;; 00:1589 $20 $03
     ld   HL, rIE                                       ;; 00:158b $21 $ff $ff
@@ -536,9 +536,9 @@ call_00_157a_BgMap_LoadHorizontalStrip:
     or   A, L                                          ;; 00:15b8 $b5
     ld   L, A                                          ;; 00:15b9 $6f
     push HL                                            ;; 00:15ba $e5
-    ld   [wD6FC], A                                    ;; 00:15bb $ea $fc $d6
+    ld   [wD6FC_BgMap_RowScrollPosition], A                                    ;; 00:15bb $ea $fc $d6
     ld   A, H                                          ;; 00:15be $7c
-    ld   [wD6FD], A                                    ;; 00:15bf $ea $fd $d6
+    ld   [wD6FD_BgMap_RowUnk], A                                    ;; 00:15bf $ea $fd $d6
     ld   A, E                                          ;; 00:15c2 $7b
     rrca                                               ;; 00:15c3 $0f
     rrca                                               ;; 00:15c4 $0f
@@ -565,7 +565,7 @@ call_00_157a_BgMap_LoadHorizontalStrip:
     ld   H, A                                          ;; 00:15de $67
     push HL                                            ;; 00:15df $e5
     push HL                                            ;; 00:15e0 $e5
-    ld   A, [wD6F5_CurrentMapBank]                                    ;; 00:15e1 $fa $f5 $d6
+    ld   A, [wD6F5_MapBank]                                    ;; 00:15e1 $fa $f5 $d6
     call call_00_1089_SwitchBank                                  ;; 00:15e4 $cd $89 $10
     pop  HL                                            ;; 00:15e7 $e1
     ld   DE, wD70E                                     ;; 00:15e8 $11 $0e $d7
@@ -598,7 +598,7 @@ call_00_157a_BgMap_LoadHorizontalStrip:
     ld   A, [HL]                                       ;; 00:1607 $7e
     ld   [DE], A                                       ;; 00:1608 $12
     call call_00_10a3_RestoreBank                                  ;; 00:1609 $cd $a3 $10
-    ld   A, [wD6F6_SecondaryTilesetOverrideBank]                                    ;; 00:160c $fa $f6 $d6
+    ld   A, [wD6F6_BlocksetOverrideBank]                                    ;; 00:160c $fa $f6 $d6
     call call_00_1089_SwitchBank                                  ;; 00:160f $cd $89 $10
     pop  HL                                            ;; 00:1612 $e1
     ld   DE, wD70F                                     ;; 00:1613 $11 $0f $d7
@@ -633,7 +633,7 @@ call_00_157a_BgMap_LoadHorizontalStrip:
     call call_00_10a3_RestoreBank                                  ;; 00:1634 $cd $a3 $10
     ld   HL, wD70E                                     ;; 00:1637 $21 $0e $d7
     call call_00_18e4_BgMap_ResolveHorizontalSecondaryTileset                                  ;; 00:163a $cd $e4 $18
-    ld   A, [wD6F7_CurrentBlocksetAndCollisionBank]                                    ;; 00:163d $fa $f7 $d6
+    ld   A, [wD6F7_BlocksetAndCollisionBank]                                    ;; 00:163d $fa $f7 $d6
     call call_00_1089_SwitchBank                                  ;; 00:1640 $cd $89 $10
     pop  AF                                            ;; 00:1643 $f1
     pop  HL                                            ;; 00:1644 $e1
@@ -711,7 +711,7 @@ call_00_169f_BgMap_WriteOverrideTiles:
 ; switches VRAM bank, reads the blockset/collision bank metatile data, expands to 8 tile IDs per metatile 
 ; (same 2×4 pattern with GBC attribute bit toggling), writes to the tilemap. After completion sets bit 0 of 
 ; wD77B to signal the override write is done
-    ld   A, [wD6F7_CurrentBlocksetAndCollisionBank]                                    ;; 00:169f $fa $f7 $d6
+    ld   A, [wD6F7_BlocksetAndCollisionBank]                                    ;; 00:169f $fa $f7 $d6
     call call_00_1089_SwitchBank                                  ;; 00:16a2 $cd $89 $10
     ld   HL, wD780                                     ;; 00:16a5 $21 $80 $d7
     ld   E, [HL]                                       ;; 00:16a8 $5e
@@ -1287,7 +1287,7 @@ call_00_1922_SecondaryTileset_Load:
     ret                                                ;; 00:1958 $c9
 .jr_00_1959:
     dec  A                                             ;; 00:1959 $3d
-    ld   HL, wD72D_CurrentSecondaryTilesetIndex          ;; 00:195a $21 $2d $d7
+    ld   HL, wD72D_SecondaryTilesetIndex          ;; 00:195a $21 $2d $d7
     cp   A, [HL]                                       ;; 00:195d $be
     ret  Z                                             ;; 00:195e $c8 ; return if the secondary tileset is already the current one
     ld   [HL], A                                       ;; 00:195f $77
@@ -1301,11 +1301,11 @@ call_00_1922_SecondaryTileset_Load:
     ld   DE, .data_LevelSecondaryTilesetBankTable                                     ;; 00:196a $11 $f0 $19
     add  HL, DE                                        ;; 00:196d $19
     add  A, [HL]                                       ;; 00:196e $86
-    ld   [wD728_CurrentSecondaryTilesetAddr], A                                    ;; 00:196f $ea $28 $d7
+    ld   [wD728_SecondaryTilesetAddr], A                                    ;; 00:196f $ea $28 $d7
     inc  HL                                            ;; 00:1972 $23
     ld   A, [HL]                                       ;; 00:1973 $7e
     ld   [wD726_SecondaryTilesetBank], A                                    ;; 00:1974 $ea $26 $d7
-    ld   [wD72E], A                                    ;; 00:1977 $ea $2e $d7
+    ld   [wD72E_SecondaryTilesetBank2], A                                    ;; 00:1977 $ea $2e $d7
     call call_00_1089_SwitchBank                                  ;; 00:197a $cd $89 $10
     xor  A, A                                          ;; 00:197d $af
     ld   [wD727], A                                    ;; 00:197e $ea $27 $d7

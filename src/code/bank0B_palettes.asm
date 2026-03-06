@@ -292,7 +292,7 @@ call_0b_5d4b_MediaDimension_LoadTVPalette:
     ld   A, [wD59E]                                    ;; 0b:5d4b $fa $9e $d5
     and  A, A                                          ;; 0b:5d4e $a7
     ret  Z                                             ;; 0b:5d4f $c8
-    call call_00_2e3a_GetMapTVPaletteId                                  ;; 0b:5d50 $cd $3a $2e
+    call call_00_2e3a_MapData_GetTVPaletteId                                  ;; 0b:5d50 $cd $3a $2e
     ld   DE, .data_0b_5d62                             ;; 0b:5d53 $11 $62 $5d
     call call_00_07b9                                  ;; 0b:5d56 $cd $b9 $07
     ld   DE, wDA7B                                     ;; 0b:5d59 $11 $7b $da
@@ -338,7 +338,7 @@ call_0b_5df8_MediaDimension_LoadActiveTVPalette:
     ld   A, [wD624_CurrentLevelId]                                    ;; 0b:5dfd $fa $24 $d6
     and  A, A                                          ;; 0b:5e00 $a7
     ret  NZ                                            ;; 0b:5e01 $c0
-    ld   HL, wD72D_CurrentSecondaryTilesetIndex                                     ;; 0b:5e02 $21 $2d $d7
+    ld   HL, wD72D_SecondaryTilesetIndex                                     ;; 0b:5e02 $21 $2d $d7
     ld   L, [HL]                                       ;; 0b:5e05 $6e
     ld   H, $00                                        ;; 0b:5e06 $26 $00
     add  HL, HL                                        ;; 0b:5e08 $29

@@ -293,8 +293,8 @@ call_02_4a77_Player_ApplyXMovement:
 ; Only runs if not climbing. Takes wD75D (previous X speed), negates if facing left, adds wD75C sub-pixel 
 ; accumulator. Returns if zero. If collision flags low nibble is set (wall hit), applies an equal Y nudge 
 ; (upward, B=$FF) before the X move. Then applies the X delta: if moving left, calls the left-push path; 
-; if moving right, calls the right-push path. Both paths check wD74E/wD74F (scroll lock flags): 
-; if both clear, applies delta directly to wD20E/wD20F. If wD74E is set, reads the entity's scroll 
+; if moving right, calls the right-push path. Both paths check wD74E_PlayerPlatformRelated/wD74F_PlayerPlatformRelated2 (scroll lock flags): 
+; if both clear, applies delta directly to wD20E/wD20F. If wD74E_PlayerPlatformRelated is set, reads the entity's scroll 
 ; constraint field (bit 7 = hard lock or soft lock), compares player screen X (wD212) to the constraint 
 ; threshold, and either clamps to the saved world X or applies the delta with the constraint offset 
 ; subtracted/added
@@ -330,10 +330,10 @@ call_02_4a77_Player_ApplyXMovement:
     ld   C, A                                          ;; 02:4aa6 $4f
     jp   .jp_02_4aaa                                   ;; 02:4aa7 $c3 $aa $4a
 .jp_02_4aaa:
-    ld   A, [wD74E]                                    ;; 02:4aaa $fa $4e $d7
+    ld   A, [wD74E_PlayerPlatformRelated]                                    ;; 02:4aaa $fa $4e $d7
     and  A, A                                          ;; 02:4aad $a7
     jr   NZ, .jr_02_4ac0                               ;; 02:4aae $20 $10
-    ld   A, [wD74F]                                    ;; 02:4ab0 $fa $4f $d7
+    ld   A, [wD74F_PlayerPlatformRelated2]                                    ;; 02:4ab0 $fa $4f $d7
     and  A, A                                          ;; 02:4ab3 $a7
     ret  NZ                                            ;; 02:4ab4 $c0
 .jr_02_4ab5:
@@ -404,10 +404,10 @@ call_02_4a77_Player_ApplyXMovement:
     ld   [HL], A                                       ;; 02:4b0e $77
     ret                                                ;; 02:4b0f $c9
 .jr_02_4b10:
-    ld   A, [wD74E]                                    ;; 02:4b10 $fa $4e $d7
+    ld   A, [wD74E_PlayerPlatformRelated]                                    ;; 02:4b10 $fa $4e $d7
     and  A, A                                          ;; 02:4b13 $a7
     jr   NZ, .jr_02_4b26                               ;; 02:4b14 $20 $10
-    ld   A, [wD74F]                                    ;; 02:4b16 $fa $4f $d7
+    ld   A, [wD74F_PlayerPlatformRelated2]                                    ;; 02:4b16 $fa $4f $d7
     and  A, A                                          ;; 02:4b19 $a7
     ret  NZ                                            ;; 02:4b1a $c0
 .jr_02_4b1b:

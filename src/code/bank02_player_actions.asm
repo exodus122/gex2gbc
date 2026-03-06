@@ -122,7 +122,7 @@ call_02_41b7_PlayerAction_Stand:
     jp   call_02_4ccd_Player_RequestAction                                  ;; 02:4201 $c3 $cd $4c
 
 call_02_4204_Player_WalkingRelated:
-    ld   A, [wD74E]                                    ;; 02:4204 $fa $4e $d7
+    ld   A, [wD74E_PlayerPlatformRelated]                                    ;; 02:4204 $fa $4e $d7
     and  A, A                                          ;; 02:4207 $a7
     jr   NZ, .jr_02_4215                               ;; 02:4208 $20 $0b
     ld   HL, wD585_CollisionFlags                                     ;; 02:420a $21 $85 $d5
@@ -270,7 +270,7 @@ call_02_42f7_PlayerAction_TailSpin:
     ld   HL, wD759                                     ;; 02:42fe $21 $59 $d7
     set  0, [HL]                                       ;; 02:4301 $cb $c6
     ld   A, $01                                        ;; 02:4303 $3e $01
-    ld   [wD76B_TailSpinningFlagMaybe], A                                    ;; 02:4305 $ea $6b $d7
+    ld   [wD76B_Player_IsAttacking], A                                    ;; 02:4305 $ea $6b $d7
     ld   A, [wD75E_PlayerXSpeed]                                    ;; 02:4308 $fa $5e $d7
     and  A, A                                          ;; 02:430b $a7
     jr   NZ, .jr_02_4313                               ;; 02:430c $20 $05
@@ -286,7 +286,7 @@ call_02_42f7_PlayerAction_TailSpin:
     and  A, $04                                        ;; 02:4320 $e6 $04
     ret  Z                                             ;; 02:4322 $c8
     xor  A, A                                          ;; 02:4323 $af
-    ld   [wD76B_TailSpinningFlagMaybe], A                                    ;; 02:4324 $ea $6b $d7
+    ld   [wD76B_Player_IsAttacking], A                                    ;; 02:4324 $ea $6b $d7
     ld   HL, wD759                                     ;; 02:4327 $21 $59 $d7
     set  6, [HL]                                       ;; 02:432a $cb $f6
     ld   C, PLAYER_ACTION_FREEFALL                                        ;; 02:432c $0e $17
@@ -351,9 +351,9 @@ call_02_437b_PlayerAction_DeathSetUpWarp:
     ret  Z                                             ;; 02:4398 $c8
     ld   A, $00                                        ;; 02:4399 $3e $00
     ld   [wD744], A                                    ;; 02:439b $ea $44 $d7
-    ld   A, [wD621]                                    ;; 02:439e $fa $21 $d6
+    ld   A, [wD621_WarpFlags]                                    ;; 02:439e $fa $21 $d6
     or   A, $02                                        ;; 02:43a1 $f6 $02
-    ld   [wD621], A                                    ;; 02:43a3 $ea $21 $d6
+    ld   [wD621_WarpFlags], A                                    ;; 02:43a3 $ea $21 $d6
     ret                                                ;; 02:43a6 $c9
 
 call_02_43a7_PlayerAction_EnterTV:
@@ -368,9 +368,9 @@ call_02_43a7_PlayerAction_EnterTV:
     ld   HL, wD20A                                     ;; 02:43b7 $21 $0a $d2
     bit  2, [HL]                                       ;; 02:43ba $cb $56
     ret  Z                                             ;; 02:43bc $c8
-    ld   A, [wD621]                                    ;; 02:43bd $fa $21 $d6
+    ld   A, [wD621_WarpFlags]                                    ;; 02:43bd $fa $21 $d6
     or   A, $04                                        ;; 02:43c0 $f6 $04
-    ld   [wD621], A                                    ;; 02:43c2 $ea $21 $d6
+    ld   [wD621_WarpFlags], A                                    ;; 02:43c2 $ea $21 $d6
     ret                                                ;; 02:43c5 $c9
 
 call_02_43c6_PlayerAction_Unk13:
@@ -385,9 +385,9 @@ call_02_43c6_PlayerAction_Unk13:
     ld   a,[wD20A]
     and  a,$04
     ret  z
-    ld   a,[wD621]
+    ld   a,[wD621_WarpFlags]
     or   a,$04
-    ld   [wD621],a
+    ld   [wD621_WarpFlags],a
     ret
 
 call_02_43e5_PlayerAction_ExitTV:
@@ -470,9 +470,9 @@ call_02_4459_PlayerAction_EnterDoor:
     ld   [wD75E_PlayerXSpeed],a
     call call_02_4894
     ret  z
-    ld   a,[wD621]
+    ld   a,[wD621_WarpFlags]
     or   a,$08
-    ld   [wD621],a
+    ld   [wD621_WarpFlags],a
     ld   a,$1B
     ld   [wD744],a
     call call_00_38f0_Entity_DespawnAll
@@ -963,9 +963,9 @@ call_02_480f:
 call_02_481b_PlayerAction_Unk1E:
     call call_02_4894
     ret  z
-    ld   a,[wD621]
+    ld   a,[wD621_WarpFlags]
     or   a,$04
-    ld   [wD621],a
+    ld   [wD621_WarpFlags],a
     ret  
 
 call_02_4828_PlayerAction_Unk1F:

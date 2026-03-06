@@ -390,6 +390,15 @@ DEF ENTITY_FIELD_WIDTH                      EQU $14
 DEF ENTITY_FIELD_HEIGHT                     EQU $15
 DEF ENTITY_FIELD_COLLISION_TYPE             EQU $16
 DEF ENTITY_FIELD_UNK_17                     EQU $17
+; Movement flags
+; bit 7 (80) = used
+; bit 6 (40) = 
+; bit 5 (20) = 
+; bit 4 (10) = 
+; bit 3 (08) = used
+; bit 2 (04) = 
+; bit 1 (02) = used
+; bit 0 (01) = used
 DEF ENTITY_FIELD_MISC_TIMER                 EQU $18
 DEF ENTITY_FIELD_UNK_19                     EQU $19
 DEF ENTITY_FIELD_MISC_FLAGS                 EQU $1A ; used by tv buttons, etc.
@@ -452,3 +461,27 @@ DEF COLLISION_TYPE_UNK_PLATFORM_FLAG          EQU $80
 
 ; Text
 DEF END_TEXT        EQU $80
+
+; VRAM memory address constants
+DEF VRAM_HUD_TILES                                    EQU $8600
+DEF VRAM_HUD_DEMO_MODE_OR_TIMER                       EQU $8680
+DEF VRAM_DIGIT_HUNDREDS                               EQU $8748
+DEF VRAM_DIGIT_TENS                                   EQU $8768
+DEF VRAM_DIGIT_ONES                                   EQU $8788
+DEF VRAM_LIVES_TENS                                   EQU $87a8
+DEF VRAM_LIVES_ONES                                   EQU $87c8
+DEF VRAM_COLLECTIBLE_SPRITES                          EQU $87e0
+
+DEF VRAM_ANIMATED_TILE_TOON_TV_GROUP_1                EQU $8b30
+DEF VRAM_ANIMATED_TILE_TOON_TV_GROUP_2                EQU $8a50
+DEF VRAM_ANIMATED_TILE_TOON_TV_GROUP_3                EQU $8c40
+DEF VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_1              EQU $97e0
+DEF VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_2              EQU $96a0
+DEF VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_3              EQU $8ac0
+DEF VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_4              EQU $8b00
+DEF VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_1        EQU $91e0
+DEF VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_2        EQU $9200
+DEF VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_3        EQU $9220
+DEF VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_1              EQU $8cb0
+DEF VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_2              EQU $8e00
+DEF VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_3              EQU $8f00

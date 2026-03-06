@@ -348,7 +348,7 @@ call_01_4297_LoadMissionSelectMenu:
     ld   [wD626], A                                    ;; 01:4298 $ea $26 $d6
 .jr_01_429b:
     push AF                                            ;; 01:429b $f5
-    call call_00_2e5f_GetMapTextPtr2                                  ;; 01:429c $cd $5f $2e
+    call call_00_2e5f_MapData_GetTextPtr2                                  ;; 01:429c $cd $5f $2e
     bit  7, [HL]                                       ;; 01:429f $cb $7e
     jr   NZ, .jr_01_42a7                               ;; 01:42a1 $20 $04
     ld   HL, wD626                                     ;; 01:42a3 $21 $26 $d6
@@ -367,26 +367,26 @@ call_01_4297_LoadMissionSelectMenu:
     ret                                                ;; 01:42bc $c9
 
 call_01_42bd_EnterTV:
-    ld   A, [wD621]                                    ;; 01:42bd $fa $21 $d6
+    ld   A, [wD621_WarpFlags]                                    ;; 01:42bd $fa $21 $d6
     and  A, $fb                                        ;; 01:42c0 $e6 $fb
-    ld   [wD621], A                                    ;; 01:42c2 $ea $21 $d6
+    ld   [wD621_WarpFlags], A                                    ;; 01:42c2 $ea $21 $d6
     ld   A, [wD624_CurrentLevelId]                                    ;; 01:42c5 $fa $24 $d6
     and  A, A                                          ;; 01:42c8 $a7
     jr   Z, .jr_01_432b                                ;; 01:42c9 $28 $60
     ld   A, [wD623]                                    ;; 01:42cb $fa $23 $d6
     and  A, A                                          ;; 01:42ce $a7
     jr   Z, .jr_01_42e7                                ;; 01:42cf $28 $16
-    ld   A, [wD621]                                    ;; 01:42d1 $fa $21 $d6
+    ld   A, [wD621_WarpFlags]                                    ;; 01:42d1 $fa $21 $d6
     and  A, $10                                        ;; 01:42d4 $e6 $10
     jr   Z, .jr_01_4319                                ;; 01:42d6 $28 $41
-    ld   A, [wD621]                                    ;; 01:42d8 $fa $21 $d6
+    ld   A, [wD621_WarpFlags]                                    ;; 01:42d8 $fa $21 $d6
     and  A, $ef                                        ;; 01:42db $e6 $ef
-    ld   [wD621], A                                    ;; 01:42dd $ea $21 $d6
+    ld   [wD621_WarpFlags], A                                    ;; 01:42dd $ea $21 $d6
     ld   A, MENU_TYPE_TIME_UP                                        ;; 01:42e0 $3e $1b
     call call_01_4000_MenuLoad                                  ;; 01:42e2 $cd $00 $40
     jr   .jr_01_4319                                   ;; 01:42e5 $18 $32
 .jr_01_42e7:
-    call call_00_2e43_GetMapRemoteProgressId                                  ;; 01:42e7 $cd $43 $2e
+    call call_00_2e43_MapData_GetRemoteProgressId                                  ;; 01:42e7 $cd $43 $2e
     ld   E, A                                          ;; 01:42ea $5f
     add  A, A                                          ;; 01:42eb $87
     add  A, E                                          ;; 01:42ec $83
@@ -450,7 +450,7 @@ call_01_4349_LoadEnteringMenu:
     ld   C, $80                                        ;; 01:435e $0e $80
 .jr_01_4360:
     push HL                                            ;; 01:4360 $e5
-    call call_00_2e43_GetMapRemoteProgressId                                  ;; 01:4361 $cd $43 $2e
+    call call_00_2e43_MapData_GetRemoteProgressId                                  ;; 01:4361 $cd $43 $2e
     ld   E, A                                          ;; 01:4364 $5f
     ld   D, $00                                        ;; 01:4365 $16 $00
     ld   HL, .data_01_43b6                             ;; 01:4367 $21 $b6 $43
@@ -901,7 +901,7 @@ call_01_466b:
     ld   BC, $80                                       ;; 01:4671 $01 $80 $00
     call call_00_07b0_MemCopy                                  ;; 01:4674 $cd $b0 $07
     FARCALL call_0b_5d4b_MediaDimension_LoadTVPalette
-    call call_00_2e3a_GetMapTVPaletteId                                  ;; 01:4682 $cd $3a $2e
+    call call_00_2e3a_MapData_GetTVPaletteId                                  ;; 01:4682 $cd $3a $2e
     ld   DE, data_01_5cb9                              ;; 01:4685 $11 $b9 $5c
     call call_00_07b9                                  ;; 01:4688 $cd $b9 $07
     ld   A, [wD69A]                                    ;; 01:468b $fa $9a $d6
@@ -935,13 +935,13 @@ call_01_466b:
     db   $00, $00, $1f, $00, $ff, $01, $7f, $03        ;; 01:4720 ........
 
 call_01_4728:
-    call call_00_2e3a_GetMapTVPaletteId                                  ;; 01:4728 $cd $3a $2e
+    call call_00_2e3a_MapData_GetTVPaletteId                                  ;; 01:4728 $cd $3a $2e
     ld   DE, data_01_5ee7                              ;; 01:472b $11 $e7 $5e
     call call_00_07b9                                  ;; 01:472e $cd $b9 $07
     jp   call_01_4e6f                                  ;; 01:4731 $c3 $6f $4e
 
 call_01_4734:
-    call call_00_2e4c_GetMapTextPtr                                  ;; 01:4734 $cd $4c $2e
+    call call_00_2e4c_MapData_GetTextPtr                                  ;; 01:4734 $cd $4c $2e
     jp   call_01_4e6f                                  ;; 01:4737 $c3 $6f $4e
 
 call_01_473a:
@@ -953,7 +953,7 @@ call_01_473a:
 .jr_01_4746:
     push AF                                            ;; 01:4746 $f5
     and  A, $7f                                        ;; 01:4747 $e6 $7f
-    call call_00_2e5f_GetMapTextPtr2                                  ;; 01:4749 $cd $5f $2e
+    call call_00_2e5f_MapData_GetTextPtr2                                  ;; 01:4749 $cd $5f $2e
     call call_01_4e6f                                  ;; 01:474c $cd $6f $4e
     pop  AF                                            ;; 01:474f $f1
     bit  7, A                                          ;; 01:4750 $cb $7f
@@ -1166,7 +1166,7 @@ call_01_4879:
     inc  DE                                            ;; 01:48bb $13
     dec  B                                             ;; 01:48bc $05
     jr   NZ, .jr_01_48b3                               ;; 01:48bd $20 $f4
-    call call_00_2e43_GetMapRemoteProgressId                                  ;; 01:48bf $cd $43 $2e
+    call call_00_2e43_MapData_GetRemoteProgressId                                  ;; 01:48bf $cd $43 $2e
     ld   C, A                                          ;; 01:48c2 $4f
     ld   A, [wD69B]                                    ;; 01:48c3 $fa $9b $d6
     add  A, C                                          ;; 01:48c6 $81
@@ -1235,7 +1235,7 @@ call_01_491d:
     db   $40, $1d, $e8, $57, $3d, $00, $40
     
 call_01_4969:
-    call call_00_2e43_GetMapRemoteProgressId
+    call call_00_2e43_MapData_GetRemoteProgressId
     push af
     push af
     ld   hl,wD624_CurrentLevelId
@@ -2376,7 +2376,7 @@ call_01_5271_ProcessPassword: ; handles setting save data from password
     ld   C, $80                                        ;; 01:52d4 $0e $80
 .jr_01_52d6:
     push HL                                            ;; 01:52d6 $e5
-    call call_00_2e43_GetMapRemoteProgressId                                  ;; 01:52d7 $cd $43 $2e
+    call call_00_2e43_MapData_GetRemoteProgressId                                  ;; 01:52d7 $cd $43 $2e
     ld   E, A                                          ;; 01:52da $5f
     ld   D, $00                                        ;; 01:52db $16 $00
     ld   HL, .data_01_531d                             ;; 01:52dd $21 $1d $53

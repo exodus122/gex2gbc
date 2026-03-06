@@ -1,6 +1,6 @@
 call_0b_4efe_Player_SetSpawnPosition:
 ; Top-level player spawn handler. Three branches: 
-; (1) Door spawn — if wD621 bit 3 is set (entering through a door), clears the bit, computes 
+; (1) Door spawn — if wD621_WarpFlags bit 3 is set (entering through a door), clears the bit, computes 
 ; tile coordinates from current player position (world pos − $FFF1, shifted), looks up the 
 ; door in the level's .data_LevelDoorSpawnPointerTable list (terminated by $FF), reads the target X/Y 
 ; tile coords from the matching door entry, converts to world coords (tile × 32 + $20 for X, 
@@ -10,7 +10,7 @@ call_0b_4efe_Player_SetSpawnPosition:
 ; (tile × 32 + $20 X, tile × 32 + $30 Y), updates map window. 
 ; (3) Level spawn — uses level ID × 8 + checkpoint ID × 2 to index .data_LevelInitialSpawnTable 
 ; (X/Y tile pairs), converts to world coords (tile × 32 + $10 for both X and Y), updates map window
-    ld   HL, wD621                                     ;; 0b:4efe $21 $21 $d6
+    ld   HL, wD621_WarpFlags                                     ;; 0b:4efe $21 $21 $d6
     ld   A, [HL]                                       ;; 0b:4f01 $7e
     and  A, $08                                        ;; 0b:4f02 $e6 $08
     jr   Z, .jr_0b_4f70                                ;; 0b:4f04 $28 $6a

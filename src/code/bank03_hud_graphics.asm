@@ -1,16 +1,16 @@
 call_03_66ae_HUD_LoadTiles:
 ; Top-level HUD tile loader. Copies .image_03_66e1 ($140 bytes) to VRAM $8600 (main HUD graphics), 
-; calls call_03_6d13_HUD_LoadLivesDigits (lives digits) and call_03_6941_HUD_LoadCollectibleIcon (collectible icon). Then conditionally loads 
+; calls call_03_6d13_HUD_LoadLivesDigits (lives digits) and call_03_6941_HUD_LoadCollectibleSprites (collectible icon). Then conditionally loads 
 ; either the "DEMO MODE" banner tiles to $8680 if demo mode is active, or if wD623 is set (timer mode), 
-; loads the colon tile via call_03_6efd_VRAM_Copy16Bytes and jumps to call_03_6ceb_HUD_LoadTimerDigits (timer digits)
+; loads the colon tile via VRAM_Copy32Bytes and jumps to call_03_6ceb_HUD_LoadTimerDigits (timer digits)
     ld   HL, .image_03_66e1                             ;; 03:66ae $21 $e1 $66
-    ld   DE, $8600                                     ;; 03:66b1 $11 $00 $86
+    ld   DE, VRAM_HUD_TILES                                     ;; 03:66b1 $11 $00 $86
     ld   BC, $140                                      ;; 03:66b4 $01 $40 $01
     call call_00_07b0_MemCopy                                  ;; 03:66b7 $cd $b0 $07
     call call_03_6d13_HUD_LoadLivesDigits                                  ;; 03:66ba $cd $13 $6d
-    call call_03_6941_HUD_LoadCollectibleIcon                                  ;; 03:66bd $cd $41 $69
+    call call_03_6941_HUD_LoadCollectibleSprites                                  ;; 03:66bd $cd $41 $69
     ld   HL, .image_demo_mode_03_6821                             ;; 03:66c0 $21 $21 $68
-    ld   DE, $8680                                     ;; 03:66c3 $11 $80 $86
+    ld   DE, VRAM_HUD_DEMO_MODE_OR_TIMER                                     ;; 03:66c3 $11 $80 $86
     ld   BC, $100                                      ;; 03:66c6 $01 $00 $01
     ld   A, [wD61E_DemoModeEnabled]                                    ;; 03:66c9 $fa $1e $d6
     and  A, A                                          ;; 03:66cc $a7
@@ -19,8 +19,8 @@ call_03_66ae_HUD_LoadTiles:
     and  A, A                                          ;; 03:66d3 $a7
     ret  Z                                             ;; 03:66d4 $c8
     ld   HL, .image_colon_03_6921                             ;; 03:66d5 $21 $21 $69
-    ld   DE, $8680                                     ;; 03:66d8 $11 $80 $86
-    call call_03_6efd_VRAM_Copy16Bytes                                  ;; 03:66db $cd $fd $6e
+    ld   DE, VRAM_HUD_DEMO_MODE_OR_TIMER                                     ;; 03:66d8 $11 $80 $86
+    call call_03_6efd_VRAM_Copy32Bytes                                  ;; 03:66db $cd $fd $6e
     jp   call_03_6ceb_HUD_LoadTimerDigits                                    ;; 03:66de $c3 $eb $6c
 .image_03_66e1:
     INCBIN ".gfx/misc_sprites/image_003_66e1.bin"
@@ -29,12 +29,12 @@ call_03_66ae_HUD_LoadTiles:
 .image_colon_03_6921:
     INCBIN ".gfx/misc_sprites/image_colon_003_6921.bin"
 
-call_03_6941_HUD_LoadCollectibleIcon:
-; Loads the collectible icon tiles for the current level. Calls call_03_6be5_HUD_LoadCollectiblePalette first (to set up the palette). 
+call_03_6941_HUD_LoadCollectibleSprites:
+; Loads the collectible sprite tiles for the current level. Calls call_03_6be5_HUD_LoadCollectiblePalette first (to set up the palette). 
 ; Uses wD624 (level ID) to index .data_image_collectibles_03_6967 — a 31-entry pointer table mapping each 
 ; level to one of 6 world-specific collectible tile sets (Toon TV, Scream TV, Circuit Central, Kung Fu Theater,
 ;  Prehistory Channel, Rezopolis). Then uses wD648 (collectible type index, swap-shifted) as a sub-index 
-; within that set to select the specific tile frame, and copies 1 tile ($10 bytes) to VRAM $87E0 via call_03_6efd_VRAM_Copy16Bytes
+; within that set to select the specific tile frame, and copies 1 tile ($10 bytes) to VRAM $87E0 via VRAM_Copy32Bytes
     ld   HL, wD60E                                     ;; 03:6941 $21 $0e $d6
     res  3, [HL]                                       ;; 03:6944 $cb $9e
     call call_03_6be5_HUD_LoadCollectiblePalette                                  ;; 03:6946 $cd $e5 $6b
@@ -53,8 +53,8 @@ call_03_6941_HUD_LoadCollectibleIcon:
     ld   H, $00                                        ;; 03:695d $26 $00
     add  HL, HL                                        ;; 03:695f $29
     add  HL, DE                                        ;; 03:6960 $19
-    ld   DE, $87e0                                     ;; 03:6961 $11 $e0 $87
-    jp   call_03_6efd_VRAM_Copy16Bytes                                  ;; 03:6964 $c3 $fd $6e
+    ld   DE, VRAM_COLLECTIBLE_SPRITES                                     ;; 03:6961 $11 $e0 $87
+    jp   call_03_6efd_VRAM_Copy32Bytes                                  ;; 03:6964 $c3 $fd $6e
 .data_image_collectibles_03_6967:
     dw   .image_collectibles_toon_tv_003_69a5
     dw   .image_collectibles_toon_tv_003_69a5
@@ -201,16 +201,16 @@ call_03_6ceb_HUD_LoadTimerDigits:
     ld   HL, wD60E                                     ;; 03:6ceb $21 $0e $d6
     res  2, [HL]                                       ;; 03:6cee $cb $96
     ld   A, [wD76F]                                    ;; 03:6cf0 $fa $6f $d7
-    ld   DE, $8748                                     ;; 03:6cf3 $11 $48 $87
+    ld   DE, VRAM_DIGIT_HUNDREDS                                     ;; 03:6cf3 $11 $48 $87
     call call_03_6d88_HUD_LoadDigitTile                                  ;; 03:6cf6 $cd $88 $6d
     ld   A, [wD770]                                    ;; 03:6cf9 $fa $70 $d7
     swap A                                             ;; 03:6cfc $cb $37
     and  A, $0f                                        ;; 03:6cfe $e6 $0f
-    ld   DE, $8768                                     ;; 03:6d00 $11 $68 $87
+    ld   DE, VRAM_DIGIT_TENS                                     ;; 03:6d00 $11 $68 $87
     call call_03_6d88_HUD_LoadDigitTile                                  ;; 03:6d03 $cd $88 $6d
     ld   A, [wD770]                                    ;; 03:6d06 $fa $70 $d7
     and  A, $0f                                        ;; 03:6d09 $e6 $0f
-    ld   DE, $8788                                     ;; 03:6d0b $11 $88 $87
+    ld   DE, VRAM_DIGIT_ONES                                     ;; 03:6d0b $11 $88 $87
     call call_03_6d88_HUD_LoadDigitTile                                  ;; 03:6d0e $cd $88 $6d
     jr   call_03_6d5e_HUD_LoadCollectibleCountDigits                                    ;; 03:6d11 $18 $4b
 
@@ -252,13 +252,13 @@ call_03_6d13_HUD_LoadLivesDigits:
 .jr_03_6d42:
     ld   [HL], A                                       ;; 03:6d42 $77
     ld   A, [wD73E_PlayerLivesHundreds]                                    ;; 03:6d43 $fa $3e $d7
-    ld   DE, $8748                                     ;; 03:6d46 $11 $48 $87
+    ld   DE, VRAM_DIGIT_HUNDREDS                                     ;; 03:6d46 $11 $48 $87
     call call_03_6d88_HUD_LoadDigitTile                                  ;; 03:6d49 $cd $88 $6d
     ld   A, [wD73F_PlayerLivesTens]                                    ;; 03:6d4c $fa $3f $d7
-    ld   DE, $8768                                     ;; 03:6d4f $11 $68 $87
+    ld   DE, VRAM_DIGIT_TENS                                     ;; 03:6d4f $11 $68 $87
     call call_03_6d88_HUD_LoadDigitTile                                  ;; 03:6d52 $cd $88 $6d
     ld   A, [wD740_PlayerLivesOnes]                                    ;; 03:6d55 $fa $40 $d7
-    ld   DE, $8788                                     ;; 03:6d58 $11 $88 $87
+    ld   DE, VRAM_DIGIT_ONES                                     ;; 03:6d58 $11 $88 $87
     call call_03_6d88_HUD_LoadDigitTile                                  ;; 03:6d5b $cd $88 $6d
 
 call_03_6d5e_HUD_LoadCollectibleCountDigits:
@@ -281,17 +281,17 @@ call_03_6d5e_HUD_LoadCollectibleCountDigits:
 .jr_03_6d76:
     ld   [HL], A                                       ;; 03:6d76 $77
     ld   A, [wD64A]                                    ;; 03:6d77 $fa $4a $d6
-    ld   DE, $87a8                                     ;; 03:6d7a $11 $a8 $87
+    ld   DE, VRAM_LIVES_TENS                                     ;; 03:6d7a $11 $a8 $87
     call call_03_6d88_HUD_LoadDigitTile                                  ;; 03:6d7d $cd $88 $6d
     ld   A, [wD64B]                                    ;; 03:6d80 $fa $4b $d6
-    ld   DE, $87c8                                     ;; 03:6d83 $11 $c8 $87
+    ld   DE, VRAM_LIVES_ONES                                     ;; 03:6d83 $11 $c8 $87
     jr   call_03_6d88_HUD_LoadDigitTile                                  ;; 03:6d86 $18 $00
 
 call_03_6d88_HUD_LoadDigitTile:
 ; Core digit tile writer. Takes a digit value in A (0–9) and a VRAM destination in DE. 
 ; Swap-shifts A to use as an index, selects either .numbers_003_6d9d or .numbers_003_6e4d 
 ; (alternate digit font, based on wD623 timer-mode flag), adds to get the correct tile data pointer, 
-; and copies 32 bytes (2 tiles = one digit glyph) to VRAM via call_03_6f2d_VRAM_Copy32Bytes
+; and copies 16 bytes (2 tiles = one digit glyph) to VRAM via VRAM_Copy16Bytes
     swap A                                             ;; 03:6d88 $cb $37
     ld   L, A                                          ;; 03:6d8a $6f
     ld   H, $00                                        ;; 03:6d8b $26 $00
@@ -302,7 +302,7 @@ call_03_6d88_HUD_LoadDigitTile:
     ld   BC, .numbers_003_6e4d                             ;; 03:6d96 $01 $4d $6e
 .jr_03_6d99:
     add  HL, BC                                        ;; 03:6d99 $09
-    jp   call_03_6f2d_VRAM_Copy32Bytes                                  ;; 03:6d9a $c3 $2d $6f
+    jp   call_03_6f2d_VRAM_Copy16Bytes                                  ;; 03:6d9a $c3 $2d $6f
 .numbers_003_6d9d:
     INCBIN ".gfx/misc_sprites/numbers_003_6d9d.bin"
 .numbers_003_6e4d:

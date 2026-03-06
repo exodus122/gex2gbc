@@ -367,14 +367,14 @@ call_03_5b5b_HUD_BuildSprites:
     db   $5c, $68, $64, $6a, $74, $68, $7c, $6a        ;; 03:5ca0 ........
 
 call_03_5ca8_Player_BuildBodySprites:
-; Main Gex sprite builder. Reads wD586 (base sprite state index), adjusts by +2 if facing 
+; Main Gex sprite builder. Reads wD586_GexSpriteStateFlags (base sprite state index), adjusts by +2 if facing 
 ; left (bit 5 of wD20D), +4 if climbing (bit 6 of wD74B). Uses this to index .data_03_5d6f 
 ; via call_00_07b9 to get the frame pointer. Computes player screen X/Y from world position 
 ; minus map scroll origin (wD6ED/wD6EF) plus offsets ($08/$10), stores into wD212/wD213. 
 ; Checks action ID for $11 (special state), invincibility flags (wD755/wD753/wD751), 
 ; and wD73B bit 3 — if any special condition is active, substitutes .data_03_5e7f 
 ; (invincible/stunned sprite). Writes up to 8 OAM entries into wCC00, each as (Y+B, X+C, tile+wD73A, attr
-    ld   A, [wD586]                                    ;; 03:5ca8 $fa $86 $d5
+    ld   A, [wD586_GexSpriteStateFlags]                                    ;; 03:5ca8 $fa $86 $d5
     ld   HL, wD20D_PlayerFacingAngle                                     ;; 03:5cab $21 $0d $d2
     bit  5, [HL]                                       ;; 03:5cae $cb $6e
     jr   Z, .jr_03_5cb4                                ;; 03:5cb0 $28 $02
@@ -1194,7 +1194,7 @@ call_03_6499_Collectible_BuildSprites:
 ; Reads collectible slot data from wC4xx/wC5xx (two parallel arrays of X and Y positions). 
 ; For each active slot: computes screen position, writes tile 7E with attribute $01 (a sparkle tile). 
 ; If Gex is drawn and the player overlaps the 18×36 collection window, marks the slot as 
-; collected (FF) and calls call_00_06ec (collect/score). Clears remaining OAM entries after 
+; collected (FF) and calls call_00_06ec_Player_ObtainedCollectible (collect/score). Clears remaining OAM entries after 
 ; the last active collectible
     ld   HL, wD6ED_XPositionInMap                                     ;; 03:6499 $21 $ed $d6
     ld   A, [HL]                                       ;; 03:649c $7e
@@ -1283,7 +1283,7 @@ call_03_6499_Collectible_BuildSprites:
     dec  E                                             ;; 03:651b $1d
     ld   A, $ff                                        ;; 03:651c $3e $ff
     ld   [DE], A                                       ;; 03:651e $12
-    call call_00_06ec                                  ;; 03:651f $cd $ec $06
+    call call_00_06ec_Player_ObtainedCollectible                                  ;; 03:651f $cd $ec $06
     pop  DE                                            ;; 03:6522 $d1
     pop  HL                                            ;; 03:6523 $e1
 .jr_03_6524:

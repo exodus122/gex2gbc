@@ -780,11 +780,11 @@ call_00_34ea_Entity_CheckActivationFlag:
     bit  5, [HL]                                       ;; 00:34f2 $cb $6e
     ret                                                ;; 00:34f4 $c9
 
-call_00_34f5_Entity_CheckPlayerRoomMatch:
-; Checks wD74D_PlayerRoom (current player room tag) against high bits of entity address; 
-; sets B=1 if entity belongs to the active room
+call_00_34f5_Entity_CheckPlayerInteracting:
+; Checks wD74D_PlayerInteractedEntityLo (current player interacted entity) against high bits of entity address; 
+; sets B=1 if player is interacting with the current object
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
-    ld   A, [wD74D_PlayerRoom]                                    ;; 00:34fd $fa $4d $d7
+    ld   A, [wD74D_PlayerInteractedEntityLo]                                    ;; 00:34fd $fa $4d $d7
     ld   B, A                                          ;; 00:3500 $47
     and  A, A                                          ;; 00:3501 $a7
     ret  Z                                             ;; 00:3502 $c8
@@ -939,7 +939,7 @@ call_00_3597_Entity_ApplyVelocityXY_Subpixel_NoPlayerPush:
     jp   call_00_37c9_Entity_MoveX
 
 call_00_35d5_Entity_MoveXAndPushPlayer:
-; Moves entity X by BC, then if entity belongs to the player's room, 
+; Moves entity X by BC, then if entity is interacting with player, 
 ; pushes the player's X position by the platform's movement delta (conveyor/moving platform behavior)
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
     ld   A, [HL]                                       ;; 00:35dd $7e
@@ -952,14 +952,14 @@ call_00_35d5_Entity_MoveXAndPushPlayer:
     ld   D, A                                          ;; 00:35e4 $57
     ld   A, L                                          ;; 00:35e5 $7d
     and  A, $e0                                        ;; 00:35e6 $e6 $e0
-    ld   HL, wD74D_PlayerRoom                                     ;; 00:35e8 $21 $4d $d7
+    ld   HL, wD74D_PlayerInteractedEntityLo                                     ;; 00:35e8 $21 $4d $d7
     cp   A, [HL]                                       ;; 00:35eb $be
     jr   NZ, .jr_00_35f3                               ;; 00:35ec $20 $05
     ld   A, C                                          ;; 00:35ee $79
     ld   [wD75C], A                                    ;; 00:35ef $ea $5c $d7
     ret                                                ;; 00:35f2 $c9
 .jr_00_35f3:
-    ld   HL, wD74F                                     ;; 00:35f3 $21 $4f $d7
+    ld   HL, wD74F_PlayerPlatformRelated2                                     ;; 00:35f3 $21 $4f $d7
     cp   A, [HL]                                       ;; 00:35f6 $be
     ret  NZ                                            ;; 00:35f7 $c0
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS_ON_SCREEN
@@ -991,14 +991,14 @@ call_00_35d5_Entity_MoveXAndPushPlayer:
     ret                                                ;; 00:3627 $c9
 
 call_00_3628_Entity_SaveWorldState:
-; Backs up camera/room pointers (wD74D_PlayerRoom–wD74F, wD688), copies entity table (wD000), 
+; Backs up camera/interaction pointers (wD74D_PlayerInteractedEntityLo–wD74F_PlayerPlatformRelated2, wD688), copies entity table (wD000), 
 ; player entity (wD200), slot table (wD301), and room bounds (wD309) into 
 ; save buffers at wD79F/wD89F/wD99F/wD9A7
-    ld   A, [wD74D_PlayerRoom]                                    ;; 00:3628 $fa $4d $d7
+    ld   A, [wD74D_PlayerInteractedEntityLo]                                    ;; 00:3628 $fa $4d $d7
     ld   [wD9C7], A                                    ;; 00:362b $ea $c7 $d9
-    ld   A, [wD74E]                                    ;; 00:362e $fa $4e $d7
+    ld   A, [wD74E_PlayerPlatformRelated]                                    ;; 00:362e $fa $4e $d7
     ld   [wD9C8], A                                    ;; 00:3631 $ea $c8 $d9
-    ld   A, [wD74F]                                    ;; 00:3634 $fa $4f $d7
+    ld   A, [wD74F_PlayerPlatformRelated2]                                    ;; 00:3634 $fa $4f $d7
     ld   [wD9C9], A                                    ;; 00:3637 $ea $c9 $d9
     ld   A, [wD688]                                    ;; 00:363a $fa $88 $d6
     ld   [wD9CA], A                                    ;; 00:363d $ea $ca $d9
@@ -1024,11 +1024,11 @@ call_00_3628_Entity_SaveWorldState:
 call_00_3675_Entity_RestoreWorldState:
 ; Inverse of call_00_3628_Entity_SaveWorldState — restores all saved buffers back to live RAM
     ld   A, [wD9C7]                                    ;; 00:3675 $fa $c7 $d9
-    ld   [wD74D_PlayerRoom], A                                    ;; 00:3678 $ea $4d $d7
+    ld   [wD74D_PlayerInteractedEntityLo], A                                    ;; 00:3678 $ea $4d $d7
     ld   A, [wD9C8]                                    ;; 00:367b $fa $c8 $d9
-    ld   [wD74E], A                                    ;; 00:367e $ea $4e $d7
+    ld   [wD74E_PlayerPlatformRelated], A                                    ;; 00:367e $ea $4e $d7
     ld   A, [wD9C9]                                    ;; 00:3681 $fa $c9 $d9
-    ld   [wD74F], A                                    ;; 00:3684 $ea $4f $d7
+    ld   [wD74F_PlayerPlatformRelated2], A                                    ;; 00:3684 $ea $4f $d7
     ld   A, [wD9CA]                                    ;; 00:3687 $fa $ca $d9
     ld   [wD688], A                                    ;; 00:368a $ea $88 $d6
     ld   HL, wD79F                                     ;; 00:368d $21 $9f $d7
