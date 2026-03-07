@@ -60,10 +60,11 @@ data_02_4120:
     dw   call_02_4483_PlayerAction_Unk1C, data_02_7665
     DEF  PLAYER_ACTION_CLIMB                      EQU $1D ; used for both types of climbing
     dw   call_02_44af_PlayerAction_Climb, data_02_766d
-    DEF  PLAYER_ACTION_UNK_1E                     EQU $1E
-    dw   call_02_481b_PlayerAction_Unk1E, data_02_7673
+    DEF  PLAYER_ACTION_GOLD_REMOTE_WARP           EQU $1E
+    dw   call_02_481b_PlayerAction_GoldRemoteWarp, data_02_7673
     DEF  PLAYER_ACTION_UNK_1F                     EQU $1F ; disables collision updating?
     dw   call_02_4828_PlayerAction_Unk1F, data_02_7684
+    DEF  PLAYER_ACTION_NONE_PENDING               EQU $FF
     
 call_02_41a0_PlayerAction_Spawn:
     ld   A, [wD209]                                    ;; 02:41a0 $fa $09 $d2
@@ -122,7 +123,7 @@ call_02_41b7_PlayerAction_Stand:
     jp   call_02_4ccd_Player_RequestAction                                  ;; 02:4201 $c3 $cd $4c
 
 call_02_4204_Player_WalkingRelated:
-    ld   A, [wD74E_PlayerPlatformRelated]                                    ;; 02:4204 $fa $4e $d7
+    ld   A, [wD74E_Player_PlatformRelated]                                    ;; 02:4204 $fa $4e $d7
     and  A, A                                          ;; 02:4207 $a7
     jr   NZ, .jr_02_4215                               ;; 02:4208 $20 $0b
     ld   HL, wD585_CollisionFlags                                     ;; 02:420a $21 $85 $d5
@@ -200,7 +201,7 @@ call_02_4275_PlayerAction_Jump:
     and  A, $20                                        ;; 02:4278 $e6 $20
     jr   Z, .jr_02_429a                                ;; 02:427a $28 $1e
     ld   C, $2a                                        ;; 02:427c $0e $2a
-    call call_02_4856                                  ;; 02:427e $cd $56 $48
+    call call_02_480f_PlayerJump_Sub                                  ;; 02:427e $cd $56 $48
     ld   [wD760_PlayerYVelocity], A                                    ;; 02:4281 $ea $60 $d7
     ld   [wD762_PlayerInitialYVelocity], A                                    ;; 02:4284 $ea $62 $d7
     call call_02_4a3a_Player_SetWallJumpFlag                                  ;; 02:4287 $cd $3a $4a
@@ -227,7 +228,7 @@ call_02_42ac_PlayerAction_DoubleJump:
     jr   Z, .jr_02_42d1                                ;; 02:42b1 $28 $1e
 .jr_02_42b3:
     ld   C, $36                                        ;; 02:42b3 $0e $36
-    call call_02_4856                                  ;; 02:42b5 $cd $56 $48
+    call call_02_480f_PlayerJump_Sub                                  ;; 02:42b5 $cd $56 $48
     ld   [wD760_PlayerYVelocity], A                                    ;; 02:42b8 $ea $60 $d7
     ld   [wD762_PlayerInitialYVelocity], A                                    ;; 02:42bb $ea $62 $d7
     call call_02_4a3a_Player_SetWallJumpFlag                                  ;; 02:42be $cd $3a $4a
@@ -349,8 +350,8 @@ call_02_437b_PlayerAction_DeathSetUpWarp:
     ld   A, [wD20A]                                    ;; 02:4393 $fa $0a $d2
     and  A, $04                                        ;; 02:4396 $e6 $04
     ret  Z                                             ;; 02:4398 $c8
-    ld   A, $00                                        ;; 02:4399 $3e $00
-    ld   [wD744], A                                    ;; 02:439b $ea $44 $d7
+    ld   A, PLAYER_ACTION_SPAWN                                        ;; 02:4399 $3e $00
+    ld   [wD744_Player_SpawnAction], A                                    ;; 02:439b $ea $44 $d7
     ld   A, [wD621_WarpFlags]                                    ;; 02:439e $fa $21 $d6
     or   A, $02                                        ;; 02:43a1 $f6 $02
     ld   [wD621_WarpFlags], A                                    ;; 02:43a3 $ea $21 $d6
@@ -468,13 +469,13 @@ call_02_4459_PlayerAction_EnterDoor:
 .jr_02_4465:
     xor  a
     ld   [wD75E_PlayerXSpeed],a
-    call call_02_4894
+    call call_02_4894_PlayerWarp_Sub
     ret  z
     ld   a,[wD621_WarpFlags]
     or   a,$08
     ld   [wD621_WarpFlags],a
-    ld   a,$1B
-    ld   [wD744],a
+    ld   a,PLAYER_ACTION_LEAVE_DOOR
+    ld   [wD744_Player_SpawnAction],a
     call call_00_38f0_Entity_DespawnAll
     ret  
 
@@ -512,7 +513,7 @@ call_02_44af_PlayerAction_Climb:
     ld   HL, wD759                                     ;; 02:44b6 $21 $59 $d7
     set  6, [HL]                                       ;; 02:44b9 $cb $f6
     xor  A, A                                          ;; 02:44bb $af
-    ld   [wD747], A                                    ;; 02:44bc $ea $47 $d7
+    ld   [wD747_Player_ClimbingUnkCounter], A                                    ;; 02:44bc $ea $47 $d7
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:44bf $ea $5e $d7
     ld   [wD760_PlayerYVelocity], A                                    ;; 02:44c2 $ea $60 $d7
     ld   [wD761_PlayerFallingFlag], A                                    ;; 02:44c5 $ea $61 $d7
@@ -522,9 +523,9 @@ call_02_44af_PlayerAction_Climb:
     jr   Z, .jr_02_44d3                                ;; 02:44cf $28 $02
     ld   A, $02                                        ;; 02:44d1 $3e $02
 .jr_02_44d3:
-    ld   [wD746_PlayerClimbingState], A                                    ;; 02:44d3 $ea $46 $d7
+    ld   [wD746_Player_ClimbingState], A                                    ;; 02:44d3 $ea $46 $d7
 .jr_02_44d6:
-    ld   HL, wD746_PlayerClimbingState                                     ;; 02:44d6 $21 $46 $d7
+    ld   HL, wD746_Player_ClimbingState                                     ;; 02:44d6 $21 $46 $d7
     ld   L, [HL]                                       ;; 02:44d9 $6e
     ld   H, $00                                        ;; 02:44da $26 $00
     add  HL, HL                                        ;; 02:44dc $29
@@ -535,22 +536,22 @@ call_02_44af_PlayerAction_Climb:
     ld   L, A                                          ;; 02:44e3 $6f
     jp   HL                                            ;; 02:44e4 $e9
 .data_02_44e5:
-    dw   call_02_44f9
-    dw   call_02_455f
-    dw   call_02_45b0                                 ;; 02:44e5 pP
-    dw   call_02_4626
-    dw   call_02_45b0        ;; 02:44e7 ????????
-    dw   call_02_4626                                      ;; 02:44ef ??
-    dw   call_02_4667                                 ;; 02:44f1 pP
-    dw   call_02_468f
-    dw   call_02_46b3
-    dw   call_02_46b8                  ;; 02:44f3 ??????
+    dw   call_02_44f9_PlayerClimbingAction_Background ; climbing background
+    dw   call_02_455f_PlayerClimbingAction_BackgroundTailSpin ; climbing background and tail spinning
+    dw   call_02_45b0_PlayerClimbingAction_Wall ; climbing wall
+    dw   call_02_4626_PlayerClimbingAction_WallTailSpin ; climbing wall and tail spinning
+    dw   call_02_45b0_PlayerClimbingAction_Wall
+    dw   call_02_4626_PlayerClimbingAction_WallTailSpin
+    dw   call_02_4667_PlayerClimbingAction_BackgroundBottom ; climbing background: reached bottom
+    dw   call_02_468f_PlayerClimbingAction_WallBottom ; climbing wall: reached bottom
+    dw   call_02_46b3_PlayerClimbingAction_WallTop ; climbing wall: reached top
+    dw   call_02_46b8_PlayerClimbingAction_Unk9
 
-call_02_44f9:
-    call call_02_4777                                  ;; 02:44f9 $cd $77 $47
+call_02_44f9_PlayerClimbingAction_Background:
+    call call_02_4777_PlayerBackgroundClimb_Sub                                  ;; 02:44f9 $cd $77 $47
     cp   A, $ff                                        ;; 02:44fc $fe $ff
     jr   Z, .jr_02_4531                                ;; 02:44fe $28 $31
-    ld   [wD748], A                                    ;; 02:4500 $ea $48 $d7
+    ld   [wD748_Player_ClimbingRelated], A                                    ;; 02:4500 $ea $48 $d7
     ld   E, A                                          ;; 02:4503 $5f
     ld   D, $00                                        ;; 02:4504 $16 $00
     ld   HL, .data_02_4557                             ;; 02:4506 $21 $57 $45
@@ -564,7 +565,7 @@ call_02_44f9:
     ld   HL, .data_02_454f                             ;; 02:4516 $21 $4f $45
     add  HL, DE                                        ;; 02:4519 $19
     ld   C, [HL]                                       ;; 02:451a $4e
-    ld   HL, wD747                                     ;; 02:451b $21 $47 $d7
+    ld   HL, wD747_Player_ClimbingUnkCounter                                     ;; 02:451b $21 $47 $d7
     inc  [HL]                                          ;; 02:451e $34
     ld   A, [HL]                                       ;; 02:451f $7e
     rrca                                               ;; 02:4520 $0f
@@ -588,9 +589,9 @@ call_02_44f9:
     and  A, PADF_A                                        ;; 02:4540 $e6 $01
     jr   Z, .jr_02_454e                                ;; 02:4542 $28 $0a
     ld   A, $01                                        ;; 02:4544 $3e $01
-    ld   [wD746_PlayerClimbingState], A                                    ;; 02:4546 $ea $46 $d7
+    ld   [wD746_Player_ClimbingState], A                                    ;; 02:4546 $ea $46 $d7
     xor  A, A                                          ;; 02:4549 $af
-    ld   [wD747], A                                    ;; 02:454a $ea $47 $d7
+    ld   [wD747_Player_ClimbingUnkCounter], A                                    ;; 02:454a $ea $47 $d7
     ret                                                ;; 02:454d $c9
 .jr_02_454e:
     ret                                                ;; 02:454e $c9
@@ -599,20 +600,20 @@ call_02_44f9:
 .data_02_4557:
     db   $00, $00, $00, $00, $60, $60, $60, $60        ;; 02:4557 ........
 
-call_02_455f:
-    call call_02_4777
+call_02_455f_PlayerClimbingAction_BackgroundTailSpin:
+    call call_02_4777_PlayerBackgroundClimb_Sub
     cp   a,$FF
     jr   z,.jr_02_4569
-    ld   [wD748],a
+    ld   [wD748_Player_ClimbingRelated],a
 .jr_02_4569:
-    ld   hl,wD747
+    ld   hl,wD747_Player_ClimbingUnkCounter
     inc  [hl]
     ld   a,[hl]
     rrca 
     rrca 
     and  a,$07
     ld   c,a
-    ld   hl,wD748
+    ld   hl,wD748_Player_ClimbingRelated
     ld   l,[hl]
     ld   h,$00
     ld   de,.data_02_45a8
@@ -631,22 +632,22 @@ call_02_455f:
     ld   [wD74B],a
     ld   hl,wD60F_HDMATransferFlags
     set  0,[hl]
-    ld   a,[wD747]
+    ld   a,[wD747_Player_ClimbingUnkCounter]
     cp   a,$20
     ret  c
     ld   a,$00
-    ld   [wD746_PlayerClimbingState],a
+    ld   [wD746_Player_ClimbingState],a
     xor  a
-    ld   [wD747],a
+    ld   [wD747_Player_ClimbingUnkCounter],a
     ret  
 .data_02_45a8:
     db   $00, $07, $06, $05, $04, $03, $02, $01        ;; 02:45a7 ????????
 
-call_02_45b0:
-    call call_02_47d5
+call_02_45b0_PlayerClimbingAction_Wall:
+    call call_02_47d5_PlayerWallClimb_Sub
     cp   a,$FF
     jr   z,.jr_02_45F0
-    ld   [wD748],a
+    ld   [wD748_Player_ClimbingRelated],a
     ld   e,a
     ld   d,$00
     ld   hl, .data_02_460e
@@ -666,7 +667,7 @@ call_02_45b0:
     ld   hl, .data_02_461e
     add  hl,de
     ld   c,[hl]
-    ld   hl,wD747
+    ld   hl,wD747_Player_ClimbingUnkCounter
     inc  [hl]
     ld   a,[hl]
     rrca 
@@ -690,9 +691,9 @@ call_02_45b0:
     and  a,PADF_A
     jr   z,.jr_02_460D
     ld   a,$03
-    ld   [wD746_PlayerClimbingState],a
+    ld   [wD746_Player_ClimbingState],a
     xor  a
-    ld   [wD747],a
+    ld   [wD747_Player_ClimbingUnkCounter],a
     ret  
 .jr_02_460D:
     ret  
@@ -703,19 +704,19 @@ call_02_45b0:
 .data_02_461e:
     db   $60, $60, $68, $60, $60, $60, $68, $60
 
-call_02_4626:
-    call call_02_47d5
+call_02_4626_PlayerClimbingAction_WallTailSpin:
+    call call_02_47d5_PlayerWallClimb_Sub
     cp   a,$FF
     jr   z,.jr_02_4630
-    ld   [wD748],a
+    ld   [wD748_Player_ClimbingRelated],a
 .jr_02_4630:
-    ld   hl,wD747
+    ld   hl,wD747_Player_ClimbingUnkCounter
     inc  [hl]
     ld   a,[hl]
     rrca 
     rrca 
     and  a,$07
-    ld   hl,wD748
+    ld   hl,wD748_Player_ClimbingRelated
     ld   l,[hl]
     ld   h,$00
     ld   de, .data_02_465f
@@ -727,21 +728,21 @@ call_02_4626:
     ld   [hl],a
     ld   hl,wD60F_HDMATransferFlags
     set  0,[hl]
-    ld   a,[wD747]
+    ld   a,[wD747_Player_ClimbingUnkCounter]
     cp   a,$20
     ret  c
     ld   a,$02
-    ld   [wD746_PlayerClimbingState],a
+    ld   [wD746_Player_ClimbingState],a
     xor  a
-    ld   [wD747],a
+    ld   [wD747_Player_ClimbingUnkCounter],a
     ret  
 .data_02_465f:
     db   $70, $00, $78, $00, $70, $00, $78, $00        ;; 02:465f ????????
 
-call_02_4667:
+call_02_4667_PlayerClimbingAction_BackgroundBottom:
     ld   A, $00                                        ;; 02:4667 $3e $00
     ld   [wD74B], A                                    ;; 02:4669 $ea $4b $d7
-    ld   HL, wD747                                     ;; 02:466c $21 $47 $d7
+    ld   HL, wD747_Player_ClimbingUnkCounter                                     ;; 02:466c $21 $47 $d7
     ld   A, [HL]                                       ;; 02:466f $7e
     cp   A, $18                                        ;; 02:4670 $fe $18
     jr   Z, .jr_02_4684                                ;; 02:4672 $28 $10
@@ -753,17 +754,17 @@ call_02_4667:
     ld   DE, .data_02_4689                             ;; 02:467c $11 $89 $46
     add  HL, DE                                        ;; 02:467f $19
     ld   A, [HL]                                       ;; 02:4680 $7e
-    jp   call_02_480f                                    ;; 02:4681 $c3 $0f $48
+    jp   call_02_480f_PlayerClimb_DismountBottom_Sub                                    ;; 02:4681 $c3 $0f $48
 .jr_02_4684:
     ld   A, PLAYER_ACTION_STAND                                        ;; 02:4684 $3e $02
     jp   call_02_4ccd_Player_RequestAction                                  ;; 02:4686 $c3 $cd $4c
 .data_02_4689:
     db   $c2, $c3, $c4, $c5, $c6, $c7
 
-call_02_468f:    
+call_02_468f_PlayerClimbingAction_WallBottom:    
     ld   a,$00
     ld   [wD74B],a
-    ld   hl,wD747
+    ld   hl,wD747_Player_ClimbingUnkCounter
     ld   a,[hl]
     cp   a,$08
     jr   z,.jr_02_46AC
@@ -775,22 +776,22 @@ call_02_468f:
     ld   de, .data_02_46b1
     add  hl,de
     ld   a,[hl]
-    jp   call_02_480f
+    jp   call_02_480f_PlayerClimb_DismountBottom_Sub
 .jr_02_46AC:
     ld   a,PLAYER_ACTION_STAND
     jp   call_02_4ccd_Player_RequestAction
 .data_02_46b1:
     db   $c8, $c9
 
-call_02_46b3:  
+call_02_46b3_PlayerClimbingAction_WallTop:  
     ld   a,PLAYER_ACTION_JUMP
     jp   call_02_4ccd_Player_RequestAction
 
-call_02_46b8:  
-    ld   a,[wD73C]
+call_02_46b8_PlayerClimbingAction_Unk9:  
+    ld   a,[wD73C_FrameCounter2]
     and  a,$1F
     ret  nz
-    ld   a,[wD749]
+    ld   a,[wD749_Player_ClimbingDirection]
     add  a
     add  a
     ld   hl,wD20D_PlayerFacingAngle
@@ -814,23 +815,23 @@ call_02_46b8:
     call call_02_4c19_Player_AddToYPosition
     pop  bc
     call call_02_4c0a_Player_AddToXPosition
-    ld   a,[wD747]
+    ld   a,[wD747_Player_ClimbingUnkCounter]
     srl  a
     ld   l,a
     ld   h,$00
     ld   de, .data_02_472e
     add  hl,de
     ld   a,[hl]
-    call call_02_480f
+    call call_02_480f_PlayerClimb_DismountBottom_Sub
     ld   a,$00
     ld   [wD74B],a
-    ld   hl,wD747
+    ld   hl,wD747_Player_ClimbingUnkCounter
     inc  [hl]
     ld   a,[hl]
     cp   a,$11
     ret  nz
     ld   [hl],$00
-    ld   a,[wD749]
+    ld   a,[wD749_Player_ClimbingDirection]
     add  a
     add  a
     add  a
@@ -844,7 +845,7 @@ call_02_46b8:
     ld   de, .data_02_4757
     add  hl,de
     ldi  a,[hl]
-    ld   [wD746_PlayerClimbingState],a
+    ld   [wD746_Player_ClimbingState],a
     ldi  a,[hl]
     ld   [wD20D_PlayerFacingAngle],a
     ldi  a,[hl]
@@ -870,7 +871,7 @@ call_02_46b8:
     db   $00, $68, $02, $00, $00, $60, $02, $20        ;; 02:4769 ????????
     db   $00, $60, $04, $20, $00, $68                  ;; 02:4771 ??????
 
-call_02_4777:
+call_02_4777_PlayerBackgroundClimb_Sub:
     ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:4777 $fa $5a $d7
     and  A, PADF_RIGHT | PADF_LEFT | PADF_UP | PADF_DOWN                                        ;; 02:477a $e6 $f0
     jr   Z, .jr_02_478d                                ;; 02:477c $28 $0f
@@ -912,7 +913,7 @@ call_02_4777:
     db   $ff, $ff, $01, $00, $50, $01, $01, $00        ;; 02:47c5 ....?w..
     db   $ff, $ff, $90, $03, $01, $00, $01, $00        ;; 02:47cd ..?w....
 
-call_02_47d5:
+call_02_47d5_PlayerWallClimb_Sub:
     ld   a,[wD75A_CurrentInputsAlt]
     and  a,PADF_UP | PADF_DOWN
     jr   z,.jr_02_47EB
@@ -951,7 +952,7 @@ call_02_47d5:
     db   $00, $00, $ff, $ff, $80, $04, $00, $00        ;; 02:4805 ????????
     db   $01, $00                                      ;; 02:480d ??
 
-call_02_480f:
+call_02_480f_PlayerClimb_DismountBottom_Sub:
     ld   HL, wD208_PlayerSpriteIndex                                     ;; 02:480f $21 $08 $d2
     cp   A, [HL]                                       ;; 02:4812 $be
     ret  Z                                             ;; 02:4813 $c8
@@ -960,8 +961,8 @@ call_02_480f:
     set  0, [HL]                                       ;; 02:4818 $cb $c6
     ret                                                ;; 02:481a $c9
 
-call_02_481b_PlayerAction_Unk1E:
-    call call_02_4894
+call_02_481b_PlayerAction_GoldRemoteWarp:
+    call call_02_4894_PlayerWarp_Sub
     ret  z
     ld   a,[wD621_WarpFlags]
     or   a,$04
@@ -1001,7 +1002,7 @@ call_02_4828_PlayerAction_Unk1F:
     ld   a,PLAYER_ACTION_JUMP
     jp   call_02_4ccd_Player_RequestAction
 
-call_02_4856:
+call_02_480f_PlayerJump_Sub:
     ld   A, [wD758]                                    ;; 02:4856 $fa $58 $d7
     and  A, A                                          ;; 02:4859 $a7
     ret  NZ                                            ;; 02:485a $c0
@@ -1042,7 +1043,7 @@ call_02_4856:
     ld   A, $60                                        ;; 02:4891 $3e $60
     ret                                                ;; 02:4893 $c9
 
-call_02_4894:
+call_02_4894_PlayerWarp_Sub:
     ld   a,[wD20A]
     and  a,$04
     ret     

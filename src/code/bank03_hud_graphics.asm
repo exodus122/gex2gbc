@@ -221,7 +221,7 @@ call_03_6d13_HUD_LoadLivesDigits:
 ; to load the collectible count
     ld   HL, wD60E                                     ;; 03:6d13 $21 $0e $d6
     res  1, [HL]                                       ;; 03:6d16 $cb $8e
-    ld   HL, wD73E_PlayerLivesHundreds                                     ;; 03:6d18 $21 $3e $d7
+    ld   HL, wD73E_LivesRemaining_Hundreds                                     ;; 03:6d18 $21 $3e $d7
     ld   A, $0a                                        ;; 03:6d1b $3e $0a
     ld   [HL+], A                                      ;; 03:6d1d $22
     ld   [HL+], A                                      ;; 03:6d1e $22
@@ -251,13 +251,13 @@ call_03_6d13_HUD_LoadLivesDigits:
     inc  HL                                            ;; 03:6d41 $23
 .jr_03_6d42:
     ld   [HL], A                                       ;; 03:6d42 $77
-    ld   A, [wD73E_PlayerLivesHundreds]                                    ;; 03:6d43 $fa $3e $d7
+    ld   A, [wD73E_LivesRemaining_Hundreds]                                    ;; 03:6d43 $fa $3e $d7
     ld   DE, VRAM_DIGIT_HUNDREDS                                     ;; 03:6d46 $11 $48 $87
     call call_03_6d88_HUD_LoadDigitTile                                  ;; 03:6d49 $cd $88 $6d
-    ld   A, [wD73F_PlayerLivesTens]                                    ;; 03:6d4c $fa $3f $d7
+    ld   A, [wD73F_LivesRemaining_Tens]                                    ;; 03:6d4c $fa $3f $d7
     ld   DE, VRAM_DIGIT_TENS                                     ;; 03:6d4f $11 $68 $87
     call call_03_6d88_HUD_LoadDigitTile                                  ;; 03:6d52 $cd $88 $6d
-    ld   A, [wD740_PlayerLivesOnes]                                    ;; 03:6d55 $fa $40 $d7
+    ld   A, [wD740_LivesRemaining_Ones]                                    ;; 03:6d55 $fa $40 $d7
     ld   DE, VRAM_DIGIT_ONES                                     ;; 03:6d58 $11 $88 $87
     call call_03_6d88_HUD_LoadDigitTile                                  ;; 03:6d5b $cd $88 $6d
 

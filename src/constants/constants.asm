@@ -389,24 +389,35 @@ DEF ENTITY_FIELD_YPOS_ON_SCREEN             EQU $13
 DEF ENTITY_FIELD_WIDTH                      EQU $14
 DEF ENTITY_FIELD_HEIGHT                     EQU $15
 DEF ENTITY_FIELD_COLLISION_TYPE             EQU $16
-DEF ENTITY_FIELD_UNK_17                     EQU $17
-; Movement flags
-; bit 7 (80) = used
-; bit 6 (40) = 
-; bit 5 (20) = 
-; bit 4 (10) = 
-; bit 3 (08) = used
-; bit 2 (04) = 
-; bit 1 (02) = used
-; bit 0 (01) = used
+DEF ENTITY_FIELD_MISC_FLAGS                 EQU $17
+    DEF ENTITY_MISC_FLAGS_LEFT           EQU 7 ; set = left platform movement, unset = right
+    DEF ENTITY_MISC_FLAGS_UP             EQU 6 ; set = up platform movement, unset = down
+    DEF ENTITY_MISC_FLAGS_UNK5_BIT       EQU 5 ; unused?
+    DEF ENTITY_MISC_FLAGS_UNK4_BIT       EQU 4 ; unused?
+    DEF ENTITY_MISC_FLAGS_UNK3_BIT       EQU 3 ; used
+    DEF ENTITY_MISC_FLAGS_UNK2_BIT       EQU 2 ; used
+    DEF ENTITY_MISC_FLAGS_VERTICAL       EQU 1 ; set = vertical platform movement, unset = horizontal
+    DEF ENTITY_MISC_FLAGS_UNK0_BIT       EQU 0 ; used
 DEF ENTITY_FIELD_MISC_TIMER                 EQU $18
 DEF ENTITY_FIELD_UNK_19                     EQU $19
-DEF ENTITY_FIELD_MISC_FLAGS                 EQU $1A ; used by tv buttons, etc.
+DEF ENTITY_FIELD_OTHER_FLAGS                EQU $1A ; used by tv buttons, etc.
 DEF ENTITY_FIELD_UNK_1B                     EQU $1B
 DEF ENTITY_FIELD_XVEL                       EQU $1C
 DEF ENTITY_FIELD_XVEL_RELATED               EQU $1D
 DEF ENTITY_FIELD_YVEL                       EQU $1E
 DEF ENTITY_FIELD_UNK_1F                     EQU $1F ; unused?
+
+; Entity Spawn Struct
+DEF ENTITY_SPAWN_ID_OFFSET                  EQU $00
+DEF ENTITY_SPAWN_XPOS_OFFSET                EQU $01
+DEF ENTITY_SPAWN_YPOS_OFFSET                EQU $03
+DEF ENTITY_SPAWN_BOUNDINGBOX_XMAX_OFFSET    EQU $05
+DEF ENTITY_SPAWN_BOUNDINGBOX_XMIN_OFFSET    EQU $06
+DEF ENTITY_SPAWN_BOUNDINGBOX_YMIN_OFFSET    EQU $07
+DEF ENTITY_SPAWN_BOUNDINGBOX_YMAX_OFFSET    EQU $08
+DEF ENTITY_SPAWN_PARAMETER_OFFSET           EQU $09
+DEF ENTITY_SPAWN_PARAMETER2_OFFSET          EQU $0A
+DEF ENTITY_SPAWN_PARAMETER3_OFFSET          EQU $0B
 
 ; Player vs Entity interactions
 DEF PLAYER_TOUCHED_ENTITY    EQU $00

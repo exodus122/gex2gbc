@@ -27,12 +27,12 @@ call_03_4915_BgCollision_Sidescroller:
 ; or left (C=−1) through successive tiles calling TileCollisionCheck_Raw, counting how many are solid into B. 
 ; Negates B, ORs into collision flags; if any of the low nibble bits are set, also sets bit 7. 
 ; Falls through to the floor/ceiling check
-    ld   A, [wD74D_PlayerInteractedEntityLo]                                    ;; 03:4915 $fa $4d $d7
+    ld   A, [wD74D_Player_InteractedEntityLo]                                    ;; 03:4915 $fa $4d $d7
     and  A, A                                          ;; 03:4918 $a7
     jr   Z, .jr_03_491d                                ;; 03:4919 $28 $02
     set  7, [HL]                                       ;; 03:491b $cb $fe ; set 0x80
 .jr_03_491d:
-    ld   A, [wD746_PlayerClimbingState]                                    ;; 03:491d $fa $46 $d7
+    ld   A, [wD746_Player_ClimbingState]                                    ;; 03:491d $fa $46 $d7
     cp   A, $ff                                        ;; 03:4920 $fe $ff
     jp   NZ, call_03_4ac4_BgCollision_Climb        ; 03:4922 $c2 $c4 $4a ; if climb state byte is not ff, run alternate collision func
     ld   A, [wD760_PlayerYVelocity]                                    ;; 03:4925 $fa $60 $d7
@@ -320,14 +320,14 @@ call_03_4ac4_BgCollision_Climb:
 ; On no match, masks wD75A to low nibble (suppresses directional input). On match: reads two (C, B) offset pairs. 
 ; First pair: calls FetchTileValue; if bit 6 of result is set (exit tile), checks for jump input ($80) 
 ; and transitions climb state to 6 or 7 (drop off). If bit 6 not set: second pair: calls FetchTileValue again; 
-; if bit 7 set, checks for tile IDs $30–$33 (pipe entry), stores offset in wD749, sets climb state 9. 
+; if bit 7 set, checks for tile IDs $30–$33 (pipe entry), stores offset in wD749_Player_ClimbingDirection, sets climb state 9. 
 ; Otherwise, if down input ($40) is pressed and climb state ≥ 2, sets climb state 8 (step down)
     ld   HL, wD585_CollisionFlags                                     ;; 03:4ac4 $21 $85 $d5
     set  7, [HL]                                       ;; 03:4ac7 $cb $fe
-    ld   A, [wD746_PlayerClimbingState]                                    ;; 03:4ac9 $fa $46 $d7
+    ld   A, [wD746_Player_ClimbingState]                                    ;; 03:4ac9 $fa $46 $d7
     cp   A, $06                                        ;; 03:4acc $fe $06
     ret  NC                                            ;; 03:4ace $d0
-    ld   HL, wD746_PlayerClimbingState                                     ;; 03:4acf $21 $46 $d7
+    ld   HL, wD746_Player_ClimbingState                                     ;; 03:4acf $21 $46 $d7
     ld   A, [HL]                                       ;; 03:4ad2 $7e
     add  A, A                                          ;; 03:4ad3 $87
     ld   HL, wD20D_PlayerFacingAngle                                     ;; 03:4ad4 $21 $0d $d2
@@ -378,15 +378,15 @@ call_03_4ac4_BgCollision_Climb:
     ld   A, [wD75A_CurrentInputsAlt]                                    ;; 03:4b11 $fa $5a $d7
     cp   A, PADF_DOWN                                        ;; 03:4b14 $fe $80
     jr   NZ, .jr_03_4afa                               ;; 03:4b16 $20 $e2
-    ld   A, [wD746_PlayerClimbingState]                                    ;; 03:4b18 $fa $46 $d7
+    ld   A, [wD746_Player_ClimbingState]                                    ;; 03:4b18 $fa $46 $d7
     cp   A, $02                                        ;; 03:4b1b $fe $02
     ld   A, $06                                        ;; 03:4b1d $3e $06
     jr   C, .jr_03_4b23                                ;; 03:4b1f $38 $02
     ld   A, $07                                        ;; 03:4b21 $3e $07
 .jr_03_4b23:
-    ld   [wD746_PlayerClimbingState], A                                    ;; 03:4b23 $ea $46 $d7
+    ld   [wD746_Player_ClimbingState], A                                    ;; 03:4b23 $ea $46 $d7
     xor  A, A                                          ;; 03:4b26 $af
-    ld   [wD747], A                                    ;; 03:4b27 $ea $47 $d7
+    ld   [wD747_Player_ClimbingUnkCounter], A                                    ;; 03:4b27 $ea $47 $d7
     ret                                                ;; 03:4b2a $c9
 .jr_03_4b2b:
     ld   A, [HL+]                                      ;; 03:4b2b $2a
@@ -396,17 +396,17 @@ call_03_4ac4_BgCollision_Climb:
     call call_03_4c5a_BgCollision_FetchTile                                  ;; 03:4b2f $cd $5a $4c
     bit  7, B                                          ;; 03:4b32 $cb $78
     jr   NZ, .jr_03_4b4a                               ;; 03:4b34 $20 $14
-    ld   A, [wD746_PlayerClimbingState]                                    ;; 03:4b36 $fa $46 $d7
+    ld   A, [wD746_Player_ClimbingState]                                    ;; 03:4b36 $fa $46 $d7
     cp   A, $02                                        ;; 03:4b39 $fe $02
     jr   C, .jr_03_4afa                                ;; 03:4b3b $38 $bd
     ld   A, [wD75A_CurrentInputsAlt]                                    ;; 03:4b3d $fa $5a $d7
     and  A, PADF_UP                                        ;; 03:4b40 $e6 $40
     jr   Z, .jr_03_4afa                                ;; 03:4b42 $28 $b6
     ld   A, $08                                        ;; 03:4b44 $3e $08
-    ld   [wD746_PlayerClimbingState], A                                    ;; 03:4b46 $ea $46 $d7
+    ld   [wD746_Player_ClimbingState], A                                    ;; 03:4b46 $ea $46 $d7
     ret                                                ;; 03:4b49 $c9
 .jr_03_4b4a:
-    ld   A, [wD746_PlayerClimbingState]                                    ;; 03:4b4a $fa $46 $d7
+    ld   A, [wD746_Player_ClimbingState]                                    ;; 03:4b4a $fa $46 $d7
     cp   A, $02                                        ;; 03:4b4d $fe $02
     ret  C                                             ;; 03:4b4f $d8
     ld   A, C                                          ;; 03:4b50 $79
@@ -415,11 +415,11 @@ call_03_4ac4_BgCollision_Climb:
     cp   A, $34                                        ;; 03:4b54 $fe $34
     ret  NC                                            ;; 03:4b56 $d0
     sub  A, $30                                        ;; 03:4b57 $d6 $30
-    ld   [wD749], A                                    ;; 03:4b59 $ea $49 $d7
+    ld   [wD749_Player_ClimbingDirection], A                                    ;; 03:4b59 $ea $49 $d7
     ld   A, $09                                        ;; 03:4b5c $3e $09
-    ld   [wD746_PlayerClimbingState], A                                    ;; 03:4b5e $ea $46 $d7
+    ld   [wD746_Player_ClimbingState], A                                    ;; 03:4b5e $ea $46 $d7
     xor  A, A                                          ;; 03:4b61 $af
-    ld   [wD747], A                                    ;; 03:4b62 $ea $47 $d7
+    ld   [wD747_Player_ClimbingUnkCounter], A                                    ;; 03:4b62 $ea $47 $d7
     ret                                                ;; 03:4b65 $c9
 .data_03_4b66_ClimbCollisionScriptTable:
 ; 12-entry pointer table (climb state 0–5 × 2 facing directions). States 0–3 (all facings) share 

@@ -1141,7 +1141,7 @@ call_00_18a7_BgMap_ResolveVerticalSecondaryTileset:
     call call_00_1e3c_BgMap_MaskOverrideData                                  ;; 00:18a7 $cd $3c $1e
     ld   A, [wD778]                                    ;; 00:18aa $fa $78 $d7
     and  A, A                                          ;; 00:18ad $a7
-    jr   Z, call_00_1922_SecondaryTileset_Load                                 ;; 00:18ae $28 $72
+    jr   Z, call_00_1922_BgMap_LoadSecondaryTileset                                 ;; 00:18ae $28 $72
     dec  A                                             ;; 00:18b0 $3d
     ld   E, A                                          ;; 00:18b1 $5f
     ld   D, $ce                                        ;; 00:18b2 $16 $ce
@@ -1181,7 +1181,7 @@ call_00_18a7_BgMap_ResolveVerticalSecondaryTileset:
     bit  7, E                                          ;; 00:18dd $cb $7b
     jr   Z, .jr_00_18bd                                ;; 00:18df $28 $dc
     pop  HL                                            ;; 00:18e1 $e1
-    jr   call_00_1922_SecondaryTileset_Load                                    ;; 00:18e2 $18 $3e
+    jr   call_00_1922_BgMap_LoadSecondaryTileset                                    ;; 00:18e2 $18 $3e
 
 call_00_18e4_BgMap_ResolveHorizontalSecondaryTileset:
 ; Same as above but for horizontal strip loading: scans $CDB0 for overrides matching X block coordinate wD779, 
@@ -1190,7 +1190,7 @@ call_00_18e4_BgMap_ResolveHorizontalSecondaryTileset:
     call call_00_1e3c_BgMap_MaskOverrideData                                  ;; 00:18e4 $cd $3c $1e
     ld   A, [wD778]                                    ;; 00:18e7 $fa $78 $d7
     and  A, A                                          ;; 00:18ea $a7
-    jr   Z, call_00_1922_SecondaryTileset_Load                                 ;; 00:18eb $28 $35
+    jr   Z, call_00_1922_BgMap_LoadSecondaryTileset                                 ;; 00:18eb $28 $35
     dec  A                                             ;; 00:18ed $3d
     ld   E, A                                          ;; 00:18ee $5f
     ld   D, $cd                                        ;; 00:18ef $16 $cd
@@ -1231,9 +1231,9 @@ call_00_18e4_BgMap_ResolveHorizontalSecondaryTileset:
     bit  7, E                                          ;; 00:191b $cb $7b
     jr   Z, .jr_00_18fa                                ;; 00:191d $28 $db
     pop  HL                                            ;; 00:191f $e1
-    jr   call_00_1922_SecondaryTileset_Load                                    ;; 00:1920 $18 $00
+    jr   call_00_1922_BgMap_LoadSecondaryTileset                                    ;; 00:1920 $18 $00
 
-call_00_1922_SecondaryTileset_Load:
+call_00_1922_BgMap_LoadSecondaryTileset:
 ; Checks wD60F bit 2 (HDMA active) — returns if set. Advances HL by $0B to reach the tile area 
 ; index within the strip. Looks up the current level ID in .data_00_1a2e_LevelSecondaryTilesetIndexTable 
 ; to get a per-world data pointer. Reads the first byte (base index C). Scans 6 entries backward 

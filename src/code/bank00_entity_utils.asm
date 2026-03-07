@@ -83,10 +83,10 @@ call_00_30da_Entity_ApplyGravityMoveY_WithFloorCollision:
     ld   [hl],d
     ret  
 
-call_00_3137_Entity_ClampYToBound_MiscFlags:
-; Reads a bound from MISC_FLAGS sub-fields (not from the standard bound helpers) 
+call_00_3137_Entity_ClampYToBound_OtherFlags:
+; Reads a bound from OTHER_FLAGS sub-fields (not from the standard bound helpers) 
 ; and clamps Y position similarly to below functions
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_OTHER_FLAGS
     ld   e,[hl]
     inc  l
     ld   d,[hl]
@@ -151,19 +151,19 @@ call_00_316e_Entity_MoveYDownWithOffsetFloorBound:
     ld   [HL], A                                       ;; 00:318b $77
     ret                                                ;; 00:318c $c9
 
-call_00_318d_Entity_PatrolXY_WithBoundsAndFlip:
-; Complex patrol logic: checks UNK_17 flags for movement mode (horizontal vs vertical, 
+call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip:
+; Complex patrol logic: checks for movement mode (horizontal vs vertical, 
 ; forward vs backward), calls appropriate bound helper, then nudges a speed counter and 
 ; flips direction when a bound is hit; also zeroes velocity sub-fields on direction change
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
-    bit  3, [HL]                                       ;; 00:3195 $cb $5e
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
+    bit  ENTITY_MISC_FLAGS_UNK3_BIT, [HL]                                       ;; 00:3195 $cb $5e
     jr   Z, .jr_00_319c                                ;; 00:3197 $28 $03
-    bit  0, [HL]                                       ;; 00:3199 $cb $46
+    bit  ENTITY_MISC_FLAGS_UNK0_BIT, [HL]                                       ;; 00:3199 $cb $46
     ret  Z                                             ;; 00:319b $c8
 .jr_00_319c:
-    bit  1, [HL]                                       ;; 00:319c $cb $4e
+    bit  ENTITY_MISC_FLAGS_VERTICAL, [HL]                                       ;; 00:319c $cb $4e
     jr   NZ, .jr_00_3202                               ;; 00:319e $20 $62
-    bit  7, [HL]                                       ;; 00:31a0 $cb $7e
+    bit  ENTITY_MISC_FLAGS_LEFT, [HL]                                       ;; 00:31a0 $cb $7e
     jr   NZ, .jr_00_31de                               ;; 00:31a2 $20 $3a
     call call_00_347e_Entity_GetLeftXBound                                  ;; 00:31a4 $cd $7e $34
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
@@ -184,7 +184,7 @@ call_00_318d_Entity_PatrolXY_WithBoundsAndFlip:
     ld   A, L                                          ;; 00:31be $7d
     xor  A, $18                                        ;; 00:31bf $ee $18
     ld   L, A                                          ;; 00:31c1 $6f
-    set  7, [HL]                                       ;; 00:31c2 $cb $fe
+    set  ENTITY_MISC_FLAGS_LEFT, [HL]                                       ;; 00:31c2 $cb $fe
 .jp_00_31c4:
     push HL                                            ;; 00:31c4 $e5
     ld   A, L                                          ;; 00:31c5 $7d
@@ -194,9 +194,9 @@ call_00_318d_Entity_PatrolXY_WithBoundsAndFlip:
     pop  HL                                            ;; 00:31ca $e1
     cp   A, $17                                        ;; 00:31cb $fe $17
     jr   Z, .jr_00_31d4                                ;; 00:31cd $28 $05
-    bit  3, [HL]                                       ;; 00:31cf $cb $5e
+    bit  ENTITY_MISC_FLAGS_UNK3_BIT, [HL]                                       ;; 00:31cf $cb $5e
     ret  Z                                             ;; 00:31d1 $c8
-    res  0, [HL]                                       ;; 00:31d2 $cb $86
+    res  ENTITY_MISC_FLAGS_UNK0_BIT, [HL]                                       ;; 00:31d2 $cb $86
 .jr_00_31d4:
     ld   A, L                                          ;; 00:31d4 $7d
     xor  A, $0b                                        ;; 00:31d5 $ee $0b
@@ -229,10 +229,10 @@ call_00_318d_Entity_PatrolXY_WithBoundsAndFlip:
     ld   A, L                                          ;; 00:31fa $7d
     xor  A, $18                                        ;; 00:31fb $ee $18
     ld   L, A                                          ;; 00:31fd $6f
-    res  7, [HL]                                       ;; 00:31fe $cb $be
+    res  ENTITY_MISC_FLAGS_LEFT, [HL]                                       ;; 00:31fe $cb $be
     jr   .jp_00_31c4                                   ;; 00:3200 $18 $c2
 .jr_00_3202:
-    bit  6, [HL]                                       ;; 00:3202 $cb $76
+    bit  ENTITY_MISC_FLAGS_UP, [HL]                                       ;; 00:3202 $cb $76
     jr   NZ, .jr_00_322a                               ;; 00:3204 $20 $24
     call call_00_34ba_Entity_GetUpperYBound                                  ;; 00:3206 $cd $ba $34
    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
@@ -255,7 +255,7 @@ call_00_318d_Entity_PatrolXY_WithBoundsAndFlip:
     ld   A, L                                          ;; 00:3222 $7d
     xor  A, $06                                        ;; 00:3223 $ee $06
     ld   L, A                                          ;; 00:3225 $6f
-    set  6, [HL]                                       ;; 00:3226 $cb $f6
+    set  ENTITY_MISC_FLAGS_UP, [HL]                                       ;; 00:3226 $cb $f6
     jr   .jp_00_31c4                                   ;; 00:3228 $18 $9a
 .jr_00_322a:
     call call_00_349c_Entity_GetLowerYBound                                  ;; 00:322a $cd $9c $34
@@ -281,7 +281,7 @@ call_00_318d_Entity_PatrolXY_WithBoundsAndFlip:
     ld   A, L                                          ;; 00:3248 $7d
     xor  A, $06                                        ;; 00:3249 $ee $06
     ld   L, A                                          ;; 00:324b $6f
-    res  6, [HL]                                       ;; 00:324c $cb $b6
+    res  ENTITY_MISC_FLAGS_UP, [HL]                                       ;; 00:324c $cb $b6
     jp   .jp_00_31c4                                   ;; 00:324e $c3 $c4 $31
 
 call_00_3251_Entity_UpdateFacingMomentumAndMoveX:
@@ -482,7 +482,7 @@ call_00_335a_Entity_SetYVelocity:
     ret                                                ;; 00:3363 $c9
 
 call_00_3364_Entity_TrackPlayerXWithBounds:
-; Compares entity X (block-scaled) against room bounds from wD309; if player is within range, 
+; Compares entity X (block-scaled) against room bounds from wD309_EntityBoundingBoxXMax; if player is within range, 
 ; sets facing direction toward player and applies movement delta to X pos
     ld   a,[wD300_CurrentEntityAddrLo]
     rrca 
@@ -491,7 +491,7 @@ call_00_3364_Entity_TrackPlayerXWithBounds:
     and  a,$1C
     ld   l,a
     ld   h,$00
-    ld   de,wD309
+    ld   de,wD309_EntityBoundingBoxXMax
     add  hl,de
     ld   b,[hl]
     dec  b
@@ -665,7 +665,7 @@ call_00_3442_Entity_MoveXByFacingSpeed:
     jp   call_00_37c9_Entity_MoveX
 
 call_00_3460_Entity_GetRightXBound:
-; Looks up wD30A for this entity slot, scales by 32, adds $30 offset; result in DE = right patrol bound
+; Looks up wD30A_EntityBoundingBoxXMin for this entity slot, scales by 32, adds $30 offset; result in DE = right patrol bound
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3460 $fa $00 $d3
     rrca                                               ;; 00:3463 $0f
     rrca                                               ;; 00:3464 $0f
@@ -673,7 +673,7 @@ call_00_3460_Entity_GetRightXBound:
     and  A, $1c                                        ;; 00:3466 $e6 $1c
     ld   L, A                                          ;; 00:3468 $6f
     ld   H, $00                                        ;; 00:3469 $26 $00
-    ld   DE, wD30A                                     ;; 00:346b $11 $0a $d3
+    ld   DE, wD30A_EntityBoundingBoxXMin                                     ;; 00:346b $11 $0a $d3
     add  HL, DE                                        ;; 00:346e $19
     ld   L, [HL]                                       ;; 00:346f $6e
     ld   H, $00                                        ;; 00:3470 $26 $00
@@ -689,7 +689,7 @@ call_00_3460_Entity_GetRightXBound:
     ret                                                ;; 00:347d $c9
 
 call_00_347e_Entity_GetLeftXBound:
-; Same as above but uses wD309, subtracts $10 (adds $FFF0); result in DE = left patrol bound
+; Same as above but uses wD309_EntityBoundingBoxXMax, subtracts $10 (adds $FFF0); result in DE = left patrol bound
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:347e $fa $00 $d3
     rrca                                               ;; 00:3481 $0f
     rrca                                               ;; 00:3482 $0f
@@ -697,7 +697,7 @@ call_00_347e_Entity_GetLeftXBound:
     and  A, $1c                                        ;; 00:3484 $e6 $1c
     ld   L, A                                          ;; 00:3486 $6f
     ld   H, $00                                        ;; 00:3487 $26 $00
-    ld   DE, wD309                                     ;; 00:3489 $11 $09 $d3
+    ld   DE, wD309_EntityBoundingBoxXMax                                     ;; 00:3489 $11 $09 $d3
     add  HL, DE                                        ;; 00:348c $19
     ld   L, [HL]                                       ;; 00:348d $6e
     ld   H, $00                                        ;; 00:348e $26 $00
@@ -713,7 +713,7 @@ call_00_347e_Entity_GetLeftXBound:
     ret                                                ;; 00:349b $c9
 
 call_00_349c_Entity_GetLowerYBound:
-; Uses wD30C, scales by 32, adds $30; result in DE = lower Y bound
+; Uses wD30C_EntityBoundingBoxYMin, scales by 32, adds $30; result in DE = lower Y bound
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:349c $fa $00 $d3
     rrca                                               ;; 00:349f $0f
     rrca                                               ;; 00:34a0 $0f
@@ -721,7 +721,7 @@ call_00_349c_Entity_GetLowerYBound:
     and  A, $1c                                        ;; 00:34a2 $e6 $1c
     ld   L, A                                          ;; 00:34a4 $6f
     ld   H, $00                                        ;; 00:34a5 $26 $00
-    ld   DE, wD30C                                     ;; 00:34a7 $11 $0c $d3
+    ld   DE, wD30C_EntityBoundingBoxYMin                                     ;; 00:34a7 $11 $0c $d3
     add  HL, DE                                        ;; 00:34aa $19
     ld   L, [HL]                                       ;; 00:34ab $6e
     ld   H, $00                                        ;; 00:34ac $26 $00
@@ -737,7 +737,7 @@ call_00_349c_Entity_GetLowerYBound:
     ret                                                ;; 00:34b9 $c9
 
 call_00_34ba_Entity_GetUpperYBound:
-; Uses wD30B, scales by 32, subtracts $10; result in DE = upper Y bound
+; Uses wD30B_EntityBoundingBoxYMax, scales by 32, subtracts $10; result in DE = upper Y bound
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:34ba $fa $00 $d3
     rrca                                               ;; 00:34bd $0f
     rrca                                               ;; 00:34be $0f
@@ -745,7 +745,7 @@ call_00_34ba_Entity_GetUpperYBound:
     and  A, $1c                                        ;; 00:34c0 $e6 $1c
     ld   L, A                                          ;; 00:34c2 $6f
     ld   H, $00                                        ;; 00:34c3 $26 $00
-    ld   DE, wD30B                                     ;; 00:34c5 $11 $0b $d3
+    ld   DE, wD30B_EntityBoundingBoxYMax                                     ;; 00:34c5 $11 $0b $d3
     add  HL, DE                                        ;; 00:34c8 $19
     ld   L, [HL]                                       ;; 00:34c9 $6e
     ld   H, $00                                        ;; 00:34ca $26 $00
@@ -781,10 +781,10 @@ call_00_34ea_Entity_CheckActivationFlag:
     ret                                                ;; 00:34f4 $c9
 
 call_00_34f5_Entity_CheckPlayerInteracting:
-; Checks wD74D_PlayerInteractedEntityLo (current player interacted entity) against high bits of entity address; 
+; Checks wD74D_Player_InteractedEntityLo (current player interacted entity) against high bits of entity address; 
 ; sets B=1 if player is interacting with the current object
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
-    ld   A, [wD74D_PlayerInteractedEntityLo]                                    ;; 00:34fd $fa $4d $d7
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
+    ld   A, [wD74D_Player_InteractedEntityLo]                                    ;; 00:34fd $fa $4d $d7
     ld   B, A                                          ;; 00:3500 $47
     and  A, A                                          ;; 00:3501 $a7
     ret  Z                                             ;; 00:3502 $c8
@@ -797,7 +797,7 @@ call_00_34f5_Entity_CheckPlayerInteracting:
     ret                                                ;; 00:350b $c9
 
 call_00_350c_Entity_CheckIfPlayerInRoomBounds:
-; Reads this entity's room bounds (X min/max, Y min/max) from wD309–wD30C; 
+; Reads this entity's room bounds (X min/max, Y min/max) from wD309_EntityBoundingBoxXMax–wD30C_EntityBoundingBoxYMin; 
 ; compares against wD329 (camera/scroll bounds); returns carry if player is outside
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:350c $fa $00 $d3
     rrca                                               ;; 00:350f $0f
@@ -805,7 +805,7 @@ call_00_350c_Entity_CheckIfPlayerInRoomBounds:
     rrca                                               ;; 00:3511 $0f
     ld   L, A                                          ;; 00:3512 $6f
     ld   H, $00                                        ;; 00:3513 $26 $00
-    ld   BC, wD309                                     ;; 00:3515 $01 $09 $d3
+    ld   BC, wD309_EntityBoundingBoxXMax                                     ;; 00:3515 $01 $09 $d3
     add  HL, BC                                        ;; 00:3518 $09
     ld   B, [HL]                                       ;; 00:3519 $46
     inc  HL                                            ;; 00:351a $23
@@ -839,7 +839,7 @@ call_00_3531_Entity_CheckIfXWithinRoomBoundsOnly:
     and  a,$1C
     ld   l,a
     ld   h,$00
-    ld   de,wD309
+    ld   de,wD309_EntityBoundingBoxXMax
     add  hl,de
     ld   b,[hl]
     dec  b
@@ -952,14 +952,14 @@ call_00_35d5_Entity_MoveXAndPushPlayer:
     ld   D, A                                          ;; 00:35e4 $57
     ld   A, L                                          ;; 00:35e5 $7d
     and  A, $e0                                        ;; 00:35e6 $e6 $e0
-    ld   HL, wD74D_PlayerInteractedEntityLo                                     ;; 00:35e8 $21 $4d $d7
+    ld   HL, wD74D_Player_InteractedEntityLo                                     ;; 00:35e8 $21 $4d $d7
     cp   A, [HL]                                       ;; 00:35eb $be
     jr   NZ, .jr_00_35f3                               ;; 00:35ec $20 $05
     ld   A, C                                          ;; 00:35ee $79
     ld   [wD75C], A                                    ;; 00:35ef $ea $5c $d7
     ret                                                ;; 00:35f2 $c9
 .jr_00_35f3:
-    ld   HL, wD74F_PlayerPlatformRelated2                                     ;; 00:35f3 $21 $4f $d7
+    ld   HL, wD74F_Player_PlatformRelated2                                     ;; 00:35f3 $21 $4f $d7
     cp   A, [HL]                                       ;; 00:35f6 $be
     ret  NZ                                            ;; 00:35f7 $c0
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS_ON_SCREEN
@@ -991,14 +991,14 @@ call_00_35d5_Entity_MoveXAndPushPlayer:
     ret                                                ;; 00:3627 $c9
 
 call_00_3628_Entity_SaveWorldState:
-; Backs up camera/interaction pointers (wD74D_PlayerInteractedEntityLo–wD74F_PlayerPlatformRelated2, wD688), copies entity table (wD000), 
-; player entity (wD200), slot table (wD301), and room bounds (wD309) into 
+; Backs up camera/interaction pointers (wD74D_Player_InteractedEntityLo–wD74F_Player_PlatformRelated2, wD688), copies entity table (wD000), 
+; player entity (wD200), slot table (wD301), and room bounds (wD309_EntityBoundingBoxXMax) into 
 ; save buffers at wD79F/wD89F/wD99F/wD9A7
-    ld   A, [wD74D_PlayerInteractedEntityLo]                                    ;; 00:3628 $fa $4d $d7
+    ld   A, [wD74D_Player_InteractedEntityLo]                                    ;; 00:3628 $fa $4d $d7
     ld   [wD9C7], A                                    ;; 00:362b $ea $c7 $d9
-    ld   A, [wD74E_PlayerPlatformRelated]                                    ;; 00:362e $fa $4e $d7
+    ld   A, [wD74E_Player_PlatformRelated]                                    ;; 00:362e $fa $4e $d7
     ld   [wD9C8], A                                    ;; 00:3631 $ea $c8 $d9
-    ld   A, [wD74F_PlayerPlatformRelated2]                                    ;; 00:3634 $fa $4f $d7
+    ld   A, [wD74F_Player_PlatformRelated2]                                    ;; 00:3634 $fa $4f $d7
     ld   [wD9C9], A                                    ;; 00:3637 $ea $c9 $d9
     ld   A, [wD688]                                    ;; 00:363a $fa $88 $d6
     ld   [wD9CA], A                                    ;; 00:363d $ea $ca $d9
@@ -1016,7 +1016,7 @@ call_00_3628_Entity_SaveWorldState:
     ld   DE, wD99F                                     ;; 00:3660 $11 $9f $d9
     ld   BC, $08                                       ;; 00:3663 $01 $08 $00
     call call_00_07b0_MemCopy                                  ;; 00:3666 $cd $b0 $07
-    ld   HL, wD309                                     ;; 00:3669 $21 $09 $d3
+    ld   HL, wD309_EntityBoundingBoxXMax                                     ;; 00:3669 $21 $09 $d3
     ld   DE, wD9A7                                     ;; 00:366c $11 $a7 $d9
     ld   BC, $20                                       ;; 00:366f $01 $20 $00
     jp   call_00_07b0_MemCopy                                  ;; 00:3672 $c3 $b0 $07
@@ -1024,11 +1024,11 @@ call_00_3628_Entity_SaveWorldState:
 call_00_3675_Entity_RestoreWorldState:
 ; Inverse of call_00_3628_Entity_SaveWorldState — restores all saved buffers back to live RAM
     ld   A, [wD9C7]                                    ;; 00:3675 $fa $c7 $d9
-    ld   [wD74D_PlayerInteractedEntityLo], A                                    ;; 00:3678 $ea $4d $d7
+    ld   [wD74D_Player_InteractedEntityLo], A                                    ;; 00:3678 $ea $4d $d7
     ld   A, [wD9C8]                                    ;; 00:367b $fa $c8 $d9
-    ld   [wD74E_PlayerPlatformRelated], A                                    ;; 00:367e $ea $4e $d7
+    ld   [wD74E_Player_PlatformRelated], A                                    ;; 00:367e $ea $4e $d7
     ld   A, [wD9C9]                                    ;; 00:3681 $fa $c9 $d9
-    ld   [wD74F_PlayerPlatformRelated2], A                                    ;; 00:3684 $ea $4f $d7
+    ld   [wD74F_Player_PlatformRelated2], A                                    ;; 00:3684 $ea $4f $d7
     ld   A, [wD9CA]                                    ;; 00:3687 $fa $ca $d9
     ld   [wD688], A                                    ;; 00:368a $ea $88 $d6
     ld   HL, wD79F                                     ;; 00:368d $21 $9f $d7
@@ -1044,7 +1044,7 @@ call_00_3675_Entity_RestoreWorldState:
     ld   BC, $08                                       ;; 00:36ab $01 $08 $00
     call call_00_07b0_MemCopy                                  ;; 00:36ae $cd $b0 $07
     ld   HL, wD9A7                                     ;; 00:36b1 $21 $a7 $d9
-    ld   DE, wD309                                     ;; 00:36b4 $11 $09 $d3
+    ld   DE, wD309_EntityBoundingBoxXMax                                     ;; 00:36b4 $11 $09 $d3
     ld   BC, $20                                       ;; 00:36b7 $01 $20 $00
     jp   call_00_07b0_MemCopy                                  ;; 00:36ba $c3 $b0 $07
 
@@ -1135,7 +1135,7 @@ call_00_36f7_Entity_MoveXByFacingMomentum_BoundsChecked:
     and  A, $1c                                        ;; 00:3738 $e6 $1c
     ld   L, A                                          ;; 00:373a $6f
     ld   H, $00                                        ;; 00:373b $26 $00
-    ld   BC, wD309                                     ;; 00:373d $01 $09 $d3
+    ld   BC, wD309_EntityBoundingBoxXMax                                     ;; 00:373d $01 $09 $d3
     add  HL, BC                                        ;; 00:3740 $09
     ld   B, [HL]                                       ;; 00:3741 $46
     dec  B                                             ;; 00:3742 $05
@@ -1161,7 +1161,7 @@ call_00_36f7_Entity_MoveXByFacingMomentum_BoundsChecked:
     
 call_00_3760_Entity_PatrolY_FacingBased:
 ; Vertical patrol using facing direction bit 6 to determine up/down; 
-; moves Y, checks against wD30B bounds, flips a $40/$00 flag in facing when bound hit
+; moves Y, checks against wD30B_EntityBoundingBoxYMax bounds, flips a $40/$00 flag in facing when bound hit
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_DIRECTION
     ld   c,[hl]
     ld   a,l
@@ -1210,7 +1210,7 @@ call_00_3760_Entity_PatrolY_FacingBased:
     and  a,$1C
     ld   l,a
     ld   h,$00
-    ld   bc,wD30B
+    ld   bc,wD30B_EntityBoundingBoxYMax
     add  hl,bc
     ld   b,[hl]
     dec  b
@@ -1270,9 +1270,9 @@ call_00_37e7_Entity_SetSlotCounter:
     ld   [HL], C                                       ;; 00:37f6 $71
     ret                                                ;; 00:37f7 $c9
 
-call_00_37f8_Entity_SetUNK17:
+call_00_37f8_Entity_SetMovementMode:
 ; Writes C to UNK_17 flags field
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_17
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     ld   [hl],c
     ret  
 

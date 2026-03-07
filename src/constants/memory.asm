@@ -119,21 +119,18 @@ wD220_OtherLoadedEntities:
 wD300_CurrentEntityAddrLo:
 ; addr of entity currently being updated (normally set to first available slot)
     ds 1                                               ;; d300
-
 wD301:
     ds 8                                               ;; d301
-
-wD309:
+wD309_EntityBoundingBoxXMax:
     ds 1                                               ;; d309
-
-wD30A:
+wD30A_EntityBoundingBoxXMin:
     ds 1                                               ;; d30a
-
-wD30B:
+wD30B_EntityBoundingBoxYMax:
     ds 1                                               ;; d30b
+wD30C_EntityBoundingBoxYMin:
+    ds 1                                               ;; d30c
 
-wD30C:
-    ds 29                                              ;; d30c
+    ds 28                                              ;; d30d
 
 wD329:
     ds 1                                               ;; d329
@@ -155,11 +152,9 @@ wD335:
 
 wD336_CurrentEntityToLoadPtr:
     ds 1                                               ;; d336
-
 wD337_CurrentEntityToLoadPtr:
     ds 1                                               ;; d337
-
-wD338:
+wD338_EntityLoadingFlag:
     ds 1                                               ;; d338
 
 wD339:
@@ -354,9 +349,9 @@ wD621_WarpFlags:
 ; bit 7 (80) = 
 ; bit 6 (40) = 
 ; bit 5 (20) = 
-; bit 4 (10) = collected gold remote
+; bit 4 (10) = unknown (related to gold remote?)
 ; bit 3 (08) = entered door
-; bit 2 (04) = entered tv
+; bit 2 (04) = entered tv / collected gold remote
 ; bit 1 (02) = died
 ; bit 0 (01) = 
     ds 1                                               ;; d621
@@ -804,56 +799,53 @@ wD739:
 wD73A:
     ds 1                                               ;; d73a
 
-wD73B:
+wD73B_FrameCounter:
     ds 1                                               ;; d73b
-
-wD73C:
+wD73C_FrameCounter2:
     ds 1                                               ;; d73c
 
 wD73D_LivesRemaining:
     ds 1                                               ;; d73d
-wD73E_PlayerLivesHundreds: ; the hundreds unit of your lives
+wD73E_LivesRemaining_Hundreds: ; the hundreds unit of your lives
     ds 1                                               ;; d73e
-wD73F_PlayerLivesTens: ; the tens unit of your lives
+wD73F_LivesRemaining_Tens: ; the tens unit of your lives
     ds 1                                               ;; d73f
-wD740_PlayerLivesOnes: ; the ones unit of your lives
+wD740_LivesRemaining_Ones: ; the ones unit of your lives
     ds 1                                               ;; d740
-wD741_PlayerHealth:
+wD741_Player_Health:
     ds 1                                               ;; d741
-wD742_PlayerCurrentFly:
+wD742_Player_CurrentFly:
     ds 1                                               ;; d742
-
-wD743_DrawGexFlag:
+wD743_Player_UpdateFlag:
     ds 1                                               ;; d743
-
-wD744:
+wD744_Player_SpawnAction:
     ds 1                                               ;; d744
-
-wD745:
+wD745_Player_QueuedAction:
     ds 1                                               ;; d745
-
-wD746_PlayerClimbingState:
+wD746_Player_ClimbingState:
 ; 0 = climbing background
 ; 1 = climbing background and tail spinning
 ; 2 = climbing wall
 ; 3 = climbing wall and tail spinning
+; 4 = ?
+; 5 = ?
 ; 6 = climbing background - dropping down to floor
-; 7 = ?
-; 8 = ?
+; 7 = climbing wall - reached bottom
+; 8 = climbing wall - reached top
 ; 9 = ?
 ; FF = default (run normal collision func)
     ds 1                                               ;; d746
-
-wD747:
+wD747_Player_ClimbingUnkCounter:
     ds 1                                               ;; d747
-
-wD748:
+wD748_Player_ClimbingRelated:
     ds 1                                               ;; d748
-
-wD749:
+wD749_Player_ClimbingDirection:
+; 0 = up
+; 2 = right
+; 4 = down
+; 6 = left
     ds 1                                               ;; d749
-
-wD74A:
+wD74A_Player_NearbyTileRelated:
     ds 1                                               ;; d74a
 
 wD74B:
@@ -862,11 +854,11 @@ wD74B:
 wD74C:
     ds 1                                               ;; d74c
 
-wD74D_PlayerInteractedEntityLo:
+wD74D_Player_InteractedEntityLo:
     ds 1                                               ;; d74d
-wD74E_PlayerPlatformRelated:
+wD74E_Player_PlatformRelated:
     ds 1                                               ;; d74e
-wD74F_PlayerPlatformRelated2:
+wD74F_Player_PlatformRelated2:
     ds 1                                               ;; d74f
 
 wD750:

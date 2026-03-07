@@ -383,14 +383,14 @@ call_0b_5df8_MediaDimension_LoadActiveTVPalette:
 
 call_0b_5ec3_Player_UpdateGBCPalette:
 ; Updates Gex's OBJ palette based on current invincibility/power-up state. Returns if DMG. 
-; Reads wD73B low 5 bits; if ≥ 8 (not tail-whipping), checks invincibility timers wD751/wD752 →
+; Reads wD73B_FrameCounter low 5 bits; if ≥ 8 (not ?), checks invincibility timers wD751/wD752 →
 ; uses .data_0b_5efb (gold flash palette), then wD755/wD756 → uses .data_0b_5f03 (blue/white palette), 
 ; then wD753/wD754 → same blue/white palette. Otherwise falls through to .data_gex_entity_palette 
 ; (normal Gex palette). Copies 8 bytes to wDA0B
     ld   A, [wD59E]                                    ;; 0b:5ec3 $fa $9e $d5
     and  A, A                                          ;; 0b:5ec6 $a7
     ret  Z                                             ;; 0b:5ec7 $c8
-    ld   A, [wD73B]                                    ;; 0b:5ec8 $fa $3b $d7
+    ld   A, [wD73B_FrameCounter]                                    ;; 0b:5ec8 $fa $3b $d7
     and  A, $1f                                        ;; 0b:5ecb $e6 $1f
     cp   A, $08                                        ;; 0b:5ecd $fe $08
     jr   C, .jr_0b_5eef                                ;; 0b:5ecf $38 $1e
@@ -430,7 +430,7 @@ call_0b_5f1b_FlyPowerup_LoadParticlePalette:
     ld   A, [wD59E]                                    ;; 0b:5f1b $fa $9e $d5
     and  A, A                                          ;; 0b:5f1e $a7
     ret  Z                                             ;; 0b:5f1f $c8
-    ld   A, [wD742_PlayerCurrentFly]                                    ;; 0b:5f20 $fa $42 $d7
+    ld   A, [wD742_Player_CurrentFly]                                    ;; 0b:5f20 $fa $42 $d7
     dec  A                                             ;; 0b:5f23 $3d
     ld   L, A                                          ;; 0b:5f24 $6f
     ld   H, $00                                        ;; 0b:5f25 $26 $00

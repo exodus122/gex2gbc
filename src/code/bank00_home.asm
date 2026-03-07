@@ -202,8 +202,8 @@ call_00_0150_Init:
     ld   [wD64F], A                                    ;; 00:02e0 $ea $4f $d6
     ld   [wD650], A                                    ;; 00:02e3 $ea $50 $d6
     ld   [wD651], A                                    ;; 00:02e6 $ea $51 $d6
-    ld   A, $00                                        ;; 00:02e9 $3e $00
-    ld   [wD744], A                                    ;; 00:02eb $ea $44 $d7
+    ld   A, PLAYER_ACTION_SPAWN                                        ;; 00:02e9 $3e $00
+    ld   [wD744_Player_SpawnAction], A                                    ;; 00:02eb $ea $44 $d7
 .jp_00_02ee:
     ld   A, [wD61E_DemoModeEnabled]                                    ;; 00:02ee $fa $1e $d6
     and  A, A                                          ;; 00:02f1 $a7
@@ -250,7 +250,7 @@ call_00_0150_Init:
     call call_00_0562                                  ;; 00:036d $cd $62 $05
 .jp_00_0370:
     xor  A, A                                          ;; 00:0370 $af
-    ld   [wD742_PlayerCurrentFly], A                                    ;; 00:0371 $ea $42 $d7
+    ld   [wD742_Player_CurrentFly], A                                    ;; 00:0371 $ea $42 $d7
     ld   [wD750], A                                    ;; 00:0374 $ea $50 $d7
     ld   [wD751], A                                    ;; 00:0377 $ea $51 $d7
     ld   [wD752], A                                    ;; 00:037a $ea $52 $d7
@@ -261,7 +261,7 @@ call_00_0150_Init:
     ld   [wD772], A                                    ;; 00:0389 $ea $72 $d7
     ld   [wD773], A                                    ;; 00:038c $ea $73 $d7
     ld   [wD774], A                                    ;; 00:038f $ea $74 $d7
-    ld   [wD73C], A                                    ;; 00:0392 $ea $3c $d7
+    ld   [wD73C_FrameCounter2], A                                    ;; 00:0392 $ea $3c $d7
     ld   [wD6F9_BgMapLoadingFlags], A                                    ;; 00:0395 $ea $f9 $d6
     ld   [wD60E], A                                    ;; 00:0398 $ea $0e $d6
     ld   [wD60F_HDMATransferFlags], A                                    ;; 00:039b $ea $0f $d6
@@ -273,7 +273,7 @@ call_00_0150_Init:
     ld   [wD5A4], A                                    ;; 00:03ad $ea $a4 $d5
     ld   [wD5A5], A                                    ;; 00:03b0 $ea $a5 $d5
     ld   A, $04 ; Set Health to 4                                       ;; 00:03b3 $3e $04
-    ld   [wD741_PlayerHealth], A                                    ;; 00:03b5 $ea $41 $d7
+    ld   [wD741_Player_Health], A                                    ;; 00:03b5 $ea $41 $d7
     FARCALL call_0b_4000_Collectibles_Init
     FARCALL call_02_6eb1_Entities_ClearFlagsTable
     call call_00_3c3f                                  ;; 00:03ce $cd $3f $3c
@@ -292,7 +292,7 @@ call_00_0150_Init:
     ld   A, $ff                                        ;; 00:03ef $3e $ff
     ld   [wD610], A                                    ;; 00:03f1 $ea $10 $d6
     ld   A, $01                                        ;; 00:03f4 $3e $01
-    ld   [wD743_DrawGexFlag], A                                    ;; 00:03f6 $ea $43 $d7
+    ld   [wD743_Player_UpdateFlag], A                                    ;; 00:03f6 $ea $43 $d7
     FARCALL call_0b_4efe_Player_SetSpawnPosition
     call call_00_1264_Map_LoadFull                                  ;; 00:0404 $cd $64 $12
     FARCALL call_02_6e17_Entities_InitAndSpawnAll
@@ -351,8 +351,8 @@ call_00_0150_Init:
     jp   Z, .jp_00_0254                                ;; 00:049a $ca $54 $02
     xor  A, A                                          ;; 00:049d $af
     ld   [wD624_CurrentLevelId], A                                    ;; 00:049e $ea $24 $d6
-    ld   A, $14                                        ;; 00:04a1 $3e $14
-    ld   [wD744], A                                    ;; 00:04a3 $ea $44 $d7
+    ld   A, PLAYER_ACTION_EXIT_TV                                        ;; 00:04a1 $3e $14
+    ld   [wD744_Player_SpawnAction], A                                    ;; 00:04a3 $ea $44 $d7
     jp   .jp_00_02ee                                   ;; 00:04a6 $c3 $ee $02
 .jr_00_04a9:
     ld   A, [wD61E_DemoModeEnabled]                                    ;; 00:04a9 $fa $1e $d6
@@ -377,7 +377,7 @@ call_00_0150_Init:
     ld   A, [HL+]                                      ;; 00:04d0 $2a
     or   A, [HL]                                       ;; 00:04d1 $b6
     jr   Z, .jr_00_04e0                                ;; 00:04d2 $28 $0c
-    ld   A, [wD73B]                                    ;; 00:04d4 $fa $3b $d7
+    ld   A, [wD73B_FrameCounter]                                    ;; 00:04d4 $fa $3b $d7
     and  A, $7f                                        ;; 00:04d7 $e6 $7f
     jr   NZ, .jr_00_04e0                               ;; 00:04d9 $20 $05
     ld   C, SFX_MENU_UNK_1                                        ;; 00:04db $0e $14
@@ -390,9 +390,9 @@ call_00_0150_Init:
     call call_00_05c7                                  ;; 00:04f4 $cd $c7 $05
     call call_00_08fc_SetupEntityVRAMTransfer                                  ;; 00:04f7 $cd $fc $08
     FARCALL call_0b_5ec3_Player_UpdateGBCPalette
-    ld   HL, wD73C                                     ;; 00:0505 $21 $3c $d7
+    ld   HL, wD73C_FrameCounter2                                     ;; 00:0505 $21 $3c $d7
     inc  [HL]                                          ;; 00:0508 $34
-    ld   A, [wD73B]                                    ;; 00:0509 $fa $3b $d7
+    ld   A, [wD73B_FrameCounter]                                    ;; 00:0509 $fa $3b $d7
     and  A, A                                          ;; 00:050c $a7
     jp   NZ, .jp_00_0428                               ;; 00:050d $c2 $28 $04
     ld   HL, wD5A3                                     ;; 00:0510 $21 $a3 $d5
@@ -558,7 +558,7 @@ call_00_05c7:
     ld   [wD687], A                                    ;; 00:0618 $ea $87 $d6
     ret                                                ;; 00:061b $c9
 .jr_00_061c:
-    ld   A, [wD741_PlayerHealth]                                    ;; 00:061c $fa $41 $d7
+    ld   A, [wD741_Player_Health]                                    ;; 00:061c $fa $41 $d7
     cp   A, $02                                        ;; 00:061f $fe $02
     jr   C, .jr_00_0616                                ;; 00:0621 $38 $f3
     ld   A, $82                                        ;; 00:0623 $3e $82
@@ -585,7 +585,7 @@ call_00_0634:
     ret                                                ;; 00:0646 $c9
 
 call_00_0647:
-    ld   hl,wD742_PlayerCurrentFly
+    ld   hl,wD742_Player_CurrentFly
     ld   c,[hl]
     ld   [hl],a
     push bc
@@ -642,19 +642,19 @@ call_00_0696:
     jp   call_00_0634                                  ;; 00:06b4 $c3 $34 $06
 
 call_00_06b7_Player_ResetHealth:
-    ld   hl, wD741_PlayerHealth
+    ld   hl, wD741_Player_Health
     ld   [hl], $04
     jp   call_00_0629
 
 call_00_06bf_DealDamageToPlayer: ; Deal damage to Gex
     call call_00_075b_Player_CanBeDamaged                                  ;; 00:06bf $cd $5b $07
     ret  NZ                                            ;; 00:06c2 $c0
-    ld   HL, wD742_PlayerCurrentFly                                     ;; 00:06c3 $21 $42 $d7
+    ld   HL, wD742_Player_CurrentFly                                     ;; 00:06c3 $21 $42 $d7
     ld   A, [HL]                                       ;; 00:06c6 $7e
     ld   [HL], $00                                     ;; 00:06c7 $36 $00
     and  A, A                                          ;; 00:06c9 $a7
     jr   NZ, .jr_00_06d2                               ;; 00:06ca $20 $06
-    ld   HL, wD741_PlayerHealth                                     ;; 00:06cc $21 $41 $d7
+    ld   HL, wD741_Player_Health                                     ;; 00:06cc $21 $41 $d7
     dec  [HL]                                          ;; 00:06cf $35
     jr   Z, call_00_0696                                 ;; 00:06d0 $28 $c4
 .jr_00_06d2:
@@ -1186,7 +1186,7 @@ call_00_0a54_MainGameLoop_UpdateAndRenderFrame:
     and  A, $01                                        ;; 00:0a92 $e6 $01
     ld   [MBC1SRamBank], A                                    ;; 00:0a94 $ea $01 $40
     call call_22_410c                                  ;; 00:0a97 $cd $0c $41
-    ld   HL, wD73B                                     ;; 00:0a9a $21 $3b $d7
+    ld   HL, wD73B_FrameCounter                                     ;; 00:0a9a $21 $3b $d7
     inc  [HL]                                          ;; 00:0a9d $34
     ld   A, [wD59C_CurrentROMBank]                                    ;; 00:0a9e $fa $9c $d5
     ld   [MBC1RomBank], A                                    ;; 00:0aa1 $ea $01 $20

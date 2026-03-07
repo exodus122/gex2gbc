@@ -6,7 +6,7 @@
 call_0a_4000_EntityList_LoadForCurrentLevel:
 ; Indexes into a level→entity-list pointer table using wD624_CurrentLevelId, 
 ; writes the resulting pointer into wD336/wD337 (the "current entity to load" cursor), 
-; and sets wD338=1 to signal that loading should begin
+; and sets wD338_EntityLoadingFlag=1 to signal that loading should begin
     ld   HL, wD624_CurrentLevelId                                     ;; 0a:4000 $21 $24 $d6
     ld   L, [HL]                                       ;; 0a:4003 $6e ; L = current level
     ld   H, $00                                        ;; 0a:4004 $26 $00
@@ -18,7 +18,7 @@ call_0a_4000_EntityList_LoadForCurrentLevel:
     ld   A, [HL+]                                      ;; 0a:400f $2a
     ld   [wD337_CurrentEntityToLoadPtr], A                                    ;; 0a:4010 $ea $37 $d3
     ld   A, $01                                        ;; 0a:4013 $3e $01
-    ld   [wD338], A                                    ;; 0a:4015 $ea $38 $d3
+    ld   [wD338_EntityLoadingFlag], A                                    ;; 0a:4015 $ea $38 $d3
     ret                                                ;; 0a:4018 $c9
 .data_0a_4019:
     dw   .data_MediaDimension_entity_list
@@ -286,7 +286,7 @@ call_0a_7a7c_EntitySpawn_SpawnNextFromList:
     ld   [wD336_CurrentEntityToLoadPtr], A                                    ;; 0a:7aaa $ea $36 $d3
     ld   A, H                                          ;; 0a:7aad $7c
     ld   [wD337_CurrentEntityToLoadPtr], A                                    ;; 0a:7aae $ea $37 $d3 ; load 2 bytes 0x10 after first
-    ld   HL, wD338                                     ;; 0a:7ab1 $21 $38 $d3 
+    ld   HL, wD338_EntityLoadingFlag                                     ;; 0a:7ab1 $21 $38 $d3 
     ld   C, [HL]                                       ;; 0a:7ab4 $4e 
     inc  [HL]                                          ;; 0a:7ab5 $34
     ld   B, $d0                                        ;; 0a:7ab6 $06 $d0
@@ -314,7 +314,7 @@ call_0a_7a7c_EntitySpawn_SpawnNextFromList:
     ld   H, $00                                        ;; 0a:7ad8 $26 $00
     add  HL, HL                                        ;; 0a:7ada $29
     add  HL, HL                                        ;; 0a:7adb $29
-    ld   BC, wD309                                     ;; 0a:7adc $01 $09 $d3
+    ld   BC, wD309_EntityBoundingBoxXMax               ;; 0a:7adc $01 $09 $d3 ; this is where bounding box is set
     add  HL, BC                                        ;; 0a:7adf $09
     ld   A, [DE]                                       ;; 0a:7ae0 $1a
     ld   [HL+], A                                      ;; 0a:7ae1 $22
@@ -585,7 +585,7 @@ call_0a_7b9a_EntitySpawn_SpawnChildEntity:
     and  A, $1c                                        ;; 0a:7c6e $e6 $1c
     ld   L, A                                          ;; 0a:7c70 $6f
     ld   H, $00                                        ;; 0a:7c71 $26 $00
-    ld   DE, wD309                                     ;; 0a:7c73 $11 $09 $d3
+    ld   DE, wD309_EntityBoundingBoxXMax                                     ;; 0a:7c73 $11 $09 $d3
     add  HL, DE                                        ;; 0a:7c76 $19
     ld   E, L                                          ;; 0a:7c77 $5d
     ld   D, H                                          ;; 0a:7c78 $54
@@ -596,7 +596,7 @@ call_0a_7b9a_EntitySpawn_SpawnChildEntity:
     and  A, $1c                                        ;; 0a:7c7d $e6 $1c
     ld   L, A                                          ;; 0a:7c7f $6f
     ld   H, $00                                        ;; 0a:7c80 $26 $00
-    ld   BC, wD309                                     ;; 0a:7c82 $01 $09 $d3
+    ld   BC, wD309_EntityBoundingBoxXMax                                     ;; 0a:7c82 $01 $09 $d3
     add  HL, BC                                        ;; 0a:7c85 $09
     ld   A, [DE]                                       ;; 0a:7c86 $1a
     ld   [HL+], A                                      ;; 0a:7c87 $22

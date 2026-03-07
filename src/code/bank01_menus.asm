@@ -420,14 +420,14 @@ call_01_42bd_EnterTV:
     call call_01_4000_MenuLoad                                  ;; 01:431e $cd $00 $40
     xor  A, A                                          ;; 01:4321 $af
     ld   [wD624_CurrentLevelId], A                                    ;; 01:4322 $ea $24 $d6
-    ld   A, $14                                        ;; 01:4325 $3e $14
-    ld   [wD744], A                                    ;; 01:4327 $ea $44 $d7
+    ld   A, PLAYER_ACTION_EXIT_TV                                        ;; 01:4325 $3e $14
+    ld   [wD744_Player_SpawnAction], A                                    ;; 01:4327 $ea $44 $d7
     ret                                                ;; 01:432a $c9
 .jr_01_432b:
     ld   A, [wD628_MediaDimensionRespawnPoint]                                    ;; 01:432b $fa $28 $d6
     ld   [wD624_CurrentLevelId], A                                    ;; 01:432e $ea $24 $d6
-    ld   A, $00                                        ;; 01:4331 $3e $00
-    ld   [wD744], A                                    ;; 01:4333 $ea $44 $d7
+    ld   A, PLAYER_ACTION_SPAWN                                        ;; 01:4331 $3e $00
+    ld   [wD744_Player_SpawnAction], A                                    ;; 01:4333 $ea $44 $d7
     ret                                                ;; 01:4336 $c9
 .data_01_4337:
     db   $01, $02, $04, $01, $02, $00, $01, $00        ;; 01:4337 ????????
@@ -1058,7 +1058,7 @@ call_01_47f6:
     ld   A, [wD73D_LivesRemaining]                                    ;; 01:4814 $fa $3d $d7
     ret                                                ;; 01:4817 $c9
 .jr_01_4818:
-    ld   A, [wD741_PlayerHealth]                                    ;; 01:4818 $fa $41 $d7
+    ld   A, [wD741_Player_Health]                                    ;; 01:4818 $fa $41 $d7
     ret                                                ;; 01:481b $c9
 .jr_01_481c:
     ld   C, $07                                        ;; 01:481c $0e $07

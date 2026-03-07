@@ -60,7 +60,7 @@ call_00_2329_MissionPreview_LoadAndRun:
     push DE                                            ;; 00:2367 $d5
     call call_00_13a6_MapWindow_UpdateFromPlayerPos                                  ;; 00:2368 $cd $a6 $13
     xor  A, A                                          ;; 00:236b $af
-    ld   [wD743_DrawGexFlag], A                                    ;; 00:236c $ea $43 $d7
+    ld   [wD743_Player_UpdateFlag], A                                    ;; 00:236c $ea $43 $d7
     call call_00_1264_Map_LoadFull                                  ;; 00:236f $cd $64 $12
     FARCALL call_02_6e68_Entities_InitNPCSlots
     call call_00_0521_DrawEntitiesWrapper                                  ;; 00:237d $cd $21 $05
@@ -164,7 +164,7 @@ call_00_2329_MissionPreview_LoadAndRun:
     jr   NZ, .jr_00_2420                               ;; 00:2443 $20 $db
 .jp_00_2445:
     ld   A, $01                                        ;; 00:2445 $3e $01
-    ld   [wD743_DrawGexFlag], A                                    ;; 00:2447 $ea $43 $d7
+    ld   [wD743_Player_UpdateFlag], A                                    ;; 00:2447 $ea $43 $d7
     call call_00_3675_Entity_RestoreWorldState                                  ;; 00:244a $cd $75 $36
     ld   HL, wD211_PlayerYPosition                                     ;; 00:244d $21 $11 $d2
     pop  BC                                            ;; 00:2450 $c1
