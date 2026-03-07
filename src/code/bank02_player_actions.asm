@@ -79,11 +79,11 @@ call_02_41a0_PlayerAction_Spawn:
     ret                                                ;; 02:41ac $c9
     
 call_02_41ad_PlayerAction_IntroWarp:
-; On non-Media-Dimension levels calls call_00_0634 (unknown, likely outro warp/level entry effect). 
+; On non-Media-Dimension levels calls call_00_0634_FlyPowerup_StartEntry (unknown, likely outro warp/level entry effect). 
 ; Then calls Entity_HandleActionSequenceEnd to advance to next action
     ld   A, [wD624_CurrentLevelId]                                    ;; 02:41ad $fa $24 $d6
     and  A, A                                          ;; 02:41b0 $a7
-    call NZ, call_00_0634                              ;; 02:41b1 $c4 $34 $06
+    call NZ, call_00_0634_FlyPowerup_StartEntry                              ;; 02:41b1 $c4 $34 $06
     jp   call_02_70f1_Entity_HandleActionSequenceEnd                                    ;; 02:41b4 $c3 $f1 $70
     
 call_02_41b7_PlayerAction_Stand:
@@ -318,7 +318,7 @@ call_02_42f7_PlayerAction_TailSpin:
     cpl                                                ;; 02:4316 $2f
     ld   C, A                                          ;; 02:4317 $4f
     cp   A, $40                                        ;; 02:4318 $fe $40
-    call C, call_00_1f46_HandlePlayerAttackingSpecialTiles                               ;; 02:431a $dc $46 $1f
+    call C, call_00_1f46_SpecialTile_OnPlayerAttack                               ;; 02:431a $dc $46 $1f
     ld   A, [wD20A_Player_UnkFlags2]                                    ;; 02:431d $fa $0a $d2
     and  A, $04                                        ;; 02:4320 $e6 $04
     ret  Z                                             ;; 02:4322 $c8
@@ -344,14 +344,14 @@ call_02_42f7_PlayerAction_TailSpin:
     jp   call_02_4ccd_Player_RequestAction                                  ;; 02:434a $c3 $cd $4c
 
 call_02_434d_PlayerAction_EatFly:
-; Zeroes X speed. On first frame: calls call_00_0647 (likely applies fly power-up effect
+; Zeroes X speed. On first frame: calls call_00_0647_Player_EatFlyPowerup (likely applies fly power-up effect
     xor  a
     ld   [wD75E_PlayerXSpeed],a
     ld   a,[wD209_Player_UnkFlags]
     and  a,$20
     ret  z
     xor  a
-    jp   call_00_0647
+    jp   call_00_0647_Player_EatFlyPowerup
 
 call_02_435b_PlayerAction_TakeDamage:
 ; On first frame: plays hurt SFX. Zeroes X speed. Sets wD750 = $77 (invincibility timer)

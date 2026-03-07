@@ -2,18 +2,18 @@ call_00_1264_Map_LoadFull:
 ; Top-level map initialization. Queries all map metadata (bank numbers for map data, blockset override, 
 ; blockset+collision, tileset; tileset offset; override bit) and stores them to wD6F5–wD700. 
 ; Calls call_00_0f38 (unknown init), then WriteTilesToVRAM. Resets secondary tileset index to $FF, 
-; clears wD77B/wD77D. Then loops 22 ($16) times: sets wD6F9_BgMapLoadingFlags=$01 (dirty flag), calls LoadBgMapDirtyRegions 
+; clears wD77B_OverrideVRAMWritePending/wD77D_OverrideSequenceStepsRemaining. Then loops 22 ($16) times: sets wD6F9_BgMapLoadingFlags=$01 (dirty flag), calls LoadBgMapDirtyRegions 
 ; and BgMap_WriteScrollColumn, advances wD6EF (Y map position) by 8 each iteration — effectively rendering 
 ; the full visible map column by column. Clears dirty flag, loads HUD tiles, updates map window
     call call_00_0ede                                  ;; 00:1264 $cd $de $0e
     call call_00_2e77_MapData_GetMapBank                                  ;; 00:1267 $cd $77 $2e
     ld   [wD6F5_MapBank], A                                    ;; 00:126a $ea $f5 $d6
-    call call_00_2e80_MapData_GetBlocksetOverrideBank                                  ;; 00:126d $cd $80 $2e
-    ld   [wD6F6_BlocksetOverrideBank], A                                    ;; 00:1270 $ea $f6 $d6
+    call call_00_2e80_MapData_GetExtendedMapBank                                  ;; 00:126d $cd $80 $2e
+    ld   [wD6F6_ExtendedMapBank], A                                    ;; 00:1270 $ea $f6 $d6
     call call_00_2e89_MapData_GetBlocksetAndCollisionBank                                  ;; 00:1273 $cd $89 $2e
     ld   [wD6F7_BlocksetAndCollisionBank], A                                    ;; 00:1276 $ea $f7 $d6
-    call call_00_2e93_MapData_GetBlocksetOverrideBit                                  ;; 00:1279 $cd $93 $2e
-    ld   [wD6FE_LevelTileOverrideBit], A                                    ;; 00:127c $ea $fe $d6
+    call call_00_2e93_MapData_GetExtendedMapBit                                  ;; 00:1279 $cd $93 $2e
+    ld   [wD6FE_BlocksetOverrideBitMask], A                                    ;; 00:127c $ea $fe $d6
     call call_00_2e9c_MapData_GetTilesetBank                                  ;; 00:127f $cd $9c $2e
     ld   [wD6FF_BgTilesetBank], A                                    ;; 00:1282 $ea $ff $d6
     call call_00_2ea5_MapData_GetTilesetBankOffset                                  ;; 00:1285 $cd $a5 $2e
@@ -26,8 +26,8 @@ call_00_1264_Map_LoadFull:
     ld   A, $ff                                        ;; 00:1294 $3e $ff
     ld   [wD72D_SecondaryTilesetIndex], A                                    ;; 00:1296 $ea $2d $d7
     xor  A, A                                          ;; 00:1299 $af
-    ld   [wD77B], A                                    ;; 00:129a $ea $7b $d7
-    ld   [wD77D], A                                    ;; 00:129d $ea $7d $d7
+    ld   [wD77B_OverrideVRAMWritePending], A                                    ;; 00:129a $ea $7b $d7
+    ld   [wD77D_OverrideSequenceStepsRemaining], A                                    ;; 00:129d $ea $7d $d7
     ld   A, $16                                        ;; 00:12a0 $3e $16
 .jr_00_12a2:
     push AF                                            ;; 00:12a2 $f5
@@ -54,28 +54,28 @@ call_00_1264_Map_LoadFull:
     ret                                                ;; 00:12e3 $c9
 
 call_00_12e4_Map_InitBgTileOverrides:
-; Clears 16 bytes at wD78B (per-tile override slots) and wD778. Looks up current level ID in .data_00_1356_LevelTileOverrideBitTable to 
-; get a tile flag byte, then rotates its 3 low bits into wD798–wD79A (1 bit each via rrca/rl). 
+; Clears 16 bytes at wD78B_OverrideSlotTable (per-tile override slots) and wD778_OverrideSlotWriteHead. Looks up current level ID in .data_00_1356_LevelTileOverrideBitTable to 
+; get a tile flag byte, then rotates its 3 low bits into wD798_OverrideSlotTable13–wD79A_OverrideSlotTable15 (1 bit each via rrca/rl). 
 ; If level ID is 0 (Media Dimension), iterates over .data_00_1375_MediaDimension_BgTileOverrideList (a $FF-terminated list of 12-byte 
 ; override records): compares wD64F (low 7 bits) against the record's threshold — if equal and bit 7 
-; of wD64F is set, marks the matching wD78B slot as $02. If greater, loads the record's tile coordinates 
-; into wD782/wD783 and pointer into wD780/wD781, sets wD784/wD785=$02, calls UpdateBgTileFlags. 
+; of wD64F is set, marks the matching wD78B_OverrideSlotTable slot as $02. If greater, loads the record's tile coordinates 
+; into wD782_OverrideTargetBlockX/wD783_OverrideTargetBlockY and pointer into wD780_OverrideDataPtrLo/wD781_OverrideDataPtrHi, sets wD784_OverrideWidth/wD785_OverrideHeight=$02, calls UpdateBgTileFlags. 
 ; Advances by $0C per record
-    ld   HL, wD78B                                     ;; 00:12e4 $21 $8b $d7
+    ld   HL, wD78B_OverrideSlotTable                                     ;; 00:12e4 $21 $8b $d7
     ld   B, $10                                        ;; 00:12e7 $06 $10
     xor  A, A                                          ;; 00:12e9 $af
 .jr_00_12ea:
     ld   [HL+], A                                      ;; 00:12ea $22
     dec  B                                             ;; 00:12eb $05
     jr   NZ, .jr_00_12ea                               ;; 00:12ec $20 $fc
-    ld   [wD778], A                                    ;; 00:12ee $ea $78 $d7
+    ld   [wD778_OverrideSlotWriteHead], A                                    ;; 00:12ee $ea $78 $d7
     ld   HL, wD624_CurrentLevelId                                     ;; 00:12f1 $21 $24 $d6
     ld   L, [HL]                                       ;; 00:12f4 $6e
     ld   H, $00                                        ;; 00:12f5 $26 $00
     ld   DE, .data_00_1356_LevelTileOverrideBitTable                                     ;; 00:12f7 $11 $56 $13
     add  HL, DE                                        ;; 00:12fa $19
     ld   A, [HL]                                       ;; 00:12fb $7e
-    ld   HL, wD798                                     ;; 00:12fc $21 $98 $d7
+    ld   HL, wD798_OverrideSlotTable13                                     ;; 00:12fc $21 $98 $d7
     ld   B, $03                                        ;; 00:12ff $06 $03
 .jr_00_1301:
     rrca                                               ;; 00:1301 $0f
@@ -103,7 +103,7 @@ call_00_12e4_Map_InitBgTileOverrides:
     inc  HL                                            ;; 00:1326 $23
     ld   L, [HL]                                       ;; 00:1327 $6e
     ld   H, $00                                        ;; 00:1328 $26 $00
-    ld   DE, wD78B                                     ;; 00:132a $11 $8b $d7
+    ld   DE, wD78B_OverrideSlotTable                                     ;; 00:132a $11 $8b $d7
     add  HL, DE                                        ;; 00:132d $19
     ld   [HL], $02                                     ;; 00:132e $36 $02
     jr   .jr_00_134f                                   ;; 00:1330 $18 $1d
@@ -111,24 +111,24 @@ call_00_12e4_Map_InitBgTileOverrides:
     inc  HL                                            ;; 00:1332 $23
     inc  HL                                            ;; 00:1333 $23
     ld   A, [HL+]                                      ;; 00:1334 $2a
-    ld   [wD782], A                                    ;; 00:1335 $ea $82 $d7
+    ld   [wD782_OverrideTargetBlockX], A                                    ;; 00:1335 $ea $82 $d7
     ld   A, [HL+]                                      ;; 00:1338 $2a
-    ld   [wD783], A                                    ;; 00:1339 $ea $83 $d7
+    ld   [wD783_OverrideTargetBlockY], A                                    ;; 00:1339 $ea $83 $d7
     ld   A, L                                          ;; 00:133c $7d
-    ld   [wD780], A                                    ;; 00:133d $ea $80 $d7
+    ld   [wD780_OverrideDataPtrLo], A                                    ;; 00:133d $ea $80 $d7
     ld   A, H                                          ;; 00:1340 $7c
-    ld   [wD781], A                                    ;; 00:1341 $ea $81 $d7
+    ld   [wD781_OverrideDataPtrHi], A                                    ;; 00:1341 $ea $81 $d7
     ld   A, $02                                        ;; 00:1344 $3e $02
-    ld   [wD784], A                                    ;; 00:1346 $ea $84 $d7
-    ld   [wD785], A                                    ;; 00:1349 $ea $85 $d7
-    call call_00_1ec9_BgMap_UpdateCollisionFlags                                  ;; 00:134c $cd $c9 $1e
+    ld   [wD784_OverrideWidth], A                                    ;; 00:1346 $ea $84 $d7
+    ld   [wD785_OverrideHeight], A                                    ;; 00:1349 $ea $85 $d7
+    call call_00_1ec9_BgMap_RegisterOverrideRegion                                  ;; 00:134c $cd $c9 $1e
 .jr_00_134f:
     pop  HL                                            ;; 00:134f $e1
     ld   DE, $0c                                       ;; 00:1350 $11 $0c $00
     add  HL, DE                                        ;; 00:1353 $19
     jr   .jr_00_1310                                   ;; 00:1354 $18 $ba
 .data_00_1356_LevelTileOverrideBitTable:
-; 31-byte table indexed by level ID. Each byte provides flag bits used in call_00_1e3c_BgMap_MaskOverrideData to mask the special 
+; 31-byte table indexed by level ID. Each byte provides flag bits used in call_00_1e3c_BgMap_MaskSecondaryOverrideBytes to mask the special 
 ; override tile data read from banks $34/$35. Controls which tile override layers are active per level
     db   $00, $01, $05, $07, $03, $03, $00, $03        ;; 00:1356 ...?????
     db   $03, $07, $07, $03, $00, $07, $01, $00        ;; 00:135e ????????
@@ -281,7 +281,7 @@ call_00_1472_BgMap_LoadVerticalStrip:
 ; Computes map data addresses from current X/Y scroll positions (wD6ED/wD6EF). 
 ; Reads 6 metatile IDs from the map bank (wD6F5) into wD702–wD70C (every other byte), 
 ; reads corresponding override flags from the secondary bank (wD6F6) into wD703–wD70D. 
-; Calls call_00_18a7_BgMap_ResolveVerticalSecondaryTileset to resolve secondary tileset overrides. Switches to blockset/collision bank (wD6F7), 
+; Calls call_00_18a7_BgMap_PatchVerticalStripWithOverrides to resolve secondary tileset overrides. Switches to blockset/collision bank (wD6F7), 
 ; then expands each metatile into 8 tile IDs (2×4 tiles, GBC attribute bits set on alternating writes 
 ; via set 3, H / set 5, B) and writes them to the GBC tilemap at computed VRAM addresses. Handles tilemap 
 ; row wrap at $20-byte boundaries
@@ -386,7 +386,7 @@ call_00_1472_BgMap_LoadVerticalStrip:
     ld   A, [HL+]                                      ;; 00:14f5 $2a
     ld   [DE], A                                       ;; 00:14f6 $12
     call call_00_10a3_RestoreBank                                  ;; 00:14f7 $cd $a3 $10
-    ld   A, [wD6F6_BlocksetOverrideBank]                                    ;; 00:14fa $fa $f6 $d6
+    ld   A, [wD6F6_ExtendedMapBank]                                    ;; 00:14fa $fa $f6 $d6
     call call_00_1089_SwitchBank                       ;; 00:14fd $cd $89 $10 switch to map data file 34/35
     pop  HL                                            ;; 00:1500 $e1 hl = 44b4
     ld   DE, wD703                                     ;; 00:1501 $11 $03 $d7 de = d703
@@ -414,7 +414,7 @@ call_00_1472_BgMap_LoadVerticalStrip:
     ld   [DE], A                                       ;; 00:1519 $12
     call call_00_10a3_RestoreBank                                  ;; 00:151a $cd $a3 $10
     ld   HL, wD702                                     ;; 00:151d $21 $02 $d7
-    call call_00_18a7_BgMap_ResolveVerticalSecondaryTileset                                  ;; 00:1520 $cd $a7 $18
+    call call_00_18a7_BgMap_PatchVerticalStripWithOverrides                                  ;; 00:1520 $cd $a7 $18
     ld   A, [wD6F7_BlocksetAndCollisionBank]                                    ;; 00:1523 $fa $f7 $d6
     call call_00_1089_SwitchBank                       ;; 00:1526 $cd $89 $10
     pop  AF                                            ;; 00:1529 $f1
@@ -485,7 +485,7 @@ call_00_157a_BgMap_LoadHorizontalStrip:
 ; Loads one vertical column of 6 metatiles for horizontal camera scrolling. Mirrors the 
 ; structure of LoadVerticalBgStrip: determines left or right edge column from wD6F9_BgMapLoadingFlags bit 3, 
 ; reads 6 metatile IDs (stepping $80 bytes = one map row apart) from the map bank and override 
-; bank into wD70E–wD71C. Calls call_00_18e4_BgMap_ResolveHorizontalSecondaryTileset for secondary tileset resolution. Expands each metatile 
+; bank into wD70E–wD71C. Calls call_00_18e4_BgMap_PatchHorizontalStripWithOverrides for secondary tileset resolution. Expands each metatile 
 ; into 8 tile IDs and writes to VRAM column-wise, advancing HL by $20 (one tilemap row) per pair, 
 ; with GBC attribute toggling via set 3, H / set 5, B. Handles tilemap column wrap at 32-tile ($20) 
 ; boundaries
@@ -598,7 +598,7 @@ call_00_157a_BgMap_LoadHorizontalStrip:
     ld   A, [HL]                                       ;; 00:1607 $7e
     ld   [DE], A                                       ;; 00:1608 $12
     call call_00_10a3_RestoreBank                                  ;; 00:1609 $cd $a3 $10
-    ld   A, [wD6F6_BlocksetOverrideBank]                                    ;; 00:160c $fa $f6 $d6
+    ld   A, [wD6F6_ExtendedMapBank]                                    ;; 00:160c $fa $f6 $d6
     call call_00_1089_SwitchBank                                  ;; 00:160f $cd $89 $10
     pop  HL                                            ;; 00:1612 $e1
     ld   DE, wD70F                                     ;; 00:1613 $11 $0f $d7
@@ -632,7 +632,7 @@ call_00_157a_BgMap_LoadHorizontalStrip:
     ld   [DE], A                                       ;; 00:1633 $12
     call call_00_10a3_RestoreBank                                  ;; 00:1634 $cd $a3 $10
     ld   HL, wD70E                                     ;; 00:1637 $21 $0e $d7
-    call call_00_18e4_BgMap_ResolveHorizontalSecondaryTileset                                  ;; 00:163a $cd $e4 $18
+    call call_00_18e4_BgMap_PatchHorizontalStripWithOverrides                                  ;; 00:163a $cd $e4 $18
     ld   A, [wD6F7_BlocksetAndCollisionBank]                                    ;; 00:163d $fa $f7 $d6
     call call_00_1089_SwitchBank                                  ;; 00:1640 $cd $89 $10
     pop  AF                                            ;; 00:1643 $f1
@@ -706,26 +706,33 @@ call_00_157a_BgMap_LoadHorizontalStrip:
     ret                                                ;; 00:169e $c9
 
 call_00_169f_BgMap_WriteOverrideTiles:
-; Writes a rectangular block of tile IDs directly to the GBC BG tilemap for a tile override region. 
-; Reads the map data pointer from wD77E/wD780, dimensions from wD784/wD785. For each metatile in the region: 
-; switches VRAM bank, reads the blockset/collision bank metatile data, expands to 8 tile IDs per metatile 
-; (same 2×4 pattern with GBC attribute bit toggling), writes to the tilemap. After completion sets bit 0 of 
-; wD77B to signal the override write is done
+; Writes a rectangular block of metatile graphics to the GBC BG tilemap, using metatile 
+; indices from wD780/wD781 (data pointer) and the tilemap VRAM address from wD77E/wD77F. 
+; Switches to wD6F7_BlocksetAndCollisionBank. For each metatile in the width × height rectangle: 
+; reads 2 bytes from the data pointer (blockset index C, secondary override flag); sets B=$40 as 
+; the blockset page base, or $50 if the override flag is nonzero (selects alternate blockset); 
+; expands the metatile to 8 tile IDs by reading 8 consecutive bytes from [BC] in the blockset bank. 
+; Writes them to the tilemap in a 4×2 pattern: first row left-to-right, second row right-to-left, 
+; with set 3, H toggling between the two halves of the interleaved GBC tilemap layout. 
+; Each row advances HL by $20 (one tilemap row). After writing all columns in a row, L is wrapped 
+; within its $20-byte aligned block; after all rows, HL advances by $80 (one full metatile row). 
+; After all metatiles, sets bit 0 of wD77B_OverrideVRAMWritePending to gate further sequence steps 
+; until VBLANK flushes the write. Restores bank
     ld   A, [wD6F7_BlocksetAndCollisionBank]                                    ;; 00:169f $fa $f7 $d6
     call call_00_1089_SwitchBank                                  ;; 00:16a2 $cd $89 $10
-    ld   HL, wD780                                     ;; 00:16a5 $21 $80 $d7
+    ld   HL, wD780_OverrideDataPtrLo                                     ;; 00:16a5 $21 $80 $d7
     ld   E, [HL]                                       ;; 00:16a8 $5e
     inc  HL                                            ;; 00:16a9 $23
     ld   D, [HL]                                       ;; 00:16aa $56
-    ld   HL, wD77E                                     ;; 00:16ab $21 $7e $d7
+    ld   HL, wD77E_OverrideTilemapAddrLo                                     ;; 00:16ab $21 $7e $d7
     ld   A, [HL+]                                      ;; 00:16ae $2a
     ld   H, [HL]                                       ;; 00:16af $66
     ld   L, A                                          ;; 00:16b0 $6f
-    ld   A, [wD785]                                    ;; 00:16b1 $fa $85 $d7
+    ld   A, [wD785_OverrideHeight]                                    ;; 00:16b1 $fa $85 $d7
 .jp_00_16b4:
     push AF                                            ;; 00:16b4 $f5
     push HL                                            ;; 00:16b5 $e5
-    ld   A, [wD784]                                    ;; 00:16b6 $fa $84 $d7
+    ld   A, [wD784_OverrideWidth]                                    ;; 00:16b6 $fa $84 $d7
 .jp_00_16b9:
     push AF                                            ;; 00:16b9 $f5
     push DE                                            ;; 00:16ba $d5
@@ -879,32 +886,35 @@ call_00_169f_BgMap_WriteOverrideTiles:
     pop  AF                                            ;; 00:176c $f1
     dec  A                                             ;; 00:176d $3d
     jp   NZ, .jp_00_16b4                               ;; 00:176e $c2 $b4 $16
-    ld   HL, wD77B                                     ;; 00:1771 $21 $7b $d7
+    ld   HL, wD77B_OverrideVRAMWritePending                                     ;; 00:1771 $21 $7b $d7
     set  0, [HL]                                       ;; 00:1774 $cb $c6
     jp   call_00_10a3_RestoreBank                                  ;; 00:1776 $c3 $a3 $10
 
-call_00_1779_BgMap_WriteGBCPaletteAttributes:
-; On GBC only (wD59E nonzero): switches to VRAM bank 1, then writes GBC palette attribute bytes to 
-; the BG tilemap for a rectangle of metatiles. For each tile position, reads the tile type from 
-; the $C000-page collision/type table, looks up the palette ID from the $C0xx palette attribute 
-; table at the corresponding address, and writes it to VRAM bank 1. Handles tilemap address wrapping. 
-; On DMG (or after the GBC pass), also writes the plain tile IDs (tilemap bank 0) for the same rectangle 
-; from wD77E
+call_00_1779_BgMap_WriteOverridePaletteAttributes:
+; Writes GBC palette attribute bytes and tile IDs to the BG tilemap for an override rectangle. 
+; On GBC (wD59E nonzero): switches to VRAM bank 1; for each of the width × height metatiles, 
+; reads 4 tile IDs per sub-row from the $C0xx block coordinate cache (using H bits 0–1 + $C0 as page), 
+; looks up the palette attribute for each from $CFxx via B=$CF as page base, and writes the 
+; 4 attribute bytes to the tilemap. Advances through 4 sub-rows per metatile (+ $1D each), 
+; wraps L within $E0-aligned blocks, advances HL by $80 per metatile row. Restores VRAM bank 0 
+; afterward. Both GBC and DMG paths then write the plain tile IDs (4 per sub-row × 4 sub-rows 
+; per metatile, BC=$1D stride) from the same $C0xx cache to tilemap bank 0. Reads the tilemap 
+; base address from wD77E/wD77F
     ld   A, [wD59E]                                    ;; 00:1779 $fa $9e $d5
     and  A, A                                          ;; 00:177c $a7
     jp   Z, .jp_00_182a                                ;; 00:177d $ca $2a $18
     ld   A, $01                                        ;; 00:1780 $3e $01
     ldh  [rVBK], A                                     ;; 00:1782 $e0 $4f
-    ld   HL, wD77E                                     ;; 00:1784 $21 $7e $d7
+    ld   HL, wD77E_OverrideTilemapAddrLo                                     ;; 00:1784 $21 $7e $d7
     ld   A, [HL+]                                      ;; 00:1787 $2a
     ld   H, [HL]                                       ;; 00:1788 $66
     ld   L, A                                          ;; 00:1789 $6f
     ld   B, $cf                                        ;; 00:178a $06 $cf
-    ld   A, [wD785]                                    ;; 00:178c $fa $85 $d7
+    ld   A, [wD785_OverrideHeight]                                    ;; 00:178c $fa $85 $d7
 .jp_00_178f:
     push AF                                            ;; 00:178f $f5
     push HL                                            ;; 00:1790 $e5
-    ld   A, [wD784]                                    ;; 00:1791 $fa $84 $d7
+    ld   A, [wD784_OverrideWidth]                                    ;; 00:1791 $fa $84 $d7
 .jp_00_1794:
     push AF                                            ;; 00:1794 $f5
     push HL                                            ;; 00:1795 $e5
@@ -1030,16 +1040,16 @@ call_00_1779_BgMap_WriteGBCPaletteAttributes:
     ld   A, $00                                        ;; 00:1826 $3e $00
     ldh  [rVBK], A                                     ;; 00:1828 $e0 $4f
 .jp_00_182a:
-    ld   HL, wD77E                                     ;; 00:182a $21 $7e $d7
+    ld   HL, wD77E_OverrideTilemapAddrLo                                     ;; 00:182a $21 $7e $d7
     ld   A, [HL+]                                      ;; 00:182d $2a
     ld   H, [HL]                                       ;; 00:182e $66
     ld   L, A                                          ;; 00:182f $6f
     ld   BC, $1d                                       ;; 00:1830 $01 $1d $00
-    ld   A, [wD785]                                    ;; 00:1833 $fa $85 $d7
+    ld   A, [wD785_OverrideHeight]                                    ;; 00:1833 $fa $85 $d7
 .jr_00_1836:
     push AF                                            ;; 00:1836 $f5
     push HL                                            ;; 00:1837 $e5
-    ld   A, [wD784]                                    ;; 00:1838 $fa $84 $d7
+    ld   A, [wD784_OverrideWidth]                                    ;; 00:1838 $fa $84 $d7
 .jr_00_183b:
     push AF                                            ;; 00:183b $f5
     push HL                                            ;; 00:183c $e5
@@ -1133,13 +1143,12 @@ call_00_1779_BgMap_WriteGBCPaletteAttributes:
     jr   NZ, .jr_00_1836                               ;; 00:18a4 $20 $90
     ret                                                ;; 00:18a6 $c9
 
-call_00_18a7_BgMap_ResolveVerticalSecondaryTileset:
-; After reading a horizontal row of metatile IDs, scans the secondary tileset override list at 
-; $CEB0 for any entries whose Y block coordinate matches wD77A and whose X block coordinate is 
-; within 6 tiles of wD779. For each match, overwrites the corresponding entry in the wD702 metatile 
-; buffer with the override metatile ID. Then falls through to LoadSecondaryTileset
-    call call_00_1e3c_BgMap_MaskOverrideData                                  ;; 00:18a7 $cd $3c $1e
-    ld   A, [wD778]                                    ;; 00:18aa $fa $78 $d7
+call_00_18a7_BgMap_PatchVerticalStripWithOverrides:
+; Same as above but for vertical camera strips. Calls BgMap_MaskSecondaryOverrideBytes, then scans 
+; $CD00 slots for entries whose X coord matches wD779. Checks Y coord within 6 rows of wD77A. On match, 
+; patches the column buffer at HL+1 + (Y_coord - wD77A) × 2 with the override data from `$CD[E
+    call call_00_1e3c_BgMap_MaskSecondaryOverrideBytes                                  ;; 00:18a7 $cd $3c $1e
+    ld   A, [wD778_OverrideSlotWriteHead]                                    ;; 00:18aa $fa $78 $d7
     and  A, A                                          ;; 00:18ad $a7
     jr   Z, call_00_1922_BgMap_LoadSecondaryTileset                                 ;; 00:18ae $28 $72
     dec  A                                             ;; 00:18b0 $3d
@@ -1183,12 +1192,12 @@ call_00_18a7_BgMap_ResolveVerticalSecondaryTileset:
     pop  HL                                            ;; 00:18e1 $e1
     jr   call_00_1922_BgMap_LoadSecondaryTileset                                    ;; 00:18e2 $18 $3e
 
-call_00_18e4_BgMap_ResolveHorizontalSecondaryTileset:
+call_00_18e4_BgMap_PatchHorizontalStripWithOverrides:
 ; Same as above but for horizontal strip loading: scans $CDB0 for overrides matching X block coordinate wD779, 
 ; within 6 rows of wD77A, and patches the wD70E metatile column buffer accordingly. 
 ; Falls through to SecondaryTileset_Load
-    call call_00_1e3c_BgMap_MaskOverrideData                                  ;; 00:18e4 $cd $3c $1e
-    ld   A, [wD778]                                    ;; 00:18e7 $fa $78 $d7
+    call call_00_1e3c_BgMap_MaskSecondaryOverrideBytes                                  ;; 00:18e4 $cd $3c $1e
+    ld   A, [wD778_OverrideSlotWriteHead]                                    ;; 00:18e7 $fa $78 $d7
     and  A, A                                          ;; 00:18ea $a7
     jr   Z, call_00_1922_BgMap_LoadSecondaryTileset                                 ;; 00:18eb $28 $35
     dec  A                                             ;; 00:18ed $3d
@@ -1428,12 +1437,13 @@ call_00_1922_BgMap_LoadSecondaryTileset:
 .secondary_tileset_data_channel_z:
     INCBIN "data/maps/channel_z/secondary_tileset_data_channel_z.bin"
 
-call_00_1e3c_BgMap_MaskOverrideData:
-; Reads the level's tile override mask bit from wD6FE into C. Then masks 6 consecutive bytes starting at 
-; HL+1 (the secondary override bytes in the strip buffer) each with AND C, writing the results back in place. 
-; Effectively zeroes override data for levels that don't use secondary blockset overrides
+call_00_1e3c_BgMap_MaskSecondaryOverrideBytes:
+; Reads wD6FE_BlocksetOverrideBitMask into C. Masks 6 consecutive bytes at HL+1 through HL+6 each with 
+; AND C in place. The 6 bytes are the secondary blockset override flags in the horizontal/vertical 
+; strip buffer (alternating bytes at wD703/wD705/... or wD70F/... depending on caller). 
+; Effectively zeroes the override layer for levels whose bitmask has that layer's bit clear
     push HL                                            ;; 00:1e3c $e5
-    ld   A, [wD6FE_LevelTileOverrideBit]                                    ;; 00:1e3d $fa $fe $d6
+    ld   A, [wD6FE_BlocksetOverrideBitMask]                                    ;; 00:1e3d $fa $fe $d6
     ld   C, A                                          ;; 00:1e40 $4f
     inc  HL                                            ;; 00:1e41 $23
     ld   A, [HL]                                       ;; 00:1e42 $7e
@@ -1462,40 +1472,47 @@ call_00_1e3c_BgMap_MaskOverrideData:
     pop  HL                                            ;; 00:1e59 $e1
     ret                                                ;; 00:1e5a $c9
 
-call_00_1e5b_BgMap_TickOverrideAnimation:
-; Decrements wD786 (override animation timer) if nonzero. Returns if wD77B is nonzero 
-; (override write pending) or timer still nonzero. Otherwise reloads timer from wD787. 
-; Decrements wD77D (override sequence counter); if nonzero, reads the next override 
-; record pointer from wD780/wD781, loads flags into wD77C. Dispatches based on flags: 
-; bit 1 → UpdateBgTileFlags; bit 2 → call_00_1f05_BgMap_FindAndWriteOverrideBlock; bit 3 → BgMap_WriteOverrideTiles. 
-; Advances the map data pointer by (width × height × 2) bytes. 
-; Bit 0 set in flags = loop back and process another record immediately
-    ld   HL, wD786                                     ;; 00:1e5b $21 $86 $d7
+call_00_1e5b_BgMap_TickOverrideSequence:
+; Per-frame driver for tile override animations. Decrements wD786_OverrideStepTimer if nonzero. 
+; Returns early if wD77B_OverrideVRAMWritePending is set (VRAM write not yet flushed by VBLANK) 
+; or if timer is still nonzero. Otherwise reloads timer from wD787_OverrideStepTimerReload and 
+; re-enters the step loop (.jr_00_1e6f). Decrements wD77D_OverrideSequenceStepsRemaining; 
+; returns if now zero. Dereferences wD780/wD781 as a pointer into the script and reads the step's 
+; flag byte into wD77C_OverrideSequenceFlags. If bit 5 set: reads a bank argument byte and calls 
+; call_00_113e (farcall dispatcher — used to play a SFX or trigger an effect mid-sequence). Saves 
+; updated pointer back to wD780/wD781. 
+; Dispatches on remaining flag bits: 
+; bit 1 → BgMap_UpdateCollisionFlags; 
+; bit 2 → BgMap_FindAndWriteCollisionBlock; 
+; bit 3 → BgMap_WriteOverrideTiles. 
+; Advances wD780/wD781 forward by width × height × 2 bytes (the size of one frame's tile data block). 
+; If bit 0 set, loops back immediately to process the next step without waiting for the next frame
+    ld   HL, wD786_OverrideStepTimer                                     ;; 00:1e5b $21 $86 $d7
     ld   A, [HL]                                       ;; 00:1e5e $7e
     and  A, A                                          ;; 00:1e5f $a7
     jr   Z, .jr_00_1e63                                ;; 00:1e60 $28 $01
     dec  [HL]                                          ;; 00:1e62 $35
 .jr_00_1e63:
-    ld   A, [wD77B]                                    ;; 00:1e63 $fa $7b $d7
+    ld   A, [wD77B_OverrideVRAMWritePending]                                    ;; 00:1e63 $fa $7b $d7
     and  A, A                                          ;; 00:1e66 $a7
     ret  NZ                                            ;; 00:1e67 $c0
     ld   A, [HL]                                       ;; 00:1e68 $7e
     and  A, A                                          ;; 00:1e69 $a7
     ret  NZ                                            ;; 00:1e6a $c0
-    ld   A, [wD787]                                    ;; 00:1e6b $fa $87 $d7
+    ld   A, [wD787_OverrideStepTimerReload]                                    ;; 00:1e6b $fa $87 $d7
     ld   [HL], A                                       ;; 00:1e6e $77
 .jr_00_1e6f:
-    ld   HL, wD77D                                     ;; 00:1e6f $21 $7d $d7
+    ld   HL, wD77D_OverrideSequenceStepsRemaining                                     ;; 00:1e6f $21 $7d $d7
     ld   A, [HL]                                       ;; 00:1e72 $7e
     and  A, A                                          ;; 00:1e73 $a7
     ret  Z                                             ;; 00:1e74 $c8
     dec  [HL]                                          ;; 00:1e75 $35
-    ld   HL, wD780                                     ;; 00:1e76 $21 $80 $d7
+    ld   HL, wD780_OverrideDataPtrLo                                     ;; 00:1e76 $21 $80 $d7
     ld   A, [HL+]                                      ;; 00:1e79 $2a
     ld   H, [HL]                                       ;; 00:1e7a $66
     ld   L, A                                          ;; 00:1e7b $6f
     ld   A, [HL+]                                      ;; 00:1e7c $2a
-    ld   [wD77C], A                                    ;; 00:1e7d $ea $7c $d7
+    ld   [wD77C_OverrideSequenceFlags], A                                    ;; 00:1e7d $ea $7c $d7
     bit  5, A                                          ;; 00:1e80 $cb $6f
     jr   Z, .jr_00_1e8a                                ;; 00:1e82 $28 $06
     ld   A, [HL+]                                      ;; 00:1e84 $2a
@@ -1504,21 +1521,21 @@ call_00_1e5b_BgMap_TickOverrideAnimation:
     pop  HL                                            ;; 00:1e89 $e1
 .jr_00_1e8a:
     ld   A, L                                          ;; 00:1e8a $7d
-    ld   [wD780], A                                    ;; 00:1e8b $ea $80 $d7
+    ld   [wD780_OverrideDataPtrLo], A                                    ;; 00:1e8b $ea $80 $d7
     ld   A, H                                          ;; 00:1e8e $7c
-    ld   [wD781], A                                    ;; 00:1e8f $ea $81 $d7
-    ld   HL, wD77C                                     ;; 00:1e92 $21 $7c $d7
+    ld   [wD781_OverrideDataPtrHi], A                                    ;; 00:1e8f $ea $81 $d7
+    ld   HL, wD77C_OverrideSequenceFlags                                     ;; 00:1e92 $21 $7c $d7
     bit  1, [HL]                                       ;; 00:1e95 $cb $4e
-    call NZ, call_00_1ec9_BgMap_UpdateCollisionFlags                              ;; 00:1e97 $c4 $c9 $1e
-    ld   HL, wD77C                                     ;; 00:1e9a $21 $7c $d7
+    call NZ, call_00_1ec9_BgMap_RegisterOverrideRegion                              ;; 00:1e97 $c4 $c9 $1e
+    ld   HL, wD77C_OverrideSequenceFlags                                     ;; 00:1e9a $21 $7c $d7
     bit  2, [HL]                                       ;; 00:1e9d $cb $56
-    call NZ, call_00_1f05_BgMap_FindAndWriteOverrideBlock                              ;; 00:1e9f $c4 $05 $1f
-    ld   HL, wD77C                                     ;; 00:1ea2 $21 $7c $d7
+    call NZ, call_00_1f05_BgMap_FindAndWriteCollisionBlock                              ;; 00:1e9f $c4 $05 $1f
+    ld   HL, wD77C_OverrideSequenceFlags                                     ;; 00:1ea2 $21 $7c $d7
     bit  3, [HL]                                       ;; 00:1ea5 $cb $5e
     call NZ, call_00_169f_BgMap_WriteOverrideTiles                              ;; 00:1ea7 $c4 $9f $16
-    ld   HL, wD785                                     ;; 00:1eaa $21 $85 $d7
+    ld   HL, wD785_OverrideHeight                                     ;; 00:1eaa $21 $85 $d7
     ld   B, [HL]                                       ;; 00:1ead $46
-    ld   HL, wD784                                     ;; 00:1eae $21 $84 $d7
+    ld   HL, wD784_OverrideWidth                                     ;; 00:1eae $21 $84 $d7
     ld   C, [HL]                                       ;; 00:1eb1 $4e
     xor  A, A                                          ;; 00:1eb2 $af
 .jr_00_1eb3:
@@ -1526,40 +1543,40 @@ call_00_1e5b_BgMap_TickOverrideAnimation:
     dec  B                                             ;; 00:1eb4 $05
     jr   NZ, .jr_00_1eb3                               ;; 00:1eb5 $20 $fc
     add  A, A                                          ;; 00:1eb7 $87
-    ld   HL, wD780                                     ;; 00:1eb8 $21 $80 $d7
+    ld   HL, wD780_OverrideDataPtrLo                                     ;; 00:1eb8 $21 $80 $d7
     add  A, [HL]                                       ;; 00:1ebb $86
     ld   [HL+], A                                      ;; 00:1ebc $22
     ld   A, $00                                        ;; 00:1ebd $3e $00
     adc  A, [HL]                                       ;; 00:1ebf $8e
     ld   [HL], A                                       ;; 00:1ec0 $77
-    ld   HL, wD77C                                     ;; 00:1ec1 $21 $7c $d7
+    ld   HL, wD77C_OverrideSequenceFlags                                     ;; 00:1ec1 $21 $7c $d7
     bit  0, [HL]                                       ;; 00:1ec4 $cb $46
     jr   NZ, .jr_00_1e6f                               ;; 00:1ec6 $20 $a7
     ret                                                ;; 00:1ec8 $c9
 
-call_00_1ec9_BgMap_UpdateCollisionFlags:
-; Writes tile type/collision flag pairs to wD78B-indexed slot and to wCE00/wCD00 page tables. 
-; Reads dimensions from wD784/wD785, source map pointer from wD780, slot index from wD778. 
-; Iterates width × height: for each tile, writes the high byte (B = row flag) to $CExL and 
-; the low byte to $CDxL, reads 2 bytes from the source map pointer (DE) for each cell. 
-; Increments C (tile X) and L (slot) each column, increments B (tile row) each row. 
-; Stores final L back to wD778
-    ld   HL, wD782                                     ;; 00:1ec9 $21 $82 $d7
+call_00_1ec9_BgMap_RegisterOverrideRegion:
+; Registers a rectangular tile override region into the wCE00/wCD00 block coordinate tables and 
+; advances wD778_OverrideSlotWriteHead. Reads starting block coordinates from 
+; wD782_OverrideTargetBlockX/wD783_OverrideTargetBlockY into C/B. Reads the data pointer from 
+; wD780/wD781 into DE. Sets HL = $CE00 + slot index from wD778. For each cell in the width × height 
+; rectangle: writes B (current Y block coord) to $CE[slot], writes C (current X block coord) to $CD[slot], 
+; then reads 2 bytes from DE and writes them to `$CE[slot
+    ld   HL, wD782_OverrideTargetBlockX                                     ;; 00:1ec9 $21 $82 $d7
     ld   C, [HL]                                       ;; 00:1ecc $4e
-    ld   HL, wD783                                     ;; 00:1ecd $21 $83 $d7
+    ld   HL, wD783_OverrideTargetBlockY                                     ;; 00:1ecd $21 $83 $d7
     ld   B, [HL]                                       ;; 00:1ed0 $46
-    ld   HL, wD780                                     ;; 00:1ed1 $21 $80 $d7
+    ld   HL, wD780_OverrideDataPtrLo                                     ;; 00:1ed1 $21 $80 $d7
     ld   E, [HL]                                       ;; 00:1ed4 $5e
     inc  HL                                            ;; 00:1ed5 $23
     ld   D, [HL]                                       ;; 00:1ed6 $56
-    ld   HL, wD778                                     ;; 00:1ed7 $21 $78 $d7
+    ld   HL, wD778_OverrideSlotWriteHead                                     ;; 00:1ed7 $21 $78 $d7
     ld   L, [HL]                                       ;; 00:1eda $6e
     ld   H, $ce                                        ;; 00:1edb $26 $ce
-    ld   A, [wD785]                                    ;; 00:1edd $fa $85 $d7
+    ld   A, [wD785_OverrideHeight]                                    ;; 00:1edd $fa $85 $d7
 .jr_00_1ee0:
     push AF                                            ;; 00:1ee0 $f5
     push BC                                            ;; 00:1ee1 $c5
-    ld   A, [wD784]                                    ;; 00:1ee2 $fa $84 $d7
+    ld   A, [wD784_OverrideWidth]                                    ;; 00:1ee2 $fa $84 $d7
 .jr_00_1ee5:
     push AF                                            ;; 00:1ee5 $f5
     ld   [HL], B                                       ;; 00:1ee6 $70 ; updated CE00 bgtile flags
@@ -1585,23 +1602,24 @@ call_00_1ec9_BgMap_UpdateCollisionFlags:
     dec  A                                             ;; 00:1efd $3d
     jr   NZ, .jr_00_1ee0                               ;; 00:1efe $20 $e0
     ld   A, L                                          ;; 00:1f00 $7d
-    ld   [wD778], A                                    ;; 00:1f01 $ea $78 $d7
+    ld   [wD778_OverrideSlotWriteHead], A                                    ;; 00:1f01 $ea $78 $d7
     ret                                                ;; 00:1f04 $c9
 
-call_00_1f05_BgMap_FindAndWriteOverrideBlock:
-; Searches wCD00/wCE00 page tables (scanning backward from wD778) for a tile position matching 
-; the target coordinates wD782/wD783. Once found (both low and high bytes match), calls the 
-; write loop identical to UpdateBgTileFlags — copies source data from wD780 into the matched 
-; slot position in $CDxx/$CExx
-    ld   HL, wD782                                     ;; 00:1f05 $21 $82 $d7
+call_00_1f05_BgMap_FindAndWriteCollisionBlock:
+; Searches the $CD00/$CE00 tables backward from wD778_OverrideSlotWriteHead for a slot 
+; whose X byte ($CD[slot]) matches wD782_OverrideTargetBlockX and whose Y byte ($CE[slot]) 
+; matches wD783_OverrideTargetBlockY. Stops when L wraps past bit 7 (scanned all slots). 
+; On match: switches to $CE00 page with bit 7 of L set, then copies width × height × 2 bytes 
+; from wD780/wD781 data pointer into the matched slot range in `$CE[slot
+    ld   HL, wD782_OverrideTargetBlockX                                     ;; 00:1f05 $21 $82 $d7
     ld   C, [HL]                                       ;; 00:1f08 $4e
-    ld   HL, wD783                                     ;; 00:1f09 $21 $83 $d7
+    ld   HL, wD783_OverrideTargetBlockY                                     ;; 00:1f09 $21 $83 $d7
     ld   B, [HL]                                       ;; 00:1f0c $46
-    ld   HL, wD780                                     ;; 00:1f0d $21 $80 $d7
+    ld   HL, wD780_OverrideDataPtrLo                                     ;; 00:1f0d $21 $80 $d7
     ld   E, [HL]                                       ;; 00:1f10 $5e
     inc  HL                                            ;; 00:1f11 $23
     ld   D, [HL]                                       ;; 00:1f12 $56
-    ld   HL, wD778                                     ;; 00:1f13 $21 $78 $d7
+    ld   HL, wD778_OverrideSlotWriteHead                                     ;; 00:1f13 $21 $78 $d7
     ld   L, [HL]                                       ;; 00:1f16 $6e
     dec  L                                             ;; 00:1f17 $2d
     ld   H, $cd                                        ;; 00:1f18 $26 $cd
@@ -1622,10 +1640,10 @@ call_00_1f05_BgMap_FindAndWriteOverrideBlock:
 .jr_00_1f2a:
     set  7, L                                          ;; 00:1f2a $cb $fd
     ld   H, $ce                                        ;; 00:1f2c $26 $ce
-    ld   A, [wD785]                                    ;; 00:1f2e $fa $85 $d7
+    ld   A, [wD785_OverrideHeight]                                    ;; 00:1f2e $fa $85 $d7
     ld   B, A                                          ;; 00:1f31 $47
 .jr_00_1f32:
-    ld   A, [wD784]                                    ;; 00:1f32 $fa $84 $d7
+    ld   A, [wD784_OverrideWidth]                                    ;; 00:1f32 $fa $84 $d7
     ld   C, A                                          ;; 00:1f35 $4f
 .jr_00_1f36:
     ld   A, [DE]                                       ;; 00:1f36 $1a

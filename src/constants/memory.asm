@@ -293,7 +293,7 @@ wD60A:
 wD60B:
     ds 3                                               ;; d60b
 
-wD60E:
+wD60E_HUDDirtyFlags:
     ds 1                                               ;; d60e
 
 wD60F_HDMATransferFlags:
@@ -314,7 +314,7 @@ wD613:
 wD614:
     ds 1                                               ;; d614
 
-wD615:
+wD615_Cannon_FacingDirection:
     ds 1                                               ;; d615
 
 wD616:
@@ -364,7 +364,7 @@ wD622_InterruptFlag:
 ; gets set when an interrupt occurs. used when waiting for an interrupt
     ds 1                                               ;; d622
 
-wD623:
+wD623_CollectibleMode:
     ds 1                                               ;; d623
 
 wD624_CurrentLevelId:
@@ -678,7 +678,7 @@ wD6F3_BgMap_PrevRow:
     ds 2                                               ;; d6f3
 wD6F5_MapBank:
     ds 1                                               ;; d6f5
-wD6F6_BlocksetOverrideBank:
+wD6F6_ExtendedMapBank:
     ds 1                                               ;; d6f6
 wD6F7_BlocksetAndCollisionBank:
     ds 2                                               ;; d6f7
@@ -692,12 +692,12 @@ wD6FC_BgMap_RowScrollPosition:
     ds 1                                               ;; d6fc
 wD6FD_BgMap_RowUnk:
     ds 1                                               ;; d6fd
-wD6FE_LevelTileOverrideBit:
+wD6FE_BlocksetOverrideBitMask:
     ds 1                                               ;; d6fe
 wD6FF_BgTilesetBank:
     ds 1                                               ;; d6ff
 
-wD700: ; where block ids get written temporarily. also where override bits are set temporarily
+wD700: ; where block ids get written temporarily. also where secondary blockset bits are set temporarily
     ds 2                                               ;; d700
 
 wD702:
@@ -979,7 +979,8 @@ wD774:
 wD775:
     ds 3                                               ;; d775
 
-wD778:
+wD778_OverrideSlotWriteHead:
+; Index into wD78B_OverrideSlotTable slot table; incremented by BgMap_UpdateCollisionFlags as slots are filled
     ds 1                                               ;; d778
 
 wD779_RelatedToXPosition:
@@ -988,72 +989,79 @@ wD779_RelatedToXPosition:
 wD77A_PlayerYPositionBlock:
     ds 1                                               ;; d77a
 
-wD77B:
+; Bg override related memory
+wD77B_OverrideVRAMWritePending:
+; Bit 0 set = BgMap_WriteOverrideTiles has queued a VRAM write that hasn't completed yet; 
+; gates BgMap_TickOverrideAnimation and SpecialTile_OnPlayerAttack
     ds 1                                               ;; d77b
-
-wD77C:
+wD77C_OverrideSequenceFlags:
+; Flags for current sequence step: 
+; bit 0 = loop immediately, 
+; bit 1 = call UpdateCollisionFlags, 
+; bit 2 = call FindAndWriteOverrideBlock, 
+; bit 3 = call WriteOverrideTiles, 
+; bit 5 = call call_00_113e (SFX/effect) before proceeding
     ds 1                                               ;; d77c
-
-wD77D:
+wD77D_OverrideSequenceStepsRemaining:
+; Countdown of remaining steps in the active tile animation sequence; zero = sequence idle
     ds 1                                               ;; d77d
-
-wD77E:
+wD77E_OverrideTilemapAddrLo:
+; VRAM tilemap address where BgMap_WriteOverrideTiles will write the expanded tile block
     ds 1                                               ;; d77e
-
-wD77F:
+wD77F_OverrideTilemapAddrHi:
     ds 1                                               ;; d77f
-
-wD780:
+wD780_OverrideDataPtrLo:
+; Pointer into ROM script data; advances by (width × height × 2) after each step
     ds 1                                               ;; d780
-
-wD781:
+wD781_OverrideDataPtrHi:
     ds 1                                               ;; d781
-
-wD782:
+wD782_OverrideTargetBlockX:
+; Block X coordinate of the tile being overridden (player world X × 8, high byte); 
+; used by UpdateCollisionFlags and FindAndWriteOverrideBlock
     ds 1                                               ;; d782
-
-wD783:
+wD783_OverrideTargetBlockY:
+; Block Y coordinate of the tile being overridden
     ds 1                                               ;; d783
-
-wD784:
+wD784_OverrideWidth:
+; Width in metatiles of the override rectangle
     ds 1                                               ;; d784
-
-wD785:
+wD785_OverrideHeight:
+; Height in metatiles of the override rectangle
     ds 1                                               ;; d785
-
-wD786:
+wD786_OverrideStepTimer:
+; Counts down to zero before the next sequence step fires; reloaded from wD787 each step
     ds 1                                               ;; d786
-
-wD787:
+wD787_OverrideStepTimerReload:
+; Per-script frame delay between animation steps
     ds 1                                               ;; d787
 
 wD788_CurrentAudioBank:
     ds 1                                               ;; d788
-
 wD789: ; audio related
     ds 1                                               ;; d789
-
 wD78A_MusicId: ; multiplied by 4 and used as index into .data_00_1244_MusicList
     ds 1                                               ;; d78a
 
-wD78B:
+wD78B_OverrideSlotTable:
+; 16-byte table of slot states: 
+; $00 = empty, 
+; $01 = armed/active, 
+; $02 = triggered/counting-up, 
+; $FF = completed. 
+; Each slot tracks one interactive tile region's state. Slots 0–15 correspond to tile 
+; override regions registered by UpdateCollisionFlags
     ds 4                                              ;; d78b
-
-wD78F:
+wD78F_OverrideSlotTable4:
     ds 9
-
-wD798:
+wD798_OverrideSlotTable13:
     ds 1                                               ;; d798
-
-wD799:
+wD799_OverrideSlotTable14:
     ds 1                                               ;; d799
-
-wD79A:
+wD79A_OverrideSlotTable15:
     ds 1                                               ;; d79a
 
 wD79B_MissionPreviewCutsceneRelated:
     ds 2                                               ;; d79b
-
 wD79D_MissionPreviewCutsceneMovementFlags:
     ds 2                                               ;; d79d
 

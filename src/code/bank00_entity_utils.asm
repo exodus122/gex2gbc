@@ -1347,7 +1347,7 @@ call_00_3859_Entity_CheckPlayerXProximity:
     ret                                                ;; 00:3877 $c9
 
 call_00_3878_Entity_CheckIfVisibleOrInRange:
-; In non-hub levels, uses slot index into wD798 visibility table; 
+; In non-hub levels, uses slot index into wD798_OverrideSlotTable13 visibility table; 
 ; in hub level, checks entity's UNK_19 range values against wD64F–wD651 player position bytes
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:3878 $fa $24 $d6
     and  A, A                                          ;; 00:387b $a7
@@ -1365,7 +1365,7 @@ call_00_3878_Entity_CheckIfVisibleOrInRange:
     dec  A                                             ;; 00:388e $3d
     srl  A                                             ;; 00:388f $cb $3f
     ld   E, A                                          ;; 00:3891 $5f
-    ld   HL, wD798                                     ;; 00:3892 $21 $98 $d7
+    ld   HL, wD798_OverrideSlotTable13                                     ;; 00:3892 $21 $98 $d7
     add  HL, DE                                        ;; 00:3895 $19
     ld   A, [HL]                                       ;; 00:3896 $7e
     and  A, A                                          ;; 00:3897 $a7
@@ -1532,12 +1532,12 @@ call_00_3951_Entity_SpawnPlayerClone:
     ld   a,[de]
     ld   [hl],a
     call call_00_34d8_Entity_ClearSlotCounter
-    call call_00_3985_Entity_SpawnProjectileInit
+    call call_00_3985_Entity_ParticleBurstInit
     pop  af
     ld   [wD300_CurrentEntityAddrLo],a
     ret  
 
-call_00_3985_Entity_SpawnProjectileInit:
+call_00_3985_Entity_ParticleBurstInit:
 ; Sets projectile slot counter to 1, clears collision type, sets UNK_16=$07, 
 ; clears UNK_17 and UNK_1A, loads animation type 1, clears entity table slot, 
 ; sets action to 0, plays sound $17
@@ -1562,7 +1562,7 @@ call_00_3985_Entity_SpawnProjectileInit:
     call call_00_393c_Entity_ClearEntityFlagSlot                                  ;; 00:39ab $cd $3c $39
     xor  A, A                                          ;; 00:39ae $af
     FARCALL call_02_7102_Entity_SetAction
-    ld   C, SFX_PROJECTILE                                        ;; 00:39ba $0e $17
+    ld   C, SFX_ENEMY_DEFEATED                                        ;; 00:39ba $0e $17
     call call_00_112f_QueueSFX                                  ;; 00:39bc $cd $2f $11
     ret                                                ;; 00:39bf $c9
 
@@ -1686,42 +1686,50 @@ call_00_3a23_Entity_LoadAnimationData:
     set  0, [HL]                                       ;; 00:3a64 $cb $c6
     ret                                                ;; 00:3a66 $c9
 .data_00_3a67:
-    db   $75, $3a                                      ;; 00:3a67 ??
-    dw   .data_00_3a9d                                 ;; 00:3a69 pP
-    dw   .data_00_3ac5                                 ;; 00:3a6b pP
-    db   $ed, $3a, $15, $3b, $3d, $3b, $65, $3b        ;; 00:3a6d ????????
+    dw   .data_00_3a75                                 ;; 00:3a67 ??
+    dw   .data_00_3a9d_ParticleBurstPattern                                 ;; 00:3a69 pP
+    dw   .data_00_3ac5_ParticleBurstPattern2                                 ;; 00:3a6b pP
+    dw   .data_00_3aed
+    dw   .data_00_3b15_FallingBoulderPattern
+    dw   .data_00_3b3d_JarBurstPattern
+    dw   .data_00_3b65_MultiProjectilePattern
+.data_00_3a75:
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:3a75 ????????
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:3a7d ????????
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:3a85 ????????
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:3a8d ????????
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:3a95 ????????
-.data_00_3a9d:
+.data_00_3a9d_ParticleBurstPattern:
     db   $81, $40, $00, $04, $01, $81, $30, $00        ;; 00:3a9d ........
     db   $03, $01, $81, $20, $00, $02, $01, $81        ;; 00:3aa5 ........
     db   $18, $00, $01, $01, $81, $40, $00, $04        ;; 00:3aad ........
     db   $ff, $81, $30, $00, $03, $ff, $81, $20        ;; 00:3ab5 ........
     db   $00, $02, $ff, $81, $18, $00, $01, $ff        ;; 00:3abd ........
-.data_00_3ac5:
+.data_00_3ac5_ParticleBurstPattern2:
     db   $81, $24, $00, $00, $00, $81, $20, $00        ;; 00:3ac5 ........
     db   $06, $01, $81, $20, $00, $06, $ff, $00        ;; 00:3acd ........
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:3ad5 ........
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:3add ........
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:3ae5 ........
+.data_00_3aed:
     db   $81, $24, $00, $00, $00, $81, $20, $00        ;; 00:3aed ????????
     db   $06, $01, $81, $20, $00, $06, $ff, $81        ;; 00:3af5 ????????
     db   $1c, $00, $0e, $01, $81, $1c, $00, $0e        ;; 00:3afd ????????
     db   $ff, $00, $00, $00, $00, $00, $00, $00        ;; 00:3b05 ????????
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:3b0d ????????
+.data_00_3b15_FallingBoulderPattern:
     db   $01, $30, $10, $0c, $fb, $01, $20, $10        ;; 00:3b15 ????????
     db   $04, $ff, $01, $38, $10, $04, $05, $01        ;; 00:3b1d ????????
     db   $2e, $00, $0e, $fb, $01, $2c, $00, $06        ;; 00:3b25 ????????
     db   $01, $01, $26, $00, $0d, $05, $00, $00        ;; 00:3b2d ????????
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:3b35 ????????
+.data_00_3b3d_JarBurstPattern:
     db   $01, $28, $10, $09, $f3, $01, $1a, $10        ;; 00:3b3d ????????
     db   $01, $fc, $01, $2e, $10, $02, $06, $01        ;; 00:3b45 ????????
     db   $26, $00, $0b, $f6, $01, $24, $00, $03        ;; 00:3b4d ????????
     db   $05, $01, $21, $00, $0a, $03, $00, $00        ;; 00:3b55 ????????
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:3b5d ????????
+.data_00_3b65_MultiProjectilePattern:
     db   $81, $40, $0c, $0c, $01, $81, $30, $0c        ;; 00:3b65 ????????
     db   $09, $01, $81, $20, $0c, $06, $01, $81        ;; 00:3b6d ????????
     db   $18, $0c, $03, $01, $81, $40, $0c, $0c        ;; 00:3b75 ????????

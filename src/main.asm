@@ -607,12 +607,12 @@ map_scream_tv2.bin:
     INCBIN "data/maps/scream_tv/map_scream_tv2.bin"
 
 SECTION "bank34", ROMX[$4000], BANK[$34]
-blockset_override_data_bank34.bin:
-    INCBIN "data/maps/blockset_override_data_bank34.bin"
+extended_maps_bank34.bin:
+    INCBIN "data/maps/extended_maps_bank34.bin"
 
 SECTION "bank35", ROMX[$4000], BANK[$35]
-blockset_override_data_bank35.bin:
-    INCBIN "data/maps/blockset_override_data_bank35.bin"
+extended_maps_bank35.bin:
+    INCBIN "data/maps/extended_maps_bank35.bin"
 
 SECTION "bank36", ROMX[$4000], BANK[$36]
 tileset_media_dimension.bin:

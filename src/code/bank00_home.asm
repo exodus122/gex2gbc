@@ -38,7 +38,6 @@ entry:
 SECTION "bank00_0150", ROM0[$0150]
 
 call_00_0150_Init:
-; call point of the code
     di                                                 ;; 00:0150 $f3
     ld   SP, $fffe                                     ;; 00:0151 $31 $fe $ff
     push AF                                            ;; 00:0154 $f5
@@ -217,7 +216,7 @@ call_00_0150_Init:
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:0309 $fa $24 $d6
     and  A, A                                          ;; 00:030c $a7
     jr   Z, .jr_00_0350                                ;; 00:030d $28 $41
-    call call_00_0562                                  ;; 00:030f $cd $62 $05
+    call call_00_0562_Collectible_InitForLevel                                  ;; 00:030f $cd $62 $05
     FARCALL call_01_4297_LoadMissionSelectMenu
     FARCALL call_0b_4000_Collectibles_Init
     FARCALL call_02_6eb1_Entities_ClearFlagsTable
@@ -247,7 +246,7 @@ call_00_0150_Init:
     ld   A, [HL]                                       ;; 00:0367 $7e
     and  A, $18                                        ;; 00:0368 $e6 $18
     ld   [wD64C], A                                    ;; 00:036a $ea $4c $d6
-    call call_00_0562                                  ;; 00:036d $cd $62 $05
+    call call_00_0562_Collectible_InitForLevel                                  ;; 00:036d $cd $62 $05
 .jp_00_0370:
     xor  A, A                                          ;; 00:0370 $af
     ld   [wD742_Player_CurrentFly], A                                    ;; 00:0371 $ea $42 $d7
@@ -263,10 +262,10 @@ call_00_0150_Init:
     ld   [wD774], A                                    ;; 00:038f $ea $74 $d7
     ld   [wD73C_FrameCounter2], A                                    ;; 00:0392 $ea $3c $d7
     ld   [wD6F9_BgMapLoadingFlags], A                                    ;; 00:0395 $ea $f9 $d6
-    ld   [wD60E], A                                    ;; 00:0398 $ea $0e $d6
+    ld   [wD60E_HUDDirtyFlags], A                                    ;; 00:0398 $ea $0e $d6
     ld   [wD60F_HDMATransferFlags], A                                    ;; 00:039b $ea $0f $d6
-    ld   [wD77B], A                                    ;; 00:039e $ea $7b $d7
-    ld   [wD77D], A                                    ;; 00:03a1 $ea $7d $d7
+    ld   [wD77B_OverrideVRAMWritePending], A                                    ;; 00:039e $ea $7b $d7
+    ld   [wD77D_OverrideSequenceStepsRemaining], A                                    ;; 00:03a1 $ea $7d $d7
     ld   [wD72F], A                                    ;; 00:03a4 $ea $2f $d7
     ld   [wD71E], A                                    ;; 00:03a7 $ea $1e $d7
     ld   [wD5A3], A                                    ;; 00:03aa $ea $a3 $d5
@@ -278,8 +277,8 @@ call_00_0150_Init:
     FARCALL call_02_6eb1_Entities_ClearFlagsTable
     call call_00_3c3f                                  ;; 00:03ce $cd $3f $3c
     call call_00_12e4_Map_InitBgTileOverrides                                  ;; 00:03d1 $cd $e4 $12
-    call call_00_0547                                  ;; 00:03d4 $cd $47 $05
-    call call_00_0562                                  ;; 00:03d7 $cd $62 $05
+    call call_00_0547_FlyPowerup_InitTimers                                  ;; 00:03d4 $cd $47 $05
+    call call_00_0562_Collectible_InitForLevel                                  ;; 00:03d7 $cd $62 $05
 .jr_00_03da:
     ld   A, $0a                                        ;; 00:03da $3e $0a
     ld   [wD613], A                                    ;; 00:03dc $ea $13 $d6
@@ -385,9 +384,9 @@ call_00_0150_Init:
 .jr_00_04e0:
     FARCALL call_02_6eba_Entities_UpdateAll
     call call_00_1455_BgMap_LoadDirtyRegions                                  ;; 00:04eb $cd $55 $14
-    call call_00_2305                                  ;; 00:04ee $cd $05 $23
-    call call_00_1e5b_BgMap_TickOverrideAnimation                                  ;; 00:04f1 $cd $5b $1e
-    call call_00_05c7                                  ;; 00:04f4 $cd $c7 $05
+    call call_00_2305_OverrideSlotTable_Tick                                  ;; 00:04ee $cd $05 $23
+    call call_00_1e5b_BgMap_TickOverrideSequence                                  ;; 00:04f1 $cd $5b $1e
+    call call_00_05c7_FlyPowerup_Update                                  ;; 00:04f4 $cd $c7 $05
     call call_00_08fc_SetupEntityVRAMTransfer                                  ;; 00:04f7 $cd $fc $08
     FARCALL call_0b_5ec3_Player_UpdateGBCPalette
     ld   HL, wD73C_FrameCounter2                                     ;; 00:0505 $21 $3c $d7
@@ -419,7 +418,10 @@ call_00_0521_DrawEntitiesWrapper:
     call call_00_0f56                                  ;; 00:0543 $cd $56 $0f
     ret                                                ;; 00:0546 $c9
 
-call_00_0547:
+call_00_0547_FlyPowerup_InitTimers:
+; Initializes fly power-up state. Zeros wD687 (fly animation state) and wD689 (fly animation timer). 
+; Sets wD688 = $A0 (fly animation position, starting offscreen). Sets wD76F = $03 (remaining lives fly count), 
+; zeros wD770 (BCD score counter), sets wD771 = $3C (score tick timer reload)
     xor  A, A                                          ;; 00:0547 $af
     ld   [wD687], A                                    ;; 00:0548 $ea $87 $d6
     ld   [wD689], A                                    ;; 00:054b $ea $89 $d6
@@ -433,21 +435,28 @@ call_00_0547:
     ld   [wD771], A                                    ;; 00:055e $ea $71 $d7
     ret                                                ;; 00:0561 $c9
 
-call_00_0562:
+call_00_0562_Collectible_InitForLevel:
+; Looks up the current level ID in .data_00_0579_CollectibleCountTable and stores the result in 
+; both wD649_CollectibleAmount and wD623_CollectibleMode. If zero (level has no collectible quota), returns. 
+; Otherwise sets wD623_CollectibleMode = $01 (collectible mode active)
     ld   HL, wD624_CurrentLevelId                                     ;; 00:0562 $21 $24 $d6
     ld   L, [HL]                                       ;; 00:0565 $6e
     ld   H, $00                                        ;; 00:0566 $26 $00
-    ld   DE, .data_00_0579                                      ;; 00:0568 $11 $79 $05
+    ld   DE, .data_00_0579_CollectibleCountTable                                      ;; 00:0568 $11 $79 $05
     add  HL, DE                                        ;; 00:056b $19
     ld   A, [HL]                                       ;; 00:056c $7e
     ld   [wD649_CollectibleAmount], A                                    ;; 00:056d $ea $49 $d6
-    ld   HL, wD623                                     ;; 00:0570 $21 $23 $d6
+    ld   HL, wD623_CollectibleMode                                     ;; 00:0570 $21 $23 $d6
     ld   [HL], A                                       ;; 00:0573 $77
     and  A, A                                          ;; 00:0574 $a7
     ret  Z                                             ;; 00:0575 $c8
     ld   [HL], $01                                     ;; 00:0576 $36 $01
     ret                                                ;; 00:0578 $c9
-.data_00_0579:
+.data_00_0579_CollectibleCountTable:
+; 30-byte table indexed by level ID. Each byte is the number of collectibles required for that 
+; level's quota. Most levels have $00 (no quota). Exceptions: MAP_SCREAM_TV_THURSDAY_THE_12TH 
+; ($32=50), MAP_KUNG_FU_THEATER_LIZARD_IN_A_CHINA_SHOP ($1F=31), MAP_REZOPOLIS_BUGGED_OUT 
+; ($32=50), MAP_CIRCUIT_CENTRAL_CHIPS_AND_DIPS ($32=50)
     db   $00 ; MAP_MEDIA_DIMENSION
     db   $00 ; MAP_TOON_TV_OUT_OF_TOON
     db   $00 ; MAP_SCREAM_TV_SMELLRAISER
@@ -480,12 +489,17 @@ call_00_0562:
     db   $00 ; MAP_UNUSED_1D
     db   $00 ; MAP_BOSS_TV_CHANNEL_Z
 
-call_00_0598:
+call_00_0598_FlyPowerup_TickScoreTimer:
+; Per-frame score countdown tick for the fly power-up. Decrements wD771 timer; reloads to 
+; $3C when expired and sets bit 2 of wD60E_HUDDirtyFlags (score display dirty flag). Decrements wD770 
+; as a BCD value (via daa); if it underflows to $99: reloads to $59 and decrements 
+; wD76F (fly life counter). If wD76F goes negative (bit 7 set): clamps to $00, zeroes wD770, 
+; ORs $14 into wD621_WarpFlags (triggers level end / warp out)
     ld   HL, wD771                                     ;; 00:0598 $21 $71 $d7
     dec  [HL]                                          ;; 00:059b $35
     ret  NZ                                            ;; 00:059c $c0
     ld   [HL], $3c                                     ;; 00:059d $36 $3c
-    ld   HL, wD60E                                     ;; 00:059f $21 $0e $d6
+    ld   HL, wD60E_HUDDirtyFlags                                     ;; 00:059f $21 $0e $d6
     set  2, [HL]                                       ;; 00:05a2 $cb $d6
     ld   HL, wD770                                     ;; 00:05a4 $21 $70 $d7
     ld   A, [HL]                                       ;; 00:05a7 $7e
@@ -507,10 +521,21 @@ call_00_0598:
     ld   [wD621_WarpFlags], A                                    ;; 00:05c3 $ea $21 $d6
     ret                                                ;; 00:05c6 $c9
 
-call_00_05c7:
-    ld   A, [wD623]                                    ;; 00:05c7 $fa $23 $d6
+call_00_05c7_FlyPowerup_Update:
+; Main per-frame fly power-up logic dispatcher. If wD623_CollectibleMode (collectible mode) is nonzero, 
+; delegates to FlyPowerup_TickScoreTimer and returns. 
+; Otherwise dispatches on wD687 animation state flags: 
+; bit 0 set → fly is moving in (decrement wD688 toward $88; 
+; on reaching $88, sets wD689 to $05 if Media Dimension else $FF as hold timer; 
+; on wD689 expiry, dispatches on bit 7 of wD687: 
+; if clear and level=0 → sets state $42 (loop); 
+; if clear and level≠0 → sets state $81 (exit); 
+; if set and health < 2 → sets state $81; 
+; else → sets state $82). 
+; Bit 1 set and bit 0 clear → fly moving out (increment wD688 toward $A0 and return)
+    ld   A, [wD623_CollectibleMode]                                    ;; 00:05c7 $fa $23 $d6
     and  A, A                                          ;; 00:05ca $a7
-    jr   NZ, call_00_0598                                ;; 00:05cb $20 $cb
+    jr   NZ, call_00_0598_FlyPowerup_TickScoreTimer                                ;; 00:05cb $20 $cb
     ld   A, [wD687]                                    ;; 00:05cd $fa $87 $d6
     and  A, $01                                        ;; 00:05d0 $e6 $01
     jr   NZ, .jr_00_05e3                               ;; 00:05d2 $20 $0f
@@ -565,14 +590,18 @@ call_00_05c7:
     ld   [wD687], A                                    ;; 00:0625 $ea $87 $d6
     ret                                                ;; 00:0628 $c9
 
-call_00_0629:
+call_00_0629_FlyPowerup_StartExit:
+; Sets wD687 = $81 (exit animation state, bit 7 + bit 0) and wD689 = $FF (hold timer). 
+; Begins the fly sprite moving off-screen
     ld   A, $81                                        ;; 00:0629 $3e $81
     ld   [wD687], A                                    ;; 00:062b $ea $87 $d6
     ld   A, $ff                                        ;; 00:062e $3e $ff
     ld   [wD689], A                                    ;; 00:0630 $ea $89 $d6
     ret                                                ;; 00:0633 $c9
 
-call_00_0634:
+call_00_0634_FlyPowerup_StartEntry:
+; Sets wD687 = $41 (entry animation state, bit 6 + bit 0). Sets wD689 = $05 if 
+; Media Dimension (level 0), else $FF. Begins the fly sprite moving on-screen
     ld   A, $41                                        ;; 00:0634 $3e $41
     ld   [wD687], A                                    ;; 00:0636 $ea $87 $d6
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:0639 $fa $24 $d6
@@ -584,7 +613,16 @@ call_00_0634:
     ld   [wD689], A                                    ;; 00:0643 $ea $89 $d6
     ret                                                ;; 00:0646 $c9
 
-call_00_0647:
+call_00_0647_Player_EatFlyPowerup:
+; Eats a new fly power-up, swapping it with the currently held one. 
+; Stores the new power-up ID (A) into wD742_Player_CurrentFly, saves the old value in C. 
+; Farcalls FlyPowerup_LoadParticlePalette to update the particle effect palette for the new power-up. 
+; Then dispatches on the old power-up ID (C): 
+; if $03 → Player_ResetHealth (the health fly was active, restore health on swap-out); 
+; if $04 → call_00_068a_Player_ExtraLifeFly (unknown, fourth fly type cleanup); 
+; if $01 → stores zero to wD755/wD756 and loads $0708 into wD753/wD754 (deactivates one timer pair, arms the other); 
+; if $02 → stores zero to wD753/wD754 and loads $0708 into wD755/wD756 (mirror of the $01 case). 
+; Returns without action if old power-up was $00 or any other value
     ld   hl,wD742_Player_CurrentFly
     ld   c,[hl]
     ld   [hl],a
@@ -595,7 +633,7 @@ call_00_0647:
     cp   a,$03
     jr   z,call_00_06b7_Player_ResetHealth
     cp   a,$04
-    jr   z,call_00_068a
+    jr   z,call_00_068a_Player_ExtraLifeFly
     cp   a,$01
     jr   z,.jr_00_067a
     cp   a,$02
@@ -619,34 +657,48 @@ call_00_0647:
     ld   [hl],d
     ret  
 
-call_00_068a:
-    call call_00_074d                                  ;; 00:068a $cd $4d $07
+call_00_068a_Player_ExtraLifeFly:
+; Calls call_00_074d_HUD_MarkDirty to mark score dirty.
+; Increments wD73D_LivesRemaining; if the result is nonzero (no overflow), jumps to FlyPowerup_StartEntry. 
+; If the increment wrapped to zero (was already $FF, maxed out), decrements back to $FF to clamp, 
+; then falls through to FlyPowerup_StartEntry. So this grants +1 life on swap-out, clamped at $FF
+    call call_00_074d_HUD_MarkDirty                                  ;; 00:068a $cd $4d $07
     ld   HL, wD73D_LivesRemaining                                     ;; 00:068d $21 $3d $d7
     inc  [HL]                                          ;; 00:0690 $34
-    jr   NZ, call_00_0634                              ;; 00:0691 $20 $a1
+    jr   NZ, call_00_0634_FlyPowerup_StartEntry                              ;; 00:0691 $20 $a1
     dec  [HL]                                          ;; 00:0693 $35
-    jr   call_00_0634                                  ;; 00:0694 $18 $9e
+    jr   call_00_0634_FlyPowerup_StartEntry                                  ;; 00:0694 $18 $9e
 
-call_00_0696:
+call_00_0696_Player_Die:
+; Requests player action PLAYER_ACTION_DEATH via Player_RequestAction. 
+; If level is nonzero (not Media Dimension) and wD623_CollectibleMode is zero (not collectible mode): 
+; calls call_00_074d_HUD_MarkDirty to mark score dirty, decrements wD73D_LivesRemaining, 
+; then jumps to FlyPowerup_StartEntry
     ld   A, PLAYER_ACTION_DEATH                                        ;; 00:0696 $3e $10
     FARCALL call_02_4ccd_Player_RequestAction
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:06a3 $fa $24 $d6
     and  A, A                                          ;; 00:06a6 $a7
     ret  Z                                             ;; 00:06a7 $c8
-    ld   A, [wD623]                                    ;; 00:06a8 $fa $23 $d6
+    ld   A, [wD623_CollectibleMode]                                    ;; 00:06a8 $fa $23 $d6
     and  A, A                                          ;; 00:06ab $a7
     ret  NZ                                            ;; 00:06ac $c0
-    call call_00_074d                                  ;; 00:06ad $cd $4d $07
+    call call_00_074d_HUD_MarkDirty                                  ;; 00:06ad $cd $4d $07
     ld   HL, wD73D_LivesRemaining                                     ;; 00:06b0 $21 $3d $d7
     dec  [HL]                                          ;; 00:06b3 $35
-    jp   call_00_0634                                  ;; 00:06b4 $c3 $34 $06
+    jp   call_00_0634_FlyPowerup_StartEntry                                  ;; 00:06b4 $c3 $34 $06
 
 call_00_06b7_Player_ResetHealth:
+; Sets wD741_Player_Health = $04 (full health), then jumps to FlyPowerup_StartExit
     ld   hl, wD741_Player_Health
     ld   [hl], $04
-    jp   call_00_0629
+    jp   call_00_0629_FlyPowerup_StartExit
 
 call_00_06bf_DealDamageToPlayer:
+; Calls Player_CanBeDamaged; returns if invincible. Clears wD742_Player_CurrentFly. 
+; If a fly was held (old value nonzero), skips health decrement. Otherwise decrements 
+; wD741_Player_Health; if it reaches zero, jumps to Player_Die. 
+; If a fly was held or health > 0: if current action is already PLAYER_ACTION_HIT_BOUNCE → jumps 
+; to FlyPowerup_StartExit; else requests PLAYER_ACTION_TAKE_DAMAGE then jumps to FlyPowerup_StartExit
     call call_00_075b_Player_CanBeDamaged                                  ;; 00:06bf $cd $5b $07
     ret  NZ                                            ;; 00:06c2 $c0
     ld   HL, wD742_Player_CurrentFly                                     ;; 00:06c3 $21 $42 $d7
@@ -656,22 +708,31 @@ call_00_06bf_DealDamageToPlayer:
     jr   NZ, .jr_00_06d2                               ;; 00:06ca $20 $06
     ld   HL, wD741_Player_Health                                     ;; 00:06cc $21 $41 $d7
     dec  [HL]                                          ;; 00:06cf $35
-    jr   Z, call_00_0696                                 ;; 00:06d0 $28 $c4
+    jr   Z, call_00_0696_Player_Die                                 ;; 00:06d0 $28 $c4
 .jr_00_06d2:
     ld   A, [wD201_PlayerEntity_ActionId]                                    ;; 00:06d2 $fa $01 $d2
     and  A, PLAYER_ACTION_MASK                                        ;; 00:06d5 $e6 $1f
     cp   A, PLAYER_ACTION_HIT_BOUNCE                                        ;; 00:06d7 $fe $1c
-    jp   Z, call_00_0629                                 ;; 00:06d9 $ca $29 $06
+    jp   Z, call_00_0629_FlyPowerup_StartExit                                 ;; 00:06d9 $ca $29 $06
     ld   A, PLAYER_ACTION_TAKE_DAMAGE                                        ;; 00:06dc $3e $0f
     FARCALL call_02_4ccd_Player_RequestAction
-    jp   call_00_0629                                    ;; 00:06e9 $c3 $29 $06
+    jp   call_00_0629_FlyPowerup_StartExit                                    ;; 00:06e9 $c3 $29 $06
 
 call_00_06ec_Player_ObtainedCollectible:
+; Plays collectible SFX. Calls call_00_074d_HUD_MarkDirty (score dirty) and FlyPowerup_StartEntry. 
+; If wD623_CollectibleMode (collectible mode quota) is nonzero: returns if warp bit 4 already set in wD621; 
+; decrements wD649_CollectibleAmount (counting down toward zero). 
+; If wD623_CollectibleMode is zero (free-collect mode): increments wD649_CollectibleAmount, clamped at $FF. 
+; Looks up wD648 (milestone index) in .data_00_074a_CollectibleMilestoneThresholds ($1E/$28/$32). 
+; If the threshold is $32: checks if wD649 is an exact multiple of $32 — if so and 
+; bit 3 of wD64C not yet set, sets that bit and awards an extra life via Player_ExtraLifeFly_Deactivate. 
+; Otherwise: if wD649 has reached the threshold, resets it to zero, increments wD648 milestone index, 
+; sets bit 3 of wD60E_HUDDirtyFlags (milestone display dirty)
     ld   C, SFX_COLLECTIBLE                                        ;; 00:06ec $0e $06
     call call_00_112f_QueueSFX                                  ;; 00:06ee $cd $2f $11
-    call call_00_074d                                  ;; 00:06f1 $cd $4d $07
-    call call_00_0634                                  ;; 00:06f4 $cd $34 $06
-    ld   A, [wD623]                                    ;; 00:06f7 $fa $23 $d6
+    call call_00_074d_HUD_MarkDirty                                  ;; 00:06f1 $cd $4d $07
+    call call_00_0634_FlyPowerup_StartEntry                                  ;; 00:06f4 $cd $34 $06
+    ld   A, [wD623_CollectibleMode]                                    ;; 00:06f7 $fa $23 $d6
     and  A, A                                          ;; 00:06fa $a7
     jr   Z, .jr_00_070b                                ;; 00:06fb $28 $0e
     ld   A, [wD621_WarpFlags]                                    ;; 00:06fd $fa $21 $d6
@@ -693,7 +754,7 @@ call_00_06ec_Player_ObtainedCollectible:
     ld   HL, wD648                                     ;; 00:0713 $21 $48 $d6
     ld   L, [HL]                                       ;; 00:0716 $6e
     ld   H, $00                                        ;; 00:0717 $26 $00
-    ld   DE, .data_00_074a                                      ;; 00:0719 $11 $4a $07
+    ld   DE, .data_00_074a_CollectibleMilestoneThresholds                                      ;; 00:0719 $11 $4a $07
     add  HL, DE                                        ;; 00:071c $19
     ld   A, [HL]                                       ;; 00:071d $7e
     cp   A, $32                                        ;; 00:071e $fe $32
@@ -704,7 +765,7 @@ call_00_06ec_Player_ObtainedCollectible:
     ld   [HL], $00                                     ;; 00:0727 $36 $00
     ld   HL, wD648                                     ;; 00:0729 $21 $48 $d6
     inc  [HL]                                          ;; 00:072c $34
-    ld   HL, wD60E                                     ;; 00:072d $21 $0e $d6
+    ld   HL, wD60E_HUDDirtyFlags                                     ;; 00:072d $21 $0e $d6
     set  3, [HL]                                       ;; 00:0730 $cb $de
     ret                                                ;; 00:0732 $c9
 .jr_00_0733:
@@ -715,24 +776,31 @@ call_00_06ec_Player_ObtainedCollectible:
     jr   NZ, .jr_00_0736                               ;; 00:0739 $20 $fb
     ld   HL, wD64C                                     ;; 00:073b $21 $4c $d6
     bit  3, [HL]                                       ;; 00:073e $cb $5e
-    jp   NZ, call_00_068a                                ;; 00:0740 $c2 $8a $06
+    jp   NZ, call_00_068a_Player_ExtraLifeFly                                ;; 00:0740 $c2 $8a $06
     set  3, [HL]                                       ;; 00:0743 $cb $de
     xor  A, A                                          ;; 00:0745 $af
     ld   [wD649_CollectibleAmount], A                                    ;; 00:0746 $ea $49 $d6
     ret                                                ;; 00:0749 $c9
-.data_00_074a:
-    db   $1e, $28, $32                                 ;; 00:074a .??
+.data_00_074a_CollectibleMilestoneThresholds:
+; 3-byte table. Successive collectible count thresholds that 
+; trigger milestone rewards, indexed by wD648
+    db   30, 40, 50                                 ;; 00:074a .??
 
-call_00_074d:
+call_00_074d_HUD_MarkDirty:
+; Returns without action if demo mode (wD61E_DemoModeEnabled) or collectible mode (wD623) is active. 
+; Otherwise sets bit 1 of wD60E_HUDDirtyFlags (score dirty flag)
     ld   A, [wD61E_DemoModeEnabled]                                    ;; 00:074d $fa $1e $d6
-    ld   HL, wD623                                     ;; 00:0750 $21 $23 $d6
+    ld   HL, wD623_CollectibleMode                                     ;; 00:0750 $21 $23 $d6
     or   A, [HL]                                       ;; 00:0753 $b6
     ret  NZ                                            ;; 00:0754 $c0
-    ld   HL, wD60E                                     ;; 00:0755 $21 $0e $d6
+    ld   HL, wD60E_HUDDirtyFlags                                     ;; 00:0755 $21 $0e $d6
     set  1, [HL]                                       ;; 00:0758 $cb $ce
     ret                                                ;; 00:075a $c9
 
 call_00_075b_Player_CanBeDamaged:
+; Returns NZ (cannot be damaged) if wD750 is nonzero (invincibility timer active), or if wD755/wD756 
+; (fly type $01 shield timer) are nonzero, or if wD753/wD754 (fly type $02 shield timer) are nonzero. 
+; Returns Z (can be damaged) only if all three are clear
     ld   A, [wD750]                                    ;; 00:075b $fa $50 $d7
     and  A, A                                          ;; 00:075e $a7
     ret  NZ                                            ;; 00:075f $c0
@@ -1236,11 +1304,11 @@ call_00_0ac1:
     ld   [wD6F9_BgMapLoadingFlags], A                                    ;; 00:0aec $ea $f9 $d6
     ret                                                ;; 00:0aef $c9
 .jr_00_0af0:
-    ld   HL, wD77B                                     ;; 00:0af0 $21 $7b $d7
+    ld   HL, wD77B_OverrideVRAMWritePending                                     ;; 00:0af0 $21 $7b $d7
     ld   A, [HL]                                       ;; 00:0af3 $7e
     res  0, [HL]                                       ;; 00:0af4 $cb $86
     bit  0, A                                          ;; 00:0af6 $cb $47
-    jp   NZ, call_00_1779_BgMap_WriteGBCPaletteAttributes                                ;; 00:0af8 $c2 $79 $17
+    jp   NZ, call_00_1779_BgMap_WriteOverridePaletteAttributes                                ;; 00:0af8 $c2 $79 $17
     ld   A, [wD72F]                                    ;; 00:0afb $fa $2f $d7
     and  A, A                                          ;; 00:0afe $a7
     jr   Z, .jr_00_0b0c                                ;; 00:0aff $28 $0b
@@ -1251,10 +1319,10 @@ call_00_0ac1:
     ld   [HL], A                                       ;; 00:0b08 $77
     jp   .jp_00_0b24                                   ;; 00:0b09 $c3 $24 $0b
 .jr_00_0b0c:
-    ld   A, [wD60E]                                    ;; 00:0b0c $fa $0e $d6
+    ld   A, [wD60E_HUDDirtyFlags]                                    ;; 00:0b0c $fa $0e $d6
     bit  3, A                                          ;; 00:0b0f $cb $5f
     call NZ, call_03_6941_HUD_LoadCollectibleSprites                              ;; 00:0b11 $c4 $41 $69
-    ld   A, [wD60E]                                    ;; 00:0b14 $fa $0e $d6
+    ld   A, [wD60E_HUDDirtyFlags]                                    ;; 00:0b14 $fa $0e $d6
     bit  1, A                                          ;; 00:0b17 $cb $4f
     jp   NZ, call_03_6d13_HUD_LoadLivesDigits                              ;; 00:0b19 $c2 $13 $6d
     bit  2, A                                          ;; 00:0b1c $cb $57
@@ -1752,9 +1820,9 @@ call_00_0f01:
     ld   [wCCFD], A                                    ;; 00:0f03 $ea $fd $cc
     xor  A, A                                          ;; 00:0f06 $af
     ld   [wD6F9_BgMapLoadingFlags], A                                    ;; 00:0f07 $ea $f9 $d6
-    ld   [wD60E], A                                    ;; 00:0f0a $ea $0e $d6
+    ld   [wD60E_HUDDirtyFlags], A                                    ;; 00:0f0a $ea $0e $d6
     ld   [wD60F_HDMATransferFlags], A                                    ;; 00:0f0d $ea $0f $d6
-    ld   [wD77B], A                                    ;; 00:0f10 $ea $7b $d7
+    ld   [wD77B_OverrideVRAMWritePending], A                                    ;; 00:0f10 $ea $7b $d7
     ld   [wD72F], A                                    ;; 00:0f13 $ea $2f $d7
     ld   [wD611_AnimatedTileId], A                                    ;; 00:0f16 $ea $11 $d6
     ld   [wD6E2], A                                    ;; 00:0f19 $ea $e2 $d6
@@ -2269,383 +2337,7 @@ call_00_120c_SetupMusic:
 
 INCLUDE "code/bank00_maps_core.asm"
 
-call_00_1f46_HandlePlayerAttackingSpecialTiles:
-    ld   A, [wD77D]                                    ;; 00:1f46 $fa $7d $d7
-    and  A, A                                          ;; 00:1f49 $a7
-    ret  NZ                                            ;; 00:1f4a $c0
-    ld   A, [wD77B]                                    ;; 00:1f4b $fa $7b $d7
-    and  A, A                                          ;; 00:1f4e $a7
-    ret  NZ                                            ;; 00:1f4f $c0
-    ld   A, [wD76B_Player_IsAttacking]                                    ;; 00:1f50 $fa $6b $d7
-    and  A, A                                          ;; 00:1f53 $a7
-    ret  Z                                             ;; 00:1f54 $c8
-    xor  A, A                                          ;; 00:1f55 $af
-    ld   [wD76B_Player_IsAttacking], A                                    ;; 00:1f56 $ea $6b $d7
-    ld   HL, wD20E_PlayerXPosition                                     ;; 00:1f59 $21 $0e $d2
-    ld   A, [HL+]                                      ;; 00:1f5c $2a
-    ld   H, [HL]                                       ;; 00:1f5d $66
-    ld   L, A                                          ;; 00:1f5e $6f
-    add  HL, HL                                        ;; 00:1f5f $29
-    add  HL, HL                                        ;; 00:1f60 $29
-    add  HL, HL                                        ;; 00:1f61 $29
-    ld   A, H                                          ;; 00:1f62 $7c
-    ld   [wD782], A                                    ;; 00:1f63 $ea $82 $d7
-    ld   HL, wD210_PlayerYPosition                                     ;; 00:1f66 $21 $10 $d2
-    ld   A, [HL+]                                      ;; 00:1f69 $2a
-    ld   H, [HL]                                       ;; 00:1f6a $66
-    ld   L, A                                          ;; 00:1f6b $6f
-    add  HL, HL                                        ;; 00:1f6c $29
-    add  HL, HL                                        ;; 00:1f6d $29
-    add  HL, HL                                        ;; 00:1f6e $29
-    ld   A, H                                          ;; 00:1f6f $7c
-    ld   [wD783], A                                    ;; 00:1f70 $ea $83 $d7
-    ld   L, C                                          ;; 00:1f73 $69
-    ld   H, $00                                        ;; 00:1f74 $26 $00
-    add  HL, HL                                        ;; 00:1f76 $29
-    ld   DE, data_00_1ff6                                     ;; 00:1f77 $11 $f6 $1f
-    add  HL, DE                                        ;; 00:1f7a $19
-    ld   A, [HL+]                                      ;; 00:1f7b $2a
-    ld   H, [HL]                                       ;; 00:1f7c $66
-    ld   L, A                                          ;; 00:1f7d $6f
-    or   A, H                                          ;; 00:1f7e $b4
-    ret  Z                                             ;; 00:1f7f $c8
-call_00_1f80:
-    ld   E, [HL]                                       ;; 00:1f80 $5e
-    inc  HL                                            ;; 00:1f81 $23
-    ld   D, [HL]                                       ;; 00:1f82 $56
-    inc  HL                                            ;; 00:1f83 $23
-    push DE                                            ;; 00:1f84 $d5
-    ld   A, [HL+]                                      ;; 00:1f85 $2a
-    and  A, A                                          ;; 00:1f86 $a7
-    jr   Z, .jr_00_1fef                                ;; 00:1f87 $28 $66
-    ld   [wD77D], A                                    ;; 00:1f89 $ea $7d $d7
-    ld   A, [HL+]                                      ;; 00:1f8c $2a
-    ld   [wD787], A                                    ;; 00:1f8d $ea $87 $d7
-    ld   E, [HL]                                       ;; 00:1f90 $5e
-    inc  HL                                            ;; 00:1f91 $23
-    ld   D, [HL]                                       ;; 00:1f92 $56
-    inc  HL                                            ;; 00:1f93 $23
-    ld   A, [HL+]                                      ;; 00:1f94 $2a
-    ld   [wD784], A                                    ;; 00:1f95 $ea $84 $d7
-    ld   A, [HL+]                                      ;; 00:1f98 $2a
-    ld   [wD785], A                                    ;; 00:1f99 $ea $85 $d7
-    ld   A, L                                          ;; 00:1f9c $7d
-    ld   [wD780], A                                    ;; 00:1f9d $ea $80 $d7
-    ld   A, H                                          ;; 00:1fa0 $7c
-    ld   [wD781], A                                    ;; 00:1fa1 $ea $81 $d7
-    ld   A, D                                          ;; 00:1fa4 $7a
-    add  A, A                                          ;; 00:1fa5 $87
-    add  A, A                                          ;; 00:1fa6 $87
-    add  A, A                                          ;; 00:1fa7 $87
-    add  A, A                                          ;; 00:1fa8 $87
-    add  A, A                                          ;; 00:1fa9 $87
-    ld   HL, wD210_PlayerYPosition                                     ;; 00:1faa $21 $10 $d2
-    add  A, [HL]                                       ;; 00:1fad $86
-    and  A, $e0                                        ;; 00:1fae $e6 $e0
-    ld   L, A                                          ;; 00:1fb0 $6f
-    ld   H, $00                                        ;; 00:1fb1 $26 $00
-    add  HL, HL                                        ;; 00:1fb3 $29
-    add  HL, HL                                        ;; 00:1fb4 $29
-    ld   A, E                                          ;; 00:1fb5 $7b
-    add  A, A                                          ;; 00:1fb6 $87
-    add  A, A                                          ;; 00:1fb7 $87
-    add  A, A                                          ;; 00:1fb8 $87
-    add  A, A                                          ;; 00:1fb9 $87
-    add  A, A                                          ;; 00:1fba $87
-    ld   C, A                                          ;; 00:1fbb $4f
-    ld   A, [wD20E_PlayerXPosition]                                    ;; 00:1fbc $fa $0e $d2
-    add  A, C                                          ;; 00:1fbf $81
-    rrca                                               ;; 00:1fc0 $0f
-    rrca                                               ;; 00:1fc1 $0f
-    rrca                                               ;; 00:1fc2 $0f
-    and  A, $1c                                        ;; 00:1fc3 $e6 $1c
-    or   A, L                                          ;; 00:1fc5 $b5
-    ld   [wD77E], A                                    ;; 00:1fc6 $ea $7e $d7
-    ld   A, H                                          ;; 00:1fc9 $7c
-    add  A, $c0                                        ;; 00:1fca $c6 $c0
-    ld   [wD77F], A                                    ;; 00:1fcc $ea $7f $d7
-    ld   HL, wD20E_PlayerXPosition                                     ;; 00:1fcf $21 $0e $d2
-    ld   A, [HL+]                                      ;; 00:1fd2 $2a
-    ld   H, [HL]                                       ;; 00:1fd3 $66
-    ld   L, A                                          ;; 00:1fd4 $6f
-    add  HL, HL                                        ;; 00:1fd5 $29
-    add  HL, HL                                        ;; 00:1fd6 $29
-    add  HL, HL                                        ;; 00:1fd7 $29
-    ld   A, H                                          ;; 00:1fd8 $7c
-    add  A, E                                          ;; 00:1fd9 $83
-    ld   [wD782], A                                    ;; 00:1fda $ea $82 $d7
-    ld   HL, wD210_PlayerYPosition                                     ;; 00:1fdd $21 $10 $d2
-    ld   A, [HL+]                                      ;; 00:1fe0 $2a
-    ld   H, [HL]                                       ;; 00:1fe1 $66
-    ld   L, A                                          ;; 00:1fe2 $6f
-    add  HL, HL                                        ;; 00:1fe3 $29
-    add  HL, HL                                        ;; 00:1fe4 $29
-    add  HL, HL                                        ;; 00:1fe5 $29
-    ld   A, H                                          ;; 00:1fe6 $7c
-    add  A, D                                          ;; 00:1fe7 $82
-    ld   [wD783], A                                    ;; 00:1fe8 $ea $83 $d7
-    xor  A, A                                          ;; 00:1feb $af
-    ld   [wD786], A                                    ;; 00:1fec $ea $86 $d7
-.jr_00_1fef:
-    pop  HL                                            ;; 00:1fef $e1
-    ld   A, L                                          ;; 00:1ff0 $7d
-    or   A, H                                          ;; 00:1ff1 $b4
-    call NZ, call_00_10bd_JumpHL                              ;; 00:1ff2 $c4 $bd $10
-    ret                                                ;; 00:1ff5 $c9
-
-data_00_1ff6:
-    db   $74, $20, $d3, $20, $ff, $20, $1c, $21        ;; 00:1ff6 ????????
-    db   $39, $21, $56, $21, $ae, $21, $c2, $21        ;; 00:1ffe ????????
-    db   $e4, $21, $06, $22, $6e, $21, $00, $00        ;; 00:2006 ????????
-    db   $00, $00, $00, $00, $00, $00, $eb, $20        ;; 00:200e ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:2016 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:201e ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:2026 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:202e ????????
-    db   $17, $22, $00, $00, $00, $00, $00, $00        ;; 00:2036 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:203e ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:2046 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:204e ????????
-    db   $00, $00, $00, $00, $66, $22, $00, $00        ;; 00:2056 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:205e ????????
-    db   $e7, $22, $c9, $22, $80, $20, $df, $20        ;; 00:2066 ????????
-    db   $0b, $21, $28, $21, $45, $21, $8c, $20        ;; 00:206e ????????
-    db   $01, $00, $00, $00, $01, $01, $2a, $02        ;; 00:2076 ????????
-    db   $fa, $01, $8c, $20, $01, $00, $00, $00        ;; 00:207e ????????
-;    db   $01, $01, $2a, $02, $ea, $01,                 ;; 00:2086 ????????
-;     db   $21, $82                                      ;; 00:2086 ????????
-;    db   $d7, $4e, $21, $83, $d7, $46, $21, $b6        ;; 00:208e ????????
-;    db   $20, $11, $04, $00, $e5, $fa, $24, $d6        ;; 00:2096 ????????
-;    db   $be, $20, $0d, $23, $2a, $b9, $20, $08        ;; 00:209e ????????
-;    db   $2a, $b8, $20, $04, $7e, $ea, $18, $d6        ;; 00:20a6 ????????
-;    db   $e1, $19, $7e, $fe, $ff, $20, $e5, $c9        ;; 00:20ae ????????
-    
-    ld   bc,$2A01
-    ld   [bc],a
-    ld   [$2101],a
-    add  d
-    rst  $10
-    ld   c,[hl]
-    ld   hl,wD783
-jr_00_2093:
-    ld   b,[hl]
-    ld   hl,$20B6
-    ld   de,$0004
-jr_00_209a:
-    push hl
-    ld   a,[wD624_CurrentLevelId]
-    cp   [hl]
-    jr   nz,.jr_00_20ae
-    inc  hl
-    ldi  a,[hl]
-    cp   c
-    jr   nz,.jr_00_20ae
-    ldi  a,[hl]
-    cp   b
-    jr   nz,.jr_00_20ae
-    ld   a,[hl]
-    ld   [wD618_CheckpointSpawnId],a
-.jr_00_20ae:
-    pop  hl
-    add  hl,de
-    ld   a,[hl]
-    cp   a,$FF
-    jr   nz,jr_00_209a
-    ret  
-    
-    db   $01, $26, $3a, $01, $02, $4b, $0a, $01        ;; 00:20b6 ????????
-    db   $05, $10, $15, $01, $0a, $4d, $34, $01        ;; 00:20be ????????
-    db   $08, $37, $56, $01, $09, $3f, $70, $01        ;; 00:20c6 ????????
-    db   $18, $0e, $34, $01, $ff, $fa, $20, $01        ;; 00:20ce ????????
-    db   $00, $00, $00, $01, $01, $2a, $02, $fa        ;; 00:20d6 ????????
-    db   $01, $fa, $20, $01, $00, $00, $00, $01        ;; 00:20de ????????
-    db   $01, $2a, $02, $ea, $01, $fa, $20, $02        ;; 00:20e6 ????????
-    db   $28, $00, $00, $01, $01, $28, $02, $fa        ;; 00:20ee ????????
-    db   $01, $08, $9f, $01, $3e, $02, $c3, $47        ;; 00:20f6 ????????
-    db   $06, $17, $21, $01, $00, $00, $00, $01        ;; 00:20fe ????????
-    db   $01, $2a, $02, $fa, $01, $17, $21, $01        ;; 00:2106 ????????
-    db   $00, $00, $00, $01, $01, $2a, $02, $ea        ;; 00:210e ????????
-    db   $01, $3e, $03, $c3, $47, $06, $34, $21        ;; 00:2116 ????????
-    db   $01, $00, $00, $00, $01, $01, $2a, $02        ;; 00:211e ????????
-    db   $fa, $01, $34, $21, $01, $00, $00, $00        ;; 00:2126 ????????
-    db   $01, $01, $2a, $02, $ea, $01, $3e, $01        ;; 00:212e ????????
-    db   $c3, $47, $06, $51, $21, $01, $00, $00        ;; 00:2136 ????????
-    db   $00, $01, $01, $2a, $02, $fa, $01, $51        ;; 00:213e ????????
-    db   $21, $01, $00, $00, $00, $01, $01, $2a        ;; 00:2146 ????????
-    db   $02, $ea, $01, $3e, $04, $c3, $47, $06        ;; 00:214e ????????
-    db   $86, $21, $03, $3c, $00, $ff, $01, $02        ;; 00:2156 ????????
-    db   $23, $22, $00, $00, $e2, $01, $08, $d9        ;; 00:215e ????????
-    db   $01, $da, $01, $08, $00, $00, $e2, $01        ;; 00:2166 ????????
-    db   $86, $21, $03, $3c, $00, $00, $01, $02        ;; 00:216e ????????
-    db   $23, $22, $00, $00, $e2, $01, $08, $d9        ;; 00:2176 ????????
-    db   $01, $da, $01, $08, $00, $00, $e2, $01        ;; 00:217e ????????
-    db   $21, $72, $d7, $34
-
-    ld   c,$05
-    ld   de,$D799
-    ld   a,[wD624_CurrentLevelId]
-    cp   a,MAP_SCREAM_TV_SMELLRAISER
-    jr   z,.jr_00_219b
-    ld   c,$08
-    ld   de,wD79A
-.jr_00_219b:
-    ld   a,c
-    cp   [hl]
-    jr   nz,.jr_00_21a2
-    ld   a,$02
-    ld   [de],a
-.jr_00_21a2:
-    FARCALL call_00_3951_Entity_SpawnPlayerClone
-    ret  
-
-    db   $bc, $21, $01, $00, $ff, $00, $02, $01        ;; 00:21ae ????????
-    db   $2c, $26, $c9, $01, $ca, $01, $21, $8b        ;; 00:21b6 ????????
-    db   $d7, $36, $02, $c9, $00, $00, $05, $08        ;; 00:21be ????????
-    db   $ff, $00, $02, $01, $2a, $25, $d3, $01        ;; 00:21c6 ????????
-    db   $d4, $01, $08, $d1, $01, $d2, $01, $08        ;; 00:21ce ????????
-    db   $cf, $01, $d0, $01, $08, $cd, $01, $ce        ;; 00:21d6 ????????
-    db   $01, $0c, $cb, $01, $cc, $01, $00, $00        ;; 00:21de ????????
-    db   $05, $08, $00, $00, $02, $01, $2a, $25        ;; 00:21e6 ????????
-    db   $d3, $01, $d4, $01, $08, $d1, $01, $d2        ;; 00:21ee ????????
-    db   $01, $08, $cf, $01, $d0, $01, $08, $cd        ;; 00:21f6 ????????
-    db   $01, $ce, $01, $0c, $cb, $01, $cc, $01        ;; 00:21fe ????????
-    db   $11, $22, $01, $00, $00, $00, $01, $01        ;; 00:2206 ????????
-    db   $0a, $c7, $01, $21, $8b, $d7, $36, $02        ;; 00:220e ????????
-    db   $c9, $25, $22, $01, $08, $00, $ff, $01        ;; 00:2216 ????????
-    db   $02, $28, $1b, $f8, $01, $f9, $01             ;; 00:221e ???????? 
-;    db   $21        
-;    db   $82, $d7, $4e, $21, $83, $d7, $46, $21        ;; 00:2226 ????????
-;    db   $53, $22, $1e, $00, $2a, $b9, $20, $04        ;; 00:222e ????????
-;    db   $7e, $b8, $28, $08, $23, $1c, $7e, $fe        ;; 00:2236 ????????
-;    db   $ff, $20, $f1, $c9, $16, $00, $21, $8b        ;; 00:223e ????????
-;    db   $d7, $19, $7e, $a7, $c0, $36, $01, $7b        ;; 00:2246 ????????
-;    db   $fe, $06, $c0, $34, $c9                       ;; 00:224e ????????
-    
-    ld   hl,wD782
-    ld   c,[hl]
-    ld   hl,wD783
-    ld   b,[hl]
-    ld   hl,.data_00_2253
-    ld   e,$00
-.jr_00_2232:
-    ldi  a,[hl]
-    cp   c
-    jr   nz,.jr_00_223a
-    ld   a,[hl]
-    cp   b
-    jr   z,.jr_00_2242
-.jr_00_223a:
-    inc  hl
-    inc  e
-    ld   a,[hl]
-    cp   a,$FF
-    jr   nz,.jr_00_2232
-    ret  
-.jr_00_2242:
-    ld   d,$00
-    ld   hl,wD78B
-    add  hl,de
-    ld   a,[hl]
-    and  a
-    ret  nz
-    ld   [hl],$01
-    ld   a,e
-    cp   a,$06
-    ret  nz
-    inc  [hl]
-    ret  
-.data_00_2253:
-    db   $25, $59, $2a
-    db   $59, $2f, $59, $47, $51, $54, $55, $5a        ;; 00:2256 ????????
-    db   $55, $29, $4a, $39, $64, $10, $47, $ff        ;; 00:225e ????????
-    db   $74, $22, $00, $08, $00, $00, $01, $01        ;; 00:2266 ????????
-    db   $28, $1b, $f8, $01, $f9, $01                  ;; 00:226e ????????
-    
-;    db   $21, $82
-;    db   $d7, $4e, $21, $83, $d7, $46, $21, $a7        ;; 00:2276 ????????
-;    db   $22, $fa, $24, $d6, $fe, $05, $28, $03        ;; 00:227e ????????
-;    db   $21, $b8, $22, $1e, $00, $2a, $b9, $20        ;; 00:2286 ????????
-;    db   $04, $7e, $b8, $28, $08, $23, $1c, $7e        ;; 00:228e ????????
-;    db   $fe, $ff, $20, $f1, $c9, $16, $00, $21        ;; 00:2296 ????????
-;    db   $8b, $d7, $19, $7e, $a7, $c0, $36, $02        ;; 00:229e ????????
-;    db   $c9,                                          ;; 00:22a6 ????????
-
-    ld   hl,wD782
-    ld   c,[hl]
-    ld   hl,wD783
-    ld   b,[hl]
-    ld   hl,.data_00_22a7
-    ld   a,[wD624_CurrentLevelId]
-    cp   a,MAP_KUNG_FU_THEATER_MAO_TSE_TONGUE
-    jr   z,.jr_00_2289
-    ld   hl,.data_00_22b8
-.jr_00_2289:
-    ld   e,$00
-.jr_00_228b:
-    ldi  a,[hl]
-    cp   c
-    jr   nz,.jr_00_2293
-    ld   a,[hl]
-    cp   b
-    jr   z,.jr_00_229b
-.jr_00_2293:
-    inc  hl
-    inc  e
-    ld   a,[hl]
-    cp   a,$FF
-    jr   nz,.jr_00_228b
-    ret  
-.jr_00_229b:
-    ld   d,$00
-    ld   hl,wD78B
-    add  hl,de
-    ld   a,[hl]
-    and  a
-    ret  nz
-    ld   [hl],$02
-    ret  
-.data_00_22a7:
-    db   $00, $00, $4c, $3a, $4b, $05, $44             ;; 00:22a6 ????????
-    db   $36, $00, $00, $32, $04, $5a, $30, $48        ;; 00:22ae ????????
-    db   $0e, $ff
-.data_00_22b8:
-    db   $5e, $0d, $43, $1f, $4f, $1f        ;; 00:22b6 ????????
-    db   $05, $0f, $75, $04, $51, $1e, $73, $2d        ;; 00:22be ????????
-    db   $6e, $2d, $ff, $e1, $22, $03, $06, $00        ;; 00:22c6 ????????
-    db   $00, $02, $01, $28, $2c, $b9, $01, $ba        ;; 00:22ce ????????
-    db   $01, $08, $bb, $01, $bc, $01, $08, $bd        ;; 00:22d6 ????????
-    db   $01, $be, $01, $3e, $20, $ea, $15, $d6        ;; 00:22de ????????
-    db   $c9, $ff, $22, $03, $06, $00, $00, $02        ;; 00:22e6 ????????
-    db   $01, $28, $2c, $bb, $01, $bc, $01, $08        ;; 00:22ee ????????
-    db   $b9, $01, $ba, $01, $08, $b7, $01, $b8        ;; 00:22f6 ????????
-    db   $01, $3e, $00, $ea, $15, $d6, $c9             ;; 00:22fe ???????
-
-call_00_2305:
-    ld   HL, wD78B                                     ;; 00:2305 $21 $8b $d7
-    ld   B, $00                                        ;; 00:2308 $06 $00
-    ld   C, $00                                        ;; 00:230a $0e $00
-.jr_00_230c:
-    ld   A, [HL]                                       ;; 00:230c $7e
-    cp   A, $02                                        ;; 00:230d $fe $02
-    jr   C, .jr_00_2314                                ;; 00:230f $38 $03
-    inc  [HL]                                          ;; 00:2311 $34
-    jr   Z, .jr_00_231c                                ;; 00:2312 $28 $08
-.jr_00_2314:
-    inc  HL                                            ;; 00:2314 $23
-    inc  C                                             ;; 00:2315 $0c
-    ld   A, C                                          ;; 00:2316 $79
-    cp   A, $10                                        ;; 00:2317 $fe $10
-    jr   NZ, .jr_00_230c                               ;; 00:2319 $20 $f1
-    ret                                                ;; 00:231b $c9
-.jr_00_231c:
-    dec  [HL]                                          ;; 00:231c $35
-    ld   A, [wD77D]                                    ;; 00:231d $fa $7d $d7
-    and  A, A                                          ;; 00:2320 $a7
-    ret  NZ                                            ;; 00:2321 $c0
-    ld   A, [wD77B]                                    ;; 00:2322 $fa $7b $d7
-    and  A, A                                          ;; 00:2325 $a7
-    ret  NZ                                            ;; 00:2326 $c0
-    ld   [HL], $01                                     ;; 00:2327 $36 $01
+INCLUDE "code/bank00_special_tile_scripts.asm"
 
 INCLUDE "code/bank00_mission_preview.asm"
 

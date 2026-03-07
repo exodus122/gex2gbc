@@ -53,7 +53,7 @@ call_00_2e77_MapData_GetMapBank:
     ld   A, [HL]                                       ;; 00:2e7e $7e
     ret                                                ;; 00:2e7f $c9
 
-call_00_2e80_MapData_GetBlocksetOverrideBank:
+call_00_2e80_MapData_GetExtendedMapBank:
     call call_00_2eb0_MapData_GetMapDataAddr                                  ;; 00:2e80 $cd $b0 $2e
     ld   DE, $05                                       ;; 00:2e83 $11 $05 $00
     add  HL, DE                                        ;; 00:2e86 $19
@@ -68,7 +68,7 @@ call_00_2e89_MapData_GetBlocksetAndCollisionBank:
     ret                                                ;; 00:2e91 $c9
     ret                                                ;; 00:2e92 $c9
 
-call_00_2e93_MapData_GetBlocksetOverrideBit:
+call_00_2e93_MapData_GetExtendedMapBit:
     call call_00_2eb0_MapData_GetMapDataAddr                                  ;; 00:2e93 $cd $b0 $2e
     ld   DE, $08                                       ;; 00:2e96 $11 $08 $00
     add  HL, DE                                        ;; 00:2e99 $19
@@ -108,10 +108,10 @@ call_00_2eb0_MapData_GetMapDataAddr:
 ; 0x1 remote progress related
 ; 0x2-0x3 is a pointer to the level's text (level name, mission names)
 ; 0x4 is map bank number
-; 0x5 is blockset override bank
+; 0x5 is extended map bank
 ; 0x6 is blockset/collision data bank
 ; 0x7 unused (always 0)
-; 0x8 is the bit to use in the blockset override data bank
+; 0x8 is the bit to use in the extended map data bank, for this map
 ; 0x9 is tileset bank
 ; 0xa-0xb is tileset bank offset
 ; 0xc unused (always 0)

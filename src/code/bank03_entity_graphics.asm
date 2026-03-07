@@ -250,7 +250,7 @@ call_03_5b5b_HUD_BuildSprites:
 ; Builds the OAM entries for the player HUD/status display (health hearts etc.) into wCC80. 
 ; Selects one of 5 different 3-byte data layouts depending on game state: level 0 uses .data_03_5beb, 
 ; other levels use .data_03_5bd3, demo mode uses a specific layout, and if a special condition 
-; (wD623 set, wD770/wD771 in range) uses .data_03_5c1b (a "low health" or special display variant). 
+; (wD623_CollectibleMode set, wD770/wD771 in range) uses .data_03_5c1b (a "low health" or special display variant). 
 ; Writes 8 OAM entries as (palette, tile, bank) triplets to wCC80. If wD687 bit 7 is set, falls into 
 ; .jp_03_5c33_HUD_BuildSprites_HealthBased (health-based tile select path)
     ld   A, [wD688]                                    ;; 03:5b5b $fa $88 $d6
@@ -264,7 +264,7 @@ call_03_5b5b_HUD_BuildSprites:
     ld   A, [wD61E_DemoModeEnabled]                                    ;; 03:5b6d $fa $1e $d6
     and  A, A                                          ;; 03:5b70 $a7
     jr   NZ, .jr_03_5ba7                               ;; 03:5b71 $20 $34
-    ld   A, [wD623]                                    ;; 03:5b73 $fa $23 $d6
+    ld   A, [wD623_CollectibleMode]                                    ;; 03:5b73 $fa $23 $d6
     and  A, A                                          ;; 03:5b76 $a7
     jr   Z, .jr_03_5b98                                ;; 03:5b77 $28 $1f
     ld   DE, .data_03_5c03                             ;; 03:5b79 $11 $03 $5c

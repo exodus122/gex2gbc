@@ -482,7 +482,7 @@ call_02_5253_EntityAction_RedRemote_unk0:
     call NZ, call_00_3bf4_Entity_TriggerPaletteSwap                              ;; 02:5256 $c4 $f4 $3b
     ld   HL, wD60F_HDMATransferFlags                                     ;; 02:5259 $21 $0f $d6
     bit  4, [HL]                                       ;; 02:525c $cb $66
-    call Z, call_00_0634                               ;; 02:525e $cc $34 $06
+    call Z, call_00_0634_FlyPowerup_StartEntry                               ;; 02:525e $cc $34 $06
     ld   A, [wD59E]                                    ;; 02:5261 $fa $9e $d5
     and  A, A                                          ;; 02:5264 $a7
     ld   A, $01                                        ;; 02:5265 $3e $01
@@ -648,7 +648,7 @@ call_02_5348_EntityAction_ScreamTVMovingPlatform_Update:
     and  A, $0f                                        ;; 02:5361 $e6 $0f
     ld   L, A                                          ;; 02:5363 $6f
     ld   H, $00                                        ;; 02:5364 $26 $00
-    ld   DE, wD78B                                     ;; 02:5366 $11 $8b $d7
+    ld   DE, wD78B_OverrideSlotTable                                     ;; 02:5366 $11 $8b $d7
     add  HL, DE                                        ;; 02:5369 $19
     ld   A, [HL]                                       ;; 02:536a $7e
     and  A, A                                          ;; 02:536b $a7
@@ -664,7 +664,7 @@ call_02_5373_EntityAction_ScreamTVPushBlock_Update:
     ld   a,[hl]
     sbc  a,$02
     ret  nc
-    ld   hl,wD78B
+    ld   hl,wD78B_OverrideSlotTable
     ld   a,[hl]
     and  a
     ret  nz
@@ -1139,7 +1139,7 @@ call_02_56af_EntityAction_MonaLisaElevator_Update:
     dec  l
     ld   [hl],a
 .jr_02_56BB:
-    ld   a,[wD78B]
+    ld   a,[wD78B_OverrideSlotTable]
     and  a
     ret  z
     call call_00_3559_Entity_ApplyVelocityXY_SubpixelBoth
@@ -1612,12 +1612,12 @@ call_02_5a28_EntityAction_Mushroom_Update:
     ld   A, [HL]                                       ;; 02:5a37 $7e
     cp   A, $05                                        ;; 02:5a38 $fe $05
     jr   NZ, .jr_02_5a41                               ;; 02:5a3a $20 $05
-    ld   HL, wD79A                                     ;; 02:5a3c $21 $9a $d7
+    ld   HL, wD79A_OverrideSlotTable15                                     ;; 02:5a3c $21 $9a $d7
     ld   [HL], $02                                     ;; 02:5a3f $36 $02
 .jr_02_5a41:
     ld   C, $08                                        ;; 02:5a41 $0e $08
     FARCALL call_0a_7b9a_EntitySpawn_SpawnChildEntity
-    call call_00_3985_Entity_SpawnProjectileInit                                  ;; 02:5a4e $cd $85 $39
+    call call_00_3985_Entity_ParticleBurstInit                                  ;; 02:5a4e $cd $85 $39
     ld   H, $d2                                        ;; 02:5a51 $26 $d2
     ld   A, $20                                        ;; 02:5a53 $3e $20
 .jr_02_5a55:
@@ -1692,7 +1692,7 @@ call_02_5aab_EntityAction_ToonTVVanishingBlock_unk0:
     inc  l
     ld   l,[hl]
     ld   h,$00
-    ld   de,wD78B
+    ld   de,wD78B_OverrideSlotTable
     add  hl,de
     ld   a,[hl]
     and  a
@@ -1843,7 +1843,7 @@ call_02_5bb6_EntityAction_MovingLog_Update:
     and  A, $0f                                        ;; 02:5bcf $e6 $0f
     ld   L, A                                          ;; 02:5bd1 $6f
     ld   H, $00                                        ;; 02:5bd2 $26 $00
-    ld   DE, wD78B                                     ;; 02:5bd4 $11 $8b $d7
+    ld   DE, wD78B_OverrideSlotTable                                     ;; 02:5bd4 $11 $8b $d7
     add  HL, DE                                        ;; 02:5bd7 $19
     ld   A, [HL]                                       ;; 02:5bd8 $7e
     and  A, A                                          ;; 02:5bd9 $a7
@@ -2291,7 +2291,7 @@ call_02_5ebd_EntityAction_Cannon_Update:
     ld   a,l
     add  a,$20
     jr   nz,.jr_02_5ECC
-    ld   hl,wD615
+    ld   hl,wD615_Cannon_FacingDirection
     ld   c,[hl]
     call call_00_3290_Entity_SetFacingDirection
     ld   c,$0D
@@ -2366,7 +2366,7 @@ call_02_5f50_EntityAction_DragonBodySegment_Update:
     call call_02_613f_DragonHead_Sub2
     ld   a,[wD613]
     and  a
-    jp   z,call_00_3985_Entity_SpawnProjectileInit
+    jp   z,call_00_3985_Entity_ParticleBurstInit
     jp   call_02_6029_DragonHead_Sub1
 
 call_02_5f67_EntityAction_DragonHead_Update:
@@ -2375,8 +2375,8 @@ call_02_5f67_EntityAction_DragonHead_Update:
     and  a
     jp   nz,.jr_02_5F79
     ld   a,$02
-    ld   [wD78F],a
-    jp   call_00_3985_Entity_SpawnProjectileInit
+    ld   [wD78F_OverrideSlotTable4],a
+    jp   call_00_3985_Entity_ParticleBurstInit
 .jr_02_5F79:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_OTHER_FLAGS
     ldd  a,[hl]
@@ -2721,7 +2721,7 @@ call_02_6275_SamuraiBody_Sub:
     add  a,$20
     jr   nz,.jr_02_6290
     pop  af
-    jp   call_00_3985_Entity_SpawnProjectileInit
+    jp   call_00_3985_Entity_ParticleBurstInit
 .jr_02_629F:
     ld   a,l
     or   a,$01
@@ -2811,7 +2811,7 @@ call_02_62fc_EntityAction_SamuraiHead_unk1:
 call_02_6327_EntityAction_SamuraiHead_unk2:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     bit  ENTITY_MISC_FLAGS_UNK0_BIT,[hl]
-    jp   nz,call_00_3985_Entity_SpawnProjectileInit
+    jp   nz,call_00_3985_Entity_ParticleBurstInit
     ret  
 
 call_02_6335_EntityAction_Lizard_Update:
@@ -2851,7 +2851,7 @@ call_02_635d_EntityAction_Jar_unk0:
 
 call_02_6375_EntityAction_Jar_unk1:
     call call_00_3b8d_Entity_TickAnimationFrames
-    jp   z,call_00_3985_Entity_SpawnProjectileInit
+    jp   z,call_00_3985_Entity_ParticleBurstInit
     FARCALL call_03_6675_Entity_BuildSprites_Jar
     ret  
 
@@ -2947,7 +2947,7 @@ call_02_6409_EntityAction_KungFuMovingPlatform_Update:
     and  a,$0F
     ld   l,a
     ld   h,$00
-    ld   de,wD78B
+    ld   de,wD78B_OverrideSlotTable
     add  hl,de
     ld   a,[hl]
     and  a
@@ -4108,7 +4108,7 @@ call_02_6Ca7_Rez_Unk5Sub:
     FARCALL call_0a_7b9a_EntitySpawn_SpawnChildEntity
     ld   c,SFX_REZ_PROJECTILE
     call call_00_112f_QueueSFX
-    jp   call_00_3985_Entity_SpawnProjectileInit
+    jp   call_00_3985_Entity_ParticleBurstInit
 
 call_02_6cca_EntityAction_RezFollowingFire_Update:
     ld   h,$D2

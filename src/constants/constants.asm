@@ -152,7 +152,7 @@ DEF SFX_13                                 EQU $13 ; unused?
 DEF SFX_MENU_UNK_1                         EQU $14
 DEF SFX_MENU_UNK_2                         EQU $15
 DEF SFX_16                                 EQU $16 ; unused?
-DEF SFX_PROJECTILE                         EQU $17
+DEF SFX_ENEMY_DEFEATED                         EQU $17
 DEF SFX_18                                 EQU $18 ; unused?
 DEF SFX_HARD_HEAD_AREA_OBJECT              EQU $19
 DEF SFX_FALLING_OBJECT                     EQU $1A

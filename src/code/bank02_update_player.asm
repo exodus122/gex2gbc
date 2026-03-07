@@ -619,7 +619,7 @@ call_02_4c28_Player_CheckConveyorWaterTiles:
 
 call_02_4c4f_Player_CheckTileInteractions:
 ; Checks for kill tiles and climb entry. If action is $10 or $11 (already dying/dead), skips kill check. 
-; Otherwise if wD764 or wD765 = $23 (instant-kill tile), jumps to call_00_0696 (player death). 
+; Otherwise if wD764 or wD765 = $23 (instant-kill tile), jumps to call_00_0696_Player_Die (player death). 
 ; Then if down/crouch input (bit 6 of wD75A) is pressed: checks wD764 for tile $22 → action $1A (enter door); 
 ; tile $26 → action $1D (enter climb); checks wD766 (face tile) for $2C/$2D (directional ladder entry, 
 ; facing-direction validated) → action $1D. If none of those, looks up current action ID in data_02_4d15_ActionInputTransitionTable 
@@ -632,10 +632,10 @@ call_02_4c4f_Player_CheckTileInteractions:
     jr   Z, .jr_02_4c6a                                ;; 02:4c58 $28 $10
     ld   A, [wD764_TileTypeBehindGexsBody]                                    ;; 02:4c5a $fa $64 $d7
     cp   A, $23                                        ;; 02:4c5d $fe $23
-    jp   Z, call_00_0696                                 ;; 02:4c5f $ca $96 $06
+    jp   Z, call_00_0696_Player_Die                                 ;; 02:4c5f $ca $96 $06
     ld   A, [wD765_TileTypeBehindGexsBody]                                    ;; 02:4c62 $fa $65 $d7
     cp   A, $23                                        ;; 02:4c65 $fe $23
-    jp   Z, call_00_0696                                 ;; 02:4c67 $ca $96 $06
+    jp   Z, call_00_0696_Player_Die                                 ;; 02:4c67 $ca $96 $06
 .jr_02_4c6a:
     ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:4c6a $fa $5a $d7
     and  A, PADF_UP                                        ;; 02:4c6d $e6 $40

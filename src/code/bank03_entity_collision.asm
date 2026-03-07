@@ -127,7 +127,7 @@ call_03_4c76_EntityCollision_Dispatch:
     ret  nc
     call call_00_3931_Entity_KillSelf
     ld   a,$04
-    jp   call_00_0647
+    jp   call_00_0647_Player_EatFlyPowerup
 .jr_03_4d3f_CollisionHandler_SilverRemote:
 ; Overlap check; sets bit 4 of wD64C (silver remote collected flag), 
 ; plays SFX $03, kills entity and clears its flag slot
@@ -210,7 +210,7 @@ call_03_4c76_EntityCollision_Dispatch:
     ret  NC                                            ;; 03:4dbf $d0
     cp   A, $00                                        ;; 03:4dc0 $fe $00
     jp   Z, call_03_52be_Entity_DamagePlayerIfVulnerable                               ;; 03:4dc2 $ca $be $52
-    jp   call_00_3985_Entity_SpawnProjectileInit                                  ;; 03:4dc5 $c3 $85 $39
+    jp   call_00_3985_Entity_ParticleBurstInit                                  ;; 03:4dc5 $c3 $85 $39
 .jr_03_4dc8_CollisionHandler_GhostHead:
 ; Touch → damage player; attack/stomp → also kills entity (ghost head has no "survive attack" behavior)
     call call_03_519b_Entity_CheckPlayerInteraction
@@ -263,7 +263,7 @@ call_03_4c76_EntityCollision_Dispatch:
 .jr_03_4E12:
     ld   a,l
     ld   [wD300_CurrentEntityAddrLo],a
-    call call_00_3985_Entity_SpawnProjectileInit
+    call call_00_3985_Entity_ParticleBurstInit
 .jr_03_4E19:
     pop  af
     ld   [wD300_CurrentEntityAddrLo],a
@@ -330,7 +330,7 @@ call_03_4c76_EntityCollision_Dispatch:
 ; Checks UNK_17 bit 0 first (already shooting, skip). Touch → damage player. 
 ; Attack/stomp: decrements UNK_18 timer; if not zero, sets the "shooting" bit and returns. 
 ; When timer hits zero, spawns a projectile, increments wD773 (hunter shot count), 
-; and if count reaches 2 sets wD799=$02 (likely triggers a level flag)
+; and if count reaches 2 sets wD799_OverrideSlotTable14=$02 (likely triggers a level flag)
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     bit  ENTITY_MISC_FLAGS_UNK0_BIT,[hl]
     ret  nz
@@ -344,13 +344,13 @@ call_03_4c76_EntityCollision_Dispatch:
     set  ENTITY_MISC_FLAGS_UNK0_BIT,[hl]
     ret  
 .jr_03_4EA3:
-    call call_00_3985_Entity_SpawnProjectileInit
+    call call_00_3985_Entity_ParticleBurstInit
     ld   hl,wD773
     inc  [hl]
     ld   a,[hl]
     cp   a,$02
     ret  nz
-    ld   hl,wD799
+    ld   hl,wD799_OverrideSlotTable14
     ld   [hl],$02
     ret  
 .jr_03_4eb4_CollisionHandler_Mushroom:
@@ -519,15 +519,15 @@ call_03_4c76_EntityCollision_Dispatch:
     ld   a,[hl]
     cp   a,$FF
     jr   nz,.jr_03_4F9B
-    jp   call_00_3985_Entity_SpawnProjectileInit
+    jp   call_00_3985_Entity_ParticleBurstInit
 .jr_03_4FB0:
     inc  hl
     ld   l,[hl]
     ld   h,$00
-    ld   de,wD78B
+    ld   de,wD78B_OverrideSlotTable
     add  hl,de
     ld   [hl],$02
-    jp   call_00_3985_Entity_SpawnProjectileInit
+    jp   call_00_3985_Entity_ParticleBurstInit
 .data_03_4fbd:
     db   $0d, $07, $08, $05, $05, $00, $05, $06
     db   $08, $ff
@@ -666,7 +666,7 @@ call_03_4c76_EntityCollision_Dispatch:
     ld   a,l
     add  a,$20
     jr   nz,.jr_03_509C
-    jp   call_00_3985_Entity_SpawnProjectileInit
+    jp   call_00_3985_Entity_ParticleBurstInit
 .jr_03_50ac_CollisionHandler_Gear:
 ; Overlap check with result saved. If overlapping AND stomp (A=$01), sets UNK_17 bit 0 (gear activated). 
 ; If not overlapping or not stomp, clears UNK_17 bit 0 (gear released) — models a pressure-activated gear/button

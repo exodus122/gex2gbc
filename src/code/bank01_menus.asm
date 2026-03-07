@@ -373,7 +373,7 @@ call_01_42bd_EnterTV:
     ld   A, [wD624_CurrentLevelId]                                    ;; 01:42c5 $fa $24 $d6
     and  A, A                                          ;; 01:42c8 $a7
     jr   Z, .jr_01_432b                                ;; 01:42c9 $28 $60
-    ld   A, [wD623]                                    ;; 01:42cb $fa $23 $d6
+    ld   A, [wD623_CollectibleMode]                                    ;; 01:42cb $fa $23 $d6
     and  A, A                                          ;; 01:42ce $a7
     jr   Z, .jr_01_42e7                                ;; 01:42cf $28 $16
     ld   A, [wD621_WarpFlags]                                    ;; 01:42d1 $fa $21 $d6
@@ -2043,7 +2043,7 @@ call_01_4eb1:
     ld   HL, .data_01_4ecc                             ;; 01:4eb4 $21 $cc $4e
     add  HL, DE                                        ;; 01:4eb7 $19
     ld   B, [HL]                                       ;; 01:4eb8 $46
-    ld   A, [wD623]                                    ;; 01:4eb9 $fa $23 $d6
+    ld   A, [wD623_CollectibleMode]                                    ;; 01:4eb9 $fa $23 $d6
     and  A, A                                          ;; 01:4ebc $a7
     jr   Z, .jr_01_4ec1                                ;; 01:4ebd $28 $02
     ld   B, $20                                        ;; 01:4ebf $06 $20

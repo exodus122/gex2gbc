@@ -7,8 +7,8 @@ call_00_2329_MissionPreview_LoadAndRun:
 ; commands: writes direction flags to wD75A, duration to wD79B/wD79C, then runs the game loop (wait-for-interrupt, 
 ; ProcessCutsceneMovement, map update, entity update, BG map dirty regions, VRAM transfer) until the 
 ; duration expires or the player presses a button (if skippable). 
-; (2) Animation phase: if the script has an animation pointer, calls call_00_1f80 (entity animation/dialogue runner), 
-; loops the game loop while wD77D/wD77B are nonzero. 
+; (2) Animation phase: if the script has an animation pointer, calls call_00_1f80_SpecialTile_RunScript (entity animation/dialogue runner), 
+; loops the game loop while wD77D_OverrideSequenceStepsRemaining/wD77B_OverrideVRAMWritePending are nonzero. 
 ; (3) Hold phase: waits 180 frames ($B4) for the player to view the scene. Restores world state, player position, 
 ; and map on exit
     ld   A, B                                          ;; 00:2329 $78
@@ -124,7 +124,7 @@ call_00_2329_MissionPreview_LoadAndRun:
     ld   L, A                                          ;; 00:23eb $6f
     or   A, H                                          ;; 00:23ec $b4
     jr   Z, .jr_00_241e                                ;; 00:23ed $28 $2f
-    call call_00_1f80                                  ;; 00:23ef $cd $80 $1f
+    call call_00_1f80_SpecialTile_RunScript                                  ;; 00:23ef $cd $80 $1f
 .jr_00_23f2:
     ld   A, [wD775]                                    ;; 00:23f2 $fa $75 $d7
     and  A, A                                          ;; 00:23f5 $a7
@@ -134,13 +134,13 @@ call_00_2329_MissionPreview_LoadAndRun:
     jr   NZ, .jp_00_2445                               ;; 00:23fc $20 $47
 .jr_00_23fe:
     call call_00_0ab4_WaitForInterrupt                                  ;; 00:23fe $cd $b4 $0a
-    call call_00_1e5b_BgMap_TickOverrideAnimation                                  ;; 00:2401 $cd $5b $1e
+    call call_00_1e5b_BgMap_TickOverrideSequence                                  ;; 00:2401 $cd $5b $1e
     FARCALL call_02_6eba_Entities_UpdateAll
     call call_00_08fc_SetupEntityVRAMTransfer                                  ;; 00:240f $cd $fc $08
-    ld   A, [wD77D]                                    ;; 00:2412 $fa $7d $d7
+    ld   A, [wD77D_OverrideSequenceStepsRemaining]                                    ;; 00:2412 $fa $7d $d7
     and  A, A                                          ;; 00:2415 $a7
     jr   NZ, .jr_00_23f2                               ;; 00:2416 $20 $da
-    ld   A, [wD77B]                                    ;; 00:2418 $fa $7b $d7
+    ld   A, [wD77B_OverrideVRAMWritePending]                                    ;; 00:2418 $fa $7b $d7
     and  A, A                                          ;; 00:241b $a7
     jr   NZ, .jr_00_23f2                               ;; 00:241c $20 $d4
 .jr_00_241e:

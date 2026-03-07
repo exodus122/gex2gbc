@@ -8,10 +8,10 @@ TV_PALETTE_ID = 0
 REMOTE_PROGRESS_ID = 1
 TEXT_PTR = 2
 MAP_BANK = 3
-BLOCKSET_OVERRIDE_BANK = 4
+EXTENDED_MAP_BANK = 4
 BLOCKSET_AND_COLLISION_BANK = 5
 LEVEL_DATA_UNK6 = 6 # seems unused
-BLOCKSET_OVERRIDE_BIT = 7
+EXTENDED_MAP_BIT = 7
 TILESET_BANK = 8
 TILESET_BANK_OFFSET = 9
 
@@ -417,10 +417,10 @@ for level_counter in range(0, len(level_names)):
         map_file = "../banks/bank_0"+f"{level_data[MAP_BANK]:x}"+".bin"
         map_data = open(map_file, 'rb').read()
 
-        blockset_override_file = "../banks/bank_0"+f"{level_data[BLOCKSET_OVERRIDE_BANK]:x}"+".bin"
-        blockset_override_data = open(blockset_override_file, 'rb').read()
+        extended_map_file = "../banks/bank_0"+f"{level_data[EXTENDED_MAP_BANK]:x}"+".bin"
+        extended_map_data = open(extended_map_file, 'rb').read()
 
-        level_override_bit = level_data[BLOCKSET_OVERRIDE_BIT]
+        extended_map_bit = level_data[EXTENDED_MAP_BIT]
 
         os.system('mkdir -p map_images')
         
@@ -457,7 +457,7 @@ for level_counter in range(0, len(level_names)):
             for x in range(0, 128):
                 draw.rectangle(((x*32,y*32), ((x+1)*32,(y+1)*32)), map_data[count],3)
                 
-                if blockset_override_data[y*128+x] & level_override_bit != 0:
+                if extended_map_data[y*128+x] & extended_map_bit != 0:
                     img.paste(blockset2[map_data[count]], (x*32, y*32))
                 else:
                     img.paste(blockset[map_data[count]], (x*32, y*32))

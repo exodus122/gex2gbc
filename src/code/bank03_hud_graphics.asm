@@ -1,7 +1,7 @@
 call_03_66ae_HUD_LoadTiles:
 ; Top-level HUD tile loader. Copies .image_03_66e1 ($140 bytes) to VRAM $8600 (main HUD graphics), 
 ; calls call_03_6d13_HUD_LoadLivesDigits (lives digits) and call_03_6941_HUD_LoadCollectibleSprites (collectible icon). Then conditionally loads 
-; either the "DEMO MODE" banner tiles to $8680 if demo mode is active, or if wD623 is set (timer mode), 
+; either the "DEMO MODE" banner tiles to $8680 if demo mode is active, or if wD623_CollectibleMode is set (timer mode), 
 ; loads the colon tile via VRAM_Copy32Bytes and jumps to call_03_6ceb_HUD_LoadTimerDigits (timer digits)
     ld   HL, .image_03_66e1                             ;; 03:66ae $21 $e1 $66
     ld   DE, VRAM_HUD_TILES                                     ;; 03:66b1 $11 $00 $86
@@ -15,7 +15,7 @@ call_03_66ae_HUD_LoadTiles:
     ld   A, [wD61E_DemoModeEnabled]                                    ;; 03:66c9 $fa $1e $d6
     and  A, A                                          ;; 03:66cc $a7
     jp   NZ, call_00_07b0_MemCopy                              ;; 03:66cd $c2 $b0 $07
-    ld   A, [wD623]                                    ;; 03:66d0 $fa $23 $d6
+    ld   A, [wD623_CollectibleMode]                                    ;; 03:66d0 $fa $23 $d6
     and  A, A                                          ;; 03:66d3 $a7
     ret  Z                                             ;; 03:66d4 $c8
     ld   HL, .image_colon_03_6921                             ;; 03:66d5 $21 $21 $69
@@ -35,7 +35,7 @@ call_03_6941_HUD_LoadCollectibleSprites:
 ; level to one of 6 world-specific collectible tile sets (Toon TV, Scream TV, Circuit Central, Kung Fu Theater,
 ;  Prehistory Channel, Rezopolis). Then uses wD648 (collectible type index, swap-shifted) as a sub-index 
 ; within that set to select the specific tile frame, and copies 1 tile ($10 bytes) to VRAM $87E0 via VRAM_Copy32Bytes
-    ld   HL, wD60E                                     ;; 03:6941 $21 $0e $d6
+    ld   HL, wD60E_HUDDirtyFlags                                     ;; 03:6941 $21 $0e $d6
     res  3, [HL]                                       ;; 03:6944 $cb $9e
     call call_03_6be5_HUD_LoadCollectiblePalette                                  ;; 03:6946 $cd $e5 $6b
     ld   HL, wD624_CurrentLevelId                                     ;; 03:6949 $21 $24 $d6
@@ -195,10 +195,10 @@ call_03_6be5_HUD_LoadCollectiblePalette:
     INCBIN "gfx/misc_sprites/collectibles/palettes/palette_rezopolis_collectibles.bin"
 
 call_03_6ceb_HUD_LoadTimerDigits:
-; Loads timer display tiles. Clears bit 2 of wD60E. Reads wD76F (timer hundreds), wD770 high nibble (tens), 
+; Loads timer display tiles. Clears bit 2 of wD60E_HUDDirtyFlags. Reads wD76F (timer hundreds), wD770 high nibble (tens), 
 ; and wD770 low nibble (ones), calling call_03_6d88_HUD_LoadDigitTile for each to write digit tiles to VRAM $8748, $8768, 
 ; $8788 respectively. Falls through to call_03_6d5e_HUD_LoadCollectibleCountDigits to also load the collectible count digits
-    ld   HL, wD60E                                     ;; 03:6ceb $21 $0e $d6
+    ld   HL, wD60E_HUDDirtyFlags                                     ;; 03:6ceb $21 $0e $d6
     res  2, [HL]                                       ;; 03:6cee $cb $96
     ld   A, [wD76F]                                    ;; 03:6cf0 $fa $6f $d7
     ld   DE, VRAM_DIGIT_HUNDREDS                                     ;; 03:6cf3 $11 $48 $87
@@ -215,11 +215,11 @@ call_03_6ceb_HUD_LoadTimerDigits:
     jr   call_03_6d5e_HUD_LoadCollectibleCountDigits                                    ;; 03:6d11 $18 $4b
 
 call_03_6d13_HUD_LoadLivesDigits:
-; Loads the lives counter display tiles. Clears bit 1 of wD60E. Decomposes wD73D (lives remaining) 
+; Loads the lives counter display tiles. Clears bit 1 of wD60E_HUDDirtyFlags. Decomposes wD73D (lives remaining) 
 ; into hundreds/tens/ones digits stored in wD73E/wD73F/wD740 using repeated subtraction. Calls 
 ; call_03_6d88_HUD_LoadDigitTile for each digit to write tiles to VRAM $8748/$8768/$8788. Falls through to call_03_6d5e_HUD_LoadCollectibleCountDigits 
 ; to load the collectible count
-    ld   HL, wD60E                                     ;; 03:6d13 $21 $0e $d6
+    ld   HL, wD60E_HUDDirtyFlags                                     ;; 03:6d13 $21 $0e $d6
     res  1, [HL]                                       ;; 03:6d16 $cb $8e
     ld   HL, wD73E_LivesRemaining_Hundreds                                     ;; 03:6d18 $21 $3e $d7
     ld   A, $0a                                        ;; 03:6d1b $3e $0a
@@ -290,13 +290,13 @@ call_03_6d5e_HUD_LoadCollectibleCountDigits:
 call_03_6d88_HUD_LoadDigitTile:
 ; Core digit tile writer. Takes a digit value in A (0–9) and a VRAM destination in DE. 
 ; Swap-shifts A to use as an index, selects either .numbers_003_6d9d or .numbers_003_6e4d 
-; (alternate digit font, based on wD623 timer-mode flag), adds to get the correct tile data pointer, 
+; (alternate digit font, based on wD623_CollectibleMode timer-mode flag), adds to get the correct tile data pointer, 
 ; and copies 16 bytes (2 tiles = one digit glyph) to VRAM via VRAM_Copy16Bytes
     swap A                                             ;; 03:6d88 $cb $37
     ld   L, A                                          ;; 03:6d8a $6f
     ld   H, $00                                        ;; 03:6d8b $26 $00
     ld   BC, .numbers_003_6d9d                             ;; 03:6d8d $01 $9d $6d
-    ld   A, [wD623]                                    ;; 03:6d90 $fa $23 $d6
+    ld   A, [wD623_CollectibleMode]                                    ;; 03:6d90 $fa $23 $d6
     and  A, A                                          ;; 03:6d93 $a7
     jr   Z, .jr_03_6d99                                ;; 03:6d94 $28 $03
     ld   BC, .numbers_003_6e4d                             ;; 03:6d96 $01 $4d $6e
