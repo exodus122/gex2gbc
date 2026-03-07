@@ -145,9 +145,9 @@ DEF SFX_GEX_JUMP                           EQU $0C
 DEF SFX_GEX_DOUBLE_JUMP                    EQU $0D
 DEF SFX_GEX_COLLAPSE                       EQU $0E
 DEF SFX_GEX_DEATH                          EQU $0F
-DEF SFX_GEX_EAT_FLY                        EQU $10
+DEF SFX_GEX_HURT                           EQU $10
 DEF SFX_GEX_SPAWN                          EQU $11
-DEF SFX_GEX_UNK1C                          EQU $12
+DEF SFX_GEX_HIT_BOUNCE                     EQU $12
 DEF SFX_13                                 EQU $13 ; unused?
 DEF SFX_MENU_UNK_1                         EQU $14
 DEF SFX_MENU_UNK_2                         EQU $15
@@ -165,7 +165,7 @@ DEF SFX_HUNTER                             EQU $20
 DEF SFX_21                                 EQU $21 ; unused?
 DEF SFX_22                                 EQU $22 ; unused?
 DEF SFX_23                                 EQU $23 ; unused?
-DEF SFX_BOUNCE                             EQU $24
+DEF SFX_ENEMY_BOUNCE                       EQU $24
 DEF SFX_25                                 EQU $25 ; unused?
 DEF SFX_26                                 EQU $26 ; unused?
 DEF SFX_FALLING_PLATFORM                   EQU $27

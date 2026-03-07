@@ -71,11 +71,9 @@ wD000_EntityFlags:
 wD100_TilesToLoadBuffer:
     ds 256                                             ;; d100
 
-
 ; From D200 to D300 is the loaded entities space
 ; Each entity takes up 0x20 of space, and there can be up to 8 entities. 
-; Gex occupies the first slot. The first byte of each entity is the id
-; Entity Instance Struct is defined in constants.asm
+; Gex occupies the first slot. The entity instance fields are defined in constants.asm
 wD200_EntityMemory:
 wD200_PlayerEntity_Id:
     ds 1                                               ;; d200
@@ -83,22 +81,20 @@ wD201_PlayerEntity_ActionId:
     ds 1                                               ;; d201
 wD202_PlayerEntity_ActionFunc:
     ds 2                                               ;; d202
-
     ds 3
 wD207_Player_SpriteCounter:
     ds 1                                               ;; d207
-wD208_PlayerSpriteIndex:
+wD208_Player_SpriteID:
     ds 1                                               ;; d208
-wD209:
+wD209_Player_UnkFlags:
     ds 1                                               ;; d209
-wD20A:
+wD20A_Player_UnkFlags2:
     ds 3                                               ;; d20a
 wD20D_PlayerFacingAngle:
     ds 1                                               ;; d20d
 ; wD20E_PlayerXPosition and wD20F_PlayerXPosition_PlayerXPosition control gex's x coordinate position (can freeze wD20F_PlayerXPosition_PlayerXPosition to sometimes fall through floors)
 wD20E_PlayerXPosition:
     ds 1                                               ;; d20e
-
 wD20F_PlayerXPosition:
     ds 1                                               ;; d20f
 ; wD210_PlayerYPosition and wD211_PlayerYPosition control gex's y coordinate position (can freeze both to hover at fixed height)
@@ -218,6 +214,14 @@ wD584_CollisionFlagsPrev:
 ; copy of the value that wD585_CollisionFlags had at the start of the frame
     ds 1                                               ;; d584
 wD585_CollisionFlags:
+; bit 7 (80) = grounded or climbing
+; bit 6 (40) = pushing wall
+; bit 5 (20) = 
+; bit 4 (10) = 
+; bit 3 (08) = 
+; bit 2 (04) = 
+; bit 1 (02) = walking up slope
+; bit 0 (01) = walking up slope
     ds 1                                               ;; d585
 
 wD586_GexSpriteStateFlags:
@@ -395,7 +399,6 @@ wD629_RemoteProgressFlags:
 ; D637 : no weddings and a funeral obtained remotes bitfield (19 = all)
 ; D638 : ? obtained remotes bitfield (unused byte, deleted world?)
 ; D639 : thursday the 12th obtained remotes bitfield (20 = all)
-
 
 ; D63E : lizard in a china shop obtained remotes bitfield (20 = all)
 ; D63F : bugged out obtained remotes bitfield (20 = all)
@@ -667,7 +670,7 @@ wD6ED_XPositionInMap: ; current x position in map of screen/player?
     ds 2                                               ;; d6ed
 wD6EF_YPositionInMap: ; current y position in map of screen/player?
     ds 1                                               ;; d6ef
-wD6F0_BgMap_HardHeadAreaObjectRelated:
+wD6F0_BgMap_Unk:
     ds 1                                               ;; d6f0
 wD6F1_BgMap_PrevColumn:
     ds 2                                               ;; d6f1
@@ -888,7 +891,15 @@ wD757_LanternLitFlag:
 wD758:
     ds 1                                               ;; d758
 
-wD759:
+wD759_ButtonBlockingFlags:
+; bit 7 (80) = suppresses b button during upward velocity
+; bit 6 (40) = suppresses b button
+; bit 5 (20) = 
+; bit 4 (10) = can hold b to double jump when landing
+; bit 3 (08) = 
+; bit 2 (04) = 
+; bit 1 (02) = 
+; bit 0 (01) = suppresses a button
     ds 1                                               ;; d759
 
 wD75A_CurrentInputsAlt:

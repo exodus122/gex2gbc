@@ -174,7 +174,7 @@ call_02_6e17_Entities_InitAndSpawnAll:
     ld   [wD761_PlayerFallingFlag], A                                    ;; 02:6e3a $ea $61 $d7
     ld   [wD762_PlayerInitialYVelocity], A                                    ;; 02:6e3d $ea $62 $d7
     ld   [wD763_PlayerMovementFlags], A                                    ;; 02:6e40 $ea $63 $d7
-    ld   [wD759], A                                    ;; 02:6e43 $ea $59 $d7
+    ld   [wD759_ButtonBlockingFlags], A                                    ;; 02:6e43 $ea $59 $d7
     ld   [wD758], A                                    ;; 02:6e46 $ea $58 $d7
     ld   [wD585_CollisionFlags], A                                    ;; 02:6e49 $ea $85 $d5
     ld   [wD584_CollisionFlagsPrev], A                                    ;; 02:6e4c $ea $84 $d5
@@ -501,7 +501,7 @@ call_02_70f1_Entity_HandleActionSequenceEnd:
     ld   A, [HL]                                       ;; 02:70f9 $7e
     bit  7, A                                          ;; 02:70fa $cb $7f
     ret  Z                                             ;; 02:70fc $c8
-    and  A, PLAYER_ACTION_UNK_1F                                        ;; 02:70fd $e6 $1f
+    and  A, PLAYER_ACTION_RIDING_ROCKET                                        ;; 02:70fd $e6 $1f
     jp   call_02_4ccd_Player_RequestAction                                  ;; 02:70ff $c3 $cd $4c
 
 call_02_7102_Entity_SetAction:

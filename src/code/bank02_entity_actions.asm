@@ -472,7 +472,7 @@ call_02_51ea_EntityAction_TVButton_unk0:
     ld   A, PLAYER_ACTION_ENTER_TV                                        ;; 02:5248 $3e $12
     jp   call_02_4ccd_Player_RequestAction                                  ;; 02:524a $c3 $cd $4c
 .jr_02_524d:
-    ld   A, PLAYER_ACTION_UNK_13                                        ;; 02:524d $3e $13
+    ld   A, PLAYER_ACTION_ENTER_TV_ALT                                        ;; 02:524d $3e $13
     jp   call_02_4ccd_Player_RequestAction                                  ;; 02:524f $c3 $cd $4c
 call_02_5252_EntityAction_TVButton_unk1:
     ret                                                ;; 02:5252 $c9
@@ -683,7 +683,7 @@ call_02_5399_EntityAction_Pumpkin_unk1:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped                                  ;; 02:5399 $cd $af $30
     call call_00_3154_Entity_MoveYDownWithFloorBound                                  ;; 02:539c $cd $54 $31
     ret  C                                             ;; 02:539f $d8
-    ld   C, SFX_BOUNCE                                        ;; 02:53a0 $0e $24
+    ld   C, SFX_ENEMY_BOUNCE                                        ;; 02:53a0 $0e $24
     call call_00_112f_QueueSFX                                  ;; 02:53a2 $cd $2f $11
     ld   A, $00                                        ;; 02:53a5 $3e $00
     jp   call_02_7102_Entity_SetAction                                  ;; 02:53a7 $c3 $02 $71
@@ -1165,7 +1165,7 @@ call_02_56dc_EntityAction_HardHeadAreaObject_unk0:
     ld   A, [wD6EF_YPositionInMap]                                    ;; 02:56e4 $fa $ef $d6
     sub  A, $18                                        ;; 02:56e7 $d6 $18
     ld   [HL+], A                                      ;; 02:56e9 $22
-    ld   A, [wD6F0_BgMap_HardHeadAreaObjectRelated]                                    ;; 02:56ea $fa $f0 $d6
+    ld   A, [wD6F0_BgMap_Unk]                                    ;; 02:56ea $fa $f0 $d6
     sbc  A, $00                                        ;; 02:56ed $de $00
     ld   [HL], A                                       ;; 02:56ef $77
     ld   A, [wD75D_PlayerXSpeedPrev]                                    ;; 02:56f0 $fa $5d $d7
@@ -1299,7 +1299,7 @@ call_02_576e_EntityAction_HardHeadAreaObject_unk1:
     ld   A, [wD6EF_YPositionInMap]                                    ;; 02:57c6 $fa $ef $d6
     sub  A, $18                                        ;; 02:57c9 $d6 $18
     ld   [HL+], A                                      ;; 02:57cb $22
-    ld   A, [wD6F0_BgMap_HardHeadAreaObjectRelated]                                    ;; 02:57cc $fa $f0 $d6
+    ld   A, [wD6F0_BgMap_Unk]                                    ;; 02:57cc $fa $f0 $d6
     sbc  A, $00                                        ;; 02:57cf $de $00
     ld   [HL], A                                       ;; 02:57d1 $77
     ld   A, L                                          ;; 02:57d2 $7d
@@ -1452,7 +1452,7 @@ call_02_58fa_EntityAction_Cactus_unk2:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped                                  ;; 02:58fa $cd $af $30
     call call_00_3154_Entity_MoveYDownWithFloorBound                                  ;; 02:58fd $cd $54 $31
     ret  C                                             ;; 02:5900 $d8
-    ld   C, SFX_BOUNCE                                        ;; 02:5901 $0e $24
+    ld   C, SFX_ENEMY_BOUNCE                                        ;; 02:5901 $0e $24
     call call_00_112f_QueueSFX                                  ;; 02:5903 $cd $2f $11
     ld   A, $00                                        ;; 02:5906 $3e $00
     jp   call_02_7102_Entity_SetAction                                  ;; 02:5908 $c3 $02 $71
@@ -1669,7 +1669,7 @@ call_02_5a9a_EntityAction_HappyFace_unk1:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped                                  ;; 02:5a9a $cd $af $30
     call call_00_3154_Entity_MoveYDownWithFloorBound                                  ;; 02:5a9d $cd $54 $31
     ret  C                                             ;; 02:5aa0 $d8
-    ld   C, SFX_BOUNCE                                        ;; 02:5aa1 $0e $24
+    ld   C, SFX_ENEMY_BOUNCE                                        ;; 02:5aa1 $0e $24
     call call_00_112f_QueueSFX                                  ;; 02:5aa3 $cd $2f $11
     ld   A, $00                                        ;; 02:5aa6 $3e $00
     jp   call_02_7102_Entity_SetAction                                  ;; 02:5aa8 $c3 $02 $71
@@ -4285,7 +4285,7 @@ call_02_6de3_EntityAction_Unk8D_Update:
     ret  z
     xor  a
     ld   [wD647],a
-    ld   a,PLAYER_ACTION_UNK_13
+    ld   a,PLAYER_ACTION_ENTER_TV_ALT
     jp   call_02_4ccd_Player_RequestAction
 
 call_02_6df0_EntityAction_Unk8E_Update:

@@ -708,7 +708,7 @@ call_03_4c76_EntityCollision_Dispatch:
     ret  nc
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     set  ENTITY_MISC_FLAGS_LEFT,[hl]
-    ld   a,PLAYER_ACTION_UNK_1F
+    ld   a,PLAYER_ACTION_RIDING_ROCKET
     FARCALL call_02_4ccd_Player_RequestAction
     ret  
 .jr_03_5109_CollisionHandler_Cannon:

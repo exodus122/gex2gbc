@@ -1,8 +1,8 @@
 call_02_489a_Player_SetLandingAction:
-; Called on landing. Sets bit 6 of wD759. Chooses action ID: default 2 (light landing); 
-; if directional input (LEFT or RIGHT) is held and X speed ≥ 2, uses 5 (running landing); 
-; if directional input but speed < 2, uses 4 (soft landing). Jumps to Player_RequestAction
-    ld   HL, wD759                                     ;; 02:489a $21 $59 $d7
+; Called on landing. Sets bit 6 of wD759_ButtonBlockingFlags. Chooses action ID: default 2 (stand); 
+; if directional input (LEFT or RIGHT) is held and X speed ≥ 2, uses 5 (run); 
+; if directional input but speed < 2, uses 4 (walk). Jumps to Player_RequestAction
+    ld   HL, wD759_ButtonBlockingFlags                                     ;; 02:489a $21 $59 $d7
     set  6, [HL]                                       ;; 02:489d $cb $f6
     ld   C, PLAYER_ACTION_STAND                                        ;; 02:489f $0e $02
     ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:48a1 $fa $5a $d7
@@ -102,13 +102,13 @@ call_02_48b7_Player_SpawnLevelSpecificDoor:
 call_02_4939_Player_UpdateMain:
 ; Master per-frame player update. Handles demo mode input replay (advances through run-length encoded 
 ; input stream wD61B, loads current input byte into wD620; if stream ends, clears demo mode flag). 
-; For live play reads wD59F. Processes input through wD759 button-lock flags: bit 0 suppresses A button until 
+; For live play reads wD59F. Processes input through wD759_ButtonBlockingFlags button-lock flags: bit 0 suppresses A button until 
 ; released; bit 6 suppresses B button (jump) unless already held; bit 7 suppresses jump during upward Y velocity, 
 ; with a bit-4 latch for re-press tracking. Writes filtered input to wD75A. Decrements wD750 timer if nonzero. 
 ; Calls: Player_UpdateFacing, bg collision update, Player_ApplyYVelocity, bg tile cache, Player_CheckTileInteractions, 
 ; then dispatches wD745_Player_QueuedAction pending action change (resets climb state to $FF, clears wD74B), calls the current action 
 ; function pointer at wD202, Player_ApplyXMovement, clears wD758, computes wD76A (block X = world X >> 5 high byte), 
-; clears two entity flags in wD209/wD20A, ticks action frame counter, updates map window, checks water/conveyor tiles, 
+; clears two entity flags in wD209_Player_UnkFlags/wD20A_Player_UnkFlags2, ticks action frame counter, updates map window, checks water/conveyor tiles, 
 ; builds body sprites, and decrements three 16-bit timers at wD751, wD755, wD753
     ld   A, [wD61E_DemoModeEnabled]                                    ;; 02:4939 $fa $1e $d6
     and  A, A                                          ;; 02:493c $a7
@@ -142,7 +142,7 @@ call_02_4939_Player_UpdateMain:
 .jr_02_4968:
     ld   C, A                                          ;; 02:4968 $4f
     ld   E, A                                          ;; 02:4969 $5f
-    ld   HL, wD759                                     ;; 02:496a $21 $59 $d7
+    ld   HL, wD759_ButtonBlockingFlags                                     ;; 02:496a $21 $59 $d7
     bit  0, [HL]                                       ;; 02:496d $cb $46
     jr   Z, .jr_02_4979                                ;; 02:496f $28 $08
     bit  PADF_A_BIT, E                                          ;; 02:4971 $cb $43
@@ -218,9 +218,9 @@ call_02_4939_Player_UpdateMain:
     add  HL, HL                                        ;; 02:49fe $29
     ld   A, H                                          ;; 02:49ff $7c
     ld   [wD76A_PlayerXPositionBlock], A                                    ;; 02:4a00 $ea $6a $d7
-    ld   HL, wD209                                     ;; 02:4a03 $21 $09 $d2
+    ld   HL, wD209_Player_UnkFlags                                     ;; 02:4a03 $21 $09 $d2
     res  5, [HL]                                       ;; 02:4a06 $cb $ae
-    ld   HL, wD20A                                     ;; 02:4a08 $21 $0a $d2
+    ld   HL, wD20A_Player_UnkFlags2                                     ;; 02:4a08 $21 $0a $d2
     res  6, [HL]                                       ;; 02:4a0b $cb $b6
     call call_02_6fda_Entity_TickAction                                  ;; 02:4a0d $cd $da $6f
     call call_02_715a_MapWindow_Update                                  ;; 02:4a10 $cd $5a $71
@@ -245,12 +245,13 @@ call_02_4a30_Player_DecrementTimer16:
     ld   [HL], E                                       ;; 02:4a38 $73
     ret                                                ;; 02:4a39 $c9
 
-call_02_4a3a_Player_SetWallJumpFlag:
-; Preserves low nibble of wD759, sets bit 7. Used to mark that Gex is in a wall-jump eligible state
-    ld   A, [wD759]                                    ;; 02:4a3a $fa $59 $d7
+call_02_4a3a_Player_LockBPress:
+; Preserves low nibble of wD759_ButtonBlockingFlags, sets bit 7. Used to mark that 
+; the player cannot press B to buffer a double jump
+    ld   A, [wD759_ButtonBlockingFlags]                                    ;; 02:4a3a $fa $59 $d7
     and  A, $0f                                        ;; 02:4a3d $e6 $0f
     or   A, $80                                        ;; 02:4a3f $f6 $80
-    ld   [wD759], A                                    ;; 02:4a41 $ea $59 $d7
+    ld   [wD759_ButtonBlockingFlags], A                                    ;; 02:4a41 $ea $59 $d7
     ret                                                ;; 02:4a44 $c9
 
 call_02_4a45_Player_UpdateFacing:
@@ -612,7 +613,7 @@ call_02_4c28_Player_CheckConveyorWaterTiles:
     ld   [wD74A_Player_NearbyTileRelated], A                                    ;; 02:4c41 $ea $4a $d7
     ld   A, [wD765_TileTypeBehindGexsBody]                                    ;; 02:4c44 $fa $65 $d7
     cp   A, $24                                        ;; 02:4c47 $fe $24
-    ld   A, PLAYER_ACTION_UNK_1C                                        ;; 02:4c49 $3e $1c
+    ld   A, PLAYER_ACTION_HIT_BOUNCE                                        ;; 02:4c49 $3e $1c
     call Z, call_02_4ccd_Player_RequestAction                               ;; 02:4c4b $cc $cd $4c
     ret                                                ;; 02:4c4e $c9
 

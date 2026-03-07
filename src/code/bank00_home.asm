@@ -646,7 +646,7 @@ call_00_06b7_Player_ResetHealth:
     ld   [hl], $04
     jp   call_00_0629
 
-call_00_06bf_DealDamageToPlayer: ; Deal damage to Gex
+call_00_06bf_DealDamageToPlayer:
     call call_00_075b_Player_CanBeDamaged                                  ;; 00:06bf $cd $5b $07
     ret  NZ                                            ;; 00:06c2 $c0
     ld   HL, wD742_Player_CurrentFly                                     ;; 00:06c3 $21 $42 $d7
@@ -660,7 +660,7 @@ call_00_06bf_DealDamageToPlayer: ; Deal damage to Gex
 .jr_00_06d2:
     ld   A, [wD201_PlayerEntity_ActionId]                                    ;; 00:06d2 $fa $01 $d2
     and  A, PLAYER_ACTION_MASK                                        ;; 00:06d5 $e6 $1f
-    cp   A, PLAYER_ACTION_UNK_1C                                        ;; 00:06d7 $fe $1c
+    cp   A, PLAYER_ACTION_HIT_BOUNCE                                        ;; 00:06d7 $fe $1c
     jp   Z, call_00_0629                                 ;; 00:06d9 $ca $29 $06
     ld   A, PLAYER_ACTION_TAKE_DAMAGE                                        ;; 00:06dc $3e $0f
     FARCALL call_02_4ccd_Player_RequestAction
@@ -1007,13 +1007,13 @@ call_00_08fc_SetupEntityVRAMTransfer: ; this reads secondary tileset information
     jr   NZ, .jr_00_0954                               ;; 00:091b $20 $37
     ret                                                ;; 00:091d $c9
 .jr_00_091e:
-    ld   A, [wD208_PlayerSpriteIndex]                                    ;; 00:091e $fa $08 $d2
+    ld   A, [wD208_Player_SpriteID]                                    ;; 00:091e $fa $08 $d2
     rlca                                               ;; 00:0921 $07
     rlca                                               ;; 00:0922 $07
     and  A, $03                                        ;; 00:0923 $e6 $03
     add  A, $04                                        ;; 00:0925 $c6 $04
     call call_00_1089_SwitchBank                                  ;; 00:0927 $cd $89 $10
-    ld   A, [wD208_PlayerSpriteIndex]                                    ;; 00:092a $fa $08 $d2
+    ld   A, [wD208_Player_SpriteID]                                    ;; 00:092a $fa $08 $d2
     and  A, $3f                                        ;; 00:092d $e6 $3f
     add  A, $40                                        ;; 00:092f $c6 $40
     jr   .jr_00_095e                                   ;; 00:0931 $18 $2b
@@ -1062,13 +1062,13 @@ call_00_0971:
 
 call_00_098f:
     res  0, [HL]                                       ;; 00:098f $cb $86
-    ld   A, [wD208_PlayerSpriteIndex]                                    ;; 00:0991 $fa $08 $d2
+    ld   A, [wD208_Player_SpriteID]                                    ;; 00:0991 $fa $08 $d2
     rlca                                               ;; 00:0994 $07
     rlca                                               ;; 00:0995 $07
     and  A, $03                                        ;; 00:0996 $e6 $03
     add  A, $04                                        ;; 00:0998 $c6 $04
     call call_00_1089_SwitchBank                                  ;; 00:099a $cd $89 $10
-    ld   A, [wD208_PlayerSpriteIndex]                                    ;; 00:099d $fa $08 $d2
+    ld   A, [wD208_Player_SpriteID]                                    ;; 00:099d $fa $08 $d2
     and  A, $3f                                        ;; 00:09a0 $e6 $3f
     add  A, $40                                        ;; 00:09a2 $c6 $40
     ld   H, A                                          ;; 00:09a4 $67
@@ -2269,7 +2269,7 @@ call_00_120c_SetupMusic:
 
 INCLUDE "code/bank00_maps_core.asm"
 
-call_00_1f46:
+call_00_1f46_HandlePlayerAttackingSpecialTiles:
     ld   A, [wD77D]                                    ;; 00:1f46 $fa $7d $d7
     and  A, A                                          ;; 00:1f49 $a7
     ret  NZ                                            ;; 00:1f4a $c0
@@ -2309,7 +2309,6 @@ call_00_1f46:
     ld   L, A                                          ;; 00:1f7d $6f
     or   A, H                                          ;; 00:1f7e $b4
     ret  Z                                             ;; 00:1f7f $c8
-
 call_00_1f80:
     ld   E, [HL]                                       ;; 00:1f80 $5e
     inc  HL                                            ;; 00:1f81 $23
