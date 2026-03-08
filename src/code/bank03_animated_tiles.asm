@@ -14,7 +14,7 @@ call_03_723c_AnimatedTile_Init:
     ld   A, [HL]                                       ;; 03:724a $7e
     ld   [wD611_AnimatedTileId], A                                    ;; 03:724b $ea $11 $d6
     xor  A, A                                          ;; 03:724e $af
-    ld   [wD612_AnimatedTileId], A                                    ;; 03:724f $ea $12 $d6
+    ld   [wD612_AnimatedTime_FrameCounter], A                                    ;; 03:724f $ea $12 $d6
     ret                                                ;; 03:7252 $c9
 
 call_03_7253_AnimatedTile_Update:
@@ -23,7 +23,7 @@ call_03_7253_AnimatedTile_Update:
 ; and wraps it. Uses the frame index × 8 to index into the block's per-frame descriptor records. 
 ; Each record: (tile count B, VRAM dest lo C, VRAM dest hi, source bank E, source address D/+1, 
 ; tile data pointer HL). If bit 7 of C is set (conditional tile flag): checks wD72D (secondary tileset index) 
-; and wD5A3–wD5A5 (conveyor states) — if the relevant conveyor is inactive, substitutes data_03_7bfd_AnimatedTile_BlankTileData 
+; and wD5A3_ConveyorState1–wD5A5_ConveyorState3 (conveyor states) — if the relevant conveyor is inactive, substitutes data_03_7bfd_AnimatedTile_BlankTileData 
 ; (blank/off tile) instead. Calls call_03_6f2d B times to copy B tiles of 16 bytes each to the 
 ; specified VRAM destination
     ld   A, [wD611_AnimatedTileId]                                    ;; 03:7253 $fa $11 $d6
@@ -40,7 +40,7 @@ call_03_7253_AnimatedTile_Update:
     ld   D, [HL]                                       ;; 03:7265 $56
     ld   A, [DE]                                       ;; 03:7266 $1a
     inc  DE                                            ;; 03:7267 $13
-    ld   HL, wD612_AnimatedTileId                                     ;; 03:7268 $21 $12 $d6
+    ld   HL, wD612_AnimatedTime_FrameCounter                                     ;; 03:7268 $21 $12 $d6
     inc  [HL]                                          ;; 03:726b $34
     sub  A, [HL]                                       ;; 03:726c $96
     jr   NZ, .jr_03_7271                               ;; 03:726d $20 $02
@@ -69,13 +69,13 @@ call_03_7253_AnimatedTile_Update:
     cp   A, $00                                        ;; 03:728a $fe $00
     ret  NZ                                            ;; 03:728c $c0
     res  7, C                                          ;; 03:728d $cb $b9
-    ld   A, [wD5A3]                                    ;; 03:728f $fa $a3 $d5
+    ld   A, [wD5A3_ConveyorState1]                                    ;; 03:728f $fa $a3 $d5
     dec  C                                             ;; 03:7292 $0d
     jr   Z, .jr_03_729e                                ;; 03:7293 $28 $09
-    ld   A, [wD5A4]                                    ;; 03:7295 $fa $a4 $d5
+    ld   A, [wD5A4_ConveyorState2]                                    ;; 03:7295 $fa $a4 $d5
     dec  C                                             ;; 03:7298 $0d
     jr   Z, .jr_03_729e                                ;; 03:7299 $28 $03
-    ld   A, [wD5A5]                                    ;; 03:729b $fa $a5 $d5
+    ld   A, [wD5A5_ConveyorState3]                                    ;; 03:729b $fa $a5 $d5
 .jr_03_729e:
     and  A, A                                          ;; 03:729e $a7
     jr   NZ, .jr_03_72a4                               ;; 03:729f $20 $03
@@ -268,7 +268,7 @@ data_03_72ab_AnimatedTileBlockPointerTable:
 .data_03_73bb_AnimatedTileBlock_CircuitCentral:
 ; 12-frame animated tile block for Circuit Central. 3 tile groups each writing 2 tiles with conditional 
 ; conveyor belt logic (bit 7 of dest byte set): groups at $81E0/$91, $8200/$92, $8320/$92, cycling 
-; through 4 frame sets. If the corresponding conveyor slot (wD5A3–wD5A5) is inactive, substitutes 
+; through 4 frame sets. If the corresponding conveyor slot (wD5A3_ConveyorState1–wD5A5_ConveyorState3) is inactive, substitutes 
 ; blank tiles from data_03_7bfd_AnimatedTile_BlankTileData
     db   $0c
     
@@ -396,85 +396,85 @@ data_03_72ab_AnimatedTileBlockPointerTable:
     dw   .data_03_7b6d
     db   $00, $00                  ;; 03:7477 ??????
 .data_03_747d:
-    INCBIN ".gfx/animated_tiles/image_003_747d.bin"
+    INCBIN ".gfx/animated_tiles/toon_tv/image_003_747d.bin"
 .data_03_74bd:
-    INCBIN ".gfx/animated_tiles/image_003_74bd.bin"
+    INCBIN ".gfx/animated_tiles/toon_tv/image_003_74bd.bin"
 .data_03_74fd:
-    INCBIN ".gfx/animated_tiles/image_003_74fd.bin"
+    INCBIN ".gfx/animated_tiles/toon_tv/image_003_74fd.bin"
 .data_03_753d:
-    INCBIN ".gfx/animated_tiles/image_003_753d.bin"
+    INCBIN ".gfx/animated_tiles/toon_tv/image_003_753d.bin"
 .data_03_757d:
-    INCBIN ".gfx/animated_tiles/image_003_757d.bin"
+    INCBIN ".gfx/animated_tiles/toon_tv/image_003_757d.bin"
 .data_03_759d:
-    INCBIN ".gfx/animated_tiles/image_003_759d.bin"
+    INCBIN ".gfx/animated_tiles/toon_tv/image_003_759d.bin"
 .data_03_75bd:
-    INCBIN ".gfx/animated_tiles/image_003_75bd.bin"
+    INCBIN ".gfx/animated_tiles/toon_tv/image_003_75bd.bin"
 .data_03_75dd:
-    INCBIN ".gfx/animated_tiles/image_003_75dd.bin"
+    INCBIN ".gfx/animated_tiles/toon_tv/image_003_75dd.bin"
 .data_03_75fd:
-    INCBIN ".gfx/animated_tiles/image_003_75fd.bin"
+    INCBIN ".gfx/animated_tiles/toon_tv/image_003_75fd.bin"
 .data_03_763d:
-    INCBIN ".gfx/animated_tiles/image_003_763d.bin"
+    INCBIN ".gfx/animated_tiles/toon_tv/image_003_763d.bin"
 .data_03_767d:
-    INCBIN ".gfx/animated_tiles/image_003_767d.bin"
+    INCBIN ".gfx/animated_tiles/toon_tv/image_003_767d.bin"
 .data_03_76bd:
-    INCBIN ".gfx/animated_tiles/image_003_76bd.bin"
+    INCBIN ".gfx/animated_tiles/toon_tv/image_003_76bd.bin"
 .data_03_76fd:
-    INCBIN ".gfx/animated_tiles/image_003_76fd.bin"
+    INCBIN ".gfx/animated_tiles/scream_tv/image_003_76fd.bin"
 .data_03_775d:
-    INCBIN ".gfx/animated_tiles/image_003_775d.bin"
+    INCBIN ".gfx/animated_tiles/scream_tv/image_003_775d.bin"
 .data_03_77bd:
-    INCBIN ".gfx/animated_tiles/image_003_77bd.bin"
+    INCBIN ".gfx/animated_tiles/scream_tv/image_003_77bd.bin"
 .data_03_781d:
-    INCBIN ".gfx/animated_tiles/image_003_781d.bin"
+    INCBIN ".gfx/animated_tiles/scream_tv/image_003_781d.bin"
 .data_03_787d:
-    INCBIN ".gfx/animated_tiles/image_003_787d.bin"
+    INCBIN ".gfx/animated_tiles/scream_tv/image_003_787d.bin"
 .data_03_789d:
-    INCBIN ".gfx/animated_tiles/image_003_789d.bin"
+    INCBIN ".gfx/animated_tiles/scream_tv/image_003_789d.bin"
 .data_03_78bd:
-    INCBIN ".gfx/animated_tiles/image_003_78bd.bin"
+    INCBIN ".gfx/animated_tiles/scream_tv/image_003_78bd.bin"
 .data_03_78fd:
-    INCBIN ".gfx/animated_tiles/image_003_78fd.bin"
+    INCBIN ".gfx/animated_tiles/scream_tv/image_003_78fd.bin"
 .data_03_793d:
-    INCBIN ".gfx/animated_tiles/image_003_793d.bin"
+    INCBIN ".gfx/animated_tiles/scream_tv/image_003_793d.bin"
 .data_03_797d:
-    INCBIN ".gfx/animated_tiles/image_003_797d.bin"
+    INCBIN ".gfx/animated_tiles/scream_tv/image_003_797d.bin"
 .data_03_79bd:
-    INCBIN ".gfx/animated_tiles/image_003_79bd.bin"
+    INCBIN ".gfx/animated_tiles/scream_tv/image_003_79bd.bin"
 .data_03_79fd:
-    INCBIN ".gfx/animated_tiles/image_003_79fd.bin"
+    INCBIN ".gfx/animated_tiles/scream_tv/image_003_79fd.bin"
 .data_03_7a3d:
-    INCBIN ".gfx/animated_tiles/image_003_7a3d.bin"
+    INCBIN ".gfx/animated_tiles/scream_tv/image_003_7a3d.bin"
 .data_03_7a7d:
-    INCBIN ".gfx/animated_tiles/image_003_7a7d.bin"
+    INCBIN ".gfx/animated_tiles/scream_tv/image_003_7a7d.bin"
 .data_03_7abd:
-    INCBIN ".gfx/animated_tiles/image_003_7abd.bin"
+    INCBIN ".gfx/animated_tiles/rezopolis/image_003_7abd.bin"
 .data_03_7add:
-    INCBIN ".gfx/animated_tiles/image_003_7add.bin"
+    INCBIN ".gfx/animated_tiles/rezopolis/image_003_7add.bin"
 .data_03_7afd:
-    INCBIN ".gfx/animated_tiles/image_003_7afd.bin"
+    INCBIN ".gfx/animated_tiles/rezopolis/image_003_7afd.bin"
 .data_03_7b0d:
-    INCBIN ".gfx/animated_tiles/image_003_7b0d.bin"
+    INCBIN ".gfx/animated_tiles/rezopolis/image_003_7b0d.bin"
 .data_03_7b1d:
-    INCBIN ".gfx/animated_tiles/image_003_7b1d.bin"
+    INCBIN ".gfx/animated_tiles/rezopolis/image_003_7b1d.bin"
 .data_03_7b2d:
-    INCBIN ".gfx/animated_tiles/image_003_7b2d.bin"
+    INCBIN ".gfx/animated_tiles/rezopolis/image_003_7b2d.bin"
 .data_03_7b3d:
-    INCBIN ".gfx/animated_tiles/image_003_7b3d.bin"
+    INCBIN ".gfx/animated_tiles/rezopolis/image_003_7b3d.bin"
 .data_03_7b4d:
-    INCBIN ".gfx/animated_tiles/image_003_7b4d.bin"
+    INCBIN ".gfx/animated_tiles/rezopolis/image_003_7b4d.bin"
 .data_03_7b5d:
-    INCBIN ".gfx/animated_tiles/image_003_7b5d.bin"
+    INCBIN ".gfx/animated_tiles/rezopolis/image_003_7b5d.bin"
 .data_03_7b6d:
-    INCBIN ".gfx/animated_tiles/image_003_7b6d.bin"
+    INCBIN ".gfx/animated_tiles/rezopolis/image_003_7b6d.bin"
 .data_03_7b7d:
-    INCBIN ".gfx/animated_tiles/image_003_7b7d.bin"
+    INCBIN ".gfx/animated_tiles/circuit_central/image_003_7b7d.bin"
 .data_03_7b9d:
-    INCBIN ".gfx/animated_tiles/image_003_7b9d.bin"
+    INCBIN ".gfx/animated_tiles/circuit_central/image_003_7b9d.bin"
 .data_03_7bbd:
-    INCBIN ".gfx/animated_tiles/image_003_7bbd.bin"
+    INCBIN ".gfx/animated_tiles/circuit_central/image_003_7bbd.bin"
 .data_03_7bdd:
-    INCBIN ".gfx/animated_tiles/image_003_7bdd.bin"
+    INCBIN ".gfx/animated_tiles/circuit_central/image_003_7bdd.bin"
 
 data_03_7bfd_AnimatedTile_BlankTileData:
 ; 32-byte buffer of zeros (with $FF sentinel bytes at start and end) used as a substitute 

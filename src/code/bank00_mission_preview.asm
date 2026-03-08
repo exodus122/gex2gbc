@@ -38,7 +38,7 @@ call_00_2329_MissionPreview_LoadAndRun:
     push DE                                            ;; 00:234d $d5
     call call_00_3628_Entity_SaveWorldState                                  ;; 00:234e $cd $28 $36
     pop  DE                                            ;; 00:2351 $d1
-    ld   HL, wD20E_PlayerXPosition                                     ;; 00:2352 $21 $0e $d2
+    ld   HL, wD20E_Player_XPosition                                     ;; 00:2352 $21 $0e $d2
     ld   C, [HL]                                       ;; 00:2355 $4e
     ld   A, [DE]                                       ;; 00:2356 $1a
     ld   [HL+], A                                      ;; 00:2357 $22
@@ -61,7 +61,7 @@ call_00_2329_MissionPreview_LoadAndRun:
     call call_00_13a6_MapWindow_UpdateFromPlayerPos                                  ;; 00:2368 $cd $a6 $13
     xor  A, A                                          ;; 00:236b $af
     ld   [wD743_Player_UpdateFlag], A                                    ;; 00:236c $ea $43 $d7
-    call call_00_1264_Map_LoadFull                                  ;; 00:236f $cd $64 $12
+    call call_00_1264_BgMap_LoadFull                                  ;; 00:236f $cd $64 $12
     FARCALL call_02_6e68_Entities_InitNPCSlots
     call call_00_0521_DrawEntitiesWrapper                                  ;; 00:237d $cd $21 $05
     pop  HL                                            ;; 00:2380 $e1
@@ -180,7 +180,7 @@ call_00_2329_MissionPreview_LoadAndRun:
     and  A, A                                          ;; 00:245c $a7
     ret  NZ                                            ;; 00:245d $c0
     call call_00_13a6_MapWindow_UpdateFromPlayerPos                                  ;; 00:245e $cd $a6 $13
-    call call_00_1264_Map_LoadFull                                  ;; 00:2461 $cd $64 $12
+    call call_00_1264_BgMap_LoadFull                                  ;; 00:2461 $cd $64 $12
     FARCALL call_02_71c8_Entities_UpdateSoundsForAll
     jp   call_00_0521_DrawEntitiesWrapper                                  ;; 00:246f $c3 $21 $05
 .data_00_2472_CutsceneIndexLookupTable:
@@ -535,36 +535,36 @@ call_00_2dbf_MissionPreview_UpdateMovement:
     ld   HL, wD75A_CurrentInputsAlt                                     ;; 00:2deb $21 $5a $d7
     bit  PADF_RIGHT_BIT, [HL]                                       ;; 00:2dee $cb $66
     jr   Z, .jr_00_2e01                                ;; 00:2df0 $28 $0f
-    ld   A, [wD20E_PlayerXPosition]                                    ;; 00:2df2 $fa $0e $d2
+    ld   A, [wD20E_Player_XPosition]                                    ;; 00:2df2 $fa $0e $d2
     add  A, C                                          ;; 00:2df5 $81
-    ld   [wD20E_PlayerXPosition], A                                    ;; 00:2df6 $ea $0e $d2
+    ld   [wD20E_Player_XPosition], A                                    ;; 00:2df6 $ea $0e $d2
     ld   A, [wD20F_PlayerXPosition]                                    ;; 00:2df9 $fa $0f $d2
     adc  A, $00                                        ;; 00:2dfc $ce $00
     ld   [wD20F_PlayerXPosition], A                                    ;; 00:2dfe $ea $0f $d2
 .jr_00_2e01:
     bit  PADF_LEFT_BIT, [HL]                                       ;; 00:2e01 $cb $6e
     jr   Z, .jr_00_2e14                                ;; 00:2e03 $28 $0f
-    ld   A, [wD20E_PlayerXPosition]                                    ;; 00:2e05 $fa $0e $d2
+    ld   A, [wD20E_Player_XPosition]                                    ;; 00:2e05 $fa $0e $d2
     sub  A, C                                          ;; 00:2e08 $91
-    ld   [wD20E_PlayerXPosition], A                                    ;; 00:2e09 $ea $0e $d2
+    ld   [wD20E_Player_XPosition], A                                    ;; 00:2e09 $ea $0e $d2
     ld   A, [wD20F_PlayerXPosition]                                    ;; 00:2e0c $fa $0f $d2
     sbc  A, $00                                        ;; 00:2e0f $de $00
     ld   [wD20F_PlayerXPosition], A                                    ;; 00:2e11 $ea $0f $d2
 .jr_00_2e14:
     bit  PADF_DOWN_BIT, [HL]                                       ;; 00:2e14 $cb $7e
     jr   Z, .jr_00_2e27                                ;; 00:2e16 $28 $0f
-    ld   A, [wD210_PlayerYPosition]                                    ;; 00:2e18 $fa $10 $d2
+    ld   A, [wD210_Player_YPosition]                                    ;; 00:2e18 $fa $10 $d2
     add  A, C                                          ;; 00:2e1b $81
-    ld   [wD210_PlayerYPosition], A                                    ;; 00:2e1c $ea $10 $d2
+    ld   [wD210_Player_YPosition], A                                    ;; 00:2e1c $ea $10 $d2
     ld   A, [wD211_PlayerYPosition]                                    ;; 00:2e1f $fa $11 $d2
     adc  A, $00                                        ;; 00:2e22 $ce $00
     ld   [wD211_PlayerYPosition], A                                    ;; 00:2e24 $ea $11 $d2
 .jr_00_2e27:
     bit  PADF_UP_BIT, [HL]                                       ;; 00:2e27 $cb $76
     ret  Z                                             ;; 00:2e29 $c8
-    ld   A, [wD210_PlayerYPosition]                                    ;; 00:2e2a $fa $10 $d2
+    ld   A, [wD210_Player_YPosition]                                    ;; 00:2e2a $fa $10 $d2
     sub  A, C                                          ;; 00:2e2d $91
-    ld   [wD210_PlayerYPosition], A                                    ;; 00:2e2e $ea $10 $d2
+    ld   [wD210_Player_YPosition], A                                    ;; 00:2e2e $ea $10 $d2
     ld   A, [wD211_PlayerYPosition]                                    ;; 00:2e31 $fa $11 $d2
     sbc  A, $00                                        ;; 00:2e34 $de $00
     ld   [wD211_PlayerYPosition], A                                    ;; 00:2e36 $ea $11 $d2

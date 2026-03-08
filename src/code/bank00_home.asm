@@ -221,7 +221,7 @@ call_00_0150_Init:
     FARCALL call_0b_4000_Collectibles_Init
     FARCALL call_02_6eb1_Entities_ClearFlagsTable
     call call_00_3c3f                                  ;; 00:0333 $cd $3f $3c
-    call call_00_12e4_Map_InitBgTileOverrides                                  ;; 00:0336 $cd $e4 $12
+    call call_00_12e4_BgMap_InitTileOverrides                                  ;; 00:0336 $cd $e4 $12
     ld   A, $0a                                        ;; 00:0339 $3e $0a
     ld   [wD613], A                                    ;; 00:033b $ea $13 $d6
     xor  A, A                                          ;; 00:033e $af
@@ -261,22 +261,22 @@ call_00_0150_Init:
     ld   [wD773], A                                    ;; 00:038c $ea $73 $d7
     ld   [wD774], A                                    ;; 00:038f $ea $74 $d7
     ld   [wD73C_FrameCounter2], A                                    ;; 00:0392 $ea $3c $d7
-    ld   [wD6F9_BgMapLoadingFlags], A                                    ;; 00:0395 $ea $f9 $d6
+    ld   [wD6F9_BgMap_LoadingFlags], A                                    ;; 00:0395 $ea $f9 $d6
     ld   [wD60E_HUDDirtyFlags], A                                    ;; 00:0398 $ea $0e $d6
     ld   [wD60F_HDMATransferFlags], A                                    ;; 00:039b $ea $0f $d6
     ld   [wD77B_OverrideVRAMWritePending], A                                    ;; 00:039e $ea $7b $d7
     ld   [wD77D_OverrideSequenceStepsRemaining], A                                    ;; 00:03a1 $ea $7d $d7
     ld   [wD72F], A                                    ;; 00:03a4 $ea $2f $d7
     ld   [wD71E], A                                    ;; 00:03a7 $ea $1e $d7
-    ld   [wD5A3], A                                    ;; 00:03aa $ea $a3 $d5
-    ld   [wD5A4], A                                    ;; 00:03ad $ea $a4 $d5
-    ld   [wD5A5], A                                    ;; 00:03b0 $ea $a5 $d5
+    ld   [wD5A3_ConveyorState1], A                                    ;; 00:03aa $ea $a3 $d5
+    ld   [wD5A4_ConveyorState2], A                                    ;; 00:03ad $ea $a4 $d5
+    ld   [wD5A5_ConveyorState3], A                                    ;; 00:03b0 $ea $a5 $d5
     ld   A, $04 ; Set Health to 4                                       ;; 00:03b3 $3e $04
     ld   [wD741_Player_Health], A                                    ;; 00:03b5 $ea $41 $d7
     FARCALL call_0b_4000_Collectibles_Init
     FARCALL call_02_6eb1_Entities_ClearFlagsTable
     call call_00_3c3f                                  ;; 00:03ce $cd $3f $3c
-    call call_00_12e4_Map_InitBgTileOverrides                                  ;; 00:03d1 $cd $e4 $12
+    call call_00_12e4_BgMap_InitTileOverrides                                  ;; 00:03d1 $cd $e4 $12
     call call_00_0547_FlyPowerup_InitTimers                                  ;; 00:03d4 $cd $47 $05
     call call_00_0562_Collectible_InitForLevel                                  ;; 00:03d7 $cd $62 $05
 .jr_00_03da:
@@ -285,20 +285,20 @@ call_00_0150_Init:
     xor  A, A                                          ;; 00:03df $af
     ld   [wD614], A                                    ;; 00:03e0 $ea $14 $d6
     ld   [wD617], A                                    ;; 00:03e3 $ea $17 $d6
-    ld   [wD5A3], A                                    ;; 00:03e6 $ea $a3 $d5
-    ld   [wD5A4], A                                    ;; 00:03e9 $ea $a4 $d5
-    ld   [wD5A5], A                                    ;; 00:03ec $ea $a5 $d5
+    ld   [wD5A3_ConveyorState1], A                                    ;; 00:03e6 $ea $a3 $d5
+    ld   [wD5A4_ConveyorState2], A                                    ;; 00:03e9 $ea $a4 $d5
+    ld   [wD5A5_ConveyorState3], A                                    ;; 00:03ec $ea $a5 $d5
     ld   A, $ff                                        ;; 00:03ef $3e $ff
     ld   [wD610], A                                    ;; 00:03f1 $ea $10 $d6
     ld   A, $01                                        ;; 00:03f4 $3e $01
     ld   [wD743_Player_UpdateFlag], A                                    ;; 00:03f6 $ea $43 $d7
     FARCALL call_0b_4efe_Player_SetSpawnPosition
-    call call_00_1264_Map_LoadFull                                  ;; 00:0404 $cd $64 $12
+    call call_00_1264_BgMap_LoadFull                                  ;; 00:0404 $cd $64 $12
     FARCALL call_02_6e17_Entities_InitAndSpawnAll
     call call_00_0521_DrawEntitiesWrapper                                  ;; 00:0412 $cd $21 $05
     jr   .jp_00_0428                                   ;; 00:0415 $18 $11
 .jp_00_0417:
-    call call_00_1264_Map_LoadFull                                  ;; 00:0417 $cd $64 $12
+    call call_00_1264_BgMap_LoadFull                                  ;; 00:0417 $cd $64 $12
     FARCALL call_02_71c8_Entities_UpdateSoundsForAll
     call call_00_0521_DrawEntitiesWrapper                                  ;; 00:0425 $cd $21 $05
 .jp_00_0428:
@@ -394,7 +394,7 @@ call_00_0150_Init:
     ld   A, [wD73B_FrameCounter]                                    ;; 00:0509 $fa $3b $d7
     and  A, A                                          ;; 00:050c $a7
     jp   NZ, .jp_00_0428                               ;; 00:050d $c2 $28 $04
-    ld   HL, wD5A3                                     ;; 00:0510 $21 $a3 $d5
+    ld   HL, wD5A3_ConveyorState1                                     ;; 00:0510 $21 $a3 $d5
     ld   B, $03                                        ;; 00:0513 $06 $03
 .jr_00_0515:
     ld   A, [HL]                                       ;; 00:0515 $7e
@@ -1246,9 +1246,9 @@ call_00_0a54_MainGameLoop_UpdateAndRenderFrame:
     ld   [wD622_InterruptFlag], A                                    ;; 00:0a74 $ea $22 $d6
     ld   A, [wD5A0]                                    ;; 00:0a77 $fa $a0 $d5
     ldh  [rLCDC], A                                    ;; 00:0a7a $e0 $40
-    ld   A, [wD5A1]                                    ;; 00:0a7c $fa $a1 $d5
+    ld   A, [wD5A1_MapXScroll_Copy]                                    ;; 00:0a7c $fa $a1 $d5
     ldh  [rSCX], A                                     ;; 00:0a7f $e0 $43
-    ld   A, [wD5A2]                                    ;; 00:0a81 $fa $a2 $d5
+    ld   A, [wD5A2_MapYScroll_Copy]                                    ;; 00:0a81 $fa $a2 $d5
     ldh  [rSCY], A                                     ;; 00:0a84 $e0 $42
     call call_00_0f80                                  ;; 00:0a86 $cd $80 $0f
     ld   A, [wD788_CurrentAudioBank]                                    ;; 00:0a89 $fa $88 $d7
@@ -1292,20 +1292,20 @@ call_00_0ac1:
     rrca                                               ;; 00:0ac8 $0f
     and  A, $01                                        ;; 00:0ac9 $e6 $01
     ld   [MBC1SRamBank], A                                    ;; 00:0acb $ea $01 $40
-    ld   HL, wD6F9_BgMapLoadingFlags                                     ;; 00:0ace $21 $f9 $d6
+    ld   HL, wD6F9_BgMap_LoadingFlags                                     ;; 00:0ace $21 $f9 $d6
     bit  7, [HL]                                       ;; 00:0ad1 $cb $7e
     jr   Z, .jr_00_0af0                                ;; 00:0ad3 $28 $1b
     res  7, [HL]                                       ;; 00:0ad5 $cb $be
-    ld   A, [wD6F9_BgMapLoadingFlags]                                    ;; 00:0ad7 $fa $f9 $d6
+    ld   A, [wD6F9_BgMap_LoadingFlags]                                    ;; 00:0ad7 $fa $f9 $d6
     and  A, $0f                                        ;; 00:0ada $e6 $0f
     jr   Z, .jr_00_0af0                                ;; 00:0adc $28 $12
     and  A, $03                                        ;; 00:0ade $e6 $03
     call NZ, call_03_6f5e_BgMap_WriteScrollColumn                              ;; 00:0ae0 $c4 $5e $6f
-    ld   A, [wD6F9_BgMapLoadingFlags]                                    ;; 00:0ae3 $fa $f9 $d6
+    ld   A, [wD6F9_BgMap_LoadingFlags]                                    ;; 00:0ae3 $fa $f9 $d6
     and  A, $0c                                        ;; 00:0ae6 $e6 $0c
     call NZ, call_03_708d_BgMap_WriteScrollRow                              ;; 00:0ae8 $c4 $8d $70
     xor  A, A                                          ;; 00:0aeb $af
-    ld   [wD6F9_BgMapLoadingFlags], A                                    ;; 00:0aec $ea $f9 $d6
+    ld   [wD6F9_BgMap_LoadingFlags], A                                    ;; 00:0aec $ea $f9 $d6
     ret                                                ;; 00:0aef $c9
 .jr_00_0af0:
     ld   HL, wD77B_OverrideVRAMWritePending                                     ;; 00:0af0 $21 $7b $d7
@@ -1756,8 +1756,8 @@ call_00_0e87:
     call call_00_0eba_ClearVRAMBgMap                                  ;; 00:0eac $cd $ba $0e
     call call_00_0ee8                                  ;; 00:0eaf $cd $e8 $0e
     xor  A, A                                          ;; 00:0eb2 $af
-    ld   [wD5A1], A                                    ;; 00:0eb3 $ea $a1 $d5
-    ld   [wD5A2], A                                    ;; 00:0eb6 $ea $a2 $d5
+    ld   [wD5A1_MapXScroll_Copy], A                                    ;; 00:0eb3 $ea $a1 $d5
+    ld   [wD5A2_MapYScroll_Copy], A                                    ;; 00:0eb6 $ea $a2 $d5
     ret                                                ;; 00:0eb9 $c9
 
 call_00_0eba_ClearVRAMBgMap:
@@ -1823,7 +1823,7 @@ call_00_0f01:
     ld   A, $00                                        ;; 00:0f01 $3e $00
     ld   [wCCFD], A                                    ;; 00:0f03 $ea $fd $cc
     xor  A, A                                          ;; 00:0f06 $af
-    ld   [wD6F9_BgMapLoadingFlags], A                                    ;; 00:0f07 $ea $f9 $d6
+    ld   [wD6F9_BgMap_LoadingFlags], A                                    ;; 00:0f07 $ea $f9 $d6
     ld   [wD60E_HUDDirtyFlags], A                                    ;; 00:0f0a $ea $0e $d6
     ld   [wD60F_HDMATransferFlags], A                                    ;; 00:0f0d $ea $0f $d6
     ld   [wD77B_OverrideVRAMWritePending], A                                    ;; 00:0f10 $ea $7b $d7
@@ -2339,53 +2339,3 @@ call_00_120c_SetupMusic:
     db   BANK_23, $04, $0f, $00
     db   BANK_23, $00, $0f, $00        ;; 00:125c ...?...?
 
-INCLUDE "code/bank00_maps_core.asm"
-
-INCLUDE "code/bank00_special_tile_scripts.asm"
-
-INCLUDE "code/bank00_mission_preview.asm"
-
-INCLUDE "code/bank00_map_data.asm"
-
-INCLUDE "code/bank00_entity_utils.asm"
-
-call_00_3c3f:
-    ld   C, $07                                        ;; 00:3c3f $0e $07
-    ld   HL, wD64F                                     ;; 00:3c41 $21 $4f $d6
-    call call_00_3c54                                  ;; 00:3c44 $cd $54 $3c
-    ld   C, $18                                        ;; 00:3c47 $0e $18
-    ld   HL, wD650                                     ;; 00:3c49 $21 $50 $d6
-    call call_00_3c54                                  ;; 00:3c4c $cd $54 $3c
-    ld   C, $20                                        ;; 00:3c4f $0e $20
-    ld   HL, wD651                                     ;; 00:3c51 $21 $51 $d6
-
-call_00_3c54:
-    push HL                                            ;; 00:3c54 $e5
-    ld   HL, wD629_RemoteProgressFlags                                     ;; 00:3c55 $21 $29 $d6
-    ld   B, $1e                                        ;; 00:3c58 $06 $1e
-    ld   E, $00                                        ;; 00:3c5a $1e $00
-.jr_00_3c5c:
-    ld   A, [HL+]                                      ;; 00:3c5c $2a
-    and  A, C                                          ;; 00:3c5d $a1
-    ld   D, $08                                        ;; 00:3c5e $16 $08
-.jr_00_3c60:
-    rlca                                               ;; 00:3c60 $07
-    jr   NC, .jr_00_3c64                               ;; 00:3c61 $30 $01
-    inc  E                                             ;; 00:3c63 $1c
-.jr_00_3c64:
-    dec  D                                             ;; 00:3c64 $15
-    jr   NZ, .jr_00_3c60                               ;; 00:3c65 $20 $f9
-    dec  B                                             ;; 00:3c67 $05
-    jr   NZ, .jr_00_3c5c                               ;; 00:3c68 $20 $f2
-    ld   A, E                                          ;; 00:3c6a $7b
-    pop  HL                                            ;; 00:3c6b $e1
-    cp   A, [HL]                                       ;; 00:3c6c $be
-    ret  Z                                             ;; 00:3c6d $c8
-    ld   [HL], A                                       ;; 00:3c6e $77
-    set  7, [HL]                                       ;; 00:3c6f $cb $fe
-    ret                                                ;; 00:3c71 $c9
-    
-data_00_3c72:
-    db   $1c, $02, $00
-    INCBIN ".gfx/misc_sprites/image_000_3c75.bin"  
-    db   $fe  

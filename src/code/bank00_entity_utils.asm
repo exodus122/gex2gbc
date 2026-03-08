@@ -798,7 +798,7 @@ call_00_34f5_Entity_CheckPlayerInteracting:
 
 call_00_350c_Entity_CheckIfPlayerInRoomBounds:
 ; Reads this entity's room bounds (X min/max, Y min/max) from wD309_EntityBoundingBoxXMax–wD30C_EntityBoundingBoxYMin; 
-; compares against wD329 (camera/scroll bounds); returns carry if player is outside
+; compares against wD329_BlockXRangeMin (camera/scroll bounds); returns carry if player is outside
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:350c $fa $00 $d3
     rrca                                               ;; 00:350f $0f
     rrca                                               ;; 00:3510 $0f
@@ -814,7 +814,7 @@ call_00_350c_Entity_CheckIfPlayerInRoomBounds:
     ld   D, [HL]                                       ;; 00:351d $56
     inc  HL                                            ;; 00:351e $23
     ld   E, [HL]                                       ;; 00:351f $5e
-    ld   HL, wD329                                     ;; 00:3520 $21 $29 $d3
+    ld   HL, wD329_BlockXRangeMin                                     ;; 00:3520 $21 $29 $d3
     ld   A, B                                          ;; 00:3523 $78
     cp   A, [HL]                                       ;; 00:3524 $be
     ret  C                                             ;; 00:3525 $d8
@@ -971,7 +971,7 @@ call_00_35d5_Entity_MoveXAndPushPlayer:
     ld   L, A                                          ;; 00:3609 $6f
     ld   A, E                                          ;; 00:360a $7b
     add  A, [HL]                                       ;; 00:360b $86
-    ld   [wD20E_PlayerXPosition], A                                    ;; 00:360c $ea $0e $d2
+    ld   [wD20E_Player_XPosition], A                                    ;; 00:360c $ea $0e $d2
     ld   A, D                                          ;; 00:360f $7a
     adc  A, $00                                        ;; 00:3610 $ce $00
     ld   [wD20F_PlayerXPosition], A                                    ;; 00:3612 $ea $0f $d2
@@ -984,7 +984,7 @@ call_00_35d5_Entity_MoveXAndPushPlayer:
     inc  C                                             ;; 00:361b $0c
     ld   A, E                                          ;; 00:361c $7b
     sub  A, C                                          ;; 00:361d $91
-    ld   [wD20E_PlayerXPosition], A                                    ;; 00:361e $ea $0e $d2
+    ld   [wD20E_Player_XPosition], A                                    ;; 00:361e $ea $0e $d2
     ld   A, D                                          ;; 00:3621 $7a
     sbc  A, $00                                        ;; 00:3622 $de $00
     ld   [wD20F_PlayerXPosition], A                                    ;; 00:3624 $ea $0f $d2
@@ -1051,7 +1051,7 @@ call_00_3675_Entity_RestoreWorldState:
 call_00_36bd_Entity_FaceTowardsPlayer:
 ; Computes sign of (player X − entity X); sets facing direction to $20 (left) or $00 (right)
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
-    ld   A, [wD20E_PlayerXPosition]                                    ;; 00:36c5 $fa $0e $d2
+    ld   A, [wD20E_Player_XPosition]                                    ;; 00:36c5 $fa $0e $d2
     sub  A, [HL]                                       ;; 00:36c8 $96
     inc  HL                                            ;; 00:36c9 $23
     ld   A, [wD20F_PlayerXPosition]                                    ;; 00:36ca $fa $0f $d2
@@ -1069,7 +1069,7 @@ call_00_36bd_Entity_FaceTowardsPlayer:
 call_00_36da_Entity_FaceAwayFromPlayer:
 ; Inverse of above — faces away from player
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
-    ld   a,[wD20E_PlayerXPosition]
+    ld   a,[wD20E_Player_XPosition]
     sub  [hl]
     inc  hl
     ld   a,[wD20F_PlayerXPosition]
@@ -1329,7 +1329,7 @@ call_00_3859_Entity_CheckPlayerXProximity:
 ; Computes (player X − entity X), adds C offset, doubles C, subtracts; 
 ; returns carry/sign indicating whether player is within C-pixel horizontal range
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
-    ld   A, [wD20E_PlayerXPosition]                                    ;; 00:3861 $fa $0e $d2
+    ld   A, [wD20E_Player_XPosition]                                    ;; 00:3861 $fa $0e $d2
     sub  A, [HL]                                       ;; 00:3864 $96
     ld   E, A                                          ;; 00:3865 $5f
     inc  HL                                            ;; 00:3866 $23
@@ -1519,7 +1519,7 @@ call_00_3951_Entity_SpawnPlayerClone:
     ld   [wD300_CurrentEntityAddrLo],a
     or   a,$0E
     ld   l,a
-    ld   de,wD20E_PlayerXPosition
+    ld   de,wD20E_Player_XPosition
     ld   a,[de]
     ldi  [hl],a
     inc  de
@@ -1850,3 +1850,44 @@ call_00_3bf4_Entity_TriggerPaletteSwap:
     db   $0e, $08, $03, $00, $ff, $0b, $11, $ff        ;; 00:3c28 ????????
     db   $07, $ff, $ff, $ff, $ff, $0d, $0a, $01        ;; 00:3c30 .???????
     db   $13, $06, $12, $ff, $ff, $ff, $10             ;; 00:3c38 ???????
+
+call_00_3c3f:
+    ld   C, $07                                        ;; 00:3c3f $0e $07
+    ld   HL, wD64F                                     ;; 00:3c41 $21 $4f $d6
+    call call_00_3c54                                  ;; 00:3c44 $cd $54 $3c
+    ld   C, $18                                        ;; 00:3c47 $0e $18
+    ld   HL, wD650                                     ;; 00:3c49 $21 $50 $d6
+    call call_00_3c54                                  ;; 00:3c4c $cd $54 $3c
+    ld   C, $20                                        ;; 00:3c4f $0e $20
+    ld   HL, wD651                                     ;; 00:3c51 $21 $51 $d6
+
+call_00_3c54:
+    push HL                                            ;; 00:3c54 $e5
+    ld   HL, wD629_RemoteProgressFlags                                     ;; 00:3c55 $21 $29 $d6
+    ld   B, $1e                                        ;; 00:3c58 $06 $1e
+    ld   E, $00                                        ;; 00:3c5a $1e $00
+.jr_00_3c5c:
+    ld   A, [HL+]                                      ;; 00:3c5c $2a
+    and  A, C                                          ;; 00:3c5d $a1
+    ld   D, $08                                        ;; 00:3c5e $16 $08
+.jr_00_3c60:
+    rlca                                               ;; 00:3c60 $07
+    jr   NC, .jr_00_3c64                               ;; 00:3c61 $30 $01
+    inc  E                                             ;; 00:3c63 $1c
+.jr_00_3c64:
+    dec  D                                             ;; 00:3c64 $15
+    jr   NZ, .jr_00_3c60                               ;; 00:3c65 $20 $f9
+    dec  B                                             ;; 00:3c67 $05
+    jr   NZ, .jr_00_3c5c                               ;; 00:3c68 $20 $f2
+    ld   A, E                                          ;; 00:3c6a $7b
+    pop  HL                                            ;; 00:3c6b $e1
+    cp   A, [HL]                                       ;; 00:3c6c $be
+    ret  Z                                             ;; 00:3c6d $c8
+    ld   [HL], A                                       ;; 00:3c6e $77
+    set  7, [HL]                                       ;; 00:3c6f $cb $fe
+    ret                                                ;; 00:3c71 $c9
+
+data_00_3c72:
+    db   $1c, $02, $00
+    INCBIN ".gfx/misc_sprites/image_000_3c75.bin"  
+    db   $fe  

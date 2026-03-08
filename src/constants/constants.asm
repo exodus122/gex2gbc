@@ -483,6 +483,9 @@ DEF VRAM_LIVES_TENS                                   EQU $87a8
 DEF VRAM_LIVES_ONES                                   EQU $87c8
 DEF VRAM_COLLECTIBLE_SPRITES                          EQU $87e0
 
+DEF VRAM_TILESET_ADDR_2                               EQU $8800
+DEF VRAM_TILESET_ADDR_1                               EQU $9000
+
 DEF VRAM_ANIMATED_TILE_TOON_TV_GROUP_1                EQU $8b30
 DEF VRAM_ANIMATED_TILE_TOON_TV_GROUP_2                EQU $8a50
 DEF VRAM_ANIMATED_TILE_TOON_TV_GROUP_3                EQU $8c40

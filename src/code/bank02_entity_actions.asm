@@ -1162,10 +1162,10 @@ call_02_56af_EntityAction_MonaLisaElevator_Update:
 
 call_02_56dc_EntityAction_HardHeadAreaObject_unk0:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
-    ld   A, [wD6EF_YPositionInMap]                                    ;; 02:56e4 $fa $ef $d6
+    ld   A, [wD6EF_BgMap_ScrollY]                                    ;; 02:56e4 $fa $ef $d6
     sub  A, $18                                        ;; 02:56e7 $d6 $18
     ld   [HL+], A                                      ;; 02:56e9 $22
-    ld   A, [wD6F0_BgMap_Unk]                                    ;; 02:56ea $fa $f0 $d6
+    ld   A, [wD6F0_BgMap_ScrollYHi]                                    ;; 02:56ea $fa $f0 $d6
     sbc  A, $00                                        ;; 02:56ed $de $00
     ld   [HL], A                                       ;; 02:56ef $77
     ld   A, [wD75D_PlayerXSpeedPrev]                                    ;; 02:56f0 $fa $5d $d7
@@ -1180,7 +1180,7 @@ call_02_56dc_EntityAction_HardHeadAreaObject_unk0:
     add  HL, HL                                        ;; 02:56ff $29
     ld   DE, .data_02_575e                             ;; 02:5700 $11 $5e $57
     add  HL, DE                                        ;; 02:5703 $19
-    ld   A, [wD20E_PlayerXPosition]                                    ;; 02:5704 $fa $0e $d2
+    ld   A, [wD20E_Player_XPosition]                                    ;; 02:5704 $fa $0e $d2
     add  A, [HL]                                       ;; 02:5707 $86
     ld   C, A                                          ;; 02:5708 $4f
     inc  HL                                            ;; 02:5709 $23
@@ -1227,7 +1227,7 @@ call_02_56dc_EntityAction_HardHeadAreaObject_unk0:
 .jr_02_5743:
     dec  L                                             ;; 02:5743 $2d
     ld   [HL], $00                                     ;; 02:5744 $36 $00
-    ld   A, [wD20E_PlayerXPosition]                                    ;; 02:5746 $fa $0e $d2
+    ld   A, [wD20E_Player_XPosition]                                    ;; 02:5746 $fa $0e $d2
     swap A                                             ;; 02:5749 $cb $37
     and  A, $03                                        ;; 02:574b $e6 $03
     ld   L, A                                          ;; 02:574d $6f
@@ -1296,16 +1296,16 @@ call_02_576e_EntityAction_HardHeadAreaObject_unk1:
     ld   A, L                                          ;; 02:57c2 $7d
     xor  A, $1a                                        ;; 02:57c3 $ee $1a
     ld   L, A                                          ;; 02:57c5 $6f
-    ld   A, [wD6EF_YPositionInMap]                                    ;; 02:57c6 $fa $ef $d6
+    ld   A, [wD6EF_BgMap_ScrollY]                                    ;; 02:57c6 $fa $ef $d6
     sub  A, $18                                        ;; 02:57c9 $d6 $18
     ld   [HL+], A                                      ;; 02:57cb $22
-    ld   A, [wD6F0_BgMap_Unk]                                    ;; 02:57cc $fa $f0 $d6
+    ld   A, [wD6F0_BgMap_ScrollYHi]                                    ;; 02:57cc $fa $f0 $d6
     sbc  A, $00                                        ;; 02:57cf $de $00
     ld   [HL], A                                       ;; 02:57d1 $77
     ld   A, L                                          ;; 02:57d2 $7d
     xor  A, $09                                        ;; 02:57d3 $ee $09
     ld   L, A                                          ;; 02:57d5 $6f
-    ld   A, [wD20E_PlayerXPosition]                                    ;; 02:57d6 $fa $0e $d2
+    ld   A, [wD20E_Player_XPosition]                                    ;; 02:57d6 $fa $0e $d2
     and  A, $1f                                        ;; 02:57d9 $e6 $1f
     or   A, $20                                        ;; 02:57db $f6 $20
     ld   [HL], A                                       ;; 02:57dd $77
@@ -2012,7 +2012,7 @@ call_02_5ccf_EntityAction_Pterosaur_Update:
     ld   c,$30
     call call_00_3859_Entity_CheckPlayerXProximity
     jr   nc,.jr_02_5CFF
-    ld   a,[wD20E_PlayerXPosition]
+    ld   a,[wD20E_Player_XPosition]
     and  a,$03
     inc  a
     ld   c,a
@@ -2033,7 +2033,7 @@ call_02_5d0b_EntityAction_Unk3D_Update:
     ret  
 
 call_02_5d0c_EntityAction_FallingBoulder_unk0:
-    ld   hl,wD6EF_YPositionInMap
+    ld   hl,wD6EF_BgMap_ScrollY
     ldi  a,[hl]
     ld   h,[hl]
     ld   l,a
@@ -2602,7 +2602,7 @@ call_02_616e_EntityAction_Ninja_unk0:
 .jr_02_61AC:
     ld   c,$01
     call call_00_37f8_Entity_SetMovementMode
-    ld   a,[wD20E_PlayerXPosition]
+    ld   a,[wD20E_Player_XPosition]
     and  a,$01
     add  a,$02
     ld   c,a
@@ -2618,7 +2618,7 @@ call_02_616e_EntityAction_Ninja_unk0:
 .jr_02_61CE:
     ld   c,$02
     call call_00_37f8_Entity_SetMovementMode
-    ld   a,[wD20E_PlayerXPosition]
+    ld   a,[wD20E_Player_XPosition]
     rrca 
     rrca 
     rrca 
@@ -2991,7 +2991,7 @@ call_02_644a_EntityAction_RezopolisSpecialMovingPlatform_Update:
     dec  l
     ld   [hl],a
 .jr_02_6456:
-    ld   hl,wD210_PlayerYPosition
+    ld   hl,wD210_Player_YPosition
     ldi  a,[hl]
     ld   h,[hl]
     ld   l,a
@@ -3790,7 +3790,7 @@ call_02_6a3c_EntityAction_WalkwayActivator_Update:
     ld   l,[hl]
     dec  l
     ld   h,$00
-    ld   de,wD5A3
+    ld   de,wD5A3_ConveyorState1
     add  hl,de
     ld   c,$00
     ld   a,[hl]
@@ -3800,7 +3800,7 @@ call_02_6a3c_EntityAction_WalkwayActivator_Update:
 .jr_02_6A54:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WIDTH
     ld   [hl],c
-    ld   hl,wD20E_PlayerXPosition
+    ld   hl,wD20E_Player_XPosition
     ldi  a,[hl]
     ld   h,[hl]
     ld   l,a
@@ -3823,7 +3823,7 @@ call_02_6a3c_EntityAction_WalkwayActivator_Update:
     cp   [hl]
     ret  c
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
-    ld   a,[wD20E_PlayerXPosition]
+    ld   a,[wD20E_Player_XPosition]
     ldi  [hl],a
     ld   a,[wD20F_PlayerXPosition]
     ld   [hl],a
@@ -4048,7 +4048,7 @@ call_02_6c4a_EntityAction_Rez_unk2:
     ld   e,[hl]
     inc  l
     ld   d,[hl]
-    ld   a,[wD210_PlayerYPosition]
+    ld   a,[wD210_Player_YPosition]
     sub  a,$08
     ld   l,a
     ld   a,[wD211_PlayerYPosition]

@@ -665,6 +665,7 @@ data_01_7c0f_collectible_images:
     INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_rezopolis.bin"
     INCBIN "gfx/misc_sprites/collectibles/palettes/palette_rezopolis_collectibles.bin"
 
-    db   $00, $b4, $01, $7f, $3f, $00, $00, $6f
+; the below bytes are an incomplete copy of palette_rezopolis_collectibles.bin
+    db   $00, $b4, $01, $7f, $3f, $00, $00, $6f                             ;; 01:7f08 ????????
     db   $00, $bf, $04, $ff, $31, $00, $00, $00
     db   $00, $9c, $02, $7f, $03

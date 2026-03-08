@@ -279,7 +279,7 @@ call_03_4c76_EntityCollision_Dispatch:
     ret  Z                                             ;; 03:4e2a $c8
     xor  A, $10                                        ;; 03:4e2b $ee $10
     ld   L, A                                          ;; 03:4e2d $6f
-    ld   A, [wD20E_PlayerXPosition]                                    ;; 03:4e2e $fa $0e $d2
+    ld   A, [wD20E_Player_XPosition]                                    ;; 03:4e2e $fa $0e $d2
     sub  A, [HL]                                       ;; 03:4e31 $96
     ld   C, A                                          ;; 03:4e32 $4f
     inc  HL                                            ;; 03:4e33 $23
@@ -307,7 +307,7 @@ call_03_4c76_EntityCollision_Dispatch:
     add  HL, DE                                        ;; 03:4e4f $19
     ld   DE, $10                                       ;; 03:4e50 $11 $10 $00
     add  HL, DE                                        ;; 03:4e53 $19
-    ld   A, [wD210_PlayerYPosition]                                    ;; 03:4e54 $fa $10 $d2
+    ld   A, [wD210_Player_YPosition]                                    ;; 03:4e54 $fa $10 $d2
     sub  A, L                                          ;; 03:4e57 $95
     ld   L, A                                          ;; 03:4e58 $6f
     ld   A, [wD211_PlayerYPosition]                                    ;; 03:4e59 $fa $11 $d2
@@ -733,7 +733,7 @@ call_03_4c76_EntityCollision_Dispatch:
     ret  
 .jr_03_5129_CollisionHandler_PoweredWalkway:
 ; Overlap check; if wD751/wD752 are non-zero (walkway is powered), reads UNK_19 as an index 
-; into wD5A3 conveyor state table, writes $06 to that slot; if the previous value was 0, 
+; into wD5A3_ConveyorState1 conveyor state table, writes $06 to that slot; if the previous value was 0, 
 ; plays SFX $2B (activation sound)
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
@@ -745,7 +745,7 @@ call_03_4c76_EntityCollision_Dispatch:
     ld   l,[hl]
     dec  l
     ld   h,$00
-    ld   de,wD5A3
+    ld   de,wD5A3_ConveyorState1
     add  hl,de
     ld   a,[hl]
     ld   [hl],$06

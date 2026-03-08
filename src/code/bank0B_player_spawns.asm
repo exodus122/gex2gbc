@@ -17,7 +17,7 @@ call_0b_4efe_Player_SetSpawnPosition:
     ld   A, [HL]                                       ;; 0b:4f06 $7e
     and  A, $f7                                        ;; 0b:4f07 $e6 $f7
     ld   [HL], A                                       ;; 0b:4f09 $77
-    ld   HL, wD20E_PlayerXPosition                                     ;; 0b:4f0a $21 $0e $d2
+    ld   HL, wD20E_Player_XPosition                                     ;; 0b:4f0a $21 $0e $d2
     ld   A, [HL+]                                      ;; 0b:4f0d $2a
     ld   H, [HL]                                       ;; 0b:4f0e $66
     ld   L, A                                          ;; 0b:4f0f $6f
@@ -27,7 +27,7 @@ call_0b_4efe_Player_SetSpawnPosition:
     add  HL, HL                                        ;; 0b:4f15 $29
     add  HL, HL                                        ;; 0b:4f16 $29
     ld   C, H                                          ;; 0b:4f17 $4c
-    ld   HL, wD210_PlayerYPosition                                     ;; 0b:4f18 $21 $10 $d2
+    ld   HL, wD210_Player_YPosition                                     ;; 0b:4f18 $21 $10 $d2
     ld   A, [HL+]                                      ;; 0b:4f1b $2a
     ld   H, [HL]                                       ;; 0b:4f1c $66
     ld   L, A                                          ;; 0b:4f1d $6f
@@ -72,7 +72,7 @@ call_0b_4efe_Player_SetSpawnPosition:
     ld   DE, $20                                       ;; 0b:4f4d $11 $20 $00
     add  HL, DE                                        ;; 0b:4f50 $19
     ld   A, L                                          ;; 0b:4f51 $7d
-    ld   [wD20E_PlayerXPosition], A                                    ;; 0b:4f52 $ea $0e $d2
+    ld   [wD20E_Player_XPosition], A                                    ;; 0b:4f52 $ea $0e $d2
     ld   A, H                                          ;; 0b:4f55 $7c
     ld   [wD20F_PlayerXPosition], A                                    ;; 0b:4f56 $ea $0f $d2
     ld   L, B                                          ;; 0b:4f59 $68
@@ -85,7 +85,7 @@ call_0b_4efe_Player_SetSpawnPosition:
     ld   DE, $10                                       ;; 0b:4f61 $11 $10 $00
     add  HL, DE                                        ;; 0b:4f64 $19
     ld   A, L                                          ;; 0b:4f65 $7d
-    ld   [wD210_PlayerYPosition], A                                    ;; 0b:4f66 $ea $10 $d2
+    ld   [wD210_Player_YPosition], A                                    ;; 0b:4f66 $ea $10 $d2
     ld   A, H                                          ;; 0b:4f69 $7c
     ld   [wD211_PlayerYPosition], A                                    ;; 0b:4f6a $ea $11 $d2
     jp   call_00_13a6_MapWindow_UpdateFromPlayerPos                                  ;; 0b:4f6d $c3 $a6 $13
@@ -112,7 +112,7 @@ call_0b_4efe_Player_SetSpawnPosition:
     ld   DE, $20                                       ;; 0b:4f8c $11 $20 $00
     add  HL, DE                                        ;; 0b:4f8f $19
     ld   A, L                                          ;; 0b:4f90 $7d
-    ld   [wD20E_PlayerXPosition], A                                    ;; 0b:4f91 $ea $0e $d2
+    ld   [wD20E_Player_XPosition], A                                    ;; 0b:4f91 $ea $0e $d2
     ld   A, H                                          ;; 0b:4f94 $7c
     ld   [wD20F_PlayerXPosition], A                                    ;; 0b:4f95 $ea $0f $d2
     ld   L, B                                          ;; 0b:4f98 $68
@@ -125,7 +125,7 @@ call_0b_4efe_Player_SetSpawnPosition:
     ld   DE, $30                                       ;; 0b:4fa0 $11 $30 $00
     add  HL, DE                                        ;; 0b:4fa3 $19
     ld   A, L                                          ;; 0b:4fa4 $7d
-    ld   [wD210_PlayerYPosition], A                                    ;; 0b:4fa5 $ea $10 $d2
+    ld   [wD210_Player_YPosition], A                                    ;; 0b:4fa5 $ea $10 $d2
     ld   A, H                                          ;; 0b:4fa8 $7c
     ld   [wD211_PlayerYPosition], A                                    ;; 0b:4fa9 $ea $11 $d2
     jp   call_00_13a6_MapWindow_UpdateFromPlayerPos                                  ;; 0b:4fac $c3 $a6 $13
@@ -156,7 +156,7 @@ call_0b_4efe_Player_SetSpawnPosition:
     ld   DE, $10                                       ;; 0b:4fcf $11 $10 $00
     add  HL, DE                                        ;; 0b:4fd2 $19
     ld   A, L                                          ;; 0b:4fd3 $7d
-    ld   [wD20E_PlayerXPosition], A                                    ;; 0b:4fd4 $ea $0e $d2
+    ld   [wD20E_Player_XPosition], A                                    ;; 0b:4fd4 $ea $0e $d2
     ld   A, H                                          ;; 0b:4fd7 $7c
     ld   [wD20F_PlayerXPosition], A                                    ;; 0b:4fd8 $ea $0f $d2
     ld   L, B                                          ;; 0b:4fdb $68
@@ -169,7 +169,7 @@ call_0b_4efe_Player_SetSpawnPosition:
     ld   DE, $10                                       ;; 0b:4fe3 $11 $10 $00
     add  HL, DE                                        ;; 0b:4fe6 $19
     ld   A, L                                          ;; 0b:4fe7 $7d
-    ld   [wD210_PlayerYPosition], A                                    ;; 0b:4fe8 $ea $10 $d2
+    ld   [wD210_Player_YPosition], A                                    ;; 0b:4fe8 $ea $10 $d2
     ld   A, H                                          ;; 0b:4feb $7c
     ld   [wD211_PlayerYPosition], A                                    ;; 0b:4fec $ea $11 $d2
     jp   call_00_13a6_MapWindow_UpdateFromPlayerPos                                  ;; 0b:4fef $c3 $a6 $13

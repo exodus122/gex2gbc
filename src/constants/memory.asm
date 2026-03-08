@@ -60,7 +60,8 @@ wCE00_BgTileFlags:
 ; or hidden smellraiser switch, etc.
     ds 256
 
-wCF00_SecondaryTilesetPaletteIds:
+wCF00_TilesetPaletteIds:
+; Will be modified when a secondary tileset is loaded
     ds 256                                             ;; cf00
 
 wD000_EntityFlags:
@@ -92,14 +93,14 @@ wD20A_Player_UnkFlags2:
     ds 3                                               ;; d20a
 wD20D_PlayerFacingAngle:
     ds 1                                               ;; d20d
-; wD20E_PlayerXPosition and wD20F_PlayerXPosition_PlayerXPosition control gex's x coordinate position (can freeze wD20F_PlayerXPosition_PlayerXPosition to sometimes fall through floors)
-wD20E_PlayerXPosition:
+; wD20E_Player_XPosition and wD20F_PlayerXPosition_PlayerXPosition control gex's x coordinate position (can freeze wD20F_PlayerXPosition_PlayerXPosition to sometimes fall through floors)
+wD20E_Player_XPosition:
     ds 1                                               ;; d20e
 wD20F_PlayerXPosition:
     ds 1                                               ;; d20f
-; wD210_PlayerYPosition and wD211_PlayerYPosition control gex's y coordinate position (can freeze both to hover at fixed height)
+; wD210_Player_YPosition and wD211_PlayerYPosition control gex's y coordinate position (can freeze both to hover at fixed height)
 ; can also set to 0000 to warp to top of map for example
-wD210_PlayerYPosition:
+wD210_Player_YPosition:
     ds 1                                               ;; d210
 wD211_PlayerYPosition:
     ds 1                                               ;; d211
@@ -128,16 +129,13 @@ wD30C_EntityBoundingBoxYMin:
 
     ds 28                                              ;; d30d
 
-wD329:
+wD329_BlockXRangeMin:
     ds 1                                               ;; d329
-
-wD32A:
+wD32A_BlockXRangeMax:
     ds 1                                               ;; d32a
-
-wD32B:
+wD32B_BlockYRangeMin:
     ds 1                                               ;; d32b
-
-wD32C:
+wD32C_BlockYRangeMax:
     ds 1                                               ;; d32c
 
 wD32D:
@@ -257,19 +255,16 @@ wD59F_CurrentInputs: ; inputs defined in hardware.inc
 wD5A0:
     ds 1                                               ;; d5a0
 
-wD5A1: ; related to gex's x position
+wD5A1_MapXScroll_Copy:
     ds 1                                               ;; d5a1
-
-wD5A2: ; related to gex's y position
+wD5A2_MapYScroll_Copy:
     ds 1                                               ;; d5a2
 
-wD5A3:
+wD5A3_ConveyorState1:
     ds 1                                               ;; d5a3
-
-wD5A4:
+wD5A4_ConveyorState2:
     ds 1                                               ;; d5a4
-
-wD5A5:
+wD5A5_ConveyorState3:
     ds 1                                               ;; d5a5
 
 wD5A6_TextBuffer: ; goes until at least D5CC
@@ -304,8 +299,7 @@ wD610:
 
 wD611_AnimatedTileId:
     ds 1                                               ;; d611
-
-wD612_AnimatedTileId:
+wD612_AnimatedTime_FrameCounter:
     ds 1                                               ;; d612
 
 wD613:
@@ -663,23 +657,33 @@ wD6EC:
     ds 1                                               ;; d6ec
 
 ; BgMap related memory starts here
-wD6ED_XPositionInMap: ; current x position in map of screen/player?
+wD6ED_BgMap_ScrollX: ; current x position in map of screen/player?
     ds 2                                               ;; d6ed
-wD6EF_YPositionInMap: ; current y position in map of screen/player?
+wD6EF_BgMap_ScrollY: ; current y position in map of screen/player?
     ds 1                                               ;; d6ef
-wD6F0_BgMap_Unk:
+wD6F0_BgMap_ScrollYHi:
     ds 1                                               ;; d6f0
 wD6F1_BgMap_PrevColumn:
     ds 2                                               ;; d6f1
 wD6F3_BgMap_PrevRow:
     ds 2                                               ;; d6f3
-wD6F5_MapBank:
+wD6F5_BgMap_MapBank:
     ds 1                                               ;; d6f5
-wD6F6_ExtendedMapBank:
+wD6F6_BgMap_ExtendedMapBank:
     ds 1                                               ;; d6f6
-wD6F7_BlocksetAndCollisionBank:
-    ds 2                                               ;; d6f7
-wD6F9_BgMapLoadingFlags:
+wD6F7_BgMap_BlocksetAndCollisionBank:
+    ds 1                                               ;; d6f7
+; unused byte
+    ds 1
+wD6F9_BgMap_LoadingFlags:
+; bit 7 (80) = pending vram transfer
+; bit 6 (40) = unused
+; bit 5 (20) = unused
+; bit 4 (10) = unused
+; bit 3 (08) = scroll left
+; bit 2 (04) = scroll right
+; bit 1 (02) = scroll up
+; bit 0 (01) = scroll down
     ds 1                                               ;; d6f9
 wD6FA_BgMap_ColumnScrollPosition:
     ds 1                                               ;; d6fa
@@ -689,121 +693,96 @@ wD6FC_BgMap_RowScrollPosition:
     ds 1                                               ;; d6fc
 wD6FD_BgMap_RowUnk:
     ds 1                                               ;; d6fd
-wD6FE_BlocksetOverrideBitMask:
+wD6FE_BgMap_BlocksetOverrideBitMask:
     ds 1                                               ;; d6fe
-wD6FF_BgTilesetBank:
+wD6FF_BgMap_TilesetBank:
     ds 1                                               ;; d6ff
-
-wD700: ; where block ids get written temporarily. also where secondary blockset bits are set temporarily
+wD700_BgMap_TilesetBankOffset:
     ds 2                                               ;; d700
-
-wD702:
+wD702_BgMap_TempScratchRowMetaTileIDs:
+; where block ids get written temporarily when a row is loaded
     ds 1                                               ;; d702
-
-wD703:
+wD703_BgMap_TempScratchRowMetaTileOverrideBits:
+; where blockset override (extended map) bits are set for the loaded row tiles
     ds 11                                              ;; d703
-
-wD70E:
+wD70E_BgMap_TempScratchColumnMetaTileIDs:
+; where block ids get written temporarily when a column is loaded
     ds 1                                               ;; d70e
-
-wD70F:
+wD70F_BgMap_TempScratchColumnMetaTileOverrideBits:
+; where blockset override (extended map) bits are set for the loaded column tiles
     ds 11                                              ;; d70f
 
+; Sound related
 wD71A:
     ds 4                                               ;; d71a
-
 wD71E:
     ds 1                                               ;; d71e
-
 wD71F:
     ds 1                                               ;; d71f
-
 wD720:
     ds 1                                               ;; d720
-
 wD721:
     ds 1                                               ;; d721
-
 wD722:
     ds 1                                               ;; d722
-
 wD723:
     ds 1                                               ;; d723
-
 wD724:
     ds 1                                               ;; d724
-
 wD725:
     ds 1                                               ;; d725
 
+; Secondary Tileset related
 wD726_SecondaryTilesetBank:
     ds 1                                               ;; d726
-
-wD727:
+wD727: ; always 0?
     ds 1                                               ;; d727
-
 wD728_SecondaryTilesetAddr: ; this determines which secondary tilset to load (and is loading)
     ds 1                                               ;; d728
-
 wD729:
     ds 1                                               ;; d729
-
 wD72A:
     ds 1                                               ;; d72a
-
 wD72B:
     ds 1                                               ;; d72b
-
 wD72C:
     ds 1                                               ;; d72c
-
 wD72D_SecondaryTilesetIndex:
     ds 1                                               ;; d72d
-
 wD72E_SecondaryTilesetBank2:
     ds 1                                               ;; d72e
-
 wD72F:
     ds 1                                               ;; d72f
-
 wD730:
     ds 1                                               ;; d730
-
 wD731:
     ds 1                                               ;; d731
-
 wD732:
     ds 1                                               ;; d732
-
 wD733:
     ds 1                                               ;; d733
-
 wD734:
     ds 1                                               ;; d734
-
 wD735:
     ds 1                                               ;; d735
-
 wD736:
     ds 1                                               ;; d736
-
 wD737:
     ds 1                                               ;; d737
-
 wD738:
     ds 1                                               ;; d738
 
+; Entity graphics related
 wD739:
     ds 1                                               ;; d739
-
 wD73A:
     ds 1                                               ;; d73a
-
 wD73B_FrameCounter:
     ds 1                                               ;; d73b
 wD73C_FrameCounter2:
     ds 1                                               ;; d73c
 
+; Player related memory
 wD73D_LivesRemaining:
     ds 1                                               ;; d73d
 wD73E_LivesRemaining_Hundreds: ; the hundreds unit of your lives

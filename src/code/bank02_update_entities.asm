@@ -261,7 +261,7 @@ call_02_6eba_Entities_UpdateAll:
     ld   L, A                                          ;; 02:6ee6 $6f
     ld   A, [HL+]                                      ;; 02:6ee7 $2a
     sub  A, $10                                        ;; 02:6ee8 $d6 $10
-    ld   [wD210_PlayerYPosition], A                                    ;; 02:6eea $ea $10 $d2
+    ld   [wD210_Player_YPosition], A                                    ;; 02:6eea $ea $10 $d2
     ld   A, [HL]                                       ;; 02:6eed $7e
     sbc  A, $00                                        ;; 02:6eee $de $00
     ld   [wD211_PlayerYPosition], A                                    ;; 02:6ef0 $ea $11 $d2
@@ -579,12 +579,13 @@ call_02_715a_MapWindow_Update:
     ret                                                ;; 02:7163 $c9
 
 call_02_7164_MapScroll_CheckVertical:
-; Reads wD6EF (Y position in map, 16-bit), right-shifts 3 to get tile row, compares against previously stored row in wD6F3_BgMap_PrevRow; 
-; if changed, sets bit 0 (scroll down) or bit 1 (scroll up) in wD6F9_BgMapLoadingFlags scroll-request flags
-    ld   HL, wD6EF_YPositionInMap                                     ;; 02:7164 $21 $ef $d6
+; Reads wD6EF (Y position in map, 16-bit), right-shifts 3 to get tile row, compares against previously 
+; stored row in wD6F3_BgMap_PrevRow; if changed, sets bit 0 (scroll down) or bit 1 (scroll up) in 
+; wD6F9_BgMap_LoadingFlags scroll-request flags
+    ld   HL, wD6EF_BgMap_ScrollY                                     ;; 02:7164 $21 $ef $d6
     ld   A, [HL+]                                      ;; 02:7167 $2a
     ld   D, [HL]                                       ;; 02:7168 $56
-    ld   [wD5A2], A                                    ;; 02:7169 $ea $a2 $d5
+    ld   [wD5A2_MapYScroll_Copy], A                                    ;; 02:7169 $ea $a2 $d5
     srl  D                                             ;; 02:716c $cb $3a
     rra                                                ;; 02:716e $1f
     srl  D                                             ;; 02:716f $cb $3a
@@ -605,24 +606,25 @@ call_02_7164_MapScroll_CheckVertical:
     jr   C, .jr_02_718e                                ;; 02:7182 $38 $0a
     or   A, E                                          ;; 02:7184 $b3
     ret  Z                                             ;; 02:7185 $c8
-    ld   HL, wD6F9_BgMapLoadingFlags                                     ;; 02:7186 $21 $f9 $d6
+    ld   HL, wD6F9_BgMap_LoadingFlags                                     ;; 02:7186 $21 $f9 $d6
     ld   A, [HL]                                       ;; 02:7189 $7e
     or   A, $01                                        ;; 02:718a $f6 $01
     ld   [HL], A                                       ;; 02:718c $77
     ret                                                ;; 02:718d $c9
 .jr_02_718e:
-    ld   HL, wD6F9_BgMapLoadingFlags                                     ;; 02:718e $21 $f9 $d6
+    ld   HL, wD6F9_BgMap_LoadingFlags                                     ;; 02:718e $21 $f9 $d6
     ld   A, [HL]                                       ;; 02:7191 $7e
     or   A, $02                                        ;; 02:7192 $f6 $02
     ld   [HL], A                                       ;; 02:7194 $77
     ret                                                ;; 02:7195 $c9
 
 call_02_7196_MapScroll_CheckHorizontal:
-; Same logic as above for wD6ED (X position in map); sets bit 2 (scroll right) or bit 3 (scroll left) in wD6F9_BgMapLoadingFlags
-    ld   HL, wD6ED_XPositionInMap                                     ;; 02:7196 $21 $ed $d6
+; Same logic as above for wD6ED (X position in map); sets bit 2 (scroll right) or bit 3 (scroll left) 
+; in wD6F9_BgMap_LoadingFlags
+    ld   HL, wD6ED_BgMap_ScrollX                                     ;; 02:7196 $21 $ed $d6
     ld   A, [HL+]                                      ;; 02:7199 $2a
     ld   D, [HL]                                       ;; 02:719a $56
-    ld   [wD5A1], A                                    ;; 02:719b $ea $a1 $d5
+    ld   [wD5A1_MapXScroll_Copy], A                                    ;; 02:719b $ea $a1 $d5
     srl  D                                             ;; 02:719e $cb $3a
     rra                                                ;; 02:71a0 $1f
     srl  D                                             ;; 02:71a1 $cb $3a
@@ -643,13 +645,13 @@ call_02_7196_MapScroll_CheckHorizontal:
     jr   C, .jr_02_71c0                                ;; 02:71b4 $38 $0a
     or   A, E                                          ;; 02:71b6 $b3
     ret  Z                                             ;; 02:71b7 $c8
-    ld   HL, wD6F9_BgMapLoadingFlags                                     ;; 02:71b8 $21 $f9 $d6
+    ld   HL, wD6F9_BgMap_LoadingFlags                                     ;; 02:71b8 $21 $f9 $d6
     ld   A, [HL]                                       ;; 02:71bb $7e
     or   A, $04                                        ;; 02:71bc $f6 $04
     ld   [HL], A                                       ;; 02:71be $77
     ret                                                ;; 02:71bf $c9
 .jr_02_71c0:
-    ld   HL, wD6F9_BgMapLoadingFlags                                     ;; 02:71c0 $21 $f9 $d6
+    ld   HL, wD6F9_BgMap_LoadingFlags                                     ;; 02:71c0 $21 $f9 $d6
     ld   A, [HL]                                       ;; 02:71c3 $7e
     or   A, $08                                        ;; 02:71c4 $f6 $08
     ld   [HL], A                                       ;; 02:71c6 $77

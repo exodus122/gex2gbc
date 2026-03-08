@@ -1096,7 +1096,7 @@ call_02_4828_PlayerAction_RidingRocket:
     ldi  a,[hl]
     ld   h,[hl]
     ld   l,a
-    ld   [wD210_PlayerYPosition],a
+    ld   [wD210_Player_YPosition],a
     ld   a,h
     ld   [wD211_PlayerYPosition],a
     add  hl,hl

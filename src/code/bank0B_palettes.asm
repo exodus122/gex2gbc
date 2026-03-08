@@ -513,7 +513,7 @@ call_0b_5f57_Entity_LoadGBCPalette:
 call_0b_641e_TilesetPaletteIds_Load:
 ; Loads the per-tile palette ID table for the current level into wCF00. Uses wD624 (level ID) 
 ; to index .data_level_palette_ids (31-entry pointer table, one per world), then copies 256 bytes 
-; (one palette ID per tile type, wrapping at 256) into wCF00_SecondaryTilesetPaletteIds. 
+; (one palette ID per tile type, wrapping at 256) into wCF00_TilesetPaletteIds. 
 ; Used by the BG map renderer to assign the correct GBC palette to each background tile
     ld   HL, wD624_CurrentLevelId                                     ;; 0b:641e $21 $24 $d6
     ld   L, [HL]                                       ;; 0b:6421 $6e
@@ -524,7 +524,7 @@ call_0b_641e_TilesetPaletteIds_Load:
     ld   A, [HL+]                                      ;; 0b:6429 $2a
     ld   H, [HL]                                       ;; 0b:642a $66
     ld   L, A                                          ;; 0b:642b $6f
-    ld   DE, wCF00_SecondaryTilesetPaletteIds                                     ;; 0b:642c $11 $00 $cf
+    ld   DE, wCF00_TilesetPaletteIds                                     ;; 0b:642c $11 $00 $cf
 .jr_0b_642f:
     ld   A, [HL+]                                      ;; 0b:642f $2a
     ld   [DE], A                                       ;; 0b:6430 $12

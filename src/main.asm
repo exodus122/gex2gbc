@@ -7,6 +7,11 @@ INCLUDE "code/macros/macros.asm"
 
 SECTION "bank00", ROM0[$0000]
 INCLUDE "code/bank00_home.asm"
+INCLUDE "code/bank00_bg_map.asm"
+INCLUDE "code/bank00_special_tile_scripts.asm"
+INCLUDE "code/bank00_mission_preview.asm"
+INCLUDE "code/bank00_map_data.asm"
+INCLUDE "code/bank00_entity_utils.asm"
 
 SECTION "bank01", ROMX[$4000], BANK[$01]
 INCLUDE "code/bank01_menus.asm"
