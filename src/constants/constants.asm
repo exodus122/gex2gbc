@@ -377,8 +377,24 @@ DEF ENTITY_FIELD_SPRITE_IDS_PTR             EQU $04
 DEF ENTITY_FIELD_SPRITE_FRAME_COUNTER       EQU $06
 DEF ENTITY_FIELD_SPRITE_COUNTER             EQU $07
 DEF ENTITY_FIELD_SPRITE_ID                  EQU $08
-DEF ENTITY_FIELD_UNK_09                     EQU $09
+DEF ENTITY_FIELD_ACTION_STATE_FLAGS         EQU $09
+    DEF ACTION_STATE_HAS_PENDING_BIT       EQU 7
+    DEF ACTION_STATE_UNK40_BIT             EQU 6
+    DEF ACTION_STATE_IS_FIRST_FRAME_BIT    EQU 5
+
+    DEF ACTION_STATE_HAS_PENDING           EQU $80
+    DEF ACTION_STATE_UNK40                 EQU $40
+    DEF ACTION_STATE_IS_FIRST_FRAME        EQU $20
+    DEF ACTION_STATE_PENDING_ACTION        EQU $1F
 DEF ENTITY_FIELD_UNK_0A                     EQU $0A
+    DEF UNK_0A_BIT_7                 EQU 7 ; unused?
+    DEF UNK_0A_BIT_6                 EQU 6 ; used
+    DEF UNK_0A_BIT_5                 EQU 5 ; used
+    DEF UNK_0A_BIT_4                 EQU 4 ; unused?
+    DEF UNK_0A_BIT_3                 EQU 3 ; used
+    DEF UNK_0A_BIT_2                 EQU 2 ; used
+    DEF UNK_0A_BIT_1                 EQU 1 ; used
+    DEF UNK_0A_BIT_0                 EQU 0 ; used
 DEF ENTITY_FIELD_SPRITE_FRAME_COUNTER_MAX   EQU $0B
 DEF ENTITY_FIELD_SPRITE_COUNTER_MAX         EQU $0C
 DEF ENTITY_FIELD_FACING_DIRECTION           EQU $0D
@@ -389,7 +405,7 @@ DEF ENTITY_FIELD_YPOS_ON_SCREEN             EQU $13
 DEF ENTITY_FIELD_WIDTH                      EQU $14
 DEF ENTITY_FIELD_HEIGHT                     EQU $15
 DEF ENTITY_FIELD_COLLISION_TYPE             EQU $16
-DEF ENTITY_FIELD_MISC_FLAGS                 EQU $17
+DEF ENTITY_FIELD_MISC_FLAGS                 EQU $17 ; different entities use these flags for different purposes
     DEF MISC_FLAGS_BIT_7                 EQU 7 ; for platforms: set = left platform movement, unset = right
     DEF MISC_FLAGS_BIT_6                 EQU 6 ; for platforms: set = up platform movement, unset = down
     DEF MISC_FLAGS_BIT_5                 EQU 5 ; unused?
@@ -399,7 +415,7 @@ DEF ENTITY_FIELD_MISC_FLAGS                 EQU $17
     DEF MISC_FLAGS_BIT_1                 EQU 1 ; for platforms: set = vertical platform movement, unset = horizontal
     DEF MISC_FLAGS_BIT_0                 EQU 0 ; used
 DEF ENTITY_FIELD_MISC_TIMER                 EQU $18
-DEF ENTITY_FIELD_UNK_19                     EQU $19
+DEF ENTITY_FIELD_TIMER_2                    EQU $19
 DEF ENTITY_FIELD_OTHER_FLAGS                EQU $1A ; used by tv buttons, etc.
 DEF ENTITY_FIELD_UNK_1B                     EQU $1B
 DEF ENTITY_FIELD_XVEL                       EQU $1C
@@ -454,14 +470,14 @@ DEF COLLISION_TYPE_PROJECTILE                 EQU $13
 DEF COLLISION_TYPE_JAR                        EQU $14
 DEF COLLISION_TYPE_NINJA                      EQU $15
 DEF COLLISION_TYPE_HANGING_BLADE              EQU $16
-DEF COLLISION_TYPE_LAUNCH                     EQU $17 ; unverified
+DEF COLLISION_TYPE_UNK_17                     EQU $17 ; unverified
 DEF COLLISION_TYPE_SAMURAI_BODY               EQU $18
-DEF COLLISION_TYPE_DAMAGE_AND_SET_MISC_FLAG   EQU $19 ; unverified
+DEF COLLISION_TYPE_SAMURAI_HEAD               EQU $19
 DEF COLLISION_TYPE_GEYSER                     EQU $1A
 DEF COLLISION_TYPE_TRICERATOPS                EQU $1B
 DEF COLLISION_TYPE_GEAR                       EQU $1C
 DEF COLLISION_TYPE_ELECTRIC_BALL              EQU $1D
-DEF COLLISION_TYPE_SET_MISC_FLAG_AND_DAMAGE   EQU $1E ; unverified
+DEF COLLISION_TYPE_GUN_PROJECTILE             EQU $1E
 DEF COLLISION_TYPE_ROCKET                     EQU $1F
 DEF COLLISION_TYPE_CANNON                     EQU $20
 DEF COLLISION_TYPE_POWERED_WALKWAY            EQU $21

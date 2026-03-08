@@ -87,7 +87,7 @@ wD207_Player_SpriteCounter:
     ds 1                                               ;; d207
 wD208_Player_SpriteID:
     ds 1                                               ;; d208
-wD209_Player_UnkFlags:
+wD209_Player_ActionState:
     ds 1                                               ;; d209
 wD20A_Player_UnkFlags2:
     ds 3                                               ;; d20a
@@ -246,7 +246,7 @@ wD59D_ReturnBank:
 ; bank to return to after the upcoming bank switch
     ds 1                                               ;; d59d
 
-wD59E:
+wD59E_OnGBCFlag:
     ds 1                                               ;; d59e
 
 wD59F_CurrentInputs: ; inputs defined in hardware.inc
@@ -840,28 +840,26 @@ wD74E_Player_PlatformRelated:
 wD74F_Player_PlatformRelated2:
     ds 1                                               ;; d74f
 
-wD750_PlayerDamageCooldownTimer:
+; Player Timers
+wD750_Player_DamageCooldownTimer:
     ds 1                                               ;; d750
-
-wD751:
+wD751_Player_CircuitPowerUpTimerLo:
     ds 1                                               ;; d751
-
-wD752:
+wD752_Player_CircuitPowerUpTimerHi:
     ds 1                                               ;; d752
-
-wD753_FlyPowerup1_Timer1:
+wD753_FlyPowerup1_TimerLo:
     ds 1                                               ;; d753
-wD754_FlyPowerup1_Timer2:
+wD754_FlyPowerup1_TimerHi:
     ds 1                                               ;; d754
-wD755_FlyPowerup2_Timer1:
+wD755_FlyPowerup2_TimerLo:
     ds 1                                               ;; d755
-wD756_FlyPowerup2_Timer2:
+wD756_FlyPowerup2_TimerHi:
     ds 1                                               ;; d756
 
 wD757_LanternLitFlag:
     ds 1                                               ;; d757
 
-wD758_Player_LaunchVelocityMaybe:
+wD758_UnkCollisionRelated:
     ds 1                                               ;; d758
 
 wD759_ButtonBlockingFlags:

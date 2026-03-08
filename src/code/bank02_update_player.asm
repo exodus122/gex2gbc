@@ -106,14 +106,14 @@ call_02_4939_Player_UpdateMain:
 ; For live play reads wD59F. Processes input through wD759_ButtonBlockingFlags button-lock flags: 
 ; bit 0 suppresses A button until released; bit 6 suppresses B button (jump) unless already held; 
 ; bit 7 suppresses jump during upward Y velocity, with a bit-4 latch for re-press tracking. 
-; Writes filtered input to wD75A. Decrements wD750_PlayerDamageCooldownTimer timer if nonzero. 
+; Writes filtered input to wD75A. Decrements wD750_Player_DamageCooldownTimer timer if nonzero. 
 ; Calls: Player_UpdateFacing, bg collision update, Player_ApplyYVelocity, bg tile cache, 
 ; Player_CheckTileInteractions, then dispatches wD745_Player_QueuedAction pending action change 
 ; (resets climb state to $FF, clears wD74B), calls the current action function pointer at wD202, 
-; Player_ApplyXMovement, clears wD758_Player_LaunchVelocityMaybe, computes wD76A (block X = world X >> 5 high byte), 
-; clears two entity flags in wD209_Player_UnkFlags/wD20A_Player_UnkFlags2, ticks action frame counter, 
+; Player_ApplyXMovement, clears wD758_UnkCollisionRelated, computes wD76A (block X = world X >> 5 high byte), 
+; clears two entity flags in wD209_Player_ActionState/wD20A_Player_UnkFlags2, ticks action frame counter, 
 ; updates map window, checks water/conveyor tiles, builds body sprites, and decrements three 16-bit 
-; timers at wD751, wD755_FlyPowerup2_Timer1, wD753_FlyPowerup1_Timer1
+; timers at wD751_Player_CircuitPowerUpTimerLo, wD755_FlyPowerup2_TimerLo, wD753_FlyPowerup1_TimerLo
     ld   A, [wD61E_DemoModeEnabled]                                    ;; 02:4939 $fa $1e $d6
     and  A, A                                          ;; 02:493c $a7
     jr   Z, .jr_02_4965                                ;; 02:493d $28 $26
@@ -183,7 +183,7 @@ call_02_4939_Player_UpdateMain:
 .jr_02_49a4:
     ld   HL, wD75A_CurrentInputsAlt                                     ;; 02:49a4 $21 $5a $d7
     ld   [HL], C                                       ;; 02:49a7 $71
-    ld   HL, wD750_PlayerDamageCooldownTimer                                     ;; 02:49a8 $21 $50 $d7
+    ld   HL, wD750_Player_DamageCooldownTimer                                     ;; 02:49a8 $21 $50 $d7
     ld   A, [HL]                                       ;; 02:49ab $7e
     and  A, A                                          ;; 02:49ac $a7
     jr   Z, .jr_02_49b0                                ;; 02:49ad $28 $01
@@ -212,7 +212,7 @@ call_02_4939_Player_UpdateMain:
     call call_00_10bd_JumpHL                                  ;; 02:49ec $cd $bd $10
     call call_02_4a77_Player_ApplyXMovement                                  ;; 02:49ef $cd $77 $4a
     xor  A, A                                          ;; 02:49f2 $af
-    ld   [wD758_Player_LaunchVelocityMaybe], A                                    ;; 02:49f3 $ea $58 $d7
+    ld   [wD758_UnkCollisionRelated], A                                    ;; 02:49f3 $ea $58 $d7
     ld   HL, wD20E_Player_XPosition                                     ;; 02:49f6 $21 $0e $d2
     ld   A, [HL+]                                      ;; 02:49f9 $2a
     ld   H, [HL]                                       ;; 02:49fa $66
@@ -222,19 +222,19 @@ call_02_4939_Player_UpdateMain:
     add  HL, HL                                        ;; 02:49fe $29
     ld   A, H                                          ;; 02:49ff $7c
     ld   [wD76A_PlayerXPositionBlock], A                                    ;; 02:4a00 $ea $6a $d7
-    ld   HL, wD209_Player_UnkFlags                                     ;; 02:4a03 $21 $09 $d2
-    res  5, [HL]                                       ;; 02:4a06 $cb $ae
+    ld   HL, wD209_Player_ActionState                                     ;; 02:4a03 $21 $09 $d2
+    res  ACTION_STATE_IS_FIRST_FRAME_BIT, [HL]                                       ;; 02:4a06 $cb $ae
     ld   HL, wD20A_Player_UnkFlags2                                     ;; 02:4a08 $21 $0a $d2
     res  6, [HL]                                       ;; 02:4a0b $cb $b6
     call call_02_6fda_Entity_TickAction                                  ;; 02:4a0d $cd $da $6f
     call call_02_715a_MapWindow_Update                                  ;; 02:4a10 $cd $5a $71
     call call_02_4c28_Player_CheckConveyorWaterTiles                                  ;; 02:4a13 $cd $28 $4c
     FARCALL call_03_5ca8_Player_BuildBodySprites
-    ld   HL, wD751                                     ;; 02:4a21 $21 $51 $d7
+    ld   HL, wD751_Player_CircuitPowerUpTimerLo                                     ;; 02:4a21 $21 $51 $d7
     call call_02_4a30_Player_DecrementTimer16                                  ;; 02:4a24 $cd $30 $4a
-    ld   HL, wD755_FlyPowerup2_Timer1                                     ;; 02:4a27 $21 $55 $d7
+    ld   HL, wD755_FlyPowerup2_TimerLo                                     ;; 02:4a27 $21 $55 $d7
     call call_02_4a30_Player_DecrementTimer16                                  ;; 02:4a2a $cd $30 $4a
-    ld   HL, wD753_FlyPowerup1_Timer1                                     ;; 02:4a2d $21 $53 $d7
+    ld   HL, wD753_FlyPowerup1_TimerLo                                     ;; 02:4a2d $21 $53 $d7
 
 call_02_4a30_Player_DecrementTimer16:
 ; Decrements a 16-bit timer at HL (little-endian). Returns immediately if already zero

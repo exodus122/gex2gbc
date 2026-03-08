@@ -577,12 +577,12 @@ call_00_33dd_Entity_ApplyXVelocityFriction:
 ; avoid wrap-around artifacts — essentially a friction/momentum integrator that bleeds off X velocity 
 ; into position while preventing the accumulator from flipping sign unexpectedly.
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_0A
-    bit  5,[hl]
+    bit  UNK_0A_BIT_5,[hl]
     ret  z
     ld   a,l
     xor  a,$1D
     ld   l,a
-    bit  1,[hl]
+    bit  UNK_0A_BIT_1,[hl]
     jr   z,.jr_02_33F2
     jr   .jr_02_341B
 .jr_02_33F2:
@@ -774,13 +774,13 @@ call_00_34d8_Entity_ClearSlotCounter:
     ld   [HL], $00                                     ;; 00:34e7 $36 $00
     ret                                                ;; 00:34e9 $c9
 
-call_00_34ea_Entity_CheckActivationFlag:
-; Tests bit 5 of UNK_09; returns Z/NZ for use as an activation/spawn gate
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_09
-    bit  5, [HL]                                       ;; 00:34f2 $cb $6e
+call_00_34ea_Entity_IsFirstFrameOfAction:
+; Tests bit 5 of ACTION_STATE; returns Z/NZ for use as an activation/spawn gate
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_ACTION_STATE_FLAGS
+    bit  ACTION_STATE_IS_FIRST_FRAME_BIT, [HL]                                       ;; 00:34f2 $cb $6e
     ret                                                ;; 00:34f4 $c9
 
-call_00_34f5_Entity_CheckPlayerInteracting:
+call_00_34f5_Entity_CompareMiscFlags:
 ; Checks wD74D_Player_InteractedEntityLo (current player interacted entity) against high bits of entity address; 
 ; sets B=1 if player is interacting with the current object
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
@@ -1270,7 +1270,7 @@ call_00_37e7_Entity_SetSlotCounter:
     ld   [HL], C                                       ;; 00:37f6 $71
     ret                                                ;; 00:37f7 $c9
 
-call_00_37f8_Entity_SetMovementMode:
+call_00_37f8_Entity_SetMiscFlags:
 ; Writes C to UNK_17 flags field
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     ld   [hl],c
@@ -1311,6 +1311,7 @@ call_00_382f_Entity_SetWidth:
     ld   [hl],c
     ret  
 
+call_00_3839_Entity_GetSpriteCounter:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_SPRITE_COUNTER
     ld   a,[hl]
     ret  
@@ -1318,11 +1319,12 @@ call_00_382f_Entity_SetWidth:
 call_00_3843_Entity_CheckAnimFlag_Bit2:
 ; Tests bit 2 of UNK_0A (animation/state flag)
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_0A
-    bit  2, [HL]                                       ;; 00:384b $cb $56
+    bit  UNK_0A_BIT_2, [HL]                                       ;; 00:384b $cb $56
     ret                                                ;; 00:384d $c9
 
+call_00_384e_Entity_CheckAnimFlag_Bit6:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_0A
-    bit  6,[hl]
+    bit  UNK_0A_BIT_6,[hl]
     ret  
 
 call_00_3859_Entity_CheckPlayerXProximity:
@@ -1346,7 +1348,7 @@ call_00_3859_Entity_CheckPlayerXProximity:
     sbc  A, $00                                        ;; 00:3875 $de $00
     ret                                                ;; 00:3877 $c9
 
-call_00_3878_Entity_CheckIfVisibleOrInRange:
+call_00_3878_Entity_CheckIfTVButtonVisibleOrInRange:
 ; In non-hub levels, uses slot index into wD798_OverrideSlotTable13 visibility table; 
 ; in hub level, checks entity's UNK_19 range values against wD64F–wD651 player position bytes
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:3878 $fa $24 $d6
@@ -1378,7 +1380,7 @@ call_00_3899_Entity_CheckHubProximityToPlayer:
 ; returns A=1 (player is close enough to activate); if any comparison fails, returns A=0.
 ; So it's essentially a 3-axis "is the player within this entity's activation radius?" check used exclusively 
 ; in the hub world, where entities need distance-based activation rather than room-based visibility.
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_19
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
     ld   A, [wD64F]                                    ;; 00:38a1 $fa $4f $d6
     and  A, $7f                                        ;; 00:38a4 $e6 $7f
     cp   A, [HL]                                       ;; 00:38a6 $be
@@ -1400,9 +1402,9 @@ call_00_3899_Entity_CheckHubProximityToPlayer:
     xor  A, A                                          ;; 00:38bf $af
     ret                                                ;; 00:38c0 $c9
 
-call_00_38c1_Entity_CheckProgressFlag:
-; In non-hub levels, maps slot to a bitmask via a 3-byte table and 
-; ANDs against wD629 remote progress flags; in hub delegates to call_00_3899_Entity_CheckHubProximityToPlayer
+call_00_38c1_Entity_CheckRedRemoteProgressFlag:
+; In non-hub levels, maps slot to a bitmask via a 3-byte table and ANDs against 
+; wD629 remote progress flags; in hub delegates to call_00_3899_Entity_CheckHubProximityToPlayer
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:38c1 $fa $24 $d6
     and  A, A                                          ;; 00:38c4 $a7
     jr   Z, call_00_3899_Entity_CheckHubProximityToPlayer                                 ;; 00:38c5 $28 $d2
@@ -1683,7 +1685,7 @@ call_00_3a23_Entity_LoadAnimationData:
     dec  B                                             ;; 00:3a59 $05
     jr   NZ, .jr_00_3a4a                               ;; 00:3a5a $20 $ee
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_0A
-    set  0, [HL]                                       ;; 00:3a64 $cb $c6
+    set  UNK_0A_BIT_0, [HL]                                       ;; 00:3a64 $cb $c6
     ret                                                ;; 00:3a66 $c9
 .data_00_3a67:
     dw   .data_00_3a75                                 ;; 00:3a67 ??

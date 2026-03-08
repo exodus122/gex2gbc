@@ -102,10 +102,10 @@ call_03_6941_HUD_LoadCollectibleSprites:
 
 call_03_6be5_HUD_LoadCollectiblePalette:
 ; Loads the GBC palette for the collectible icon into wDA13_ObjectPalettes_Slot1 (8 bytes = 4 colors × 2 bytes). 
-; Returns immediately if wD59E is zero (mono/non-GBC mode). Uses wD624 (level ID) to index 
+; Returns immediately if wD59E_OnGBCFlag is zero (mono/non-GBC mode). Uses wD624 (level ID) to index 
 ; .data_03_6c1d_collectible_palettes for a world-specific palette pointer, then uses wD648 × 8 
 ; as a sub-index to select the specific color entry within that palette block, copying 8 bytes to wDA13_ObjectPalettes_Slot1
-    ld   A, [wD59E]                                    ;; 03:6be5 $fa $9e $d5
+    ld   A, [wD59E_OnGBCFlag]                                    ;; 03:6be5 $fa $9e $d5
     and  A, A                                          ;; 03:6be8 $a7
     ret  Z                                             ;; 03:6be9 $c8
     ld   HL, wD624_CurrentLevelId                                     ;; 03:6bea $21 $24 $d6

@@ -8,7 +8,7 @@ call_03_4c76_EntityCollision_Dispatch:
     and  A, A                                          ;; 03:4c79 $a7
     ret  Z                                             ;; 03:4c7a $c8 ; return if [D743] is 0
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_0A
-    bit  5, [HL]                                       ;; 03:4c83 $cb $6e
+    bit  UNK_0A_BIT_5, [HL]                                       ;; 03:4c83 $cb $6e
     ret  Z                                             ;; 03:4c85 $c8
     xor  A, $1e                                        ;; 03:4c86 $ee $1e
     ld   L, A                                          ;; 03:4c88 $6f
@@ -51,14 +51,14 @@ call_03_4c76_EntityCollision_Dispatch:
     dw   .jr_03_4f14_CollisionHandler_Jar ; COLLISION_TYPE_JAR
     dw   .jr_03_4f20_CollisionHandler_Ninja ; COLLISION_TYPE_NINJA
     dw   .jr_03_4fc7_CollisionHandler_HangingBlade ; COLLISION_TYPE_HANGING_BLADE
-    dw   .jr_03_4fcf_CollisionHandler_Launch ; COLLISION_TYPE_LAUNCH
+    dw   .jr_03_4fcf_CollisionHandler_Unk17 ; COLLISION_TYPE_UNK_17
     dw   .jr_03_4fd9_CollisionHandler_SamuraiBody ; COLLISION_TYPE_SAMURAI_BODY
-    dw   .jr_03_5035_CollisionHandler_DamageAndSetMiscFlag ; COLLISION_TYPE_DAMAGE_AND_SET_MISC_FLAG
+    dw   .jr_03_5035_CollisionHandler_SamuraiHead ; COLLISION_TYPE_SAMURAI_HEAD
     dw   .jr_03_5049_CollisionHandler_Geyser ; COLLISION_TYPE_GEYSER
     dw   .jr_03_505d_CollisionHandler_Triceratops ; COLLISION_TYPE_TRICERATOPS
     dw   .jr_03_50ac_CollisionHandler_Gear ; COLLISION_TYPE_GEAR
     dw   .jr_03_50c5_CollisionHandler_ElectricBall ; COLLISION_TYPE_ELECTRIC_BALL
-    dw   .jr_03_50d6_CollisionHandler_SetMiscFlagAndDamage ; COLLISION_TYPE_SET_MISC_FLAG_AND_DAMAGE
+    dw   .jr_03_50d6_CollisionHandler_GunProjectile ; COLLISION_TYPE_GUN_PROJECTILE
     dw   .jr_03_50e7_CollisionHandler_Rocket ; COLLISION_TYPE_ROCKET
     dw   .jr_03_5109_CollisionHandler_Cannon ; COLLISION_TYPE_CANNON
     dw   .jr_03_5129_CollisionHandler_PoweredWalkway ; COLLISION_TYPE_POWERED_WALKWAY
@@ -272,7 +272,7 @@ call_03_4c76_EntityCollision_Dispatch:
 ; Only active when Y velocity is negative (object is moving downward; bit 7 set). 
 ; Computes horizontal overlap against entity width E. If in range, computes vertical overlap 
 ; using the entity's action data pointer + height + $10 offset; checks against wD211/wD210 (world Y). 
-; If all checks pass and player is vulnerable, damages and sets wD750_PlayerDamageCooldownTimer=$77 then triggers 
+; If all checks pass and player is vulnerable, damages and sets wD750_Player_DamageCooldownTimer=$77 then triggers 
 ; player action $19 (crushed animation)
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YVEL
     bit  7, [HL]                                       ;; 03:4e28 $cb $7e
@@ -322,7 +322,7 @@ call_03_4c76_EntityCollision_Dispatch:
     ret  NZ                                            ;; 03:4e68 $c0
     call call_03_52be_Entity_DamagePlayerIfVulnerable                                  ;; 03:4e69 $cd $be $52
     ld   A, $77                                        ;; 03:4e6c $3e $77
-    ld   [wD750_PlayerDamageCooldownTimer], A                                    ;; 03:4e6e $ea $50 $d7
+    ld   [wD750_Player_DamageCooldownTimer], A                                    ;; 03:4e6e $ea $50 $d7
     ld   A, PLAYER_ACTION_COLLAPSE                                        ;; 03:4e71 $3e $19
     FARCALL call_02_4ccd_Player_RequestAction
     ret                                                ;; 03:4e7e $c9
@@ -487,7 +487,7 @@ call_03_4c76_EntityCollision_Dispatch:
     ret  nc
     cp   a,$00
     jp   z,call_03_52be_Entity_DamagePlayerIfVulnerable
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_19
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
     ld   a,[hl]
     and  a
     jr   z,.jr_03_4F87
@@ -532,18 +532,17 @@ call_03_4c76_EntityCollision_Dispatch:
     db   $0d, $07, $08, $05, $05, $00, $05, $06
     db   $08, $ff
 .jr_03_4fc7_CollisionHandler_HangingBlade:
-; Chains: first runs the FallingObject handler (damage if falling), then unconditionally 
-; runs the UNK_09/hazard handler (damage if touching)
+; Chains: first runs the FallingObject handler, then unconditionally runs the touch damage handler
     push de
     call .jr_03_4e20_CollisionHandler_FallingObject
     pop  de
     jp   .jr_03_4d82_CollisionHandler_TouchDamage
-.jr_03_4fcf_CollisionHandler_Launch:
-; Overlap check; on hit, sets wD758_Player_LaunchVelocityMaybe=$7F (likely a slide/ice friction override value)
+.jr_03_4fcf_CollisionHandler_Unk17:
+; Overlap check; on hit, sets wD758_UnkCollisionRelated=$7F (likely a slide/ice friction override value)
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     ld   a,$7F
-    ld   [wD758_Player_LaunchVelocityMaybe],a
+    ld   [wD758_UnkCollisionRelated],a
     ret  
 .jr_03_4fd9_CollisionHandler_SamuraiBody:
 ; Nearly identical to Ninja: if action is $01 (attacking) and frame is ≥2, checks sword hitbox overlap 
@@ -598,7 +597,7 @@ call_03_4c76_EntityCollision_Dispatch:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     set  MISC_FLAGS_BIT_0,[hl]
     ret  
-.jr_03_5035_CollisionHandler_DamageAndSetMiscFlag:
+.jr_03_5035_CollisionHandler_SamuraiHead:
 ; Touch → damage player; attack/stomp → sets MISC_FLAG bit 0 (generic "set hit flag" pattern shared by some enemies)
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
@@ -608,7 +607,7 @@ call_03_4c76_EntityCollision_Dispatch:
     set  MISC_FLAGS_BIT_0,[hl]
     ret  
 .jr_03_5049_CollisionHandler_Geyser:
-; Only active in action $01 (geyser erupting). Sets wD758_Player_LaunchVelocityMaybe=$50 (likely an upward launch velocity 
+; Only active in action $01 (geyser erupting). Sets wD758_UnkCollisionRelated=$50 (likely an upward launch velocity 
 ; applied to the player) — no damage, just launches
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_ACTION_ID
     ld   a,[hl]
@@ -616,7 +615,7 @@ call_03_4c76_EntityCollision_Dispatch:
     cp   a,$01
     ret  nz
     ld   a,$50
-    ld   [wD758_Player_LaunchVelocityMaybe],a
+    ld   [wD758_UnkCollisionRelated],a
     ret  
 .jr_03_505d_CollisionHandler_Triceratops:
 ; Checks the horn hitbox first (X offset adjusted for facing direction), within a 12×12 window — 
@@ -683,14 +682,14 @@ call_03_4c76_EntityCollision_Dispatch:
     res  MISC_FLAGS_BIT_0,[hl]
     ret  
 .jr_03_50c5_CollisionHandler_ElectricBall:
-; Only dangerous in action $00 (charged state); otherwise falls through to standard UNK_09 hazard handler
+; Only dangerous in action $00 (charged state); otherwise falls through to touch damage handler
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_ACTION_ID
     ld   a,[hl]
     and  a,$1F
     cp   a,$00
     jp   nz,.jr_03_4d82_CollisionHandler_TouchDamage
     ret  
-.jr_03_50d6_CollisionHandler_SetMiscFlagAndDamage:
+.jr_03_50d6_CollisionHandler_GunProjectile:
 ; Overlap check; sets MISC_FLAGS bit 7 and damages player
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
@@ -698,9 +697,9 @@ call_03_4c76_EntityCollision_Dispatch:
     set  MISC_FLAGS_BIT_7,[hl]
     jp   call_03_52be_Entity_DamagePlayerIfVulnerable
 .jr_03_50e7_CollisionHandler_Rocket:
-; Checks wD755_FlyPowerup2_Timer1/wD756_FlyPowerup2_Timer2 (speed registers) are non-zero (rocket is moving). Overlap check; 
+; Checks wD755_FlyPowerup2_TimerLo/wD756_FlyPowerup2_TimerHi (speed registers) are non-zero (rocket is moving). Overlap check; 
 ; sets UNK_17 bit 7, then triggers player action $1F (rocket ride/capture)
-    ld   hl,wD755_FlyPowerup2_Timer1
+    ld   hl,wD755_FlyPowerup2_TimerLo
     ldi  a,[hl]
     or   [hl]
     ret  z
@@ -732,16 +731,16 @@ call_03_4c76_EntityCollision_Dispatch:
     set  MISC_FLAGS_BIT_7,[hl]
     ret  
 .jr_03_5129_CollisionHandler_PoweredWalkway:
-; Overlap check; if wD751/wD752 are non-zero (walkway is powered), reads UNK_19 as an index 
+; Overlap check; if wD751_Player_CircuitPowerUpTimerLo/wD752_Player_CircuitPowerUpTimerHi are non-zero (walkway is powered), reads UNK_19 as an index 
 ; into wD5A3_ConveyorState1 conveyor state table, writes $06 to that slot; if the previous value was 0, 
 ; plays SFX $2B (activation sound)
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
-    ld   hl,wD751
+    ld   hl,wD751_Player_CircuitPowerUpTimerLo
     ldi  a,[hl]
     or   [hl]
     ret  z
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_19
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
     ld   l,[hl]
     dec  l
     ld   h,$00
@@ -755,14 +754,15 @@ call_03_4c76_EntityCollision_Dispatch:
     call call_00_112f_QueueSFX
     ret  
 .jr_03_514e_CollisionHandler_PowerUp:
-; Overlap check; on hit, copies UNK_19 and the following byte into wD751/wD752 (power-up type/value registers)
+; Overlap check; on hit, copies ENTITY_FIELD_TIMER_2 and the following byte into 
+; wD751_Player_CircuitPowerUpTimerLo/wD752_Player_CircuitPowerUpTimerHi (power-up type/value registers)
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_19
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
     ldi  a,[hl]
-    ld   [wD751],a
+    ld   [wD751_Player_CircuitPowerUpTimerLo],a
     ld   a,[hl]
-    ld   [wD752],a
+    ld   [wD752_Player_CircuitPowerUpTimerHi],a
     ret  
 .jr_03_5163_CollisionHandler_DragonProjectile:
 ; Standard overlap; always damages player if hit, then despawns the projectile slot entirely
@@ -800,7 +800,7 @@ call_03_4c76_EntityCollision_Dispatch:
 call_03_519b_Entity_CheckPlayerInteraction:
 ; The shared AABB overlap test used by nearly every handler. Loads the entity's height/width (D/E), 
 ; computes Y overlap using player screen Y vs entity Y + half-height, then X overlap similarly. 
-; Returns carry clear = no overlap. If overlapping, checks wD753_FlyPowerup1_Timer1/wD755_FlyPowerup2_Timer1 (invincibility/stun timers) 
+; Returns carry clear = no overlap. If overlapping, checks wD753_FlyPowerup1_TimerLo/wD755_FlyPowerup2_TimerLo (invincibility/stun timers) 
 ; and the entity's interaction flags byte from .data_03_522e_EntityInteractionFlagsTable: 
 ; bit 1 = requires player NOT to be climbing/tail-whipping (returns A=$01, "touch"), 
 ; bit 2 = stomping valid — if player is in jump/fall action AND Y velocity is negative, bounces player upward 
@@ -830,11 +830,11 @@ call_03_519b_Entity_CheckPlayerInteraction:
     cp   A, E                                          ;; 03:51c8 $bb
     ret  NC                                            ;; 03:51c9 $d0
     ld   C, A                                          ;; 03:51ca $4f
-    ld   HL, wD753_FlyPowerup1_Timer1                                     ;; 03:51cb $21 $53 $d7
+    ld   HL, wD753_FlyPowerup1_TimerLo                                     ;; 03:51cb $21 $53 $d7
     ld   A, [HL+]                                      ;; 03:51ce $2a
     or   A, [HL]                                       ;; 03:51cf $b6
     jr   NZ, .jr_03_51f5                               ;; 03:51d0 $20 $23
-    ld   HL, wD755_FlyPowerup2_Timer1                                     ;; 03:51d2 $21 $55 $d7
+    ld   HL, wD755_FlyPowerup2_TimerLo                                     ;; 03:51d2 $21 $55 $d7
     ld   A, [HL+]                                      ;; 03:51d5 $2a
     or   A, [HL]                                       ;; 03:51d6 $b6
     jr   NZ, .jr_03_51f5                               ;; 03:51d7 $20 $1c

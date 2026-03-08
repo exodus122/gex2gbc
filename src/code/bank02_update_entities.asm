@@ -175,7 +175,7 @@ call_02_6e17_Entities_InitAndSpawnAll:
     ld   [wD762_PlayerInitialYVelocity], A                                    ;; 02:6e3d $ea $62 $d7
     ld   [wD763_PlayerMovementFlags], A                                    ;; 02:6e40 $ea $63 $d7
     ld   [wD759_ButtonBlockingFlags], A                                    ;; 02:6e43 $ea $59 $d7
-    ld   [wD758_Player_LaunchVelocityMaybe], A                                    ;; 02:6e46 $ea $58 $d7
+    ld   [wD758_UnkCollisionRelated], A                                    ;; 02:6e46 $ea $58 $d7
     ld   [wD585_CollisionFlags], A                                    ;; 02:6e49 $ea $85 $d5
     ld   [wD584_CollisionFlagsPrev], A                                    ;; 02:6e4c $ea $84 $d5
     ld   A, PLAYER_ACTION_NONE_PENDING                                        ;; 02:6e4f $3e $ff
@@ -371,7 +371,7 @@ call_02_6f80_Entities_DrawAll:
 call_02_6fda_Entity_TickAction:
 ; Per-entity action tick called each frame. Clears bit 2 of UNK_0A (collision result flag), 
 ; decrements the frame duration counter at UNK_06; if it hits zero, increments the animation frame index 
-; and checks if the sequence is complete (via bit 6 of UNK_0A → call_02_70f1_Entity_HandleActionSequenceEnd). 
+; and checks if the sequence is complete (via bit 6 of UNK_0A → call_02_70f1_Entity_RequestQueuedAction). 
 ; On frame advance: reads the next action function pointer from the action data table (using UNK_07 as index), 
 ; writes it to UNK_08, sets bit 6 of UNK_0A, then falls through into call_02_7030
     ld   H, $d2                                        ;; 02:6fda $26 $d2
@@ -402,7 +402,7 @@ call_02_6fda_Entity_TickAction:
     inc  L                                             ;; 02:6ffc $2c
     inc  L                                             ;; 02:6ffd $2c
     bit  6, [HL]                                       ;; 02:6ffe $cb $76
-    jp   NZ, call_02_70f1_Entity_HandleActionSequenceEnd                                ;; 02:7000 $c2 $f1 $70
+    jp   NZ, call_02_70f1_Entity_RequestQueuedAction                                ;; 02:7000 $c2 $f1 $70
     inc  L                                             ;; 02:7003 $2c
     ld   B, [HL]                                       ;; 02:7004 $46
     dec  L                                             ;; 02:7005 $2d
@@ -494,21 +494,22 @@ call_02_7030_Entity_NotifyActionChanged:
     db   $1a, $00, $00, $00, $00, $00, $1c, $00        ;; 02:70e1 ????????
     db   $00, $00, $00, $00, $00, $1b, $00, $00        ;; 02:70e9 ????????
 
-call_02_70f1_Entity_HandleActionSequenceEnd:
-; Called when an animation sequence finishes. Reads UNK_09, checks bit 7; if clear, returns (sequence loops). 
-; If set, masks to low 5 bits and calls call_02_4ccd_Player_RequestAction (likely a state-machine transition or death/reset handler)
-    LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_UNK_09
+call_02_70f1_Entity_RequestQueuedAction:
+; Called when an animation sequence finishes. Reads ACTION_STATE, checks bit 7; if clear, returns (sequence loops). 
+; If set, masks to low 5 bits and calls call_02_4ccd_Player_RequestAction (likely a state-machine transition 
+; or death/reset handler)
+    LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_ACTION_STATE_FLAGS
     ld   A, [HL]                                       ;; 02:70f9 $7e
-    bit  7, A                                          ;; 02:70fa $cb $7f
+    bit  ACTION_STATE_HAS_PENDING_BIT, A                                          ;; 02:70fa $cb $7f
     ret  Z                                             ;; 02:70fc $c8
-    and  A, PLAYER_ACTION_RIDING_ROCKET                                        ;; 02:70fd $e6 $1f
+    and  A, ACTION_STATE_PENDING_ACTION                                        ;; 02:70fd $e6 $1f
     jp   call_02_4ccd_Player_RequestAction                                  ;; 02:70ff $c3 $cd $4c
 
 call_02_7102_Entity_SetAction:
 ; Sets a new action on the current entity. Masks action index to 5 bits, writes to ACTION_ID field, 
 ; then double-indexes data_02_4000_EntityDataTables (by entity ID, then by action index × 4) to get 
 ; the action function pointer and data pointer. Writes function pointer to ACTION_FUNC, reads 4 bytes 
-; from the data block: byte 0 → UNK_09 | $20, byte 1 → UNK_0A | $40, byte 2 → SPRITE_FRAME_COUNTER_MAX 
+; from the data block: byte 0 → ACTION_STATE | $20, byte 1 → UNK_0A | $40, byte 2 → SPRITE_FRAME_COUNTER_MAX 
 ; and SPRITE_FRAME_COUNTER, byte 3 → SPRITE_COUNTER_MAX; sets SPRITE_IDS_PTR to 4 bytes into the data block; 
 ; zeroes SPRITE_COUNTER; writes byte 4 to SPRITE_ID; then falls into Entity_NotifyActionChanged
     and  A, $1f                                        ;; 02:7102 $e6 $1f
@@ -539,10 +540,10 @@ call_02_7102_Entity_SetAction:
     ld   A, [HL+]                                      ;; 02:712e $2a
     ld   H, [HL]                                       ;; 02:712f $66
     ld   L, A                                          ;; 02:7130 $6f ; HL = action data ptr
-    LOAD_OBJ_FIELD_TO_BC_ALT ENTITY_FIELD_UNK_09
+    LOAD_OBJ_FIELD_TO_BC_ALT ENTITY_FIELD_ACTION_STATE_FLAGS
     ld   A, [HL+]                                      ;; 02:7139 $2a
-    or   A, $20                                        ;; 02:713a $f6 $20
-    ld   [BC], A                                       ;; 02:713c $02 ; ENTITY_FIELD_UNK_09 = first byte in data table | 0x20
+    or   A, ACTION_STATE_IS_FIRST_FRAME                     ;; 02:713a $f6 $20
+    ld   [BC], A                                       ;; 02:713c $02 ; ENTITY_FIELD_ACTION_STATE_FLAGS = first byte in data table | 0x20
     inc  C                                             ;; 02:713d $0c ; BC = ENTITY_FIELD_UNK_0A
     ld   A, [HL+]                                      ;; 02:713e $2a
     or   A, $40                                        ;; 02:713f $f6 $40
@@ -660,7 +661,7 @@ call_02_7196_MapScroll_CheckHorizontal:
 call_02_71c8_Entities_UpdateSoundsForAll:
 ; Iterates all 7 NPC slots; for each active entity looks up its entity ID in data_02_743c to get 
 ; a (sound-id, bank) pair, calls call_02_7211_SoundQueue_Enqueue to queue the sound if non-zero, then optionally calls 
-; a sound-play farCall if wD59E is set. After the loop, calls call_0b_5f1b_FlyPowerup_LoadParticlePalette (sound flush)
+; a sound-play farCall if wD59E_OnGBCFlag is set. After the loop, calls call_0b_5f1b_FlyPowerup_LoadParticlePalette (sound flush)
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:71c8 $fa $00 $d3
     push AF                                            ;; 02:71cb $f5
     ld   A, $20                                        ;; 02:71cc $3e $20
@@ -681,7 +682,7 @@ call_02_71c8_Entities_UpdateSoundsForAll:
     and  A, A                                          ;; 02:71e3 $a7
     call NZ, call_02_7211_SoundQueue_Enqueue                              ;; 02:71e4 $c4 $11 $72
     pop  HL                                            ;; 02:71e7 $e1
-    ld   A, [wD59E]                                    ;; 02:71e8 $fa $9e $d5
+    ld   A, [wD59E_OnGBCFlag]                                    ;; 02:71e8 $fa $9e $d5
     and  A, A                                          ;; 02:71eb $a7
     jr   Z, .jr_02_71fa                                ;; 02:71ec $28 $0c
     ld   C, [HL]                                       ;; 02:71ee $4e

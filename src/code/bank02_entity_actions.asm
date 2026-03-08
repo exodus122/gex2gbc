@@ -422,10 +422,10 @@ call_02_51b7_EntityAction_CollectibleSpawn_Update:
     ret                                                ;; 02:51e9 $c9
 
 call_02_51ea_EntityAction_TVButton_unk0:
-    call call_00_3878_Entity_CheckIfVisibleOrInRange                                  ;; 02:51ea $cd $78 $38
+    call call_00_3878_Entity_CheckIfTVButtonVisibleOrInRange                                  ;; 02:51ea $cd $78 $38
     ld   E, A                                          ;; 02:51ed $5f
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_0A
-    res  3, [HL]                                       ;; 02:51f6 $cb $9e
+    res  UNK_0A_BIT_3, [HL]                                       ;; 02:51f6 $cb $9e
     inc  E                                             ;; 02:51f8 $1c
     dec  E                                             ;; 02:51f9 $1d
     jr   NZ, .jr_02_5207                               ;; 02:51fa $20 $0b
@@ -433,12 +433,12 @@ call_02_51ea_EntityAction_TVButton_unk0:
     and  A, $1f                                        ;; 02:51ff $e6 $1f
     cp   A, $0c                                        ;; 02:5201 $fe $0c
     jr   NC, .jr_02_5207                               ;; 02:5203 $30 $02
-    set  3, [HL]                                       ;; 02:5205 $cb $de
+    set  UNK_0A_BIT_3, [HL]                                       ;; 02:5205 $cb $de
 .jr_02_5207:
-    call call_00_34f5_Entity_CheckPlayerInteracting                                  ;; 02:5207 $cd $f5 $34
+    call call_00_34f5_Entity_CompareMiscFlags                                  ;; 02:5207 $cd $f5 $34
     bit  0, B                                          ;; 02:520a $cb $40
     ret  Z                                             ;; 02:520c $c8
-    call call_00_3878_Entity_CheckIfVisibleOrInRange                                  ;; 02:520d $cd $78 $38
+    call call_00_3878_Entity_CheckIfTVButtonVisibleOrInRange                                  ;; 02:520d $cd $78 $38
     ret  Z                                             ;; 02:5210 $c8
     ld   A, [wD624_CurrentLevelId]                                    ;; 02:5211 $fa $24 $d6
     and  A, A                                          ;; 02:5214 $a7
@@ -446,7 +446,7 @@ call_02_51ea_EntityAction_TVButton_unk0:
     ld   HL, wD647                                     ;; 02:5217 $21 $47 $d6
     ld   [HL], E                                       ;; 02:521a $73
 .jr_02_521b:
-    call call_00_34f5_Entity_CheckPlayerInteracting                                  ;; 02:521b $cd $f5 $34
+    call call_00_34f5_Entity_CompareMiscFlags                                  ;; 02:521b $cd $f5 $34
     bit  0, B                                          ;; 02:521e $cb $40
     ret  Z                                             ;; 02:5220 $c8
     ld   BC, $05                                       ;; 02:5221 $01 $05 $00
@@ -478,31 +478,31 @@ call_02_5252_EntityAction_TVButton_unk1:
     ret                                                ;; 02:5252 $c9
 
 call_02_5253_EntityAction_RedRemote_unk0:
-    call call_00_34ea_Entity_CheckActivationFlag                                  ;; 02:5253 $cd $ea $34
+    call call_00_34ea_Entity_IsFirstFrameOfAction                                  ;; 02:5253 $cd $ea $34
     call NZ, call_00_3bf4_Entity_TriggerPaletteSwap                              ;; 02:5256 $c4 $f4 $3b
     ld   HL, wD60F_HDMATransferFlags                                     ;; 02:5259 $21 $0f $d6
     bit  4, [HL]                                       ;; 02:525c $cb $66
     call Z, call_00_0634_FlyPowerup_StartEntry                               ;; 02:525e $cc $34 $06
-    ld   A, [wD59E]                                    ;; 02:5261 $fa $9e $d5
+    ld   A, [wD59E_OnGBCFlag]                                    ;; 02:5261 $fa $9e $d5
     and  A, A                                          ;; 02:5264 $a7
     ld   A, $01                                        ;; 02:5265 $3e $01
     call NZ, call_02_7102_Entity_SetAction                              ;; 02:5267 $c4 $02 $71
 call_02_526a_EntityAction_RedRemote_unk1:
-    call call_00_38c1_Entity_CheckProgressFlag                                  ;; 02:526a $cd $c1 $38
+    call call_00_38c1_Entity_CheckRedRemoteProgressFlag                                  ;; 02:526a $cd $c1 $38
     ld   E, A                                          ;; 02:526d $5f
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_0A
-    res  3, [HL]                                       ;; 02:5276 $cb $9e
+    res  UNK_0A_BIT_3, [HL]                                       ;; 02:5276 $cb $9e
     inc  E                                             ;; 02:5278 $1c
     dec  E                                             ;; 02:5279 $1d
     ret  NZ                                            ;; 02:527a $c0
     ld   A, [wD73B_FrameCounter]                                    ;; 02:527b $fa $3b $d7
     and  A, $01                                        ;; 02:527e $e6 $01
     ret  Z                                             ;; 02:5280 $c8
-    set  3, [HL]                                       ;; 02:5281 $cb $de
+    set  UNK_0A_BIT_3, [HL]                                       ;; 02:5281 $cb $de
     ret                                                ;; 02:5283 $c9
 
 call_02_5284_EntityAction_SilverRemote_unk0:
-    ld   a,[wD59E]
+    ld   a,[wD59E_OnGBCFlag]
     and  a
     ld   a,$01
     call nz,call_02_7102_Entity_SetAction
@@ -510,7 +510,7 @@ call_02_528d_EntityAction_SilverRemote_unk1:
     ret  
 
 call_02_528e_EntityAction_GoldRemote_unk0:
-    ld   a,[wD59E]
+    ld   a,[wD59E_OnGBCFlag]
     and  a
     ld   a,$01
     call nz,call_02_7102_Entity_SetAction
@@ -560,7 +560,7 @@ call_02_52e7_EntityAction_Unk08_Update:
     ret  
 
 call_02_52e8_EntityAction_ScreamTVFallingPlatform_Update:
-    call call_00_34f5_Entity_CheckPlayerInteracting
+    call call_00_34f5_Entity_CompareMiscFlags
     bit  0,[hl]
     jr   nz,.jr_02_52FF
     bit  1,[hl]
@@ -632,7 +632,7 @@ call_02_52e8_EntityAction_ScreamTVFallingPlatform_Update:
     jp   call_00_37d8_Entity_MoveY
 
 call_02_5348_EntityAction_ScreamTVMovingPlatform_Update:
-    call call_00_34ea_Entity_CheckActivationFlag                                  ;; 02:5348 $cd $ea $34
+    call call_00_34ea_Entity_IsFirstFrameOfAction                                  ;; 02:5348 $cd $ea $34
     jr   Z, .jr_02_5354                                ;; 02:534b $28 $07
     ld   A, L                                          ;; 02:534d $7d
     xor  A, $10                                        ;; 02:534e $ee $10
@@ -692,7 +692,7 @@ call_02_53aa_EntityAction_Frankie_Update:
     jp   call_00_3364_Entity_TrackPlayerXWithBounds
 
 call_02_53ad_EntityAction_HeadGhost_unk0:
-    call call_00_34ea_Entity_CheckActivationFlag
+    call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_53C3
     ld   a,l
     xor  a,$10
@@ -879,7 +879,7 @@ call_02_54fc_EntityAction_ZombieHead_unk2:
     jp   call_00_36bd_Entity_FaceTowardsPlayer
 
 call_02_54ff_EntityAction_FallingAxe_unk0:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_19
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
     ld   a,[wD73B_FrameCounter]
     and  a,$7F
     cp   [hl]
@@ -949,7 +949,7 @@ call_02_557c_EntityAction_Bat_Update:
     jp   call_00_3364_Entity_TrackPlayerXWithBounds
 
 call_02_5589_EntityAction_ScreamTVOrangeMovingPlatform_Update:
-    call call_00_34ea_Entity_CheckActivationFlag
+    call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_5595
     ld   a,l
     xor  a,$10
@@ -1054,7 +1054,7 @@ call_02_5612_EntityAction_Ghost_unk3:
     jp   call_02_7102_Entity_SetAction
 
 call_02_5628_EntityAction_ClimbWallSunEnemy_Update:
-    call call_00_34ea_Entity_CheckActivationFlag
+    call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_5634
     ld   a,l
     xor  a,$10
@@ -1130,7 +1130,7 @@ call_02_56a1_EntityAction_ScreamTVVanishingPlatform_unk2:
     jp   call_02_7102_Entity_SetAction
 
 call_02_56af_EntityAction_MonaLisaElevator_Update:
-    call call_00_34ea_Entity_CheckActivationFlag
+    call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_56BB
     ld   a,l
     xor  a,$10
@@ -1143,7 +1143,7 @@ call_02_56af_EntityAction_MonaLisaElevator_Update:
     and  a
     ret  z
     call call_00_3559_Entity_ApplyVelocityXY_SubpixelBoth
-    call call_00_34f5_Entity_CheckPlayerInteracting
+    call call_00_34f5_Entity_CompareMiscFlags
     bit  0,[hl]
     jr   nz,.jr_02_56D9
     bit  0,b
@@ -1334,7 +1334,7 @@ call_02_5803_EntityAction_StationaryBearTrap_unk1:
     ret  
 
 call_02_5812_EntityAction_MovingBearTrap_unk0:
-    call call_00_34ea_Entity_CheckActivationFlag
+    call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_581C
     ld   c,$10
     call call_00_3350_Entity_SetXVelocity
@@ -1530,7 +1530,7 @@ call_02_598c_EntityAction_FlowerHammer_unk2:
     ret                                                ;; 02:5992 $c9
 
 call_02_5993_EntityAction_Hunter_unk0:
-    call call_00_34ea_Entity_CheckActivationFlag
+    call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_599D
     ld   c,$03
     call call_00_3802_Entity_SetMiscTimer
@@ -1675,7 +1675,7 @@ call_02_5a9a_EntityAction_HappyFace_unk1:
     jp   call_02_7102_Entity_SetAction                                  ;; 02:5aa8 $c3 $02 $71
 
 call_02_5aab_EntityAction_ToonTVVanishingBlock_unk0:
-    call call_00_34ea_Entity_CheckActivationFlag
+    call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_5AB7
     ld   a,l
     xor  a,$10
@@ -1761,7 +1761,7 @@ call_02_5b39_EntityAction_ToonTVVanishingBlock_unk2:
     jp   call_02_7102_Entity_SetAction
 
 call_02_5b47_EntityAction_ToonTVMovingBlock_unk0:
-    call call_00_34ea_Entity_CheckActivationFlag
+    call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_5B53
     ld   a,l
     xor  a,$10
@@ -1827,7 +1827,7 @@ call_02_5b9d_EntityAction_ToonTVMovingBlock_unk1:
     jp   call_02_7102_Entity_SetAction
 
 call_02_5bb6_EntityAction_MovingLog_Update:
-    call call_00_34ea_Entity_CheckActivationFlag                                  ;; 02:5bb6 $cd $ea $34
+    call call_00_34ea_Entity_IsFirstFrameOfAction                                  ;; 02:5bb6 $cd $ea $34
     jr   Z, .jr_02_5bc2                                ;; 02:5bb9 $28 $07
     ld   A, L                                          ;; 02:5bbb $7d
     xor  A, $10                                        ;; 02:5bbc $ee $10
@@ -1964,7 +1964,7 @@ call_02_5c9c_EntityAction_FallingLava_unk1:
     ret  
 
 call_02_5ca8_EntityAction_LavaRaft_unk0:
-    call call_00_34ea_Entity_CheckActivationFlag
+    call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_5CB4
     ld   a,l
     xor  a,$10
@@ -1980,7 +1980,7 @@ call_02_5cba_EntityAction_LavaRaft_unk1:
     ret  
 
 call_02_5cbb_EntityAction_PreHistoryMovingPlatform_Update:
-    call call_00_34ea_Entity_CheckActivationFlag
+    call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_5CC7
     ld   a,l
     xor  a,$10
@@ -2051,7 +2051,7 @@ call_02_5d0c_EntityAction_FallingBoulder_unk0:
     and  a,$3F
     cp   [hl]
     ret  nz
-    ld   c,$0F
+    ld   c,COLLISION_TYPE_FALLING_OBJECT
     call call_00_3825_Entity_SetCollisionType
     ld   a,$01
     jp   call_02_7102_Entity_SetAction
@@ -2068,7 +2068,7 @@ call_02_5d37_EntityAction_FallingBoulder_unk1:
 call_02_5d48_EntityAction_FallingBoulder_unk2:
     call call_00_3843_Entity_CheckAnimFlag_Bit2
     ret  z
-    ld   c,$13
+    ld   c,COLLISION_TYPE_PROJECTILE
     call call_00_3825_Entity_SetCollisionType
     ld   a,$03
     call call_02_7102_Entity_SetAction
@@ -2110,7 +2110,7 @@ call_02_5d92_EntityAction_FirePlant_unk0:
     ret  z
     call call_00_3817_Entity_DecrementMiscTimer
     ret  nz
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_19
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
     dec  [hl]
     ld   a,[hl]
     dec  l
@@ -2181,7 +2181,7 @@ call_02_5e0c_EntityAction_Dinosaur_Update:
     ret  
 
 call_02_5e26_EntityAction_Triceratops_Update:
-    call call_00_34ea_Entity_CheckActivationFlag
+    call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_5E38
     ld   c,$07
     FARCALL call_0a_7b9a_EntitySpawn_SpawnChildEntity
@@ -2268,12 +2268,12 @@ call_02_5e92_EntityAction_HangingBlade_Update:
     ld   c,$3C
     call call_00_3802_Entity_SetMiscTimer
     ld   c,$01
-    jp   call_00_37f8_Entity_SetMovementMode
+    jp   call_00_37f8_Entity_SetMiscFlags
 .jr_02_5EAF:
     call call_00_3817_Entity_DecrementMiscTimer
     ret  nz
     ld   c,$00
-    call call_00_37f8_Entity_SetMovementMode
+    call call_00_37f8_Entity_SetMiscFlags
     ld   c,$40
     jp   call_00_335a_Entity_SetYVelocity
 
@@ -2313,7 +2313,7 @@ call_02_5efa_EntityAction_CannonProjectile_unk1:
     call call_00_3350_Entity_SetXVelocity
     call call_00_3442_Entity_MoveXByFacingSpeed
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_0A
-    bit  5,[hl]
+    bit  UNK_0A_BIT_5,[hl]
     ret  z
     ld   a,$20
 .jr_02_5F15:
@@ -2444,7 +2444,7 @@ call_02_5f67_EntityAction_DragonHead_Update:
     db   $01, $40
     
 call_02_6029_DragonHead_Sub1:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_19
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
     inc  [hl]
     ld   a,[hl]
     sub  a,$52
@@ -2549,11 +2549,11 @@ call_02_6029_DragonHead_Sub1:
 
 call_02_613f_DragonHead_Sub2:    
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_0A
-    res  3,[hl]
+    res  UNK_0A_BIT_3,[hl]
     ld   a,[wD614]
     and  a,$02
     ret  z
-    set  3,[hl]
+    set  UNK_0A_BIT_3,[hl]
     ret  
 
 call_02_6152_EntityAction_DragonProjectile_unk0:
@@ -2601,7 +2601,7 @@ call_02_616e_EntityAction_Ninja_unk0:
     jp   call_00_36f7_Entity_MoveXByFacingMomentum_BoundsChecked
 .jr_02_61AC:
     ld   c,$01
-    call call_00_37f8_Entity_SetMovementMode
+    call call_00_37f8_Entity_SetMiscFlags
     ld   a,[wD20E_Player_XPosition]
     and  a,$01
     add  a,$02
@@ -2613,11 +2613,11 @@ call_02_616e_EntityAction_Ninja_unk0:
     ld   a,$01
     jp   nz,call_02_7102_Entity_SetAction
     ld   c,$00
-    call call_00_37f8_Entity_SetMovementMode
+    call call_00_37f8_Entity_SetMiscFlags
     jr   .jr_02_6182
 .jr_02_61CE:
     ld   c,$02
-    call call_00_37f8_Entity_SetMovementMode
+    call call_00_37f8_Entity_SetMiscFlags
     ld   a,[wD20E_Player_XPosition]
     rrca 
     rrca 
@@ -2638,7 +2638,7 @@ call_02_616e_EntityAction_Ninja_unk0:
     ret  z
 .jr_02_61F6:
     ld   c,$04
-    call call_00_37f8_Entity_SetMovementMode
+    call call_00_37f8_Entity_SetMiscFlags
 .jr_02_61FB:
     ld   c,$18
     call call_00_32e1_Entity_NudgeXVelocityTowardC
@@ -2672,13 +2672,13 @@ call_02_6235_EntityAction_Ninja_Jump:
     call call_00_3154_Entity_MoveYDownWithFloorBound
     ret  c
     ld   c,$00
-    call call_00_37f8_Entity_SetMovementMode
+    call call_00_37f8_Entity_SetMiscFlags
     call call_00_36bd_Entity_FaceTowardsPlayer
     ld   a,$00
     jp   call_02_7102_Entity_SetAction
 
 call_02_624c_EntityAction_SamuraiBody_unk0:
-    call call_00_34ea_Entity_CheckActivationFlag
+    call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_625E
     ld   c,$05
     FARCALL call_0a_7b9a_EntitySpawn_SpawnChildEntity
@@ -2793,7 +2793,7 @@ call_02_62fc_EntityAction_SamuraiHead_unk1:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
     call call_00_3154_Entity_MoveYDownWithFloorBound
     ret  c
-    ld   a,[wD59E]
+    ld   a,[wD59E_OnGBCFlag]
     and  a
     jr   z,.jr_02_6315
     ld   hl,.data_02_631f
@@ -2801,7 +2801,7 @@ call_02_62fc_EntityAction_SamuraiHead_unk1:
     ld   bc,$0008
     call call_00_07b0_MemCopy
 .jr_02_6315:
-    ld   c,$19
+    ld   c,COLLISION_TYPE_SAMURAI_HEAD
     call call_00_3825_Entity_SetCollisionType
     ld   a,$02
     jp   call_02_7102_Entity_SetAction
@@ -2842,7 +2842,7 @@ call_02_635d_EntityAction_Jar_unk0:
     ret  z
     ld   c,SFX_JAR
     call call_00_112f_QueueSFX
-    ld   c,$00
+    ld   c,COLLISION_TYPE_NONE
     call call_00_3825_Entity_SetCollisionType
     ld   a,$01
     call call_02_7102_Entity_SetAction
@@ -2859,7 +2859,7 @@ call_02_6387_EntityAction_Unk5C_Update:
     ret  
 
 call_02_6388_EntityAction_KungFuVanishingPlatform_unk0:
-    call call_00_34ea_Entity_CheckActivationFlag
+    call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_6394
     ld   a,l
     xor  a,$10
@@ -2931,7 +2931,7 @@ call_02_63fb_EntityAction_KungFuVanishingPlatform_unk2:
     jp   call_02_7102_Entity_SetAction
 
 call_02_6409_EntityAction_KungFuMovingPlatform_Update:
-    call call_00_34ea_Entity_CheckActivationFlag
+    call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_6415
     ld   a,l
     xor  a,$10
@@ -2960,7 +2960,7 @@ call_02_6434_EntityAction_Unk60_Update:
     ret  
 
 call_02_6435_EntityAction_MovingRaft_Update:
-    call call_00_34ea_Entity_CheckActivationFlag
+    call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_6441
     ld   a,l
     xor  a,$10
@@ -2982,7 +2982,7 @@ call_02_6449_EntityAction_Unk64_None:
     ret  
 
 call_02_644a_EntityAction_RezopolisSpecialMovingPlatform_Update:
-    call call_00_34ea_Entity_CheckActivationFlag
+    call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_6456
     ld   a,l
     xor  a,$10
@@ -3001,7 +3001,7 @@ call_02_644a_EntityAction_RezopolisSpecialMovingPlatform_Update:
     ld   a,h
     cp   a,$0A
     jr   z,.jr_02_6484
-    call call_00_34f5_Entity_CheckPlayerInteracting
+    call call_00_34f5_Entity_CompareMiscFlags
     bit  0,b
     jr   nz,.jr_02_648A
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER
@@ -3028,7 +3028,7 @@ call_02_644a_EntityAction_RezopolisSpecialMovingPlatform_Update:
     jp   call_00_37d8_Entity_MoveY
 
 call_02_649c_EntityAction_RezopolisMovingPlatform_Update:
-    call call_00_34ea_Entity_CheckActivationFlag
+    call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_64A8
     ld   a,l
     xor  a,$10
@@ -3043,7 +3043,7 @@ call_02_649c_EntityAction_RezopolisMovingPlatform_Update:
 call_02_64ae_EntityAction_RedPlatform_Update:
     ld   c,$80
     call call_00_3290_Entity_SetFacingDirection
-    call call_00_34f5_Entity_CheckPlayerInteracting
+    call call_00_34f5_Entity_CompareMiscFlags
     bit  1,[hl]
     jr   nz,.jr_02_64DA
     bit  0,[hl]
@@ -3158,7 +3158,7 @@ call_02_650f_EntityAction_ActivatedRedPlatform_Update:
     ret  
 
 call_02_655d_EntityAction_TailspinPlatform_Update:
-    call call_00_34f5_Entity_CheckPlayerInteracting
+    call call_00_34f5_Entity_CompareMiscFlags
     bit  0,b
     jr   z,.jr_02_65A2
     ld   a,[wD201_PlayerEntity_ActionId]
@@ -3184,7 +3184,7 @@ call_02_655d_EntityAction_TailspinPlatform_Update:
     ld   a,[hl]
     cp   c
     ret  nc
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_19
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
     ld   a,[hl]
     add  a,$01
     ldi  [hl],a
@@ -3306,7 +3306,7 @@ call_02_6635_EntityAction_Unk6F_Update:
     ret  
     
 call_02_6636_EntityAction_Pincer_Update:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_19
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
     ld   c,$00
     bit  0,[hl]
     jr   z,.jr_02_6646
@@ -3324,7 +3324,7 @@ call_02_664c_EntityAction_Flamethrower_unk1:
     ret  
     
 call_02_664d_EntityAction_UFO_unk0:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_19
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
     bit  0,[hl]
     jr   nz,.jr_02_6662
     ld   c,$08
@@ -3442,7 +3442,7 @@ call_02_6723_EntityAction_Unk79_Update:
     ret  
 
 call_02_6724_EntityAction_LittleRobot_unk0:
-    call call_00_34ea_Entity_CheckActivationFlag
+    call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_6736
     ld   c,$09
     FARCALL call_0a_7b9a_EntitySpawn_SpawnChildEntity
@@ -3593,7 +3593,7 @@ call_02_680e_ElectricBall_Sub:
     db   $10, $40, $90, $10, $10, $5c, $ff
 
 call_02_68c0_EntityAction_CircuitCentralMovingPlatform_Update:
-    call call_00_34ea_Entity_CheckActivationFlag
+    call call_00_34ea_Entity_IsFirstFrameOfAction
     call nz,.jr_02_68D6
     call call_00_3559_Entity_ApplyVelocityXY_SubpixelBoth
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_1B
@@ -3652,7 +3652,7 @@ call_02_68c0_EntityAction_CircuitCentralMovingPlatform_Update:
     db   $f0, $10, $e0, $10, $10, $ff
 
 call_02_696f_EntityAction_CircuitCentralPoweredPlatform_unk0:
-    call call_00_34ea_Entity_CheckActivationFlag
+    call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_697B
     ld   a,l
     xor  a,$10
@@ -3661,12 +3661,12 @@ call_02_696f_EntityAction_CircuitCentralPoweredPlatform_unk0:
     dec  l
     ld   [hl],a
 .jr_02_697B:
-    call call_00_34f5_Entity_CheckPlayerInteracting
+    call call_00_34f5_Entity_CompareMiscFlags
     bit  0,b
     ret  z
-    ld   a,[wD751]
+    ld   a,[wD751_Player_CircuitPowerUpTimerLo]
     ld   e,a
-    ld   a,[wD752]
+    ld   a,[wD752_Player_CircuitPowerUpTimerHi]
     or   e
     ret  z
     set  2,[hl]
@@ -3710,7 +3710,7 @@ call_02_69c4_EntityAction_CircuitCentralPoweredPlatform_unk2:
     jp   call_02_7102_Entity_SetAction
 
 call_02_69d7_EntityAction_CircuitCentralLoweringPlatform_Update:
-    call call_00_34f5_Entity_CheckPlayerInteracting
+    call call_00_34f5_Entity_CompareMiscFlags
     bit  1,[hl]
     jr   nz,.jr_02_69FE
     bit  MISC_FLAGS_BIT_0,[hl]
@@ -3786,7 +3786,7 @@ call_02_6a3b_EntityAction_PoweredWalkway_Update:
     ret  
 
 call_02_6a3c_EntityAction_WalkwayActivator_Update:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_19
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
     ld   l,[hl]
     dec  l
     ld   h,$00
@@ -3830,7 +3830,7 @@ call_02_6a3c_EntityAction_WalkwayActivator_Update:
     ret  
 
 call_02_6a8b_EntityAction_ArcedGunProjectile_unk0:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_19
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
     ld   a,[wD73B_FrameCounter]
     and  a,$3F
     cp   [hl]
@@ -3859,7 +3859,7 @@ call_02_6aac_EntityAction_ArcedGunProjectile_unk1:
     jp   call_02_6bf8_GunProjectile_Sub2
 
 call_02_6ad3_EntityAction_ArcedGunProjectile2_unk0:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_19
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
     ld   a,[wD73B_FrameCounter]
     and  a,$3F
     cp   [hl]
@@ -3922,7 +3922,7 @@ call_02_6b43_EntityAction_ArcedGunProjectile2_unk3:
     jp   call_02_6bf8_GunProjectile_Sub2
 
 call_02_6b6a_EntityAction_GunProjectile_unk0:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_19
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
     ld   a,[wD73B_FrameCounter]
     and  a,$3F
     cp   [hl]
@@ -3981,7 +3981,7 @@ call_02_6b81_EntityAction_GunProjectile_unk1:
 call_02_6bcd_GunProjectile_Sub3:
     ld   c,SFX_GUN_PROJECTILE
     call call_00_112f_QueueSFX
-    ld   c,$1E
+    ld   c,COLLISION_TYPE_GUN_PROJECTILE
     call call_00_3825_Entity_SetCollisionType
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XVEL
     xor  a
@@ -4012,7 +4012,7 @@ call_02_6c03_GunProjectile_Sub:
     jp   call_00_3910_Entity_DespawnSlot
 
 call_02_6c18_EntityAction_Rez_unk0:
-    call call_00_34ea_Entity_CheckActivationFlag
+    call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_6C38
     ld   a,$0A
     ld   [wD616],a
@@ -4168,7 +4168,7 @@ call_02_6cca_EntityAction_RezFollowingFire_Update:
     ret  
 
 call_02_6d11_EntityAction_Unk87_Update:
-    call call_00_34ea_Entity_CheckActivationFlag
+    call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_6D1D
     ld   a,l
     xor  a,$10
@@ -4230,13 +4230,13 @@ call_02_6d7f_EntityAction_Unk8B_unk1:
     ret  
 
 call_02_6d80_EntityAction_FinalBattleButton_unk0:
-    call call_00_34f5_Entity_CheckPlayerInteracting
+    call call_00_34f5_Entity_CompareMiscFlags
     bit  0,b
     ret  z
     ld   a,[wD616]
     and  a,$7F
     ret  z
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_19
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
     ld   a,[hl]
     cp   a,$01
     ld   c,$0F
@@ -4292,7 +4292,7 @@ call_02_6df0_EntityAction_Unk8E_Update:
     ret  
 
 call_02_6df1_EntityAction_MediaDimensionMovingPlatform_Update:
-    call call_00_34ea_Entity_CheckActivationFlag                                  ;; 02:6df1 $cd $ea $34
+    call call_00_34ea_Entity_IsFirstFrameOfAction                                  ;; 02:6df1 $cd $ea $34
     jr   Z, .jr_02_6dfd                                ;; 02:6df4 $28 $07
     ld   A, L                                          ;; 02:6df6 $7d
     xor  A, $10                                        ;; 02:6df7 $ee $10

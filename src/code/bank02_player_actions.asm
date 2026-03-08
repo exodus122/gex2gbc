@@ -70,8 +70,8 @@ data_02_4120:
     
 call_02_41a0_PlayerAction_Spawn:
 ; On first frame (bit 5 of wD209 set): plays spawn SFX
-    ld   A, [wD209_Player_UnkFlags]                                    ;; 02:41a0 $fa $09 $d2
-    and  A, $20                                        ;; 02:41a3 $e6 $20
+    ld   A, [wD209_Player_ActionState]                                    ;; 02:41a0 $fa $09 $d2
+    and  A, ACTION_STATE_IS_FIRST_FRAME                                        ;; 02:41a3 $e6 $20
     jr   Z, .jr_02_41ac                                ;; 02:41a5 $28 $05
     ld   C, SFX_GEX_SPAWN                                        ;; 02:41a7 $0e $11
     call call_00_112f_QueueSFX                                  ;; 02:41a9 $cd $2f $11
@@ -80,19 +80,19 @@ call_02_41a0_PlayerAction_Spawn:
     
 call_02_41ad_PlayerAction_IntroWarp:
 ; On non-Media-Dimension levels calls call_00_0634_FlyPowerup_StartEntry (unknown, likely outro warp/level entry effect). 
-; Then calls Entity_HandleActionSequenceEnd to advance to next action
+; Then calls Entity_RequestQueuedAction to advance to next action
     ld   A, [wD624_CurrentLevelId]                                    ;; 02:41ad $fa $24 $d6
     and  A, A                                          ;; 02:41b0 $a7
     call NZ, call_00_0634_FlyPowerup_StartEntry                              ;; 02:41b1 $c4 $34 $06
-    jp   call_02_70f1_Entity_HandleActionSequenceEnd                                    ;; 02:41b4 $c3 $f1 $70
+    jp   call_02_70f1_Entity_RequestQueuedAction                                    ;; 02:41b4 $c3 $f1 $70
     
 call_02_41b7_PlayerAction_Stand:
 ; On first frame: sets B-lock flag (bit 6 of wD759), zeroes X speed and Y velocity, sets idle timer to max(health, 50). 
 ; Each frame: checks floor tile type — if tile $08 and facing right, or $09 and facing left 
 ; (directional conveyor/slope), requests action $07 (StopOnCertainFloor). Otherwise decrements idle timer; 
 ; when it hits zero, requests action $03 (IdleAnimation)
-    ld   A, [wD209_Player_UnkFlags]                                    ;; 02:41b7 $fa $09 $d2
-    and  A, $20                                        ;; 02:41ba $e6 $20
+    ld   A, [wD209_Player_ActionState]                                    ;; 02:41b7 $fa $09 $d2
+    and  A, ACTION_STATE_IS_FIRST_FRAME                                        ;; 02:41ba $e6 $20
     jr   Z, .jr_02_41da                                ;; 02:41bc $28 $1c
     ld   HL, wD759_ButtonBlockingFlags                                     ;; 02:41be $21 $59 $d7
     set  6, [HL]                                       ;; 02:41c1 $cb $f6
@@ -163,8 +163,8 @@ call_02_422b_PlayerAction_None:
 call_02_422c_PlayerAction_Walk:
 ; On first frame: sets X speed to 1. Sets C=$04, calls Player_CheckWallPush. 
 ; If bit 2 of wD20A is set (run threshold reached), requests action $05 (Run)
-    ld   A, [wD209_Player_UnkFlags]                                    ;; 02:422c $fa $09 $d2
-    and  A, $20                                        ;; 02:422f $e6 $20
+    ld   A, [wD209_Player_ActionState]                                    ;; 02:422c $fa $09 $d2
+    and  A, ACTION_STATE_IS_FIRST_FRAME                                        ;; 02:422f $e6 $20
     jr   Z, .jr_02_4238                                ;; 02:4231 $28 $05
     ld   A, $01                                        ;; 02:4233 $3e $01
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:4235 $ea $5e $d7
@@ -179,8 +179,8 @@ call_02_422c_PlayerAction_Walk:
 
 call_02_4248_PlayerAction_Run:
 ; On first frame: sets X speed to 2. Sets C=$05, calls Player_CheckWallPush
-    ld   A, [wD209_Player_UnkFlags]                                    ;; 02:4248 $fa $09 $d2
-    and  A, $20                                        ;; 02:424b $e6 $20
+    ld   A, [wD209_Player_ActionState]                                    ;; 02:4248 $fa $09 $d2
+    and  A, ACTION_STATE_IS_FIRST_FRAME                                        ;; 02:424b $e6 $20
     jr   Z, .jr_02_4254                                ;; 02:424d $28 $05
     ld   A, $02                                        ;; 02:424f $3e $02
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:4251 $ea $5e $d7
@@ -221,8 +221,8 @@ call_02_4275_PlayerAction_Jump:
 ; stores to wD760/wD762, sets B-lock flag, plays jump SFX, ensures X speed ≥ 1. 
 ; Each frame: if wD762 (initial Y velocity) is nonzero, returns (still in jump arc). 
 ; If B is held, requests double jump ($0A). Otherwise calls Player_SetLandingAction
-    ld   A, [wD209_Player_UnkFlags]                                    ;; 02:4275 $fa $09 $d2
-    and  A, $20                                        ;; 02:4278 $e6 $20
+    ld   A, [wD209_Player_ActionState]                                    ;; 02:4275 $fa $09 $d2
+    and  A, ACTION_STATE_IS_FIRST_FRAME                                        ;; 02:4278 $e6 $20
     jr   Z, .jr_02_429a                                ;; 02:427a $28 $1e
     ld   C, $2a                                        ;; 02:427c $0e $2a
     call call_02_480f_Player_GetJumpVelocity                                  ;; 02:427e $cd $56 $48
@@ -251,8 +251,8 @@ call_02_42ac_PlayerAction_DoubleJump:
 ; plays double-jump SFX, ensures X speed ≥ 1. 
 ; Each frame: if wD762 nonzero, returns. If B is still held, re-executes the first-frame 
 ; logic (allows continuous re-fire while B held). Otherwise calls Player_SetLandingAction
-    ld   A, [wD209_Player_UnkFlags]                                    ;; 02:42ac $fa $09 $d2
-    and  A, $20                                        ;; 02:42af $e6 $20
+    ld   A, [wD209_Player_ActionState]                                    ;; 02:42ac $fa $09 $d2
+    and  A, ACTION_STATE_IS_FIRST_FRAME                                        ;; 02:42af $e6 $20
     jr   Z, .jr_02_42d1                                ;; 02:42b1 $28 $1e
 .jr_02_42b3:
     ld   C, $36                                        ;; 02:42b3 $0e $36
@@ -283,8 +283,8 @@ call_02_42e0_PlayerAction_None:                             ;; 02:42e0
 call_02_42e1_PlayerAction_KarateKick:
 ; On first frame: sets wD74C = $30 (duration timer). 
 ; Each frame: decrements wD74C; when it reaches zero, requests Stand
-    ld a, [wD209_Player_UnkFlags]
-    and $20
+    ld a, [wD209_Player_ActionState]
+    and a,ACTION_STATE_IS_FIRST_FRAME
     jr z, .jr_02_42ed
     ld a, $30
     ld [wD74C], a
@@ -301,8 +301,8 @@ call_02_42f7_PlayerAction_TailSpin:
 ; HandlePlayerAttackingSpecialTiles. When animation ends (bit 2 of wD20A): clears attacking flag, 
 ; sets B-lock. If on ground, requests Stand/Walk/Run based on directional input and current X speed; 
 ; if airborne, requests Freefall
-    ld   A, [wD209_Player_UnkFlags]                                    ;; 02:42f7 $fa $09 $d2
-    and  A, $20                                        ;; 02:42fa $e6 $20
+    ld   A, [wD209_Player_ActionState]                                    ;; 02:42f7 $fa $09 $d2
+    and  A, ACTION_STATE_IS_FIRST_FRAME                                        ;; 02:42fa $e6 $20
     jr   Z, .jr_02_4313                                ;; 02:42fc $28 $15
     ld   HL, wD759_ButtonBlockingFlags                                     ;; 02:42fe $21 $59 $d7
     set  0, [HL]                                       ;; 02:4301 $cb $c6
@@ -347,16 +347,16 @@ call_02_434d_PlayerAction_EatFly:
 ; Zeroes X speed. On first frame: calls call_00_0647_Player_SetUpOrEatFlyPowerup (likely applies fly power-up effect
     xor  a
     ld   [wD75E_PlayerXSpeed],a
-    ld   a,[wD209_Player_UnkFlags]
-    and  a,$20
+    ld   a,[wD209_Player_ActionState]
+    and  a,ACTION_STATE_IS_FIRST_FRAME
     ret  z
     xor  a
     jp   call_00_0647_Player_SetUpOrEatFlyPowerup
 
 call_02_435b_PlayerAction_TakeDamage:
-; On first frame: plays hurt SFX. Zeroes X speed. Sets wD750_PlayerDamageCooldownTimer = $77 (invincibility timer)
-    ld   a,[wD209_Player_UnkFlags]
-    and  a,$20
+; On first frame: plays hurt SFX. Zeroes X speed. Sets wD750_Player_DamageCooldownTimer = $77 (invincibility timer)
+    ld   a,[wD209_Player_ActionState]
+    and  a,ACTION_STATE_IS_FIRST_FRAME
     jr   z,.jr_02_4367
     ld   c,SFX_GEX_HURT
     call call_00_112f_QueueSFX
@@ -364,23 +364,23 @@ call_02_435b_PlayerAction_TakeDamage:
     xor  a
     ld   [wD75E_PlayerXSpeed],a
     ld   a,$77
-    ld   [wD750_PlayerDamageCooldownTimer],a
+    ld   [wD750_Player_DamageCooldownTimer],a
     ret  
 
 call_02_4371_PlayerAction_Death:
-; Zeroes X speed. Sets wD750_PlayerDamageCooldownTimer = $77. Used as the "lying dead" hold state before respawn warp
+; Zeroes X speed. Sets wD750_Player_DamageCooldownTimer = $77. Used as the "lying dead" hold state before respawn warp
     xor  A, A                                          ;; 02:4371 $af
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:4372 $ea $5e $d7
     ld   A, $77                                        ;; 02:4375 $3e $77
-    ld   [wD750_PlayerDamageCooldownTimer], A                                    ;; 02:4377 $ea $50 $d7
+    ld   [wD750_Player_DamageCooldownTimer], A                                    ;; 02:4377 $ea $50 $d7
     ret                                                ;; 02:437a $c9
 
 call_02_437b_PlayerAction_DeathSetUpWarp:
 ; On first frame: zeroes X speed, calls call_00_0f5d (set up respawn warp data), plays death SFX. 
-; Each frame: sets wD750_PlayerDamageCooldownTimer=$77. On animation end: sets spawn action to $00, sets bit 1 of 
+; Each frame: sets wD750_Player_DamageCooldownTimer=$77. On animation end: sets spawn action to $00, sets bit 1 of 
 ; wD621 (warp flags) to trigger respawn warp
-    ld   A, [wD209_Player_UnkFlags]                                    ;; 02:437b $fa $09 $d2
-    and  A, $20                                        ;; 02:437e $e6 $20
+    ld   A, [wD209_Player_ActionState]                                    ;; 02:437b $fa $09 $d2
+    and  A, ACTION_STATE_IS_FIRST_FRAME                                        ;; 02:437e $e6 $20
     jr   Z, .jr_02_438e                                ;; 02:4380 $28 $0c
     xor  A, A                                          ;; 02:4382 $af
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:4383 $ea $5e $d7
@@ -389,7 +389,7 @@ call_02_437b_PlayerAction_DeathSetUpWarp:
     call call_00_112f_QueueSFX                                  ;; 02:438b $cd $2f $11
 .jr_02_438e:
     ld   A, $77                                        ;; 02:438e $3e $77
-    ld   [wD750_PlayerDamageCooldownTimer], A                                    ;; 02:4390 $ea $50 $d7
+    ld   [wD750_Player_DamageCooldownTimer], A                                    ;; 02:4390 $ea $50 $d7
     ld   A, [wD20A_Player_UnkFlags2]                                    ;; 02:4393 $fa $0a $d2
     and  A, $04                                        ;; 02:4396 $e6 $04
     ret  Z                                             ;; 02:4398 $c8
@@ -403,8 +403,8 @@ call_02_437b_PlayerAction_DeathSetUpWarp:
 call_02_43a7_PlayerAction_EnterTV:
 ; On first frame: plays spawn SFX. 
 ; Zeroes X speed. On animation end (bit 2 of wD20A): sets bit 2 of wD621 (warp into TV)
-    ld   A, [wD209_Player_UnkFlags]                                    ;; 02:43a7 $fa $09 $d2
-    and  A, $20                                        ;; 02:43aa $e6 $20
+    ld   A, [wD209_Player_ActionState]                                    ;; 02:43a7 $fa $09 $d2
+    and  A, ACTION_STATE_IS_FIRST_FRAME                                        ;; 02:43aa $e6 $20
     jr   Z, .jr_02_43b3                                ;; 02:43ac $28 $05
     ld   C, SFX_GEX_SPAWN                                        ;; 02:43ae $0e $11
     call call_00_112f_QueueSFX                                  ;; 02:43b0 $cd $2f $11
@@ -423,8 +423,8 @@ call_02_43c6_PlayerAction_EnterTVAlt:
 ; On first frame: plays spawn SFX. Zeroes X speed. 
 ; On animation end: sets bit 2 of wD621. 
 ; Functionally identical to EnterTV, likely used for a different entry/exit direction
-    ld   a,[wD209_Player_UnkFlags]
-    and  a,$20
+    ld   a,[wD209_Player_ActionState]
+    and  a,ACTION_STATE_IS_FIRST_FRAME
     jr   z,.jr_02_43D2
     ld   c,SFX_GEX_SPAWN
     call call_00_112f_QueueSFX
@@ -441,8 +441,8 @@ call_02_43c6_PlayerAction_EnterTVAlt:
 
 call_02_43e5_PlayerAction_ExitTV:
 ; On first frame: plays spawn SFX. Zeroes X speed.
-    ld   A, [wD209_Player_UnkFlags]                                    ;; 02:43e5 $fa $09 $d2
-    and  A, $20                                        ;; 02:43e8 $e6 $20
+    ld   A, [wD209_Player_ActionState]                                    ;; 02:43e5 $fa $09 $d2
+    and  A, ACTION_STATE_IS_FIRST_FRAME                                        ;; 02:43e8 $e6 $20
     jr   Z, .jr_02_43f1                                ;; 02:43ea $28 $05
     ld   C, SFX_GEX_SPAWN                                        ;; 02:43ec $0e $11
     call call_00_112f_QueueSFX                                  ;; 02:43ee $cd $2f $11
@@ -454,8 +454,8 @@ call_02_43e5_PlayerAction_ExitTV:
 call_02_43f6_PlayerAction_StandingPush:
 ; On first frame: sets X speed to 1. 
 ; Sets C=$02, calls Player_CheckWallPush
-    ld   a,[wD209_Player_UnkFlags]
-    and  a,$20
+    ld   a,[wD209_Player_ActionState]
+    and  a,ACTION_STATE_IS_FIRST_FRAME
     jr   z,.jr_02_4402
     ld   a,$01
     ld   [wD75E_PlayerXSpeed],a
@@ -466,8 +466,8 @@ call_02_43f6_PlayerAction_StandingPush:
 call_02_4407_PlayerAction_WalkingPush:
 ; On first frame: sets X speed to 1. 
 ; Sets C=$02, calls Player_CheckWallPush. Used when pushing a moveable entity like a TV button
-    ld   A, [wD209_Player_UnkFlags]                                    ;; 02:4407 $fa $09 $d2
-    and  A, $20                                        ;; 02:440a $e6 $20
+    ld   A, [wD209_Player_ActionState]                                    ;; 02:4407 $fa $09 $d2
+    and  A, ACTION_STATE_IS_FIRST_FRAME                                        ;; 02:440a $e6 $20
     jr   Z, .jr_02_4413                                ;; 02:440c $28 $05
     ld   A, $01                                        ;; 02:440e $3e $01
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:4410 $ea $5e $d7
@@ -479,8 +479,8 @@ call_02_4418_PlayerAction_Freefall:
 ; On first frame: sets wD762=1 (falling), ensures X speed ≥ 1. 
 ; Each frame: if wD762 nonzero, returns. On landing: if directional input held, 
 ; requests Walk; otherwise requests Stand
-    ld   A, [wD209_Player_UnkFlags]                                    ;; 02:4418 $fa $09 $d2
-    and  A, $20                                        ;; 02:441b $e6 $20
+    ld   A, [wD209_Player_ActionState]                                    ;; 02:4418 $fa $09 $d2
+    and  A, ACTION_STATE_IS_FIRST_FRAME                                        ;; 02:441b $e6 $20
     jr   Z, .jr_02_442f                                ;; 02:441d $28 $10
     ld   A, $01                                        ;; 02:441f $3e $01
     ld   [wD762_PlayerInitialYVelocity], A                                    ;; 02:4421 $ea $62 $d7
@@ -509,8 +509,8 @@ call_02_4443_PlayerAction_StopImmediate:
 call_02_4448_PlayerAction_Collapse:
 ; On first frame: plays collapse SFX. 
 ; Zeroes X speed. Used for hard landings and enemy crush
-    ld   A, [wD209_Player_UnkFlags]                                    ;; 02:4448 $fa $09 $d2
-    and  A, $20                                        ;; 02:444b $e6 $20
+    ld   A, [wD209_Player_ActionState]                                    ;; 02:4448 $fa $09 $d2
+    and  A, ACTION_STATE_IS_FIRST_FRAME                                        ;; 02:444b $e6 $20
     jr   Z, .jr_02_4454                                ;; 02:444d $28 $05
     ld   C, SFX_GEX_COLLAPSE                                        ;; 02:444f $0e $0e
     call call_00_112f_QueueSFX                                  ;; 02:4451 $cd $2f $11
@@ -523,8 +523,8 @@ call_02_4459_PlayerAction_EnterDoor:
 ; On first frame: calls Player_SpawnLevelSpecificDoor with A=0. 
 ; Zeroes X speed. Calls PlayerWarp_Sub; if warp triggers: sets bit 3 of wD621 (door warp), 
 ; sets spawn action to LeaveDoor, despawns all entities
-    ld   a,[wD209_Player_UnkFlags]
-    and  a,$20
+    ld   a,[wD209_Player_ActionState]
+    and  a,ACTION_STATE_IS_FIRST_FRAME
     jr   z,.jr_02_4465
     ld   a,$00
     call call_02_48b7_Player_SpawnLevelSpecificDoor
@@ -550,8 +550,8 @@ call_02_447e_PlayerAction_LeaveDoor:
 call_02_4483_PlayerAction_HitBounce:
 ; On first frame: plays a SFX, calls DealDamageToPlayer, sets Y velocity to $50 (bounce upward), sets wD762=$50. 
 ; Ensures X speed ≥ 1. On Y velocity expiry: requests Stand. Used when hit by an enemy that bounces Gex upward
-    ld   a,[wD209_Player_UnkFlags]
-    and  a,$20
+    ld   a,[wD209_Player_ActionState]
+    and  a,ACTION_STATE_IS_FIRST_FRAME
     jr   z,.jr_02_44A5
     ld   c,SFX_GEX_HIT_BOUNCE
     call call_00_112f_QueueSFX
@@ -575,8 +575,8 @@ call_02_44af_PlayerAction_Climb:
 ; On first frame: sets B-lock, zeroes climb counter/X speed/Y velocity/falling flag. 
 ; Sets climb state to 0 (background) or 2 (wall) based on tile type $26 in wD769. 
 ; Each frame: dispatches via .data_02_44e5 jump table on wD746 (climb state 0–9)
-    ld   A, [wD209_Player_UnkFlags]                                    ;; 02:44af $fa $09 $d2
-    and  A, $20                                        ;; 02:44b2 $e6 $20
+    ld   A, [wD209_Player_ActionState]                                    ;; 02:44af $fa $09 $d2
+    and  A, ACTION_STATE_IS_FIRST_FRAME                                        ;; 02:44b2 $e6 $20
     jr   Z, .jr_02_44d6                                ;; 02:44b4 $28 $20
     ld   HL, wD759_ButtonBlockingFlags                                     ;; 02:44b6 $21 $59 $d7
     set  6, [HL]                                       ;; 02:44b9 $cb $f6
@@ -1109,13 +1109,13 @@ call_02_4828_PlayerAction_RidingRocket:
     jp   call_02_4ccd_Player_RequestAction
 
 call_02_480f_Player_GetJumpVelocity:
-; Checks wD758_Player_LaunchVelocityMaybe (jump suppression flag) — returns 0 if set. Reads floor tile type from wD765. 
+; Checks wD758_UnkCollisionRelated (jump suppression flag) — returns 0 if set. Reads floor tile type from wD765. 
 ; Tile $CE → returns $4C (spring low boost). 
 ; Tile $CF → returns $60 (spring high boost). 
-; Tile $F0 → if wD751 (timer) nonzero, plays SFX and returns $4C (trampoline low). 
-; Tile $F1 → if wD751 nonzero, plays SFX and returns $60 (trampoline high). 
+; Tile $F0 → if wD751_Player_CircuitPowerUpTimerLo (timer) nonzero, plays SFX and returns $4C (trampoline low). 
+; Tile $F1 → if wD751_Player_CircuitPowerUpTimerLo nonzero, plays SFX and returns $60 (trampoline high). 
 ; Otherwise returns C unchanged (normal jump velocity)
-    ld   A, [wD758_Player_LaunchVelocityMaybe]                                    ;; 02:4856 $fa $58 $d7
+    ld   A, [wD758_UnkCollisionRelated]                                    ;; 02:4856 $fa $58 $d7
     and  A, A                                          ;; 02:4859 $a7
     ret  NZ                                            ;; 02:485a $c0
     ld   A, [wD765_TileTypeBehindGexsBody]                                    ;; 02:485b $fa $65 $d7
@@ -1137,7 +1137,7 @@ call_02_480f_Player_GetJumpVelocity:
     ld   A, $60                                        ;; 02:4873 $3e $60
     ret                                                ;; 02:4875 $c9
 .jr_02_4876:
-    ld   HL, wD751                                     ;; 02:4876 $21 $51 $d7
+    ld   HL, wD751_Player_CircuitPowerUpTimerLo                                     ;; 02:4876 $21 $51 $d7
     ld   A, [HL+]                                      ;; 02:4879 $2a
     or   A, [HL]                                       ;; 02:487a $b6
     jr   Z, .jr_02_486e                                ;; 02:487b $28 $f1
@@ -1146,7 +1146,7 @@ call_02_480f_Player_GetJumpVelocity:
     ld   A, $4c                                        ;; 02:4882 $3e $4c
     ret                                                ;; 02:4884 $c9
 .jr_02_4885:
-    ld   HL, wD751                                     ;; 02:4885 $21 $51 $d7
+    ld   HL, wD751_Player_CircuitPowerUpTimerLo                                     ;; 02:4885 $21 $51 $d7
     ld   A, [HL+]                                      ;; 02:4888 $2a
     or   A, [HL]                                       ;; 02:4889 $b6
     jr   Z, .jr_02_486e                                ;; 02:488a $28 $e2

@@ -1,14 +1,17 @@
 data_02_755c:
-    db   $c1, $00, $06, $0c, $9f, $a0, $a1, $a2
+    db   ACTION_STATE_HAS_PENDING | ACTION_STATE_UNK40 | PLAYER_ACTION_INTRO_WARP
+    db   $00, $06, $0c, $9f, $a0, $a1, $a2
     db   $a3, $a4, $a5, $a6, $a7, $a8, $a9, $aa
     db   $00
 data_02_756d:
-    db   $c2, $00, $04, $01, $14, $00
+    db   ACTION_STATE_HAS_PENDING | ACTION_STATE_UNK40 | PLAYER_ACTION_STAND
+    db   $00, $04, $01, $14, $00
 data_02_7573:
     db   $00
     db   $00, $04, $04, $14, $15, $16, $17, $00
 data_02_757c:
-    db   $c2, $00, $0a, $01, $09, $00
+    db   ACTION_STATE_HAS_PENDING | ACTION_STATE_UNK40 | PLAYER_ACTION_STAND
+    db   $00, $0a, $01, $09, $00
 data_02_7582:
     db   $00, $00
     db   $04, $08, $00, $01, $02, $03, $04, $05
@@ -17,7 +20,8 @@ data_02_758f:
     db   $00, $00, $04, $08, $0a
     db   $0b, $0c, $0d, $0e, $0f, $10, $11, $00
 data_02_759c:
-    db   $c2, $00, $04, $03, $18, $19, $1a, $00
+    db   ACTION_STATE_HAS_PENDING | ACTION_STATE_UNK40 | PLAYER_ACTION_STAND
+    db   $00, $04, $03, $18, $19, $1a, $00
 data_02_75a4:
     db   $00, $00, $04, $04, $32, $33, $34, $35
     db   $00
@@ -39,13 +43,16 @@ data_02_75ce:
     db   $00, $02, $04, $06, $27, $22
     db   $23, $24, $25, $26, $00
 data_02_75d9:
-    db   $c2, $00, $04
+    db   ACTION_STATE_HAS_PENDING | ACTION_STATE_UNK40 | PLAYER_ACTION_STAND
+    db   $00, $04
     db   $01, $09, $00
 data_02_75df:
-    db   $c2, $00, $04, $05, $8c
+    db   ACTION_STATE_HAS_PENDING | ACTION_STATE_UNK40 | PLAYER_ACTION_STAND
+    db   $00, $04, $05, $8c
     db   $8d, $8e, $8f, $1c, $00
 data_02_75e9:
-    db   $d1, $00, $04
+    db   ACTION_STATE_HAS_PENDING | ACTION_STATE_UNK40 | PLAYER_ACTION_DEATH_SET_UP_WARP
+    db   $00, $04
     db   $04, $90, $91, $92, $96, $00
 data_02_75f2:
     db   $00, $02
@@ -55,7 +62,8 @@ data_02_75f9:
     db   $0a, $28, $29, $2a, $2b, $2c, $2d, $2e
     db   $2f, $30, $31, $00
 data_02_7608:
-    db   $c2, $00, $0a, $0a
+    db   ACTION_STATE_HAS_PENDING | ACTION_STATE_UNK40 | PLAYER_ACTION_STAND
+    db   $00, $0a, $0a
     db   $31, $30, $2f, $d1, $d2, $d3, $d4, $d5
     db   $d6, $d7, $00
 data_02_7617:
@@ -68,10 +76,11 @@ data_02_762a:
     db   $00, $00
     db   $04, $04, $1e, $1f, $20, $21, $00
 data_02_7633:
-    db   $c2
+    db   ACTION_STATE_HAS_PENDING | ACTION_STATE_UNK40 | PLAYER_ACTION_STAND
     db   $00, $04, $01, $1c, $00
 data_02_7639:
-    db   $c2, $00, $04
+    db   ACTION_STATE_HAS_PENDING | ACTION_STATE_UNK40 | PLAYER_ACTION_STAND
+    db   $00, $04
     db   $09, $1c, $36, $37, $38, $39, $3a, $38
     db   $38, $1c, $00
 data_02_7647:
@@ -79,7 +88,8 @@ data_02_7647:
     db   $af, $b0, $b1, $b2, $b3, $b4, $b5, $3c
     db   $3c, $3c, $3c, $00
 data_02_7658:
-    db   $c2, $00, $06, $08
+    db   ACTION_STATE_HAS_PENDING | ACTION_STATE_UNK40 | PLAYER_ACTION_STAND
+    db   $00, $06, $08
     db   $b6, $b7, $b8, $b9, $ba, $bb, $c0, $c1
     db   $00
 data_02_7665:

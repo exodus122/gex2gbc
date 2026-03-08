@@ -897,7 +897,7 @@ call_00_169f_BgMap_WriteOverrideTiles:
 
 call_00_1779_BgMap_WriteOverridePaletteAttributes:
 ; Writes GBC palette attribute bytes and tile IDs to the BG tilemap for an override rectangle. 
-; On GBC (wD59E nonzero): switches to VRAM bank 1; for each of the width × height metatiles, 
+; On GBC (wD59E_OnGBCFlag nonzero): switches to VRAM bank 1; for each of the width × height metatiles, 
 ; reads 4 tile IDs per sub-row from the $C0xx block coordinate cache (using H bits 0–1 + $C0 as page), 
 ; looks up the palette attribute for each from $CFxx via B=$CF as page base, and writes the 
 ; 4 attribute bytes to the tilemap. Advances through 4 sub-rows per metatile (+ $1D each), 
@@ -905,7 +905,7 @@ call_00_1779_BgMap_WriteOverridePaletteAttributes:
 ; afterward. Both GBC and DMG paths then write the plain tile IDs (4 per sub-row × 4 sub-rows 
 ; per metatile, BC=$1D stride) from the same $C0xx cache to tilemap bank 0. Reads the tilemap 
 ; base address from wD77E/wD77F
-    ld   A, [wD59E]                                    ;; 00:1779 $fa $9e $d5
+    ld   A, [wD59E_OnGBCFlag]                                    ;; 00:1779 $fa $9e $d5
     and  A, A                                          ;; 00:177c $a7
     jp   Z, .jp_00_182a                                ;; 00:177d $ca $2a $18
     ld   A, $01                                        ;; 00:1780 $3e $01

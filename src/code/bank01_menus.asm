@@ -756,7 +756,7 @@ call_01_44e6:
     ld   B, A                                          ;; 01:458d $47
     ld   DE, $120                                      ;; 01:458e $11 $20 $01
 .jr_01_4591:
-    ld   A, [wD59E]                                    ;; 01:4591 $fa $9e $d5
+    ld   A, [wD59E_OnGBCFlag]                                    ;; 01:4591 $fa $9e $d5
     and  A, A                                          ;; 01:4594 $a7
     jr   Z, .jr_01_45cb                                ;; 01:4595 $28 $34
     push HL                                            ;; 01:4597 $e5
@@ -962,7 +962,7 @@ call_01_473a:
     call call_01_4eb1                                  ;; 01:4754 $cd $b1 $4e
     push AF                                            ;; 01:4757 $f5
     ld   C, $ec                                        ;; 01:4758 $0e $ec
-    ld   A, [wD59E]                                    ;; 01:475a $fa $9e $d5
+    ld   A, [wD59E_OnGBCFlag]                                    ;; 01:475a $fa $9e $d5
     and  A, A                                          ;; 01:475d $a7
     jr   NZ, .jr_01_4769                               ;; 01:475e $20 $09
     ld   C, $e8                                        ;; 01:4760 $0e $e8

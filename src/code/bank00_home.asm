@@ -63,7 +63,7 @@ call_00_0150_Init:
     xor  A, A                                          ;; 00:017e $af
     ldh  [rSCX], A                                     ;; 00:017f $e0 $43
     ldh  [rSCY], A                                     ;; 00:0181 $e0 $42
-    ld   [wD59E], A                                    ;; 00:0183 $ea $9e $d5
+    ld   [wD59E_OnGBCFlag], A                                    ;; 00:0183 $ea $9e $d5
     ld   A, $07                                        ;; 00:0186 $3e $07
     ldh  [rWX], A                                      ;; 00:0188 $e0 $4b
     ld   A, $8f                                        ;; 00:018a $3e $8f
@@ -77,7 +77,7 @@ call_00_0150_Init:
     cp   A, $11                                        ;; 00:019c $fe $11
     jr   NZ, .jr_00_01ac                               ;; 00:019e $20 $0c
     ld   A, $01                                        ;; 00:01a0 $3e $01
-    ld   [wD59E], A                                    ;; 00:01a2 $ea $9e $d5
+    ld   [wD59E_OnGBCFlag], A                                    ;; 00:01a2 $ea $9e $d5
     ld   A, $00                                        ;; 00:01a5 $3e $00
     ldh  [rVBK], A                                     ;; 00:01a7 $e0 $4f
     call call_00_0f9d_UpdateLCDPalettes                ;; 00:01a9 $cd $9d $0f
@@ -116,7 +116,7 @@ call_00_0150_Init:
     ld   A, $ff                                        ;; 00:01fa $3e $ff
     ld   [wD78A_MusicId], A                                    ;; 00:01fc $ea $8a $d7
     ei                                                 ;; 00:01ff $fb
-    ld   A, [wD59E]                                    ;; 00:0200 $fa $9e $d5
+    ld   A, [wD59E_OnGBCFlag]                                    ;; 00:0200 $fa $9e $d5
     and  A, A                                          ;; 00:0203 $a7
     jr   Z, .jr_00_0210                                ;; 00:0204 $28 $0a
     ld   A, $30                                        ;; 00:0206 $3e $30
@@ -128,7 +128,7 @@ call_00_0150_Init:
     ld   A, $03                                        ;; 00:0210 $3e $03
     ld   [wD61D_DemoUnk], A                                    ;; 00:0212 $ea $1d $d6
     FARCALL call_01_4f87_LoadEnterPasswordMenu
-.jp_00_0220:
+.jp_00_0220_SoftReset:
     ld   A, MENU_TYPE_TITLE_SPLASH                                        ;; 00:0220 $3e $14
     FARCALL call_01_4000_MenuLoad
     ld   A, MENU_TYPE_TITLE_CRAVE                                        ;; 00:022d $3e $13
@@ -247,16 +247,16 @@ call_00_0150_Init:
     and  A, $18                                        ;; 00:0368 $e6 $18
     ld   [wD64C], A                                    ;; 00:036a $ea $4c $d6
     call call_00_0562_Collectible_InitForLevel                                  ;; 00:036d $cd $62 $05
-.jp_00_0370:
+.jp_00_0370_GameOver:
     xor  A, A                                          ;; 00:0370 $af
     ld   [wD742_Player_CurrentFly], A                                    ;; 00:0371 $ea $42 $d7
-    ld   [wD750_PlayerDamageCooldownTimer], A                                    ;; 00:0374 $ea $50 $d7
-    ld   [wD751], A                                    ;; 00:0377 $ea $51 $d7
-    ld   [wD752], A                                    ;; 00:037a $ea $52 $d7
-    ld   [wD755_FlyPowerup2_Timer1], A                                    ;; 00:037d $ea $55 $d7
-    ld   [wD756_FlyPowerup2_Timer2], A                                    ;; 00:0380 $ea $56 $d7
-    ld   [wD753_FlyPowerup1_Timer1], A                                    ;; 00:0383 $ea $53 $d7
-    ld   [wD754_FlyPowerup1_Timer2], A                                    ;; 00:0386 $ea $54 $d7
+    ld   [wD750_Player_DamageCooldownTimer], A                                    ;; 00:0374 $ea $50 $d7
+    ld   [wD751_Player_CircuitPowerUpTimerLo], A                                    ;; 00:0377 $ea $51 $d7
+    ld   [wD752_Player_CircuitPowerUpTimerHi], A                                    ;; 00:037a $ea $52 $d7
+    ld   [wD755_FlyPowerup2_TimerLo], A                                    ;; 00:037d $ea $55 $d7
+    ld   [wD756_FlyPowerup2_TimerHi], A                                    ;; 00:0380 $ea $56 $d7
+    ld   [wD753_FlyPowerup1_TimerLo], A                                    ;; 00:0383 $ea $53 $d7
+    ld   [wD754_FlyPowerup1_TimerHi], A                                    ;; 00:0386 $ea $54 $d7
     ld   [wD772], A                                    ;; 00:0389 $ea $72 $d7
     ld   [wD773], A                                    ;; 00:038c $ea $73 $d7
     ld   [wD774], A                                    ;; 00:038f $ea $74 $d7
@@ -305,7 +305,7 @@ call_00_0150_Init:
     call call_00_0ab4_WaitForInterrupt                                  ;; 00:0428 $cd $b4 $0a
     ld   A, [wD59F_CurrentInputs]                                    ;; 00:042b $fa $9f $d5
     cp   A, PADF_A | PADF_B | PADF_SELECT | PADF_START                                        ;; 00:042e $fe $0f
-    jp   Z, .jp_00_0220                                ;; 00:0430 $ca $20 $02
+    jp   Z, .jp_00_0220_SoftReset                                ;; 00:0430 $ca $20 $02
     ld   A, [wD621_WarpFlags]                                    ;; 00:0433 $fa $21 $d6
     and  A, $08                                        ;; 00:0436 $e6 $08
     jr   Z, .jr_00_043f                                ;; 00:0438 $28 $05
@@ -320,7 +320,7 @@ call_00_0150_Init:
     jr   Z, .jr_00_0468                                ;; 00:044c $28 $1a
     ld   A, [wD73D_LivesRemaining]                                    ;; 00:044e $fa $3d $d7
     and  A, A                                          ;; 00:0451 $a7
-    jp   NZ, .jp_00_0370                               ;; 00:0452 $c2 $70 $03
+    jp   NZ, .jp_00_0370_GameOver                               ;; 00:0452 $c2 $70 $03
     FARCALL call_01_43bd_LoadGameOverMenu
     cp   A, $80                                        ;; 00:0460 $fe $80
     jp   Z, .jp_00_029d                                ;; 00:0462 $ca $9d $02
@@ -363,16 +363,16 @@ call_00_0150_Init:
     and  A, A                                          ;; 00:04b7 $a7
     jp   NZ, .jp_00_0254                               ;; 00:04b8 $c2 $54 $02
 .jr_00_04bb:
-    ld   A, [wD752]                                    ;; 00:04bb $fa $52 $d7
+    ld   A, [wD752_Player_CircuitPowerUpTimerHi]                                    ;; 00:04bb $fa $52 $d7
     and  A, A                                          ;; 00:04be $a7
     jr   NZ, .jr_00_04cd                               ;; 00:04bf $20 $0c
-    ld   A, [wD751]                                    ;; 00:04c1 $fa $51 $d7
+    ld   A, [wD751_Player_CircuitPowerUpTimerLo]                                    ;; 00:04c1 $fa $51 $d7
     cp   A, $01                                        ;; 00:04c4 $fe $01
     jr   NZ, .jr_00_04cd                               ;; 00:04c6 $20 $05
     ld   C, SFX_MENU_UNK_2                                        ;; 00:04c8 $0e $15
     call call_00_112f_QueueSFX                                  ;; 00:04ca $cd $2f $11
 .jr_00_04cd:
-    ld   HL, wD751                                     ;; 00:04cd $21 $51 $d7
+    ld   HL, wD751_Player_CircuitPowerUpTimerLo                                     ;; 00:04cd $21 $51 $d7
     ld   A, [HL+]                                      ;; 00:04d0 $2a
     or   A, [HL]                                       ;; 00:04d1 $b6
     jr   Z, .jr_00_04e0                                ;; 00:04d2 $28 $0c
@@ -388,7 +388,7 @@ call_00_0150_Init:
     call call_00_1e5b_BgMap_TickOverrideSequence                                  ;; 00:04f1 $cd $5b $1e
     call call_00_05c7_FlyPowerup_Update                                  ;; 00:04f4 $cd $c7 $05
     call call_00_08fc_SetupEntityVRAMTransfer                                  ;; 00:04f7 $cd $fc $08
-    FARCALL call_0b_5ec3_Player_UpdateGBCPalette
+    FARCALL call_0b_5ec3_UpdatePlayerObjPalette
     ld   HL, wD73C_FrameCounter2                                     ;; 00:0505 $21 $3c $d7
     inc  [HL]                                          ;; 00:0508 $34
     ld   A, [wD73B_FrameCounter]                                    ;; 00:0509 $fa $3b $d7
@@ -621,10 +621,10 @@ call_00_0647_Player_SetUpOrEatFlyPowerup:
 ; Then dispatches on the old power-up ID (C): 
 ; if $03 → Player_ResetHealth (the health fly was active, restore health on swap-out); 
 ; if $04 → Player_ExtraLifeFly (extra life); 
-; if $01 → stores zero to wD755_FlyPowerup2_Timer1/wD756_FlyPowerup2_Timer2 and loads $0708 
-;   into wD753_FlyPowerup1_Timer1/wD754_FlyPowerup1_Timer2 (deactivates one timer pair, arms the other); 
-; if $02 → stores zero to wD753_FlyPowerup1_Timer1/wD754_FlyPowerup1_Timer2 and loads $0708 
-;   into wD755_FlyPowerup2_Timer1/wD756_FlyPowerup2_Timer2 (mirror of the $01 case). 
+; if $01 → stores zero to wD755_FlyPowerup2_TimerLo/wD756_FlyPowerup2_TimerHi and loads $0708 
+;   into wD753_FlyPowerup1_TimerLo/wD754_FlyPowerup1_TimerHi (deactivates one timer pair, arms the other); 
+; if $02 → stores zero to wD753_FlyPowerup1_TimerLo/wD754_FlyPowerup1_TimerHi and loads $0708 
+;   into wD755_FlyPowerup2_TimerLo/wD756_FlyPowerup2_TimerHi (mirror of the $01 case). 
 ; Returns without action if old power-up was $00 or any other value
     ld   hl,wD742_Player_CurrentFly
     ld   c,[hl]
@@ -642,19 +642,19 @@ call_00_0647_Player_SetUpOrEatFlyPowerup:
     cp   a,$02
     ret  nz
     xor  a
-    ld   [wD753_FlyPowerup1_Timer1],a
-    ld   [wD754_FlyPowerup1_Timer2],a
+    ld   [wD753_FlyPowerup1_TimerLo],a
+    ld   [wD754_FlyPowerup1_TimerHi],a
     ld   de,$0708
-    ld   hl,wD755_FlyPowerup2_Timer1
+    ld   hl,wD755_FlyPowerup2_TimerLo
     ld   [hl],e
     inc  hl
     ld   [hl],d
     ret  
 .jr_00_067a:
-    ld   [wD755_FlyPowerup2_Timer1],a
-    ld   [wD756_FlyPowerup2_Timer2],a
+    ld   [wD755_FlyPowerup2_TimerLo],a
+    ld   [wD756_FlyPowerup2_TimerHi],a
     ld   de,$0708
-    ld   hl,wD753_FlyPowerup1_Timer1
+    ld   hl,wD753_FlyPowerup1_TimerLo
     ld   [hl],e
     inc  hl
     ld   [hl],d
@@ -801,18 +801,18 @@ call_00_074d_HUD_MarkDirty:
     ret                                                ;; 00:075a $c9
 
 call_00_075b_Player_CanBeDamaged:
-; Returns NZ (cannot be damaged) if wD750_PlayerDamageCooldownTimer is nonzero (invincibility 
-; timer active), or if wD755_FlyPowerup2_Timer1/wD756_FlyPowerup2_Timer2 (fly type $01 shield 
-; timer) are nonzero, or if wD753_FlyPowerup1_Timer1/wD754_FlyPowerup1_Timer2 (fly type $02 
+; Returns NZ (cannot be damaged) if wD750_Player_DamageCooldownTimer is nonzero (invincibility 
+; timer active), or if wD755_FlyPowerup2_TimerLo/wD756_FlyPowerup2_TimerHi (fly type $01 shield 
+; timer) are nonzero, or if wD753_FlyPowerup1_TimerLo/wD754_FlyPowerup1_TimerHi (fly type $02 
 ; shield timer) are nonzero. Returns Z (can be damaged) only if all three are clear
-    ld   A, [wD750_PlayerDamageCooldownTimer]                                    ;; 00:075b $fa $50 $d7
+    ld   A, [wD750_Player_DamageCooldownTimer]                                    ;; 00:075b $fa $50 $d7
     and  A, A                                          ;; 00:075e $a7
     ret  NZ                                            ;; 00:075f $c0
-    ld   HL, wD755_FlyPowerup2_Timer1                                     ;; 00:0760 $21 $55 $d7
+    ld   HL, wD755_FlyPowerup2_TimerLo                                     ;; 00:0760 $21 $55 $d7
     ld   A, [HL+]                                      ;; 00:0763 $2a
     or   A, [HL]                                       ;; 00:0764 $b6
     ret  NZ                                            ;; 00:0765 $c0
-    ld   HL, wD753_FlyPowerup1_Timer1                                     ;; 00:0766 $21 $53 $d7
+    ld   HL, wD753_FlyPowerup1_TimerLo                                     ;; 00:0766 $21 $53 $d7
     ld   A, [HL+]                                      ;; 00:0769 $2a
     or   A, [HL]                                       ;; 00:076a $b6
     ret  NZ                                            ;; 00:076b $c0
@@ -899,7 +899,7 @@ call_00_07c3:
     ld   c,a
     push de
 .jr_00_0800:
-    ld   a,[wD59E]
+    ld   a,[wD59E_OnGBCFlag]
     and  a
     jr   z,.jr_00_0834
     ld   a,$01
@@ -966,7 +966,7 @@ call_00_084d:
     ld   DE, _VRAM+$1000                                     ;; 00:0862 $11 $00 $90
     ld   BC, $780                                      ;; 00:0865 $01 $80 $07
     call call_00_07b0_MemCopy                                  ;; 00:0868 $cd $b0 $07
-    ld   A, [wD59E]                                    ;; 00:086b $fa $9e $d5
+    ld   A, [wD59E_OnGBCFlag]                                    ;; 00:086b $fa $9e $d5
     and  A, A                                          ;; 00:086e $a7
     jr   Z, .jr_00_0891                                ;; 00:086f $28 $20
     ld   A, $01                                        ;; 00:0871 $3e $01
@@ -1734,7 +1734,7 @@ data_00_0e13:
     db   $88, $60, $40, $94                            ;; 00:0e83 ????
 
 call_00_0e87:
-    ld   A, [wD59E]                                    ;; 00:0e87 $fa $9e $d5
+    ld   A, [wD59E_OnGBCFlag]                                    ;; 00:0e87 $fa $9e $d5
     and  A, A                                          ;; 00:0e8a $a7
     jr   Z, .jr_00_0e98                                ;; 00:0e8b $28 $0b
     ld   A, $01                                        ;; 00:0e8d $3e $01
@@ -1744,7 +1744,7 @@ call_00_0e87:
     ldh  [rVBK], A                                     ;; 00:0e96 $e0 $4f
 .jr_00_0e98:
     call call_00_0ec4_ClearTileVRAM                                  ;; 00:0e98 $cd $c4 $0e
-    ld   A, [wD59E]                                    ;; 00:0e9b $fa $9e $d5
+    ld   A, [wD59E_OnGBCFlag]                                    ;; 00:0e9b $fa $9e $d5
     and  A, A                                          ;; 00:0e9e $a7
     jr   Z, .jr_00_0eac                                ;; 00:0e9f $28 $0b
     ld   A, $01                                        ;; 00:0ea1 $3e $01
@@ -1795,7 +1795,7 @@ call_00_0ec4_ClearTileVRAM:
     ret                                                ;; 00:0edd $c9
 
 call_00_0ede:
-    ld   A, [wD59E]                                    ;; 00:0ede $fa $9e $d5
+    ld   A, [wD59E_OnGBCFlag]                                    ;; 00:0ede $fa $9e $d5
     and  A, A                                          ;; 00:0ee1 $a7
     ret  Z                                             ;; 00:0ee2 $c8
     ld   A, $01                                        ;; 00:0ee3 $3e $01
@@ -1894,7 +1894,7 @@ call_00_0f72:
     jp   call_00_0fbc                                    ;; 00:0f7d $c3 $bc $0f
 
 call_00_0f80:
-    ld   A, [wD59E]                                    ;; 00:0f80 $fa $9e $d5
+    ld   A, [wD59E_OnGBCFlag]                                    ;; 00:0f80 $fa $9e $d5
     and  A, A                                          ;; 00:0f83 $a7
     jr   NZ, .jr_00_0f99                               ;; 00:0f84 $20 $13
     call call_00_1004                                  ;; 00:0f86 $cd $04 $10
@@ -2338,4 +2338,3 @@ call_00_120c_SetupMusic:
     db   BANK_22, $00, $0f, $00        ;; 00:1254 ????...?
     db   BANK_23, $04, $0f, $00
     db   BANK_23, $00, $0f, $00        ;; 00:125c ...?...?
-

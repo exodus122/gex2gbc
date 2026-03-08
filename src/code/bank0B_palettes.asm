@@ -2,10 +2,10 @@
 
 call_0b_5537_BgPalette_LoadMonoOrGetSpriteParams:
 ; Mono-mode (DMG) background palette loader, or sprite params setter in GBC mode. 
-; If wD59E is zero (DMG): loads wD624 (level ID) to index either .data_0b_555f (C=0, primary BG) 
+; If wD59E_OnGBCFlag is zero (DMG): loads wD624 (level ID) to index either .data_0b_555f (C=0, primary BG) 
 ; or .data_0b_55db (C≠0, secondary BG), copies 3 bytes into wDAD1–wDAD3 (DMG palette register values). 
-; If GBC (wD59E nonzero), branches to call_0b_561b_GBC_LoadLevelBgPalette
-    ld   A, [wD59E]                                    ;; 0b:5537 $fa $9e $d5
+; If GBC (wD59E_OnGBCFlag nonzero), branches to call_0b_561b_GBC_LoadLevelBgPalette
+    ld   A, [wD59E_OnGBCFlag]                                    ;; 0b:5537 $fa $9e $d5
     and  A, A                                          ;; 0b:553a $a7
     jp   NZ, call_0b_561b_GBC_LoadLevelBgPalette                               ;; 0b:553b $c2 $1b $56
     ld   A, [wD624_CurrentLevelId]                                    ;; 0b:553e $fa $24 $d6
@@ -291,7 +291,7 @@ call_0b_5d4b_MediaDimension_LoadTVPalette:
 ; pointer to the 16-byte television palette for the appropriate world (Scream TV, Toon TV, 
 ; Prehistory Channel, Circuit Central, Kung Fu Theater, Channel Z, Rezopolis, or Bonus TV), copies 
 ; to wDA7B_MediaDimensionTVPalette
-    ld   A, [wD59E]                                    ;; 0b:5d4b $fa $9e $d5
+    ld   A, [wD59E_OnGBCFlag]                                    ;; 0b:5d4b $fa $9e $d5
     and  A, A                                          ;; 0b:5d4e $a7
     ret  Z                                             ;; 0b:5d4f $c8
     call call_00_2e3a_MapData_GetTVPaletteId                                  ;; 0b:5d50 $cd $3a $2e
@@ -334,7 +334,7 @@ call_0b_5df8_MediaDimension_LoadActiveTVPalette:
 ; ID is nonzero (not Media Dimension). Uses wD72D (secondary tileset index = current TV channel) 
 ; to index .media_dimension_tv_palettes — same world palette set as above but with null entries 
 ; for some slots — copies 16 bytes to wD9FB_BgPalettes_Slot6. Zero pointer = return early (no TV active)
-    ld   A, [wD59E]                                    ;; 0b:5df8 $fa $9e $d5
+    ld   A, [wD59E_OnGBCFlag]                                    ;; 0b:5df8 $fa $9e $d5
     and  A, A                                          ;; 0b:5dfb $a7
     ret  Z                                             ;; 0b:5dfc $c8
     ld   A, [wD624_CurrentLevelId]                                    ;; 0b:5dfd $fa $24 $d6
@@ -383,30 +383,31 @@ call_0b_5df8_MediaDimension_LoadActiveTVPalette:
 .bonus_tv_television_palette:
     INCBIN "gfx/secondary_tilesets/media_dimension/palettes/bonus_tv_television_palette.bin"
 
-call_0b_5ec3_Player_UpdateGBCPalette:
-; Updates Gex's OBJ palette based on current invincibility/power-up state. Returns if DMG. 
-; Reads wD73B_FrameCounter low 5 bits; if ≥ 8 (not ?), checks invincibility timers wD751/wD752 →
-; uses .data_0b_5efb (gold flash palette), then wD755_FlyPowerup2_Timer1/wD756 → uses .data_0b_5f03 
-; (blue/white palette), then wD753_FlyPowerup1_Timer1/wD754_FlyPowerup1_Timer2 → same blue/white palette. 
+call_0b_5ec3_UpdatePlayerObjPalette:
+; Updates Gex's OBJ palette based on current power-up state. Returns if DMG. 
+; Reads wD73B_FrameCounter low 5 bits; if ≥ 8 (not ?), checks powerup timers 
+; wD751_Player_CircuitPowerUpTimerLo/wD752_Player_CircuitPowerUpTimerHi →
+; uses .data_0b_5efb (gold flash palette), then wD755_FlyPowerup2_TimerLo/wD756 → uses .data_0b_5f03 
+; (blue/white palette), then wD753_FlyPowerup1_TimerLo/wD754_FlyPowerup1_TimerHi → same blue/white palette. 
 ; Otherwise falls through to .data_gex_entity_palette (normal Gex palette). Copies 8 bytes to wDA0B
-    ld   A, [wD59E]                                    ;; 0b:5ec3 $fa $9e $d5
+    ld   A, [wD59E_OnGBCFlag]                                    ;; 0b:5ec3 $fa $9e $d5
     and  A, A                                          ;; 0b:5ec6 $a7
     ret  Z                                             ;; 0b:5ec7 $c8
     ld   A, [wD73B_FrameCounter]                                    ;; 0b:5ec8 $fa $3b $d7
     and  A, $1f                                        ;; 0b:5ecb $e6 $1f
     cp   A, $08                                        ;; 0b:5ecd $fe $08
     jr   C, .jr_0b_5eef                                ;; 0b:5ecf $38 $1e
-    ld   HL, wD751                                     ;; 0b:5ed1 $21 $51 $d7
+    ld   HL, wD751_Player_CircuitPowerUpTimerLo                                     ;; 0b:5ed1 $21 $51 $d7
     ld   A, [HL+]                                      ;; 0b:5ed4 $2a
     or   A, [HL]                                       ;; 0b:5ed5 $b6
     ld   HL, .data_0b_5efb                             ;; 0b:5ed6 $21 $fb $5e
     jr   NZ, .jr_0b_5ef2                               ;; 0b:5ed9 $20 $17
-    ld   HL, wD755_FlyPowerup2_Timer1                                     ;; 0b:5edb $21 $55 $d7
+    ld   HL, wD755_FlyPowerup2_TimerLo                                     ;; 0b:5edb $21 $55 $d7
     ld   A, [HL+]                                      ;; 0b:5ede $2a
     or   A, [HL]                                       ;; 0b:5edf $b6
     ld   HL, .data_0b_5f03                             ;; 0b:5ee0 $21 $03 $5f
     jr   NZ, .jr_0b_5ef2                               ;; 0b:5ee3 $20 $0d
-    ld   HL, wD753_FlyPowerup1_Timer1                                     ;; 0b:5ee5 $21 $53 $d7
+    ld   HL, wD753_FlyPowerup1_TimerLo                                     ;; 0b:5ee5 $21 $53 $d7
     ld   A, [HL+]                                      ;; 0b:5ee8 $2a
     or   A, [HL]                                       ;; 0b:5ee9 $b6
     ld   HL, .data_0b_5f03                             ;; 0b:5eea $21 $03 $5f
@@ -429,7 +430,7 @@ call_0b_5f1b_FlyPowerup_LoadParticlePalette:
 ; Loads the fly power-up particle's GBC palette. Returns if DMG. Uses wD742 (fly power-up type, 1-based) 
 ; × 8 to index .data_0b_5f37_FlyPalettes (4 entries × 8 bytes), copies to wDA1B_ObjectPalettes_Slot2 
 ; (OBJ palette 2). The 4 fly types have different particle colors: green/teal, white/gray, blue, and transparent/white
-    ld   A, [wD59E]                                    ;; 0b:5f1b $fa $9e $d5
+    ld   A, [wD59E_OnGBCFlag]                                    ;; 0b:5f1b $fa $9e $d5
     and  A, A                                          ;; 0b:5f1e $a7
     ret  Z                                             ;; 0b:5f1f $c8
     ld   A, [wD742_Player_CurrentFly]                                    ;; 0b:5f20 $fa $42 $d7

@@ -418,7 +418,7 @@ call_0a_7a7c_EntitySpawn_SpawnNextFromList:
     FARCALL call_02_7211_SoundQueue_Enqueue
 .jr_0a_7b87:
     pop  HL                                            ;; 0a:7b87 $e1
-    ld   A, [wD59E]                                    ;; 0a:7b88 $fa $9e $d5
+    ld   A, [wD59E_OnGBCFlag]                                    ;; 0a:7b88 $fa $9e $d5
     and  A, A                                          ;; 0a:7b8b $a7
     ret  Z                                             ;; 0a:7b8c $c8
     ld   C, [HL]                                       ;; 0a:7b8d $4e
@@ -566,7 +566,7 @@ call_0a_7b9a_EntitySpawn_SpawnChildEntity:
     FARCALL call_02_7211_SoundQueue_Enqueue
 .jr_0a_7c43:
     pop  HL                                            ;; 0a:7c43 $e1
-    ld   A, [wD59E]                                    ;; 0a:7c44 $fa $9e $d5
+    ld   A, [wD59E_OnGBCFlag]                                    ;; 0a:7c44 $fa $9e $d5
     and  A, A                                          ;; 0a:7c47 $a7
     jr   Z, .jr_0a_7c56                                ;; 0a:7c48 $28 $0c
     ld   C, [HL]                                       ;; 0a:7c4a $4e
