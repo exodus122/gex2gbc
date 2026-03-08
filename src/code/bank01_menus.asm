@@ -897,7 +897,7 @@ call_01_465f:
 
 call_01_466b:
     ld   HL, .data_01_46a8                             ;; 01:466b $21 $a8 $46
-    ld   DE, wDA4B                                     ;; 01:466e $11 $4b $da
+    ld   DE, wDA4B_DynamicPalette                                     ;; 01:466e $11 $4b $da
     ld   BC, $80                                       ;; 01:4671 $01 $80 $00
     call call_00_07b0_MemCopy                                  ;; 01:4674 $cd $b0 $07
     FARCALL call_0b_5d4b_MediaDimension_LoadTVPalette
@@ -1287,8 +1287,8 @@ call_01_4969:
     db   $5e, $92, $5e, $92, $5e
 
 call_01_49d7:
-    ld   hl,data_01_4a0f
-    ld   de,wDA4B
+    ld   hl,.data_01_4a0f
+    ld   de,wDA4B_DynamicPalette
     ld   bc,$0080
     call call_00_07b0_MemCopy
     ld   a,[wD624_CurrentLevelId]
@@ -1305,10 +1305,10 @@ call_01_49d7:
     pop  hl
     ld   de,wC000_BgMapTileIds
     call call_00_07b0_MemCopy
-    ld   de,wDAAB
+    ld   de,wDAAB_MenuBgMapTileIds
     ld   bc,$0018
     jp   call_00_07b0_MemCopy
-data_01_4a0f:
+.data_01_4a0f:
     db   $00, $00, $00                                 
     db   $02, $00, $00, $e0, $03, $00, $00, $8c        ;; 01:4a12 ????????
     db   $01, $c0, $02, $5a, $03, $00, $00, $10        ;; 01:4a1a ????????
@@ -2159,7 +2159,7 @@ call_01_4f87_LoadEnterPasswordMenu:
     ld   A, $4a                                        ;; 01:4f9a $3e $4a
     ld   [wD684_PasswordGoButton], A                                    ;; 01:4f9c $ea $84 $d6
     ld   A, $4b                                        ;; 01:4f9f $3e $4b
-    ld   [wD685], A                                    ;; 01:4fa1 $ea $85 $d6
+    ld   [wD685_PasswordUnkButton], A                                    ;; 01:4fa1 $ea $85 $d6
     ret                                                ;; 01:4fa4 $c9
 
 call_01_4fa5_SetupPassword:
@@ -2173,7 +2173,7 @@ call_01_4fa5_SetupPassword:
     ld   A, $4a                                        ;; 01:4fb8 $3e $4a
     ld   [wD684_PasswordGoButton], A                                    ;; 01:4fba $ea $84 $d6
     ld   A, $4b                                        ;; 01:4fbd $3e $4b
-    ld   [wD685], A                                    ;; 01:4fbf $ea $85 $d6
+    ld   [wD685_PasswordUnkButton], A                                    ;; 01:4fbf $ea $85 $d6
     ld   HL, .data_01_4fef                             ;; 01:4fc2 $21 $ef $4f
 .jr_01_4fc5:
     push HL                                            ;; 01:4fc5 $e5

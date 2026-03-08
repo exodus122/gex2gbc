@@ -156,14 +156,14 @@ call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip:
 ; forward vs backward), calls appropriate bound helper, then nudges a speed counter and 
 ; flips direction when a bound is hit; also zeroes velocity sub-fields on direction change
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
-    bit  ENTITY_MISC_FLAGS_UNK3_BIT, [HL]                                       ;; 00:3195 $cb $5e
+    bit  MISC_FLAGS_BIT_3, [HL]                                       ;; 00:3195 $cb $5e
     jr   Z, .jr_00_319c                                ;; 00:3197 $28 $03
-    bit  ENTITY_MISC_FLAGS_UNK0_BIT, [HL]                                       ;; 00:3199 $cb $46
+    bit  MISC_FLAGS_BIT_0, [HL]                                       ;; 00:3199 $cb $46
     ret  Z                                             ;; 00:319b $c8
 .jr_00_319c:
-    bit  ENTITY_MISC_FLAGS_VERTICAL, [HL]                                       ;; 00:319c $cb $4e
+    bit  MISC_FLAGS_BIT_1, [HL]                                       ;; 00:319c $cb $4e
     jr   NZ, .jr_00_3202                               ;; 00:319e $20 $62
-    bit  ENTITY_MISC_FLAGS_LEFT, [HL]                                       ;; 00:31a0 $cb $7e
+    bit  MISC_FLAGS_BIT_7, [HL]                                       ;; 00:31a0 $cb $7e
     jr   NZ, .jr_00_31de                               ;; 00:31a2 $20 $3a
     call call_00_347e_Entity_GetLeftXBound                                  ;; 00:31a4 $cd $7e $34
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
@@ -184,7 +184,7 @@ call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip:
     ld   A, L                                          ;; 00:31be $7d
     xor  A, $18                                        ;; 00:31bf $ee $18
     ld   L, A                                          ;; 00:31c1 $6f
-    set  ENTITY_MISC_FLAGS_LEFT, [HL]                                       ;; 00:31c2 $cb $fe
+    set  MISC_FLAGS_BIT_7, [HL]                                       ;; 00:31c2 $cb $fe
 .jp_00_31c4:
     push HL                                            ;; 00:31c4 $e5
     ld   A, L                                          ;; 00:31c5 $7d
@@ -194,9 +194,9 @@ call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip:
     pop  HL                                            ;; 00:31ca $e1
     cp   A, $17                                        ;; 00:31cb $fe $17
     jr   Z, .jr_00_31d4                                ;; 00:31cd $28 $05
-    bit  ENTITY_MISC_FLAGS_UNK3_BIT, [HL]                                       ;; 00:31cf $cb $5e
+    bit  MISC_FLAGS_BIT_3, [HL]                                       ;; 00:31cf $cb $5e
     ret  Z                                             ;; 00:31d1 $c8
-    res  ENTITY_MISC_FLAGS_UNK0_BIT, [HL]                                       ;; 00:31d2 $cb $86
+    res  MISC_FLAGS_BIT_0, [HL]                                       ;; 00:31d2 $cb $86
 .jr_00_31d4:
     ld   A, L                                          ;; 00:31d4 $7d
     xor  A, $0b                                        ;; 00:31d5 $ee $0b
@@ -229,10 +229,10 @@ call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip:
     ld   A, L                                          ;; 00:31fa $7d
     xor  A, $18                                        ;; 00:31fb $ee $18
     ld   L, A                                          ;; 00:31fd $6f
-    res  ENTITY_MISC_FLAGS_LEFT, [HL]                                       ;; 00:31fe $cb $be
+    res  MISC_FLAGS_BIT_7, [HL]                                       ;; 00:31fe $cb $be
     jr   .jp_00_31c4                                   ;; 00:3200 $18 $c2
 .jr_00_3202:
-    bit  ENTITY_MISC_FLAGS_UP, [HL]                                       ;; 00:3202 $cb $76
+    bit  MISC_FLAGS_BIT_6, [HL]                                       ;; 00:3202 $cb $76
     jr   NZ, .jr_00_322a                               ;; 00:3204 $20 $24
     call call_00_34ba_Entity_GetUpperYBound                                  ;; 00:3206 $cd $ba $34
    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
@@ -255,7 +255,7 @@ call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip:
     ld   A, L                                          ;; 00:3222 $7d
     xor  A, $06                                        ;; 00:3223 $ee $06
     ld   L, A                                          ;; 00:3225 $6f
-    set  ENTITY_MISC_FLAGS_UP, [HL]                                       ;; 00:3226 $cb $f6
+    set  MISC_FLAGS_BIT_6, [HL]                                       ;; 00:3226 $cb $f6
     jr   .jp_00_31c4                                   ;; 00:3228 $18 $9a
 .jr_00_322a:
     call call_00_349c_Entity_GetLowerYBound                                  ;; 00:322a $cd $9c $34
@@ -281,7 +281,7 @@ call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip:
     ld   A, L                                          ;; 00:3248 $7d
     xor  A, $06                                        ;; 00:3249 $ee $06
     ld   L, A                                          ;; 00:324b $6f
-    res  ENTITY_MISC_FLAGS_UP, [HL]                                       ;; 00:324c $cb $b6
+    res  MISC_FLAGS_BIT_6, [HL]                                       ;; 00:324c $cb $b6
     jp   .jp_00_31c4                                   ;; 00:324e $c3 $c4 $31
 
 call_00_3251_Entity_UpdateFacingMomentumAndMoveX:
@@ -991,7 +991,7 @@ call_00_35d5_Entity_MoveXAndPushPlayer:
     ret                                                ;; 00:3627 $c9
 
 call_00_3628_Entity_SaveWorldState:
-; Backs up camera/interaction pointers (wD74D_Player_InteractedEntityLo–wD74F_Player_PlatformRelated2, wD688), copies entity table (wD000), 
+; Backs up camera/interaction pointers (wD74D_Player_InteractedEntityLo–wD74F_Player_PlatformRelated2, wD688_FlyAnimationPosition), copies entity table (wD000), 
 ; player entity (wD200), slot table (wD301), and room bounds (wD309_EntityBoundingBoxXMax) into 
 ; save buffers at wD79F/wD89F/wD99F/wD9A7
     ld   A, [wD74D_Player_InteractedEntityLo]                                    ;; 00:3628 $fa $4d $d7
@@ -1000,10 +1000,10 @@ call_00_3628_Entity_SaveWorldState:
     ld   [wD9C8], A                                    ;; 00:3631 $ea $c8 $d9
     ld   A, [wD74F_Player_PlatformRelated2]                                    ;; 00:3634 $fa $4f $d7
     ld   [wD9C9], A                                    ;; 00:3637 $ea $c9 $d9
-    ld   A, [wD688]                                    ;; 00:363a $fa $88 $d6
+    ld   A, [wD688_FlyAnimationPosition]                                    ;; 00:363a $fa $88 $d6
     ld   [wD9CA], A                                    ;; 00:363d $ea $ca $d9
     ld   A, $a0                                        ;; 00:3640 $3e $a0
-    ld   [wD688], A                                    ;; 00:3642 $ea $88 $d6
+    ld   [wD688_FlyAnimationPosition], A                                    ;; 00:3642 $ea $88 $d6
     ld   HL, wD000_EntityFlags                                     ;; 00:3645 $21 $00 $d0
     ld   DE, wD79F                                     ;; 00:3648 $11 $9f $d7
     ld   BC, $100                                      ;; 00:364b $01 $00 $01
@@ -1030,7 +1030,7 @@ call_00_3675_Entity_RestoreWorldState:
     ld   A, [wD9C9]                                    ;; 00:3681 $fa $c9 $d9
     ld   [wD74F_Player_PlatformRelated2], A                                    ;; 00:3684 $ea $4f $d7
     ld   A, [wD9CA]                                    ;; 00:3687 $fa $ca $d9
-    ld   [wD688], A                                    ;; 00:368a $ea $88 $d6
+    ld   [wD688_FlyAnimationPosition], A                                    ;; 00:368a $ea $88 $d6
     ld   HL, wD79F                                     ;; 00:368d $21 $9f $d7
     ld   DE, wD000_EntityFlags                                     ;; 00:3690 $11 $00 $d0
     ld   BC, $100                                      ;; 00:3693 $01 $00 $01

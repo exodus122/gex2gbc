@@ -1247,7 +1247,7 @@ call_02_56dc_EntityAction_HardHeadAreaObject_unk0:
 
 call_02_576e_EntityAction_HardHeadAreaObject_unk1:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
-    bit  ENTITY_MISC_FLAGS_UNK0_BIT, [HL]                                       ;; 02:5776 $cb $46
+    bit  MISC_FLAGS_BIT_0, [HL]                                       ;; 02:5776 $cb $46
     jr   NZ, .jr_02_5794                               ;; 02:5778 $20 $1a
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped                                  ;; 02:577a $cd $af $30
     call call_00_3154_Entity_MoveYDownWithFloorBound                                  ;; 02:577d $cd $54 $31
@@ -1255,7 +1255,7 @@ call_02_576e_EntityAction_HardHeadAreaObject_unk1:
     ld   C, SFX_FALLING_OBJECT                                        ;; 02:5781 $0e $1a
     call call_00_112f_QueueSFX                                  ;; 02:5783 $cd $2f $11
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
-    set  ENTITY_MISC_FLAGS_UNK0_BIT, [HL]                                       ;; 02:578e $cb $c6
+    set  MISC_FLAGS_BIT_0, [HL]                                       ;; 02:578e $cb $c6
     inc  L                                             ;; 02:5790 $2c
     ld   [HL], $80                                     ;; 02:5791 $36 $80
     ret                                                ;; 02:5793 $c9
@@ -1579,13 +1579,13 @@ call_02_59ed_EntityAction_Hunter_unk5:
     call call_00_3843_Entity_CheckAnimFlag_Bit2
     ret  z
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
-    res  ENTITY_MISC_FLAGS_UNK0_BIT,[hl]
+    res  MISC_FLAGS_BIT_0,[hl]
     ld   a,HUNTER_ACTION_UNK0
     jp   call_02_7102_Entity_SetAction
 
 call_02_5A00_Hunter_Sub:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
-    bit  ENTITY_MISC_FLAGS_UNK0_BIT,[hl]
+    bit  MISC_FLAGS_BIT_0,[hl]
     ret  z
     ld   a,HUNTER_ACTION_UNK2
     jp   call_02_7102_Entity_SetAction
@@ -1605,7 +1605,7 @@ call_02_5a1f_EntityAction_HunterBullet_unk1:
 
 call_02_5a28_EntityAction_Mushroom_Update:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
-    bit  ENTITY_MISC_FLAGS_UNK0_BIT, [HL]                                       ;; 02:5a30 $cb $46
+    bit  MISC_FLAGS_BIT_0, [HL]                                       ;; 02:5a30 $cb $46
     ret  Z                                             ;; 02:5a32 $c8
     ld   HL, wD774                                     ;; 02:5a33 $21 $74 $d7
     inc  [HL]                                          ;; 02:5a36 $34
@@ -1685,7 +1685,7 @@ call_02_5aab_EntityAction_ToonTVVanishingBlock_unk0:
     ld   [hl],a
 .jr_02_5AB7:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
-    bit  ENTITY_MISC_FLAGS_UNK0_BIT,[hl]
+    bit  MISC_FLAGS_BIT_0,[hl]
     jr   z,.jr_02_5AD2
     inc  l
     inc  l
@@ -1822,7 +1822,7 @@ call_02_5b9d_EntityAction_ToonTVMovingBlock_unk1:
     call call_00_3817_Entity_DecrementMiscTimer
     ret  nz
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
-    set  ENTITY_MISC_FLAGS_UNK0_BIT,[hl]
+    set  MISC_FLAGS_BIT_0,[hl]
     ld   a,$00
     jp   call_02_7102_Entity_SetAction
 
@@ -1856,7 +1856,7 @@ call_02_5be1_EntityAction_StationaryLog_Update:
     
 call_02_5be2_EntityAction_Rocket_unk0:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
-    bit  ENTITY_MISC_FLAGS_LEFT,[hl]
+    bit  MISC_FLAGS_BIT_7,[hl]
     ret  z
     ld   c,SFX_ROCKET
     call call_00_112f_QueueSFX
@@ -2260,7 +2260,7 @@ call_02_5e91_EntityAction_Unk4A_Update:
 
 call_02_5e92_EntityAction_HangingBlade_Update:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
-    bit  ENTITY_MISC_FLAGS_UNK0_BIT,[hl]
+    bit  MISC_FLAGS_BIT_0,[hl]
     jr   nz,.jr_02_5EAF
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
     call call_00_3154_Entity_MoveYDownWithFloorBound
@@ -2279,9 +2279,9 @@ call_02_5e92_EntityAction_HangingBlade_Update:
 
 call_02_5ebd_EntityAction_Cannon_Update:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
-    bit  ENTITY_MISC_FLAGS_LEFT,[hl]
+    bit  MISC_FLAGS_BIT_7,[hl]
     ret  z
-    res  ENTITY_MISC_FLAGS_LEFT,[hl]
+    res  MISC_FLAGS_BIT_7,[hl]
     ld   a,$20
 .jr_02_5ECC:
     ld   l,a
@@ -2575,11 +2575,11 @@ call_02_616d_EntityAction_Unk51_Update:
 
 call_02_616e_EntityAction_Ninja_unk0:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
-    bit  ENTITY_MISC_FLAGS_UNK0_BIT,[hl]
+    bit  MISC_FLAGS_BIT_0,[hl]
     jr   nz,.jr_02_61BC
-    bit  ENTITY_MISC_FLAGS_VERTICAL,[hl]
+    bit  MISC_FLAGS_BIT_1,[hl]
     jr   nz,.jr_02_61E1
-    bit  ENTITY_MISC_FLAGS_UNK2_BIT,[hl]
+    bit  MISC_FLAGS_BIT_2,[hl]
     jr   nz,.jr_02_61FB
 .jr_02_6182:
     ld   c,$14
@@ -2797,7 +2797,7 @@ call_02_62fc_EntityAction_SamuraiHead_unk1:
     and  a
     jr   z,.jr_02_6315
     ld   hl,.data_02_631f
-    ld   de,wDA3B
+    ld   de,wDA3B_ObjectPalettes_Slot6
     ld   bc,$0008
     call call_00_07b0_MemCopy
 .jr_02_6315:
@@ -2810,7 +2810,7 @@ call_02_62fc_EntityAction_SamuraiHead_unk1:
 
 call_02_6327_EntityAction_SamuraiHead_unk2:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
-    bit  ENTITY_MISC_FLAGS_UNK0_BIT,[hl]
+    bit  MISC_FLAGS_BIT_0,[hl]
     jp   nz,call_00_3985_Entity_ParticleBurstInit
     ret  
 
@@ -3114,11 +3114,11 @@ call_02_650f_EntityAction_ActivatedRedPlatform_Update:
     ld   c,$80
     call call_00_3290_Entity_SetFacingDirection
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
-    bit  ENTITY_MISC_FLAGS_UNK0_BIT,[hl]
+    bit  MISC_FLAGS_BIT_0,[hl]
     jr   z,.jr_02_654F
-    bit  ENTITY_MISC_FLAGS_VERTICAL,[hl]
+    bit  MISC_FLAGS_BIT_1,[hl]
     jr   nz,.jr_02_6544
-    bit  ENTITY_MISC_FLAGS_UNK2_BIT,[hl]
+    bit  MISC_FLAGS_BIT_2,[hl]
     jr   nz,.jr_02_6535
     inc  l
     dec  [hl]
@@ -3239,7 +3239,7 @@ call_02_65db_EntityAction_TailspinGear_unk4:
     ld   b,$04
 call_02_65E2_TailSpinGear_Sub1:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
-    bit  ENTITY_MISC_FLAGS_UNK0_BIT,[hl]
+    bit  MISC_FLAGS_BIT_0,[hl]
     jr   z,.jr_02_65F4
     ld   c,b
     ld   a,b
@@ -3676,9 +3676,9 @@ call_02_696f_EntityAction_CircuitCentralPoweredPlatform_unk0:
 
 call_02_6993_EntityAction_CircuitCentralPoweredPlatform_unk1:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
-    bit  ENTITY_MISC_FLAGS_UNK3_BIT,[hl]
+    bit  MISC_FLAGS_BIT_3,[hl]
     jr   z,.jr_02_69BE
-    bit  ENTITY_MISC_FLAGS_UNK0_BIT,[hl]
+    bit  MISC_FLAGS_BIT_0,[hl]
     jr   nz,.jr_02_69BE
     ld   a,[hl]
     and  a,$c0
@@ -3689,7 +3689,7 @@ call_02_6993_EntityAction_CircuitCentralPoweredPlatform_unk1:
     and  a,$c0
     sub  c
     jr   nz,.jr_02_69B6
-    res  ENTITY_MISC_FLAGS_UNK2_BIT,[hl]
+    res  MISC_FLAGS_BIT_2,[hl]
     ld   a,$00
     jp   call_02_7102_Entity_SetAction
 .jr_02_69B6:
@@ -3705,7 +3705,7 @@ call_02_69c4_EntityAction_CircuitCentralPoweredPlatform_unk2:
     call call_00_3817_Entity_DecrementMiscTimer
     ret  nz
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
-    set  ENTITY_MISC_FLAGS_UNK0_BIT,[hl]
+    set  MISC_FLAGS_BIT_0,[hl]
     ld   a,$01
     jp   call_02_7102_Entity_SetAction
 
@@ -3713,7 +3713,7 @@ call_02_69d7_EntityAction_CircuitCentralLoweringPlatform_Update:
     call call_00_34f5_Entity_CheckPlayerInteracting
     bit  1,[hl]
     jr   nz,.jr_02_69FE
-    bit  ENTITY_MISC_FLAGS_UNK0_BIT,[hl]
+    bit  MISC_FLAGS_BIT_0,[hl]
     jr   z,.jr_02_6A0B
     inc  l
     dec  [hl]
@@ -4002,7 +4002,7 @@ call_02_6bcd_GunProjectile_Sub3:
 
 call_02_6bf8_GunProjectile_Sub2:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
-    bit  ENTITY_MISC_FLAGS_LEFT,[hl]
+    bit  MISC_FLAGS_BIT_7,[hl]
     ret  z
 call_02_6c03_GunProjectile_Sub:
     ld   c,SFX_REZ_PROJECTILE

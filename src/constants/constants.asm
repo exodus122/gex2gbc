@@ -196,7 +196,7 @@ DEF MAP_SCREAM_TV_SMELLRAISER                     EQU $02
 DEF MAP_SCREAM_TV_FRANKENSTEINFELD                EQU $03
 DEF MAP_CIRCUIT_CENTRAL_WWWDOTCOMCOM              EQU $04
 DEF MAP_KUNG_FU_THEATER_MAO_TSE_TONGUE            EQU $05
-DEF MAP_UNUSED_04                                 EQU $06
+DEF MAP_UNUSED_06                                 EQU $06
 DEF MAP_PRE_HISTORY_CHANNEL_PANGAEA_90210         EQU $07
 DEF MAP_TOON_TV_FINE_TOONING                      EQU $08
 DEF MAP_PRE_HISTORY_CHANNEL_THIS_OLD_CAVE         EQU $09
@@ -390,14 +390,14 @@ DEF ENTITY_FIELD_WIDTH                      EQU $14
 DEF ENTITY_FIELD_HEIGHT                     EQU $15
 DEF ENTITY_FIELD_COLLISION_TYPE             EQU $16
 DEF ENTITY_FIELD_MISC_FLAGS                 EQU $17
-    DEF ENTITY_MISC_FLAGS_LEFT           EQU 7 ; set = left platform movement, unset = right
-    DEF ENTITY_MISC_FLAGS_UP             EQU 6 ; set = up platform movement, unset = down
-    DEF ENTITY_MISC_FLAGS_UNK5_BIT       EQU 5 ; unused?
-    DEF ENTITY_MISC_FLAGS_UNK4_BIT       EQU 4 ; unused?
-    DEF ENTITY_MISC_FLAGS_UNK3_BIT       EQU 3 ; used
-    DEF ENTITY_MISC_FLAGS_UNK2_BIT       EQU 2 ; used
-    DEF ENTITY_MISC_FLAGS_VERTICAL       EQU 1 ; set = vertical platform movement, unset = horizontal
-    DEF ENTITY_MISC_FLAGS_UNK0_BIT       EQU 0 ; used
+    DEF MISC_FLAGS_BIT_7                 EQU 7 ; for platforms: set = left platform movement, unset = right
+    DEF MISC_FLAGS_BIT_6                 EQU 6 ; for platforms: set = up platform movement, unset = down
+    DEF MISC_FLAGS_BIT_5                 EQU 5 ; unused?
+    DEF MISC_FLAGS_BIT_4                 EQU 4 ; unused?
+    DEF MISC_FLAGS_BIT_3                 EQU 3 ; used
+    DEF MISC_FLAGS_BIT_2                 EQU 2 ; used
+    DEF MISC_FLAGS_BIT_1                 EQU 1 ; for platforms: set = vertical platform movement, unset = horizontal
+    DEF MISC_FLAGS_BIT_0                 EQU 0 ; used
 DEF ENTITY_FIELD_MISC_TIMER                 EQU $18
 DEF ENTITY_FIELD_UNK_19                     EQU $19
 DEF ENTITY_FIELD_OTHER_FLAGS                EQU $1A ; used by tv buttons, etc.
@@ -433,14 +433,14 @@ DEF PLAYER_ACTION_MASK                       EQU $1F
 ; Entity Collision Types
 DEF COLLISION_TYPE_NONE                       EQU $00
 DEF COLLISION_TYPE_COLLECTIBLE                EQU $01
-DEF COLLISION_TYPE_UNK_02                     EQU $02
+DEF COLLISION_TYPE_EXTRA_LIFE                 EQU $02
 DEF COLLISION_TYPE_STATIONARY_PLATFORM        EQU $03
 DEF COLLISION_TYPE_MOVING_PLATFORM            EQU $04
-DEF COLLISION_TYPE_UNK_05                     EQU $05
+DEF COLLISION_TYPE_ONE_WAY_PLATFORM           EQU $05
 DEF COLLISION_TYPE_GENERIC_ENEMY              EQU $06
 DEF COLLISION_TYPE_SILVER_REMOTE              EQU $07
 DEF COLLISION_TYPE_GOLD_REMOTE                EQU $08
-DEF COLLISION_TYPE_UNK_09                     EQU $09
+DEF COLLISION_TYPE_TOUCH_DAMAGE               EQU $09
 DEF COLLISION_TYPE_LANTERN                    EQU $0A
 DEF COLLISION_TYPE_ZOMBIE                     EQU $0B
 DEF COLLISION_TYPE_GHOST_HEAD                 EQU $0C
@@ -449,19 +449,19 @@ DEF COLLISION_TYPE_ZOMBIE_HEAD                EQU $0E
 DEF COLLISION_TYPE_FALLING_OBJECT             EQU $0F
 DEF COLLISION_TYPE_HUNTER                     EQU $10
 DEF COLLISION_TYPE_MUSHROOM                   EQU $11
-DEF COLLISION_TYPE_UNK_12                     EQU $12
+DEF COLLISION_TYPE_NONE_2                     EQU $12
 DEF COLLISION_TYPE_PROJECTILE                 EQU $13
 DEF COLLISION_TYPE_JAR                        EQU $14
 DEF COLLISION_TYPE_NINJA                      EQU $15
 DEF COLLISION_TYPE_HANGING_BLADE              EQU $16
-DEF COLLISION_TYPE_UNK_17                     EQU $17
+DEF COLLISION_TYPE_LAUNCH                     EQU $17 ; unverified
 DEF COLLISION_TYPE_SAMURAI_BODY               EQU $18
-DEF COLLISION_TYPE_UNK_19                     EQU $19
+DEF COLLISION_TYPE_DAMAGE_AND_SET_MISC_FLAG   EQU $19 ; unverified
 DEF COLLISION_TYPE_GEYSER                     EQU $1A
 DEF COLLISION_TYPE_TRICERATOPS                EQU $1B
 DEF COLLISION_TYPE_GEAR                       EQU $1C
 DEF COLLISION_TYPE_ELECTRIC_BALL              EQU $1D
-DEF COLLISION_TYPE_UNK_1E                     EQU $1E
+DEF COLLISION_TYPE_SET_MISC_FLAG_AND_DAMAGE   EQU $1E ; unverified
 DEF COLLISION_TYPE_ROCKET                     EQU $1F
 DEF COLLISION_TYPE_CANNON                     EQU $20
 DEF COLLISION_TYPE_POWERED_WALKWAY            EQU $21

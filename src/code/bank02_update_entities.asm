@@ -175,7 +175,7 @@ call_02_6e17_Entities_InitAndSpawnAll:
     ld   [wD762_PlayerInitialYVelocity], A                                    ;; 02:6e3d $ea $62 $d7
     ld   [wD763_PlayerMovementFlags], A                                    ;; 02:6e40 $ea $63 $d7
     ld   [wD759_ButtonBlockingFlags], A                                    ;; 02:6e43 $ea $59 $d7
-    ld   [wD758], A                                    ;; 02:6e46 $ea $58 $d7
+    ld   [wD758_Player_LaunchVelocityMaybe], A                                    ;; 02:6e46 $ea $58 $d7
     ld   [wD585_CollisionFlags], A                                    ;; 02:6e49 $ea $85 $d5
     ld   [wD584_CollisionFlagsPrev], A                                    ;; 02:6e4c $ea $84 $d5
     ld   A, PLAYER_ACTION_NONE_PENDING                                        ;; 02:6e4f $3e $ff

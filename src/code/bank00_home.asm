@@ -250,13 +250,13 @@ call_00_0150_Init:
 .jp_00_0370:
     xor  A, A                                          ;; 00:0370 $af
     ld   [wD742_Player_CurrentFly], A                                    ;; 00:0371 $ea $42 $d7
-    ld   [wD750], A                                    ;; 00:0374 $ea $50 $d7
+    ld   [wD750_PlayerDamageCooldownTimer], A                                    ;; 00:0374 $ea $50 $d7
     ld   [wD751], A                                    ;; 00:0377 $ea $51 $d7
     ld   [wD752], A                                    ;; 00:037a $ea $52 $d7
-    ld   [wD755], A                                    ;; 00:037d $ea $55 $d7
-    ld   [wD756], A                                    ;; 00:0380 $ea $56 $d7
-    ld   [wD753], A                                    ;; 00:0383 $ea $53 $d7
-    ld   [wD754], A                                    ;; 00:0386 $ea $54 $d7
+    ld   [wD755_FlyPowerup2_Timer1], A                                    ;; 00:037d $ea $55 $d7
+    ld   [wD756_FlyPowerup2_Timer2], A                                    ;; 00:0380 $ea $56 $d7
+    ld   [wD753_FlyPowerup1_Timer1], A                                    ;; 00:0383 $ea $53 $d7
+    ld   [wD754_FlyPowerup1_Timer2], A                                    ;; 00:0386 $ea $54 $d7
     ld   [wD772], A                                    ;; 00:0389 $ea $72 $d7
     ld   [wD773], A                                    ;; 00:038c $ea $73 $d7
     ld   [wD774], A                                    ;; 00:038f $ea $74 $d7
@@ -419,14 +419,15 @@ call_00_0521_DrawEntitiesWrapper:
     ret                                                ;; 00:0546 $c9
 
 call_00_0547_FlyPowerup_InitTimers:
-; Initializes fly power-up state. Zeros wD687 (fly animation state) and wD689 (fly animation timer). 
-; Sets wD688 = $A0 (fly animation position, starting offscreen). Sets wD76F = $03 (remaining lives fly count), 
+; Initializes fly power-up state. Zeros wD687_FlyAnimationState (fly animation state) and 
+; wD689_FlyAnimationTimer (fly animation timer). Sets wD688_FlyAnimationPosition = $A0 
+; (fly animation position, starting offscreen). Sets wD76F = $03 (remaining lives fly count), 
 ; zeros wD770 (BCD score counter), sets wD771 = $3C (score tick timer reload)
     xor  A, A                                          ;; 00:0547 $af
-    ld   [wD687], A                                    ;; 00:0548 $ea $87 $d6
-    ld   [wD689], A                                    ;; 00:054b $ea $89 $d6
+    ld   [wD687_FlyAnimationState], A                                    ;; 00:0548 $ea $87 $d6
+    ld   [wD689_FlyAnimationTimer], A                                    ;; 00:054b $ea $89 $d6
     ld   A, $a0                                        ;; 00:054e $3e $a0
-    ld   [wD688], A                                    ;; 00:0550 $ea $88 $d6
+    ld   [wD688_FlyAnimationPosition], A                                    ;; 00:0550 $ea $88 $d6
     ld   A, $03                                        ;; 00:0553 $3e $03
     ld   [wD76F], A                                    ;; 00:0555 $ea $6f $d7
     xor  A, A                                          ;; 00:0558 $af
@@ -463,7 +464,7 @@ call_00_0562_Collectible_InitForLevel:
     db   $00 ; MAP_SCREAM_TV_FRANKENSTEINFELD
     db   $00 ; MAP_CIRCUIT_CENTRAL_WWWDOTCOMCOM
     db   $00 ; MAP_KUNG_FU_THEATER_MAO_TSE_TONGUE
-    db   $00 ; MAP_UNUSED_04
+    db   $00 ; MAP_UNUSED_06
     db   $00 ; MAP_PRE_HISTORY_CHANNEL_PANGAEA_90210
     db   $00 ; MAP_TOON_TV_FINE_TOONING
     db   $00 ; MAP_PRE_HISTORY_CHANNEL_THIS_OLD_CAVE
@@ -524,32 +525,32 @@ call_00_0598_FlyPowerup_TickScoreTimer:
 call_00_05c7_FlyPowerup_Update:
 ; Main per-frame fly power-up logic dispatcher. If wD623_CollectibleMode (collectible mode) is nonzero, 
 ; delegates to FlyPowerup_TickScoreTimer and returns. 
-; Otherwise dispatches on wD687 animation state flags: 
-; bit 0 set → fly is moving in (decrement wD688 toward $88; 
-; on reaching $88, sets wD689 to $05 if Media Dimension else $FF as hold timer; 
-; on wD689 expiry, dispatches on bit 7 of wD687: 
+; Otherwise dispatches on wD687_FlyAnimationState animation state flags: 
+; bit 0 set → fly is moving in (decrement wD688_FlyAnimationPosition toward $88; 
+; on reaching $88, sets wD689_FlyAnimationTimer to $05 if Media Dimension else $FF as hold timer; 
+; on wD689_FlyAnimationTimer expiry, dispatches on bit 7 of wD687_FlyAnimationState: 
 ; if clear and level=0 → sets state $42 (loop); 
 ; if clear and level≠0 → sets state $81 (exit); 
 ; if set and health < 2 → sets state $81; 
 ; else → sets state $82). 
-; Bit 1 set and bit 0 clear → fly moving out (increment wD688 toward $A0 and return)
+; Bit 1 set and bit 0 clear → fly moving out (increment wD688_FlyAnimationPosition toward $A0 and return)
     ld   A, [wD623_CollectibleMode]                                    ;; 00:05c7 $fa $23 $d6
     and  A, A                                          ;; 00:05ca $a7
     jr   NZ, call_00_0598_FlyPowerup_TickScoreTimer                                ;; 00:05cb $20 $cb
-    ld   A, [wD687]                                    ;; 00:05cd $fa $87 $d6
+    ld   A, [wD687_FlyAnimationState]                                    ;; 00:05cd $fa $87 $d6
     and  A, $01                                        ;; 00:05d0 $e6 $01
     jr   NZ, .jr_00_05e3                               ;; 00:05d2 $20 $0f
-    ld   A, [wD687]                                    ;; 00:05d4 $fa $87 $d6
+    ld   A, [wD687_FlyAnimationState]                                    ;; 00:05d4 $fa $87 $d6
     and  A, $02                                        ;; 00:05d7 $e6 $02
     ret  Z                                             ;; 00:05d9 $c8
-    ld   HL, wD688                                     ;; 00:05da $21 $88 $d6
+    ld   HL, wD688_FlyAnimationPosition                                     ;; 00:05da $21 $88 $d6
     ld   A, [HL]                                       ;; 00:05dd $7e
     cp   A, $a0                                        ;; 00:05de $fe $a0
     ret  Z                                             ;; 00:05e0 $c8
     inc  [HL]                                          ;; 00:05e1 $34
     ret                                                ;; 00:05e2 $c9
 .jr_00_05e3:
-    ld   HL, wD688                                     ;; 00:05e3 $21 $88 $d6
+    ld   HL, wD688_FlyAnimationPosition                                     ;; 00:05e3 $21 $88 $d6
     ld   A, [HL]                                       ;; 00:05e6 $7e
     cp   A, $88                                        ;; 00:05e7 $fe $88
     jr   Z, .jr_00_05fe                                ;; 00:05e9 $28 $13
@@ -563,65 +564,67 @@ call_00_05c7_FlyPowerup_Update:
     jr   NZ, .jr_00_05fa                               ;; 00:05f6 $20 $02
     ld   A, $05                                        ;; 00:05f8 $3e $05
 .jr_00_05fa:
-    ld   [wD689], A                                    ;; 00:05fa $ea $89 $d6
+    ld   [wD689_FlyAnimationTimer], A                                    ;; 00:05fa $ea $89 $d6
     ret                                                ;; 00:05fd $c9
 .jr_00_05fe:
-    ld   HL, wD689                                     ;; 00:05fe $21 $89 $d6
+    ld   HL, wD689_FlyAnimationTimer                                     ;; 00:05fe $21 $89 $d6
     dec  [HL]                                          ;; 00:0601 $35
     ret  NZ                                            ;; 00:0602 $c0
-    ld   A, [wD687]                                    ;; 00:0603 $fa $87 $d6
+    ld   A, [wD687_FlyAnimationState]                                    ;; 00:0603 $fa $87 $d6
     and  A, $80                                        ;; 00:0606 $e6 $80
     jr   NZ, .jr_00_061c                               ;; 00:0608 $20 $12
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:060a $fa $24 $d6
     and  A, A                                          ;; 00:060d $a7
     jr   NZ, .jr_00_0616                               ;; 00:060e $20 $06
     ld   A, $42                                        ;; 00:0610 $3e $42
-    ld   [wD687], A                                    ;; 00:0612 $ea $87 $d6
+    ld   [wD687_FlyAnimationState], A                                    ;; 00:0612 $ea $87 $d6
     ret                                                ;; 00:0615 $c9
 .jr_00_0616:
     ld   A, $81                                        ;; 00:0616 $3e $81
-    ld   [wD687], A                                    ;; 00:0618 $ea $87 $d6
+    ld   [wD687_FlyAnimationState], A                                    ;; 00:0618 $ea $87 $d6
     ret                                                ;; 00:061b $c9
 .jr_00_061c:
     ld   A, [wD741_Player_Health]                                    ;; 00:061c $fa $41 $d7
     cp   A, $02                                        ;; 00:061f $fe $02
     jr   C, .jr_00_0616                                ;; 00:0621 $38 $f3
     ld   A, $82                                        ;; 00:0623 $3e $82
-    ld   [wD687], A                                    ;; 00:0625 $ea $87 $d6
+    ld   [wD687_FlyAnimationState], A                                    ;; 00:0625 $ea $87 $d6
     ret                                                ;; 00:0628 $c9
 
 call_00_0629_FlyPowerup_StartExit:
-; Sets wD687 = $81 (exit animation state, bit 7 + bit 0) and wD689 = $FF (hold timer). 
+; Sets wD687_FlyAnimationState = $81 (exit animation state, bit 7 + bit 0) and wD689_FlyAnimationTimer = $FF (hold timer). 
 ; Begins the fly sprite moving off-screen
     ld   A, $81                                        ;; 00:0629 $3e $81
-    ld   [wD687], A                                    ;; 00:062b $ea $87 $d6
+    ld   [wD687_FlyAnimationState], A                                    ;; 00:062b $ea $87 $d6
     ld   A, $ff                                        ;; 00:062e $3e $ff
-    ld   [wD689], A                                    ;; 00:0630 $ea $89 $d6
+    ld   [wD689_FlyAnimationTimer], A                                    ;; 00:0630 $ea $89 $d6
     ret                                                ;; 00:0633 $c9
 
 call_00_0634_FlyPowerup_StartEntry:
-; Sets wD687 = $41 (entry animation state, bit 6 + bit 0). Sets wD689 = $05 if 
+; Sets wD687_FlyAnimationState = $41 (entry animation state, bit 6 + bit 0). Sets wD689_FlyAnimationTimer = $05 if 
 ; Media Dimension (level 0), else $FF. Begins the fly sprite moving on-screen
     ld   A, $41                                        ;; 00:0634 $3e $41
-    ld   [wD687], A                                    ;; 00:0636 $ea $87 $d6
+    ld   [wD687_FlyAnimationState], A                                    ;; 00:0636 $ea $87 $d6
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:0639 $fa $24 $d6
     and  A, A                                          ;; 00:063c $a7
     ld   A, $ff                                        ;; 00:063d $3e $ff
     jr   NZ, .jr_00_0643                               ;; 00:063f $20 $02
     ld   A, $05                                        ;; 00:0641 $3e $05
 .jr_00_0643:
-    ld   [wD689], A                                    ;; 00:0643 $ea $89 $d6
+    ld   [wD689_FlyAnimationTimer], A                                    ;; 00:0643 $ea $89 $d6
     ret                                                ;; 00:0646 $c9
 
-call_00_0647_Player_EatFlyPowerup:
+call_00_0647_Player_SetUpOrEatFlyPowerup:
 ; Eats a new fly power-up, swapping it with the currently held one. 
 ; Stores the new power-up ID (A) into wD742_Player_CurrentFly, saves the old value in C. 
 ; Farcalls FlyPowerup_LoadParticlePalette to update the particle effect palette for the new power-up. 
 ; Then dispatches on the old power-up ID (C): 
 ; if $03 → Player_ResetHealth (the health fly was active, restore health on swap-out); 
-; if $04 → call_00_068a_Player_ExtraLifeFly (unknown, fourth fly type cleanup); 
-; if $01 → stores zero to wD755/wD756 and loads $0708 into wD753/wD754 (deactivates one timer pair, arms the other); 
-; if $02 → stores zero to wD753/wD754 and loads $0708 into wD755/wD756 (mirror of the $01 case). 
+; if $04 → Player_ExtraLifeFly (extra life); 
+; if $01 → stores zero to wD755_FlyPowerup2_Timer1/wD756_FlyPowerup2_Timer2 and loads $0708 
+;   into wD753_FlyPowerup1_Timer1/wD754_FlyPowerup1_Timer2 (deactivates one timer pair, arms the other); 
+; if $02 → stores zero to wD753_FlyPowerup1_Timer1/wD754_FlyPowerup1_Timer2 and loads $0708 
+;   into wD755_FlyPowerup2_Timer1/wD756_FlyPowerup2_Timer2 (mirror of the $01 case). 
 ; Returns without action if old power-up was $00 or any other value
     ld   hl,wD742_Player_CurrentFly
     ld   c,[hl]
@@ -639,19 +642,19 @@ call_00_0647_Player_EatFlyPowerup:
     cp   a,$02
     ret  nz
     xor  a
-    ld   [wD753],a
-    ld   [wD754],a
+    ld   [wD753_FlyPowerup1_Timer1],a
+    ld   [wD754_FlyPowerup1_Timer2],a
     ld   de,$0708
-    ld   hl,wD755
+    ld   hl,wD755_FlyPowerup2_Timer1
     ld   [hl],e
     inc  hl
     ld   [hl],d
     ret  
 .jr_00_067a:
-    ld   [wD755],a
-    ld   [wD756],a
+    ld   [wD755_FlyPowerup2_Timer1],a
+    ld   [wD756_FlyPowerup2_Timer2],a
     ld   de,$0708
-    ld   hl,wD753
+    ld   hl,wD753_FlyPowerup1_Timer1
     ld   [hl],e
     inc  hl
     ld   [hl],d
@@ -798,17 +801,18 @@ call_00_074d_HUD_MarkDirty:
     ret                                                ;; 00:075a $c9
 
 call_00_075b_Player_CanBeDamaged:
-; Returns NZ (cannot be damaged) if wD750 is nonzero (invincibility timer active), or if wD755/wD756 
-; (fly type $01 shield timer) are nonzero, or if wD753/wD754 (fly type $02 shield timer) are nonzero. 
-; Returns Z (can be damaged) only if all three are clear
-    ld   A, [wD750]                                    ;; 00:075b $fa $50 $d7
+; Returns NZ (cannot be damaged) if wD750_PlayerDamageCooldownTimer is nonzero (invincibility 
+; timer active), or if wD755_FlyPowerup2_Timer1/wD756_FlyPowerup2_Timer2 (fly type $01 shield 
+; timer) are nonzero, or if wD753_FlyPowerup1_Timer1/wD754_FlyPowerup1_Timer2 (fly type $02 
+; shield timer) are nonzero. Returns Z (can be damaged) only if all three are clear
+    ld   A, [wD750_PlayerDamageCooldownTimer]                                    ;; 00:075b $fa $50 $d7
     and  A, A                                          ;; 00:075e $a7
     ret  NZ                                            ;; 00:075f $c0
-    ld   HL, wD755                                     ;; 00:0760 $21 $55 $d7
+    ld   HL, wD755_FlyPowerup2_Timer1                                     ;; 00:0760 $21 $55 $d7
     ld   A, [HL+]                                      ;; 00:0763 $2a
     or   A, [HL]                                       ;; 00:0764 $b6
     ret  NZ                                            ;; 00:0765 $c0
-    ld   HL, wD753                                     ;; 00:0766 $21 $53 $d7
+    ld   HL, wD753_FlyPowerup1_Timer1                                     ;; 00:0766 $21 $53 $d7
     ld   A, [HL+]                                      ;; 00:0769 $2a
     or   A, [HL]                                       ;; 00:076a $b6
     ret  NZ                                            ;; 00:076b $c0
@@ -1829,7 +1833,7 @@ call_00_0f01:
     ld   [wDAD9], A                                    ;; 00:0f1c $ea $d9 $da
     ld   [wD71E], A                                    ;; 00:0f1f $ea $1e $d7
     ld   A, $ff                                        ;; 00:0f22 $3e $ff
-    ld   [wD789], A                                    ;; 00:0f24 $ea $89 $d7
+    ld   [wD789_QueuedSFX], A                                    ;; 00:0f24 $ea $89 $d7
     ld   A, [wD5A0]                                    ;; 00:0f27 $fa $a0 $d5
     and  A, $7f                                        ;; 00:0f2a $e6 $7f
     ld   [wD5A0], A                                    ;; 00:0f2c $ea $a0 $d5
@@ -2187,7 +2191,7 @@ call_00_1129_CheckInputB:
     ret                                                ;; 00:112e $c9
 
 call_00_112f_QueueSFX:
-    ld   HL, wD789                                     ;; 00:112f $21 $89 $d7
+    ld   HL, wD789_QueuedSFX                                     ;; 00:112f $21 $89 $d7
     ld   A, [HL]                                       ;; 00:1132 $7e
     cp   A, SFX_NONE                                        ;; 00:1133 $fe $ff
     ret  NZ                                            ;; 00:1135 $c0
@@ -2195,7 +2199,7 @@ call_00_112f_QueueSFX:
     ret                                                ;; 00:1137 $c9
 
 call_00_1138_NoSFXIsQueued:
-    ld   A, [wD789]                                    ;; 00:1138 $fa $89 $d7
+    ld   A, [wD789_QueuedSFX]                                    ;; 00:1138 $fa $89 $d7
     cp   A, SFX_NONE                                        ;; 00:113b $fe $ff
     ret  Z                                             ;; 00:113d $c8
 
@@ -2227,7 +2231,7 @@ call_00_113e:
     dec  B                                             ;; 00:1161 $05
     jr   NZ, .jr_00_1153                               ;; 00:1162 $20 $ef
     ld   A, $ff                                        ;; 00:1164 $3e $ff
-    ld   [wD789], A                                    ;; 00:1166 $ea $89 $d7
+    ld   [wD789_QueuedSFX], A                                    ;; 00:1166 $ea $89 $d7
     jp   call_00_10a3_RestoreBank                                  ;; 00:1169 $c3 $a3 $10
 .data_00_116c:
     db   $01, $00, $01, $01, $01, $02, $01, $03        ;; 00:116c ....????
@@ -2262,7 +2266,7 @@ call_00_11e0_PlayMusicBasedOnLevel:
     db   MUSIC_SCREAM_TV ; MAP_SCREAM_TV_FRANKENSTEINFELD
     db   MUSIC_CIRCUIT_CENTRAL ; MAP_CIRCUIT_CENTRAL_WWWDOTCOMCOM
     db   MUSIC_KUNG_FU_THEATER ; MAP_KUNG_FU_THEATER_MAO_TSE_TONGUE
-    db   MUSIC_MEDIA_DIMENSION ; MAP_UNUSED_04
+    db   MUSIC_MEDIA_DIMENSION ; MAP_UNUSED_06
     db   MUSIC_PREHISTORY_CHANNEL ; MAP_PRE_HISTORY_CHANNEL_PANGAEA_90210
     db   MUSIC_TOON_TV ; MAP_TOON_TV_FINE_TOONING
     db   MUSIC_PREHISTORY_CHANNEL ; MAP_PRE_HISTORY_CHANNEL_THIS_OLD_CAVE

@@ -101,10 +101,10 @@ call_03_6941_HUD_LoadCollectibleSprites:
     INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_rezopolis.bin"
 
 call_03_6be5_HUD_LoadCollectiblePalette:
-; Loads the GBC palette for the collectible icon into wDA13 (8 bytes = 4 colors × 2 bytes). 
+; Loads the GBC palette for the collectible icon into wDA13_ObjectPalettes_Slot1 (8 bytes = 4 colors × 2 bytes). 
 ; Returns immediately if wD59E is zero (mono/non-GBC mode). Uses wD624 (level ID) to index 
 ; .data_03_6c1d_collectible_palettes for a world-specific palette pointer, then uses wD648 × 8 
-; as a sub-index to select the specific color entry within that palette block, copying 8 bytes to wDA13
+; as a sub-index to select the specific color entry within that palette block, copying 8 bytes to wDA13_ObjectPalettes_Slot1
     ld   A, [wD59E]                                    ;; 03:6be5 $fa $9e $d5
     and  A, A                                          ;; 03:6be8 $a7
     ret  Z                                             ;; 03:6be9 $c8
@@ -124,7 +124,7 @@ call_03_6be5_HUD_LoadCollectiblePalette:
     add  HL, HL                                        ;; 03:6bff $29
     add  HL, HL                                        ;; 03:6c00 $29
     add  HL, DE                                        ;; 03:6c01 $19
-    ld   DE, wDA13                                     ;; 03:6c02 $11 $13 $da
+    ld   DE, wDA13_ObjectPalettes_Slot1                                     ;; 03:6c02 $11 $13 $da
     ld   A, [HL+]                                      ;; 03:6c05 $2a
     ld   [DE], A                                       ;; 03:6c06 $12
     inc  DE                                            ;; 03:6c07 $13

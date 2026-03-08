@@ -251,9 +251,9 @@ call_03_5b5b_HUD_BuildSprites:
 ; Selects one of 5 different 3-byte data layouts depending on game state: level 0 uses .data_03_5beb, 
 ; other levels use .data_03_5bd3, demo mode uses a specific layout, and if a special condition 
 ; (wD623_CollectibleMode set, wD770/wD771 in range) uses .data_03_5c1b (a "low health" or special display variant). 
-; Writes 8 OAM entries as (palette, tile, bank) triplets to wCC80. If wD687 bit 7 is set, falls into 
+; Writes 8 OAM entries as (palette, tile, bank) triplets to wCC80. If wD687_FlyAnimationState bit 7 is set, falls into 
 ; .jp_03_5c33_HUD_BuildSprites_HealthBased (health-based tile select path)
-    ld   A, [wD688]                                    ;; 03:5b5b $fa $88 $d6
+    ld   A, [wD688_FlyAnimationPosition]                                    ;; 03:5b5b $fa $88 $d6
     ld   C, A                                          ;; 03:5b5e $4f
     ld   DE, .data_03_5beb                             ;; 03:5b5f $11 $eb $5b
     ld   A, [wD624_CurrentLevelId]                                    ;; 03:5b62 $fa $24 $d6
@@ -282,10 +282,10 @@ call_03_5b5b_HUD_BuildSprites:
     ld   DE, .data_03_5c1b                             ;; 03:5b93 $11 $1b $5c
     jr   .jr_03_5ba7                                   ;; 03:5b96 $18 $0f
 .jr_03_5b98:
-    ld   A, [wD687]                                    ;; 03:5b98 $fa $87 $d6
+    ld   A, [wD687_FlyAnimationState]                                    ;; 03:5b98 $fa $87 $d6
     and  A, $80                                        ;; 03:5b9b $e6 $80
     jp   NZ, .jp_03_5c33_HUD_BuildSprites_HealthBased                               ;; 03:5b9d $c2 $33 $5c
-    ld   A, [wD688]                                    ;; 03:5ba0 $fa $88 $d6
+    ld   A, [wD688_FlyAnimationPosition]                                    ;; 03:5ba0 $fa $88 $d6
     ld   C, A                                          ;; 03:5ba3 $4f
     ld   DE, .data_03_5bbb                             ;; 03:5ba4 $11 $bb $5b
 .jr_03_5ba7:
@@ -329,7 +329,7 @@ call_03_5b5b_HUD_BuildSprites:
 .jp_03_5c33_HUD_BuildSprites_HealthBased:
 ; Alternate HUD builder path: uses wD741 (player health) as an index into a lookup table 
 ; (health × 16 + $58) to select which tile pair to use, then writes 8 OAM entries with 
-; those tiles at fixed palette $CC using wD688
+; those tiles at fixed palette $CC using wD688_FlyAnimationPosition
     ld   A, [wD741_Player_Health]                                    ;; 03:5c33 $fa $41 $d7
     swap A                                             ;; 03:5c36 $cb $37
     add  A, $58                                        ;; 03:5c38 $c6 $58
@@ -337,7 +337,7 @@ call_03_5b5b_HUD_BuildSprites:
     ld   A, $00                                        ;; 03:5c3b $3e $00
     adc  A, $5c                                        ;; 03:5c3d $ce $5c
     ld   D, A                                          ;; 03:5c3f $57
-    ld   A, [wD688]                                    ;; 03:5c40 $fa $88 $d6
+    ld   A, [wD688_FlyAnimationPosition]                                    ;; 03:5c40 $fa $88 $d6
     ld   C, A                                          ;; 03:5c43 $4f
     ld   HL, wCC80                                     ;; 03:5c44 $21 $80 $cc
     ld   B, $08                                        ;; 03:5c47 $06 $08
@@ -371,7 +371,7 @@ call_03_5ca8_Player_BuildBodySprites:
 ; left (bit 5 of wD20D), +4 if climbing (bit 6 of wD74B). Uses this to index .data_03_5d6f 
 ; via call_00_07b9 to get the frame pointer. Computes player screen X/Y from world position 
 ; minus map scroll origin (wD6ED/wD6EF) plus offsets ($08/$10), stores into wD212/wD213. 
-; Checks action ID for $11 (special state), invincibility flags (wD755/wD753/wD751), 
+; Checks action ID for $11 (special state), invincibility flags (wD755_FlyPowerup2_Timer1/wD753_FlyPowerup1_Timer1/wD751), 
 ; and wD73B_FrameCounter bit 3 — if any special condition is active, substitutes .data_03_5e7f 
 ; (invincible/stunned sprite). Writes up to 8 OAM entries into wCC00, each as (Y+B, X+C, tile+wD73A, attr
     ld   A, [wD586_GexSpriteStateFlags]                                    ;; 03:5ca8 $fa $86 $d5
@@ -405,15 +405,15 @@ call_03_5ca8_Player_BuildBodySprites:
     and  A, PLAYER_ACTION_MASK                                        ;; 03:5ce2 $e6 $1f
     cp   A, PLAYER_ACTION_DEATH_SET_UP_WARP                                        ;; 03:5ce4 $fe $11
     jr   Z, .jr_03_5d11                                ;; 03:5ce6 $28 $29
-    ld   A, [wD750]                                    ;; 03:5ce8 $fa $50 $d7
+    ld   A, [wD750_PlayerDamageCooldownTimer]                                    ;; 03:5ce8 $fa $50 $d7
     and  A, $08                                        ;; 03:5ceb $e6 $08
     jr   NZ, .jr_03_5d0b                               ;; 03:5ced $20 $1c
     ld   A, [wD59E]                                    ;; 03:5cef $fa $9e $d5
     and  A, A                                          ;; 03:5cf2 $a7
     jr   NZ, .jr_03_5d11                               ;; 03:5cf3 $20 $1c
     push HL                                            ;; 03:5cf5 $e5
-    ld   A, [wD755]                                    ;; 03:5cf6 $fa $55 $d7
-    ld   HL, wD753                                     ;; 03:5cf9 $21 $53 $d7
+    ld   A, [wD755_FlyPowerup2_Timer1]                                    ;; 03:5cf6 $fa $55 $d7
+    ld   HL, wD753_FlyPowerup1_Timer1                                     ;; 03:5cf9 $21 $53 $d7
     or   A, [HL]                                       ;; 03:5cfc $b6
     ld   HL, wD751                                     ;; 03:5cfd $21 $51 $d7
     or   A, [HL]                                       ;; 03:5d00 $b6

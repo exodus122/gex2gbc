@@ -388,16 +388,16 @@ wD629_RemoteProgressFlags:
 ; D62C : frankensteinfeld obtained remotes bitfield (1F = all)
 ; D62D : www.dotcom.com obtained remotes bitfield (1B = all)
 ; D62E : moa tse tongue obtained remotes bitfield (1B = all)
-; D62F : ? obtained remotes bitfield (unused byte, deleted world?)
+; D62F : unused
 ; D630 : pangaea 90210 obtained remotes bitfield (1B = all)
 ; D631 : fine tooning obtained remotes bitfield (1B = all)
 ; D632 : this old cave obtained remotes bitfield (1F = all)
 ; D633 : honey I shrunk the gecko obtained remotes bitfield (1F = all)
 ; D634 : poltergex obtained remotes bitfield (1F = all)
-; D635 : ? obtained remotes bitfield (unused byte, deleted world?)
+; D635 : unused
 ; D636 : samurai night fever obtained remotes bitfield (1F = all)
 ; D637 : no weddings and a funeral obtained remotes bitfield (19 = all)
-; D638 : ? obtained remotes bitfield (unused byte, deleted world?)
+; D638 : unused
 ; D639 : thursday the 12th obtained remotes bitfield (20 = all)
 
 ; D63E : lizard in a china shop obtained remotes bitfield (20 = all)
@@ -469,20 +469,17 @@ wD668_PasswordValues: ; password on call screen and in game
     ds 28                                              ;; d668
 wD684_PasswordGoButton: ; Password go button (value 4a)
     ds 1                                               ;; d684
-
-wD685:
+wD685_PasswordUnkButton:
     ds 1                                               ;; d685
 
-wD686:
+wD686: ; unused except set to 0?
     ds 1                                               ;; d686
 
-wD687:
+wD687_FlyAnimationState:
     ds 1                                               ;; d687
-
-wD688:
+wD688_FlyAnimationPosition:
     ds 1                                               ;; d688
-
-wD689:
+wD689_FlyAnimationTimer:
     ds 1                                               ;; d689
 
 ; start data related to current menu (8 bytes from data_01_5574 for a particular menu type)
@@ -864,7 +861,7 @@ wD74E_Player_PlatformRelated:
 wD74F_Player_PlatformRelated2:
     ds 1                                               ;; d74f
 
-wD750:
+wD750_PlayerDamageCooldownTimer:
     ds 1                                               ;; d750
 
 wD751:
@@ -873,22 +870,19 @@ wD751:
 wD752:
     ds 1                                               ;; d752
 
-wD753:
+wD753_FlyPowerup1_Timer1:
     ds 1                                               ;; d753
-
-wD754:
+wD754_FlyPowerup1_Timer2:
     ds 1                                               ;; d754
-
-wD755:
+wD755_FlyPowerup2_Timer1:
     ds 1                                               ;; d755
-
-wD756:
+wD756_FlyPowerup2_Timer2:
     ds 1                                               ;; d756
 
 wD757_LanternLitFlag:
     ds 1                                               ;; d757
 
-wD758:
+wD758_Player_LaunchVelocityMaybe:
     ds 1                                               ;; d758
 
 wD759_ButtonBlockingFlags:
@@ -1037,7 +1031,7 @@ wD787_OverrideStepTimerReload:
 
 wD788_CurrentAudioBank:
     ds 1                                               ;; d788
-wD789: ; audio related
+wD789_QueuedSFX: ; audio related
     ds 1                                               ;; d789
 wD78A_MusicId: ; multiplied by 4 and used as index into .data_00_1244_MusicList
     ds 1                                               ;; d78a
@@ -1089,31 +1083,25 @@ wD9C9:
 wD9CA:
     ds 1                                               ;; d9ca
 
+; Palettes
 wD9CB_Bg_Palettes:
     ds 48                                              ;; d9cb
-
-wD9FB:
+wD9FB_BgPalettes_Slot6:
     ds 16                                              ;; d9fb
-
 wDA0B_Obj_Palettes:
     ds 8                                               ;; da0b
-
-wDA13:
+wDA13_ObjectPalettes_Slot1:
     ds 8                                               ;; da13
-
-wDA1B:
+wDA1B_ObjectPalettes_Slot2:
     ds 32                                              ;; da1b
-
-wDA3B:
+wDA3B_ObjectPalettes_Slot6:
     ds 16                                              ;; da1b
-
-wDA4B:
+wDA4B_DynamicPalette:
     ds 48                                              ;; da4b
-
-wDA7B:
+wDA7B_MediaDimensionTVPalette:
     ds 48                                              ;; da7b
 
-wDAAB:
+wDAAB_MenuBgMapTileIds:
     ds 32                                              ;; daab
 
 wDACB:

@@ -58,10 +58,10 @@ call_0b_5537_BgPalette_LoadMonoOrGetSpriteParams:
 call_0b_561b_GBC_LoadLevelBgPalette:
 ; GBC background palette loader. If C=0 (main gameplay): uses wD624 (level ID) to index 
 ; .data_0b_5665_LevelBgPalettePointerTable (64 bytes = 8 palettes × 4 colors × 2 bytes each), copies 
-; to wD9CB (BG palette buffer). Calls call_0b_5df8_MediaDimension_LoadActiveTVPalette (Media Dimension TV palette overlay), 
-; then copies .data_gex_entity_palette2 (8 bytes) to wDA0B (OBJ palette 0), then calls 
-; HUD_LoadCollectiblePalette. If C≠0 (menu/cutscene): uses C as index into .data_0b_56a3_MenuPalettePointerTable 
-; (menu palette pointer table), copies 128 bytes to wD9CB
+; to wD9CB (BG palette buffer). Calls call_0b_5df8_MediaDimension_LoadActiveTVPalette (Media 
+; Dimension TV palette overlay), then copies .data_gex_entity_palette2 (8 bytes) to wDA0B (OBJ 
+; palette 0), then calls HUD_LoadCollectiblePalette. If C≠0 (menu/cutscene): uses C as index 
+; into .data_0b_56a3_MenuPalettePointerTable (menu palette pointer table), copies 128 bytes to wD9CB
     inc  C                                             ;; 0b:561b $0c
     dec  C                                             ;; 0b:561c $0d
     jr   NZ, .jr_0b_5651                               ;; 0b:561d $20 $32
@@ -134,8 +134,9 @@ call_0b_561b_GBC_LoadLevelBgPalette:
 .data_0b_56a3_MenuPalettePointerTable:
 ; 16-entry pointer table for menu/cutscene palettes indexed by C register. Covers: null, 
 ; title screen (start/password), title screen (big Gex splash), password entry, unknown, 
-; "Great Job" credits, "Entering <level>" + pause screens, wDA4B (dynamic), first title splash 
-; (Enter the Gecko), CRAVE Entertainment splash, David A. Palmer splash, and 4 credits screen entries
+; "Great Job" credits, "Entering <level>" + pause screens, wDA4B_DynamicPalette (dynamic), 
+; first title splash (Enter the Gecko), CRAVE Entertainment splash, David A. Palmer splash, 
+; and 4 credits screen entries
     dw   $0000
     dw   .image_title_screen_008_1_palette
     dw   .image_title_screen_008_0_palette
@@ -143,7 +144,7 @@ call_0b_561b_GBC_LoadLevelBgPalette:
     dw   .data_57c3_Palette
     dw   .image_great_job_00c_2_palette
     dw   .data_5a83_Palette
-    dw   wDA4B
+    dw   wDA4B_DynamicPalette
     dw   .image_splash_01f_1_palette
     dw   .image_crave_01f_0_palette
     dw   .image_david_01e_0_palette
@@ -288,14 +289,15 @@ call_0b_5d4b_MediaDimension_LoadTVPalette:
 ; Loads the palette for the TV screen prop in Media Dimension. Returns immediately if DMG mode. 
 ; Calls call_00_2e3a (gets TV palette ID from current map tile), indexes .data_0b_5d62 to get a 
 ; pointer to the 16-byte television palette for the appropriate world (Scream TV, Toon TV, 
-; Prehistory Channel, Circuit Central, Kung Fu Theater, Channel Z, Rezopolis, or Bonus TV), copies to wDA7B
+; Prehistory Channel, Circuit Central, Kung Fu Theater, Channel Z, Rezopolis, or Bonus TV), copies 
+; to wDA7B_MediaDimensionTVPalette
     ld   A, [wD59E]                                    ;; 0b:5d4b $fa $9e $d5
     and  A, A                                          ;; 0b:5d4e $a7
     ret  Z                                             ;; 0b:5d4f $c8
     call call_00_2e3a_MapData_GetTVPaletteId                                  ;; 0b:5d50 $cd $3a $2e
     ld   DE, .data_0b_5d62                             ;; 0b:5d53 $11 $62 $5d
     call call_00_07b9                                  ;; 0b:5d56 $cd $b9 $07
-    ld   DE, wDA7B                                     ;; 0b:5d59 $11 $7b $da
+    ld   DE, wDA7B_MediaDimensionTVPalette                                     ;; 0b:5d59 $11 $7b $da
     ld   BC, $10                                       ;; 0b:5d5c $01 $10 $00
     jp   call_00_07b0_MemCopy                                  ;; 0b:5d5f $c3 $b0 $07
 .data_0b_5d62:
@@ -328,10 +330,10 @@ call_0b_5d4b_MediaDimension_LoadTVPalette:
     INCBIN "gfx/secondary_tilesets/media_dimension/palettes/bonus_tv_television_palette.bin"
 
 call_0b_5df8_MediaDimension_LoadActiveTVPalette:
-; Loads the active world's TV palette into BG palette slot at wD9FB. Returns if DMG or if level 
+; Loads the active world's TV palette into BG palette slot at wD9FB_BgPalettes_Slot6. Returns if DMG or if level 
 ; ID is nonzero (not Media Dimension). Uses wD72D (secondary tileset index = current TV channel) 
 ; to index .media_dimension_tv_palettes — same world palette set as above but with null entries 
-; for some slots — copies 16 bytes to wD9FB. Zero pointer = return early (no TV active)
+; for some slots — copies 16 bytes to wD9FB_BgPalettes_Slot6. Zero pointer = return early (no TV active)
     ld   A, [wD59E]                                    ;; 0b:5df8 $fa $9e $d5
     and  A, A                                          ;; 0b:5dfb $a7
     ret  Z                                             ;; 0b:5dfc $c8
@@ -349,7 +351,7 @@ call_0b_5df8_MediaDimension_LoadActiveTVPalette:
     ld   L, A                                          ;; 0b:5e0f $6f
     or   A, H                                          ;; 0b:5e10 $b4
     ret  Z                                             ;; 0b:5e11 $c8
-    ld   DE, wD9FB                                     ;; 0b:5e12 $11 $fb $d9
+    ld   DE, wD9FB_BgPalettes_Slot6                                     ;; 0b:5e12 $11 $fb $d9
     ld   BC, $10                                       ;; 0b:5e15 $01 $10 $00
     jp   call_00_07b0_MemCopy                                  ;; 0b:5e18 $c3 $b0 $07
 .media_dimension_tv_palettes:
@@ -384,9 +386,9 @@ call_0b_5df8_MediaDimension_LoadActiveTVPalette:
 call_0b_5ec3_Player_UpdateGBCPalette:
 ; Updates Gex's OBJ palette based on current invincibility/power-up state. Returns if DMG. 
 ; Reads wD73B_FrameCounter low 5 bits; if ≥ 8 (not ?), checks invincibility timers wD751/wD752 →
-; uses .data_0b_5efb (gold flash palette), then wD755/wD756 → uses .data_0b_5f03 (blue/white palette), 
-; then wD753/wD754 → same blue/white palette. Otherwise falls through to .data_gex_entity_palette 
-; (normal Gex palette). Copies 8 bytes to wDA0B
+; uses .data_0b_5efb (gold flash palette), then wD755_FlyPowerup2_Timer1/wD756 → uses .data_0b_5f03 
+; (blue/white palette), then wD753_FlyPowerup1_Timer1/wD754_FlyPowerup1_Timer2 → same blue/white palette. 
+; Otherwise falls through to .data_gex_entity_palette (normal Gex palette). Copies 8 bytes to wDA0B
     ld   A, [wD59E]                                    ;; 0b:5ec3 $fa $9e $d5
     and  A, A                                          ;; 0b:5ec6 $a7
     ret  Z                                             ;; 0b:5ec7 $c8
@@ -399,12 +401,12 @@ call_0b_5ec3_Player_UpdateGBCPalette:
     or   A, [HL]                                       ;; 0b:5ed5 $b6
     ld   HL, .data_0b_5efb                             ;; 0b:5ed6 $21 $fb $5e
     jr   NZ, .jr_0b_5ef2                               ;; 0b:5ed9 $20 $17
-    ld   HL, wD755                                     ;; 0b:5edb $21 $55 $d7
+    ld   HL, wD755_FlyPowerup2_Timer1                                     ;; 0b:5edb $21 $55 $d7
     ld   A, [HL+]                                      ;; 0b:5ede $2a
     or   A, [HL]                                       ;; 0b:5edf $b6
     ld   HL, .data_0b_5f03                             ;; 0b:5ee0 $21 $03 $5f
     jr   NZ, .jr_0b_5ef2                               ;; 0b:5ee3 $20 $0d
-    ld   HL, wD753                                     ;; 0b:5ee5 $21 $53 $d7
+    ld   HL, wD753_FlyPowerup1_Timer1                                     ;; 0b:5ee5 $21 $53 $d7
     ld   A, [HL+]                                      ;; 0b:5ee8 $2a
     or   A, [HL]                                       ;; 0b:5ee9 $b6
     ld   HL, .data_0b_5f03                             ;; 0b:5eea $21 $03 $5f
@@ -425,8 +427,8 @@ call_0b_5ec3_Player_UpdateGBCPalette:
     
 call_0b_5f1b_FlyPowerup_LoadParticlePalette:
 ; Loads the fly power-up particle's GBC palette. Returns if DMG. Uses wD742 (fly power-up type, 1-based) 
-; × 8 to index .data_0b_5f37 (4 entries × 8 bytes), copies to wDA1B (OBJ palette 2). The 4 fly types 
-; have different particle colors: green/teal, white/gray, blue, and transparent/white
+; × 8 to index .data_0b_5f37_FlyPalettes (4 entries × 8 bytes), copies to wDA1B_ObjectPalettes_Slot2 
+; (OBJ palette 2). The 4 fly types have different particle colors: green/teal, white/gray, blue, and transparent/white
     ld   A, [wD59E]                                    ;; 0b:5f1b $fa $9e $d5
     and  A, A                                          ;; 0b:5f1e $a7
     ret  Z                                             ;; 0b:5f1f $c8
@@ -437,12 +439,12 @@ call_0b_5f1b_FlyPowerup_LoadParticlePalette:
     add  HL, HL                                        ;; 0b:5f27 $29
     add  HL, HL                                        ;; 0b:5f28 $29
     add  HL, HL                                        ;; 0b:5f29 $29
-    ld   DE, .data_0b_5f37                             ;; 0b:5f2a $11 $37 $5f
+    ld   DE, .data_0b_5f37_FlyPalettes                             ;; 0b:5f2a $11 $37 $5f
     add  HL, DE                                        ;; 0b:5f2d $19
-    ld   DE, wDA1B                                     ;; 0b:5f2e $11 $1b $da
+    ld   DE, wDA1B_ObjectPalettes_Slot2                                     ;; 0b:5f2e $11 $1b $da
     ld   BC, $08                                       ;; 0b:5f31 $01 $08 $00
     jp   call_00_07b0_MemCopy                                  ;; 0b:5f34 $c3 $b0 $07
-.data_0b_5f37:
+.data_0b_5f37_FlyPalettes:
     db   $00, $00, $00, $00, $94, $52, $9c, $73        ;; 0b:5f37 ????????
     db   $00, $00, $00, $00, $14, $00, $1c, $00        ;; 0b:5f3f ????????
     db   $00, $00, $00, $00, $00, $50, $00, $70        ;; 0b:5f47 ????????

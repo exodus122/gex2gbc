@@ -238,56 +238,56 @@ call_00_208c_Checkpoint_WriteSpawnId:
     db   $ff
 
 data_00_20d3_SpecialTileScript_FlyTV2_1:
-    dw   call_00_20fa_EatFly_Type2
+    dw   call_00_20fa_HitFlyTV_Type2
     db   $01, $00, $00, $00, $01, $01
     db   $2a, $02, $fa, $01
 data_00_20df_SpecialTileScript_FlyTV2_2:
-    dw   call_00_20fa_EatFly_Type2
+    dw   call_00_20fa_HitFlyTV_Type2
     db   $01, $00, $00, $00, $01, $01
     db   $2a, $02, $ea, $01
 data_00_20eb_SpecialTileScript_FlyTV2_3:
-    dw   call_00_20fa_EatFly_Type2
+    dw   call_00_20fa_HitFlyTV_Type2
     db   $02, $28, $00, $00, $01, $01
     db   $28, $02, $fa, $01, $08, $9f, $01
-call_00_20fa_EatFly_Type2:
+call_00_20fa_HitFlyTV_Type2:
     ld   a,$02
-    jp   call_00_0647_Player_EatFlyPowerup
+    jp   call_00_0647_Player_SetUpOrEatFlyPowerup
 
 data_00_20ff_SpecialTileScript_FlyTV_Health1:
-    dw   call_00_2117_EatFly_RestoreHealth
+    dw   call_00_2117_HitFlyTV_RestoreHealth
     db   $01, $00, $00, $00, $01, $01
     db   $2a, $02, $fa, $01
 data_00_210b_SpecialTileScript_FlyTV_Health2:
-    dw   call_00_2117_EatFly_RestoreHealth
+    dw   call_00_2117_HitFlyTV_RestoreHealth
     db   $01, $00, $00, $00, $01, $01
     db   $2a, $02, $ea, $01
-call_00_2117_EatFly_RestoreHealth:
+call_00_2117_HitFlyTV_RestoreHealth:
     ld   a,$03
-    jp   call_00_0647_Player_EatFlyPowerup
+    jp   call_00_0647_Player_SetUpOrEatFlyPowerup
 
 data_00_211c_SpecialTileScript_FlyTV1_1:
-    dw   call_00_2134_EatFly_Type1
+    dw   call_00_2134_HitFlyTV_Type1
     db   $01, $00, $00, $00, $01, $01
     db   $2a, $02, $fa, $01
 data_00_2128_SpecialTileScript_FlyTV1_2:
-    dw   call_00_2134_EatFly_Type1
+    dw   call_00_2134_HitFlyTV_Type1
     db   $01, $00, $00, $00, $01, $01
     db   $2a, $02, $ea, $01
-call_00_2134_EatFly_Type1:
+call_00_2134_HitFlyTV_Type1:
     ld   a,$01
-    jp   call_00_0647_Player_EatFlyPowerup
+    jp   call_00_0647_Player_SetUpOrEatFlyPowerup
 
 data_00_2139_SpecialTileScript_FlyTV_Life1:
-    dw   call_00_2151_EatFly_ExtraLife
+    dw   call_00_2151_HitFlyTV_ExtraLife
     db   $01, $00, $00, $00, $01, $01
     db   $2a, $02, $fa, $01
 data_00_2145_SpecialTileScript_FlyTV_Life2:
-    dw   call_00_2151_EatFly_ExtraLife
+    dw   call_00_2151_HitFlyTV_ExtraLife
     db   $01, $00, $00, $00, $01, $01
     db   $2a, $02, $ea, $01
-call_00_2151_EatFly_ExtraLife:
+call_00_2151_HitFlyTV_ExtraLife:
     ld   a,$04
-    jp   call_00_0647_Player_EatFlyPowerup
+    jp   call_00_0647_Player_SetUpOrEatFlyPowerup
 
 data_00_2156:
     dw   call_00_2186
@@ -442,10 +442,11 @@ data_00_22c9_SpecialTileScript_Cannon_FaceRight:
 ; Right-rotating cannon. Step count=3, timer=$06, offset=(0,0), 2×1. 
 ; Tiles: $B9/$BA → $BB/$BC → $BD/$BE ($28 timer, $2C stride).
     dw   call_00_22e1_Cannon_FaceRight
-    db   $03, $06, $00, $00, $02, $01, $28, $2c, $b9, $01, $ba
+    db   $03, $06, $00, $00, $02, $01
+    db   $28, $2c, $b9, $01, $ba
     db   $01, $08, $bb, $01, $bc, $01, $08, $bd, $01, $be, $01
 call_00_22e1_Cannon_FaceRight:
-; Writes $20 to wD615_Cannon_FacingDirection. Sets rotating cannon to open-right state
+; Writes $20 to wD615_Cannon_FacingDirection. Sets rotating cannon to right state
     ld   a,$20
     ld   [wD615_Cannon_FacingDirection],a
     ret  
@@ -453,10 +454,11 @@ call_00_22e1_Cannon_FaceRight:
 data_00_22e7_SpecialTileScript_Cannon_FaceLeft:
 ; Left-rotating cannon. Reverse tile sequence: $BB/$BC → $B9/$BA → $B7/$B8.
     dw   call_00_22ff_Cannon_FaceLeft
-    db   $03, $06, $00, $00, $02, $01, $28, $2c, $bb, $01, $bc
+    db   $03, $06, $00, $00, $02, $01
+    db   $28, $2c, $bb, $01, $bc
     db   $01, $08, $b9, $01, $ba, $01, $08, $b7, $01, $b8, $01
 call_00_22ff_Cannon_FaceLeft:
-; Writes $00 to wD615_Cannon_FacingDirection. Sets rotating cannon to open-left/closed state
+; Writes $00 to wD615_Cannon_FacingDirection. Sets rotating cannon to left state
     ld   a,$00
     ld   [wD615_Cannon_FacingDirection],a
     ret  

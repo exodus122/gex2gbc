@@ -344,17 +344,17 @@ call_02_42f7_PlayerAction_TailSpin:
     jp   call_02_4ccd_Player_RequestAction                                  ;; 02:434a $c3 $cd $4c
 
 call_02_434d_PlayerAction_EatFly:
-; Zeroes X speed. On first frame: calls call_00_0647_Player_EatFlyPowerup (likely applies fly power-up effect
+; Zeroes X speed. On first frame: calls call_00_0647_Player_SetUpOrEatFlyPowerup (likely applies fly power-up effect
     xor  a
     ld   [wD75E_PlayerXSpeed],a
     ld   a,[wD209_Player_UnkFlags]
     and  a,$20
     ret  z
     xor  a
-    jp   call_00_0647_Player_EatFlyPowerup
+    jp   call_00_0647_Player_SetUpOrEatFlyPowerup
 
 call_02_435b_PlayerAction_TakeDamage:
-; On first frame: plays hurt SFX. Zeroes X speed. Sets wD750 = $77 (invincibility timer)
+; On first frame: plays hurt SFX. Zeroes X speed. Sets wD750_PlayerDamageCooldownTimer = $77 (invincibility timer)
     ld   a,[wD209_Player_UnkFlags]
     and  a,$20
     jr   z,.jr_02_4367
@@ -364,20 +364,20 @@ call_02_435b_PlayerAction_TakeDamage:
     xor  a
     ld   [wD75E_PlayerXSpeed],a
     ld   a,$77
-    ld   [wD750],a
+    ld   [wD750_PlayerDamageCooldownTimer],a
     ret  
 
 call_02_4371_PlayerAction_Death:
-; Zeroes X speed. Sets wD750 = $77. Used as the "lying dead" hold state before respawn warp
+; Zeroes X speed. Sets wD750_PlayerDamageCooldownTimer = $77. Used as the "lying dead" hold state before respawn warp
     xor  A, A                                          ;; 02:4371 $af
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:4372 $ea $5e $d7
     ld   A, $77                                        ;; 02:4375 $3e $77
-    ld   [wD750], A                                    ;; 02:4377 $ea $50 $d7
+    ld   [wD750_PlayerDamageCooldownTimer], A                                    ;; 02:4377 $ea $50 $d7
     ret                                                ;; 02:437a $c9
 
 call_02_437b_PlayerAction_DeathSetUpWarp:
 ; On first frame: zeroes X speed, calls call_00_0f5d (set up respawn warp data), plays death SFX. 
-; Each frame: sets wD750=$77. On animation end: sets spawn action to $00, sets bit 1 of 
+; Each frame: sets wD750_PlayerDamageCooldownTimer=$77. On animation end: sets spawn action to $00, sets bit 1 of 
 ; wD621 (warp flags) to trigger respawn warp
     ld   A, [wD209_Player_UnkFlags]                                    ;; 02:437b $fa $09 $d2
     and  A, $20                                        ;; 02:437e $e6 $20
@@ -389,7 +389,7 @@ call_02_437b_PlayerAction_DeathSetUpWarp:
     call call_00_112f_QueueSFX                                  ;; 02:438b $cd $2f $11
 .jr_02_438e:
     ld   A, $77                                        ;; 02:438e $3e $77
-    ld   [wD750], A                                    ;; 02:4390 $ea $50 $d7
+    ld   [wD750_PlayerDamageCooldownTimer], A                                    ;; 02:4390 $ea $50 $d7
     ld   A, [wD20A_Player_UnkFlags2]                                    ;; 02:4393 $fa $0a $d2
     and  A, $04                                        ;; 02:4396 $e6 $04
     ret  Z                                             ;; 02:4398 $c8
@@ -1109,13 +1109,13 @@ call_02_4828_PlayerAction_RidingRocket:
     jp   call_02_4ccd_Player_RequestAction
 
 call_02_480f_Player_GetJumpVelocity:
-; Checks wD758 (jump suppression flag) — returns 0 if set. Reads floor tile type from wD765. 
+; Checks wD758_Player_LaunchVelocityMaybe (jump suppression flag) — returns 0 if set. Reads floor tile type from wD765. 
 ; Tile $CE → returns $4C (spring low boost). 
 ; Tile $CF → returns $60 (spring high boost). 
 ; Tile $F0 → if wD751 (timer) nonzero, plays SFX and returns $4C (trampoline low). 
 ; Tile $F1 → if wD751 nonzero, plays SFX and returns $60 (trampoline high). 
 ; Otherwise returns C unchanged (normal jump velocity)
-    ld   A, [wD758]                                    ;; 02:4856 $fa $58 $d7
+    ld   A, [wD758_Player_LaunchVelocityMaybe]                                    ;; 02:4856 $fa $58 $d7
     and  A, A                                          ;; 02:4859 $a7
     ret  NZ                                            ;; 02:485a $c0
     ld   A, [wD765_TileTypeBehindGexsBody]                                    ;; 02:485b $fa $65 $d7
