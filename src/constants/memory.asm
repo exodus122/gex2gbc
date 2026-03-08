@@ -76,11 +76,11 @@ wD100_TilesToLoadBuffer:
 ; Each entity takes up 0x20 of space, and there can be up to 8 entities. 
 ; Gex occupies the first slot. The entity instance fields are defined in constants.asm
 wD200_EntityMemory:
-wD200_PlayerEntity_Id:
+wD200_Player_EntityId:
     ds 1                                               ;; d200
-wD201_PlayerEntity_ActionId:
+wD201_Player_ActionId:
     ds 1                                               ;; d201
-wD202_PlayerEntity_ActionFunc:
+wD202_Player_ActionFunc:
     ds 2                                               ;; d202
     ds 3
 wD207_Player_SpriteCounter:
@@ -93,20 +93,20 @@ wD20A_Player_UnkFlags2:
     ds 3                                               ;; d20a
 wD20D_PlayerFacingAngle:
     ds 1                                               ;; d20d
-; wD20E_Player_XPosition and wD20F_PlayerXPosition_PlayerXPosition control gex's x coordinate position (can freeze wD20F_PlayerXPosition_PlayerXPosition to sometimes fall through floors)
-wD20E_Player_XPosition:
+; wD20E_Player_XPositionLo and wD20F_Player_XPositionHi_PlayerXPosition control gex's x coordinate position (can freeze wD20F_Player_XPositionHi_PlayerXPosition to sometimes fall through floors)
+wD20E_Player_XPositionLo:
     ds 1                                               ;; d20e
-wD20F_PlayerXPosition:
+wD20F_Player_XPositionHi:
     ds 1                                               ;; d20f
-; wD210_Player_YPosition and wD211_PlayerYPosition control gex's y coordinate position (can freeze both to hover at fixed height)
+; wD210_Player_YPositionLo and wD211_Player_YPositionHi control gex's y coordinate position (can freeze both to hover at fixed height)
 ; can also set to 0000 to warp to top of map for example
-wD210_Player_YPosition:
+wD210_Player_YPositionLo:
     ds 1                                               ;; d210
-wD211_PlayerYPosition:
+wD211_Player_YPositionHi:
     ds 1                                               ;; d211
-wD212_PlayerScreenXPosition:
+wD212_Player_ScreenXPosition:
     ds 1                                               ;; d212
-wD213_PlayerScreenYPosition:
+wD213_Player_ScreenYPosition:
     ds 1
     ds 12                                              ;; d213
 
@@ -114,10 +114,15 @@ wD220_OtherLoadedEntities:
     ds 224                                             ;; d220
 
 wD300_CurrentEntityAddrLo:
-; addr of entity currently being updated (normally set to first available slot)
+; addr of entity currently being updated
+; if the entity instance starts at $D2E0, this value is E0, for example
     ds 1                                               ;; d300
-wD301:
+wD301_EntityListIndexesForCurrentEntities:
+; stores the entry number in the entity list, of all the currently loaded entities
+; the values stored here have 1 added to them though. so index 0 would have value 1 here
     ds 8                                               ;; d301
+
+
 wD309_EntityBoundingBoxXMax:
     ds 1                                               ;; d309
 wD30A_EntityBoundingBoxXMin:
@@ -129,13 +134,13 @@ wD30C_EntityBoundingBoxYMin:
 
     ds 28                                              ;; d30d
 
-wD329_BlockXRangeMin:
+wD329_MapWindow_BlockXRangeMin:
     ds 1                                               ;; d329
-wD32A_BlockXRangeMax:
+wD32A_MapWindow_BlockXRangeMax:
     ds 1                                               ;; d32a
-wD32B_BlockYRangeMin:
+wD32B_MapWindow_BlockYRangeMin:
     ds 1                                               ;; d32b
-wD32C_BlockYRangeMax:
+wD32C_MapWindow_BlockYRangeMax:
     ds 1                                               ;; d32c
 
 wD32D:
@@ -627,9 +632,9 @@ wD6DE_MenuType:
 ; 0 = pause in media dimension, 1 = exit game, 2 = pause in world, 3 = exit to map
 ; 5 = view totals, 6 = current password, B = mission select, F = enter password
     ds 1                                               ;; d6de
-wD6DF_MenuSelectedColumn: ; used for password call, but not totals screen
+wD6DF_MenuSelectedColumn: ; used for password menu, but not totals screen
     ds 1                                               ;; d6df
-wD6E0_MenuSelectedRow: ; used for password call, title screen, mission select, and leaving maps
+wD6E0_MenuSelectedRow: ; used for password menu, title screen, mission select, and leaving maps
     ds 1                                               ;; d6e0
 wD6E1:
     ds 1                                               ;; d6e1
@@ -657,12 +662,10 @@ wD6EC:
     ds 1                                               ;; d6ec
 
 ; BgMap related memory starts here
-wD6ED_BgMap_ScrollX: ; current x position in map of screen/player?
+wD6ED_BgMap_ScrollX:
     ds 2                                               ;; d6ed
-wD6EF_BgMap_ScrollY: ; current y position in map of screen/player?
-    ds 1                                               ;; d6ef
-wD6F0_BgMap_ScrollYHi:
-    ds 1                                               ;; d6f0
+wD6EF_BgMap_ScrollY:
+    ds 2                                               ;; d6ef
 wD6F1_BgMap_PrevColumn:
     ds 2                                               ;; d6f1
 wD6F3_BgMap_PrevRow:
@@ -920,10 +923,9 @@ wD76A_PlayerXPositionBlock:
 wD76B_Player_IsAttacking:
     ds 1                                               ;; d76b
 
-wD76C:
+wD76C_PlayerScreenXPosition_Copy:
     ds 1                                               ;; d76c
-
-wD76D:
+wD76D_PlayerScreenYPosition_CopyMinus20:
     ds 1                                               ;; d76d
 
 wD76E:
@@ -1008,7 +1010,7 @@ wD787_OverrideStepTimerReload:
 
 wD788_CurrentAudioBank:
     ds 1                                               ;; d788
-wD789_QueuedSFX: ; audio related
+wD789_QueuedSFX:
     ds 1                                               ;; d789
 wD78A_MusicId: ; multiplied by 4 and used as index into .data_00_1244_MusicList
     ds 1                                               ;; d78a
@@ -1031,33 +1033,26 @@ wD799_OverrideSlotTable14:
 wD79A_OverrideSlotTable15:
     ds 1                                               ;; d79a
 
+; Mission preview cutscene related variables and backup buffers
 wD79B_MissionPreviewCutsceneRelated:
     ds 2                                               ;; d79b
 wD79D_MissionPreviewCutsceneMovementFlags:
     ds 2                                               ;; d79d
-
-wD79F:
+wD79F_BackupBuffer_EntityFlags:
     ds 256                                             ;; d79f
-
-wD89F:
+wD89F_BackupBuffer_EntityMemory:
     ds 256                                             ;; d89f
-
-wD99F:
+wD99F_BackupBuffer_EntityListIndexes:
     ds 8                                               ;; d99f
-
-wD9A7:
+wD9A7_BackupBuffer_BoundingBoxAndMore:
     ds 32                                              ;; d9a7
-
-wD9C7:
+wD9C7_BackupBuffer_InteractedEntityLo:
     ds 1                                               ;; d9c7
-
-wD9C8:
+wD9C8_BackupBuffer_PlatformRelated:
     ds 1                                               ;; d9c8
-
-wD9C9:
+wD9C9_BackupBuffer_PlatformRelated2:
     ds 1                                               ;; d9c9
-
-wD9CA:
+wD9CA_BackupBuffer_FlyAnimationPosition:
     ds 1                                               ;; d9ca
 
 ; Palettes

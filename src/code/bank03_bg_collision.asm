@@ -8,7 +8,7 @@ call_03_4900_BgCollision_Update:
     ld   A, [HL]                                       ;; 03:4903 $7e
     ld   [HL], $00                                     ;; 03:4904 $36 $00
     ld   [wD584_CollisionFlagsPrev], A                                    ;; 03:4906 $ea $84 $d5
-    ld   A, [wD201_PlayerEntity_ActionId]                                    ;; 03:4909 $fa $01 $d2
+    ld   A, [wD201_Player_ActionId]                                    ;; 03:4909 $fa $01 $d2
     and  A, PLAYER_ACTION_MASK                                        ;; 03:490c $e6 $1f
     cp   A, PLAYER_ACTION_RIDING_ROCKET                                        ;; 03:490e $fe $1f
     jr   NZ, call_03_4915_BgCollision_Sidescroller                                ;; 03:4910 $20 $03
@@ -53,24 +53,24 @@ call_03_4915_BgCollision_Sidescroller:
     ld   E, A                                          ;; 03:4945 $5f
     bit  7, E                                          ;; 03:4946 $cb $7b
     jr   Z, .jr_03_4954                                ;; 03:4948 $28 $0a
-    ld   A, [wD20E_Player_XPosition]                                    ;; 03:494a $fa $0e $d2
+    ld   A, [wD20E_Player_XPositionLo]                                    ;; 03:494a $fa $0e $d2
     and  A, $07                                        ;; 03:494d $e6 $07
     add  A, E                                          ;; 03:494f $83
     ld   C, $ff                                        ;; 03:4950 $0e $ff
     jr   .jr_03_495c                                   ;; 03:4952 $18 $08
 .jr_03_4954:
-    ld   A, [wD20E_Player_XPosition]                                    ;; 03:4954 $fa $0e $d2
+    ld   A, [wD20E_Player_XPositionLo]                                    ;; 03:4954 $fa $0e $d2
     and  A, $07                                        ;; 03:4957 $e6 $07
     add  A, E                                          ;; 03:4959 $83
     ld   C, $01                                        ;; 03:495a $0e $01
 .jr_03_495c:
     push DE                                            ;; 03:495c $d5
     ld   A, E                                          ;; 03:495d $7b
-    ld   HL, wD20E_Player_XPosition                                     ;; 03:495e $21 $0e $d2
+    ld   HL, wD20E_Player_XPositionLo                                     ;; 03:495e $21 $0e $d2
     add  A, [HL]                                       ;; 03:4961 $86
     add  A, C                                          ;; 03:4962 $81
     ld   C, A                                          ;; 03:4963 $4f
-    ld   A, [wD210_Player_YPosition]                                    ;; 03:4964 $fa $10 $d2
+    ld   A, [wD210_Player_YPositionLo]                                    ;; 03:4964 $fa $10 $d2
     sub  A, $10                                        ;; 03:4967 $d6 $10
     ld   HL, wD75F_PlayerYVelocityRelated                                     ;; 03:4969 $21 $5f $d7
     sub  A, [HL]                                       ;; 03:496c $96
@@ -108,7 +108,7 @@ call_03_4915_BgCollision_Sidescroller:
     jr   Z, .jr_03_49bd                                ;; 03:4996 $28 $25
     ld   A, $01                                        ;; 03:4998 $3e $01
     ld   [wD74C], A                                    ;; 03:499a $ea $4c $d7
-    ld   HL, wD20E_Player_XPosition                                     ;; 03:499d $21 $0e $d2
+    ld   HL, wD20E_Player_XPositionLo                                     ;; 03:499d $21 $0e $d2
     bit  7, E                                          ;; 03:49a0 $cb $7b
     jr   NZ, .jr_03_49ab                               ;; 03:49a2 $20 $07
     ld   A, $07                                        ;; 03:49a4 $3e $07
@@ -199,7 +199,7 @@ call_03_4915_BgCollision_Sidescroller:
     ld   B, $00                                        ;; 03:4a19 $06 $00
     call call_03_4ab3_BgCollision_GetXOffset                                  ;; 03:4a1b $cd $b3 $4a
     ld   C, A                                          ;; 03:4a1e $4f
-    ld   A, [wD210_Player_YPosition]                                    ;; 03:4a1f $fa $10 $d2
+    ld   A, [wD210_Player_YPositionLo]                                    ;; 03:4a1f $fa $10 $d2
     add  A, $10                                        ;; 03:4a22 $c6 $10
     add  A, B                                          ;; 03:4a24 $80
     ld   B, A                                          ;; 03:4a25 $47
@@ -208,7 +208,7 @@ call_03_4915_BgCollision_Sidescroller:
     ld   H, $32                                        ;; 03:4a29 $26 $32
     add  HL, HL                                        ;; 03:4a2b $29
     add  HL, HL                                        ;; 03:4a2c $29
-    ld   A, [wD20E_Player_XPosition]                                    ;; 03:4a2d $fa $0e $d2
+    ld   A, [wD20E_Player_XPositionLo]                                    ;; 03:4a2d $fa $0e $d2
     add  A, C                                          ;; 03:4a30 $81
     ld   C, A                                          ;; 03:4a31 $4f
     rrca                                               ;; 03:4a32 $0f
@@ -272,14 +272,14 @@ call_03_4915_BgCollision_Sidescroller:
     and  A, $0f                                        ;; 03:4a85 $e6 $0f
     add  A, $11                                        ;; 03:4a87 $c6 $11
     ld   B, A                                          ;; 03:4a89 $47
-    ld   A, [wD210_Player_YPosition]                                    ;; 03:4a8a $fa $10 $d2
+    ld   A, [wD210_Player_YPositionLo]                                    ;; 03:4a8a $fa $10 $d2
     sub  A, B                                          ;; 03:4a8d $90
     and  A, $f8                                        ;; 03:4a8e $e6 $f8
     ld   L, A                                          ;; 03:4a90 $6f
     ld   H, $32                                        ;; 03:4a91 $26 $32
     add  HL, HL                                        ;; 03:4a93 $29
     add  HL, HL                                        ;; 03:4a94 $29
-    ld   A, [wD20E_Player_XPosition]                                    ;; 03:4a95 $fa $0e $d2
+    ld   A, [wD20E_Player_XPositionLo]                                    ;; 03:4a95 $fa $0e $d2
     add  A, C                                          ;; 03:4a98 $81
     rrca                                               ;; 03:4a99 $0f
     rrca                                               ;; 03:4a9a $0f
@@ -455,7 +455,7 @@ call_03_4bd4_BgCollision_TestTile:
 ; the tile ID from wC800 collision data at $3200-based address. Uses (Y & 7) to index into $4000-page 
 ; tile collision bytes, (X & 7) to index .data_03_4c02_TileCollision_BitMasks (bit mask $80/$40/$20…$01) and ANDs them. 
 ; Returns nonzero if that exact sub-tile pixel is solid
-    ld   A, [wD210_Player_YPosition]                                    ;; 03:4bd4 $fa $10 $d2
+    ld   A, [wD210_Player_YPositionLo]                                    ;; 03:4bd4 $fa $10 $d2
     add  A, $0f                                        ;; 03:4bd7 $c6 $0f
     add  A, B                                          ;; 03:4bd9 $80
     ld   B, A                                          ;; 03:4bda $47
@@ -464,7 +464,7 @@ call_03_4bd4_BgCollision_TestTile:
     ld   H, $32                                        ;; 03:4bde $26 $32
     add  HL, HL                                        ;; 03:4be0 $29
     add  HL, HL                                        ;; 03:4be1 $29
-    ld   A, [wD20E_Player_XPosition]                                    ;; 03:4be2 $fa $0e $d2
+    ld   A, [wD20E_Player_XPositionLo]                                    ;; 03:4be2 $fa $0e $d2
     add  A, C                                          ;; 03:4be5 $81
     ld   C, A                                          ;; 03:4be6 $4f
     rrca                                               ;; 03:4be7 $0f
@@ -498,13 +498,13 @@ call_03_4c0a_BgCollision_CacheAdjacentTiles:
 ; above and one tile ahead (direction-aware: C=09rightorC=09 right or C=09 right or C=F7 left) and stores to
 ; wD766 (tile in front of Gex's face). Used by game logic to determine environmental effects (water, lava, etc.) 
 ; without re-querying the map
-    ld   A, [wD210_Player_YPosition]                                    ;; 03:4c0a $fa $10 $d2
+    ld   A, [wD210_Player_YPositionLo]                                    ;; 03:4c0a $fa $10 $d2
     and  A, $f8                                        ;; 03:4c0d $e6 $f8
     ld   L, A                                          ;; 03:4c0f $6f
     ld   H, $32                                        ;; 03:4c10 $26 $32
     add  HL, HL                                        ;; 03:4c12 $29
     add  HL, HL                                        ;; 03:4c13 $29
-    ld   A, [wD20E_Player_XPosition]                                    ;; 03:4c14 $fa $0e $d2
+    ld   A, [wD20E_Player_XPositionLo]                                    ;; 03:4c14 $fa $0e $d2
     rrca                                               ;; 03:4c17 $0f
     rrca                                               ;; 03:4c18 $0f
     rrca                                               ;; 03:4c19 $0f
@@ -528,14 +528,14 @@ call_03_4c0a_BgCollision_CacheAdjacentTiles:
     jr   Z, .jr_03_4c3e                                ;; 03:4c3a $28 $02
     ld   C, $f7                                        ;; 03:4c3c $0e $f7
 .jr_03_4c3e:
-    ld   A, [wD210_Player_YPosition]                                    ;; 03:4c3e $fa $10 $d2
+    ld   A, [wD210_Player_YPositionLo]                                    ;; 03:4c3e $fa $10 $d2
     sub  A, $08                                        ;; 03:4c41 $d6 $08
     and  A, $f8                                        ;; 03:4c43 $e6 $f8
     ld   L, A                                          ;; 03:4c45 $6f
     ld   H, $32                                        ;; 03:4c46 $26 $32
     add  HL, HL                                        ;; 03:4c48 $29
     add  HL, HL                                        ;; 03:4c49 $29
-    ld   A, [wD20E_Player_XPosition]                                    ;; 03:4c4a $fa $0e $d2
+    ld   A, [wD20E_Player_XPositionLo]                                    ;; 03:4c4a $fa $0e $d2
     add  A, C                                          ;; 03:4c4d $81
     rrca                                               ;; 03:4c4e $0f
     rrca                                               ;; 03:4c4f $0f
@@ -552,14 +552,14 @@ call_03_4c5a_BgCollision_FetchTile:
 ; Computes the tile row address in wC800 collision data using (player Y + B) & $F8 as row, 
 ; (player X + C) >> 3 as column index. Reads the tile type byte from wC800, then reads the tile's 
 ; collision property byte from $4800-page. Returns the collision byte in B
-    ld   A, [wD210_Player_YPosition]                                    ;; 03:4c5a $fa $10 $d2
+    ld   A, [wD210_Player_YPositionLo]                                    ;; 03:4c5a $fa $10 $d2
     add  A, B                                          ;; 03:4c5d $80
     and  A, $f8                                        ;; 03:4c5e $e6 $f8
     ld   L, A                                          ;; 03:4c60 $6f
     ld   H, $32                                        ;; 03:4c61 $26 $32
     add  HL, HL                                        ;; 03:4c63 $29
     add  HL, HL                                        ;; 03:4c64 $29
-    ld   A, [wD20E_Player_XPosition]                                    ;; 03:4c65 $fa $0e $d2
+    ld   A, [wD20E_Player_XPositionLo]                                    ;; 03:4c65 $fa $0e $d2
     add  A, C                                          ;; 03:4c68 $81
     rrca                                               ;; 03:4c69 $0f
     rrca                                               ;; 03:4c6a $0f

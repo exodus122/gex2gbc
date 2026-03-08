@@ -47,7 +47,7 @@ call_03_4c76_EntityCollision_Dispatch:
     dw   .jr_03_4e7f_CollisionHandler_Hunter ; COLLISION_TYPE_HUNTER
     dw   .jr_03_4eb4_CollisionHandler_Mushroom ; COLLISION_TYPE_MUSHROOM
     dw   .jr_03_4ec6_CollisionHandler_None2 ; COLLISION_TYPE_NONE_2
-    dw   .jr_03_4ec7_CollisionHandler_Projectile_SubHitbox ; COLLISION_TYPE_PROJECTILE
+    dw   .jr_03_4ec7_CollisionHandler_MultiProjectile ; COLLISION_TYPE_MULTI_PROJECTILE
     dw   .jr_03_4f14_CollisionHandler_Jar ; COLLISION_TYPE_JAR
     dw   .jr_03_4f20_CollisionHandler_Ninja ; COLLISION_TYPE_NINJA
     dw   .jr_03_4fc7_CollisionHandler_HangingBlade ; COLLISION_TYPE_HANGING_BLADE
@@ -93,7 +93,7 @@ call_03_4c76_EntityCollision_Dispatch:
     ld   A, [HL+]                                      ;; 03:4d05 $2a
     add  A, B                                          ;; 03:4d06 $80
     ld   B, A                                          ;; 03:4d07 $47
-    ld   A, [wD213_PlayerScreenYPosition]                                    ;; 03:4d08 $fa $13 $d2
+    ld   A, [wD213_Player_ScreenYPosition]                                    ;; 03:4d08 $fa $13 $d2
     sub  A, B                                          ;; 03:4d0b $90
     add  A, $08                                        ;; 03:4d0c $c6 $08
     cp   A, $10                                        ;; 03:4d0e $fe $10
@@ -102,7 +102,7 @@ call_03_4c76_EntityCollision_Dispatch:
     ld   A, [HL+]                                      ;; 03:4d13 $2a
     add  A, C                                          ;; 03:4d14 $81
     ld   C, A                                          ;; 03:4d15 $4f
-    ld   A, [wD212_PlayerScreenXPosition]                                    ;; 03:4d16 $fa $12 $d2
+    ld   A, [wD212_Player_ScreenXPosition]                                    ;; 03:4d16 $fa $12 $d2
     sub  A, C                                          ;; 03:4d19 $91
     add  A, $04                                        ;; 03:4d1a $c6 $04
     cp   A, $08                                        ;; 03:4d1c $fe $08
@@ -125,7 +125,7 @@ call_03_4c76_EntityCollision_Dispatch:
 .jr_03_4d33_CollisionHandler_ExtraLife:
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
-    call call_00_3931_Entity_KillSelf
+    call call_00_3931_Entity_DeactivateSelf
     ld   a,$04
     jp   call_00_0647_Player_SetUpOrEatFlyPowerup
 .jr_03_4d3f_CollisionHandler_SilverRemote:
@@ -138,8 +138,8 @@ call_03_4c76_EntityCollision_Dispatch:
     ld   [wD64C],a
     ld   c,SFX_SILVER_REMOTE
     call call_00_112f_QueueSFX
-    call call_00_3931_Entity_KillSelf
-    jp   call_00_393c_Entity_ClearEntityFlagSlot
+    call call_00_3931_Entity_DeactivateSelf
+    jp   call_00_393c_Entity_ClearFlags
 .jr_03_4d56_CollisionHandler_GoldRemote:
 ; Guards against double-collection (checks wD621_WarpFlags bit 4). On overlap, sets bit 5 in the 
 ; level's wD629 remote progress flag byte, kills entity, clears flag slot, then triggers 
@@ -157,8 +157,8 @@ call_03_4c76_EntityCollision_Dispatch:
     ld   a,[hl]
     or   a,$20
     ld   [hl],a
-    call call_00_3931_Entity_KillSelf
-    call call_00_393c_Entity_ClearEntityFlagSlot
+    call call_00_3931_Entity_DeactivateSelf
+    call call_00_393c_Entity_ClearFlags
     ld   a,PLAYER_ACTION_GOLD_REMOTE_WARP
     FARCALL call_02_4ccd_Player_RequestAction
     ret  
@@ -217,7 +217,7 @@ call_03_4c76_EntityCollision_Dispatch:
     ret  nc
     cp   a,$00
     call z,call_03_52be_Entity_DamagePlayerIfVulnerable
-    jp   call_00_3931_Entity_KillSelf
+    jp   call_00_3931_Entity_DeactivateSelf
 .jr_03_4dd4_CollisionHandler_Ghost:
 ; Checks wD757_LanternLitFlag (lantern light flag): if zero, touch → damage; 
 ; attack/stomp → sets bit 0 of entity's D2xx slot (signals the ghost entity it was lit). 
@@ -267,7 +267,7 @@ call_03_4c76_EntityCollision_Dispatch:
 .jr_03_4E19:
     pop  af
     ld   [wD300_CurrentEntityAddrLo],a
-    jp   call_00_3931_Entity_KillSelf
+    jp   call_00_3931_Entity_DeactivateSelf
 .jr_03_4e20_CollisionHandler_FallingObject:
 ; Only active when Y velocity is negative (object is moving downward; bit 7 set). 
 ; Computes horizontal overlap against entity width E. If in range, computes vertical overlap 
@@ -279,11 +279,11 @@ call_03_4c76_EntityCollision_Dispatch:
     ret  Z                                             ;; 03:4e2a $c8
     xor  A, $10                                        ;; 03:4e2b $ee $10
     ld   L, A                                          ;; 03:4e2d $6f
-    ld   A, [wD20E_Player_XPosition]                                    ;; 03:4e2e $fa $0e $d2
+    ld   A, [wD20E_Player_XPositionLo]                                    ;; 03:4e2e $fa $0e $d2
     sub  A, [HL]                                       ;; 03:4e31 $96
     ld   C, A                                          ;; 03:4e32 $4f
     inc  HL                                            ;; 03:4e33 $23
-    ld   A, [wD20F_PlayerXPosition]                                    ;; 03:4e34 $fa $0f $d2
+    ld   A, [wD20F_Player_XPositionHi]                                    ;; 03:4e34 $fa $0f $d2
     sbc  A, [HL]                                       ;; 03:4e37 $9e
     ld   B, A                                          ;; 03:4e38 $47
     ld   A, C                                          ;; 03:4e39 $79
@@ -307,10 +307,10 @@ call_03_4c76_EntityCollision_Dispatch:
     add  HL, DE                                        ;; 03:4e4f $19
     ld   DE, $10                                       ;; 03:4e50 $11 $10 $00
     add  HL, DE                                        ;; 03:4e53 $19
-    ld   A, [wD210_Player_YPosition]                                    ;; 03:4e54 $fa $10 $d2
+    ld   A, [wD210_Player_YPositionLo]                                    ;; 03:4e54 $fa $10 $d2
     sub  A, L                                          ;; 03:4e57 $95
     ld   L, A                                          ;; 03:4e58 $6f
-    ld   A, [wD211_PlayerYPosition]                                    ;; 03:4e59 $fa $11 $d2
+    ld   A, [wD211_Player_YPositionHi]                                    ;; 03:4e59 $fa $11 $d2
     sbc  A, H                                          ;; 03:4e5c $9c
     ret  NC                                            ;; 03:4e5d $d0
     cp   A, $ff                                        ;; 03:4e5e $fe $ff
@@ -365,7 +365,7 @@ call_03_4c76_EntityCollision_Dispatch:
     ret  
 .jr_03_4ec6_CollisionHandler_None2:
     ret  
-.jr_03_4ec7_CollisionHandler_Projectile_SubHitbox:
+.jr_03_4ec7_CollisionHandler_MultiProjectile:
 ; Like the collectible handler, iterates 8 sub-hitboxes from the secondary data pointer. 
 ; For each active record, checks a 12×8-pixel window at screen position; 
 ; on hit, damages player directly (no death check bypass)
@@ -392,7 +392,7 @@ call_03_4c76_EntityCollision_Dispatch:
     sub  [hl]
     inc  hl
     ld   b,a
-    ld   a,[wD213_PlayerScreenYPosition]
+    ld   a,[wD213_Player_ScreenYPosition]
     sub  b
     add  a,$06
     cp   a,$0C
@@ -401,7 +401,7 @@ call_03_4c76_EntityCollision_Dispatch:
     ldi  a,[hl]
     add  c
     ld   c,a
-    ld   a,[wD212_PlayerScreenXPosition]
+    ld   a,[wD212_Player_ScreenXPosition]
     sub  c
     add  a,$04
     cp   a,$08
@@ -469,12 +469,12 @@ call_03_4c76_EntityCollision_Dispatch:
     sub  a,$20
 .jr_03_4F56:
     ld   e,a
-    ld   a,[wD213_PlayerScreenYPosition]
+    ld   a,[wD213_Player_ScreenYPosition]
     sub  c
     add  a,$10
     cp   a,$20
     jr   nc,.jr_03_4F6F
-    ld   a,[wD212_PlayerScreenXPosition]
+    ld   a,[wD212_Player_ScreenXPosition]
     sub  e
     add  a,$06
     cp   a,$0C
@@ -500,7 +500,7 @@ call_03_4c76_EntityCollision_Dispatch:
     rlca 
     ld   e,a
     ld   d,$00
-    ld   hl,wD301
+    ld   hl,wD301_EntityListIndexesForCurrentEntities
     add  hl,de
     ld   c,[hl]
     ld   hl,.data_03_4fbd
@@ -576,12 +576,12 @@ call_03_4c76_EntityCollision_Dispatch:
     sub  a,$1C
 .jr_03_5007:
     ld   e,a
-    ld   a,[wD213_PlayerScreenYPosition]
+    ld   a,[wD213_Player_ScreenYPosition]
     sub  c
     add  a,$10
     cp   a,$20
     jr   nc,.jr_03_5020
-    ld   a,[wD212_PlayerScreenXPosition]
+    ld   a,[wD212_Player_ScreenXPosition]
     sub  e
     add  a,$04
     cp   a,$08
@@ -635,12 +635,12 @@ call_03_4c76_EntityCollision_Dispatch:
     sub  a,$28
 .jr_03_5075:
     ld   e,a
-    ld   a,[wD213_PlayerScreenYPosition]
+    ld   a,[wD213_Player_ScreenYPosition]
     sub  c
     add  a,$06
     cp   a,$0C
     jr   nc,.jr_03_508E
-    ld   a,[wD212_PlayerScreenXPosition]
+    ld   a,[wD212_Player_ScreenXPosition]
     sub  e
     add  a,$06
     cp   a,$0C
@@ -769,7 +769,7 @@ call_03_4c76_EntityCollision_Dispatch:
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     call call_03_52be_Entity_DamagePlayerIfVulnerable
-    jp   call_00_3910_Entity_DespawnSlot
+    jp   call_00_3910_Entity_ClearSlot
 .jr_03_516d_CollisionHandler_Rez:
 ; Guards specific action IDs: 
 ; action $04 → no collision (defeated state); 
@@ -816,14 +816,14 @@ call_03_519b_Entity_CheckPlayerInteraction:
     ld   A, E                                          ;; 03:51b3 $7b
     add  A, $08                                        ;; 03:51b4 $c6 $08
     ld   E, A                                          ;; 03:51b6 $5f
-    ld   A, [wD213_PlayerScreenYPosition]                                    ;; 03:51b7 $fa $13 $d2
+    ld   A, [wD213_Player_ScreenYPosition]                                    ;; 03:51b7 $fa $13 $d2
     sub  A, [HL]                                       ;; 03:51ba $96
     add  A, D                                          ;; 03:51bb $82
     sla  D                                             ;; 03:51bc $cb $22
     cp   A, D                                          ;; 03:51be $ba
     ret  NC                                            ;; 03:51bf $d0
     dec  L                                             ;; 03:51c0 $2d
-    ld   A, [wD212_PlayerScreenXPosition]                                    ;; 03:51c1 $fa $12 $d2
+    ld   A, [wD212_Player_ScreenXPosition]                                    ;; 03:51c1 $fa $12 $d2
     sub  A, [HL]                                       ;; 03:51c4 $96
     add  A, E                                          ;; 03:51c5 $83
     sla  E                                             ;; 03:51c6 $cb $23
@@ -840,7 +840,7 @@ call_03_519b_Entity_CheckPlayerInteraction:
     jr   NZ, .jr_03_51f5                               ;; 03:51d7 $20 $1c
     bit  1, B                                          ;; 03:51d9 $cb $48
     jr   Z, .jr_03_51fa                                ;; 03:51db $28 $1d
-    ld   A, [wD201_PlayerEntity_ActionId]                                    ;; 03:51dd $fa $01 $d2
+    ld   A, [wD201_Player_ActionId]                                    ;; 03:51dd $fa $01 $d2
     and  A, PLAYER_ACTION_MASK                                        ;; 03:51e0 $e6 $1f
     cp   A, PLAYER_ACTION_TAIL_SPIN                                        ;; 03:51e2 $fe $0d
     jr   Z, .jr_03_51f5                                ;; 03:51e4 $28 $0f
@@ -872,7 +872,7 @@ call_03_519b_Entity_CheckPlayerInteraction:
     ret  NC                                            ;; 03:5209 $d0
     bit  2, B                                          ;; 03:520a $cb $50
     jr   Z, .jr_03_5229                                ;; 03:520c $28 $1b
-    ld   A, [wD201_PlayerEntity_ActionId]                                    ;; 03:520e $fa $01 $d2
+    ld   A, [wD201_Player_ActionId]                                    ;; 03:520e $fa $01 $d2
     and  A, PLAYER_ACTION_MASK                                        ;; 03:5211 $e6 $1f
     cp   A, PLAYER_ACTION_JUMP                                        ;; 03:5213 $fe $09
     jr   Z, .jr_03_521b                                ;; 03:5215 $28 $04
@@ -1052,7 +1052,7 @@ call_03_52c5_CollisionHandler_StationaryPlatform:
 ; if valid landing, writes entity address to wD74D (player's current platform) and 
 ; manages wD74E_Player_PlatformRelated (secondary platform slot). For side/bottom hits: clears platform tracking vars
     LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_YPOS_ON_SCREEN
-    ld   A, [wD213_PlayerScreenYPosition]                                    ;; 03:52cd $fa $13 $d2
+    ld   A, [wD213_Player_ScreenYPosition]                                    ;; 03:52cd $fa $13 $d2
     add  A, $0f                                        ;; 03:52d0 $c6 $0f
     cp   A, [HL]                                       ;; 03:52d2 $be
     jr   C, call_03_5314_Platform_LandingCheck                                ;; 03:52d3 $38 $3f
@@ -1064,7 +1064,7 @@ call_03_52c5_CollisionHandler_StationaryPlatform:
     cp   A, C                                          ;; 03:52db $b9
     jr   C, call_03_534d_Platform_ClearPlatformSlots                                ;; 03:52dc $38 $6f
     dec  L                                             ;; 03:52de $2d
-    ld   A, [wD212_PlayerScreenXPosition]                                    ;; 03:52df $fa $12 $d2
+    ld   A, [wD212_Player_ScreenXPosition]                                    ;; 03:52df $fa $12 $d2
     sub  A, [HL]                                       ;; 03:52e2 $96
     add  A, E                                          ;; 03:52e3 $83
     bit  7, A                                          ;; 03:52e4 $cb $7f
@@ -1091,7 +1091,7 @@ call_03_5304_CollisionHandler_OneWayPlatform:
 ; Simplified platform — only handles the "approaching from below" path (player Y+$0F < platform Y), 
 ; then falls through into Platform_LandingCheck. Effectively a one-way/pass-through platform
     LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_YPOS_ON_SCREEN
-    ld   a,[wD213_PlayerScreenYPosition]
+    ld   a,[wD213_Player_ScreenYPosition]
     add  a,$0F
     cp   [hl]
     jr   nc,call_03_534d_Platform_ClearPlatformSlots
@@ -1102,7 +1102,7 @@ call_03_5314_Platform_LandingCheck:
 ; entity to wD74D, clears wD74E_Player_PlatformRelated if it matches
     ld   C, A                                          ;; 03:5314 $4f
     dec  L                                             ;; 03:5315 $2d
-    ld   A, [wD212_PlayerScreenXPosition]                                    ;; 03:5316 $fa $12 $d2
+    ld   A, [wD212_Player_ScreenXPosition]                                    ;; 03:5316 $fa $12 $d2
     sub  A, [HL]                                       ;; 03:5319 $96
     add  A, E                                          ;; 03:531a $83
     sla  E                                             ;; 03:531b $cb $23
@@ -1169,7 +1169,7 @@ call_03_536f_CollisionHandler_MovingPlatform:
 ; (relativeX − B + E + D) instead of raw speed. On landing writes to wD74D/wD74F_Player_PlatformRelated2 
 ; (moving platform uses wD74F_Player_PlatformRelated2 instead of wD74E_Player_PlatformRelated); on miss clears both
     LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_YPOS_ON_SCREEN
-    ld   A, [wD213_PlayerScreenYPosition]                                    ;; 03:5377 $fa $13 $d2
+    ld   A, [wD213_Player_ScreenYPosition]                                    ;; 03:5377 $fa $13 $d2
     add  A, $0f                                        ;; 03:537a $c6 $0f
     cp   A, [HL]                                       ;; 03:537c $be
     jr   C, .jr_03_53ba                                ;; 03:537d $38 $3b
@@ -1181,7 +1181,7 @@ call_03_536f_CollisionHandler_MovingPlatform:
     cp   A, C                                          ;; 03:5385 $b9
     jr   C, .jr_03_5405                                ;; 03:5386 $38 $7d
     dec  L                                             ;; 03:5388 $2d
-    ld   A, [wD212_PlayerScreenXPosition]                                    ;; 03:5389 $fa $12 $d2
+    ld   A, [wD212_Player_ScreenXPosition]                                    ;; 03:5389 $fa $12 $d2
     sub  A, [HL]                                       ;; 03:538c $96
     add  A, E                                          ;; 03:538d $83
     bit  7, A                                          ;; 03:538e $cb $7f
@@ -1216,7 +1216,7 @@ call_03_536f_CollisionHandler_MovingPlatform:
 .jr_03_53ba:
     ld   C, A                                          ;; 03:53ba $4f
     dec  L                                             ;; 03:53bb $2d
-    ld   A, [wD212_PlayerScreenXPosition]                                    ;; 03:53bc $fa $12 $d2
+    ld   A, [wD212_Player_ScreenXPosition]                                    ;; 03:53bc $fa $12 $d2
     sub  A, [HL]                                       ;; 03:53bf $96
     add  A, E                                          ;; 03:53c0 $83
     sla  E                                             ;; 03:53c1 $cb $23

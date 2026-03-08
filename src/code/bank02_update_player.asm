@@ -65,7 +65,7 @@ call_02_48b7_Player_SpawnLevelSpecificDoor:
     ld   A, L                                          ;; 02:48ee $7d
     xor  A, $03                                        ;; 02:48ef $ee $03
     ld   L, A                                          ;; 02:48f1 $6f
-    ld   DE, wD20E_Player_XPosition                                     ;; 02:48f2 $11 $0e $d2
+    ld   DE, wD20E_Player_XPositionLo                                     ;; 02:48f2 $11 $0e $d2
     ld   A, [DE]                                       ;; 02:48f5 $1a
     add  A, $0f                                        ;; 02:48f6 $c6 $0f
     ld   C, A                                          ;; 02:48f8 $4f
@@ -88,7 +88,7 @@ call_02_48b7_Player_SpawnLevelSpecificDoor:
     ld   [HL], A                                       ;; 02:490d $77
     pop  AF                                            ;; 02:490e $f1
     call call_02_7102_Entity_SetAction                                  ;; 02:490f $cd $02 $71
-    call call_00_34d8_Entity_ClearSlotCounter                                  ;; 02:4912 $cd $d8 $34
+    call call_00_34d8_Entity_ResetEntityListIndex                                  ;; 02:4912 $cd $d8 $34
     xor  A, A                                          ;; 02:4915 $af
     ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:4916 $ea $00 $d3
     ret                                                ;; 02:4919 $c9
@@ -205,7 +205,7 @@ call_02_4939_Player_UpdateMain:
     ld   A, $00                                        ;; 02:49e1 $3e $00
     ld   [wD74B], A                                    ;; 02:49e3 $ea $4b $d7
 .jr_02_49e6:
-    ld   HL, wD202_PlayerEntity_ActionFunc                                     ;; 02:49e6 $21 $02 $d2
+    ld   HL, wD202_Player_ActionFunc                                     ;; 02:49e6 $21 $02 $d2
     ld   A, [HL+]                                      ;; 02:49e9 $2a
     ld   H, [HL]                                       ;; 02:49ea $66
     ld   L, A                                          ;; 02:49eb $6f
@@ -213,7 +213,7 @@ call_02_4939_Player_UpdateMain:
     call call_02_4a77_Player_ApplyXMovement                                  ;; 02:49ef $cd $77 $4a
     xor  A, A                                          ;; 02:49f2 $af
     ld   [wD758_UnkCollisionRelated], A                                    ;; 02:49f3 $ea $58 $d7
-    ld   HL, wD20E_Player_XPosition                                     ;; 02:49f6 $21 $0e $d2
+    ld   HL, wD20E_Player_XPositionLo                                     ;; 02:49f6 $21 $0e $d2
     ld   A, [HL+]                                      ;; 02:49f9 $2a
     ld   H, [HL]                                       ;; 02:49fa $66
     ld   L, A                                          ;; 02:49fb $6f
@@ -342,7 +342,7 @@ call_02_4a77_Player_ApplyXMovement:
     and  A, A                                          ;; 02:4ab3 $a7
     ret  NZ                                            ;; 02:4ab4 $c0
 .jr_02_4ab5:
-    ld   HL, wD20E_Player_XPosition                                     ;; 02:4ab5 $21 $0e $d2
+    ld   HL, wD20E_Player_XPositionLo                                     ;; 02:4ab5 $21 $0e $d2
     ld   A, [HL]                                       ;; 02:4ab8 $7e
     sub  A, C                                          ;; 02:4ab9 $91
     ld   [HL+], A                                      ;; 02:4aba $22
@@ -359,7 +359,7 @@ call_02_4a77_Player_ApplyXMovement:
     ld   A, L                                          ;; 02:4ac9 $7d
     xor  A, $04                                        ;; 02:4aca $ee $04
     ld   L, A                                          ;; 02:4acc $6f
-    ld   A, [wD212_PlayerScreenXPosition]                                    ;; 02:4acd $fa $12 $d2
+    ld   A, [wD212_Player_ScreenXPosition]                                    ;; 02:4acd $fa $12 $d2
     cp   A, [HL]                                       ;; 02:4ad0 $be
     jr   C, .jr_02_4ab5                                ;; 02:4ad1 $38 $e2
     ld   A, L                                          ;; 02:4ad3 $7d
@@ -371,14 +371,14 @@ call_02_4a77_Player_ApplyXMovement:
     ld   L, A                                          ;; 02:4adb $6f
     ld   A, [HL+]                                      ;; 02:4adc $2a
     add  A, D                                          ;; 02:4add $82
-    ld   [wD20E_Player_XPosition], A                                    ;; 02:4ade $ea $0e $d2
+    ld   [wD20E_Player_XPositionLo], A                                    ;; 02:4ade $ea $0e $d2
     ld   A, [HL]                                       ;; 02:4ae1 $7e
     adc  A, $00                                        ;; 02:4ae2 $ce $00
-    ld   [wD20F_PlayerXPosition], A                                    ;; 02:4ae4 $ea $0f $d2
+    ld   [wD20F_Player_XPositionHi], A                                    ;; 02:4ae4 $ea $0f $d2
     ret                                                ;; 02:4ae7 $c9
 .jr_02_4ae8:
     push HL                                            ;; 02:4ae8 $e5
-    ld   HL, wD20E_Player_XPosition                                     ;; 02:4ae9 $21 $0e $d2
+    ld   HL, wD20E_Player_XPositionLo                                     ;; 02:4ae9 $21 $0e $d2
     ld   A, [HL]                                       ;; 02:4aec $7e
     sub  A, C                                          ;; 02:4aed $91
     ld   [HL+], A                                      ;; 02:4aee $22
@@ -391,7 +391,7 @@ call_02_4a77_Player_ApplyXMovement:
     ld   A, L                                          ;; 02:4af6 $7d
     xor  A, $04                                        ;; 02:4af7 $ee $04
     ld   L, A                                          ;; 02:4af9 $6f
-    ld   A, [wD212_PlayerScreenXPosition]                                    ;; 02:4afa $fa $12 $d2
+    ld   A, [wD212_Player_ScreenXPosition]                                    ;; 02:4afa $fa $12 $d2
     cp   A, [HL]                                       ;; 02:4afd $be
     ret  C                                             ;; 02:4afe $d8
     ld   A, L                                          ;; 02:4aff $7d
@@ -416,7 +416,7 @@ call_02_4a77_Player_ApplyXMovement:
     and  A, A                                          ;; 02:4b19 $a7
     ret  NZ                                            ;; 02:4b1a $c0
 .jr_02_4b1b:
-    ld   HL, wD20E_Player_XPosition                                     ;; 02:4b1b $21 $0e $d2
+    ld   HL, wD20E_Player_XPositionLo                                     ;; 02:4b1b $21 $0e $d2
     ld   A, [HL]                                       ;; 02:4b1e $7e
     add  A, C                                          ;; 02:4b1f $81
     ld   [HL+], A                                      ;; 02:4b20 $22
@@ -433,7 +433,7 @@ call_02_4a77_Player_ApplyXMovement:
     ld   A, L                                          ;; 02:4b2f $7d
     xor  A, $04                                        ;; 02:4b30 $ee $04
     ld   L, A                                          ;; 02:4b32 $6f
-    ld   A, [wD212_PlayerScreenXPosition]                                    ;; 02:4b33 $fa $12 $d2
+    ld   A, [wD212_Player_ScreenXPosition]                                    ;; 02:4b33 $fa $12 $d2
     cp   A, [HL]                                       ;; 02:4b36 $be
     jr   NC, .jr_02_4b1b                               ;; 02:4b37 $30 $e2
     ld   A, L                                          ;; 02:4b39 $7d
@@ -446,14 +446,14 @@ call_02_4a77_Player_ApplyXMovement:
     ld   L, A                                          ;; 02:4b42 $6f
     ld   A, [HL+]                                      ;; 02:4b43 $2a
     sub  A, D                                          ;; 02:4b44 $92
-    ld   [wD20E_Player_XPosition], A                                    ;; 02:4b45 $ea $0e $d2
+    ld   [wD20E_Player_XPositionLo], A                                    ;; 02:4b45 $ea $0e $d2
     ld   A, [HL]                                       ;; 02:4b48 $7e
     sbc  A, $00                                        ;; 02:4b49 $de $00
-    ld   [wD20F_PlayerXPosition], A                                    ;; 02:4b4b $ea $0f $d2
+    ld   [wD20F_Player_XPositionHi], A                                    ;; 02:4b4b $ea $0f $d2
     ret                                                ;; 02:4b4e $c9
 .jr_02_4b4f:
     push HL                                            ;; 02:4b4f $e5
-    ld   HL, wD20E_Player_XPosition                                     ;; 02:4b50 $21 $0e $d2
+    ld   HL, wD20E_Player_XPositionLo                                     ;; 02:4b50 $21 $0e $d2
     ld   A, [HL]                                       ;; 02:4b53 $7e
     add  A, C                                          ;; 02:4b54 $81
     ld   [HL+], A                                      ;; 02:4b55 $22
@@ -466,7 +466,7 @@ call_02_4a77_Player_ApplyXMovement:
     ld   A, L                                          ;; 02:4b5d $7d
     xor  A, $04                                        ;; 02:4b5e $ee $04
     ld   L, A                                          ;; 02:4b60 $6f
-    ld   A, [wD212_PlayerScreenXPosition]                                    ;; 02:4b61 $fa $12 $d2
+    ld   A, [wD212_Player_ScreenXPosition]                                    ;; 02:4b61 $fa $12 $d2
     cp   A, [HL]                                       ;; 02:4b64 $be
     ret  NC                                            ;; 02:4b65 $d0
     ld   A, L                                          ;; 02:4b66 $7d
@@ -580,22 +580,22 @@ call_02_4b78_Player_ApplyYVelocity:
 
 call_02_4c0a_Player_AddToXPosition:
 ; Adds signed 16-bit (C, B) to wD20E/wD20F (player world X)
-    ld   A, [wD20E_Player_XPosition]                                    ;; 02:4c0a $fa $0e $d2
+    ld   A, [wD20E_Player_XPositionLo]                                    ;; 02:4c0a $fa $0e $d2
     add  A, C                                          ;; 02:4c0d $81
-    ld   [wD20E_Player_XPosition], A                                    ;; 02:4c0e $ea $0e $d2
-    ld   A, [wD20F_PlayerXPosition]                                    ;; 02:4c11 $fa $0f $d2
+    ld   [wD20E_Player_XPositionLo], A                                    ;; 02:4c0e $ea $0e $d2
+    ld   A, [wD20F_Player_XPositionHi]                                    ;; 02:4c11 $fa $0f $d2
     adc  A, B                                          ;; 02:4c14 $88
-    ld   [wD20F_PlayerXPosition], A                                    ;; 02:4c15 $ea $0f $d2
+    ld   [wD20F_Player_XPositionHi], A                                    ;; 02:4c15 $ea $0f $d2
     ret                                                ;; 02:4c18 $c9
 
 call_02_4c19_Player_AddToYPosition:
 ; Adds signed 16-bit (C, B) to wD210/wD211 (player world Y)
-    ld   A, [wD210_Player_YPosition]                                    ;; 02:4c19 $fa $10 $d2
+    ld   A, [wD210_Player_YPositionLo]                                    ;; 02:4c19 $fa $10 $d2
     add  A, C                                          ;; 02:4c1c $81
-    ld   [wD210_Player_YPosition], A                                    ;; 02:4c1d $ea $10 $d2
-    ld   A, [wD211_PlayerYPosition]                                    ;; 02:4c20 $fa $11 $d2
+    ld   [wD210_Player_YPositionLo], A                                    ;; 02:4c1d $ea $10 $d2
+    ld   A, [wD211_Player_YPositionHi]                                    ;; 02:4c20 $fa $11 $d2
     adc  A, B                                          ;; 02:4c23 $88
-    ld   [wD211_PlayerYPosition], A                                    ;; 02:4c24 $ea $11 $d2
+    ld   [wD211_Player_YPositionHi], A                                    ;; 02:4c24 $ea $11 $d2
     ret                                                ;; 02:4c27 $c9
 
 call_02_4c28_Player_CheckConveyorWaterTiles:
@@ -629,7 +629,7 @@ call_02_4c4f_Player_CheckTileInteractions:
 ; facing-direction validated) → action $1D. If none of those, looks up current action ID in 
 ; data_02_4d15_ActionInputTransitionTable for an input→action transition table, scans it for matching 
 ; input (with $FE = "any nonzero" wildcard), and calls Player_RequestAction with the found action
-    ld   A, [wD201_PlayerEntity_ActionId]                                    ;; 02:4c4f $fa $01 $d2
+    ld   A, [wD201_Player_ActionId]                                    ;; 02:4c4f $fa $01 $d2
     cp   A, PLAYER_ACTION_DEATH                                        ;; 02:4c52 $fe $10
     jr   Z, .jr_02_4c6a                                ;; 02:4c54 $28 $14
     cp   A, PLAYER_ACTION_DEATH_SET_UP_WARP                                        ;; 02:4c56 $fe $11
@@ -670,7 +670,7 @@ call_02_4c4f_Player_CheckTileInteractions:
     ld   A, PLAYER_ACTION_CLIMB                                        ;; 02:4ca2 $3e $1d
     jr   call_02_4ccd_Player_RequestAction                                  ;; 02:4ca4 $18 $27
 .jr_02_4ca6:
-    ld   HL, wD201_PlayerEntity_ActionId                                     ;; 02:4ca6 $21 $01 $d2
+    ld   HL, wD201_Player_ActionId                                     ;; 02:4ca6 $21 $01 $d2
     ld   L, [HL]                                       ;; 02:4ca9 $6e
     ld   H, $00                                        ;; 02:4caa $26 $00
     add  HL, HL                                        ;; 02:4cac $29
@@ -707,7 +707,7 @@ call_02_4ccd_Player_RequestAction:
 ; Bit 0 clear: checks bit 7 of wD745_Player_QueuedAction — if set (action already pending), reads the 
 ; pending action's flags instead of current; bit 1 of that = "locked" (can't be overridden), 
 ; returns without storing. Otherwise stores new action to wD745_Player_QueuedAction
-    ld   HL, wD201_PlayerEntity_ActionId                                     ;; 02:4ccd $21 $01 $d2
+    ld   HL, wD201_Player_ActionId                                     ;; 02:4ccd $21 $01 $d2
     cp   A, [HL]                                       ;; 02:4cd0 $be
     ret  Z                                             ;; 02:4cd1 $c8
     ld   L, A                                          ;; 02:4cd2 $6f
@@ -719,7 +719,7 @@ call_02_4ccd_Player_RequestAction:
     ld   HL, wD745_Player_QueuedAction                                     ;; 02:4cdd $21 $45 $d7
     bit  7, [HL]                                       ;; 02:4ce0 $cb $7e
     jr   Z, .jr_02_4ce7                                ;; 02:4ce2 $28 $03
-    ld   HL, wD201_PlayerEntity_ActionId                                     ;; 02:4ce4 $21 $01 $d2
+    ld   HL, wD201_Player_ActionId                                     ;; 02:4ce4 $21 $01 $d2
 .jr_02_4ce7:
     ld   L, [HL]                                       ;; 02:4ce7 $6e
     ld   H, $00                                        ;; 02:4ce8 $26 $00

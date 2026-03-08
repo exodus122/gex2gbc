@@ -153,9 +153,9 @@ call_00_13a6_MapWindow_UpdateFromPlayerPos:
 ; below zero. Stores result to wD6ED (map X scroll). 
 ; For Y: subtracts $48 from player Y; clamps between $20 and $0F50, defaulting to $20 if underflow. 
 ; Stores to wD6EF (map Y scroll). 
-; In both axes, computes block coordinates (value × 8, high byte) stored to wD329_BlockXRangeMin/
-; wD32A_BlockXRangeMax (X block range) and wD32B_BlockYRangeMin/wD32C_BlockYRangeMax (Y block range)
-    ld   HL, wD20E_Player_XPosition                                     ;; 00:13a6 $21 $0e $d2
+; In both axes, computes block coordinates (value × 8, high byte) stored to wD329_MapWindow_BlockXRangeMin/
+; wD32A_MapWindow_BlockXRangeMax (X block range) and wD32B_MapWindow_BlockYRangeMin/wD32C_MapWindow_BlockYRangeMax (Y block range)
+    ld   HL, wD20E_Player_XPositionLo                                     ;; 00:13a6 $21 $0e $d2
     ld   A, [HL+]                                      ;; 00:13a9 $2a
     sub  A, $50                                        ;; 00:13aa $d6 $50
     ld   E, A                                          ;; 00:13ac $5f
@@ -188,10 +188,10 @@ call_00_13a6_MapWindow_UpdateFromPlayerPos:
     add  HL, HL                                        ;; 00:13d4 $29
     add  HL, HL                                        ;; 00:13d5 $29
     ld   A, H                                          ;; 00:13d6 $7c
-    ld   [wD329_BlockXRangeMin], A                                    ;; 00:13d7 $ea $29 $d3
+    ld   [wD329_MapWindow_BlockXRangeMin], A                                    ;; 00:13d7 $ea $29 $d3
     add  A, $05                                        ;; 00:13da $c6 $05
-    ld   [wD32A_BlockXRangeMax], A                                    ;; 00:13dc $ea $2a $d3
-    ld   HL, wD210_Player_YPosition                                     ;; 00:13df $21 $10 $d2
+    ld   [wD32A_MapWindow_BlockXRangeMax], A                                    ;; 00:13dc $ea $2a $d3
+    ld   HL, wD210_Player_YPositionLo                                     ;; 00:13df $21 $10 $d2
     ld   A, [HL+]                                      ;; 00:13e2 $2a
     sub  A, $48                                        ;; 00:13e3 $d6 $48
     ld   E, A                                          ;; 00:13e5 $5f
@@ -224,9 +224,9 @@ call_00_13a6_MapWindow_UpdateFromPlayerPos:
     add  HL, HL                                        ;; 00:140d $29
     add  HL, HL                                        ;; 00:140e $29
     ld   A, H                                          ;; 00:140f $7c
-    ld   [wD32B_BlockYRangeMin], A                                    ;; 00:1410 $ea $2b $d3
+    ld   [wD32B_MapWindow_BlockYRangeMin], A                                    ;; 00:1410 $ea $2b $d3
     add  A, $05                                        ;; 00:1413 $c6 $05
-    ld   [wD32C_BlockYRangeMax], A                                    ;; 00:1415 $ea $2c $d3
+    ld   [wD32C_MapWindow_BlockYRangeMax], A                                    ;; 00:1415 $ea $2c $d3
     ret                                                ;; 00:1418 $c9
 
 call_00_1419_BgMap_LoadTileset:

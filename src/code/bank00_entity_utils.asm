@@ -481,8 +481,8 @@ call_00_335a_Entity_SetYVelocity:
     ld   [HL], C                                       ;; 00:3362 $71
     ret                                                ;; 00:3363 $c9
 
-call_00_3364_Entity_TrackPlayerXWithBounds:
-; Compares entity X (block-scaled) against room bounds from wD309_EntityBoundingBoxXMax; if player is within range, 
+call_00_3364_Entity_ApproachPlayerXWithBounds:
+; Compares entity X (block-scaled) against bounding box from wD309_EntityBoundingBoxXMax; if player is within range, 
 ; sets facing direction toward player and applies movement delta to X pos
     ld   a,[wD300_CurrentEntityAddrLo]
     rrca 
@@ -760,8 +760,8 @@ call_00_34ba_Entity_GetUpperYBound:
     ld   D, H                                          ;; 00:34d6 $54
     ret                                                ;; 00:34d7 $c9
 
-call_00_34d8_Entity_ClearSlotCounter:
-; Zeros the wD301-indexed slot counter byte for this entity's slot
+call_00_34d8_Entity_ResetEntityListIndex:
+; Zeros the wD301_EntityListIndexesForCurrentEntities-indexed slot counter byte for this entity's slot
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:34d8 $fa $00 $d3
     rlca                                               ;; 00:34db $07
     rlca                                               ;; 00:34dc $07
@@ -769,7 +769,7 @@ call_00_34d8_Entity_ClearSlotCounter:
     and  A, $07                                        ;; 00:34de $e6 $07
     ld   L, A                                          ;; 00:34e0 $6f
     ld   H, $00                                        ;; 00:34e1 $26 $00
-    ld   DE, wD301                                     ;; 00:34e3 $11 $01 $d3
+    ld   DE, wD301_EntityListIndexesForCurrentEntities                                     ;; 00:34e3 $11 $01 $d3
     add  HL, DE                                        ;; 00:34e6 $19
     ld   [HL], $00                                     ;; 00:34e7 $36 $00
     ret                                                ;; 00:34e9 $c9
@@ -796,9 +796,9 @@ call_00_34f5_Entity_CompareMiscFlags:
     inc  B                                             ;; 00:350a $04
     ret                                                ;; 00:350b $c9
 
-call_00_350c_Entity_CheckIfPlayerInRoomBounds:
-; Reads this entity's room bounds (X min/max, Y min/max) from wD309_EntityBoundingBoxXMax–wD30C_EntityBoundingBoxYMin; 
-; compares against wD329_BlockXRangeMin (camera/scroll bounds); returns carry if player is outside
+call_00_350c_Entity_CheckIfOnScreen:
+; Reads this entity's bounding box (X min/max, Y min/max) from wD309_EntityBoundingBoxXMax–wD30C_EntityBoundingBoxYMin; 
+; compares against wD329_MapWindow_BlockXRangeMin (camera/scroll bounds); returns carry if entity is outside
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:350c $fa $00 $d3
     rrca                                               ;; 00:350f $0f
     rrca                                               ;; 00:3510 $0f
@@ -814,7 +814,7 @@ call_00_350c_Entity_CheckIfPlayerInRoomBounds:
     ld   D, [HL]                                       ;; 00:351d $56
     inc  HL                                            ;; 00:351e $23
     ld   E, [HL]                                       ;; 00:351f $5e
-    ld   HL, wD329_BlockXRangeMin                                     ;; 00:3520 $21 $29 $d3
+    ld   HL, wD329_MapWindow_BlockXRangeMin                                     ;; 00:3520 $21 $29 $d3
     ld   A, B                                          ;; 00:3523 $78
     cp   A, [HL]                                       ;; 00:3524 $be
     ret  C                                             ;; 00:3525 $d8
@@ -830,8 +830,8 @@ call_00_350c_Entity_CheckIfPlayerInRoomBounds:
     cp   A, E                                          ;; 00:352f $bb
     ret                                                ;; 00:3530 $c9
 
-call_00_3531_Entity_CheckIfXWithinRoomBoundsOnly:
-; Stripped-down version of call_00_3364 — only checks if entity X is within room X bounds, no movement
+call_00_3531_Entity_CheckIfXWithinBoundingBox:
+; Stripped-down version of call_00_3364 — only checks if entity X is within X bounding box, no movement
     ld   a,[wD300_CurrentEntityAddrLo]
     rrca 
     rrca 
@@ -963,7 +963,7 @@ call_00_35d5_Entity_MoveXAndPushPlayer:
     cp   A, [HL]                                       ;; 00:35f6 $be
     ret  NZ                                            ;; 00:35f7 $c0
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS_ON_SCREEN
-    ld   A, [wD212_PlayerScreenXPosition]                                    ;; 00:3600 $fa $12 $d2
+    ld   A, [wD212_Player_ScreenXPosition]                                    ;; 00:3600 $fa $12 $d2
     cp   A, [HL]                                       ;; 00:3603 $be
     jr   C, .jr_00_3616                                ;; 00:3604 $38 $10
     ld   A, L                                          ;; 00:3606 $7d
@@ -971,10 +971,10 @@ call_00_35d5_Entity_MoveXAndPushPlayer:
     ld   L, A                                          ;; 00:3609 $6f
     ld   A, E                                          ;; 00:360a $7b
     add  A, [HL]                                       ;; 00:360b $86
-    ld   [wD20E_Player_XPosition], A                                    ;; 00:360c $ea $0e $d2
+    ld   [wD20E_Player_XPositionLo], A                                    ;; 00:360c $ea $0e $d2
     ld   A, D                                          ;; 00:360f $7a
     adc  A, $00                                        ;; 00:3610 $ce $00
-    ld   [wD20F_PlayerXPosition], A                                    ;; 00:3612 $ea $0f $d2
+    ld   [wD20F_Player_XPositionHi], A                                    ;; 00:3612 $ea $0f $d2
     ret                                                ;; 00:3615 $c9
 .jr_00_3616:
     ld   A, L                                          ;; 00:3616 $7d
@@ -984,66 +984,68 @@ call_00_35d5_Entity_MoveXAndPushPlayer:
     inc  C                                             ;; 00:361b $0c
     ld   A, E                                          ;; 00:361c $7b
     sub  A, C                                          ;; 00:361d $91
-    ld   [wD20E_Player_XPosition], A                                    ;; 00:361e $ea $0e $d2
+    ld   [wD20E_Player_XPositionLo], A                                    ;; 00:361e $ea $0e $d2
     ld   A, D                                          ;; 00:3621 $7a
     sbc  A, $00                                        ;; 00:3622 $de $00
-    ld   [wD20F_PlayerXPosition], A                                    ;; 00:3624 $ea $0f $d2
+    ld   [wD20F_Player_XPositionHi], A                                    ;; 00:3624 $ea $0f $d2
     ret                                                ;; 00:3627 $c9
 
 call_00_3628_Entity_SaveWorldState:
-; Backs up camera/interaction pointers (wD74D_Player_InteractedEntityLo–wD74F_Player_PlatformRelated2, wD688_FlyAnimationPosition), copies entity table (wD000), 
-; player entity (wD200), slot table (wD301), and room bounds (wD309_EntityBoundingBoxXMax) into 
-; save buffers at wD79F/wD89F/wD99F/wD9A7
+; Backs up camera/interaction pointers (wD74D_Player_InteractedEntityLo–wD74F_Player_PlatformRelated2, 
+; wD688_FlyAnimationPosition), copies entity table (wD000), player entity (wD200), 
+; slot table (wD301_EntityListIndexesForCurrentEntities), and bounding box (wD309_EntityBoundingBoxXMax) into 
+; save buffers at wD79F_BackupBuffer_EntityFlags/wD89F_BackupBuffer_EntityMemory/
+; wD99F_BackupBuffer_EntityListIndexes/wD9A7_BackupBuffer_BoundingBoxAndMore
     ld   A, [wD74D_Player_InteractedEntityLo]                                    ;; 00:3628 $fa $4d $d7
-    ld   [wD9C7], A                                    ;; 00:362b $ea $c7 $d9
+    ld   [wD9C7_BackupBuffer_InteractedEntityLo], A                                    ;; 00:362b $ea $c7 $d9
     ld   A, [wD74E_Player_PlatformRelated]                                    ;; 00:362e $fa $4e $d7
-    ld   [wD9C8], A                                    ;; 00:3631 $ea $c8 $d9
+    ld   [wD9C8_BackupBuffer_PlatformRelated], A                                    ;; 00:3631 $ea $c8 $d9
     ld   A, [wD74F_Player_PlatformRelated2]                                    ;; 00:3634 $fa $4f $d7
-    ld   [wD9C9], A                                    ;; 00:3637 $ea $c9 $d9
+    ld   [wD9C9_BackupBuffer_PlatformRelated2], A                                    ;; 00:3637 $ea $c9 $d9
     ld   A, [wD688_FlyAnimationPosition]                                    ;; 00:363a $fa $88 $d6
-    ld   [wD9CA], A                                    ;; 00:363d $ea $ca $d9
+    ld   [wD9CA_BackupBuffer_FlyAnimationPosition], A                                    ;; 00:363d $ea $ca $d9
     ld   A, $a0                                        ;; 00:3640 $3e $a0
     ld   [wD688_FlyAnimationPosition], A                                    ;; 00:3642 $ea $88 $d6
     ld   HL, wD000_EntityFlags                                     ;; 00:3645 $21 $00 $d0
-    ld   DE, wD79F                                     ;; 00:3648 $11 $9f $d7
+    ld   DE, wD79F_BackupBuffer_EntityFlags                                     ;; 00:3648 $11 $9f $d7
     ld   BC, $100                                      ;; 00:364b $01 $00 $01
     call call_00_07b0_MemCopy                                  ;; 00:364e $cd $b0 $07
-    ld   HL, wD200_PlayerEntity_Id                                     ;; 00:3651 $21 $00 $d2
-    ld   DE, wD89F                                     ;; 00:3654 $11 $9f $d8
+    ld   HL, wD200_EntityMemory                                     ;; 00:3651 $21 $00 $d2
+    ld   DE, wD89F_BackupBuffer_EntityMemory                                     ;; 00:3654 $11 $9f $d8
     ld   BC, $100                                      ;; 00:3657 $01 $00 $01
     call call_00_07b0_MemCopy                                  ;; 00:365a $cd $b0 $07
-    ld   HL, wD301                                     ;; 00:365d $21 $01 $d3
-    ld   DE, wD99F                                     ;; 00:3660 $11 $9f $d9
+    ld   HL, wD301_EntityListIndexesForCurrentEntities                                     ;; 00:365d $21 $01 $d3
+    ld   DE, wD99F_BackupBuffer_EntityListIndexes                                     ;; 00:3660 $11 $9f $d9
     ld   BC, $08                                       ;; 00:3663 $01 $08 $00
     call call_00_07b0_MemCopy                                  ;; 00:3666 $cd $b0 $07
     ld   HL, wD309_EntityBoundingBoxXMax                                     ;; 00:3669 $21 $09 $d3
-    ld   DE, wD9A7                                     ;; 00:366c $11 $a7 $d9
+    ld   DE, wD9A7_BackupBuffer_BoundingBoxAndMore                                     ;; 00:366c $11 $a7 $d9
     ld   BC, $20                                       ;; 00:366f $01 $20 $00
     jp   call_00_07b0_MemCopy                                  ;; 00:3672 $c3 $b0 $07
 
 call_00_3675_Entity_RestoreWorldState:
 ; Inverse of call_00_3628_Entity_SaveWorldState — restores all saved buffers back to live RAM
-    ld   A, [wD9C7]                                    ;; 00:3675 $fa $c7 $d9
+    ld   A, [wD9C7_BackupBuffer_InteractedEntityLo]                                    ;; 00:3675 $fa $c7 $d9
     ld   [wD74D_Player_InteractedEntityLo], A                                    ;; 00:3678 $ea $4d $d7
-    ld   A, [wD9C8]                                    ;; 00:367b $fa $c8 $d9
+    ld   A, [wD9C8_BackupBuffer_PlatformRelated]                                    ;; 00:367b $fa $c8 $d9
     ld   [wD74E_Player_PlatformRelated], A                                    ;; 00:367e $ea $4e $d7
-    ld   A, [wD9C9]                                    ;; 00:3681 $fa $c9 $d9
+    ld   A, [wD9C9_BackupBuffer_PlatformRelated2]                                    ;; 00:3681 $fa $c9 $d9
     ld   [wD74F_Player_PlatformRelated2], A                                    ;; 00:3684 $ea $4f $d7
-    ld   A, [wD9CA]                                    ;; 00:3687 $fa $ca $d9
+    ld   A, [wD9CA_BackupBuffer_FlyAnimationPosition]                                    ;; 00:3687 $fa $ca $d9
     ld   [wD688_FlyAnimationPosition], A                                    ;; 00:368a $ea $88 $d6
-    ld   HL, wD79F                                     ;; 00:368d $21 $9f $d7
+    ld   HL, wD79F_BackupBuffer_EntityFlags                                     ;; 00:368d $21 $9f $d7
     ld   DE, wD000_EntityFlags                                     ;; 00:3690 $11 $00 $d0
     ld   BC, $100                                      ;; 00:3693 $01 $00 $01
     call call_00_07b0_MemCopy                                  ;; 00:3696 $cd $b0 $07
-    ld   HL, wD89F                                     ;; 00:3699 $21 $9f $d8
-    ld   DE, wD200_PlayerEntity_Id                                     ;; 00:369c $11 $00 $d2
+    ld   HL, wD89F_BackupBuffer_EntityMemory                                     ;; 00:3699 $21 $9f $d8
+    ld   DE, wD200_Player_EntityId                                     ;; 00:369c $11 $00 $d2
     ld   BC, $100                                      ;; 00:369f $01 $00 $01
     call call_00_07b0_MemCopy                                  ;; 00:36a2 $cd $b0 $07
-    ld   HL, wD99F                                     ;; 00:36a5 $21 $9f $d9
-    ld   DE, wD301                                     ;; 00:36a8 $11 $01 $d3
+    ld   HL, wD99F_BackupBuffer_EntityListIndexes                                     ;; 00:36a5 $21 $9f $d9
+    ld   DE, wD301_EntityListIndexesForCurrentEntities                                     ;; 00:36a8 $11 $01 $d3
     ld   BC, $08                                       ;; 00:36ab $01 $08 $00
     call call_00_07b0_MemCopy                                  ;; 00:36ae $cd $b0 $07
-    ld   HL, wD9A7                                     ;; 00:36b1 $21 $a7 $d9
+    ld   HL, wD9A7_BackupBuffer_BoundingBoxAndMore                                     ;; 00:36b1 $21 $a7 $d9
     ld   DE, wD309_EntityBoundingBoxXMax                                     ;; 00:36b4 $11 $09 $d3
     ld   BC, $20                                       ;; 00:36b7 $01 $20 $00
     jp   call_00_07b0_MemCopy                                  ;; 00:36ba $c3 $b0 $07
@@ -1051,10 +1053,10 @@ call_00_3675_Entity_RestoreWorldState:
 call_00_36bd_Entity_FaceTowardsPlayer:
 ; Computes sign of (player X − entity X); sets facing direction to $20 (left) or $00 (right)
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
-    ld   A, [wD20E_Player_XPosition]                                    ;; 00:36c5 $fa $0e $d2
+    ld   A, [wD20E_Player_XPositionLo]                                    ;; 00:36c5 $fa $0e $d2
     sub  A, [HL]                                       ;; 00:36c8 $96
     inc  HL                                            ;; 00:36c9 $23
-    ld   A, [wD20F_PlayerXPosition]                                    ;; 00:36ca $fa $0f $d2
+    ld   A, [wD20F_Player_XPositionHi]                                    ;; 00:36ca $fa $0f $d2
     sbc  A, [HL]                                       ;; 00:36cd $9e
     ld   C, $20                                        ;; 00:36ce $0e $20
     jr   C, .jr_00_36d4                                ;; 00:36d0 $38 $02
@@ -1069,10 +1071,10 @@ call_00_36bd_Entity_FaceTowardsPlayer:
 call_00_36da_Entity_FaceAwayFromPlayer:
 ; Inverse of above — faces away from player
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
-    ld   a,[wD20E_Player_XPosition]
+    ld   a,[wD20E_Player_XPositionLo]
     sub  [hl]
     inc  hl
-    ld   a,[wD20F_PlayerXPosition]
+    ld   a,[wD20F_Player_XPositionHi]
     sbc  [hl]
     ld   c,$00
     jr   c,.jr_02_36F1
@@ -1086,7 +1088,7 @@ call_00_36da_Entity_FaceAwayFromPlayer:
 
 call_00_36f7_Entity_MoveXByFacingMomentum_BoundsChecked:
 ; Applies facing-based momentum to X, then checks if the resulting X block coordinate 
-; is outside room bounds; updates facing direction accordingly; returns non-zero if direction changed
+; is outside bounding box; updates facing direction accordingly; returns non-zero if direction changed
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_DIRECTION
     ld   C, [HL]                                       ;; 00:36ff $4e
     ld   A, L                                          ;; 00:3700 $7d
@@ -1331,11 +1333,11 @@ call_00_3859_Entity_CheckPlayerXProximity:
 ; Computes (player X − entity X), adds C offset, doubles C, subtracts; 
 ; returns carry/sign indicating whether player is within C-pixel horizontal range
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
-    ld   A, [wD20E_Player_XPosition]                                    ;; 00:3861 $fa $0e $d2
+    ld   A, [wD20E_Player_XPositionLo]                                    ;; 00:3861 $fa $0e $d2
     sub  A, [HL]                                       ;; 00:3864 $96
     ld   E, A                                          ;; 00:3865 $5f
     inc  HL                                            ;; 00:3866 $23
-    ld   A, [wD20F_PlayerXPosition]                                    ;; 00:3867 $fa $0f $d2
+    ld   A, [wD20F_Player_XPositionHi]                                    ;; 00:3867 $fa $0f $d2
     sbc  A, [HL]                                       ;; 00:386a $9e
     ld   D, A                                          ;; 00:386b $57
     ld   L, C                                          ;; 00:386c $69
@@ -1361,7 +1363,7 @@ call_00_3878_Entity_CheckIfTVButtonVisibleOrInRange:
     and  A, $07                                        ;; 00:3884 $e6 $07
     ld   E, A                                          ;; 00:3886 $5f
     ld   D, $00                                        ;; 00:3887 $16 $00
-    ld   HL, wD301                                     ;; 00:3889 $21 $01 $d3
+    ld   HL, wD301_EntityListIndexesForCurrentEntities                                     ;; 00:3889 $21 $01 $d3
     add  HL, DE                                        ;; 00:388c $19
     ld   A, [HL]                                       ;; 00:388d $7e
     dec  A                                             ;; 00:388e $3d
@@ -1415,7 +1417,7 @@ call_00_38c1_Entity_CheckRedRemoteProgressFlag:
     and  A, $07                                        ;; 00:38cd $e6 $07
     ld   E, A                                          ;; 00:38cf $5f
     ld   D, $00                                        ;; 00:38d0 $16 $00
-    ld   HL, wD301                                     ;; 00:38d2 $21 $01 $d3
+    ld   HL, wD301_EntityListIndexesForCurrentEntities                                     ;; 00:38d2 $21 $01 $d3
     add  HL, DE                                        ;; 00:38d5 $19
     ld   A, [HL]                                       ;; 00:38d6 $7e
     dec  A                                             ;; 00:38d7 $3d
@@ -1435,9 +1437,9 @@ call_00_38c1_Entity_CheckRedRemoteProgressFlag:
 .data_02_38ed:
     db   $01, $02, $04                                 ;; 00:38ed .?.
 
-call_00_38f0_Entity_DespawnAll:
+call_00_38f0_Entity_ClearAllSlots:
 ; Iterates all 8 entity slots (addresses $D220–D3E0 step $20); 
-; for each non-FF entity, calls call_00_3910_Entity_DespawnSlot to clear it
+; for each non-FF entity, calls call_00_3910_Entity_ClearSlot to clear it
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:38f0 $fa $00 $d3
     push AF                                            ;; 00:38f3 $f5
     ld   A, $20                                        ;; 00:38f4 $3e $20
@@ -1448,7 +1450,7 @@ call_00_38f0_Entity_DespawnAll:
     ld   H, $d2                                        ;; 00:38fc $26 $d2
     ld   A, [HL]                                       ;; 00:38fe $7e
     cp   A, $ff                                        ;; 00:38ff $fe $ff
-    call NZ, call_00_3910_Entity_DespawnSlot                              ;; 00:3901 $c4 $10 $39
+    call NZ, call_00_3910_Entity_ClearSlot                              ;; 00:3901 $c4 $10 $39
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3904 $fa $00 $d3
     add  A, $20                                        ;; 00:3907 $c6 $20
     jr   NZ, .jr_00_38f6                               ;; 00:3909 $20 $eb
@@ -1456,7 +1458,7 @@ call_00_38f0_Entity_DespawnAll:
     ld   [wD300_CurrentEntityAddrLo], A                                    ;; 00:390c $ea $00 $d3
     ret                                                ;; 00:390f $c9
 
-call_00_3910_Entity_DespawnSlot:
+call_00_3910_Entity_ClearSlot:
 ; Sets entity ID to $FF, then follows the slot-index link to the D0xx entity-flags table 
 ; and clears the flag byte to 0
     LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_ENTITY_ID
@@ -1468,23 +1470,23 @@ call_00_3910_Entity_DespawnSlot:
     and  A, $07                                        ;; 00:391e $e6 $07
     ld   L, A                                          ;; 00:3920 $6f
     ld   H, $00                                        ;; 00:3921 $26 $00
-    ld   DE, wD301                                     ;; 00:3923 $11 $01 $d3
+    ld   DE, wD301_EntityListIndexesForCurrentEntities                                     ;; 00:3923 $11 $01 $d3
     add  HL, DE                                        ;; 00:3926 $19
     ld   L, [HL]                                       ;; 00:3927 $6e
-    ld   H, $d0                                        ;; 00:3928 $26 $d0
+    ld   H, HIGH(wD000_EntityFlags)                                        ;; 00:3928 $26 $d0
     ld   A, [HL]                                       ;; 00:392a $7e
     cp   A, $ff                                        ;; 00:392b $fe $ff
     ret  Z                                             ;; 00:392d $c8
     ld   [HL], $00                                     ;; 00:392e $36 $00
     ret                                                ;; 00:3930 $c9
 
-call_00_3931_Entity_KillSelf:
+call_00_3931_Entity_DeactivateSelf:
 ; Sets own entity ID field to $FF (marks slot as dead)
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_ENTITY_ID
     ld   [HL], $ff                                     ;; 00:3939 $36 $ff
     ret                                                ;; 00:393b $c9
 
-call_00_393c_Entity_ClearEntityFlagSlot:
+call_00_393c_Entity_ClearFlags:
 ; Clears the D0xx entity-flags entry corresponding to this entity's slot index
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:393c $fa $00 $d3
     rlca                                               ;; 00:393f $07
@@ -1493,10 +1495,10 @@ call_00_393c_Entity_ClearEntityFlagSlot:
     and  A, $07                                        ;; 00:3942 $e6 $07
     ld   L, A                                          ;; 00:3944 $6f
     ld   H, $00                                        ;; 00:3945 $26 $00
-    ld   DE, wD301                                     ;; 00:3947 $11 $01 $d3
+    ld   DE, wD301_EntityListIndexesForCurrentEntities                                     ;; 00:3947 $11 $01 $d3
     add  HL, DE                                        ;; 00:394a $19
     ld   L, [HL]                                       ;; 00:394b $6e
-    ld   H, $d0                                        ;; 00:394c $26 $d0
+    ld   H, HIGH(wD000_EntityFlags)                                        ;; 00:394c $26 $d0
     ld   [HL], $ff                                     ;; 00:394e $36 $ff
     ret                                                ;; 00:3950 $c9
 
@@ -1521,7 +1523,7 @@ call_00_3951_Entity_SpawnPlayerClone:
     ld   [wD300_CurrentEntityAddrLo],a
     or   a,$0E
     ld   l,a
-    ld   de,wD20E_Player_XPosition
+    ld   de,wD20E_Player_XPositionLo
     ld   a,[de]
     ldi  [hl],a
     inc  de
@@ -1533,7 +1535,7 @@ call_00_3951_Entity_SpawnPlayerClone:
     inc  de
     ld   a,[de]
     ld   [hl],a
-    call call_00_34d8_Entity_ClearSlotCounter
+    call call_00_34d8_Entity_ResetEntityListIndex
     call call_00_3985_Entity_ParticleBurstInit
     pop  af
     ld   [wD300_CurrentEntityAddrLo],a
@@ -1561,7 +1563,7 @@ call_00_3985_Entity_ParticleBurstInit:
     ld   [HL], $00                                     ;; 00:39a4 $36 $00
     ld   C, $01                                        ;; 00:39a6 $0e $01
     call call_00_3a23_Entity_LoadAnimationData                                  ;; 00:39a8 $cd $23 $3a
-    call call_00_393c_Entity_ClearEntityFlagSlot                                  ;; 00:39ab $cd $3c $39
+    call call_00_393c_Entity_ClearFlags                                  ;; 00:39ab $cd $3c $39
     xor  A, A                                          ;; 00:39ae $af
     FARCALL call_02_7102_Entity_SetAction
     ld   C, SFX_ENEMY_DEFEATED                                        ;; 00:39ba $0e $17
@@ -1831,7 +1833,7 @@ call_00_3bf4_Entity_TriggerPaletteSwap:
     and  A, $07                                        ;; 00:3bff $e6 $07
     ld   L, A                                          ;; 00:3c01 $6f
     ld   H, $00                                        ;; 00:3c02 $26 $00
-    ld   DE, wD301                                     ;; 00:3c04 $11 $01 $d3
+    ld   DE, wD301_EntityListIndexesForCurrentEntities                                     ;; 00:3c04 $11 $01 $d3
     add  HL, DE                                        ;; 00:3c07 $19
     ld   A, [HL]                                       ;; 00:3c08 $7e
     dec  A                                             ;; 00:3c09 $3d

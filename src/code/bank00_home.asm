@@ -309,7 +309,7 @@ call_00_0150_Init:
     ld   A, [wD621_WarpFlags]                                    ;; 00:0433 $fa $21 $d6
     and  A, $08                                        ;; 00:0436 $e6 $08
     jr   Z, .jr_00_043f                                ;; 00:0438 $28 $05
-    call call_00_38f0_Entity_DespawnAll                                  ;; 00:043a $cd $f0 $38
+    call call_00_38f0_Entity_ClearAllSlots                                  ;; 00:043a $cd $f0 $38
     jr   .jr_00_03da                                   ;; 00:043d $18 $9b
 .jr_00_043f:
     ld   A, [wD621_WarpFlags]                                    ;; 00:043f $fa $21 $d6
@@ -713,7 +713,7 @@ call_00_06bf_DealDamageToPlayer:
     dec  [HL]                                          ;; 00:06cf $35
     jr   Z, call_00_0696_Player_Die                                 ;; 00:06d0 $28 $c4
 .jr_00_06d2:
-    ld   A, [wD201_PlayerEntity_ActionId]                                    ;; 00:06d2 $fa $01 $d2
+    ld   A, [wD201_Player_ActionId]                                    ;; 00:06d2 $fa $01 $d2
     and  A, PLAYER_ACTION_MASK                                        ;; 00:06d5 $e6 $1f
     cp   A, PLAYER_ACTION_HIT_BOUNCE                                        ;; 00:06d7 $fe $1c
     jp   Z, call_00_0629_FlyPowerup_StartExit                                 ;; 00:06d9 $ca $29 $06

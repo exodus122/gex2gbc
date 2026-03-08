@@ -160,7 +160,7 @@ call_02_6e17_Entities_InitAndSpawnAll:
     xor  A, A                                          ;; 02:6e17 $af
     ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:6e18 $ea $00 $d3
     ld   A, $00                                        ;; 02:6e1b $3e $00
-    ld   [wD200_PlayerEntity_Id], A                                    ;; 02:6e1d $ea $00 $d2
+    ld   [wD200_Player_EntityId], A                                    ;; 02:6e1d $ea $00 $d2
     ld   A, [wD744_Player_SpawnAction]                                    ;; 02:6e20 $fa $44 $d7
     call call_02_7102_Entity_SetAction                                  ;; 02:6e23 $cd $02 $71
     xor  A, A                                          ;; 02:6e26 $af
@@ -261,10 +261,10 @@ call_02_6eba_Entities_UpdateAll:
     ld   L, A                                          ;; 02:6ee6 $6f
     ld   A, [HL+]                                      ;; 02:6ee7 $2a
     sub  A, $10                                        ;; 02:6ee8 $d6 $10
-    ld   [wD210_Player_YPosition], A                                    ;; 02:6eea $ea $10 $d2
+    ld   [wD210_Player_YPositionLo], A                                    ;; 02:6eea $ea $10 $d2
     ld   A, [HL]                                       ;; 02:6eed $7e
     sbc  A, $00                                        ;; 02:6eee $de $00
-    ld   [wD211_PlayerYPosition], A                                    ;; 02:6ef0 $ea $11 $d2
+    ld   [wD211_Player_YPositionHi], A                                    ;; 02:6ef0 $ea $11 $d2
 .jr_02_6ef3:
     ld   A, [wD74F_Player_PlatformRelated2]                                    ;; 02:6ef3 $fa $4f $d7
     and  A, A                                          ;; 02:6ef6 $a7

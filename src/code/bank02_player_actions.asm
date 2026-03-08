@@ -538,7 +538,7 @@ call_02_4459_PlayerAction_EnterDoor:
     ld   [wD621_WarpFlags],a
     ld   a,PLAYER_ACTION_LEAVE_DOOR
     ld   [wD744_Player_SpawnAction],a
-    call call_00_38f0_Entity_DespawnAll
+    call call_00_38f0_Entity_ClearAllSlots
     ret  
 
 call_02_447e_PlayerAction_LeaveDoor:
@@ -1073,9 +1073,9 @@ call_02_481b_PlayerAction_GoldRemoteWarp:
     ret  
 
 call_02_4828_PlayerAction_RidingRocket:
-; Zeroes X speed. Scans entity slots at $D220 for one with type $31. Reads that entity's 
+; Zeroes X speed. Scans entity slots at $D220 for the rocket entity. Reads that entity's 
 ; Y position field (offset $10), stores to player Y. If resulting block Y < $55, requests Jump. 
-; Used for boss level entry where Gex is placed at a specific Y coordinate and launched upward
+; Used for rocket ride where Gex is placed at a specific Y coordinate and launched upward
     xor  a
     ld   [wD75E_PlayerXSpeed],a
     ld   h,$D2
@@ -1083,7 +1083,7 @@ call_02_4828_PlayerAction_RidingRocket:
 .jr_02_4830:
     ld   l,a
     ld   a,[hl]
-    cp   a,$31
+    cp   a,ENTITY_TOON_TV_ROCKET
     jr   z,.jr_02_483C
     ld   a,l
     add  a,$20
@@ -1096,9 +1096,9 @@ call_02_4828_PlayerAction_RidingRocket:
     ldi  a,[hl]
     ld   h,[hl]
     ld   l,a
-    ld   [wD210_Player_YPosition],a
+    ld   [wD210_Player_YPositionLo],a
     ld   a,h
-    ld   [wD211_PlayerYPosition],a
+    ld   [wD211_Player_YPositionHi],a
     add  hl,hl
     add  hl,hl
     add  hl,hl

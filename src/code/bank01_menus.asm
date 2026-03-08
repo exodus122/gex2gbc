@@ -1114,10 +1114,10 @@ call_01_47f6:
     ld   A, E                                          ;; 01:4867 $7b
     ret                                                ;; 01:4868 $c9
 .jr_01_4869:
-    ld   hl,wD20E_Player_XPosition
+    ld   hl,wD20E_Player_XPositionLo
     jr   .jr_01_4871
 .jr_01_486e:
-    ld   hl,wD210_Player_YPosition
+    ld   hl,wD210_Player_YPositionLo
 .jr_01_4871:
     ldi  a,[hl]
     ld   h,[hl]

@@ -389,19 +389,19 @@ call_03_5ca8_Player_BuildBodySprites:
     call call_00_07b9                                  ;; 03:5cc0 $cd $b9 $07
     ld   A, [wD6ED_BgMap_ScrollX]                                    ;; 03:5cc3 $fa $ed $d6
     ld   C, A                                          ;; 03:5cc6 $4f
-    ld   A, [wD20E_Player_XPosition]                                    ;; 03:5cc7 $fa $0e $d2
+    ld   A, [wD20E_Player_XPositionLo]                                    ;; 03:5cc7 $fa $0e $d2
     sub  A, C                                          ;; 03:5cca $91
     add  A, $08                                        ;; 03:5ccb $c6 $08
     ld   C, A                                          ;; 03:5ccd $4f
-    ld   [wD212_PlayerScreenXPosition], A                                    ;; 03:5cce $ea $12 $d2
+    ld   [wD212_Player_ScreenXPosition], A                                    ;; 03:5cce $ea $12 $d2
     ld   A, [wD6EF_BgMap_ScrollY]                                    ;; 03:5cd1 $fa $ef $d6
     ld   B, A                                          ;; 03:5cd4 $47
-    ld   A, [wD210_Player_YPosition]                                    ;; 03:5cd5 $fa $10 $d2
+    ld   A, [wD210_Player_YPositionLo]                                    ;; 03:5cd5 $fa $10 $d2
     sub  A, B                                          ;; 03:5cd8 $90
     add  A, $10                                        ;; 03:5cd9 $c6 $10
     ld   B, A                                          ;; 03:5cdb $47
-    ld   [wD213_PlayerScreenYPosition], A                                    ;; 03:5cdc $ea $13 $d2
-    ld   A, [wD201_PlayerEntity_ActionId]                                    ;; 03:5cdf $fa $01 $d2
+    ld   [wD213_Player_ScreenYPosition], A                                    ;; 03:5cdc $ea $13 $d2
+    ld   A, [wD201_Player_ActionId]                                    ;; 03:5cdf $fa $01 $d2
     and  A, PLAYER_ACTION_MASK                                        ;; 03:5ce2 $e6 $1f
     cp   A, PLAYER_ACTION_DEATH_SET_UP_WARP                                        ;; 03:5ce4 $fe $11
     jr   Z, .jr_03_5d11                                ;; 03:5ce6 $28 $29
@@ -452,11 +452,11 @@ call_03_5ca8_Player_BuildBodySprites:
     ld   A, [wD742_Player_CurrentFly]                                    ;; 03:5d2d $fa $42 $d7
     and  A, A                                          ;; 03:5d30 $a7
     ret  Z                                             ;; 03:5d31 $c8
-    ld   A, [wD212_PlayerScreenXPosition]                                    ;; 03:5d32 $fa $12 $d2
-    ld   [wD76C], A                                    ;; 03:5d35 $ea $6c $d7
-    ld   A, [wD213_PlayerScreenYPosition]                                    ;; 03:5d38 $fa $13 $d2
+    ld   A, [wD212_Player_ScreenXPosition]                                    ;; 03:5d32 $fa $12 $d2
+    ld   [wD76C_PlayerScreenXPosition_Copy], A                                    ;; 03:5d35 $ea $6c $d7
+    ld   A, [wD213_Player_ScreenYPosition]                                    ;; 03:5d38 $fa $13 $d2
     sub  A, $20                                        ;; 03:5d3b $d6 $20
-    ld   [wD76D], A                                    ;; 03:5d3d $ea $6d $d7
+    ld   [wD76D_PlayerScreenYPosition_CopyMinus20], A                                    ;; 03:5d3d $ea $6d $d7
     ld   HL, wD739                                     ;; 03:5d40 $21 $39 $d7
     ld   E, [HL]                                       ;; 03:5d43 $5e
     ld   A, E                                          ;; 03:5d44 $7b
@@ -473,12 +473,12 @@ call_03_5ca8_Player_BuildBodySprites:
     ld   H, $00                                        ;; 03:5d54 $26 $00
     ld   BC, .data_03_5e9f_FlyParticleOffsetTable                             ;; 03:5d56 $01 $9f $5e
     add  HL, BC                                        ;; 03:5d59 $09
-    ld   A, [wD76D]                                    ;; 03:5d5a $fa $6d $d7
+    ld   A, [wD76D_PlayerScreenYPosition_CopyMinus20]                                    ;; 03:5d5a $fa $6d $d7
     add  A, [HL]                                       ;; 03:5d5d $86
     ld   [DE], A                                       ;; 03:5d5e $12
     inc  E                                             ;; 03:5d5f $1c
     inc  HL                                            ;; 03:5d60 $23
-    ld   A, [wD76C]                                    ;; 03:5d61 $fa $6c $d7
+    ld   A, [wD76C_PlayerScreenXPosition_Copy]                                    ;; 03:5d61 $fa $6c $d7
     add  A, [HL]                                       ;; 03:5d64 $86
     ld   [DE], A                                       ;; 03:5d65 $12
     inc  E                                             ;; 03:5d66 $1c
@@ -618,8 +618,8 @@ call_03_5ebf_Entity_BuildSprites:
     cp   A, $f0                                        ;; 03:5f27 $fe $f0
     jr   NC, .jr_03_5f32                               ;; 03:5f29 $30 $07
 .jr_03_5f2b:
-    call call_00_350c_Entity_CheckIfPlayerInRoomBounds                                  ;; 03:5f2b $cd $0c $35
-    call C, call_00_3910_Entity_DespawnSlot                               ;; 03:5f2e $dc $10 $39
+    call call_00_350c_Entity_CheckIfOnScreen                                  ;; 03:5f2b $cd $0c $35
+    call C, call_00_3910_Entity_ClearSlot                               ;; 03:5f2e $dc $10 $39
     ret                                                ;; 03:5f31 $c9
 .jr_03_5f32:
     inc  E                                             ;; 03:5f32 $1c
@@ -1267,12 +1267,12 @@ call_03_6499_Collectible_BuildSprites:
     ld   A, [wD743_Player_UpdateFlag]                                    ;; 03:64fd $fa $43 $d7
     and  A, A                                          ;; 03:6500 $a7
     jr   Z, .jr_03_6524                                ;; 03:6501 $28 $21
-    ld   A, [wD212_PlayerScreenXPosition]                                    ;; 03:6503 $fa $12 $d2
+    ld   A, [wD212_Player_ScreenXPosition]                                    ;; 03:6503 $fa $12 $d2
     sub  A, C                                          ;; 03:6506 $91
     add  A, $05                                        ;; 03:6507 $c6 $05
     cp   A, $12                                        ;; 03:6509 $fe $12
     jr   NC, .jr_03_6524                               ;; 03:650b $30 $17
-    ld   A, [wD213_PlayerScreenYPosition]                                    ;; 03:650d $fa $13 $d2
+    ld   A, [wD213_Player_ScreenYPosition]                                    ;; 03:650d $fa $13 $d2
     sub  A, B                                          ;; 03:6510 $90
     add  A, $0a                                        ;; 03:6511 $c6 $0a
     cp   A, $24                                        ;; 03:6513 $fe $24

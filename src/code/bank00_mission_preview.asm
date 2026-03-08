@@ -38,7 +38,7 @@ call_00_2329_MissionPreview_LoadAndRun:
     push DE                                            ;; 00:234d $d5
     call call_00_3628_Entity_SaveWorldState                                  ;; 00:234e $cd $28 $36
     pop  DE                                            ;; 00:2351 $d1
-    ld   HL, wD20E_Player_XPosition                                     ;; 00:2352 $21 $0e $d2
+    ld   HL, wD20E_Player_XPositionLo                                     ;; 00:2352 $21 $0e $d2
     ld   C, [HL]                                       ;; 00:2355 $4e
     ld   A, [DE]                                       ;; 00:2356 $1a
     ld   [HL+], A                                      ;; 00:2357 $22
@@ -166,7 +166,7 @@ call_00_2329_MissionPreview_LoadAndRun:
     ld   A, $01                                        ;; 00:2445 $3e $01
     ld   [wD743_Player_UpdateFlag], A                                    ;; 00:2447 $ea $43 $d7
     call call_00_3675_Entity_RestoreWorldState                                  ;; 00:244a $cd $75 $36
-    ld   HL, wD211_PlayerYPosition                                     ;; 00:244d $21 $11 $d2
+    ld   HL, wD211_Player_YPositionHi                                     ;; 00:244d $21 $11 $d2
     pop  BC                                            ;; 00:2450 $c1
     ld   [HL], B                                       ;; 00:2451 $70
     dec  HL                                            ;; 00:2452 $2b
@@ -535,37 +535,37 @@ call_00_2dbf_MissionPreview_UpdateMovement:
     ld   HL, wD75A_CurrentInputsAlt                                     ;; 00:2deb $21 $5a $d7
     bit  PADF_RIGHT_BIT, [HL]                                       ;; 00:2dee $cb $66
     jr   Z, .jr_00_2e01                                ;; 00:2df0 $28 $0f
-    ld   A, [wD20E_Player_XPosition]                                    ;; 00:2df2 $fa $0e $d2
+    ld   A, [wD20E_Player_XPositionLo]                                    ;; 00:2df2 $fa $0e $d2
     add  A, C                                          ;; 00:2df5 $81
-    ld   [wD20E_Player_XPosition], A                                    ;; 00:2df6 $ea $0e $d2
-    ld   A, [wD20F_PlayerXPosition]                                    ;; 00:2df9 $fa $0f $d2
+    ld   [wD20E_Player_XPositionLo], A                                    ;; 00:2df6 $ea $0e $d2
+    ld   A, [wD20F_Player_XPositionHi]                                    ;; 00:2df9 $fa $0f $d2
     adc  A, $00                                        ;; 00:2dfc $ce $00
-    ld   [wD20F_PlayerXPosition], A                                    ;; 00:2dfe $ea $0f $d2
+    ld   [wD20F_Player_XPositionHi], A                                    ;; 00:2dfe $ea $0f $d2
 .jr_00_2e01:
     bit  PADF_LEFT_BIT, [HL]                                       ;; 00:2e01 $cb $6e
     jr   Z, .jr_00_2e14                                ;; 00:2e03 $28 $0f
-    ld   A, [wD20E_Player_XPosition]                                    ;; 00:2e05 $fa $0e $d2
+    ld   A, [wD20E_Player_XPositionLo]                                    ;; 00:2e05 $fa $0e $d2
     sub  A, C                                          ;; 00:2e08 $91
-    ld   [wD20E_Player_XPosition], A                                    ;; 00:2e09 $ea $0e $d2
-    ld   A, [wD20F_PlayerXPosition]                                    ;; 00:2e0c $fa $0f $d2
+    ld   [wD20E_Player_XPositionLo], A                                    ;; 00:2e09 $ea $0e $d2
+    ld   A, [wD20F_Player_XPositionHi]                                    ;; 00:2e0c $fa $0f $d2
     sbc  A, $00                                        ;; 00:2e0f $de $00
-    ld   [wD20F_PlayerXPosition], A                                    ;; 00:2e11 $ea $0f $d2
+    ld   [wD20F_Player_XPositionHi], A                                    ;; 00:2e11 $ea $0f $d2
 .jr_00_2e14:
     bit  PADF_DOWN_BIT, [HL]                                       ;; 00:2e14 $cb $7e
     jr   Z, .jr_00_2e27                                ;; 00:2e16 $28 $0f
-    ld   A, [wD210_Player_YPosition]                                    ;; 00:2e18 $fa $10 $d2
+    ld   A, [wD210_Player_YPositionLo]                                    ;; 00:2e18 $fa $10 $d2
     add  A, C                                          ;; 00:2e1b $81
-    ld   [wD210_Player_YPosition], A                                    ;; 00:2e1c $ea $10 $d2
-    ld   A, [wD211_PlayerYPosition]                                    ;; 00:2e1f $fa $11 $d2
+    ld   [wD210_Player_YPositionLo], A                                    ;; 00:2e1c $ea $10 $d2
+    ld   A, [wD211_Player_YPositionHi]                                    ;; 00:2e1f $fa $11 $d2
     adc  A, $00                                        ;; 00:2e22 $ce $00
-    ld   [wD211_PlayerYPosition], A                                    ;; 00:2e24 $ea $11 $d2
+    ld   [wD211_Player_YPositionHi], A                                    ;; 00:2e24 $ea $11 $d2
 .jr_00_2e27:
     bit  PADF_UP_BIT, [HL]                                       ;; 00:2e27 $cb $76
     ret  Z                                             ;; 00:2e29 $c8
-    ld   A, [wD210_Player_YPosition]                                    ;; 00:2e2a $fa $10 $d2
+    ld   A, [wD210_Player_YPositionLo]                                    ;; 00:2e2a $fa $10 $d2
     sub  A, C                                          ;; 00:2e2d $91
-    ld   [wD210_Player_YPosition], A                                    ;; 00:2e2e $ea $10 $d2
-    ld   A, [wD211_PlayerYPosition]                                    ;; 00:2e31 $fa $11 $d2
+    ld   [wD210_Player_YPositionLo], A                                    ;; 00:2e2e $ea $10 $d2
+    ld   A, [wD211_Player_YPositionHi]                                    ;; 00:2e31 $fa $11 $d2
     sbc  A, $00                                        ;; 00:2e34 $de $00
-    ld   [wD211_PlayerYPosition], A                                    ;; 00:2e36 $ea $11 $d2
+    ld   [wD211_Player_YPositionHi], A                                    ;; 00:2e36 $ea $11 $d2
     ret                                                ;; 00:2e39 $c9

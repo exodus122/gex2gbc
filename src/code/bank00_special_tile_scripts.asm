@@ -17,7 +17,7 @@ call_00_1f46_SpecialTile_OnPlayerAttack:
     ret  Z                                             ;; 00:1f54 $c8
     xor  A, A                                          ;; 00:1f55 $af
     ld   [wD76B_Player_IsAttacking], A                                    ;; 00:1f56 $ea $6b $d7
-    ld   HL, wD20E_Player_XPosition                                     ;; 00:1f59 $21 $0e $d2
+    ld   HL, wD20E_Player_XPositionLo                                     ;; 00:1f59 $21 $0e $d2
     ld   A, [HL+]                                      ;; 00:1f5c $2a
     ld   H, [HL]                                       ;; 00:1f5d $66
     ld   L, A                                          ;; 00:1f5e $6f
@@ -26,7 +26,7 @@ call_00_1f46_SpecialTile_OnPlayerAttack:
     add  HL, HL                                        ;; 00:1f61 $29
     ld   A, H                                          ;; 00:1f62 $7c
     ld   [wD782_OverrideTargetBlockX], A                                    ;; 00:1f63 $ea $82 $d7
-    ld   HL, wD210_Player_YPosition                                     ;; 00:1f66 $21 $10 $d2
+    ld   HL, wD210_Player_YPositionLo                                     ;; 00:1f66 $21 $10 $d2
     ld   A, [HL+]                                      ;; 00:1f69 $2a
     ld   H, [HL]                                       ;; 00:1f6a $66
     ld   L, A                                          ;; 00:1f6b $6f
@@ -84,7 +84,7 @@ call_00_1f80_SpecialTile_RunScript:
     add  A, A                                          ;; 00:1fa7 $87
     add  A, A                                          ;; 00:1fa8 $87
     add  A, A                                          ;; 00:1fa9 $87
-    ld   HL, wD210_Player_YPosition                                     ;; 00:1faa $21 $10 $d2
+    ld   HL, wD210_Player_YPositionLo                                     ;; 00:1faa $21 $10 $d2
     add  A, [HL]                                       ;; 00:1fad $86
     and  A, $e0                                        ;; 00:1fae $e6 $e0
     ld   L, A                                          ;; 00:1fb0 $6f
@@ -98,7 +98,7 @@ call_00_1f80_SpecialTile_RunScript:
     add  A, A                                          ;; 00:1fb9 $87
     add  A, A                                          ;; 00:1fba $87
     ld   C, A                                          ;; 00:1fbb $4f
-    ld   A, [wD20E_Player_XPosition]                                    ;; 00:1fbc $fa $0e $d2
+    ld   A, [wD20E_Player_XPositionLo]                                    ;; 00:1fbc $fa $0e $d2
     add  A, C                                          ;; 00:1fbf $81
     rrca                                               ;; 00:1fc0 $0f
     rrca                                               ;; 00:1fc1 $0f
@@ -109,7 +109,7 @@ call_00_1f80_SpecialTile_RunScript:
     ld   A, H                                          ;; 00:1fc9 $7c
     add  A, $c0                                        ;; 00:1fca $c6 $c0
     ld   [wD77F_OverrideTilemapAddrHi], A                                    ;; 00:1fcc $ea $7f $d7
-    ld   HL, wD20E_Player_XPosition                                     ;; 00:1fcf $21 $0e $d2
+    ld   HL, wD20E_Player_XPositionLo                                     ;; 00:1fcf $21 $0e $d2
     ld   A, [HL+]                                      ;; 00:1fd2 $2a
     ld   H, [HL]                                       ;; 00:1fd3 $66
     ld   L, A                                          ;; 00:1fd4 $6f
@@ -119,7 +119,7 @@ call_00_1f80_SpecialTile_RunScript:
     ld   A, H                                          ;; 00:1fd8 $7c
     add  A, E                                          ;; 00:1fd9 $83
     ld   [wD782_OverrideTargetBlockX], A                                    ;; 00:1fda $ea $82 $d7
-    ld   HL, wD210_Player_YPosition                                     ;; 00:1fdd $21 $10 $d2
+    ld   HL, wD210_Player_YPositionLo                                     ;; 00:1fdd $21 $10 $d2
     ld   A, [HL+]                                      ;; 00:1fe0 $2a
     ld   H, [HL]                                       ;; 00:1fe1 $66
     ld   L, A                                          ;; 00:1fe2 $6f

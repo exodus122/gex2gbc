@@ -118,7 +118,7 @@ data_0a_75fd_EntityAttributeTable:
     db   $40, $08, $10, COLLISION_TYPE_GENERIC_ENEMY, $33, $07, $00, $00 ; 0a:766c ???????? ; ENTITY_SCREAM_TV_HEAD_GHOST
     db   $00, $10, $10, COLLISION_TYPE_GHOST_HEAD, $00, $06, $00, $00 ; 0a:7674 ???????? ; ENTITY_SCREAM_TV_HEAD_GHOST_HEAD
     db   $00, $0c, $0c, COLLISION_TYPE_GENERIC_ENEMY, $00, $07, $00, $00 ; 0a:767c ???????? ; ENTITY_SCREAM_TV_FLOATING_SKULL
-    db   $00, $04, $04, COLLISION_TYPE_PROJECTILE, $00, $06, $00, $00 ; 0a:7684 ???????? ; ENTITY_SCREAM_TV_FLOATING_SKULL_PROJECTILE
+    db   $00, $04, $04, COLLISION_TYPE_MULTI_PROJECTILE, $00, $06, $00, $00 ; 0a:7684 ???????? ; ENTITY_SCREAM_TV_FLOATING_SKULL_PROJECTILE
     db   $00, $0c, $10, COLLISION_TYPE_ZOMBIE, $00, $07, $00, $00 ; 0a:768c ???????? ; ENTITY_SCREAM_TV_ZOMBIE
     db   $00, $10, $10, COLLISION_TYPE_ZOMBIE_HEAD, $00, $06, $00, $00 ; 0a:7694 ???????? ; ENTITY_SCREAM_TV_ZOMBIE_HEAD
     db   $40, $08, $08, COLLISION_TYPE_TOUCH_DAMAGE, $01, $03, $00, $00 ; 0a:769c ???????? ; ENTITY_SCREAM_TV_FALLING_AXE
@@ -169,7 +169,7 @@ data_0a_75fd_EntityAttributeTable:
     db   $00, $08, $08, COLLISION_TYPE_GENERIC_ENEMY, $1e, $07, $00, $00 ; 0a:7804 ???????? ; ENTITY_PRE_HISTORY_BEETLE_VERTICAL
     db   $00, $08, $0c, COLLISION_TYPE_GENERIC_ENEMY, $1e, $07, $00, $00 ; 0a:780c ???????? ; ENTITY_PRE_HISTORY_ANT
     db   $00, $0c, $08, COLLISION_TYPE_GENERIC_ENEMY, $14, $05, $00, $00 ; 0a:7814 ???????? ; ENTITY_PRE_HISTORY_FIRE_PLANT
-    db   $00, $04, $04, COLLISION_TYPE_PROJECTILE, $00, $04, $00, $00 ; 0a:781c ???????? ; ENTITY_PRE_HISTORY_FIRE_PLANT_PROJECTILES
+    db   $00, $04, $04, COLLISION_TYPE_MULTI_PROJECTILE, $00, $04, $00, $00 ; 0a:781c ???????? ; ENTITY_PRE_HISTORY_FIRE_PLANT_PROJECTILES
     db   $00, $08, $10, COLLISION_TYPE_GEYSER, $21, $07, $00, $00 ; 0a:7824 ???????? ; ENTITY_PRE_HISTORY_GEYSER
     db   $00, $10, $0c, COLLISION_TYPE_MOVING_PLATFORM | COLLISION_TYPE_UNK_PLATFORM_FLAG, $20, $04, $00, $00 ; 0a:782c ???????? ; ENTITY_UNK_46
     db   $00, $10, $10, COLLISION_TYPE_GENERIC_ENEMY, $00, $07, $00, $00 ; 0a:7834 ???????? ; ENTITY_PRE_HISTORY_DINOSAUR
@@ -329,7 +329,7 @@ call_0a_7a7c_EntitySpawn_SpawnNextFromList:
     ld   [HL+], A                                      ;; 0a:7aea $22
     inc  DE                                            ;; 0a:7aeb $13
     push DE                                            ;; 0a:7aec $d5
-    FARCALL call_00_350c_Entity_CheckIfPlayerInRoomBounds
+    FARCALL call_00_350c_Entity_CheckIfOnScreen
     pop  DE                                            ;; 0a:7af8 $d1
     ret  C                                             ;; 0a:7af9 $d8
     push DE                                            ;; 0a:7afa $d5
@@ -390,7 +390,7 @@ call_0a_7a7c_EntitySpawn_SpawnNextFromList:
     ld   HL, wD339                                     ;; 0a:7b46 $21 $39 $d3
     ld   L, [HL]                                       ;; 0a:7b49 $6e
     ld   H, $00                                        ;; 0a:7b4a $26 $00
-    ld   DE, wD301                                     ;; 0a:7b4c $11 $01 $d3
+    ld   DE, wD301_EntityListIndexesForCurrentEntities                                     ;; 0a:7b4c $11 $01 $d3
     add  HL, DE                                        ;; 0a:7b4f $19
     ld   A, [wD33A]                                    ;; 0a:7b50 $fa $3a $d3
     ld   [HL], A                                       ;; 0a:7b53 $77
@@ -572,7 +572,7 @@ call_0a_7b9a_EntitySpawn_SpawnChildEntity:
     ld   C, [HL]                                       ;; 0a:7c4a $4e
     FARCALL call_0b_5f57_Entity_LoadGBCPalette
 .jr_0a_7c56:
-    call call_00_34d8_Entity_ClearSlotCounter                                  ;; 0a:7c56 $cd $d8 $34
+    call call_00_34d8_Entity_ResetEntityListIndex                                  ;; 0a:7c56 $cd $d8 $34
     xor  A, A                                          ;; 0a:7c59 $af
     FARCALL call_02_7102_Entity_SetAction
     pop  AF                                            ;; 0a:7c65 $f1
