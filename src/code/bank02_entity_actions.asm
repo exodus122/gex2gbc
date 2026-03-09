@@ -3012,7 +3012,7 @@ call_02_644a_EntityAction_RezopolisSpecialMovingPlatform_Update:
     ld   bc,$0001
     call call_00_37d8_Entity_MoveY
 .jr_02_647F:
-    ld   a,[wD74D_Player_InteractedEntityLo]
+    ld   a,[wD74D_Player_EntityStoodOnLo]
     and  a
     ret  z
 .jr_02_6484:

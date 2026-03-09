@@ -135,7 +135,7 @@ call_02_4204_Player_CheckWallPush:
 ; Checks if Gex should transition to a push animation. If wD74E (platform entity) is nonzero: 
 ; if directional input is held, sets C=$16 (WalkingPush). If zero: checks bit 6 of 
 ; collision flags (wall contact) → C=$15 (StandingPush). Calls Player_RequestAction with C
-    ld   A, [wD74E_Player_PlatformRelated]                                    ;; 02:4204 $fa $4e $d7
+    ld   A, [wD74E_Player_PushedStationaryPlatformLo]                                    ;; 02:4204 $fa $4e $d7
     and  A, A                                          ;; 02:4207 $a7
     jr   NZ, .jr_02_4215                               ;; 02:4208 $20 $0b
     ld   HL, wD585_CollisionFlags                                     ;; 02:420a $21 $85 $d5
@@ -281,15 +281,15 @@ call_02_42e0_PlayerAction_None:                             ;; 02:42e0
     ret
 
 call_02_42e1_PlayerAction_KarateKick:
-; On first frame: sets wD74C = $30 (duration timer). 
-; Each frame: decrements wD74C; when it reaches zero, requests Stand
+; On first frame: sets wD74C_Player_KarateKickTimer = $30 (duration timer). 
+; Each frame: decrements wD74C_Player_KarateKickTimer; when it reaches zero, requests Stand
     ld a, [wD209_Player_ActionState]
     and a,ACTION_STATE_IS_FIRST_FRAME
     jr z, .jr_02_42ed
     ld a, $30
-    ld [wD74C], a
+    ld [wD74C_Player_KarateKickTimer], a
 .jr_02_42ed:
-    ld hl, wD74C
+    ld hl, wD74C_Player_KarateKickTimer
     dec [hl]
     ret nz
     ld a, PLAYER_ACTION_STAND
@@ -634,7 +634,7 @@ call_02_44af_PlayerAction_Climb:
     ld   [wD20D_PlayerFacingAngle], A                                    ;; 02:450d $ea $0d $d2
     ld   A, [HL]                                       ;; 02:4510 $7e
     and  A, $40                                        ;; 02:4511 $e6 $40
-    ld   [wD74B], A                                    ;; 02:4513 $ea $4b $d7
+    ld   [wD74B_Player_ClimbingFlags], A                                    ;; 02:4513 $ea $4b $d7
     ld   HL, .data_02_454f                             ;; 02:4516 $21 $4f $45
     add  HL, DE                                        ;; 02:4519 $19
     ld   C, [HL]                                       ;; 02:451a $4e
@@ -676,7 +676,7 @@ call_02_44af_PlayerAction_Climb:
 .jp_02_455f_PlayerClimbAction_BackgroundTailSpin:
 ; Background climbing while tail-spinning. Calls PlayerBackgroundClimb_Sub for movement. 
 ; Increments counter, computes reverse-rotating sprite frame using .data_02_45a8 (countdown 
-; offset table). Forces facing right and wD74B=0. After $20 frames, returns to climb state 0
+; offset table). Forces facing right and wD74B_Player_ClimbingFlags=0. After $20 frames, returns to climb state 0
     call call_02_4777_PlayerBackgroundClimb_GetDirection
     cp   a,$FF
     jr   z,.jr_02_4569
@@ -705,7 +705,7 @@ call_02_44af_PlayerAction_Climb:
     ld   a,$00
     ld   [wD20D_PlayerFacingAngle],a
     ld   a,$00
-    ld   [wD74B],a
+    ld   [wD74B_Player_ClimbingFlags],a
     ld   hl,wD60F_HDMATransferFlags
     set  0,[hl]
     ld   a,[wD747_Player_ClimbingUnkCounter]
@@ -741,7 +741,7 @@ call_02_44af_PlayerAction_Climb:
     ld   a,[hl]
     cp   a,$FF
     jr   z,.jr_02_45D5
-    ld   [wD74B],a
+    ld   [wD74B_Player_ClimbingFlags],a
 .jr_02_45D5:
     ld   hl, .data_02_461e
     add  hl,de
@@ -822,11 +822,11 @@ call_02_44af_PlayerAction_Climb:
     db   $70, $00, $78, $00, $70, $00, $78, $00        ;; 02:465f ????????
 
 .jp_02_4667_PlayerClimbAction_BackgroundBottom:
-; Dismount animation at the bottom of a background climbable. Clears wD74B. 
+; Dismount animation at the bottom of a background climbable. Clears wD74B_Player_ClimbingFlags. 
 ; Increments counter up to $18; uses (counter >> 2) to index .data_02_4689 (6 sprite IDs $C2–$C7) 
 ; and calls PlayerClimb_DismountBottom_Sub to update sprite. At $18 frames, requests Stand
     ld   A, $00                                        ;; 02:4667 $3e $00
-    ld   [wD74B], A                                    ;; 02:4669 $ea $4b $d7
+    ld   [wD74B_Player_ClimbingFlags], A                                    ;; 02:4669 $ea $4b $d7
     ld   HL, wD747_Player_ClimbingUnkCounter                                     ;; 02:466c $21 $47 $d7
     ld   A, [HL]                                       ;; 02:466f $7e
     cp   A, $18                                        ;; 02:4670 $fe $18
@@ -850,7 +850,7 @@ call_02_44af_PlayerAction_Climb:
 ; Dismount animation at the bottom of a wall climbable. Same structure as BackgroundBottom 
 ; but only 8 frames, using .data_02_46b1 (2 sprite IDs $C8–$C9)  
     ld   a,$00
-    ld   [wD74B],a
+    ld   [wD74B_Player_ClimbingFlags],a
     ld   hl,wD747_Player_ClimbingUnkCounter
     ld   a,[hl]
     cp   a,$08
@@ -880,7 +880,7 @@ call_02_44af_PlayerAction_Climb:
 ; wD749 (pipe direction) × 4 + facing bit to index .data_02_4737 (X/Y delta pairs), 
 ; applies position delta. Uses wD747 (counter >> 1) to index .data_02_472e (sprite IDs $C8–$D0) 
 ; for dismount animation. Increments counter; at $11, reads 4 bytes from .data_02_4757 
-; (new climb state, facing, wD74B, sprite ID) and applies them to complete the transition
+; (new climb state, facing, wD74B_Player_ClimbingFlags, sprite ID) and applies them to complete the transition
     ld   a,[wD73C_FrameCounter2]
     and  a,$1F
     ret  nz
@@ -917,7 +917,7 @@ call_02_44af_PlayerAction_Climb:
     ld   a,[hl]
     call call_02_480f_Player_UpdateSpriteIfChanged
     ld   a,$00
-    ld   [wD74B],a
+    ld   [wD74B_Player_ClimbingFlags],a
     ld   hl,wD747_Player_ClimbingUnkCounter
     inc  [hl]
     ld   a,[hl]
@@ -942,7 +942,7 @@ call_02_44af_PlayerAction_Climb:
     ldi  a,[hl]
     ld   [wD20D_PlayerFacingAngle],a
     ldi  a,[hl]
-    ld   [wD74B],a
+    ld   [wD74B_Player_ClimbingFlags],a
     ldi  a,[hl]
     ld   [wD208_Player_SpriteID],a
     ld   hl,wD60F_HDMATransferFlags

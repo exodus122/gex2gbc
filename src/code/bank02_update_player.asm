@@ -109,7 +109,7 @@ call_02_4939_Player_UpdateMain:
 ; Writes filtered input to wD75A. Decrements wD750_Player_DamageCooldownTimer timer if nonzero. 
 ; Calls: Player_UpdateFacing, bg collision update, Player_ApplyYVelocity, bg tile cache, 
 ; Player_CheckTileInteractions, then dispatches wD745_Player_QueuedAction pending action change 
-; (resets climb state to $FF, clears wD74B), calls the current action function pointer at wD202, 
+; (resets climb state to $FF, clears wD74B_Player_ClimbingFlags), calls the current action function pointer at wD202, 
 ; Player_ApplyXMovement, clears wD758_UnkCollisionRelated, computes wD76A (block X = world X >> 5 high byte), 
 ; clears two entity flags in wD209_Player_ActionState/wD20A_Player_UnkFlags2, ticks action frame counter, 
 ; updates map window, checks water/conveyor tiles, builds body sprites, and decrements three 16-bit 
@@ -203,7 +203,7 @@ call_02_4939_Player_UpdateMain:
     ld   A, $ff                                        ;; 02:49dc $3e $ff
     ld   [wD746_Player_ClimbingState], A                                    ;; 02:49de $ea $46 $d7
     ld   A, $00                                        ;; 02:49e1 $3e $00
-    ld   [wD74B], A                                    ;; 02:49e3 $ea $4b $d7
+    ld   [wD74B_Player_ClimbingFlags], A                                    ;; 02:49e3 $ea $4b $d7
 .jr_02_49e6:
     ld   HL, wD202_Player_ActionFunc                                     ;; 02:49e6 $21 $02 $d2
     ld   A, [HL+]                                      ;; 02:49e9 $2a
@@ -298,9 +298,9 @@ call_02_4a77_Player_ApplyXMovement:
 ; Only runs if not climbing. Takes wD75D (previous X speed), negates if facing left, adds wD75C sub-pixel 
 ; accumulator. Returns if zero. If collision flags low nibble is set (wall hit), applies an equal Y nudge 
 ; (upward, B=$FF) before the X move. Then applies the X delta: if moving left, calls the left-push path; 
-; if moving right, calls the right-push path. Both paths check wD74E_Player_PlatformRelated/
-; wD74F_Player_PlatformRelated2 (scroll lock flags): if both clear, applies delta directly to wD20E/wD20F. 
-; If wD74E_Player_PlatformRelated is set, reads the entity's scroll constraint field (bit 7 = hard lock or 
+; if moving right, calls the right-push path. Both paths check wD74E_Player_PushedStationaryPlatformLo/
+; wD74F_Player_PushedMovingPlatformLo (scroll lock flags): if both clear, applies delta directly to wD20E/wD20F. 
+; If wD74E_Player_PushedStationaryPlatformLo is set, reads the entity's scroll constraint field (bit 7 = hard lock or 
 ; soft lock), compares player screen X (wD212) to the constraint threshold, and either clamps to the saved 
 ; world X or applies the delta with the constraint offset subtracted/added
     ld   A, [wD746_Player_ClimbingState]                                    ;; 02:4a77 $fa $46 $d7
@@ -335,10 +335,10 @@ call_02_4a77_Player_ApplyXMovement:
     ld   C, A                                          ;; 02:4aa6 $4f
     jp   .jp_02_4aaa                                   ;; 02:4aa7 $c3 $aa $4a
 .jp_02_4aaa:
-    ld   A, [wD74E_Player_PlatformRelated]                                    ;; 02:4aaa $fa $4e $d7
+    ld   A, [wD74E_Player_PushedStationaryPlatformLo]                                    ;; 02:4aaa $fa $4e $d7
     and  A, A                                          ;; 02:4aad $a7
     jr   NZ, .jr_02_4ac0                               ;; 02:4aae $20 $10
-    ld   A, [wD74F_Player_PlatformRelated2]                                    ;; 02:4ab0 $fa $4f $d7
+    ld   A, [wD74F_Player_PushedMovingPlatformLo]                                    ;; 02:4ab0 $fa $4f $d7
     and  A, A                                          ;; 02:4ab3 $a7
     ret  NZ                                            ;; 02:4ab4 $c0
 .jr_02_4ab5:
@@ -409,10 +409,10 @@ call_02_4a77_Player_ApplyXMovement:
     ld   [HL], A                                       ;; 02:4b0e $77
     ret                                                ;; 02:4b0f $c9
 .jr_02_4b10:
-    ld   A, [wD74E_Player_PlatformRelated]                                    ;; 02:4b10 $fa $4e $d7
+    ld   A, [wD74E_Player_PushedStationaryPlatformLo]                                    ;; 02:4b10 $fa $4e $d7
     and  A, A                                          ;; 02:4b13 $a7
     jr   NZ, .jr_02_4b26                               ;; 02:4b14 $20 $10
-    ld   A, [wD74F_Player_PlatformRelated2]                                    ;; 02:4b16 $fa $4f $d7
+    ld   A, [wD74F_Player_PushedMovingPlatformLo]                                    ;; 02:4b16 $fa $4f $d7
     and  A, A                                          ;; 02:4b19 $a7
     ret  NZ                                            ;; 02:4b1a $c0
 .jr_02_4b1b:

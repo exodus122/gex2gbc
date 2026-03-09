@@ -222,6 +222,13 @@ DEF MAP_UNUSED_1C                                 EQU $1C
 DEF MAP_UNUSED_1D                                 EQU $1D
 DEF MAP_BOSS_TV_CHANNEL_Z                         EQU $1E
 
+; wD6F9_BgMap_LoadingFlags
+DEF MAP_PENDING_VRAM_TRANSFER    EQU 7   ;
+DEF MAP_SCROLL_LEFT              EQU $08 ;
+DEF MAP_SCROLL_RIGHT             EQU $04 ;
+DEF MAP_SCROLL_UP                EQU $02 ;
+DEF MAP_SCROLL_DOWN              EQU $01 ;
+
 ; Entities
 DEF ENTITY_GEX                              EQU $00
 DEF ENTITY_COLLECTIBLE_SPAWN                EQU $01

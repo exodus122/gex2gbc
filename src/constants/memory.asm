@@ -679,14 +679,7 @@ wD6F7_BgMap_BlocksetAndCollisionBank:
 ; unused byte
     ds 1
 wD6F9_BgMap_LoadingFlags:
-; bit 7 (80) = pending vram transfer
-; bit 6 (40) = unused
-; bit 5 (20) = unused
-; bit 4 (10) = unused
-; bit 3 (08) = scroll left
-; bit 2 (04) = scroll right
-; bit 1 (02) = scroll up
-; bit 0 (01) = scroll down
+; see constants.asm for values
     ds 1                                               ;; d6f9
 wD6FA_BgMap_ColumnScrollPosition:
     ds 1                                               ;; d6fa
@@ -830,17 +823,17 @@ wD749_Player_ClimbingDirection:
 wD74A_Player_NearbyTileRelated:
     ds 1                                               ;; d74a
 
-wD74B:
+wD74B_Player_ClimbingFlags:
     ds 1                                               ;; d74b
 
-wD74C:
+wD74C_Player_KarateKickTimer: ; gets canceled if done into a wall
     ds 1                                               ;; d74c
 
-wD74D_Player_InteractedEntityLo:
+wD74D_Player_EntityStoodOnLo: ; stores lo address of platform entity stood on
     ds 1                                               ;; d74d
-wD74E_Player_PlatformRelated:
+wD74E_Player_PushedStationaryPlatformLo: ; stores lo address of stationary platform entity pushed
     ds 1                                               ;; d74e
-wD74F_Player_PlatformRelated2:
+wD74F_Player_PushedMovingPlatformLo: ; stores lo address of moving platform entity pushed
     ds 1                                               ;; d74f
 
 ; Player Timers
@@ -1046,7 +1039,7 @@ wD99F_BackupBuffer_EntityListIndexes:
     ds 8                                               ;; d99f
 wD9A7_BackupBuffer_BoundingBoxAndMore:
     ds 32                                              ;; d9a7
-wD9C7_BackupBuffer_InteractedEntityLo:
+wD9C7_BackupPlayer_EntityStoodOnLo:
     ds 1                                               ;; d9c7
 wD9C8_BackupBuffer_PlatformRelated:
     ds 1                                               ;; d9c8

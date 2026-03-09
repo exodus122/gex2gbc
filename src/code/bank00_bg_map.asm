@@ -32,7 +32,7 @@ call_00_1264_BgMap_LoadFull:
     ld   A, $16                                        ;; 00:12a0 $3e $16
 .jr_00_12a2:
     push AF                                            ;; 00:12a2 $f5
-    ld   A, $01                                        ;; 00:12a3 $3e $01
+    ld   A, MAP_SCROLL_DOWN                                        ;; 00:12a3 $3e $01
     ld   [wD6F9_BgMap_LoadingFlags], A                                    ;; 00:12a5 $ea $f9 $d6
     call call_00_1455_BgMap_LoadDirtyRegions                                  ;; 00:12a8 $cd $55 $14
     FARCALL call_03_6f5e_BgMap_WriteScrollColumn 
@@ -267,16 +267,16 @@ call_00_1455_BgMap_LoadDirtyRegions:
 ; if set, calls LoadHorizontalBgStrip (camera moved horizontally). Sets bit 7 of wD6F9_BgMap_LoadingFlags to 
 ; signal a pending VRAM transfer is ready
     ld   HL, wD6F9_BgMap_LoadingFlags                                     ;; 00:1455 $21 $f9 $d6
-    bit  7, [HL]                                       ;; 00:1458 $cb $7e
+    bit  MAP_PENDING_VRAM_TRANSFER, [HL]                                       ;; 00:1458 $cb $7e
     jr   NZ, call_00_1455_BgMap_LoadDirtyRegions                              ;; 00:145a $20 $f9
     ld   A, [wD6F9_BgMap_LoadingFlags]                                    ;; 00:145c $fa $f9 $d6
-    and  A, $03                                        ;; 00:145f $e6 $03
+    and  A, MAP_SCROLL_DOWN | MAP_SCROLL_UP      ;; 00:145f $e6 $03
     call NZ, call_00_1472_BgMap_LoadVerticalStrip                              ;; 00:1461 $c4 $72 $14
     ld   A, [wD6F9_BgMap_LoadingFlags]                                    ;; 00:1464 $fa $f9 $d6
-    and  A, $0c                                        ;; 00:1467 $e6 $0c
+    and  A, MAP_SCROLL_RIGHT | MAP_SCROLL_LEFT   ;; 00:1467 $e6 $0c
     call NZ, call_00_157a_BgMap_LoadHorizontalStrip                              ;; 00:1469 $c4 $7a $15
     ld   HL, wD6F9_BgMap_LoadingFlags                                     ;; 00:146c $21 $f9 $d6
-    set  7, [HL]                                       ;; 00:146f $cb $fe
+    set  MAP_PENDING_VRAM_TRANSFER, [HL]                                       ;; 00:146f $cb $fe
     ret                                                ;; 00:1471 $c9
 
 call_00_1472_BgMap_LoadVerticalStrip:
@@ -297,7 +297,7 @@ call_00_1472_BgMap_LoadVerticalStrip:
     ld   B, A                                          ;; 00:1478 $47 ; after this point BC is equal to [wD6EF_BgMap_ScrollY]
     ld   HL, $90                                       ;; 00:1479 $21 $90 $00 ; HL = $90
     ld   A, [wD6F9_BgMap_LoadingFlags]                                    ;; 00:147c $fa $f9 $d6
-    and  A, $02                                        ;; 00:147f $e6 $02
+    and  A, MAP_SCROLL_UP                                        ;; 00:147f $e6 $02
     jr   NZ, .jr_00_1486                               ;; 00:1481 $20 $03
     ld   HL, $ffff                                       ;; 00:1483 $21 $ff $ff (FFFF is -1 basically)
 .jr_00_1486:
@@ -501,7 +501,7 @@ call_00_157a_BgMap_LoadHorizontalStrip:
     ld   D, A                                          ;; 00:1580 $57
     ld   HL, $a0                                       ;; 00:1581 $21 $a0 $00
     ld   A, [wD6F9_BgMap_LoadingFlags]                                    ;; 00:1584 $fa $f9 $d6
-    and  A, $08                                        ;; 00:1587 $e6 $08
+    and  A, MAP_SCROLL_LEFT                                        ;; 00:1587 $e6 $08
     jr   NZ, .jr_00_158e                               ;; 00:1589 $20 $03
     ld   HL, rIE                                       ;; 00:158b $21 $ff $ff
 .jr_00_158e:

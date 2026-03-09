@@ -1050,7 +1050,7 @@ call_03_52c5_CollisionHandler_StationaryPlatform:
 ; to determine approach direction. For top-landing: checks X overlap, then compares 
 ; horizontal approach speed against wD75D (prev X speed) to filter out wall sliding; 
 ; if valid landing, writes entity address to wD74D (player's current platform) and 
-; manages wD74E_Player_PlatformRelated (secondary platform slot). For side/bottom hits: clears platform tracking vars
+; manages wD74E_Player_PushedStationaryPlatformLo (secondary platform slot). For side/bottom hits: clears platform tracking vars
     LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_YPOS_ON_SCREEN
     ld   A, [wD213_Player_ScreenYPosition]                                    ;; 03:52cd $fa $13 $d2
     add  A, $0f                                        ;; 03:52d0 $c6 $0f
@@ -1062,7 +1062,7 @@ call_03_52c5_CollisionHandler_StationaryPlatform:
     add  A, D                                          ;; 03:52d9 $82
     dec  A                                             ;; 03:52da $3d
     cp   A, C                                          ;; 03:52db $b9
-    jr   C, call_03_534d_Platform_ClearPlatformSlots                                ;; 03:52dc $38 $6f
+    jr   C, call_03_534d_StationaryPlatform_ClearPlayerInteraction                                ;; 03:52dc $38 $6f
     dec  L                                             ;; 03:52de $2d
     ld   A, [wD212_Player_ScreenXPosition]                                    ;; 03:52df $fa $12 $d2
     sub  A, [HL]                                       ;; 03:52e2 $96
@@ -1071,35 +1071,35 @@ call_03_52c5_CollisionHandler_StationaryPlatform:
     jr   NZ, .jr_03_52f8                               ;; 03:52e6 $20 $10
     sla  E                                             ;; 03:52e8 $cb $23
     sub  A, E                                          ;; 03:52ea $93
-    jr   C, call_03_534d_Platform_ClearPlatformSlots                                ;; 03:52eb $38 $60
+    jr   C, call_03_534d_StationaryPlatform_ClearPlayerInteraction                                ;; 03:52eb $38 $60
     ld   HL, wD75D_PlayerXSpeedPrev                                     ;; 03:52ed $21 $5d $d7
     cp   A, [HL]                                       ;; 03:52f0 $be
-    jr   C, call_03_5360_Platform_SetSecondarySlot                                ;; 03:52f1 $38 $6d
+    jr   C, call_03_5360_StationaryPlatform_SetPushInteraction                                ;; 03:52f1 $38 $6d
     or   A, [HL]                                       ;; 03:52f3 $b6
-    jr   Z, call_03_5360_Platform_SetSecondarySlot                                ;; 03:52f4 $28 $6a
-    jr   call_03_534d_Platform_ClearPlatformSlots                                   ;; 03:52f6 $18 $55
+    jr   Z, call_03_5360_StationaryPlatform_SetPushInteraction                                ;; 03:52f4 $28 $6a
+    jr   call_03_534d_StationaryPlatform_ClearPlayerInteraction                                   ;; 03:52f6 $18 $55
 .jr_03_52f8:
     cpl                                                ;; 03:52f8 $2f
     ld   HL, wD75D_PlayerXSpeedPrev                                     ;; 03:52f9 $21 $5d $d7
     cp   A, [HL]                                       ;; 03:52fc $be
-    jr   C, call_03_5360_Platform_SetSecondarySlot                                ;; 03:52fd $38 $61
+    jr   C, call_03_5360_StationaryPlatform_SetPushInteraction                                ;; 03:52fd $38 $61
     or   A, [HL]                                       ;; 03:52ff $b6
-    jr   Z, call_03_5360_Platform_SetSecondarySlot                                ;; 03:5300 $28 $5e
-    jr   call_03_534d_Platform_ClearPlatformSlots                                   ;; 03:5302 $18 $49
+    jr   Z, call_03_5360_StationaryPlatform_SetPushInteraction                                ;; 03:5300 $28 $5e
+    jr   call_03_534d_StationaryPlatform_ClearPlayerInteraction                                   ;; 03:5302 $18 $49
 
 call_03_5304_CollisionHandler_OneWayPlatform:
-; Simplified platform — only handles the "approaching from below" path (player Y+$0F < platform Y), 
+; Simplified platform — only handles the "approaching from above" path (player Y+$0F < platform Y), 
 ; then falls through into Platform_LandingCheck. Effectively a one-way/pass-through platform
     LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_YPOS_ON_SCREEN
     ld   a,[wD213_Player_ScreenYPosition]
     add  a,$0F
     cp   [hl]
-    jr   nc,call_03_534d_Platform_ClearPlatformSlots
+    jr   nc,call_03_534d_StationaryPlatform_ClearPlayerInteraction
 call_03_5314_Platform_LandingCheck:
 ; Shared landing sub-routine: checks X overlap against full width (2×E), then computes the 
 ; penetration depth C = platformY − (playerY+$0F+1); if depth ≥ $80 (too deep, tunneled through) 
 ; rejects. Compares Y velocity/16 against depth to decide if landing is valid; if so, writes 
-; entity to wD74D, clears wD74E_Player_PlatformRelated if it matches
+; entity to wD74D, clears wD74E_Player_PushedStationaryPlatformLo if it matches
     ld   C, A                                          ;; 03:5314 $4f
     dec  L                                             ;; 03:5315 $2d
     ld   A, [wD212_Player_ScreenXPosition]                                    ;; 03:5316 $fa $12 $d2
@@ -1107,14 +1107,14 @@ call_03_5314_Platform_LandingCheck:
     add  A, E                                          ;; 03:531a $83
     sla  E                                             ;; 03:531b $cb $23
     cp   A, E                                          ;; 03:531d $bb
-    jr   NC, call_03_534d_Platform_ClearPlatformSlots                               ;; 03:531e $30 $2d
+    jr   NC, call_03_534d_StationaryPlatform_ClearPlayerInteraction     ;; 03:531e $30 $2d
     inc  L                                             ;; 03:5320 $2c
     inc  C                                             ;; 03:5321 $0c
     ld   A, [HL]                                       ;; 03:5322 $7e
     sub  A, C                                          ;; 03:5323 $91
     ld   C, A                                          ;; 03:5324 $4f
     cp   A, $80                                        ;; 03:5325 $fe $80
-    jr   NC, call_03_534d_Platform_ClearPlatformSlots                               ;; 03:5327 $30 $24
+    jr   NC, call_03_534d_StationaryPlatform_ClearPlayerInteraction     ;; 03:5327 $30 $24
     ld   A, [wD760_PlayerYVelocity]                                    ;; 03:5329 $fa $60 $d7
     sra  A                                             ;; 03:532c $cb $2f
     sra  A                                             ;; 03:532e $cb $2f
@@ -1125,49 +1125,49 @@ call_03_5314_Platform_LandingCheck:
     jr   NZ, .jr_03_533f                               ;; 03:5337 $20 $06
     cp   A, $02                                        ;; 03:5339 $fe $02
     jr   C, .jr_03_533f                                ;; 03:533b $38 $02
-    jr   call_03_534d_Platform_ClearPlatformSlots                                   ;; 03:533d $18 $0e
+    jr   call_03_534d_StationaryPlatform_ClearPlayerInteraction         ;; 03:533d $18 $0e
 .jr_03_533f:
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:533f $fa $00 $d3
-    ld   [wD74D_Player_InteractedEntityLo], A                                    ;; 03:5342 $ea $4d $d7
-    ld   HL, wD74E_Player_PlatformRelated                                     ;; 03:5345 $21 $4e $d7
+    ld   [wD74D_Player_EntityStoodOnLo], A                                    ;; 03:5342 $ea $4d $d7
+    ld   HL, wD74E_Player_PushedStationaryPlatformLo                          ;; 03:5345 $21 $4e $d7
     cp   A, [HL]                                       ;; 03:5348 $be
     ret  NZ                                            ;; 03:5349 $c0
     ld   [HL], $00                                     ;; 03:534a $36 $00
     ret                                                ;; 03:534c $c9
 
-call_03_534d_Platform_ClearPlatformSlots:
-; Called when platform overlap is definitely false; clears both wD74D and wD74E_Player_PlatformRelated 
+call_03_534d_StationaryPlatform_ClearPlayerInteraction:
+; Called when platform overlap is definitely false; clears both wD74D and wD74E_Player_PushedStationaryPlatformLo 
 ; if they currently reference this entity
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:534d $fa $00 $d3
-    ld   HL, wD74D_Player_InteractedEntityLo                                     ;; 03:5350 $21 $4d $d7
+    ld   A, [wD300_CurrentEntityAddrLo]                ;; 03:534d $fa $00 $d3
+    ld   HL, wD74D_Player_EntityStoodOnLo              ;; 03:5350 $21 $4d $d7
     cp   A, [HL]                                       ;; 03:5353 $be
     jr   NZ, .jr_03_5358                               ;; 03:5354 $20 $02
     ld   [HL], $00                                     ;; 03:5356 $36 $00
 .jr_03_5358:
-    ld   HL, wD74E_Player_PlatformRelated                                     ;; 03:5358 $21 $4e $d7
+    ld   HL, wD74E_Player_PushedStationaryPlatformLo   ;; 03:5358 $21 $4e $d7
     cp   A, [HL]                                       ;; 03:535b $be
     ret  NZ                                            ;; 03:535c $c0
     ld   [HL], $00                                     ;; 03:535d $36 $00
     ret                                                ;; 03:535f $c9
 
-call_03_5360_Platform_SetSecondarySlot:
+call_03_5360_StationaryPlatform_SetPushInteraction:
 ; Clears wD74D if it currently points to this entity (player left primary platform), 
-; then writes entity address to wD74E_Player_PlatformRelated (secondary/adjacent platform tracking)
+; then writes entity address to wD74E_Player_PushedStationaryPlatformLo (secondary/adjacent platform tracking)
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:5360 $fa $00 $d3
-    ld   HL, wD74D_Player_InteractedEntityLo                                     ;; 03:5363 $21 $4d $d7
+    ld   HL, wD74D_Player_EntityStoodOnLo                                     ;; 03:5363 $21 $4d $d7
     cp   A, [HL]                                       ;; 03:5366 $be
     jr   NZ, .jr_03_536b                               ;; 03:5367 $20 $02
     ld   [HL], $00                                     ;; 03:5369 $36 $00
 .jr_03_536b:
-    ld   [wD74E_Player_PlatformRelated], A                                    ;; 03:536b $ea $4e $d7
+    ld   [wD74E_Player_PushedStationaryPlatformLo], A                                    ;; 03:536b $ea $4e $d7
     ret                                                ;; 03:536e $c9
 
 call_03_536f_CollisionHandler_MovingPlatform:
 ; Same structure as stationary platform but additionally reads the platform's X velocity (UNK_0E), 
 ; right-shifts 4×, stores in B, then calls MovingPlatformCollisionHelper to get a corrected 
 ; relative X speed accounting for platform motion. Landing validity is then checked against 
-; (relativeX − B + E + D) instead of raw speed. On landing writes to wD74D/wD74F_Player_PlatformRelated2 
-; (moving platform uses wD74F_Player_PlatformRelated2 instead of wD74E_Player_PlatformRelated); on miss clears both
+; (relativeX − B + E + D) instead of raw speed. On landing writes to wD74D/wD74F_Player_PushedMovingPlatformLo 
+; (moving platform uses wD74F_Player_PushedMovingPlatformLo instead of wD74E_Player_PushedStationaryPlatformLo); on miss clears both
     LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_YPOS_ON_SCREEN
     ld   A, [wD213_Player_ScreenYPosition]                                    ;; 03:5377 $fa $13 $d2
     add  A, $0f                                        ;; 03:537a $c6 $0f
@@ -1254,32 +1254,32 @@ call_03_536f_CollisionHandler_MovingPlatform:
     jr   .jr_03_5405                                   ;; 03:53f5 $18 $0e
 .jr_03_53f7:
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:53f7 $fa $00 $d3
-    ld   [wD74D_Player_InteractedEntityLo], A                                    ;; 03:53fa $ea $4d $d7
-    ld   HL, wD74F_Player_PlatformRelated2                                     ;; 03:53fd $21 $4f $d7
+    ld   [wD74D_Player_EntityStoodOnLo], A                                    ;; 03:53fa $ea $4d $d7
+    ld   HL, wD74F_Player_PushedMovingPlatformLo                                     ;; 03:53fd $21 $4f $d7
     cp   A, [HL]                                       ;; 03:5400 $be
     ret  NZ                                            ;; 03:5401 $c0
     ld   [HL], $00                                     ;; 03:5402 $36 $00
     ret                                                ;; 03:5404 $c9
 .jr_03_5405:
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:5405 $fa $00 $d3
-    ld   HL, wD74D_Player_InteractedEntityLo                                     ;; 03:5408 $21 $4d $d7
+    ld   HL, wD74D_Player_EntityStoodOnLo                                     ;; 03:5408 $21 $4d $d7
     cp   A, [HL]                                       ;; 03:540b $be
     jr   NZ, .jr_03_5410                               ;; 03:540c $20 $02
     ld   [HL], $00                                     ;; 03:540e $36 $00
 .jr_03_5410:
-    ld   HL, wD74F_Player_PlatformRelated2                                     ;; 03:5410 $21 $4f $d7
+    ld   HL, wD74F_Player_PushedMovingPlatformLo                                     ;; 03:5410 $21 $4f $d7
     cp   A, [HL]                                       ;; 03:5413 $be
     ret  NZ                                            ;; 03:5414 $c0
     ld   [HL], $00                                     ;; 03:5415 $36 $00
     ret                                                ;; 03:5417 $c9
 .jr_03_5418:
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:5418 $fa $00 $d3
-    ld   HL, wD74D_Player_InteractedEntityLo                                     ;; 03:541b $21 $4d $d7
+    ld   HL, wD74D_Player_EntityStoodOnLo                                     ;; 03:541b $21 $4d $d7
     cp   A, [HL]                                       ;; 03:541e $be
     jr   NZ, .jr_03_5423                               ;; 03:541f $20 $02
     ld   [HL], $00                                     ;; 03:5421 $36 $00
 .jr_03_5423:
-    ld   [wD74F_Player_PlatformRelated2], A                                    ;; 03:5423 $ea $4f $d7
+    ld   [wD74F_Player_PushedMovingPlatformLo], A                                    ;; 03:5423 $ea $4f $d7
     ret                                                ;; 03:5426 $c9
 
 call_03_5427_MovingPlatform_GetRelativeXSpeed:

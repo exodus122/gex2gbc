@@ -21,13 +21,13 @@ call_03_4915_BgCollision_Sidescroller:
 ; handler instead. Otherwise: computes a Y-velocity-derived lookahead value (Y velocity − 2, clamped to $C0, 
 ; then arithmetic right-shifted 4) stored in wD75F. Calls call_03_4ab3_BgCollision_GetXOffset to get the X offset. 
 ; (1) Wall check: samples 4 tile rows at the leading edge above the player (moving up at the predicted speed), 
-; ORs all 4 tile collision bytes together into C. If bit 0 of C is set (solid wall), sets wD74C=$01, 
+; ORs all 4 tile collision bytes together into C. If bit 0 of C is set (solid wall), sets wD74C_Player_KarateKickTimer=$01, 
 ; zeros wD75C/wD75D, sets bit 6 of collision flags (wall hit). 
 ; (2) Horizontal push check: if no bit-7 collision, calls call_03_4ab3_BgCollision_GetXOffset again and walks either right (C=+1) 
 ; or left (C=−1) through successive tiles calling TileCollisionCheck_Raw, counting how many are solid into B. 
 ; Negates B, ORs into collision flags; if any of the low nibble bits are set, also sets bit 7. 
 ; Falls through to the floor/ceiling check
-    ld   A, [wD74D_Player_InteractedEntityLo]                                    ;; 03:4915 $fa $4d $d7
+    ld   A, [wD74D_Player_EntityStoodOnLo]                                    ;; 03:4915 $fa $4d $d7
     and  A, A                                          ;; 03:4918 $a7
     jr   Z, .jr_03_491d                                ;; 03:4919 $28 $02
     set  7, [HL]                                       ;; 03:491b $cb $fe ; set 0x80
@@ -107,7 +107,7 @@ call_03_4915_BgCollision_Sidescroller:
     bit  0, C                                          ;; 03:4994 $cb $41
     jr   Z, .jr_03_49bd                                ;; 03:4996 $28 $25
     ld   A, $01                                        ;; 03:4998 $3e $01
-    ld   [wD74C], A                                    ;; 03:499a $ea $4c $d7
+    ld   [wD74C_Player_KarateKickTimer], A                                    ;; 03:499a $ea $4c $d7
     ld   HL, wD20E_Player_XPositionLo                                     ;; 03:499d $21 $0e $d2
     bit  7, E                                          ;; 03:49a0 $cb $7b
     jr   NZ, .jr_03_49ab                               ;; 03:49a2 $20 $07

@@ -781,10 +781,10 @@ call_00_34ea_Entity_IsFirstFrameOfAction:
     ret                                                ;; 00:34f4 $c9
 
 call_00_34f5_Entity_CompareMiscFlags:
-; Checks wD74D_Player_InteractedEntityLo (current player interacted entity) against high bits of entity address; 
+; Checks wD74D_Player_EntityStoodOnLo (current player interacted entity) against high bits of entity address; 
 ; sets B=1 if player is interacting with the current object
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
-    ld   A, [wD74D_Player_InteractedEntityLo]                                    ;; 00:34fd $fa $4d $d7
+    ld   A, [wD74D_Player_EntityStoodOnLo]                                    ;; 00:34fd $fa $4d $d7
     ld   B, A                                          ;; 00:3500 $47
     and  A, A                                          ;; 00:3501 $a7
     ret  Z                                             ;; 00:3502 $c8
@@ -952,14 +952,14 @@ call_00_35d5_Entity_MoveXAndPushPlayer:
     ld   D, A                                          ;; 00:35e4 $57
     ld   A, L                                          ;; 00:35e5 $7d
     and  A, $e0                                        ;; 00:35e6 $e6 $e0
-    ld   HL, wD74D_Player_InteractedEntityLo                                     ;; 00:35e8 $21 $4d $d7
+    ld   HL, wD74D_Player_EntityStoodOnLo                                     ;; 00:35e8 $21 $4d $d7
     cp   A, [HL]                                       ;; 00:35eb $be
     jr   NZ, .jr_00_35f3                               ;; 00:35ec $20 $05
     ld   A, C                                          ;; 00:35ee $79
     ld   [wD75C], A                                    ;; 00:35ef $ea $5c $d7
     ret                                                ;; 00:35f2 $c9
 .jr_00_35f3:
-    ld   HL, wD74F_Player_PlatformRelated2                                     ;; 00:35f3 $21 $4f $d7
+    ld   HL, wD74F_Player_PushedMovingPlatformLo                                     ;; 00:35f3 $21 $4f $d7
     cp   A, [HL]                                       ;; 00:35f6 $be
     ret  NZ                                            ;; 00:35f7 $c0
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS_ON_SCREEN
@@ -991,16 +991,16 @@ call_00_35d5_Entity_MoveXAndPushPlayer:
     ret                                                ;; 00:3627 $c9
 
 call_00_3628_Entity_SaveWorldState:
-; Backs up camera/interaction pointers (wD74D_Player_InteractedEntityLo–wD74F_Player_PlatformRelated2, 
+; Backs up camera/interaction pointers (wD74D_Player_EntityStoodOnLo–wD74F_Player_PushedMovingPlatformLo, 
 ; wD688_FlyAnimationPosition), copies entity table (wD000), player entity (wD200), 
 ; slot table (wD301_EntityListIndexesForCurrentEntities), and bounding box (wD309_EntityBoundingBoxXMax) into 
 ; save buffers at wD79F_BackupBuffer_EntityFlags/wD89F_BackupBuffer_EntityMemory/
 ; wD99F_BackupBuffer_EntityListIndexes/wD9A7_BackupBuffer_BoundingBoxAndMore
-    ld   A, [wD74D_Player_InteractedEntityLo]                                    ;; 00:3628 $fa $4d $d7
-    ld   [wD9C7_BackupBuffer_InteractedEntityLo], A                                    ;; 00:362b $ea $c7 $d9
-    ld   A, [wD74E_Player_PlatformRelated]                                    ;; 00:362e $fa $4e $d7
+    ld   A, [wD74D_Player_EntityStoodOnLo]                                    ;; 00:3628 $fa $4d $d7
+    ld   [wD9C7_BackupPlayer_EntityStoodOnLo], A                                    ;; 00:362b $ea $c7 $d9
+    ld   A, [wD74E_Player_PushedStationaryPlatformLo]                                    ;; 00:362e $fa $4e $d7
     ld   [wD9C8_BackupBuffer_PlatformRelated], A                                    ;; 00:3631 $ea $c8 $d9
-    ld   A, [wD74F_Player_PlatformRelated2]                                    ;; 00:3634 $fa $4f $d7
+    ld   A, [wD74F_Player_PushedMovingPlatformLo]                                    ;; 00:3634 $fa $4f $d7
     ld   [wD9C9_BackupBuffer_PlatformRelated2], A                                    ;; 00:3637 $ea $c9 $d9
     ld   A, [wD688_FlyAnimationPosition]                                    ;; 00:363a $fa $88 $d6
     ld   [wD9CA_BackupBuffer_FlyAnimationPosition], A                                    ;; 00:363d $ea $ca $d9
@@ -1025,12 +1025,12 @@ call_00_3628_Entity_SaveWorldState:
 
 call_00_3675_Entity_RestoreWorldState:
 ; Inverse of call_00_3628_Entity_SaveWorldState — restores all saved buffers back to live RAM
-    ld   A, [wD9C7_BackupBuffer_InteractedEntityLo]                                    ;; 00:3675 $fa $c7 $d9
-    ld   [wD74D_Player_InteractedEntityLo], A                                    ;; 00:3678 $ea $4d $d7
+    ld   A, [wD9C7_BackupPlayer_EntityStoodOnLo]                                    ;; 00:3675 $fa $c7 $d9
+    ld   [wD74D_Player_EntityStoodOnLo], A                                    ;; 00:3678 $ea $4d $d7
     ld   A, [wD9C8_BackupBuffer_PlatformRelated]                                    ;; 00:367b $fa $c8 $d9
-    ld   [wD74E_Player_PlatformRelated], A                                    ;; 00:367e $ea $4e $d7
+    ld   [wD74E_Player_PushedStationaryPlatformLo], A                                    ;; 00:367e $ea $4e $d7
     ld   A, [wD9C9_BackupBuffer_PlatformRelated2]                                    ;; 00:3681 $fa $c9 $d9
-    ld   [wD74F_Player_PlatformRelated2], A                                    ;; 00:3684 $ea $4f $d7
+    ld   [wD74F_Player_PushedMovingPlatformLo], A                                    ;; 00:3684 $ea $4f $d7
     ld   A, [wD9CA_BackupBuffer_FlyAnimationPosition]                                    ;; 00:3687 $fa $ca $d9
     ld   [wD688_FlyAnimationPosition], A                                    ;; 00:368a $ea $88 $d6
     ld   HL, wD79F_BackupBuffer_EntityFlags                                     ;; 00:368d $21 $9f $d7

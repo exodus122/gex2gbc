@@ -1293,16 +1293,16 @@ call_00_0ac1:
     and  A, $01                                        ;; 00:0ac9 $e6 $01
     ld   [MBC1SRamBank], A                                    ;; 00:0acb $ea $01 $40
     ld   HL, wD6F9_BgMap_LoadingFlags                                     ;; 00:0ace $21 $f9 $d6
-    bit  7, [HL]                                       ;; 00:0ad1 $cb $7e
+    bit  MAP_PENDING_VRAM_TRANSFER, [HL]                                       ;; 00:0ad1 $cb $7e
     jr   Z, .jr_00_0af0                                ;; 00:0ad3 $28 $1b
-    res  7, [HL]                                       ;; 00:0ad5 $cb $be
+    res  MAP_PENDING_VRAM_TRANSFER, [HL]                                       ;; 00:0ad5 $cb $be
     ld   A, [wD6F9_BgMap_LoadingFlags]                                    ;; 00:0ad7 $fa $f9 $d6
-    and  A, $0f                                        ;; 00:0ada $e6 $0f
+    and  A, MAP_SCROLL_DOWN | MAP_SCROLL_UP | MAP_SCROLL_RIGHT | MAP_SCROLL_LEFT  ;; 00:0ada $e6 $0f
     jr   Z, .jr_00_0af0                                ;; 00:0adc $28 $12
-    and  A, $03                                        ;; 00:0ade $e6 $03
+    and  A, MAP_SCROLL_DOWN | MAP_SCROLL_UP                                        ;; 00:0ade $e6 $03
     call NZ, call_03_6f5e_BgMap_WriteScrollColumn                              ;; 00:0ae0 $c4 $5e $6f
     ld   A, [wD6F9_BgMap_LoadingFlags]                                    ;; 00:0ae3 $fa $f9 $d6
-    and  A, $0c                                        ;; 00:0ae6 $e6 $0c
+    and  A, MAP_SCROLL_RIGHT | MAP_SCROLL_LEFT                                        ;; 00:0ae6 $e6 $0c
     call NZ, call_03_708d_BgMap_WriteScrollRow                              ;; 00:0ae8 $c4 $8d $70
     xor  A, A                                          ;; 00:0aeb $af
     ld   [wD6F9_BgMap_LoadingFlags], A                                    ;; 00:0aec $ea $f9 $d6

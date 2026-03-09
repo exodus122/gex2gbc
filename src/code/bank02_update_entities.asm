@@ -166,7 +166,7 @@ call_02_6e17_Entities_InitAndSpawnAll:
     xor  A, A                                          ;; 02:6e26 $af
     ld   [wD621_WarpFlags], A                                    ;; 02:6e27 $ea $21 $d6
     xor  A, A                                          ;; 02:6e2a $af
-    ld   [wD74C], A                                    ;; 02:6e2b $ea $4c $d7
+    ld   [wD74C_Player_KarateKickTimer], A                                    ;; 02:6e2b $ea $4c $d7
     ld   [wD75D_PlayerXSpeedPrev], A                                    ;; 02:6e2e $ea $5d $d7
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:6e31 $ea $5e $d7
     ld   [wD75C], A                                    ;; 02:6e34 $ea $5c $d7
@@ -185,17 +185,17 @@ call_02_6e17_Entities_InitAndSpawnAll:
     ld   [wD586_GexSpriteStateFlags], A                                    ;; 02:6e58 $ea $86 $d5
     ld   [wD74A_Player_NearbyTileRelated], A                                    ;; 02:6e5b $ea $4a $d7
     ld   A, $00                                        ;; 02:6e5e $3e $00
-    ld   [wD74B], A                                    ;; 02:6e60 $ea $4b $d7
+    ld   [wD74B_Player_ClimbingFlags], A                                    ;; 02:6e60 $ea $4b $d7
     ld   A, $00                                        ;; 02:6e63 $3e $00
     ld   [wD20D_PlayerFacingAngle], A                                    ;; 02:6e65 $ea $0d $d2
 call_02_6e68_Entities_InitNPCSlots:
-; Subset of above — only zeros entity interaction-tracking vars (wD74D–wD74F_Player_PlatformRelated2, wD587) and 
+; Subset of above — only zeros entity interaction-tracking vars (wD74D–wD74F_Player_PushedMovingPlatformLo, wD587) and 
 ; fills the 7 NPC slots (D220–D3E0) with $FF
     xor  A, A                                          ;; 02:6e68 $af
     ld   [wD587], A                                    ;; 02:6e69 $ea $87 $d5
-    ld   [wD74D_Player_InteractedEntityLo], A                                    ;; 02:6e6c $ea $4d $d7
-    ld   [wD74E_Player_PlatformRelated], A                                    ;; 02:6e6f $ea $4e $d7
-    ld   [wD74F_Player_PlatformRelated2], A                                    ;; 02:6e72 $ea $4f $d7
+    ld   [wD74D_Player_EntityStoodOnLo], A                                    ;; 02:6e6c $ea $4d $d7
+    ld   [wD74E_Player_PushedStationaryPlatformLo], A                                    ;; 02:6e6f $ea $4e $d7
+    ld   [wD74F_Player_PushedMovingPlatformLo], A                                    ;; 02:6e72 $ea $4f $d7
     ld   HL, wD220_OtherLoadedEntities                                     ;; 02:6e75 $21 $20 $d2
     ld   DE, $20                                       ;; 02:6e78 $11 $20 $00
     ld   B, $07                                        ;; 02:6e7b $06 $07
@@ -231,7 +231,7 @@ call_02_6eb1_Entities_ClearFlagsTable:
     ret                                                ;; 02:6eb9 $c9
 
 call_02_6eba_Entities_UpdateAll:
-; Main per-frame update loop. First handles the two "interacted" entities (wD74D, wD74F_Player_PlatformRelated2) by calling their 
+; Main per-frame update loop. First handles the two "interacted" entities (wD74D, wD74F_Player_PushedMovingPlatformLo) by calling their 
 ; action functions and adjusting player Y by $10 (room transition offset). Then calls call_02_4939_Player_UpdateMain. 
 ; Then iterates all 7 NPC slots: skips entities not in the active or adjacent room (calls their despawn-check 
 ; function instead), clears collision bits 5/6, calls call_02_6fda_Entity_TickAction (action tick), calls the sprite/draw farCall. 
@@ -243,7 +243,7 @@ call_02_6eba_Entities_UpdateAll:
     ld   A, [wD743_Player_UpdateFlag]                                    ;; 02:6ec3 $fa $43 $d7
     and  A, A                                          ;; 02:6ec6 $a7
     jr   Z, .jr_02_6f0f                                ;; 02:6ec7 $28 $46
-    ld   A, [wD74D_Player_InteractedEntityLo]                                    ;; 02:6ec9 $fa $4d $d7
+    ld   A, [wD74D_Player_EntityStoodOnLo]                                    ;; 02:6ec9 $fa $4d $d7
     and  A, A                                          ;; 02:6ecc $a7
     jr   Z, .jr_02_6ef3                                ;; 02:6ecd $28 $24
     ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:6ecf $ea $00 $d3
@@ -255,7 +255,7 @@ call_02_6eba_Entities_UpdateAll:
     ld   L, A                                          ;; 02:6ed9 $6f
     call call_00_10bd_JumpHL                                  ;; 02:6eda $cd $bd $10
     ld   H, $d2                                        ;; 02:6edd $26 $d2
-    ld   A, [wD74D_Player_InteractedEntityLo]                                    ;; 02:6edf $fa $4d $d7
+    ld   A, [wD74D_Player_EntityStoodOnLo]                                    ;; 02:6edf $fa $4d $d7
     and  A, $e0                                        ;; 02:6ee2 $e6 $e0
     or   A, $10                                        ;; 02:6ee4 $f6 $10
     ld   L, A                                          ;; 02:6ee6 $6f
@@ -266,7 +266,7 @@ call_02_6eba_Entities_UpdateAll:
     sbc  A, $00                                        ;; 02:6eee $de $00
     ld   [wD211_Player_YPositionHi], A                                    ;; 02:6ef0 $ea $11 $d2
 .jr_02_6ef3:
-    ld   A, [wD74F_Player_PlatformRelated2]                                    ;; 02:6ef3 $fa $4f $d7
+    ld   A, [wD74F_Player_PushedMovingPlatformLo]                                    ;; 02:6ef3 $fa $4f $d7
     and  A, A                                          ;; 02:6ef6 $a7
     jr   Z, .jr_02_6f07                                ;; 02:6ef7 $28 $0e
     ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:6ef9 $ea $00 $d3
@@ -292,10 +292,10 @@ call_02_6eba_Entities_UpdateAll:
     cp   A, $ff                                        ;; 02:6f1a $fe $ff
     jr   Z, .jr_02_6f5c                                ;; 02:6f1c $28 $3e
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:6f1e $fa $00 $d3
-    ld   HL, wD74D_Player_InteractedEntityLo                                     ;; 02:6f21 $21 $4d $d7
+    ld   HL, wD74D_Player_EntityStoodOnLo                                     ;; 02:6f21 $21 $4d $d7
     cp   A, [HL]                                       ;; 02:6f24 $be
     jr   Z, .jr_02_6f38                                ;; 02:6f25 $28 $11
-    ld   HL, wD74F_Player_PlatformRelated2                                     ;; 02:6f27 $21 $4f $d7
+    ld   HL, wD74F_Player_PushedMovingPlatformLo                                     ;; 02:6f27 $21 $4f $d7
     cp   A, [HL]                                       ;; 02:6f2a $be
     jr   Z, .jr_02_6f38                                ;; 02:6f2b $28 $0b
     or   A, $02                                        ;; 02:6f2d $f6 $02
@@ -609,13 +609,13 @@ call_02_7164_MapScroll_CheckVertical:
     ret  Z                                             ;; 02:7185 $c8
     ld   HL, wD6F9_BgMap_LoadingFlags                                     ;; 02:7186 $21 $f9 $d6
     ld   A, [HL]                                       ;; 02:7189 $7e
-    or   A, $01                                        ;; 02:718a $f6 $01
+    or   A, MAP_SCROLL_DOWN                                        ;; 02:718a $f6 $01
     ld   [HL], A                                       ;; 02:718c $77
     ret                                                ;; 02:718d $c9
 .jr_02_718e:
     ld   HL, wD6F9_BgMap_LoadingFlags                                     ;; 02:718e $21 $f9 $d6
     ld   A, [HL]                                       ;; 02:7191 $7e
-    or   A, $02                                        ;; 02:7192 $f6 $02
+    or   A, MAP_SCROLL_UP                                        ;; 02:7192 $f6 $02
     ld   [HL], A                                       ;; 02:7194 $77
     ret                                                ;; 02:7195 $c9
 
@@ -648,13 +648,13 @@ call_02_7196_MapScroll_CheckHorizontal:
     ret  Z                                             ;; 02:71b7 $c8
     ld   HL, wD6F9_BgMap_LoadingFlags                                     ;; 02:71b8 $21 $f9 $d6
     ld   A, [HL]                                       ;; 02:71bb $7e
-    or   A, $04                                        ;; 02:71bc $f6 $04
+    or   A, MAP_SCROLL_RIGHT                                        ;; 02:71bc $f6 $04
     ld   [HL], A                                       ;; 02:71be $77
     ret                                                ;; 02:71bf $c9
 .jr_02_71c0:
     ld   HL, wD6F9_BgMap_LoadingFlags                                     ;; 02:71c0 $21 $f9 $d6
     ld   A, [HL]                                       ;; 02:71c3 $7e
-    or   A, $08                                        ;; 02:71c4 $f6 $08
+    or   A, MAP_SCROLL_LEFT                                        ;; 02:71c4 $f6 $08
     ld   [HL], A                                       ;; 02:71c6 $77
     ret                                                ;; 02:71c7 $c9
     

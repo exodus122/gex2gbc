@@ -368,7 +368,7 @@ call_03_5b5b_HUD_BuildSprites:
 
 call_03_5ca8_Player_BuildBodySprites:
 ; Main Gex sprite builder. Reads wD586_GexSpriteStateFlags (base sprite state index), adjusts by +2 if facing 
-; left (bit 5 of wD20D), +4 if climbing (bit 6 of wD74B). Uses this to index .data_03_5d6f 
+; left (bit 5 of wD20D), +4 if climbing (bit 6 of wD74B_Player_ClimbingFlags). Uses this to index .data_03_5d6f 
 ; via call_00_07b9 to get the frame pointer. Computes player screen X/Y from world position 
 ; minus map scroll origin (wD6ED/wD6EF) plus offsets ($08/$10), stores into wD212/wD213. 
 ; Checks action ID for $11 (special state), invincibility flags (wD755_FlyPowerup2_TimerLo/wD753_FlyPowerup1_TimerLo/wD751_Player_CircuitPowerUpTimerLo), 
@@ -380,7 +380,7 @@ call_03_5ca8_Player_BuildBodySprites:
     jr   Z, .jr_03_5cb4                                ;; 03:5cb0 $28 $02
     add  A, $02                                        ;; 03:5cb2 $c6 $02
 .jr_03_5cb4:
-    ld   HL, wD74B                                     ;; 03:5cb4 $21 $4b $d7
+    ld   HL, wD74B_Player_ClimbingFlags                                     ;; 03:5cb4 $21 $4b $d7
     bit  6, [HL]                                       ;; 03:5cb7 $cb $76
     jr   Z, .jr_03_5cbd                                ;; 03:5cb9 $28 $02
     add  A, $04                                        ;; 03:5cbb $c6 $04
