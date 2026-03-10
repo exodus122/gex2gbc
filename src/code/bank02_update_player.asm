@@ -229,7 +229,7 @@ call_02_4939_Player_UpdateMain:
     call call_02_6fda_Entity_TickAction                                  ;; 02:4a0d $cd $da $6f
     call call_02_715a_MapWindow_Update                                  ;; 02:4a10 $cd $5a $71
     call call_02_4c28_Player_CheckConveyorWaterTiles                                  ;; 02:4a13 $cd $28 $4c
-    FARCALL call_03_5ca8_Player_BuildBodySprites
+    FARCALL call_03_5ca8_Entity_DrawPlayer
     ld   HL, wD751_Player_CircuitPowerUpTimerLo                                     ;; 02:4a21 $21 $51 $d7
     call call_02_4a30_Player_DecrementTimer16                                  ;; 02:4a24 $cd $30 $4a
     ld   HL, wD755_FlyPowerup2_TimerLo                                     ;; 02:4a27 $21 $55 $d7
@@ -273,7 +273,7 @@ call_02_4a45_Player_UpdateFacing:
     jr   NZ, .jr_02_4a5a                               ;; 02:4a56 $20 $02
     ld   C, $20                                        ;; 02:4a58 $0e $20
 .jr_02_4a5a:
-    ld   HL, wD20D_PlayerFacingAngle                                     ;; 02:4a5a $21 $0d $d2
+    ld   HL, wD20D_Player_FacingFlags                                     ;; 02:4a5a $21 $0d $d2
     ld   A, [HL]                                       ;; 02:4a5d $7e
     ld   [HL], C                                       ;; 02:4a5e $71
     cp   A, C                                          ;; 02:4a5f $b9
@@ -307,7 +307,7 @@ call_02_4a77_Player_ApplyXMovement:
     cp   A, $ff                                        ;; 02:4a7a $fe $ff
     ret  NZ                                            ;; 02:4a7c $c0
     ld   A, [wD75D_PlayerXSpeedPrev]                                    ;; 02:4a7d $fa $5d $d7
-    ld   HL, wD20D_PlayerFacingAngle                                     ;; 02:4a80 $21 $0d $d2
+    ld   HL, wD20D_Player_FacingFlags                                     ;; 02:4a80 $21 $0d $d2
     bit  5, [HL]                                       ;; 02:4a83 $cb $6e
     jr   Z, .jr_02_4a89                                ;; 02:4a85 $28 $02
     cpl                                                ;; 02:4a87 $2f
@@ -504,11 +504,11 @@ call_02_4b78_Player_ApplyYVelocity:
     ret  NZ                                            ;; 02:4b7d $c0
     ld   A, [wD760_PlayerYVelocity]                                    ;; 02:4b7e $fa $60 $d7
     bit  7, A                                          ;; 02:4b81 $cb $7f
-    jr   NZ, .jr_02_4bbc                               ;; 02:4b83 $20 $37
+    jr   NZ, .jr_02_4bbc_NegativeOr0Velocity                               ;; 02:4b83 $20 $37
     and  A, A                                          ;; 02:4b85 $a7
-    jr   Z, .jr_02_4bbc                                ;; 02:4b86 $28 $34
+    jr   Z, .jr_02_4bbc_NegativeOr0Velocity                                ;; 02:4b86 $28 $34
     xor  A, A                                          ;; 02:4b88 $af
-    ld   [wD763_PlayerMovementFlags], A                                    ;; 02:4b89 $ea $63 $d7
+    ld   [wD763_Player_YVelocityRelated], A                                    ;; 02:4b89 $ea $63 $d7
 .jr_02_4b8c:
     ld   A, [wD760_PlayerYVelocity]                                    ;; 02:4b8c $fa $60 $d7
     sub  A, $02                                        ;; 02:4b8f $d6 $02
@@ -516,7 +516,7 @@ call_02_4b78_Player_ApplyYVelocity:
     jr   Z, .jr_02_4ba4                                ;; 02:4b93 $28 $0f
     cp   A, $c0                                        ;; 02:4b95 $fe $c0
     jr   NC, .jr_02_4ba4                               ;; 02:4b97 $30 $0b
-    ld   HL, wD763_PlayerMovementFlags                                     ;; 02:4b99 $21 $63 $d7
+    ld   HL, wD763_Player_YVelocityRelated                                     ;; 02:4b99 $21 $63 $d7
     ld   A, [HL]                                       ;; 02:4b9c $7e
     cp   A, $7f                                        ;; 02:4b9d $fe $7f
     adc  A, $00                                        ;; 02:4b9f $ce $00
@@ -536,11 +536,11 @@ call_02_4b78_Player_ApplyYVelocity:
     ld   C, A                                          ;; 02:4bb7 $4f
     dec  B                                             ;; 02:4bb8 $05
     jp   call_02_4c19_Player_AddToYPosition                                  ;; 02:4bb9 $c3 $19 $4c
-.jr_02_4bbc:
+.jr_02_4bbc_NegativeOr0Velocity:
     ld   A, [wD585_CollisionFlags]                                    ;; 02:4bbc $fa $85 $d5
     and  A, $80                                        ;; 02:4bbf $e6 $80
-    jr   Z, .jr_02_4bd8                                ;; 02:4bc1 $28 $15
-    ld   A, [wD761_PlayerFallingFlag]                                    ;; 02:4bc3 $fa $61 $d7
+    jr   Z, .jr_02_4bd8_NotGrounded                                ;; 02:4bc1 $28 $15
+    ld   A, [wD761_PlayerBonkCeilingDownwardsVelocity]                                    ;; 02:4bc3 $fa $61 $d7
     and  A, A                                          ;; 02:4bc6 $a7
     jr   Z, .jr_02_4bed                                ;; 02:4bc7 $28 $24
     ld   HL, wD584_CollisionFlagsPrev                                     ;; 02:4bc9 $21 $84 $d5
@@ -550,11 +550,11 @@ call_02_4b78_Player_ApplyYVelocity:
     cp   A, [HL]                                       ;; 02:4bd3 $be
     jr   NC, .jr_02_4ba4                               ;; 02:4bd4 $30 $ce
     jr   .jr_02_4b8c                                   ;; 02:4bd6 $18 $b4
-.jr_02_4bd8:
+.jr_02_4bd8_NotGrounded:
     ld   A, [wD584_CollisionFlagsPrev]                                    ;; 02:4bd8 $fa $84 $d5
     and  A, $80                                        ;; 02:4bdb $e6 $80
     jr   NZ, .jr_02_4be6                               ;; 02:4bdd $20 $07
-    ld   A, [wD763_PlayerMovementFlags]                                    ;; 02:4bdf $fa $63 $d7
+    ld   A, [wD763_Player_YVelocityRelated]                                    ;; 02:4bdf $fa $63 $d7
     cp   A, $10                                        ;; 02:4be2 $fe $10
     jr   C, .jr_02_4b8c                                ;; 02:4be4 $38 $a6
 .jr_02_4be6:
@@ -564,7 +564,7 @@ call_02_4b78_Player_ApplyYVelocity:
 .jr_02_4bed:
     xor  A, A                                          ;; 02:4bed $af
     ld   [wD760_PlayerYVelocity], A                                    ;; 02:4bee $ea $60 $d7
-    ld   HL, wD763_PlayerMovementFlags                                     ;; 02:4bf1 $21 $63 $d7
+    ld   HL, wD763_Player_YVelocityRelated                                     ;; 02:4bf1 $21 $63 $d7
     ld   A, [HL]                                       ;; 02:4bf4 $7e
     ld   [HL], $00                                     ;; 02:4bf5 $36 $00
     cp   A, $08                                        ;; 02:4bf7 $fe $08
@@ -658,12 +658,12 @@ call_02_4c4f_Player_CheckTileInteractions:
     jr   Z, .jr_02_4c9b                                ;; 02:4c8c $28 $0d
     cp   A, $2d                                        ;; 02:4c8e $fe $2d
     jr   NZ, .jr_02_4ca6                               ;; 02:4c90 $20 $14
-    ld   A, [wD20D_PlayerFacingAngle]                                    ;; 02:4c92 $fa $0d $d2
+    ld   A, [wD20D_Player_FacingFlags]                                    ;; 02:4c92 $fa $0d $d2
     cp   A, $00                                        ;; 02:4c95 $fe $00
     jr   NZ, .jr_02_4ca6                               ;; 02:4c97 $20 $0d
     jr   .jr_02_4ca2                                   ;; 02:4c99 $18 $07
 .jr_02_4c9b:
-    ld   A, [wD20D_PlayerFacingAngle]                                    ;; 02:4c9b $fa $0d $d2
+    ld   A, [wD20D_Player_FacingFlags]                                    ;; 02:4c9b $fa $0d $d2
     cp   A, $20                                        ;; 02:4c9e $fe $20
     jr   NZ, .jr_02_4ca6                               ;; 02:4ca0 $20 $04
 .jr_02_4ca2:

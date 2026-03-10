@@ -186,7 +186,7 @@ call_03_4915_BgCollision_Sidescroller:
 ; (2) Ceiling check (falling, Y velocity > 0): samples tile at player Y − (velocity high nibble + $11) above 
 ; the head. If bit 1 of the tile's collision byte is set (ceiling), zeroes wD760 (Y velocity)
     xor  A, A                                          ;; 03:4a05 $af
-    ld   [wD761_PlayerFallingFlag], A                                    ;; 03:4a06 $ea $61 $d7
+    ld   [wD761_PlayerBonkCeilingDownwardsVelocity], A                                    ;; 03:4a06 $ea $61 $d7
     ld   HL, wD585_CollisionFlags                                     ;; 03:4a09 $21 $85 $d5
     bit  7, [HL]                                       ;; 03:4a0c $cb $7e
     ret  NZ                                            ;; 03:4a0e $c0
@@ -225,10 +225,10 @@ call_03_4915_BgCollision_Sidescroller:
     ld   D, [HL]                                       ;; 03:4a41 $56
     ld   A, C                                          ;; 03:4a42 $79
     and  A, $07                                        ;; 03:4a43 $e6 $07
-    add  A, $ab                                        ;; 03:4a45 $c6 $ab
+    add  A, LOW(.data_03_4aab)                                        ;; 03:4a45 $c6 $ab
     ld   L, A                                          ;; 03:4a47 $6f
     ld   A, $00                                        ;; 03:4a48 $3e $00
-    adc  A, $4a                                        ;; 03:4a4a $ce $4a
+    adc  A, HIGH(.data_03_4aab)                                        ;; 03:4a4a $ce $4a
     ld   H, A                                          ;; 03:4a4c $67
     ld   C, [HL]                                       ;; 03:4a4d $4e
     ld   A, B                                          ;; 03:4a4e $78
@@ -262,7 +262,7 @@ call_03_4915_BgCollision_Sidescroller:
     swap A                                             ;; 03:4a74 $cb $37
     cpl                                                ;; 03:4a76 $2f
     inc  A                                             ;; 03:4a77 $3c
-    ld   [wD761_PlayerFallingFlag], A                                    ;; 03:4a78 $ea $61 $d7
+    ld   [wD761_PlayerBonkCeilingDownwardsVelocity], A                                    ;; 03:4a78 $ea $61 $d7
     ret                                                ;; 03:4a7b $c9
 .jr_03_4a7c:
     call call_03_4ab3_BgCollision_GetXOffset                                  ;; 03:4a7c $cd $b3 $4a
@@ -294,6 +294,7 @@ call_03_4915_BgCollision_Sidescroller:
     xor  A, A                                          ;; 03:4aa6 $af
     ld   [wD760_PlayerYVelocity], A                                    ;; 03:4aa7 $ea $60 $d7
     ret                                                ;; 03:4aaa $c9
+.data_03_4aab:
     db   $80, $40, $20, $10, $08, $04, $02, $01        ;; 03:4aab ........
 
 call_03_4ab3_BgCollision_GetXOffset:
@@ -301,7 +302,7 @@ call_03_4ab3_BgCollision_GetXOffset:
 ; negates the value. Adds wD75C (X sub-pixel accumulator) and returns the result in A. Used to 
 ; compute the forward-facing horizontal probe offset
     ld   A, [wD75D_PlayerXSpeedPrev]                                    ;; 03:4ab3 $fa $5d $d7
-    ld   HL, wD20D_PlayerFacingAngle                                     ;; 03:4ab6 $21 $0d $d2
+    ld   HL, wD20D_Player_FacingFlags                                     ;; 03:4ab6 $21 $0d $d2
     bit  5, [HL]                                       ;; 03:4ab9 $cb $6e
     jr   Z, .jr_03_4abf                                ;; 03:4abb $28 $02 ; jump if not facing left
     cpl                                                ;; 03:4abd $2f
@@ -330,7 +331,7 @@ call_03_4ac4_BgCollision_Climb:
     ld   HL, wD746_Player_ClimbingState                                     ;; 03:4acf $21 $46 $d7
     ld   A, [HL]                                       ;; 03:4ad2 $7e
     add  A, A                                          ;; 03:4ad3 $87
-    ld   HL, wD20D_PlayerFacingAngle                                     ;; 03:4ad4 $21 $0d $d2
+    ld   HL, wD20D_Player_FacingFlags                                     ;; 03:4ad4 $21 $0d $d2
     bit  5, [HL]                                       ;; 03:4ad7 $cb $6e
     jr   Z, .jr_03_4adc                                ;; 03:4ad9 $28 $01
     inc  A                                             ;; 03:4adb $3c
@@ -523,7 +524,7 @@ call_03_4c0a_BgCollision_CacheAdjacentTiles:
     ld   A, [HL]                                       ;; 03:4c2f $7e ; load tile collision type from wC800_CurrentCollisionData
     ld   [wD767_FloorTileType], A                      ;; 03:4c30 $ea $67 $d7
     ld   C, $09                                        ;; 03:4c33 $0e $09
-    ld   A, [wD20D_PlayerFacingAngle]                                    ;; 03:4c35 $fa $0d $d2
+    ld   A, [wD20D_Player_FacingFlags]                                    ;; 03:4c35 $fa $0d $d2
     cp   A, $00                                        ;; 03:4c38 $fe $00
     jr   Z, .jr_03_4c3e                                ;; 03:4c3a $28 $02
     ld   C, $f7                                        ;; 03:4c3c $0e $f7

@@ -113,12 +113,12 @@ call_02_41b7_PlayerAction_Stand:
     jr   Z, .jr_02_41ee                                ;; 02:41df $28 $0d
     cp   A, $09                                        ;; 02:41e1 $fe $09
     jr   NZ, .jr_02_41fa                               ;; 02:41e3 $20 $15
-    ld   A, [wD20D_PlayerFacingAngle]                                    ;; 02:41e5 $fa $0d $d2
+    ld   A, [wD20D_Player_FacingFlags]                                    ;; 02:41e5 $fa $0d $d2
     cp   A, $00                                        ;; 02:41e8 $fe $00
     jr   NZ, .jr_02_41fa                               ;; 02:41ea $20 $0e
     jr   .jr_02_41f5                                   ;; 02:41ec $18 $07
 .jr_02_41ee:
-    ld   A, [wD20D_PlayerFacingAngle]                                    ;; 02:41ee $fa $0d $d2
+    ld   A, [wD20D_Player_FacingFlags]                                    ;; 02:41ee $fa $0d $d2
     cp   A, $20                                        ;; 02:41f1 $fe $20
     jr   NZ, .jr_02_41fa                               ;; 02:41f3 $20 $05
 .jr_02_41f5:
@@ -584,7 +584,7 @@ call_02_44af_PlayerAction_Climb:
     ld   [wD747_Player_ClimbingUnkCounter], A                                    ;; 02:44bc $ea $47 $d7
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:44bf $ea $5e $d7
     ld   [wD760_PlayerYVelocity], A                                    ;; 02:44c2 $ea $60 $d7
-    ld   [wD761_PlayerFallingFlag], A                                    ;; 02:44c5 $ea $61 $d7
+    ld   [wD761_PlayerBonkCeilingDownwardsVelocity], A                                    ;; 02:44c5 $ea $61 $d7
     ld   A, [wD769]                                    ;; 02:44c8 $fa $69 $d7
     cp   A, $26                                        ;; 02:44cb $fe $26
     ld   A, $00                                        ;; 02:44cd $3e $00
@@ -631,7 +631,7 @@ call_02_44af_PlayerAction_Climb:
     add  HL, DE                                        ;; 02:4509 $19
     ld   A, [HL]                                       ;; 02:450a $7e
     and  A, $20                                        ;; 02:450b $e6 $20
-    ld   [wD20D_PlayerFacingAngle], A                                    ;; 02:450d $ea $0d $d2
+    ld   [wD20D_Player_FacingFlags], A                                    ;; 02:450d $ea $0d $d2
     ld   A, [HL]                                       ;; 02:4510 $7e
     and  A, $40                                        ;; 02:4511 $e6 $40
     ld   [wD74B_Player_ClimbingFlags], A                                    ;; 02:4513 $ea $4b $d7
@@ -703,7 +703,7 @@ call_02_44af_PlayerAction_Climb:
     ret  z
     ld   [hl],a
     ld   a,$00
-    ld   [wD20D_PlayerFacingAngle],a
+    ld   [wD20D_Player_FacingFlags],a
     ld   a,$00
     ld   [wD74B_Player_ClimbingFlags],a
     ld   hl,wD60F_HDMATransferFlags
@@ -734,7 +734,7 @@ call_02_44af_PlayerAction_Climb:
     ld   a,[hl]
     cp   a,$FF
     jr   z,.jr_02_45C9
-    ld   [wD20D_PlayerFacingAngle],a
+    ld   [wD20D_Player_FacingFlags],a
 .jr_02_45C9:
     ld   hl, .data_02_4616
     add  hl,de
@@ -887,7 +887,7 @@ call_02_44af_PlayerAction_Climb:
     ld   a,[wD749_Player_ClimbingDirection]
     add  a
     add  a
-    ld   hl,wD20D_PlayerFacingAngle
+    ld   hl,wD20D_Player_FacingFlags
     bit  5,[hl]
     jr   z,.jr_02_46CC
     add  a,$02
@@ -928,7 +928,7 @@ call_02_44af_PlayerAction_Climb:
     add  a
     add  a
     add  a
-    ld   hl,wD20D_PlayerFacingAngle
+    ld   hl,wD20D_Player_FacingFlags
     bit  5,[hl]
     jr   z,.jr_02_4711
     add  a,$04
@@ -940,7 +940,7 @@ call_02_44af_PlayerAction_Climb:
     ldi  a,[hl]
     ld   [wD746_Player_ClimbingState],a
     ldi  a,[hl]
-    ld   [wD20D_PlayerFacingAngle],a
+    ld   [wD20D_Player_FacingFlags],a
     ldi  a,[hl]
     ld   [wD74B_Player_ClimbingFlags],a
     ldi  a,[hl]

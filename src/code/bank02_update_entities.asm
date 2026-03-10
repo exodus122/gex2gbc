@@ -171,9 +171,9 @@ call_02_6e17_Entities_InitAndSpawnAll:
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:6e31 $ea $5e $d7
     ld   [wD75C], A                                    ;; 02:6e34 $ea $5c $d7
     ld   [wD760_PlayerYVelocity], A                                    ;; 02:6e37 $ea $60 $d7
-    ld   [wD761_PlayerFallingFlag], A                                    ;; 02:6e3a $ea $61 $d7
+    ld   [wD761_PlayerBonkCeilingDownwardsVelocity], A                                    ;; 02:6e3a $ea $61 $d7
     ld   [wD762_PlayerInitialYVelocity], A                                    ;; 02:6e3d $ea $62 $d7
-    ld   [wD763_PlayerMovementFlags], A                                    ;; 02:6e40 $ea $63 $d7
+    ld   [wD763_Player_YVelocityRelated], A                                    ;; 02:6e40 $ea $63 $d7
     ld   [wD759_ButtonBlockingFlags], A                                    ;; 02:6e43 $ea $59 $d7
     ld   [wD758_UnkCollisionRelated], A                                    ;; 02:6e46 $ea $58 $d7
     ld   [wD585_CollisionFlags], A                                    ;; 02:6e49 $ea $85 $d5
@@ -187,9 +187,9 @@ call_02_6e17_Entities_InitAndSpawnAll:
     ld   A, $00                                        ;; 02:6e5e $3e $00
     ld   [wD74B_Player_ClimbingFlags], A                                    ;; 02:6e60 $ea $4b $d7
     ld   A, $00                                        ;; 02:6e63 $3e $00
-    ld   [wD20D_PlayerFacingAngle], A                                    ;; 02:6e65 $ea $0d $d2
+    ld   [wD20D_Player_FacingFlags], A                                    ;; 02:6e65 $ea $0d $d2
 call_02_6e68_Entities_InitNPCSlots:
-; Subset of above — only zeros entity interaction-tracking vars (wD74D–wD74F_Player_PushedMovingPlatformLo, wD587) and 
+; Subset of above — only zeros entity interaction-tracking vars (wD74D–wD74F, wD587) and 
 ; fills the 7 NPC slots (D220–D3E0) with $FF
     xor  A, A                                          ;; 02:6e68 $af
     ld   [wD587], A                                    ;; 02:6e69 $ea $87 $d5
@@ -231,8 +231,9 @@ call_02_6eb1_Entities_ClearFlagsTable:
     ret                                                ;; 02:6eb9 $c9
 
 call_02_6eba_Entities_UpdateAll:
-; Main per-frame update loop. First handles the two "interacted" entities (wD74D, wD74F_Player_PushedMovingPlatformLo) by calling their 
-; action functions and adjusting player Y by $10 (room transition offset). Then calls call_02_4939_Player_UpdateMain. 
+; Main per-frame update loop. First handles the two "interacted" entities (wD74D, wD74F_Player_PushedMovingPlatformLo) 
+; by calling their action functions and adjusting player Y by $10 (room transition offset). Then calls 
+; call_02_4939_Player_UpdateMain. 
 ; Then iterates all 7 NPC slots: skips entities not in the active or adjacent room (calls their despawn-check 
 ; function instead), clears collision bits 5/6, calls call_02_6fda_Entity_TickAction (action tick), calls the sprite/draw farCall. 
 ; After the loop, calls sound queue flush, EntitySpawn_SpawnNextFromList, collision resolution, and draw farCall
@@ -339,7 +340,7 @@ call_02_6f80_Entities_DrawAll:
     jr   Z, .jr_02_6fa0                                ;; 02:6f89 $28 $15
     ld   A, $00                                        ;; 02:6f8b $3e $00
     ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:6f8d $ea $00 $d3
-    FARCALL call_03_5ca8_Player_BuildBodySprites
+    FARCALL call_03_5ca8_Entity_DrawPlayer
     ld   HL, wD60F_HDMATransferFlags                                     ;; 02:6f9b $21 $0f $d6
     set  0, [HL]                                       ;; 02:6f9e $cb $c6
 .jr_02_6fa0:

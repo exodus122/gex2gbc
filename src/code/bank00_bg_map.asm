@@ -148,6 +148,9 @@ call_00_12e4_BgMap_InitTileOverrides:
     db   $ff
 
 call_00_13a6_MapWindow_UpdateFromPlayerPos:
+; Summary: Uses Player position to calculate wD6ED_BgMap_ScrollX, wD6ED_BgMap_ScrollY, wD329_MapWindow_BlockXRangeMin, 
+; wD32A_MapWindow_BlockXRangeMax, wD32B_MapWindow_BlockYRangeMin, and wD32C_MapWindow_BlockYRangeMax
+; 
 ; Computes the map scroll window X and Y positions from player world coordinates. 
 ; For X: subtracts $50 from player X; clamps to $20 minimum and $0F40 maximum, defaulting to $20 if 
 ; below zero. Stores result to wD6ED (map X scroll). 

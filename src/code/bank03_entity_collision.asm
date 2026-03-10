@@ -1050,7 +1050,8 @@ call_03_52c5_CollisionHandler_StationaryPlatform:
 ; to determine approach direction. For top-landing: checks X overlap, then compares 
 ; horizontal approach speed against wD75D (prev X speed) to filter out wall sliding; 
 ; if valid landing, writes entity address to wD74D (player's current platform) and 
-; manages wD74E_Player_PushedStationaryPlatformLo (secondary platform slot). For side/bottom hits: clears platform tracking vars
+; manages wD74E_Player_PushedStationaryPlatformLo (secondary platform slot). 
+; For side/bottom hits: clears platform tracking vars
     LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_YPOS_ON_SCREEN
     ld   A, [wD213_Player_ScreenYPosition]                                    ;; 03:52cd $fa $13 $d2
     add  A, $0f                                        ;; 03:52d0 $c6 $0f
@@ -1163,73 +1164,78 @@ call_03_5360_StationaryPlatform_SetPushInteraction:
     ret                                                ;; 03:536e $c9
 
 call_03_536f_CollisionHandler_MovingPlatform:
+; Summary: This function essentially uses the player's screen xy position, and platform's screen xy position,
+; to determine if the platform is stood on (wD74D_Player_EntityStoodOnLo) 
+; or pushing the player (Player_PushedMovingPlatformLo). 
+;
 ; Same structure as stationary platform but additionally reads the platform's X velocity (UNK_0E), 
 ; right-shifts 4×, stores in B, then calls MovingPlatformCollisionHelper to get a corrected 
 ; relative X speed accounting for platform motion. Landing validity is then checked against 
-; (relativeX − B + E + D) instead of raw speed. On landing writes to wD74D/wD74F_Player_PushedMovingPlatformLo 
-; (moving platform uses wD74F_Player_PushedMovingPlatformLo instead of wD74E_Player_PushedStationaryPlatformLo); on miss clears both
+; (relativeX − B + E + D) instead of raw speed. On landing writes to wD74D_Player_EntityStoodOnLo
+; /Player_PushedMovingPlatformLo (moving platform uses Player_PushedMovingPlatformLo instead of 
+; wD74E_Player_PushedStationaryPlatformLo); on miss clears both
     LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_YPOS_ON_SCREEN
-    ld   A, [wD213_Player_ScreenYPosition]                                    ;; 03:5377 $fa $13 $d2
+    ld   A, [wD213_Player_ScreenYPosition]             ;; 03:5377 $fa $13 $d2
     add  A, $0f                                        ;; 03:537a $c6 $0f
     cp   A, [HL]                                       ;; 03:537c $be
-    jr   C, .jr_03_53ba                                ;; 03:537d $38 $3b
-    sub  A, $1f                                        ;; 03:537f $d6 $1f
-    ld   C, A                                          ;; 03:5381 $4f
-    ld   A, [HL]                                       ;; 03:5382 $7e
-    add  A, D                                          ;; 03:5383 $82
-    dec  A                                             ;; 03:5384 $3d
+    jr   C, .jr_03_53ba_PlayerIsAbovePlatformOnScreen  ;; 03:537d $38 $3b ; jump if PlayerScreenY+0xF is above PlatformScreenY
+    sub  A, $1f                                        ;; 03:537f $d6 $1f ; A = PlayerScreenY - 0x10
+    ld   C, A                                          ;; 03:5381 $4f ; C = PlayerScreenY - 0x10
+    ld   A, [HL]                                       ;; 03:5382 $7e ; A = PlayerScreenY
+    add  A, D                                          ;; 03:5383 $82 ; A = PlayerScreenY + PlatformHeight
+    dec  A                                             ;; 03:5384 $3d ; A = PlayerScreenY + PlatformHeight - 1
     cp   A, C                                          ;; 03:5385 $b9
-    jr   C, .jr_03_5405                                ;; 03:5386 $38 $7d
-    dec  L                                             ;; 03:5388 $2d
-    ld   A, [wD212_Player_ScreenXPosition]                                    ;; 03:5389 $fa $12 $d2
-    sub  A, [HL]                                       ;; 03:538c $96
-    add  A, E                                          ;; 03:538d $83
-    bit  7, A                                          ;; 03:538e $cb $7f
-    jr   NZ, .jr_03_53a8                               ;; 03:5390 $20 $16
+    jr   C, .jr_03_5405_PlayerIsNotOnOrBeingPushedByThisPlatform      ;; 03:5386 $38 $7d
+    dec  L                                             ;; 03:5388 $2d ; HL = ENTITY_FIELD_XPOS_ON_SCREEN (PlatformScreenX)
+    ld   A, [wD212_Player_ScreenXPosition]             ;; 03:5389 $fa $12 $d2 ; A = PlayerScreenX
+    sub  A, [HL]                                       ;; 03:538c $96 ; A = PlayerScreenX - PlatformScreenX
+    add  A, E                                          ;; 03:538d $83 ; A = PlayerScreenX + PlatformWidth
+    bit  7, A                                          ;; 03:538e $cb $7f ; jump if player is on left side of platform
+    jr   NZ, .jr_03_53a8_PlayerIsLeftOfPlatform                               ;; 03:5390 $20 $16
     sla  E                                             ;; 03:5392 $cb $23
     sub  A, E                                          ;; 03:5394 $93
-    jr   C, .jr_03_5405                                ;; 03:5395 $38 $6e
+    jr   C, .jr_03_5405_PlayerIsNotOnOrBeingPushedByThisPlatform      ;; 03:5395 $38 $6e
     ld   C, A                                          ;; 03:5397 $4f
-    call call_03_5427_MovingPlatform_GetRelativeXSpeed                                  ;; 03:5398 $cd $27 $54
+    call call_03_5427_MovingPlatform_GetRelativeXSpeed ;; 03:5398 $cd $27 $54
     ld   A, C                                          ;; 03:539b $79
     sub  A, B                                          ;; 03:539c $90
     add  A, E                                          ;; 03:539d $83
     add  A, D                                          ;; 03:539e $82
     bit  7, A                                          ;; 03:539f $cb $7f
-    jr   NZ, .jr_03_5418                               ;; 03:53a1 $20 $75
+    jr   NZ, .jr_03_5418_PlayerIsBeingPushedByThisPlatform  ;; 03:53a1 $20 $75
     and  A, A                                          ;; 03:53a3 $a7
-    jr   Z, .jr_03_5418                                ;; 03:53a4 $28 $72
-    jr   .jr_03_5405                                   ;; 03:53a6 $18 $5d
-.jr_03_53a8:
-    cpl                                                ;; 03:53a8 $2f
-    ld   C, A                                          ;; 03:53a9 $4f
-    call call_03_5427_MovingPlatform_GetRelativeXSpeed                                  ;; 03:53aa $cd $27 $54
-    ld   A, C                                          ;; 03:53ad $79
-    add  A, B                                          ;; 03:53ae $80
-    sub  A, E                                          ;; 03:53af $93
-    sub  A, D                                          ;; 03:53b0 $92
+    jr   Z, .jr_03_5418_PlayerIsBeingPushedByThisPlatform   ;; 03:53a4 $28 $72
+    jr   .jr_03_5405_PlayerIsNotOnOrBeingPushedByThisPlatform         ;; 03:53a6 $18 $5d
+.jr_03_53a8_PlayerIsLeftOfPlatform:
+    cpl                                                ;; 03:53a8 $2f ; A = BITNOT A (flip all bits)
+    ld   C, A                                          ;; 03:53a9 $4f ; C = BITNOT(PlayerScreenX + PlatformWidth)
+    call call_03_5427_MovingPlatform_GetRelativeXSpeed ;; 03:53aa $cd $27 $54 ; B = PlatformXVel, E = PlayerPrevXVel
+    ld   A, C                                          ;; 03:53ad $79 ; A = BITNOT(PlayerScreenX + PlatformWidth)
+    add  A, B                                          ;; 03:53ae $80 ; A += PlatformXVel / 16
+    sub  A, E                                          ;; 03:53af $93 ; A -= PlayerPrevXVel
+    sub  A, D                                          ;; 03:53b0 $92 ; A -= wD75C
     bit  7, A                                          ;; 03:53b1 $cb $7f
-    jr   NZ, .jr_03_5418                               ;; 03:53b3 $20 $63
+    jr   NZ, .jr_03_5418_PlayerIsBeingPushedByThisPlatform  ;; 03:53b3 $20 $63 ; jump if distance between player and platform is 0 or negative
     and  A, A                                          ;; 03:53b5 $a7
-    jr   Z, .jr_03_5418                                ;; 03:53b6 $28 $60
-    jr   .jr_03_5405                                   ;; 03:53b8 $18 $4b
-.jr_03_53ba:
-    ld   C, A                                          ;; 03:53ba $4f
-    dec  L                                             ;; 03:53bb $2d
-    ld   A, [wD212_Player_ScreenXPosition]                                    ;; 03:53bc $fa $12 $d2
-    sub  A, [HL]                                       ;; 03:53bf $96
-    add  A, E                                          ;; 03:53c0 $83
-    sla  E                                             ;; 03:53c1 $cb $23
+    jr   Z, .jr_03_5418_PlayerIsBeingPushedByThisPlatform       ;; 03:53b6 $28 $60
+    jr   .jr_03_5405_PlayerIsNotOnOrBeingPushedByThisPlatform   ;; 03:53b8 $18 $4b
+.jr_03_53ba_PlayerIsAbovePlatformOnScreen:
+    ld   C, A                                          ;; 03:53ba $4f ; C = PlayerScreenY + 0xF
+    dec  L                                             ;; 03:53bb $2d ; HL = ENTITY_FIELD_XPOS_ON_SCREEN
+    ld   A, [wD212_Player_ScreenXPosition]             ;; 03:53bc $fa $12 $d2 ; A = PlayerScreenX
+    sub  A, [HL]                                       ;; 03:53bf $96 ; A = PlayerScreenX - PlatformScreenX
+    add  A, E                                          ;; 03:53c0 $83 ; DE is platform height and width (0810 usually)
+    sla  E                                             ;; 03:53c1 $cb $23 ; E = 2*width
     cp   A, E                                          ;; 03:53c3 $bb
-    jr   NC, .jr_03_5405                               ;; 03:53c4 $30 $3f
-    inc  L                                             ;; 03:53c6 $2c
-    inc  C                                             ;; 03:53c7 $0c
-    ld   A, [HL]                                       ;; 03:53c8 $7e
-    sub  A, C                                          ;; 03:53c9 $91
-    ld   C, A                                          ;; 03:53ca $4f
-    cp   A, $80                                        ;; 03:53cb $fe $80
-    jr   NC, .jr_03_5405                               ;; 03:53cd $30 $36
-    ld   A, [wD760_PlayerYVelocity]                                    ;; 03:53cf $fa $60 $d7
+    jr   NC, .jr_03_5405_PlayerIsNotOnOrBeingPushedByThisPlatform     ;; 03:53c4 $30 $3f ; jump if player is not in x range of platform
+    inc  L                                             ;; 03:53c6 $2c ; HL = ENTITY_FIELD_YPOS_ON_SCREEN
+    inc  C                                             ;; 03:53c7 $0c ; C = PlayerScreenY + 0x10
+    ld   A, [HL]                                       ;; 03:53c8 $7e ; A = PlatformScreenY
+    sub  A, C                                          ;; 03:53c9 $91 ; A = PlatformScreenY - (PlayerScreenY + 0x10)
+    ld   C, A                                          ;; 03:53ca $4f ; C = A
+    cp   A, $80                                        ;; 03:53cb $fe $80 ; jump if player below platform?
+    jr   NC, .jr_03_5405_PlayerIsNotOnOrBeingPushedByThisPlatform     ;; 03:53cd $30 $36
+    ld   A, [wD760_PlayerYVelocity]                    ;; 03:53cf $fa $60 $d7
     sra  A                                             ;; 03:53d2 $cb $2f
     sra  A                                             ;; 03:53d4 $cb $2f
     sra  A                                             ;; 03:53d6 $cb $2f
@@ -1248,58 +1254,58 @@ call_03_536f_CollisionHandler_MovingPlatform:
     ld   A, C                                          ;; 03:53eb $79
     sub  A, E                                          ;; 03:53ec $93
     bit  7, A                                          ;; 03:53ed $cb $7f
-    jr   NZ, .jr_03_53f7                               ;; 03:53ef $20 $06
+    jr   NZ, .jr_03_53f7_PlayerIsOnThisPlatform        ;; 03:53ef $20 $06
     cp   A, $02                                        ;; 03:53f1 $fe $02
-    jr   C, .jr_03_53f7                                ;; 03:53f3 $38 $02
-    jr   .jr_03_5405                                   ;; 03:53f5 $18 $0e
-.jr_03_53f7:
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:53f7 $fa $00 $d3
-    ld   [wD74D_Player_EntityStoodOnLo], A                                    ;; 03:53fa $ea $4d $d7
-    ld   HL, wD74F_Player_PushedMovingPlatformLo                                     ;; 03:53fd $21 $4f $d7
+    jr   C, .jr_03_53f7_PlayerIsOnThisPlatform         ;; 03:53f3 $38 $02
+    jr   .jr_03_5405_PlayerIsNotOnOrBeingPushedByThisPlatform ;; 03:53f5 $18 $0e
+.jr_03_53f7_PlayerIsOnThisPlatform:
+    ld   A, [wD300_CurrentEntityAddrLo]                ;; 03:53f7 $fa $00 $d3
+    ld   [wD74D_Player_EntityStoodOnLo], A             ;; 03:53fa $ea $4d $d7
+    ld   HL, wD74F_Player_PushedMovingPlatformLo       ;; 03:53fd $21 $4f $d7
     cp   A, [HL]                                       ;; 03:5400 $be
     ret  NZ                                            ;; 03:5401 $c0
     ld   [HL], $00                                     ;; 03:5402 $36 $00
     ret                                                ;; 03:5404 $c9
-.jr_03_5405:
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:5405 $fa $00 $d3
-    ld   HL, wD74D_Player_EntityStoodOnLo                                     ;; 03:5408 $21 $4d $d7
+.jr_03_5405_PlayerIsNotOnOrBeingPushedByThisPlatform:
+    ld   A, [wD300_CurrentEntityAddrLo]                ;; 03:5405 $fa $00 $d3
+    ld   HL, wD74D_Player_EntityStoodOnLo              ;; 03:5408 $21 $4d $d7
     cp   A, [HL]                                       ;; 03:540b $be
-    jr   NZ, .jr_03_5410                               ;; 03:540c $20 $02
+    jr   NZ, .jr_03_5410_PlayerIsOnADifferentPlatform  ;; 03:540c $20 $02
     ld   [HL], $00                                     ;; 03:540e $36 $00
-.jr_03_5410:
-    ld   HL, wD74F_Player_PushedMovingPlatformLo                                     ;; 03:5410 $21 $4f $d7
+.jr_03_5410_PlayerIsOnADifferentPlatform:
+    ld   HL, wD74F_Player_PushedMovingPlatformLo       ;; 03:5410 $21 $4f $d7
     cp   A, [HL]                                       ;; 03:5413 $be
     ret  NZ                                            ;; 03:5414 $c0
     ld   [HL], $00                                     ;; 03:5415 $36 $00
     ret                                                ;; 03:5417 $c9
-.jr_03_5418:
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:5418 $fa $00 $d3
-    ld   HL, wD74D_Player_EntityStoodOnLo                                     ;; 03:541b $21 $4d $d7
+.jr_03_5418_PlayerIsBeingPushedByThisPlatform:
+    ld   A, [wD300_CurrentEntityAddrLo]                ;; 03:5418 $fa $00 $d3
+    ld   HL, wD74D_Player_EntityStoodOnLo              ;; 03:541b $21 $4d $d7
     cp   A, [HL]                                       ;; 03:541e $be
-    jr   NZ, .jr_03_5423                               ;; 03:541f $20 $02
+    jr   NZ, .jr_03_5423_PlayerIsOnADifferentPlatform  ;; 03:541f $20 $02
     ld   [HL], $00                                     ;; 03:5421 $36 $00
-.jr_03_5423:
-    ld   [wD74F_Player_PushedMovingPlatformLo], A                                    ;; 03:5423 $ea $4f $d7
+.jr_03_5423_PlayerIsOnADifferentPlatform:
+    ld   [wD74F_Player_PushedMovingPlatformLo], A      ;; 03:5423 $ea $4f $d7
     ret                                                ;; 03:5426 $c9
 
 call_03_5427_MovingPlatform_GetRelativeXSpeed:
-; Reads the platform's X subpixel velocity (UNK_0E), shifts right 4× into B (pixel speed). 
+; Reads the platform's X velocity, shifts right 4× into B (pixel speed). 
 ; Loads wD75C/wD75D (player X delta and prev speed) into D/E. Checks bit 5 of player facing angle; 
 ; if set (facing left), negates A and stores into E. Returns B=platform pixel speed, D=player X delta, 
 ; E=adjusted player speed for relative motion comparison
     ld   A, L                                          ;; 03:5427 $7d
     xor  A, $0e                                        ;; 03:5428 $ee $0e
     ld   L, A                                          ;; 03:542a $6f
-    ld   B, [HL]                                       ;; 03:542b $46
+    ld   B, [HL]                                       ;; 03:542b $46 ; B = ENTITY_FIELD_XVEL (10)
     sra  B                                             ;; 03:542c $cb $28
     sra  B                                             ;; 03:542e $cb $28
     sra  B                                             ;; 03:5430 $cb $28
-    sra  B                                             ;; 03:5432 $cb $28
+    sra  B                                             ;; 03:5432 $cb $28 B = B / 16
     ld   A, [wD75C]                                    ;; 03:5434 $fa $5c $d7
-    ld   D, A                                          ;; 03:5437 $57
-    ld   A, [wD75D_PlayerXSpeedPrev]                                    ;; 03:5438 $fa $5d $d7
-    ld   E, A                                          ;; 03:543b $5f
-    ld   HL, wD20D_PlayerFacingAngle                                     ;; 03:543c $21 $0d $d2
+    ld   D, A                                          ;; 03:5437 $57 ; D = wD75C
+    ld   A, [wD75D_PlayerXSpeedPrev]                   ;; 03:5438 $fa $5d $d7
+    ld   E, A                                          ;; 03:543b $5f ; E = wD75D_PlayerXSpeedPrev
+    ld   HL, wD20D_Player_FacingFlags                  ;; 03:543c $21 $0d $d2
     bit  5, [HL]                                       ;; 03:543f $cb $6e
     ret  Z                                             ;; 03:5441 $c8
     cpl                                                ;; 03:5442 $2f

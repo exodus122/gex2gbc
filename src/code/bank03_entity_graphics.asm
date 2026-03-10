@@ -366,7 +366,7 @@ call_03_5b5b_HUD_BuildSprites:
     db   $2c, $68, $34, $6a, $44, $68, $4c, $6a        ;; 03:5c98 ........
     db   $5c, $68, $64, $6a, $74, $68, $7c, $6a        ;; 03:5ca0 ........
 
-call_03_5ca8_Player_BuildBodySprites:
+call_03_5ca8_Entity_DrawPlayer:
 ; Main Gex sprite builder. Reads wD586_GexSpriteStateFlags (base sprite state index), adjusts by +2 if facing 
 ; left (bit 5 of wD20D), +4 if climbing (bit 6 of wD74B_Player_ClimbingFlags). Uses this to index .data_03_5d6f 
 ; via call_00_07b9 to get the frame pointer. Computes player screen X/Y from world position 
@@ -375,7 +375,7 @@ call_03_5ca8_Player_BuildBodySprites:
 ; and wD73B_FrameCounter bit 3 — if any special condition is active, substitutes .data_03_5e7f 
 ; (invincible/stunned sprite). Writes up to 8 OAM entries into wCC00, each as (Y+B, X+C, tile+wD73A, attr
     ld   A, [wD586_GexSpriteStateFlags]                                    ;; 03:5ca8 $fa $86 $d5
-    ld   HL, wD20D_PlayerFacingAngle                                     ;; 03:5cab $21 $0d $d2
+    ld   HL, wD20D_Player_FacingFlags                                     ;; 03:5cab $21 $0d $d2
     bit  5, [HL]                                       ;; 03:5cae $cb $6e
     jr   Z, .jr_03_5cb4                                ;; 03:5cb0 $28 $02
     add  A, $02                                        ;; 03:5cb2 $c6 $02
@@ -562,7 +562,7 @@ call_03_5ebf_Entity_BuildSprites:
     ld   DE, wD32D                                     ;; 03:5eca $11 $2d $d3
     add  HL, DE                                        ;; 03:5ecd $19
     ld   E, [HL]                                       ;; 03:5ece $5e
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_DIRECTION
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
     ld   A, [HL]                                       ;; 03:5ed7 $7e
     or   A, E                                          ;; 03:5ed8 $b3
     ld   [wD335], A                                    ;; 03:5ed9 $ea $35 $d3
@@ -730,7 +730,7 @@ call_03_5ebf_Entity_BuildSprites:
 ; (instead of UNK_0A) for the palette/flip byte, swaps nibbles and ORs with wD587, 
 ; then proceeds identically to the standard path: looks up sprite count and frame data 
 ; from data_03_5447/data_03_5566/data_03_5a8a, writes OAM entries
-    LOAD_OBJ_FIELD_TO_DE ENTITY_FIELD_FACING_DIRECTION
+    LOAD_OBJ_FIELD_TO_DE ENTITY_FIELD_FACING_FLAGS
     ld   A, [DE]                                       ;; 03:5fd3 $1a
     swap A                                             ;; 03:5fd4 $cb $37
     ld   HL, wD587                                     ;; 03:5fd6 $21 $87 $d5

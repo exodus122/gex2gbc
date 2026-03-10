@@ -91,7 +91,7 @@ wD209_Player_ActionState:
     ds 1                                               ;; d209
 wD20A_Player_UnkFlags2:
     ds 3                                               ;; d20a
-wD20D_PlayerFacingAngle:
+wD20D_Player_FacingFlags:
     ds 1                                               ;; d20d
 ; wD20E_Player_XPositionLo and wD20F_Player_XPositionHi_PlayerXPosition control gex's x coordinate position (can freeze wD20F_Player_XPositionHi_PlayerXPosition to sometimes fall through floors)
 wD20E_Player_XPositionLo:
@@ -223,8 +223,8 @@ wD585_CollisionFlags:
 ; bit 4 (10) = 
 ; bit 3 (08) = 
 ; bit 2 (04) = 
-; bit 1 (02) = walking up slope
-; bit 0 (01) = walking up slope
+; bit 1 (02) = walking up slope?
+; bit 0 (01) = walking up slope?
     ds 1                                               ;; d585
 
 wD586_GexSpriteStateFlags:
@@ -892,13 +892,13 @@ wD760_PlayerYVelocity:
 ; signed byte (positive = up, negative = down)
 ; can freeze this to levitate
     ds 1                                               ;; d760
-wD761_PlayerFallingFlag:
+wD761_PlayerBonkCeilingDownwardsVelocity:
 ; set to c0 when gex is falling, 0 otherwise?
     ds 1                                               ;; d761
 wD762_PlayerInitialYVelocity:
 ; y velocity when first entered the air (2a = jump, 36 = double jump). also set to 1 if fall off ledge
     ds 1                                               ;; d762
-wD763_PlayerMovementFlags:
+wD763_Player_YVelocityRelated:
     ds 1                                               ;; d763
 wD764_TileTypeBehindGexsBody:
     ds 1                                               ;; d764
@@ -1041,9 +1041,9 @@ wD9A7_BackupBuffer_BoundingBoxAndMore:
     ds 32                                              ;; d9a7
 wD9C7_BackupPlayer_EntityStoodOnLo:
     ds 1                                               ;; d9c7
-wD9C8_BackupBuffer_PlatformRelated:
+wD9C8_BackupPlayer_PushedStationaryPlatformLo:
     ds 1                                               ;; d9c8
-wD9C9_BackupBuffer_PlatformRelated2:
+wD9C9_BackupPlayer_PushedMovingPlatformLo:
     ds 1                                               ;; d9c9
 wD9CA_BackupBuffer_FlyAnimationPosition:
     ds 1                                               ;; d9ca

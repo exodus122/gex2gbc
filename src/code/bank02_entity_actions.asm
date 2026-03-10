@@ -854,7 +854,7 @@ call_02_54c6_EntityAction_ZombieHead_unk0:
     call call_00_335a_Entity_SetYVelocity
     ld   c,$03
     call call_00_3802_Entity_SetMiscTimer
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_DIRECTION
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
     ld   [hl],$00
     ld   a,$01
     jp   call_02_7102_Entity_SetAction
@@ -992,7 +992,7 @@ call_02_55a3_EntityAction_Ghost_unk0:
     or   a,$0E
     ld   e,a
     ld   bc,$0030
-    ld   a,[wD20D_PlayerFacingAngle]
+    ld   a,[wD20D_Player_FacingFlags]
     bit  5,a
     jr   z,.jr_02_55D1
     ld   bc,$FFD0
@@ -1170,7 +1170,7 @@ call_02_56dc_EntityAction_HardHeadAreaObject_unk0:
     ld   [HL], A                                       ;; 02:56ef $77
     ld   A, [wD75D_PlayerXSpeedPrev]                                    ;; 02:56f0 $fa $5d $d7
     add  A, A                                          ;; 02:56f3 $87
-    ld   HL, wD20D_PlayerFacingAngle                                     ;; 02:56f4 $21 $0d $d2
+    ld   HL, wD20D_Player_FacingFlags                                     ;; 02:56f4 $21 $0d $d2
     bit  5, [HL]                                       ;; 02:56f7 $cb $6e
     jr   Z, .jr_02_56fc                                ;; 02:56f9 $28 $01
     inc  A                                             ;; 02:56fb $3c
@@ -2424,7 +2424,7 @@ call_02_5f67_EntityAction_DragonHead_Update:
     cp   [hl]
     ret  z
     ld   [hl],a
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_DIRECTION
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
     ld   [hl],b
     ld   hl,wD60F_HDMATransferFlags
     set  1,[hl]
@@ -3341,7 +3341,7 @@ call_02_666b_EntityAction_UFO_unk1:
     ret  
 
 call_02_666c_EntityAction_AntSpawner_Update:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_DIRECTION
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
     ld   [hl],$20
     xor  a,$1A
     ld   l,a
@@ -3425,7 +3425,7 @@ call_02_66f1_EntityAction_Capacitor_unk1:
 call_02_66fd_EntityAction_PowerUp_unk0:
     call call_00_3843_Entity_CheckAnimFlag_Bit2
     ret  z
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_DIRECTION
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
     ld   [hl],$60
     ld   a,$01
     jp   call_02_7102_Entity_SetAction
@@ -3433,7 +3433,7 @@ call_02_66fd_EntityAction_PowerUp_unk0:
 call_02_6710_EntityAction_PowerUp_unk1:
     call call_00_3843_Entity_CheckAnimFlag_Bit2
     ret  z
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_DIRECTION
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
     ld   [hl],$00
     ld   a,$00
     jp   call_02_7102_Entity_SetAction
@@ -4195,7 +4195,7 @@ call_02_6d24_EntityAction_GunProjectileExplosion_Update:
     ld   e,[hl]
     inc  hl
     ld   d,[hl]
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_DIRECTION
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
     ld   [hl],e
     xor  a,$07
     ld   l,a

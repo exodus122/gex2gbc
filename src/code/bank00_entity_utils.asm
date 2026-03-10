@@ -287,7 +287,7 @@ call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip:
 call_00_3251_Entity_UpdateFacingMomentumAndMoveX:
 ; Nudges a momentum/facing sub-field toward a target based on facing direction bit 5, 
 ; then adds fractional accumulator and moves X
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_DIRECTION
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
     ld   c,[hl]
     xor  a,$16
     ld   l,a
@@ -333,14 +333,14 @@ call_00_3251_Entity_UpdateFacingMomentumAndMoveX:
 
 call_00_3290_Entity_SetFacingDirection:
 ; Writes C into the facing direction field
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_DIRECTION
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
     ld   [hl],c
     ret  
 
 call_00_329a_Entity_UpdateFacingMomentumMoveX_WithWallFlip:
 ; Similar momentum update as call_00_3251; additionally checks if entity has exceeded horizontal bounds 
 ; and flips facing direction (bit 5 of flags)
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_DIRECTION
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
     ld   c,[hl]
     ld   a,l
     xor  a,$11
@@ -520,10 +520,10 @@ call_00_3364_Entity_ApproachPlayerXWithBounds:
     jr   c,.jr_02_339C
     ld   d,$20
 .jr_02_339C:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_DIRECTION
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
     ld   [hl],d
 .jr_02_33A5:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_DIRECTION
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
     bit  5,[hl]
     jr   z,.jr_02_33C7
     ld   a,e
@@ -647,7 +647,7 @@ call_00_33dd_Entity_ApplyXVelocityFriction:
 call_00_3442_Entity_MoveXByFacingSpeed:
 ; Reads facing direction and a speed field, negates speed if facing left, 
 ; sign-extends, then calls Entity_MoveX
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_DIRECTION
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
     ld   c,[hl]
     xor  a,$11
     ld   l,a
@@ -999,9 +999,9 @@ call_00_3628_Entity_SaveWorldState:
     ld   A, [wD74D_Player_EntityStoodOnLo]                                    ;; 00:3628 $fa $4d $d7
     ld   [wD9C7_BackupPlayer_EntityStoodOnLo], A                                    ;; 00:362b $ea $c7 $d9
     ld   A, [wD74E_Player_PushedStationaryPlatformLo]                                    ;; 00:362e $fa $4e $d7
-    ld   [wD9C8_BackupBuffer_PlatformRelated], A                                    ;; 00:3631 $ea $c8 $d9
+    ld   [wD9C8_BackupPlayer_PushedStationaryPlatformLo], A                                    ;; 00:3631 $ea $c8 $d9
     ld   A, [wD74F_Player_PushedMovingPlatformLo]                                    ;; 00:3634 $fa $4f $d7
-    ld   [wD9C9_BackupBuffer_PlatformRelated2], A                                    ;; 00:3637 $ea $c9 $d9
+    ld   [wD9C9_BackupPlayer_PushedMovingPlatformLo], A                                    ;; 00:3637 $ea $c9 $d9
     ld   A, [wD688_FlyAnimationPosition]                                    ;; 00:363a $fa $88 $d6
     ld   [wD9CA_BackupBuffer_FlyAnimationPosition], A                                    ;; 00:363d $ea $ca $d9
     ld   A, $a0                                        ;; 00:3640 $3e $a0
@@ -1027,9 +1027,9 @@ call_00_3675_Entity_RestoreWorldState:
 ; Inverse of call_00_3628_Entity_SaveWorldState — restores all saved buffers back to live RAM
     ld   A, [wD9C7_BackupPlayer_EntityStoodOnLo]                                    ;; 00:3675 $fa $c7 $d9
     ld   [wD74D_Player_EntityStoodOnLo], A                                    ;; 00:3678 $ea $4d $d7
-    ld   A, [wD9C8_BackupBuffer_PlatformRelated]                                    ;; 00:367b $fa $c8 $d9
+    ld   A, [wD9C8_BackupPlayer_PushedStationaryPlatformLo]                                    ;; 00:367b $fa $c8 $d9
     ld   [wD74E_Player_PushedStationaryPlatformLo], A                                    ;; 00:367e $ea $4e $d7
-    ld   A, [wD9C9_BackupBuffer_PlatformRelated2]                                    ;; 00:3681 $fa $c9 $d9
+    ld   A, [wD9C9_BackupPlayer_PushedMovingPlatformLo]                                    ;; 00:3681 $fa $c9 $d9
     ld   [wD74F_Player_PushedMovingPlatformLo], A                                    ;; 00:3684 $ea $4f $d7
     ld   A, [wD9CA_BackupBuffer_FlyAnimationPosition]                                    ;; 00:3687 $fa $ca $d9
     ld   [wD688_FlyAnimationPosition], A                                    ;; 00:368a $ea $88 $d6
@@ -1089,7 +1089,7 @@ call_00_36da_Entity_FaceAwayFromPlayer:
 call_00_36f7_Entity_MoveXByFacingMomentum_BoundsChecked:
 ; Applies facing-based momentum to X, then checks if the resulting X block coordinate 
 ; is outside bounding box; updates facing direction accordingly; returns non-zero if direction changed
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_DIRECTION
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
     ld   C, [HL]                                       ;; 00:36ff $4e
     ld   A, L                                          ;; 00:3700 $7d
     xor  A, $11                                        ;; 00:3701 $ee $11
@@ -1155,7 +1155,7 @@ call_00_36f7_Entity_MoveXByFacingMomentum_BoundsChecked:
     xor  A, A                                          ;; 00:3752 $af
     ret                                                ;; 00:3753 $c9
 .jr_00_3754:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_DIRECTION
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
     ld   A, [HL]                                       ;; 00:375c $7e
     ld   [HL], C                                       ;; 00:375d $71
     cp   A, C                                          ;; 00:375e $b9
@@ -1164,7 +1164,7 @@ call_00_36f7_Entity_MoveXByFacingMomentum_BoundsChecked:
 call_00_3760_Entity_PatrolY_FacingBased:
 ; Vertical patrol using facing direction bit 6 to determine up/down; 
 ; moves Y, checks against wD30B_EntityBoundingBoxYMax bounds, flips a $40/$00 flag in facing when bound hit
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_DIRECTION
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
     ld   c,[hl]
     ld   a,l
     xor  a,$11
@@ -1230,7 +1230,7 @@ call_00_3760_Entity_PatrolY_FacingBased:
     xor  a
     ret  
 .jr_02_37BD:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_DIRECTION
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
     ld   a,[hl]
     ld   [hl],c
     cp   c
