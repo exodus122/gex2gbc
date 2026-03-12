@@ -50,20 +50,20 @@ level_palette_names = ["media_dimension", "toon_tv", "scream_tv", "scream_tv",
 collectible_channels = ["toon_tv", "scream_tv", "circuit_central", "kung_fu_theater", "prehistory_channel", "rezopolis"]
 
 # run flags
-create_tilesets = False
-create_blocksets = False
+create_tilesets = True
+create_blocksets = True
 create_maps = True
-collision_override = False # if True, create collision maps instead of regular maps
+collision_override = True # if True, create collision maps instead of regular maps
 
 show_kill_tiles = False # displays kill tiles on map images as a pink square
-draw_entities_and_collectibles = True # draw these on the maps
+draw_entities_and_collectibles = False # draw these on the maps
 draw_tile_ids = False
 draw_block_ids = False
 
 collision_tiles = []
 if collision_override:
     os.system('mkdir -p tileset_images')
-    collision_tileset_data = open("../../maps/bg_collision_data.bin", "rb").read()
+    collision_tileset_data = open("../../src/data/maps/bg_collision_data.bin", "rb").read()
     
     tileset_img = PIL.Image.new("RGB", (128, 128))
     draw2 = PIL.ImageDraw.Draw(tileset_img)
@@ -108,13 +108,34 @@ if collision_override:
                     draw3.point((7,row_count), color);
                 
                 row_count = row_count + 1
-            
+
+            # Additional Collision tiles
+            if tile_counter == 0x22: # door
+                draw3.rectangle(((0, 0), (7, 7)), "brown", "brown")
+            elif tile_counter == 0x23: # kill
+                draw3.rectangle(((0, 0), (7, 7)), "pink", "pink")
+            elif tile_counter == 0x24: # lava
+                draw3.rectangle(((0, 0), (7, 7)), "#FF5C00", "#FF5C00")
+            elif tile_counter == 0x25: # water
+                draw3.rectangle(((0, 0), (7, 7)), "cyan", "cyan")
+            elif tile_counter == 0x26: # climbable bg
+                draw3.rectangle(((0, 0), (7, 7)), "lime", "lime")
+            elif tile_counter == 0x27 or tile_counter == 0x2A: # some tvs and bottom of toontv flowers?
+                draw3.rectangle(((0, 0), (7, 7)), "gray", "gray")
+            elif tile_counter >= 0x2C and tile_counter <= 0x2E: # climbable wall/ceiling
+                draw3.rectangle(((0, 0), (7, 7)), "lime", "lime")
+            elif tile_counter >= 0x30 and tile_counter <= 0x33: # top of climable wall
+                draw3.rectangle(((0, 0), (7, 7)), "green", "green")
+            elif tile_counter > 0xC1: # checkpoint tvs, etc.
+                draw3.rectangle(((0, 0), (7, 7)), "gray", "gray")
+
+            #draw3.rectangle(((0, 0), (7, 7)), None, "pink")
+
             collision_tiles.append(tile_img)
             tileset_img.paste(tile_img, (x*8, y*8))
             
-            #draw2.rectangle(((x*8, y*8), ((x+1)*8, (y+1)*8)), None, "pink")
-            
             tile_counter = tile_counter + 1
+
     
     tileset_img.save("./tileset_images/collision_tileset.png")
 
@@ -124,13 +145,13 @@ collectible_sprites = []
 if draw_entities_and_collectibles:
     os.system('mkdir -p collectible_sprites')
     for channel in collectible_channels:
-        collectible_sprite_path = "../../.gfx/misc_sprites/collectibles/image_collectibles_"+channel+".bin"
+        collectible_sprite_path = "../../src/.gfx/misc_sprites/collectibles/image_collectibles_"+channel+".bin"
         collectible_sprite_data = open(collectible_sprite_path, 'rb').read()[0:0x20]
         out = open('collectible_sprite.bin', "wb")
         out.write(collectible_sprite_data)
         out.close()
 
-        collectible_palette_path = "../../gfx/misc_sprites/collectibles/palettes/palette_"+channel+"_collectibles.bin"
+        collectible_palette_path = "../../src/gfx/misc_sprites/collectibles/palettes/palette_"+channel+"_collectibles.bin"
         collectible_palette_data = open(collectible_palette_path, 'rb').read()
         collectible_palette_data = b'\xff\xff' + collectible_palette_data[2:]
         out = open('collectible_palette.bin', "wb")
@@ -182,10 +203,10 @@ for level_counter in range(0, len(level_names)):
         tileset_file = "../banks/bank_0"+f"{level_data[TILESET_BANK]:x}"+".bin"
         tileset_data = open(tileset_file, 'rb').read()[level_data[TILESET_BANK_OFFSET]-0x4000:level_data[TILESET_BANK_OFFSET]-0x3000]
 
-        palette_file = "../../gfx/tilesets/palettes/palette_"+level_palette_name+".bin"
+        palette_file = "../../src/gfx/tilesets/palettes/palette_"+level_palette_name+".bin"
         palette_data = open(palette_file, "rb").read()
 
-        palette_ids_file = "../../gfx/tilesets/palette_ids/palette_ids_"+level_channel_name+".bin"
+        palette_ids_file = "../../src/gfx/tilesets/palette_ids/palette_ids_"+level_channel_name+".bin"
         palette_ids = open(palette_ids_file, "rb").read()
 
         # create a colored version of the level's primary tileset, using the palette
@@ -226,8 +247,8 @@ for level_counter in range(0, len(level_names)):
         os.system('rm temp.bin')
 
         # create colored versions of the level's secondary tilesets, using palettes
-        secondary_tileset_folder = "../../.gfx/secondary_tilesets/"+level_channel_name
-        secondary_tileset_palette_ids_folder = "../../gfx/secondary_tilesets/"+level_channel_name+"/palette_ids"
+        secondary_tileset_folder = "../../src/.gfx/secondary_tilesets/"+level_channel_name
+        secondary_tileset_palette_ids_folder = "../../src/gfx/secondary_tilesets/"+level_channel_name+"/palette_ids"
         
         media_dimension_tv_order = ["scream_tv", "scream_tv", "toon_tv", "prehistory_channel", "circuit_central", "kung_fu_theater", "channel_z", "rezopolis", "bonus_tv"]
         media_dimension_tv_order2 = ["image_013_00", "image_013_12", "image_013_13", "image_013_14", "image_013_15", "image_013_16", "image_013_17", "image_013_18", "image_013_19"]
@@ -272,7 +293,7 @@ for level_counter in range(0, len(level_names)):
                             q = q + 1
                         
                         if television != -1:
-                            palette_file2 = "../../gfx/secondary_tilesets/"+level_channel_name+"/palettes/"+media_dimension_tv_order[q]+"_television_palette.bin"
+                            palette_file2 = "../../src/gfx/secondary_tilesets/"+level_channel_name+"/palettes/"+media_dimension_tv_order[q]+"_television_palette.bin"
                             if media_dimension_tv_order[q] == "circuit_central":
                                 temp_palette_data = open(palette_file2, "rb").read()[8:]
                             else:
@@ -303,7 +324,7 @@ for level_counter in range(0, len(level_names)):
     # create the level's blockset from the tileset
     blockset_file = "../banks/bank_0"+f"{level_data[BLOCKSET_AND_COLLISION_BANK]:x}"+".bin"
     blockset_data = open(blockset_file, "rb").read()
-    secondary_tileset_data_file = "../../maps/"+level_channel_name+"/secondary_tileset_data_"+level_channel_name+".bin"
+    secondary_tileset_data_file = "../../src/data/maps/"+level_channel_name+"/secondary_tileset_data_"+level_channel_name+".bin"
     
     os.system('mkdir -p blockset_images')
     
@@ -481,9 +502,9 @@ for level_counter in range(0, len(level_names)):
 
             # draw collectibles
             if level_channel_name != "channel_z":
-                collectible_list_file = '../../maps/'+level_channel_name+'/collectible_list_'+level_name_alt+'.bin'
+                collectible_list_file = '../../src/data/maps/'+level_channel_name+'/collectible_list_'+level_name_alt+'.bin'
             else:
-                collectible_list_file = '../../maps/media_dimension/collectible_list_media_dimension.bin'
+                collectible_list_file = '../../src/data/maps/media_dimension/collectible_list_media_dimension.bin'
             collectible_list_data = open(collectible_list_file, "rb").read()
             
             if level_channel_name != "media_dimension" and level_channel_name != "channel_z":
