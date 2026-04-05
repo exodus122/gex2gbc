@@ -587,7 +587,7 @@ call_02_7164_MapScroll_CheckVertical:
     ld   HL, wD6EF_BgMap_ScrollY                                     ;; 02:7164 $21 $ef $d6
     ld   A, [HL+]                                      ;; 02:7167 $2a
     ld   D, [HL]                                       ;; 02:7168 $56
-    ld   [wD5A2_MapYScroll_Copy], A                                    ;; 02:7169 $ea $a2 $d5
+    ld   [wD5A2_BgMap_ScrollYLo], A                                    ;; 02:7169 $ea $a2 $d5
     srl  D                                             ;; 02:716c $cb $3a
     rra                                                ;; 02:716e $1f
     srl  D                                             ;; 02:716f $cb $3a
@@ -626,7 +626,7 @@ call_02_7196_MapScroll_CheckHorizontal:
     ld   HL, wD6ED_BgMap_ScrollX                                     ;; 02:7196 $21 $ed $d6
     ld   A, [HL+]                                      ;; 02:7199 $2a
     ld   D, [HL]                                       ;; 02:719a $56
-    ld   [wD5A1_MapXScroll_Copy], A                                    ;; 02:719b $ea $a1 $d5
+    ld   [wD5A1_BgMap_ScrollXLo], A                                    ;; 02:719b $ea $a1 $d5
     srl  D                                             ;; 02:719e $cb $3a
     rra                                                ;; 02:71a0 $1f
     srl  D                                             ;; 02:71a1 $cb $3a

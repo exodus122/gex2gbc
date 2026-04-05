@@ -260,9 +260,9 @@ wD59F_CurrentInputs: ; inputs defined in hardware.inc
 wD5A0:
     ds 1                                               ;; d5a0
 
-wD5A1_MapXScroll_Copy:
+wD5A1_BgMap_ScrollXLo:
     ds 1                                               ;; d5a1
-wD5A2_MapYScroll_Copy:
+wD5A2_BgMap_ScrollYLo:
     ds 1                                               ;; d5a2
 
 wD5A3_ConveyorState1:

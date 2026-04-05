@@ -396,7 +396,7 @@ DEF ENTITY_FIELD_ACTION_STATE_FLAGS         EQU $09
 DEF ENTITY_FIELD_UNK_0A                     EQU $0A
     DEF UNK_0A_BIT_7                 EQU 7 ; unused?
     DEF UNK_0A_BIT_6                 EQU 6 ; used
-    DEF UNK_0A_BIT_5                 EQU 5 ; used
+    DEF UNK_0A_BIT_5                 EQU 5 ; used ; seems like "onscreen" flag
     DEF UNK_0A_BIT_4                 EQU 4 ; unused?
     DEF UNK_0A_BIT_3                 EQU 3 ; used
     DEF UNK_0A_BIT_2                 EQU 2 ; used

@@ -1246,9 +1246,9 @@ call_00_0a54_MainGameLoop_UpdateAndRenderFrame:
     ld   [wD622_InterruptFlag], A                                    ;; 00:0a74 $ea $22 $d6
     ld   A, [wD5A0]                                    ;; 00:0a77 $fa $a0 $d5
     ldh  [rLCDC], A                                    ;; 00:0a7a $e0 $40
-    ld   A, [wD5A1_MapXScroll_Copy]                                    ;; 00:0a7c $fa $a1 $d5
+    ld   A, [wD5A1_BgMap_ScrollXLo]                                    ;; 00:0a7c $fa $a1 $d5
     ldh  [rSCX], A                                     ;; 00:0a7f $e0 $43
-    ld   A, [wD5A2_MapYScroll_Copy]                                    ;; 00:0a81 $fa $a2 $d5
+    ld   A, [wD5A2_BgMap_ScrollYLo]                                    ;; 00:0a81 $fa $a2 $d5
     ldh  [rSCY], A                                     ;; 00:0a84 $e0 $42
     call call_00_0f80                                  ;; 00:0a86 $cd $80 $0f
     ld   A, [wD788_CurrentAudioBank]                                    ;; 00:0a89 $fa $88 $d7
@@ -1756,8 +1756,8 @@ call_00_0e87:
     call call_00_0eba_ClearVRAMBgMap                                  ;; 00:0eac $cd $ba $0e
     call call_00_0ee8                                  ;; 00:0eaf $cd $e8 $0e
     xor  A, A                                          ;; 00:0eb2 $af
-    ld   [wD5A1_MapXScroll_Copy], A                                    ;; 00:0eb3 $ea $a1 $d5
-    ld   [wD5A2_MapYScroll_Copy], A                                    ;; 00:0eb6 $ea $a2 $d5
+    ld   [wD5A1_BgMap_ScrollXLo], A                                    ;; 00:0eb3 $ea $a1 $d5
+    ld   [wD5A2_BgMap_ScrollYLo], A                                    ;; 00:0eb6 $ea $a2 $d5
     ret                                                ;; 00:0eb9 $c9
 
 call_00_0eba_ClearVRAMBgMap:

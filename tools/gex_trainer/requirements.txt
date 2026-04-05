@@ -1,0 +1,10 @@
+# BGB Trainer - Python dependencies
+# Install with: pip install -r requirements.txt
+#
+# On Windows, pywin32 is required to read BGB's process memory.
+# On other platforms, the trainer runs in simulation mode automatically.
+
+pywin32>=306; sys_platform == "win32"
+
+# tkinter is part of the Python standard library.
+# If missing on Linux: sudo apt install python3-tk
