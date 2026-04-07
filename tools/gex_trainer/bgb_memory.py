@@ -16,6 +16,7 @@ import sys
 import random
 
 PROCESS_VM_READ         = 0x0010
+PROCESS_VM_WRITE        = 0x0020
 PROCESS_QUERY_INFORMATION = 0x0400
 TH32CS_SNAPPROCESS      = 0x00000002
 MEM_COMMIT              = 0x1000
@@ -114,7 +115,7 @@ class BGBMemoryReader:
             return False, "BGB not found. Start BGB and load a ROM."
 
         self.handle = self._k32.OpenProcess(
-            PROCESS_VM_READ | PROCESS_QUERY_INFORMATION, False, self.pid)
+            PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_QUERY_INFORMATION, False, self.pid)
         if not self.handle:
             return False, f"Can't open BGB (PID {self.pid}). Run as Administrator."
 
@@ -170,7 +171,7 @@ class BGBMemoryReader:
             if not self.pid:
                 return False, "BGB not found."
             self.handle = self._k32.OpenProcess(
-                PROCESS_VM_READ | PROCESS_QUERY_INFORMATION, False, self.pid)
+                PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_QUERY_INFORMATION, False, self.pid)
             if not self.handle:
                 return False, f"Can't open BGB (PID {self.pid})."
 
@@ -415,6 +416,28 @@ class BGBMemoryReader:
         d = self.read_gb(gb_address, 2)
         return struct.unpack_from("<H", d)[0] if d else None
 
+    def write_byte(self, gb_address, value):
+        """Write a single byte to GB WRAM address space."""
+        if not self.wram_base or not (0xC000 <= gb_address < 0xE000):
+            return False
+        proc_addr = self.wram_base + gb_address
+        buf = ctypes.create_string_buffer(bytes([value & 0xFF]))
+        n = ctypes.c_size_t(0)
+        ok = self._k32.WriteProcessMemory(
+            self.handle, ctypes.c_void_p(proc_addr), buf, 1, ctypes.byref(n))
+        return bool(ok and n.value == 1)
+
+    def write_word(self, gb_address, value):
+        """Write a 16-bit little-endian word to GB WRAM address space."""
+        if not self.wram_base or not (0xC000 <= gb_address < 0xDFFF):
+            return False
+        proc_addr = self.wram_base + gb_address
+        buf = ctypes.create_string_buffer(struct.pack("<H", value & 0xFFFF))
+        n = ctypes.c_size_t(0)
+        ok = self._k32.WriteProcessMemory(
+            self.handle, ctypes.c_void_p(proc_addr), buf, 2, ctypes.byref(n))
+        return bool(ok and n.value == 2)
+
     def read_all_wram(self):
         return self.read_gb(0xC000, 0x2000)
 
@@ -553,4 +576,11 @@ class SimulatedBGBMemoryReader(BGBMemoryReader):
         if a+1 < len(self._mem):
             return struct.unpack_from("<H", self._mem, a)[0]
         return None
+    def write_byte(self, a, v):
+        if a < len(self._mem): self._mem[a] = v & 0xFF; return True
+        return False
+    def write_word(self, a, v):
+        if a+1 < len(self._mem):
+            struct.pack_into("<H", self._mem, a, v & 0xFFFF); return True
+        return False
     def dump_region_info(self): return "Simulation mode."

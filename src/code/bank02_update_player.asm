@@ -17,7 +17,7 @@ call_02_489a_Player_SetLandingAction:
     ld   A, C                                          ;; 02:48b3 $79
     jp   call_02_4ccd_Player_RequestAction                                  ;; 02:48b4 $c3 $cd $4c
 
-call_02_48b7_Player_SpawnLevelSpecificDoor:
+call_02_48b7_Player_SpawnOpeningDoorEntity:
 ; Looks up the current level ID in .data_02_491a_LevelSpecificEntityIdTable to get an entity ID 
 ; (0 = no entity for this level). Scans the entity slot table at $D220 for a free slot (value $FF), 
 ; initializes it with the entity ID, clears two entity fields, then copies the player's X/Y position 
@@ -228,15 +228,15 @@ call_02_4939_Player_UpdateMain:
     res  6, [HL]                                       ;; 02:4a0b $cb $b6
     call call_02_6fda_Entity_TickAction                                  ;; 02:4a0d $cd $da $6f
     call call_02_715a_MapWindow_Update                                  ;; 02:4a10 $cd $5a $71
-    call call_02_4c28_Player_CheckConveyorWaterTiles                                  ;; 02:4a13 $cd $28 $4c
+    call call_02_4c28_Player_CheckLavaAndWaterTiles                                  ;; 02:4a13 $cd $28 $4c
     FARCALL call_03_5ca8_Entity_DrawPlayer
     ld   HL, wD751_Player_CircuitPowerUpTimerLo                                     ;; 02:4a21 $21 $51 $d7
-    call call_02_4a30_Player_DecrementTimer16                                  ;; 02:4a24 $cd $30 $4a
+    call call_02_4a30_Player_DecrementPowerupTimer                                  ;; 02:4a24 $cd $30 $4a
     ld   HL, wD755_FlyPowerup2_TimerLo                                     ;; 02:4a27 $21 $55 $d7
-    call call_02_4a30_Player_DecrementTimer16                                  ;; 02:4a2a $cd $30 $4a
+    call call_02_4a30_Player_DecrementPowerupTimer                                  ;; 02:4a2a $cd $30 $4a
     ld   HL, wD753_FlyPowerup1_TimerLo                                     ;; 02:4a2d $21 $53 $d7
 
-call_02_4a30_Player_DecrementTimer16:
+call_02_4a30_Player_DecrementPowerupTimer:
 ; Decrements a 16-bit timer at HL (little-endian). Returns immediately if already zero
     ld   A, [HL+]                                      ;; 02:4a30 $2a
     ld   D, [HL]                                       ;; 02:4a31 $56
@@ -598,8 +598,8 @@ call_02_4c19_Player_AddToYPosition:
     ld   [wD211_Player_YPositionHi], A                                    ;; 02:4c24 $ea $11 $d2
     ret                                                ;; 02:4c27 $c9
 
-call_02_4c28_Player_CheckConveyorWaterTiles:
-; Checks tile types cached in wD765/wD767 against $25 (conveyor?) and $24 (water?). 
+call_02_4c28_Player_CheckLavaAndWaterTiles:
+; Checks tile types cached in wD765/wD767 against $25 (water) and $24 (lava). 
 ; If any match, sets wD74A_Player_NearbyTileRelated = 0 (flag active), otherwise $80 (inactive). 
 ; If wD765 = $24 specifically, triggers action $1C (enter water)
     ld   A, [wD765_TileTypeBehindGexsBody]                                    ;; 02:4c28 $fa $65 $d7
@@ -800,7 +800,7 @@ data_02_4d15_ActionInputTransitionTable:
     db   $90, $08, $a0, $08, $14, $0e, $24, $0e        ;; 02:4dcd .?.?.?.?
     db   $00, $02, $ff                                 ;; 02:4dd5 .?.
 
-call_02_4dd8_Player_GetMaxHealth:
-; Returns $7D (125) in A — the player's maximum health value
+call_02_4dd8_Player_SetATo7D:
+; Returns $7D (125) in A
     ld   A, $7d                                        ;; 02:4dd8 $3e $7d
     ret                                                ;; 02:4dda $c9

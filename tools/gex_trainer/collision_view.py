@@ -217,7 +217,10 @@ class CollisionMapView(tk.Frame):
         self._scy         = None
         self._tiles       = None
         self._map_img     = None
+        self._hover_tile  = None
+        self._hover_entity = None
         self._show_entities = tk.BooleanVar(value=True)
+        self._entity_row_slots = []
         self._build_ui()
         self._load_tiles()
 
@@ -240,11 +243,14 @@ class CollisionMapView(tk.Frame):
         tk.Checkbutton(header, text="Entities", variable=self._show_entities,
                        font=("Courier New", 9), fg="#AABBCC", bg=C_BG,
                        selectcolor=C_BG, activebackground=C_BG,
-                       command=self._redraw_overlays).pack(side=tk.RIGHT, padx=4)
+                       command=self._on_toggle_entities).pack(side=tk.RIGHT, padx=4)
 
         self._info_var = tk.StringVar(value="No data")
         tk.Label(header, textvariable=self._info_var, font=("Courier New", 9),
                  fg="#667788", bg=C_BG).pack(side=tk.RIGHT)
+        self._tooltip = None
+        self._tooltip_label = None
+        self._ensure_tooltip()
 
         # ── Legend ────────────────────────────────────────────────────────────
         legend = tk.Frame(self, bg=C_BG)
@@ -276,14 +282,34 @@ class CollisionMapView(tk.Frame):
         self._canvas.bind("<Button-4>",   self._on_mousewheel)
         self._canvas.bind("<Button-5>",   self._on_mousewheel)
         self._canvas.bind("<Button-1>",   self._on_canvas_click)
+        self._canvas.bind("<Motion>",     self._on_canvas_hover)
+        self._canvas.bind("<Leave>",      self._on_canvas_leave)
 
         # ── Entity detail panel ───────────────────────────────────────────────
-        panel = tk.Frame(main, bg="#0D1117", width=200)
+        panel = tk.Frame(main, bg="#0D1117", width=250)
         panel.pack(side=tk.RIGHT, fill=tk.Y, padx=(6, 0))
         panel.pack_propagate(False)
 
         tk.Label(panel, text="ENTITY", font=("Courier New", 10, "bold"),
                  fg="#00FF88", bg=C_BG).pack(anchor="w", padx=8, pady=(8, 4))
+
+        self._scx_var = tk.StringVar(value="SCX: --")
+        self._scy_var = tk.StringVar(value="SCY: --")
+        self._entity_count_var = tk.StringVar(value="Entities: 0")
+        tk.Label(panel, textvariable=self._scx_var, font=("Courier New", 8),
+                 fg="#99AABB", bg=C_BG).pack(anchor="w", padx=8)
+        tk.Label(panel, textvariable=self._scy_var, font=("Courier New", 8),
+                 fg="#99AABB", bg=C_BG).pack(anchor="w", padx=8)
+        tk.Label(panel, textvariable=self._entity_count_var, font=("Courier New", 8),
+                 fg="#99AABB", bg=C_BG).pack(anchor="w", padx=8, pady=(0, 6))
+
+        self._entity_list = tk.Listbox(panel, font=("Courier New", 8),
+                                       bg="#161B22", fg="#C9D1D9",
+                                       selectbackground="#1F6FEB", selectforeground="white",
+                                       relief=tk.FLAT, highlightthickness=0,
+                                       activestyle="none", height=10)
+        self._entity_list.pack(fill=tk.X, padx=4, pady=(0, 8))
+        self._entity_list.bind("<<ListboxSelect>>", self._on_entity_list_select)
 
         self._entity_text = tk.Text(panel, font=("Courier New", 8),
                                     bg="#161B22", fg="#C9D1D9",
@@ -291,6 +317,7 @@ class CollisionMapView(tk.Frame):
                                     borderwidth=0, highlightthickness=0,
                                     width=24)
         self._entity_text.pack(fill=tk.BOTH, expand=True, padx=4, pady=(0, 8))
+        self._clear_entity_detail()
 
     def _on_mousewheel(self, event):
         delta = getattr(event, "delta", 0)
@@ -304,10 +331,10 @@ class CollisionMapView(tk.Frame):
         cx = self._canvas.canvasx(event.x)
         cy = self._canvas.canvasy(event.y)
 
-        MAP_PX = self._profile.get("map_width", 32) * DST_TILE if self._profile else 512
+        map_w_px, map_h_px = self._map_canvas_size()
         hit = None
         for ent in self._entities:
-            x0, y0, x1, y1 = self._entity_canvas_rect(ent, MAP_PX)
+            x0, y0, x1, y1 = self._entity_canvas_rect(ent, map_w_px, map_h_px)
             if x0 <= cx <= x1 and y0 <= cy <= y1:
                 hit = ent
                 break
@@ -315,19 +342,164 @@ class CollisionMapView(tk.Frame):
         if hit:
             self._selected_slot = hit["slot"]
             self._show_entity_detail(hit)
+            self._sync_entity_list_selection()
             self._redraw_overlays()
 
-    def _entity_screen_to_canvas(self, screen_x, screen_y, MAP_PX):
+    def _on_canvas_hover(self, event):
+        if not self._profile or not self._map_data:
+            self._set_hover_state(None, None)
+            self._hide_tooltip()
+            return
+
+        W = self._profile.get("map_width", 32)
+        H = self._profile.get("map_height", 32)
+        cx = self._canvas.canvasx(event.x)
+        cy = self._canvas.canvasy(event.y)
+        tx = int(cx // DST_TILE)
+        ty = int(cy // DST_TILE)
+        if not (0 <= tx < W and 0 <= ty < H):
+            self._set_hover_state(None, None)
+            self._hide_tooltip()
+            return
+
+        idx = ty * W + tx
+        tile_id = self._map_data[idx] if idx < len(self._map_data) else 0
+        ent = self._entity_at_canvas_point(cx, cy)
+        self._set_hover_state((tx, ty, tile_id), ent)
+        self._show_tooltip(event.x_root, event.y_root, tx, ty, tile_id, ent)
+
+    def _on_canvas_leave(self, _event):
+        self._set_hover_state(None, None)
+        self._hide_tooltip()
+
+    def _on_entity_list_select(self, event):
+        selection = self._entity_list.curselection()
+        if not selection:
+            return
+        row = selection[0]
+        if row >= len(self._entity_row_slots):
+            return
+        slot = self._entity_row_slots[row]
+        ent = next((item for item in self._entities if item["slot"] == slot), None)
+        if ent is None:
+            return
+        self._selected_slot = slot
+        self._show_entity_detail(ent)
+        self._redraw_overlays()
+
+    def _on_toggle_entities(self):
+        if not self._show_entities.get():
+            self._hover_entity = None
+        self._redraw_overlays()
+
+    def _refresh_entity_list(self):
+        self._entity_list.delete(0, tk.END)
+        self._entity_row_slots = []
+        for ent in self._entities:
+            marker = "P" if ent["slot"] == 0 else "E"
+            self._entity_row_slots.append(ent["slot"])
+            self._entity_list.insert(
+                tk.END,
+                f"{marker}{ent['slot']}  ID {ent['entity_id']:02X}  XY {ent['xpos']:04X},{ent['ypos']:04X}",
+            )
+        self._entity_count_var.set(f"Entities: {len(self._entities)}")
+        self._sync_entity_list_selection()
+
+    def _sync_entity_list_selection(self):
+        self._entity_list.selection_clear(0, tk.END)
+        if self._selected_slot is None:
+            return
+        try:
+            row = self._entity_row_slots.index(self._selected_slot)
+        except ValueError:
+            return
+        self._entity_list.selection_set(row)
+        self._entity_list.see(row)
+
+    def _map_canvas_size(self):
+        if not self._profile:
+            return 512, 512
+        return (
+            self._profile.get("map_width", 32) * DST_TILE,
+            self._profile.get("map_height", 32) * DST_TILE,
+        )
+
+    def _set_hover_state(self, hover_tile, hover_entity):
+        hover_entity_slot = hover_entity["slot"] if hover_entity else None
+        current_entity_slot = self._hover_entity["slot"] if self._hover_entity else None
+        if self._hover_tile == hover_tile and current_entity_slot == hover_entity_slot:
+            return
+        self._hover_tile = hover_tile
+        self._hover_entity = hover_entity
+        self._update_info_label()
+        self._redraw_overlays()
+
+    def _update_info_label(self):
+        if not self._profile or self._map_data is None:
+            self._info_var.set("No data")
+            return
+
+        W = self._profile.get("map_width", 32)
+        H = self._profile.get("map_height", 32)
+        n_ent = len(self._entities)
+        self._info_var.set(f"{W}x{H} tiles  |  {n_ent} entities  |  {len(self._map_data)} bytes")
+
+    def _entity_at_canvas_point(self, cx, cy):
+        if not self._show_entities.get() or not self._entities:
+            return None
+
+        map_w_px, map_h_px = self._map_canvas_size()
+        for ent in self._entities:
+            x0, y0, x1, y1 = self._entity_canvas_rect(ent, map_w_px, map_h_px)
+            if x0 <= cx <= x1 and y0 <= cy <= y1:
+                return ent
+        return None
+
+    def _ensure_tooltip(self):
+        if self._tooltip is not None:
+            return
+        self._tooltip = tk.Toplevel(self)
+        self._tooltip.withdraw()
+        self._tooltip.overrideredirect(True)
+        self._tooltip.configure(bg="#C9A227")
+        self._tooltip.attributes("-topmost", True)
+        self._tooltip_label = tk.Label(
+            self._tooltip,
+            font=("Courier New", 8),
+            justify=tk.LEFT,
+            bg="#161B22",
+            fg="#F5F7FA",
+            padx=6,
+            pady=4,
+        )
+        self._tooltip_label.pack(padx=1, pady=1)
+
+    def _show_tooltip(self, x_root, y_root, tx, ty, tile_id, ent):
+        self._ensure_tooltip()
+        lines = [f"Tile ({tx},{ty})", f"ID: 0x{tile_id:02X} ({tile_id})"]
+        if ent is not None:
+            kind = "Player" if ent["slot"] == 0 else "Entity"
+            lines.append(f"{kind}: slot {ent['slot']}")
+            lines.append(f"Obj ID: 0x{ent['entity_id']:02X} ({ent['entity_id']})")
+        self._tooltip_label.configure(text="\n".join(lines))
+        self._tooltip.geometry(f"+{x_root + 16}+{y_root + 16}")
+        self._tooltip.deiconify()
+
+    def _hide_tooltip(self):
+        if self._tooltip is not None:
+            self._tooltip.withdraw()
+
+    def _entity_screen_to_canvas(self, screen_x, screen_y, map_w_px, map_h_px):
         """Convert entity screen coords to canvas coords with wrapping."""
         if self._scx is None or self._scy is None:
             return None, None
-        cx = ((self._scx + screen_x - 8) * SCALE) % MAP_PX
-        cy = ((self._scy + screen_y - 16) * SCALE) % MAP_PX
+        cx = ((self._scx + screen_x - 8) * SCALE) % map_w_px
+        cy = ((self._scy + screen_y - 16) * SCALE) % map_h_px
         return cx, cy
 
-    def _entity_canvas_rect(self, ent, MAP_PX):
+    def _entity_canvas_rect(self, ent, map_w_px, map_h_px):
         """Return (x0,y0,x1,y1) canvas rect for an entity's hitbox."""
-        cx, cy = self._entity_screen_to_canvas(ent["screen_x"], ent["screen_y"], MAP_PX)
+        cx, cy = self._entity_screen_to_canvas(ent["screen_x"], ent["screen_y"], map_w_px, map_h_px)
         if cx is None:
             return 0, 0, 0, 0
         w = ent["width"]  * SCALE
@@ -337,15 +509,14 @@ class CollisionMapView(tk.Frame):
     def _show_entity_detail(self, ent):
         def signed_byte(byte_val):
             return (byte_val + 128) % 256 - 128
-        
-        facing_map = {0: "Down", 4: "Up", 8: "Left", 0x0C: "Right"}
+
         lines = [
             f"Slot:    {ent['slot']}",
             f"ID:      0x{ent['entity_id']:02X}",
             f"Action:  0x{ent['action_id']:02X}",
             f"Func:    0x{ent['action_func']:04X}",
             f"Sprite:  0x{ent['sprite_id']:02X}",
-            f"Facing: {facing_map.get(ent['facing'], f'0x{ent['facing']:02X}')}",
+            f"Facing:  0x{ent['facing']:02X}",
             f"",
             f"XPos:    {ent['xpos']} (0x{ent['xpos']:04X})",
             f"YPos:    {ent['ypos']} (0x{ent['ypos']:04X})",
@@ -368,6 +539,13 @@ class CollisionMapView(tk.Frame):
         t.insert("1.0", "\n".join(lines))
         t.configure(state=tk.DISABLED)
 
+    def _clear_entity_detail(self):
+        t = self._entity_text
+        t.configure(state=tk.NORMAL)
+        t.delete("1.0", tk.END)
+        t.insert("1.0", "Select an entity")
+        t.configure(state=tk.DISABLED)
+
     # ── Public API ────────────────────────────────────────────────────────────
 
     def update_map(self, map_bytes, profile, entities):
@@ -375,12 +553,20 @@ class CollisionMapView(tk.Frame):
         self._map_data  = map_bytes
         self._profile   = profile
         self._entities  = entities
+        self._refresh_entity_list()
+        self._update_info_label()
 
         # Keep selected entity detail up to date
         if self._selected_slot is not None:
             sel = next((e for e in entities if e["slot"] == self._selected_slot), None)
             if sel:
                 self._show_entity_detail(sel)
+            else:
+                self._selected_slot = None
+                self._sync_entity_list_selection()
+                self._clear_entity_detail()
+        elif not entities:
+            self._clear_entity_detail()
 
         if map_changed:
             self._redraw()
@@ -394,6 +580,14 @@ class CollisionMapView(tk.Frame):
         self._canvas.create_text(w//2, h//2, text=message,
                                   font=("Courier New", 12), fill="#445566")
         self._info_var.set(message)
+        self._entity_count_var.set("Entities: 0")
+        self._entity_list.delete(0, tk.END)
+        self._entity_row_slots = []
+        self._selected_slot = None
+        self._hover_tile = None
+        self._hover_entity = None
+        self._hide_tooltip()
+        self._clear_entity_detail()
 
     # ── Drawing ───────────────────────────────────────────────────────────────
 
@@ -406,8 +600,7 @@ class CollisionMapView(tk.Frame):
             self._redraw_tiled(W, H)
         else:
             self._redraw_fallback(W, H)
-        n_ent = len(self._entities)
-        self._info_var.set(f"{W}×{H} tiles  |  {n_ent} entities  |  {len(self._map_data)} bytes")
+        self._update_info_label()
 
     def _redraw_tiled(self, W, H):
         S     = DST_TILE
@@ -461,17 +654,26 @@ class CollisionMapView(tk.Frame):
     def _redraw_overlays(self):
         self._canvas.delete("overlays")
         self._canvas.delete("viewport")
+        self._canvas.delete("hover")
 
         if not self._profile:
             return
 
-        W     = self._profile.get("map_width",  32)
-        S     = DST_TILE
-        MAP_PX = W * S
+        map_w_px, map_h_px = self._map_canvas_size()
+
+        if self._hover_tile is not None:
+            tx, ty, tile_id = self._hover_tile
+            x0 = tx * DST_TILE
+            y0 = ty * DST_TILE
+            x1 = x0 + DST_TILE
+            y1 = y0 + DST_TILE
+            self._canvas.create_rectangle(
+                x0, y0, x1, y1,
+                outline="#FFD700", width=2, tags="hover")
 
         # ── Viewport rectangle ────────────────────────────────────────────────
         if self._scx is not None and self._scy is not None:
-            self._draw_viewport_rect(self._scx, self._scy, MAP_PX)
+            self._draw_viewport_rect(self._scx, self._scy, map_w_px, map_h_px)
 
         if not self._show_entities.get():
             return
@@ -489,7 +691,7 @@ class CollisionMapView(tk.Frame):
             if self._scx is None:
                 continue
 
-            x0, y0, x1, y1 = self._entity_canvas_rect(ent, MAP_PX)
+            x0, y0, x1, y1 = self._entity_canvas_rect(ent, map_w_px, map_h_px)
             if is_player:
                 y0 = y0 + 8
                 y1 = y1 + 8
@@ -499,10 +701,6 @@ class CollisionMapView(tk.Frame):
                 x0, y0, x1, y1,
                 outline=border, fill=color, stipple="gray25",
                 width=2, tags="overlays")
-            self._canvas.create_text(
-                x0 + 2, y0 + 2,
-                text=f"{ent['entity_id']:02X}", anchor="nw",
-                font=("Courier New", 7), fill="cyan", tags="overlays")
 
         # ── Player (slot 0) ───────────────────────────────────────────────────
         '''if player_ent and self._scx is not None:
@@ -519,9 +717,11 @@ class CollisionMapView(tk.Frame):
     def update_viewport(self, scx, scy):
         self._scx = scx
         self._scy = scy
+        self._scx_var.set(f"SCX: {scx if scx is not None else '--'}")
+        self._scy_var.set(f"SCY: {scy if scy is not None else '--'}")
         self._redraw_overlays()
 
-    def _draw_viewport_rect(self, scx, scy, MAP_PX):
+    def _draw_viewport_rect(self, scx, scy, map_w_px, map_h_px):
         x0, y0 = scx * SCALE, scy * SCALE
         x1, y1 = x0 + VP_W * SCALE, y0 + VP_H * SCALE
 
@@ -530,14 +730,14 @@ class CollisionMapView(tk.Frame):
 
         def seg(ax0, ay0, ax1, ay1, color):
             rx0 = max(0, ax0); ry0 = max(0, ay0)
-            rx1 = min(MAP_PX, ax1); ry1 = min(MAP_PX, ay1)
+            rx1 = min(map_w_px, ax1); ry1 = min(map_h_px, ay1)
             if rx0 < rx1 and ry0 < ry1:
                 self._canvas.create_rectangle(rx0, ry0, rx1, ry1,
                     outline=color, width=3, fill="", tags="viewport")
 
-        wrap_x = x1 > MAP_PX
-        wrap_y = y1 > MAP_PX
+        wrap_x = x1 > map_w_px
+        wrap_y = y1 > map_h_px
         seg(x0, y0, x1, y1, C_VP)
-        if wrap_x: seg(0, y0, x1 - MAP_PX, y1, C_VP2)
-        if wrap_y: seg(x0, 0, x1, y1 - MAP_PX, C_VP2)
-        if wrap_x and wrap_y: seg(0, 0, x1 - MAP_PX, y1 - MAP_PX, C_VP2)
+        if wrap_x: seg(0, y0, x1 - map_w_px, y1, C_VP2)
+        if wrap_y: seg(x0, 0, x1, y1 - map_h_px, C_VP2)
+        if wrap_x and wrap_y: seg(0, 0, x1 - map_w_px, y1 - map_h_px, C_VP2)

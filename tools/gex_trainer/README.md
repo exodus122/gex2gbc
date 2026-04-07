@@ -1,4 +1,4 @@
-# BGB Trainer — Game Boy Memory Visualizer
+# Gex Trainer — Game Boy Memory Visualizer
 
 A Python tool that hooks into the **BGB** Game Boy emulator, reads its
 process memory in real time, and displays the data in a separate GUI window.
@@ -9,25 +9,22 @@ process memory in real time, and displays the data in a separate GUI window.
 
 | Tab | What it shows |
 |-----|---------------|
-| **Collision Map** | Current 32×32 tile map drawn as a colour-coded grid. Walkable tiles (green), walls/trees (red), water (blue), tall grass (light green). Player position shown as a yellow diamond, NPCs as white dots. Updates at ~10 fps. |
+| **Collision Map** | Current 32×32 tile map drawn as a colour-coded grid. Also diplays entity hitboxes and lists the currently loaded entitys in the sidebar. You can click an objec to view its properties. Updates at ~10 fps. |
 | **Hex Viewer** | Live hex dump of any 64KB GB memory region (WRAM, VRAM, OAM, etc.). Changed bytes highlighted in red since last frame. |
 | **Sprites / OAM** | All 40 OAM entries listed with Y, X, tile ID, flags, on-screen status, and flip bits. |
-| **Player Info** | Gex specific: coordinates, facing, map ID, HP, etc. |
+| **Watches** | User-defined memory watches with labels, addresses, and sizes. Supports grouping, value poking, and value freezing. |
 
 ---
 
 ## Requirements
 
 - Python 3.9+
-- Windows (BGB is Windows-only). On other OSes the trainer runs in **simulation mode** with animated demo data.
+- Windows (BGB is Windows-only)
 - BGB emulator: https://bgb.bircd.org/
 
 ```
 pip install -r requirements.txt
 ```
-
-On Windows, `pywin32` is installed automatically.  
-On Linux/macOS, `tkinter` must be installed (`sudo apt install python3-tk`).
 
 ---
 
@@ -38,11 +35,25 @@ python main.py
 ```
 
 1. Start BGB and load a ROM first.
-2. Click **⟳ CONNECT** in the trainer. It will find BGB by process name and scan its memory for the GB memory block.
-3. If BGB isn't running, the trainer falls back to simulation mode showing a generated map.
+2. Follow the **Connecting** steps below to link the trainer to BGB.
 
 > **Run as Administrator** if the Connect button shows "Failed to open process".  
 > Windows requires elevated privileges to call `ReadProcessMemory` on other processes.
+
+---
+
+## Connecting to BGB
+
+The trainer needs to locate BGB's internal Game Boy memory block before it
+can read anything. The easiest way to do this is via the **📋 PASTE WRAM**
+button:
+
+1. In BGB, open the memory viewer: **Right Click → Debugger**.
+2. Navigate to address **`C000`** — this is the start of WRAM.
+3. Select and copy at least **60 bytes** starting from `C000` (copy them as hex).
+4. In the trainer, click **📋 PASTE WRAM** and paste the copied bytes into the dialog.
+5. Click **Connect**. The trainer will use those bytes to locate the correct
+   memory region in BGB's process and begin reading live data.
 
 ---
 
@@ -84,8 +95,7 @@ Edit `game_maps.py` and add an entry to `GAME_PROFILES`:
 },
 ```
 
-Use BGB's built-in memory viewer (**Window → Tile viewer** / **VRAM viewer**)
-alongside a debugger (`F2` to open BGB's debugger) to find these addresses.
+Use BGB's built-in memory viewer (**Right Click → Debugger**) to find these addresses.
 
 ---
 
@@ -95,11 +105,12 @@ alongside a debugger (`F2` to open BGB's debugger) to find these addresses.
 bgb_trainer/
 ├── main.py           Entry point
 ├── trainer_app.py    Main window, polling loop, tab coordination
-├── bgb_memory.py     Windows process memory reader + simulation fallback
+├── bgb_memory.py     Windows process memory reader
 ├── game_maps.py      Per-game memory address profiles
 ├── collision_view.py Tile map / collision grid canvas widget
 ├── hex_view.py       Scrollable hex dump with change highlighting
 ├── sprite_view.py    OAM sprite table (Treeview)
+├── watches_view.py   User-defined memory watches
 └── requirements.txt
 ```
 
@@ -111,6 +122,6 @@ bgb_trainer/
 |---------|-----|
 | "BGB process not found" | Start BGB and load a ROM before connecting |
 | "Failed to open BGB process" | Run trainer as Administrator |
-| "Could not locate GB memory" | Make sure a ROM is loaded in BGB (not just the emulator window) |
-| Blank collision map | The ROM may not be in `game_maps.py` — check the Player Info tab for the detected title and add a profile |
+| "Could not locate GB memory" | Use **📋 PASTE WRAM** — copy 50 bytes from address `C000` in BGB's memory viewer and paste them into the dialog |
+| Blank collision map | The ROM may not be in `game_maps.py` — check the detected title and add a profile |
 | Wrong player position | Coordinates are game-specific — find them with BGB's memory viewer |

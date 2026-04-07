@@ -58,7 +58,7 @@ data_02_4120:
     dw   call_02_4459_PlayerAction_EnterDoor, data_02_7647
     DEF  PLAYER_ACTION_LEAVE_DOOR                 EQU $1B
     dw   call_02_447e_PlayerAction_LeaveDoor, data_02_7658
-    DEF  PLAYER_ACTION_HIT_BOUNCE                 EQU $1C
+    DEF  PLAYER_ACTION_HIT_BOUNCE                 EQU $1C ; used when touch lava
     dw   call_02_4483_PlayerAction_HitBounce, data_02_7665
     DEF  PLAYER_ACTION_CLIMB                      EQU $1D ; used for both types of climbing
     dw   call_02_44af_PlayerAction_Climb, data_02_766d
@@ -101,7 +101,7 @@ call_02_41b7_PlayerAction_Stand:
     ld   [wD760_PlayerYVelocity], A                                    ;; 02:41c7 $ea $60 $d7
     xor  A, A                                          ;; 02:41ca $af
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:41cb $ea $5e $d7
-    call call_02_4dd8_Player_GetMaxHealth                                  ;; 02:41ce $cd $d8 $4d
+    call call_02_4dd8_Player_SetATo7D                                  ;; 02:41ce $cd $d8 $4d
     cp   A, $32                                        ;; 02:41d1 $fe $32
     jr   NC, .jr_02_41d7                               ;; 02:41d3 $30 $02
     ld   A, $32                                        ;; 02:41d5 $3e $32
@@ -527,7 +527,7 @@ call_02_4459_PlayerAction_EnterDoor:
     and  a,ACTION_STATE_IS_FIRST_FRAME
     jr   z,.jr_02_4465
     ld   a,$00
-    call call_02_48b7_Player_SpawnLevelSpecificDoor
+    call call_02_48b7_Player_SpawnOpeningDoorEntity
 .jr_02_4465:
     xor  a
     ld   [wD75E_PlayerXSpeed],a

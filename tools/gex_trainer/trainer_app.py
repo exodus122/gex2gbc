@@ -1,5 +1,5 @@
 """
-trainer_app.py - Main window and polling loop for the BGB Trainer.
+trainer_app.py - Main window and polling loop for the Gex Trainer.
 """
 
 import sys
@@ -13,6 +13,7 @@ from game_maps import detect_game
 from collision_view import CollisionMapView
 from hex_view import HexView
 from sprite_view import SpriteView
+from watches_view import WatchesView
 
 POLL_INTERVAL_MS = 150    # how often to refresh memory (~7 fps)
 
@@ -31,14 +32,11 @@ class TrainerApp:
 
     def __init__(self, root: tk.Tk):
         self.root = root
-        self.root.title("BGB Trainer  //  Game Boy Memory Visualizer")
+        self.root.title("Gex Trainer  //  Game Boy Memory Visualizer")
         self.root.configure(bg=C_BG)
         self.root.minsize(900, 600)
         self.root.geometry("1200x750")
         
-        self._scx_var = tk.StringVar(value="0")
-        self._scy_var = tk.StringVar(value="0")
-
         # Always use real reader on Windows; simulation only on non-Windows
         self._sim_mode = sys.platform != "win32"
         self._reader = SimulatedBGBMemoryReader() if self._sim_mode else BGBMemoryReader()
@@ -50,6 +48,11 @@ class TrainerApp:
 
         self._build_ui()
         self._try_connect()
+        self.root.protocol("WM_DELETE_WINDOW", self._on_close)
+
+    def _on_close(self):
+        self._watches_view._save()
+        self.root.destroy()
 
     # ── UI Construction ───────────────────────────────────────────────────────
 
@@ -59,7 +62,7 @@ class TrainerApp:
         title_bar.pack(fill=tk.X, side=tk.TOP)
         title_bar.pack_propagate(False)
 
-        tk.Label(title_bar, text="◈  BGB TRAINER",
+        tk.Label(title_bar, text="◈  Gex TRAINER",
                  font=("Courier New", 13, "bold"),
                  fg=C_GREEN, bg=C_PANEL).pack(side=tk.LEFT, padx=12, pady=8)
 
@@ -141,10 +144,9 @@ class TrainerApp:
         self._sprite_view = SpriteView(nb)
         nb.add(self._sprite_view, text="  SPRITES / OAM  ")
 
-        # Tab 4: Player info
-        self._info_tab = tk.Frame(nb, bg=C_BG)
-        nb.add(self._info_tab, text="  PLAYER INFO  ")
-        self._build_info_tab()
+        # Tab 4: Watches
+        self._watches_view = WatchesView(nb)
+        nb.add(self._watches_view, text="  WATCHES  ")
 
         self._nb = nb
 
@@ -158,56 +160,6 @@ class TrainerApp:
         tk.Label(status_bar, textvariable=self._status_bar_var,
                  font=("Courier New", 8), fg=C_DIM, bg=C_PANEL,
                  anchor="w").pack(fill=tk.X, padx=8)
-
-    def _build_info_tab(self):
-        f = self._info_tab
-        pad = dict(padx=20, pady=8, sticky="w")
-
-        tk.Label(f, text="PLAYER STATE", font=("Courier New", 13, "bold"),
-                 fg=C_GREEN, bg=C_BG).grid(row=0, column=0, columnspan=4,
-                 padx=20, pady=(16, 4), sticky="w")
-
-        fields = [
-            ("Map X",      "_px_var"),
-            ("Map Y",      "_py_var"),
-            ("Facing",     "_facing_var"),
-            ("Map ID",     "_mapid_var"),
-            ("HP",         "_hp_var"),
-            ("Max HP",     "_maxhp_var"),
-            ("Money",      "_money_var"),
-            ("Steps",      "_steps_var"),
-            ("SCX (Scroll X)", "_scx_var"), # Added
-            ("SCY (Scroll Y)", "_scy_var"), # Added
-        ]
-        self._px_var = self._py_var = self._facing_var = self._mapid_var = None
-        self._hp_var = self._maxhp_var = self._money_var = self._steps_var = None
-
-        for i, (label, attr) in enumerate(fields):
-            row, col = divmod(i, 2)
-            var = tk.StringVar(value="—")
-            setattr(self, attr, var)
-            tk.Label(f, text=label + ":", font=("Courier New", 10),
-                     fg=C_DIM, bg=C_BG).grid(row=row + 1, column=col * 2,
-                     padx=(20, 4), pady=6, sticky="e")
-            tk.Label(f, textvariable=var, font=("Courier New", 10, "bold"),
-                     fg=C_TEXT, bg=C_BG, width=14, anchor="w").grid(
-                row=row + 1, column=col * 2 + 1,
-                padx=(0, 20), pady=6, sticky="w")
-
-        # Raw WRAM addresses info box
-        info_text = (
-            "Gex memory addresses:\n"
-            #"  wXCoord    = 0xD361    wYCoord   = 0xD362\n"
-            #"  wCurMap    = 0xD35E    wFacing   = 0xC109\n"
-            #"  wPartyHP   = 0xD16C    wMoney    = 0xD347\n"
-            #"  wStepCount = 0xD35A    wTileMap  = 0xC6E8\n\n"
-            "These addresses are game-specific.\n"
-            "Edit game_maps.py to add your own game's memory layout."
-        )
-        tk.Label(f, text=info_text, font=("Courier New", 9),
-                 fg=C_DIM, bg=C_BG, justify=tk.LEFT,
-                 relief=tk.FLAT).grid(row=6, column=0, columnspan=4,
-                 padx=20, pady=(16, 0), sticky="w")
 
     # ── Connection ────────────────────────────────────────────────────────────
 
@@ -350,13 +302,8 @@ class TrainerApp:
         entity_raw = r.read_gb(ENTITY_BUFFER_ADDR, ENTITY_COUNT * ENTITY_SIZE)
         entities   = parse_entities(entity_raw) if entity_raw else []
 
-        # Player is slot 0 — pull coords for info tab display
+        # Player is slot 0 — pull coords for status bar
         player_ent = next((e for e in entities if e["slot"] == 0), None)
-        px = player_ent["xpos"] if player_ent else 0
-        py = player_ent["ypos"] if player_ent else 0
-        coord_16bit = profile.get("coord_16bit", False)
-        map_px = px // 16 if coord_16bit else px
-        map_py = py // 16 if coord_16bit else py
 
         if map_bytes:
             self._collision_view.update_map(map_bytes, profile, entities)
@@ -377,44 +324,15 @@ class TrainerApp:
         if oam:
             self._sprite_view.update_oam(oam)
 
-        # Show raw coords (pixel if 16-bit, tile if 8-bit) + tile position
-        if coord_16bit:
-            self._px_var.set(f"{px}px  (tile {map_px})")
-            self._py_var.set(f"{py}px  (tile {map_py})")
+        # ── Watches ───────────────────────────────────────────────────────────
+        self._watches_view.poll(r)
+
+        # ── Status bar ────────────────────────────────────────────────────────
+        if player_ent:
+            px, py = player_ent["xpos"], player_ent["ypos"]
+            coord_str = f"px({px},{py}) tile({px//16},{py//16})"
         else:
-            self._px_var.set(str(px))
-            self._py_var.set(str(py))
-        facing_map = {0: "Down", 4: "Up", 8: "Left", 0x0C: "Right"}
-        facing_addr = profile.get("facing")
-        facing_raw = r.read_byte(facing_addr) if facing_addr else None
-        self._facing_var.set(facing_map.get(facing_raw, f"0x{facing_raw:02X}" if facing_raw is not None else "—"))
-
-        map_id_addr = profile.get("map_id")
-        map_id = r.read_byte(map_id_addr) if map_id_addr else None
-        self._mapid_var.set(f"0x{map_id:02X}" if map_id is not None else "—")
-
-        hp_addr    = profile.get("hp")
-        maxhp_addr = profile.get("max_hp")
-        hp    = r.read_word(hp_addr)    if hp_addr    else None
-        maxhp = r.read_word(maxhp_addr) if maxhp_addr else None
-        self._hp_var.set(str(hp)    if hp    is not None else "—")
-        self._maxhp_var.set(str(maxhp) if maxhp is not None else "—")
-
-        money_addr = profile.get("money")
-        if money_addr:
-            money_data = r.read_gb(money_addr, 3)
-            if money_data:
-                self._money_var.set(f"₽{int(money_data.hex(), 16):,}")
-            else:
-                self._money_var.set("—")
-        else:
-            self._money_var.set("—")
-
-        steps_addr = profile.get("steps")
-        steps = r.read_word(steps_addr) if steps_addr else None
-        self._steps_var.set(f"{steps:,}" if steps is not None else "—")
-
-        coord_str = f"px({px},{py}) tile({map_px},{map_py})" if coord_16bit else f"tile({px},{py})"
+            coord_str = "—"
         mode_str = "SIMULATION" if self._sim_mode else "LIVE"
         self._status_bar_var.set(
             f"Player {coord_str}  |  {self._profile['name']}  |  {mode_str}"
@@ -426,8 +344,6 @@ class TrainerApp:
         if scx_addr and scy_addr:
             scx = r.read_byte(scx_addr) or 0
             scy = r.read_byte(scy_addr) or 0
-            self._scx_var.set(str(scx))
-            self._scy_var.set(str(scy))
             self._collision_view.update_viewport(scx, scy)
         else:
             self._collision_view.update_viewport(None, None)

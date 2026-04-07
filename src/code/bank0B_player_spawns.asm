@@ -88,7 +88,7 @@ call_0b_4efe_Player_SetSpawnPosition:
     ld   [wD210_Player_YPositionLo], A                                    ;; 0b:4f66 $ea $10 $d2
     ld   A, H                                          ;; 0b:4f69 $7c
     ld   [wD211_Player_YPositionHi], A                                    ;; 0b:4f6a $ea $11 $d2
-    jp   call_00_13a6_MapWindow_UpdateFromPlayerPos                                  ;; 0b:4f6d $c3 $a6 $13
+    jp   call_00_13a6_BgMap_UpdateWindowFromPlayerPos                                  ;; 0b:4f6d $c3 $a6 $13
 .jr_0b_4f70:
     ld   A, [wD624_CurrentLevelId]                                    ;; 0b:4f70 $fa $24 $d6
     and  A, A                                          ;; 0b:4f73 $a7
@@ -128,7 +128,7 @@ call_0b_4efe_Player_SetSpawnPosition:
     ld   [wD210_Player_YPositionLo], A                                    ;; 0b:4fa5 $ea $10 $d2
     ld   A, H                                          ;; 0b:4fa8 $7c
     ld   [wD211_Player_YPositionHi], A                                    ;; 0b:4fa9 $ea $11 $d2
-    jp   call_00_13a6_MapWindow_UpdateFromPlayerPos                                  ;; 0b:4fac $c3 $a6 $13
+    jp   call_00_13a6_BgMap_UpdateWindowFromPlayerPos                                  ;; 0b:4fac $c3 $a6 $13
 .jr_0b_4faf:
     ld   HL, wD624_CurrentLevelId                                     ;; 0b:4faf $21 $24 $d6
     ld   L, [HL]                                       ;; 0b:4fb2 $6e
@@ -172,7 +172,7 @@ call_0b_4efe_Player_SetSpawnPosition:
     ld   [wD210_Player_YPositionLo], A                                    ;; 0b:4fe8 $ea $10 $d2
     ld   A, H                                          ;; 0b:4feb $7c
     ld   [wD211_Player_YPositionHi], A                                    ;; 0b:4fec $ea $11 $d2
-    jp   call_00_13a6_MapWindow_UpdateFromPlayerPos                                  ;; 0b:4fef $c3 $a6 $13
+    jp   call_00_13a6_BgMap_UpdateWindowFromPlayerPos                                  ;; 0b:4fef $c3 $a6 $13
 .data_LevelDoorSpawnPointerTable:
 ; 31-entry pointer table mapping level IDs to door spawn lists. Each list is a sequence of 3-byte 
 ; records (X tile, Y tile, destination X tile, destination Y tile — the first two identify which 

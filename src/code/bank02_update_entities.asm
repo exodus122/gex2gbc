@@ -155,8 +155,8 @@ INCLUDE "code/bank02_entity_actions.asm"
     
 call_02_6e17_Entities_InitAndSpawnAll:
 ; Full level-start initialization: zeros player entity state (velocities, flags, climbing, collision), 
-; resets all 7 NPC slots to $FF, conditionally spawns Gex via call_02_48b7_Player_SpawnLevelSpecificDoor, then calls EntityList_LoadForCurrentLevel 
-; and loops EntitySpawn_SpawnNextFromList until wD338_EntityLoadingFlag returns to 1
+; resets all 7 NPC slots to $FF, conditionally spawns Gex via call_02_48b7_Player_SpawnOpeningDoorEntity, 
+; then calls EntityList_LoadForCurrentLevel and loops EntitySpawn_SpawnNextFromList until wD338_EntityLoadingFlag returns to 1
     xor  A, A                                          ;; 02:6e17 $af
     ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:6e18 $ea $00 $d3
     ld   A, $00                                        ;; 02:6e1b $3e $00
@@ -210,7 +210,7 @@ call_02_6e68_Entities_InitNPCSlots:
     ld   A, [wD744_Player_SpawnAction]                                    ;; 02:6e89 $fa $44 $d7
     cp   A, PLAYER_ACTION_LEAVE_DOOR                                        ;; 02:6e8c $fe $1b
     ld   A, $01                                        ;; 02:6e8e $3e $01
-    call Z, call_02_48b7_Player_SpawnLevelSpecificDoor                               ;; 02:6e90 $cc $b7 $48
+    call Z, call_02_48b7_Player_SpawnOpeningDoorEntity                               ;; 02:6e90 $cc $b7 $48
 .jr_02_6e93:
     FARCALL call_0a_4000_EntityList_LoadForCurrentLevel
 .jr_02_6e9e:
@@ -575,7 +575,7 @@ call_02_7102_Entity_SetAction:
 call_02_715a_MapWindow_Update:
 ; Calls all three map-window update routines: player window update, vertical scroll check, 
 ; horizontal scroll check
-    call call_00_13a6_MapWindow_UpdateFromPlayerPos                                  ;; 02:715a $cd $a6 $13
+    call call_00_13a6_BgMap_UpdateWindowFromPlayerPos                                  ;; 02:715a $cd $a6 $13
     call call_02_7164_MapScroll_CheckVertical                                  ;; 02:715d $cd $64 $71
     call call_02_7196_MapScroll_CheckHorizontal                                  ;; 02:7160 $cd $96 $71
     ret                                                ;; 02:7163 $c9

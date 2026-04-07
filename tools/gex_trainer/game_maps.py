@@ -18,9 +18,6 @@ Player-info tab keys (all GB addresses, read via read_byte/read_word/read_gb):
                        Expected values: {0:"Down", 4:"Up", 8:"Left", 0x0C:"Right"}
   map_id        int    GB address of current map/room ID byte
   hp            int    GB address of current HP (16-bit word)
-  max_hp        int    GB address of max HP (16-bit word)
-  money         int    GB address of money (3 bytes BCD)
-  steps         int    GB address of step counter (16-bit word)
 
 NPC/sprite keys:
   sprites_addr  int    GB address of NPC struct array
@@ -45,12 +42,9 @@ GAME_PROFILES = {
         "map_height":   32,
 
         # Player info tab
-        "facing":       0xC109,       # 0=Down 4=Up 8=Left 0x0C=Right
-        "map_id":       0xD35E,
-        "hp":           0xD16C,
-        "max_hp":       0xD18D,
-        "money":        0xD347,       # 3-byte BCD
-        "steps":        0xD35A,
+        "facing":       0xD20D,       # 0=Down 4=Up 8=Left 0x0C=Right
+        "map_id":       0xD624,
+        "hp":           0xD741,
 
         # Scroll registers — GB addresses in WRAM
         "scx":          0xD5A1,
@@ -68,9 +62,6 @@ GAME_PROFILES = {
         "facing":       None,
         "map_id":       None,
         "hp":           None,
-        "max_hp":       None,
-        "money":        None,
-        "steps":        None,
         "scx":          None,
         "scy":          None,
     },

@@ -1,0 +1,53 @@
+[
+  {
+    "type": "watch",
+    "label": "Map Id",
+    "addr": 54820,
+    "size": 1,
+    "group_id": null,
+    "frozen": false,
+    "freeze_val": 0
+  },
+  {
+    "type": "watch",
+    "label": "Health",
+    "addr": 55105,
+    "size": 1,
+    "group_id": null,
+    "frozen": false,
+    "freeze_val": 2
+  },
+  {
+    "type": "group",
+    "id": "g1",
+    "label": "Player",
+    "collapsed": false
+  },
+  {
+    "type": "watch",
+    "label": "X Pos",
+    "addr": 53774,
+    "size": 2,
+    "group_id": "g1",
+    "frozen": false,
+    "freeze_val": 0
+  },
+  {
+    "type": "watch",
+    "label": "Y Pos",
+    "addr": 53776,
+    "size": 2,
+    "group_id": "g1",
+    "frozen": false,
+    "freeze_val": 0
+  },
+  {
+    "type": "watch",
+    "label": "Facing Angle",
+    "addr": 53773,
+    "size": 1,
+    "group_id": "g1",
+    "frozen": false,
+    "freeze_val": 0
+  }
+]

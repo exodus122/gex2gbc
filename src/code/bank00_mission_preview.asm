@@ -58,7 +58,7 @@ call_00_2329_MissionPreview_LoadAndRun:
     inc  DE                                            ;; 00:2365 $13
     push BC                                            ;; 00:2366 $c5
     push DE                                            ;; 00:2367 $d5
-    call call_00_13a6_MapWindow_UpdateFromPlayerPos                                  ;; 00:2368 $cd $a6 $13
+    call call_00_13a6_BgMap_UpdateWindowFromPlayerPos                                  ;; 00:2368 $cd $a6 $13
     xor  A, A                                          ;; 00:236b $af
     ld   [wD743_Player_UpdateFlag], A                                    ;; 00:236c $ea $43 $d7
     call call_00_1264_BgMap_LoadFull                                  ;; 00:236f $cd $64 $12
@@ -179,7 +179,7 @@ call_00_2329_MissionPreview_LoadAndRun:
     ld   A, [wD775]                                    ;; 00:2459 $fa $75 $d7
     and  A, A                                          ;; 00:245c $a7
     ret  NZ                                            ;; 00:245d $c0
-    call call_00_13a6_MapWindow_UpdateFromPlayerPos                                  ;; 00:245e $cd $a6 $13
+    call call_00_13a6_BgMap_UpdateWindowFromPlayerPos                                  ;; 00:245e $cd $a6 $13
     call call_00_1264_BgMap_LoadFull                                  ;; 00:2461 $cd $64 $12
     FARCALL call_02_71c8_Entities_UpdateSoundsForAll
     jp   call_00_0521_DrawEntitiesWrapper                                  ;; 00:246f $c3 $21 $05

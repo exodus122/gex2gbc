@@ -1,4 +1,3 @@
-
 call_00_1f46_SpecialTile_OnPlayerAttack:
 ; Entry point called each frame during TailSpin when the tile under Gex is interactive (type < $C0, inverted in C). 
 ; Guards: returns if wD77D_OverrideSequenceStepsRemaining nonzero (sequence already running), 

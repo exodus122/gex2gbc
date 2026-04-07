@@ -147,7 +147,7 @@ call_00_12e4_BgMap_InitTileOverrides:
     db   $0d, $03, $43, $16, $58, $01, $59, $01, $68, $01, $69, $01
     db   $ff
 
-call_00_13a6_MapWindow_UpdateFromPlayerPos:
+call_00_13a6_BgMap_UpdateWindowFromPlayerPos:
 ; Summary: Uses Player position to calculate wD6ED_BgMap_ScrollX, wD6ED_BgMap_ScrollY, wD329_MapWindow_BlockXRangeMin, 
 ; wD32A_MapWindow_BlockXRangeMax, wD32B_MapWindow_BlockYRangeMin, and wD32C_MapWindow_BlockYRangeMax
 ; 
