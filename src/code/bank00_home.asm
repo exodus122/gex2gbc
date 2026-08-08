@@ -2338,3 +2338,50 @@ call_00_120c_SetupMusic:
     db   BANK_22, $00, $0f, $00        ;; 00:1254 ????...?
     db   BANK_23, $04, $0f, $00
     db   BANK_23, $00, $0f, $00        ;; 00:125c ...?...?
+
+INCLUDE "code/bank00_bg_map.asm"
+INCLUDE "code/bank00_special_tile_scripts.asm"
+INCLUDE "code/bank00_mission_preview.asm"
+INCLUDE "code/bank00_map_init_data.asm"
+INCLUDE "code/bank00_entity_utils.asm"
+
+call_00_3c3f:
+    ld   C, $07                                        ;; 00:3c3f $0e $07
+    ld   HL, wD64F                                     ;; 00:3c41 $21 $4f $d6
+    call call_00_3c54                                  ;; 00:3c44 $cd $54 $3c
+    ld   C, $18                                        ;; 00:3c47 $0e $18
+    ld   HL, wD650                                     ;; 00:3c49 $21 $50 $d6
+    call call_00_3c54                                  ;; 00:3c4c $cd $54 $3c
+    ld   C, $20                                        ;; 00:3c4f $0e $20
+    ld   HL, wD651                                     ;; 00:3c51 $21 $51 $d6
+
+call_00_3c54:
+    push HL                                            ;; 00:3c54 $e5
+    ld   HL, wD629_RemoteProgressFlags                                     ;; 00:3c55 $21 $29 $d6
+    ld   B, $1e                                        ;; 00:3c58 $06 $1e
+    ld   E, $00                                        ;; 00:3c5a $1e $00
+.jr_00_3c5c:
+    ld   A, [HL+]                                      ;; 00:3c5c $2a
+    and  A, C                                          ;; 00:3c5d $a1
+    ld   D, $08                                        ;; 00:3c5e $16 $08
+.jr_00_3c60:
+    rlca                                               ;; 00:3c60 $07
+    jr   NC, .jr_00_3c64                               ;; 00:3c61 $30 $01
+    inc  E                                             ;; 00:3c63 $1c
+.jr_00_3c64:
+    dec  D                                             ;; 00:3c64 $15
+    jr   NZ, .jr_00_3c60                               ;; 00:3c65 $20 $f9
+    dec  B                                             ;; 00:3c67 $05
+    jr   NZ, .jr_00_3c5c                               ;; 00:3c68 $20 $f2
+    ld   A, E                                          ;; 00:3c6a $7b
+    pop  HL                                            ;; 00:3c6b $e1
+    cp   A, [HL]                                       ;; 00:3c6c $be
+    ret  Z                                             ;; 00:3c6d $c8
+    ld   [HL], A                                       ;; 00:3c6e $77
+    set  7, [HL]                                       ;; 00:3c6f $cb $fe
+    ret                                                ;; 00:3c71 $c9
+
+data_00_3c72:
+    db   $1c, $02, $00
+    INCBIN ".gfx/misc_sprites/image_000_3c75.bin"  
+    db   $fe  

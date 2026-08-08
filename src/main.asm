@@ -7,15 +7,9 @@ INCLUDE "code/macros/macros.asm"
 
 SECTION "bank00", ROM0[$0000]
 INCLUDE "code/bank00_home.asm"
-INCLUDE "code/bank00_bg_map.asm"
-INCLUDE "code/bank00_special_tile_scripts.asm"
-INCLUDE "code/bank00_mission_preview.asm"
-INCLUDE "code/bank00_map_data.asm"
-INCLUDE "code/bank00_entity_utils.asm"
 
 SECTION "bank01", ROMX[$4000], BANK[$01]
 INCLUDE "code/bank01_menus.asm"
-INCLUDE "code/bank01_menu_data.asm"
 
 SECTION "bank02", ROMX[$4000], BANK[$02]
 INCLUDE "code/bank02_update_entities.asm"
@@ -75,7 +69,7 @@ INCLUDE "code/bank0A_load_entities.asm"
 
 SECTION "bank0b", ROMX[$4000], BANK[$0b]
 INCLUDE "code/bank0B_load_collectibles.asm"
-INCLUDE "code/bank0B_player_spawns.asm"
+INCLUDE "code/bank0B_map_spawns.asm"
 INCLUDE "code/bank0B_palettes.asm"
 
 SECTION "bank0c", ROMX[$4000], BANK[$0c]
