@@ -1921,7 +1921,7 @@ call_00_0f9d_UpdateLCDPalettes:
     jr   NZ, .jr_00_0fa6                               ;; 00:0faa $20 $fa
     ld   A, $80                                        ;; 00:0fac $3e $80
     ldh  [rOCPS], A                                    ;; 00:0fae $e0 $6a
-    ld   HL, wDA0B_Obj_Palettes                        ;; 00:0fb0 $21 $0b $da
+    ld   HL, wDA0B_Entity_Palettes                        ;; 00:0fb0 $21 $0b $da
     ld   B, $40                                        ;; 00:0fb3 $06 $40
 .jr_00_0fb5:
     ld   A, [HL+]                                      ;; 00:0fb5 $2a

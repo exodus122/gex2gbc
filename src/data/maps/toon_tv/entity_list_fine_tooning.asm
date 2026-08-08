@@ -58,7 +58,7 @@
     db   $19, $13, $4c
     db   $48, $00, $00, $00, $00, $00, $00, $00
 
-    db   ENTITY_TOON_TV_HARD_HEAD_AREA_OBJECT
+    db   ENTITY_TOON_TV_HARD_HEAD_AREA_HAZARD
     dw   $07b0, $0960
     db   $41, $39, $4c
     db   $4a, $00, $00, $00, $00, $00, $00, $00
@@ -208,7 +208,7 @@
     db   $20, $1a, $66
     db   $64, $00, $00, $00, $00, $00, $00, $00
 
-    db   ENTITY_TOON_TV_HARD_HEAD_AREA_OBJECT
+    db   ENTITY_TOON_TV_HARD_HEAD_AREA_HAZARD
     dw   $0510, $0ca0
     db   $2e, $23, $66
     db   $64, $00, $00, $00, $00, $00, $00, $00

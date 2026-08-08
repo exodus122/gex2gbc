@@ -56,7 +56,7 @@ entity_names = [
     "ENTITY_SCREAM_TV_CLIMB_WALL_SUN_ENEMY",
     "ENTITY_SCREAM_TV_VANISHING_PLATFORM",
     "ENTITY_SCREAM_TV_MONA_LISA_ELEVATOR",
-    "ENTITY_TOON_TV_HARD_HEAD_AREA_OBJECT",
+    "ENTITY_TOON_TV_HARD_HEAD_AREA_HAZARD",
     "ENTITY_TOON_TV_STATIONARY_BEAR_TRAP",
     "ENTITY_TOON_TV_MOVING_BEAR_TRAP",
     "ENTITY_TOON_TV_BUMBLEBEE",
@@ -186,9 +186,9 @@ for level in levels:
     
     entity_data = bank00a_data[level[2]-0x4000:level[3]-0x4000]
 
-    '''out_bin = open('./banks/entity_lists/entity_list_'+level[1]+'.bin', "wb")
+    out_bin = open('./banks/maps/'+level[0]+'/entity_list_'+level[1]+'.bin', "wb")
     out_bin.write(entity_data)
-    out_bin.close()'''
+    out_bin.close()
     
     for i in range(0, len(entity_data)-1, 0x10):
         entityId, xPosition, yPosition, unk05, unk06, unk07, unk08, un09, unk0a, unk0b, unk0c, unk0d, unk0e, unk0f = struct.unpack('<BHHBBBBBBBBBBB',entity_data[i:i+0x10])

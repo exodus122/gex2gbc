@@ -79,7 +79,7 @@ call_0b_561b_GBC_LoadLevelBgPalette:
     call call_00_07b0_MemCopy                                  ;; 0b:5633 $cd $b0 $07
     call call_0b_5df8_MediaDimension_LoadActiveTVPalette                                  ;; 0b:5636 $cd $f8 $5d
     ld   HL, .data_gex_entity_palette2                             ;; 0b:5639 $21 $03 $5b
-    ld   DE, wDA0B_Obj_Palettes                                     ;; 0b:563c $11 $0b $da
+    ld   DE, wDA0B_Entity_Palettes                                     ;; 0b:563c $11 $0b $da
     ld   BC, $08                                       ;; 0b:563f $01 $08 $00
     call call_00_07b0_MemCopy                                  ;; 0b:5642 $cd $b0 $07
     FARCALL call_03_6be5_HUD_LoadCollectiblePalette
@@ -415,7 +415,7 @@ call_0b_5ec3_UpdatePlayerObjPalette:
 .jr_0b_5eef:
     ld   HL, .data_gex_entity_palette                             ;; 0b:5eef $21 $13 $5f
 .jr_0b_5ef2:
-    ld   DE, wDA0B_Obj_Palettes                                     ;; 0b:5ef2 $11 $0b $da
+    ld   DE, wDA0B_Entity_Palettes                                     ;; 0b:5ef2 $11 $0b $da
     ld   BC, $08                                       ;; 0b:5ef5 $01 $08 $00
     jp   call_00_07b0_MemCopy                                  ;; 0b:5ef8 $c3 $b0 $07
 .data_0b_5efb:
@@ -428,7 +428,7 @@ call_0b_5ec3_UpdatePlayerObjPalette:
     
 call_0b_5f1b_FlyPowerup_LoadParticlePalette:
 ; Loads the fly power-up particle's GBC palette. Returns if DMG. Uses wD742 (fly power-up type, 1-based) 
-; × 8 to index .data_0b_5f37_FlyPalettes (4 entries × 8 bytes), copies to wDA1B_ObjectPalettes_Slot2 
+; × 8 to index .data_0b_5f37_FlyPalettes (4 entries × 8 bytes), copies to wDA1B_EntityPalettes_Slot2 
 ; (OBJ palette 2). The 4 fly types have different particle colors: green/teal, white/gray, blue, and transparent/white
     ld   A, [wD59E_OnGBCFlag]                                    ;; 0b:5f1b $fa $9e $d5
     and  A, A                                          ;; 0b:5f1e $a7
@@ -442,7 +442,7 @@ call_0b_5f1b_FlyPowerup_LoadParticlePalette:
     add  HL, HL                                        ;; 0b:5f29 $29
     ld   DE, .data_0b_5f37_FlyPalettes                             ;; 0b:5f2a $11 $37 $5f
     add  HL, DE                                        ;; 0b:5f2d $19
-    ld   DE, wDA1B_ObjectPalettes_Slot2                                     ;; 0b:5f2e $11 $1b $da
+    ld   DE, wDA1B_EntityPalettes_Slot2                                     ;; 0b:5f2e $11 $1b $da
     ld   BC, $08                                       ;; 0b:5f31 $01 $08 $00
     jp   call_00_07b0_MemCopy                                  ;; 0b:5f34 $c3 $b0 $07
 .data_0b_5f37_FlyPalettes:
@@ -472,7 +472,7 @@ call_0b_5f57_Entity_LoadGBCPalette:
     add  HL, HL                                        ;; 0b:5f6b $29
     add  HL, HL                                        ;; 0b:5f6c $29
     add  HL, HL                                        ;; 0b:5f6d $29
-    ld   DE, wDA0B_Obj_Palettes                                     ;; 0b:5f6e $11 $0b $da
+    ld   DE, wDA0B_Entity_Palettes                                     ;; 0b:5f6e $11 $0b $da
     add  HL, DE                                        ;; 0b:5f71 $19
     ld   E, L                                          ;; 0b:5f72 $5d
     ld   D, H                                          ;; 0b:5f73 $54

@@ -53,47 +53,47 @@ call_0a_4000_EntityList_LoadForCurrentLevel:
     dw   .data_MediaDimension_entity_list
     dw   .data_ChannelZ_entity_list
 .data_MediaDimension_entity_list:                             ;; 0a:4057
-    INCLUDE "data/maps/media_dimension/entity_list_media_dimension.asm"
+    INCBIN "data/maps/media_dimension/entity_list_media_dimension.bin"
 .data_OutOfToon_entity_list:                             ;; 0a:4488
-    INCLUDE "data/maps/toon_tv/entity_list_out_of_toon.asm"
+    INCBIN "data/maps/toon_tv/entity_list_out_of_toon.bin"
 .data_Smellraiser_entity_list:                             ;; 0a:48c9
-    INCLUDE "data/maps/scream_tv/entity_list_smellraiser.asm"
+    INCBIN "data/maps/scream_tv/entity_list_smellraiser.bin"
 .data_Frankensteinfeld_entity_list:                             ;; 0a:4aba
-    INCLUDE "data/maps/scream_tv/entity_list_frankensteinfeld.asm"
+    INCBIN "data/maps/scream_tv/entity_list_frankensteinfeld.bin"
 .data_wwwdotcomcom_entity_list:                             ;; 0a:4ddb
-    INCLUDE "data/maps/circuit_central/entity_list_wwwdotcomcom.asm"
+    INCBIN "data/maps/circuit_central/entity_list_wwwdotcomcom.bin"
 .data_MaoTseTongue_entity_list:                             ;; 0a:51ec
-    INCLUDE "data/maps/kung_fu_theater/entity_list_mao_tse_tongue.asm"
+    INCBIN "data/maps/kung_fu_theater/entity_list_mao_tse_tongue.bin"
 .data_Pangaea90210_entity_list:                             ;; 0a:54ed
-    INCLUDE "data/maps/prehistory_channel/entity_list_pangaea_90210.asm"
+    INCBIN "data/maps/prehistory_channel/entity_list_pangaea_90210.bin"
 .data_FineTooning_entity_list:                             ;; 0a:57ee
-    INCLUDE "data/maps/toon_tv/entity_list_fine_tooning.asm"
+    INCBIN "data/maps/toon_tv/entity_list_fine_tooning.bin"
 .data_ThisOldCave_entity_list:                             ;; 0a:5c8f
-    INCLUDE "data/maps/prehistory_channel/entity_list_this_old_cave.asm"
+    INCBIN "data/maps/prehistory_channel/entity_list_this_old_cave.bin"
 .data_HoneyIShrunkTheGecko_entity_list:                             ;; 0a:5e20
-    INCLUDE "data/maps/circuit_central/entity_list_honey_i_shrunk_the_gecko.asm"
+    INCBIN "data/maps/circuit_central/entity_list_honey_i_shrunk_the_gecko.bin"
 .data_Poltergex_entity_list:                             ;; 0a:6331
-    INCLUDE "data/maps/scream_tv/entity_list_poltergex.asm"
+    INCBIN "data/maps/scream_tv/entity_list_poltergex.bin"
 .data_SamuraiNightFever_entity_list:                             ;; 0a:6692
-    INCLUDE "data/maps/kung_fu_theater/entity_list_samurai_night_fever.asm"
+    INCBIN "data/maps/kung_fu_theater/entity_list_samurai_night_fever.bin"
 .data_NoWeddingsAndAFuneral_entity_list:                             ;; 0a:6a43
-    INCLUDE "data/maps/rezopolis/entity_list_no_weddings_and_a_funeral.asm"
+    INCBIN "data/maps/rezopolis/entity_list_no_weddings_and_a_funeral.bin"
 .data_ThursdayThe12th_entity_list:                             ;; 0a:6c84
-    INCLUDE "data/maps/scream_tv/entity_list_thursday_the_12th.asm"
+    INCBIN "data/maps/scream_tv/entity_list_thursday_the_12th.bin"
 .data_LizardInAChinaShop_entity_list:                             ;; 0a:6d45
-    INCLUDE "data/maps/kung_fu_theater/entity_list_lizard_in_a_china_shop.asm"
+    INCBIN "data/maps/kung_fu_theater/entity_list_lizard_in_a_china_shop.bin"
 .data_BuggedOut_entity_list:                             ;; 0a:6dc6
-    INCLUDE "data/maps/rezopolis/entity_list_bugged_out.asm"
+    INCBIN "data/maps/rezopolis/entity_list_bugged_out.bin"
 .data_ChipsAndDips_entity_list:                             ;; 0a:6df7
-    INCLUDE "data/maps/circuit_central/entity_list_chips_and_dips.asm"
+    INCBIN "data/maps/circuit_central/entity_list_chips_and_dips.bin"
 .data_LavaDabbaDoo_entity_list:                             ;; 0a:6e78
-    INCLUDE "data/maps/prehistory_channel/entity_list_lava_dabba_doo.asm"
+    INCBIN "data/maps/prehistory_channel/entity_list_lava_dabba_doo.bin"
 .data_TexasChainsawManicure_entity_list:                             ;; 0a:7149
-    INCLUDE "data/maps/scream_tv/entity_list_texas_chainsaw_manicure.asm"
+    INCBIN "data/maps/scream_tv/entity_list_texas_chainsaw_manicure.bin"
 .data_MazedAndConfused_entity_list:                             ;; 0a:734a
-    INCLUDE "data/maps/rezopolis/entity_list_mazed_and_confused.asm"
+    INCBIN "data/maps/rezopolis/entity_list_mazed_and_confused.bin"
 .data_ChannelZ_entity_list:                             ;; 0a:751b
-    INCLUDE "data/maps/channel_z/entity_list_channel_z.asm"
+    INCBIN "data/maps/channel_z/entity_list_channel_z.bin"
 
 data_0a_75fc:
     db   $00                                           ;; 0a:75fc ?
@@ -130,13 +130,13 @@ data_0a_75fd_EntityAttributeTable:
     db   $50, $0c, $10, COLLISION_TYPE_GENERIC_ENEMY, $01, $05, $00, $00 ; 0a:76cc ???????? ; ENTITY_SCREAM_TV_CLIMB_WALL_SUN_ENEMY
     db   $00, $10, $10, COLLISION_TYPE_MOVING_PLATFORM | COLLISION_TYPE_UNK_PLATFORM_FLAG, $01, $04, $00, $00 ; 0a:76d4 ???????? ; ENTITY_SCREAM_TV_VANISHING_PLATFORM
     db   $50, $12, $10, COLLISION_TYPE_MOVING_PLATFORM | COLLISION_TYPE_UNK_PLATFORM_FLAG, $01, $04, $00, $00 ; 0a:76dc ???????. ; ENTITY_SCREAM_TV_MONA_LISA_ELEVATOR
-    db   $00, $10, $10, COLLISION_TYPE_FALLING_OBJECT, $03, $07, $00, $00 ; 0a:76e4 .w.ww??? ; ENTITY_TOON_TV_HARD_HEAD_AREA_OBJECT
+    db   $00, $10, $10, COLLISION_TYPE_FALLING_HAZARD, $03, $07, $00, $00 ; 0a:76e4 .w.ww??? ; ENTITY_TOON_TV_HARD_HEAD_AREA_HAZARD
     db   $00, $10, $08, COLLISION_TYPE_TOUCH_DAMAGE, $05, $07, $00, $00 ; 0a:76ec ???????? ; ENTITY_TOON_TV_STATIONARY_BEAR_TRAP
     db   $00, $08, $08, COLLISION_TYPE_TOUCH_DAMAGE, $04, $07, $00, $00 ; 0a:76f4 ???????. ; ENTITY_TOON_TV_MOVING_BEAR_TRAP
     db   $00, $0c, $10, COLLISION_TYPE_GENERIC_ENEMY, $0f, $07, $00, $00 ; 0a:76fc ...ww??? ; ENTITY_TOON_TV_BUMBLEBEE
-    db   $88, $0c, $10, COLLISION_TYPE_FALLING_OBJECT, $07, $07, $00, $00 ; 0a:7704 ???????. ; ENTITY_TOON_TV_BOWLING_BALL
+    db   $88, $0c, $10, COLLISION_TYPE_FALLING_HAZARD, $07, $07, $00, $00 ; 0a:7704 ???????. ; ENTITY_TOON_TV_BOWLING_BALL
     db   $00, $0c, $10, COLLISION_TYPE_GENERIC_ENEMY, $06, $07, $00, $00 ; 0a:770c ...ww??? ; ENTITY_TOON_TV_CACTUS
-    db   $00, $10, $10, COLLISION_TYPE_FALLING_OBJECT, $0e, $05, $00, $00 ; 0a:7714 ???????. ; ENTITY_TOON_TV_DOMINO
+    db   $00, $10, $10, COLLISION_TYPE_FALLING_HAZARD, $0e, $05, $00, $00 ; 0a:7714 ???????. ; ENTITY_TOON_TV_DOMINO
     db   $00, $0c, $0a, COLLISION_TYPE_GENERIC_ENEMY, $0d, $05, $00, $00 ; 0a:771c ...ww??. ; ENTITY_TOON_TV_SHARK
     db   $00, $10, $10, COLLISION_TYPE_NONE, $08, $07, $00, $00 ; 0a:7724 ...ww??? ; ENTITY_TOON_TV_FLOWER
     db   $00, $0a, $10, COLLISION_TYPE_HUNTER, $00, $07, $00, $00 ; 0a:772c ???????. ; ENTITY_TOON_TV_HUNTER
@@ -148,7 +148,7 @@ data_0a_75fd_EntityAttributeTable:
     db   $70, $08, $10, COLLISION_TYPE_MOVING_PLATFORM | COLLISION_TYPE_UNK_PLATFORM_FLAG, $10, $05, $00, $00 ; 0a:775c ???????. ; ENTITY_TOON_TV_MOVING_BLOCK
     db   $70, $10, $10, COLLISION_TYPE_MOVING_PLATFORM | COLLISION_TYPE_UNK_PLATFORM_FLAG, $0a, $04, $00, $00 ; 0a:7764 ...ww??. ; ENTITY_TOON_TV_MOVING_LOG
     db   $00, $10, $10, COLLISION_TYPE_MOVING_PLATFORM | COLLISION_TYPE_UNK_PLATFORM_FLAG, $0c, $05, $00, $00 ; 0a:776c ...ww??? ; ENTITY_TOON_TV_STATIONARY_LOG
-    db   $00, $0a, $08, COLLISION_TYPE_FALLING_OBJECT, $00, $06, $00, $00 ; 0a:7774 .w..w??? ; ENTITY_TOON_TV_FLOWER_HAMMER
+    db   $00, $0a, $08, COLLISION_TYPE_FALLING_HAZARD, $00, $06, $00, $00 ; 0a:7774 .w..w??? ; ENTITY_TOON_TV_FLOWER_HAMMER
     db   $00, $10, $10, COLLISION_TYPE_TOUCH_DAMAGE, $0a, $06, $00, $00 ; 0a:777c ???????? ; ENTITY_TOON_TV_HUNTER_BULLET
     db   $00, $04, $08, COLLISION_TYPE_ROCKET, $34, $05, $00, $00 ; 0a:7784 ???????? ; ENTITY_TOON_TV_ROCKET
     db   $00, $0c, $10, COLLISION_TYPE_GENERIC_ENEMY, $00, $07, $00, $00 ; 0a:778c ???????? ; ENTITY_PRE_HISTORY_FAST_DINOSAUR
@@ -162,8 +162,8 @@ data_0a_75fd_EntityAttributeTable:
     db   $00, $10, $0c, COLLISION_TYPE_MOVING_PLATFORM | COLLISION_TYPE_UNK_PLATFORM_FLAG, $20, $04, $00, $00 ; 0a:77cc ???????? ; ENTITY_UNK_3A
     db   $00, $0c, $10, COLLISION_TYPE_MOVING_PLATFORM | COLLISION_TYPE_UNK_PLATFORM_FLAG, $20, $04, $00, $00 ; 0a:77d4 ???????? ; ENTITY_UNK_3B
     db   $00, $10, $10, COLLISION_TYPE_GENERIC_ENEMY, $00, $07, $00, $00 ; 0a:77dc ???????? ; ENTITY_PRE_HISTORY_PTEROSAUR
-    db   $00, $0c, $10, COLLISION_TYPE_FALLING_OBJECT, $13, $07, $00, $00 ; 0a:77e4 ???????? ; ENTITY_UNK_3D
-    db   $40, $0c, $10, COLLISION_TYPE_FALLING_OBJECT, $13, $07, $00, $00 ; 0a:77ec ???????? ; ENTITY_PRE_HISTORY_FALLING_BOULDER
+    db   $00, $0c, $10, COLLISION_TYPE_FALLING_HAZARD, $13, $07, $00, $00 ; 0a:77e4 ???????? ; ENTITY_UNK_3D
+    db   $40, $0c, $10, COLLISION_TYPE_FALLING_HAZARD, $13, $07, $00, $00 ; 0a:77ec ???????? ; ENTITY_PRE_HISTORY_FALLING_BOULDER
     db   $00, $00, $00, COLLISION_TYPE_NONE, $00, $00, $00, $00 ; 0a:77f4 ???????? ; ENTITY_UNK_3F
     db   $00, $08, $08, COLLISION_TYPE_GENERIC_ENEMY, $1e, $07, $00, $00 ; 0a:77fc ???????? ; ENTITY_PRE_HISTORY_BEETLE_HORIZONTAL
     db   $00, $08, $08, COLLISION_TYPE_GENERIC_ENEMY, $1e, $07, $00, $00 ; 0a:7804 ???????? ; ENTITY_PRE_HISTORY_BEETLE_VERTICAL

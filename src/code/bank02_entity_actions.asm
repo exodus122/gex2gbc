@@ -78,10 +78,10 @@ data_02_4e97:                        ;; ENTITY_SCREAM_TV_VANISHING_PLATFORM
     dw   call_02_56a1_EntityAction_ScreamTVVanishingPlatform_unk2, data_02_7981
 data_02_4ea3:                        ;; ENTITY_SCREAM_TV_MONA_LISA_ELEVATOR
     dw   call_02_56af_EntityAction_MonaLisaElevator_Update, data_02_7987
-data_02_4ea7:                        ;; ENTITY_TOON_TV_HARD_HEAD_AREA_OBJECT
-    dw   call_02_56dc_EntityAction_HardHeadAreaObject_unk0, data_02_798d
-    dw   call_02_576e_EntityAction_HardHeadAreaObject_unk1, data_02_7993
-    dw   call_02_576e_EntityAction_HardHeadAreaObject_unk1, data_02_7999
+data_02_4ea7:                        ;; ENTITY_TOON_TV_HARD_HEAD_AREA_HAZARD
+    dw   call_02_56dc_EntityAction_HardHeadAreaHazard_unk0, data_02_798d
+    dw   call_02_576e_EntityAction_HardHeadAreaHazard_unk1, data_02_7993
+    dw   call_02_576e_EntityAction_HardHeadAreaHazard_unk1, data_02_7999
 data_02_4eb3:                        ;; ENTITY_TOON_TV_STATIONARY_BEAR_TRAP
     dw   call_02_57f3_EntityAction_StationaryBearTrap_unk0, data_02_79a6
     dw   call_02_5803_EntityAction_StationaryBearTrap_unk1, data_02_79ac
@@ -106,17 +106,11 @@ data_02_4ee3:                        ;; ENTITY_TOON_TV_FLOWER
     dw   call_02_592d_EntityAction_Flower_Update, data_02_79fc
     dw   call_02_592d_EntityAction_Flower_Update, data_02_7a02
 data_02_4eef:                        ;; ENTITY_TOON_TV_HUNTER
-    DEF  HUNTER_ACTION_UNK0  EQU $00
     dw   call_02_5993_EntityAction_Hunter_unk0, data_02_774c
-    DEF  HUNTER_ACTION_UNK1  EQU $01
     dw   call_02_59c8_EntityAction_Hunter_unk1, data_02_7759
-    DEF  HUNTER_ACTION_UNK2  EQU $02
     dw   call_02_59d2_EntityAction_Hunter_unk2, data_02_7768
-    DEF  HUNTER_ACTION_UNK3  EQU $03
     dw   call_02_59db_EntityAction_Hunter_unk3, data_02_777c
-    DEF  HUNTER_ACTION_UNK4  EQU $04
     dw   call_02_59e4_EntityAction_Hunter_unk4, data_02_7784
-    DEF  HUNTER_ACTION_UNK5  EQU $05
     dw   call_02_59ed_EntityAction_Hunter_unk5, data_02_778a
 data_02_4f07:                        ;; ENTITY_TOON_TV_MUSHROOM
     dw   call_02_5a28_EntityAction_Mushroom_Update, data_02_7a1b
@@ -1160,7 +1154,7 @@ call_02_56af_EntityAction_MonaLisaElevator_Update:
 .jr_02_56D9:
     jp   call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip
 
-call_02_56dc_EntityAction_HardHeadAreaObject_unk0:
+call_02_56dc_EntityAction_HardHeadAreaHazard_unk0:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
     ld   A, [wD6EF_BgMap_ScrollY]                                    ;; 02:56e4 $fa $ef $d6
     sub  A, $18                                        ;; 02:56e7 $d6 $18
@@ -1236,7 +1230,7 @@ call_02_56dc_EntityAction_HardHeadAreaObject_unk0:
     add  HL, DE                                        ;; 02:5753 $19
     ld   A, [HL]                                       ;; 02:5754 $7e
     call call_02_7102_Entity_SetAction                                  ;; 02:5755 $cd $02 $71
-    ld   C, SFX_HARD_HEAD_AREA_OBJECT                                        ;; 02:5758 $0e $19
+    ld   C, SFX_HARD_HEAD_AREA_HAZARD                                        ;; 02:5758 $0e $19
     call call_00_112f_QueueSFX                                  ;; 02:575a $cd $2f $11
     ret                                                ;; 02:575d $c9
 .data_02_575e:
@@ -1245,14 +1239,14 @@ call_02_56dc_EntityAction_HardHeadAreaObject_unk0:
 .data_02_576a:
     db   $01, $02, $01, $02                            ;; 02:576a .??.
 
-call_02_576e_EntityAction_HardHeadAreaObject_unk1:
+call_02_576e_EntityAction_HardHeadAreaHazard_unk1:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     bit  MISC_FLAGS_BIT_0, [HL]                                       ;; 02:5776 $cb $46
     jr   NZ, .jr_02_5794                               ;; 02:5778 $20 $1a
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped                                  ;; 02:577a $cd $af $30
     call call_00_3154_Entity_MoveYDownWithFloorBound                                  ;; 02:577d $cd $54 $31
     ret  C                                             ;; 02:5780 $d8
-    ld   C, SFX_FALLING_OBJECT                                        ;; 02:5781 $0e $1a
+    ld   C, SFX_FALLING_HAZARD                                        ;; 02:5781 $0e $1a
     call call_00_112f_QueueSFX                                  ;; 02:5783 $cd $2f $11
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     set  MISC_FLAGS_BIT_0, [HL]                                       ;; 02:578e $cb $c6
@@ -1398,7 +1392,7 @@ call_02_5871_EntityAction_BowlingBall_Update:
     ld   b,[hl]
     call call_00_316e_Entity_MoveYDownWithOffsetFloorBound
     ret  c
-    ld   c,SFX_FALLING_OBJECT
+    ld   c,SFX_FALLING_HAZARD
     call call_00_112f_QueueSFX
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER
     dec  [hl]
@@ -1461,7 +1455,7 @@ call_02_590b_EntityAction_Domino_Update:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
     call call_00_3154_Entity_MoveYDownWithFloorBound
     ret  c
-    ld   c,SFX_FALLING_OBJECT
+    ld   c,SFX_FALLING_HAZARD
     call call_00_112f_QueueSFX
     ld   c,$40
     jp   call_00_335a_Entity_SetYVelocity
@@ -2051,7 +2045,7 @@ call_02_5d0c_EntityAction_FallingBoulder_unk0:
     and  a,$3F
     cp   [hl]
     ret  nz
-    ld   c,COLLISION_TYPE_FALLING_OBJECT
+    ld   c,COLLISION_TYPE_FALLING_HAZARD
     call call_00_3825_Entity_SetCollisionType
     ld   a,$01
     jp   call_02_7102_Entity_SetAction
@@ -2797,7 +2791,7 @@ call_02_62fc_EntityAction_SamuraiHead_unk1:
     and  a
     jr   z,.jr_02_6315
     ld   hl,.data_02_631f
-    ld   de,wDA3B_ObjectPalettes_Slot6
+    ld   de,wDA3B_EntityPalettes_Slot6
     ld   bc,$0008
     call call_00_07b0_MemCopy
 .jr_02_6315:

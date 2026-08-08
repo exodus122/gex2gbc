@@ -103,7 +103,7 @@
     db   $0d, $0b, $0f
     db   $0d, $00, $00, $00, $00, $00, $00, $00
 
-    db   ENTITY_TOON_TV_HARD_HEAD_AREA_OBJECT
+    db   ENTITY_TOON_TV_HARD_HEAD_AREA_HAZARD
     dw   $0910, $01d0
     db   $4e, $42, $0f
     db   $0d, $00, $00, $00, $00, $00, $00, $00

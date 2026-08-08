@@ -43,7 +43,7 @@ call_03_4c76_EntityCollision_Dispatch:
     dw   .jr_03_4dc8_CollisionHandler_GhostHead ; COLLISION_TYPE_GHOST_HEAD
     dw   .jr_03_4dd4_CollisionHandler_Ghost ; COLLISION_TYPE_GHOST
     dw   .jr_03_4df4_CollisionHandler_ZombieHead ; COLLISION_TYPE_ZOMBIE_HEAD
-    dw   .jr_03_4e20_CollisionHandler_FallingObject ; COLLISION_TYPE_FALLING_OBJECT
+    dw   .jr_03_4e20_CollisionHandler_FallingHazard ; COLLISION_TYPE_FALLING_HAZARD
     dw   .jr_03_4e7f_CollisionHandler_Hunter ; COLLISION_TYPE_HUNTER
     dw   .jr_03_4eb4_CollisionHandler_Mushroom ; COLLISION_TYPE_MUSHROOM
     dw   .jr_03_4ec6_CollisionHandler_None2 ; COLLISION_TYPE_NONE_2
@@ -268,8 +268,8 @@ call_03_4c76_EntityCollision_Dispatch:
     pop  af
     ld   [wD300_CurrentEntityAddrLo],a
     jp   call_00_3931_Entity_DeactivateSelf
-.jr_03_4e20_CollisionHandler_FallingObject:
-; Only active when Y velocity is negative (object is moving downward; bit 7 set). 
+.jr_03_4e20_CollisionHandler_FallingHazard:
+; Only active when Y velocity is negative (entity is moving downward; bit 7 set). 
 ; Computes horizontal overlap against entity width E. If in range, computes vertical overlap 
 ; using the entity's action data pointer + height + $10 offset; checks against wD211/wD210 (world Y). 
 ; If all checks pass and player is vulnerable, damages and sets wD750_Player_DamageCooldownTimer=$77 then triggers 
@@ -532,9 +532,9 @@ call_03_4c76_EntityCollision_Dispatch:
     db   $0d, $07, $08, $05, $05, $00, $05, $06
     db   $08, $ff
 .jr_03_4fc7_CollisionHandler_HangingBlade:
-; Chains: first runs the FallingObject handler, then unconditionally runs the touch damage handler
+; Chains: first runs the FallingHazard handler, then unconditionally runs the touch damage handler
     push de
-    call .jr_03_4e20_CollisionHandler_FallingObject
+    call .jr_03_4e20_CollisionHandler_FallingHazard
     pop  de
     jp   .jr_03_4d82_CollisionHandler_TouchDamage
 .jr_03_4fcf_CollisionHandler_Unk17:
@@ -922,7 +922,7 @@ call_03_519b_Entity_CheckPlayerInteraction:
     db   PLAYER_CAN_TOUCH_ENTITY | PLAYER_CAN_ATTACK_ENTITY ; ENTITY_SCREAM_TV_CLIMB_WALL_SUN_ENEMY
     db   $00 ; ENTITY_SCREAM_TV_VANISHING_PLATFORM
     db   $00 ; ENTITY_SCREAM_TV_MONA_LISA_ELEVATOR
-    db   PLAYER_CAN_TOUCH_ENTITY ; ENTITY_TOON_TV_HARD_HEAD_AREA_OBJECT
+    db   PLAYER_CAN_TOUCH_ENTITY ; ENTITY_TOON_TV_HARD_HEAD_AREA_HAZARD
     db   PLAYER_CAN_TOUCH_ENTITY ; ENTITY_TOON_TV_STATIONARY_BEAR_TRAP
     db   PLAYER_CAN_TOUCH_ENTITY ; ENTITY_TOON_TV_MOVING_BEAR_TRAP
     db   PLAYER_CAN_TOUCH_ENTITY | PLAYER_CAN_ATTACK_ENTITY | PLAYER_CAN_STOMP_ENTITY ; ENTITY_TOON_TV_BUMBLEBEE

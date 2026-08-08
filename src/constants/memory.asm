@@ -1053,13 +1053,13 @@ wD9CB_Bg_Palettes:
     ds 48                                              ;; d9cb
 wD9FB_BgPalettes_Slot6:
     ds 16                                              ;; d9fb
-wDA0B_Obj_Palettes:
+wDA0B_Entity_Palettes:
     ds 8                                               ;; da0b
-wDA13_ObjectPalettes_Slot1:
+wDA13_EntityPalettes_Slot1:
     ds 8                                               ;; da13
-wDA1B_ObjectPalettes_Slot2:
+wDA1B_EntityPalettes_Slot2:
     ds 32                                              ;; da1b
-wDA3B_ObjectPalettes_Slot6:
+wDA3B_EntityPalettes_Slot6:
     ds 16                                              ;; da1b
 wDA4B_DynamicPalette:
     ds 48                                              ;; da4b
