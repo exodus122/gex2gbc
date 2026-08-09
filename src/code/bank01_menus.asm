@@ -1,7 +1,43 @@
-; This file handles various menus in the game
+; ==================================================================
+; MENUS
+;
+; Every full-screen non-gameplay state in the game - title, pause, mission
+; select, password entry, the totals screens, the credits - is a "menu type",
+; and all of them run through the single loop in call_01_4000_MenuLoad. There
+; is no per-screen code; a menu is entirely described by data.
+;
+; Two tables define one:
+;
+;   data_01_5574_MenuTypeData  8 bytes per menu type - a pointer to its script
+;                              plus the behaviour flags and cursor geometry.
+;                              Copied into wD68A..wD691 on load
+;   the script itself          a list of draw commands walked by
+;                              call_01_44d7_MenuScript_RunToEnd. Besides
+;                              putting graphics on screen, the commands also
+;                              register which rows are selectable and what
+;                              picking them means, by filling in
+;                              wD6C5_Menu_OptionActions
+;
+; MenuLoad blocks: it does not return until the player leaves the screen, and
+; the value in A tells the caller why. That is either a MENU_OPTION_* code
+; taken from the highlighted row, or MENU_RESULT_DISMISSED / _TIMED_OUT /
+; _PASSWORD_GO. Menus that lead to other menus (password entry, the quit
+; confirmation) just call MenuLoad again recursively.
+;
+; Controls are inverted from what you might expect: B confirms the highlighted
+; option, A backs out. MENU_FLAG_NO_CANCEL removes the back-out entirely,
+; which is how the title and credits screens force the player forward.
+; ==================================================================
 
-call_01_4000_MenuLoad: ; this is the primary menu loading and updating function
-    ld   HL, wD6DD                                     ;; 01:4000 $21 $dd $d6
+call_01_4000_MenuLoad:
+; Loads the menu type in A and runs it until the player leaves. Returns the
+; reason in A - see the header above.
+;
+; Entering here clears wD6DD_Menu_ReturnToType, so this is the "open a fresh
+; menu" entry point. .jp_01_4005 just below is the "switch to a different menu
+; type without forgetting where we came from" entry, used when START opens the
+; pause menu on top of another screen
+    ld   HL, wD6DD_Menu_ReturnToType                                     ;; 01:4000 $21 $dd $d6
     ld   [HL], $00                                     ;; 01:4003 $36 $00
 .jp_01_4005:
     ld   [wD6DE_MenuType], A                                    ;; 01:4005 $ea $de $d6
@@ -17,10 +53,12 @@ call_01_4000_MenuLoad: ; this is the primary menu loading and updating function
     call call_00_07b0_MemCopy                                  ;; 01:4018 $cd $b0 $07
     xor  A, A                                          ;; 01:401b $af
     ld   [wD6E0_MenuSelectedRow], A                                    ;; 01:401c $ea $e0 $d6
-    ld   A, [wD68C]                                    ;; 01:401f $fa $8c $d6
-    and  A, $02                                        ;; 01:4022 $e6 $02
+    ; the password keyboard starts on column 1 rather than 0, so that the
+    ; cursor lands on the first letter instead of the EXIT key
+    ld   A, [wD68C_Menu_Flags]                                    ;; 01:401f $fa $8c $d6
+    and  A, MENU_FLAG_GRID_CURSOR                      ;; 01:4022 $e6 $02
     jr   Z, .jr_01_402e                                ;; 01:4024 $28 $08
-    ld   A, [wD68D]                                    ;; 01:4026 $fa $8d $d6
+    ld   A, [wD68D_Menu_OptionCount]                                    ;; 01:4026 $fa $8d $d6
     and  A, A                                          ;; 01:4029 $a7
     jr   Z, .jr_01_402e                                ;; 01:402a $28 $02
     ld   A, $01                                        ;; 01:402c $3e $01
@@ -34,10 +72,10 @@ call_01_4000_MenuLoad: ; this is the primary menu loading and updating function
 .jp_01_403a:
     ld   A, $ff                                        ;; 01:403a $3e $ff
     ld   [wD619_TitleScreenCounter], A                                    ;; 01:403c $ea $19 $d6
-    ld   [wD6D6], A                                    ;; 01:403f $ea $d6 $d6
+    ld   [wD6D6_Menu_BlinkCounter], A                                    ;; 01:403f $ea $d6 $d6
     ld   A, $05                                        ;; 01:4042 $3e $05
     ld   [wD61A_TitleScreenCounter], A                                    ;; 01:4044 $ea $1a $d6
-    call call_01_4e94                                  ;; 01:4047 $cd $94 $4e
+    call call_01_4e94_Menu_WaitForNoInput                                  ;; 01:4047 $cd $94 $4e
     ld   A, [wD6DE_MenuType]                                    ;; 01:404a $fa $de $d6
     cp   A, $14                                        ;; 01:404d $fe $14
     jr   NZ, .jr_01_405c_MenuUpdate                               ;; 01:404f $20 $0b
@@ -51,17 +89,21 @@ call_01_4000_MenuLoad: ; this is the primary menu loading and updating function
     ret                                                ;; 01:405b $c9
 
 .jr_01_405c_MenuUpdate: ; start of the menu update loop
-    call call_01_4d72                                  ;; 01:405c $cd $72 $4d
+    call call_01_4d72_Menu_DrawCursor                                  ;; 01:405c $cd $72 $4d
     call call_00_0ab4_WaitForInterrupt                                  ;; 01:405f $cd $b4 $0a
-    ld   HL, wD6D6                                     ;; 01:4062 $21 $d6 $d6
+    ld   HL, wD6D6_Menu_BlinkCounter                                     ;; 01:4062 $21 $d6 $d6
     dec  [HL]                                          ;; 01:4065 $35
-    call call_01_4d25                                  ;; 01:4066 $cd $25 $4d
-    ld   A, [wD68C]                                    ;; 01:4069 $fa $8c $d6
+    call call_01_4d25_Menu_TickHideSprites                                  ;; 01:4066 $cd $25 $4d
+    ; Timeout handling. A screen without MENU_FLAG_WAIT_FOR_INPUT counts down
+    ; and leaves on its own; one with the flag normally waits forever, unless
+    ; MENU_FLAG_DEMO_COUNTDOWN is also set and a demo is playing, in which case
+    ; the demo's own clock still has to run out
+    ld   A, [wD68C_Menu_Flags]                                    ;; 01:4069 $fa $8c $d6
     ld   C, A                                          ;; 01:406c $4f
-    and  A, $80                                        ;; 01:406d $e6 $80
+    and  A, MENU_FLAG_WAIT_FOR_INPUT                   ;; 01:406d $e6 $80
     jr   Z, .jr_01_4082                                ;; 01:406f $28 $11
     ld   A, C                                          ;; 01:4071 $79
-    and  A, $04                                        ;; 01:4072 $e6 $04
+    and  A, MENU_FLAG_DEMO_COUNTDOWN                   ;; 01:4072 $e6 $04
     jr   Z, .jr_01_408f                                ;; 01:4074 $28 $19
     ld   A, [wD61E_DemoModeEnabled]                                    ;; 01:4076 $fa $1e $d6
     and  A, A                                          ;; 01:4079 $a7
@@ -77,11 +119,11 @@ call_01_4000_MenuLoad: ; this is the primary menu loading and updating function
     dec  [HL]                                          ;; 01:4089 $35
     jr   NZ, .jr_01_408f                               ;; 01:408a $20 $03
 .jr_01_408c:
-    ld   A, $70                                        ;; 01:408c $3e $70
+    ld   A, MENU_RESULT_TIMED_OUT                      ;; 01:408c $3e $70
     ret                                                ;; 01:408e $c9
 .jr_01_408f:
-    ld   A, [wD68C]                                    ;; 01:408f $fa $8c $d6
-    and  A, $02                                        ;; 01:4092 $e6 $02
+    ld   A, [wD68C_Menu_Flags]                                    ;; 01:408f $fa $8c $d6
+    and  A, MENU_FLAG_GRID_CURSOR                      ;; 01:4092 $e6 $02
     jp   Z, .jp_01_413a                                ;; 01:4094 $ca $3a $41
     ld   A, [wD59F_CurrentInputs]                                    ;; 01:4097 $fa $9f $d5
     and  A, PADF_A | PADF_B                                        ;; 01:409a $e6 $03
@@ -99,22 +141,22 @@ call_01_4000_MenuLoad: ; this is the primary menu loading and updating function
     ld   HL, data_01_5c99                              ;; 01:40b1 $21 $99 $5c
     add  HL, DE                                        ;; 01:40b4 $19
     ld   C, [HL]                                       ;; 01:40b5 $4e
-    call call_01_4f1b                                  ;; 01:40b6 $cd $1b $4f
-    cp   A, $49                                        ;; 01:40b9 $fe $49
+    call call_01_4f1b_Password_GetCellUnderCursor                                  ;; 01:40b6 $cd $1b $4f
+    cp   A, PASSWORD_KEY_EXIT                          ;; 01:40b9 $fe $49
     jp   Z, .jp_01_421e                                ;; 01:40bb $ca $1e $42
-    cp   A, $4a                                        ;; 01:40be $fe $4a
+    cp   A, PASSWORD_KEY_GO                            ;; 01:40be $fe $4a
     jr   Z, .jr_01_40cd                                ;; 01:40c0 $28 $0b
     ld   A, C                                          ;; 01:40c2 $79
-    cp   A, $20                                        ;; 01:40c3 $fe $20
+    cp   A, PASSWORD_KEY_BLANK                         ;; 01:40c3 $fe $20
     jr   Z, .jr_01_405c_MenuUpdate                                ;; 01:40c5 $28 $95
     ld   [HL], C                                       ;; 01:40c7 $71
-    call call_01_4ecf                                  ;; 01:40c8 $cd $cf $4e
+    call call_01_4ecf_Password_RefreshCellGfx                                  ;; 01:40c8 $cd $cf $4e
     jr   .jp_01_4132                                   ;; 01:40cb $18 $65
 .jr_01_40cd:
-    ld   A, $30                                        ;; 01:40cd $3e $30
+    ld   A, MENU_RESULT_PASSWORD_GO                    ;; 01:40cd $3e $30
     ret                                                ;; 01:40cf $c9
 .jr_01_40d0:
-    ld   A, [wD68D]                                    ;; 01:40d0 $fa $8d $d6
+    ld   A, [wD68D_Menu_OptionCount]                                    ;; 01:40d0 $fa $8d $d6
     and  A, A                                          ;; 01:40d3 $a7
     jp   Z, .jr_01_405c_MenuUpdate                                ;; 01:40d4 $ca $5c $40
     call call_00_10fb_CheckInputRight                                  ;; 01:40d7 $cd $fb $10
@@ -122,13 +164,13 @@ call_01_4000_MenuLoad: ; this is the primary menu loading and updating function
     ld   HL, wD6DF_MenuSelectedColumn                                     ;; 01:40dc $21 $df $d6
     inc  [HL]                                          ;; 01:40df $34
     ld   A, [HL]                                       ;; 01:40e0 $7e
-    sub  A, $06                                        ;; 01:40e1 $d6 $06
+    sub  A, PASSWORD_GRID_COLUMNS                      ;; 01:40e1 $d6 $06
     jr   NZ, .jp_01_4132                               ;; 01:40e3 $20 $4d
-    ld   [HL], A                                       ;; 01:40e5 $77
+    ld   [HL], A                                       ;; 01:40e5 $77 ; wrapped past the last column
     ld   HL, wD6E0_MenuSelectedRow                                     ;; 01:40e6 $21 $e0 $d6
     inc  [HL]                                          ;; 01:40e9 $34
     ld   A, [HL]                                       ;; 01:40ea $7e
-    sub  A, $05                                        ;; 01:40eb $d6 $05
+    sub  A, PASSWORD_GRID_ROWS                         ;; 01:40eb $d6 $05
     jr   NZ, .jp_01_4132                               ;; 01:40ed $20 $43
     ld   [HL], A                                       ;; 01:40ef $77
     jr   .jp_01_4132                                   ;; 01:40f0 $18 $40
@@ -139,12 +181,12 @@ call_01_4000_MenuLoad: ; this is the primary menu loading and updating function
     dec  [HL]                                          ;; 01:40fa $35
     bit  7, [HL]                                       ;; 01:40fb $cb $7e
     jr   Z, .jp_01_4132                                ;; 01:40fd $28 $33
-    ld   [HL], $05                                     ;; 01:40ff $36 $05
+    ld   [HL], PASSWORD_GRID_COLUMNS - 1               ;; 01:40ff $36 $05
     ld   HL, wD6E0_MenuSelectedRow                                     ;; 01:4101 $21 $e0 $d6
     dec  [HL]                                          ;; 01:4104 $35
     bit  7, [HL]                                       ;; 01:4105 $cb $7e
     jr   Z, .jp_01_4132                                ;; 01:4107 $28 $29
-    ld   [HL], $04                                     ;; 01:4109 $36 $04
+    ld   [HL], PASSWORD_GRID_ROWS - 1                  ;; 01:4109 $36 $04
     jr   .jp_01_4132                                   ;; 01:410b $18 $25
 .jr_01_410d:
     call call_00_1107_CheckInputDown                                  ;; 01:410d $cd $07 $11
@@ -152,7 +194,7 @@ call_01_4000_MenuLoad: ; this is the primary menu loading and updating function
     ld   HL, wD6E0_MenuSelectedRow                                     ;; 01:4112 $21 $e0 $d6
     inc  [HL]                                          ;; 01:4115 $34
     ld   A, [HL]                                       ;; 01:4116 $7e
-    cp   A, $05                                        ;; 01:4117 $fe $05
+    cp   A, PASSWORD_GRID_ROWS                         ;; 01:4117 $fe $05
     jr   C, .jp_01_4132                                ;; 01:4119 $38 $17
     dec  [HL]                                          ;; 01:411b $35
     jp   .jp_01_403a                                   ;; 01:411c $c3 $3a $40
@@ -170,7 +212,7 @@ call_01_4000_MenuLoad: ; this is the primary menu loading and updating function
     call call_00_113e_PlaySFX                                  ;; 01:4134 $cd $3e $11
     jp   .jp_01_403a                                   ;; 01:4137 $c3 $3a $40
 .jp_01_413a:
-    ld   A, [wD68D]                                    ;; 01:413a $fa $8d $d6
+    ld   A, [wD68D_Menu_OptionCount]                                    ;; 01:413a $fa $8d $d6
     and  A, A                                          ;; 01:413d $a7
     jr   Z, .jr_01_416a                                ;; 01:413e $28 $2a
     call call_00_1101_CheckInputUp                                  ;; 01:4140 $cd $01 $11
@@ -184,7 +226,7 @@ call_01_4000_MenuLoad: ; this is the primary menu loading and updating function
 .jr_01_414f:
     call call_00_1107_CheckInputDown                                  ;; 01:414f $cd $07 $11
     jr   Z, .jr_01_416a                                ;; 01:4152 $28 $16
-    ld   A, [wD68D]                                    ;; 01:4154 $fa $8d $d6
+    ld   A, [wD68D_Menu_OptionCount]                                    ;; 01:4154 $fa $8d $d6
     dec  A                                             ;; 01:4157 $3d
     ld   HL, wD6E0_MenuSelectedRow                                     ;; 01:4158 $21 $e0 $d6
     cp   A, [HL]                                       ;; 01:415b $be
@@ -193,11 +235,13 @@ call_01_4000_MenuLoad: ; this is the primary menu loading and updating function
 .jr_01_415f:
     ld   A, $00                                        ;; 01:415f $3e $00
     call call_00_113e_PlaySFX                                  ;; 01:4161 $cd $3e $11
-    call call_01_43e6                                  ;; 01:4164 $cd $e6 $43
+    call call_01_43e6_Menu_UpdateRasterSplit                                  ;; 01:4164 $cd $e6 $43
     jp   .jp_01_403a                                   ;; 01:4167 $c3 $3a $40
 .jr_01_416a:
-    ld   A, [wD68C]                                    ;; 01:416a $fa $8c $d6
-    and  A, $01                                        ;; 01:416d $e6 $01
+    ; the totals screens use left/right to page through the 30 levels, skipping
+    ; any page marked hidden in call_01_4265_Menu_IsTotalsPageVisible
+    ld   A, [wD68C_Menu_Flags]                                    ;; 01:416a $fa $8c $d6
+    and  A, MENU_FLAG_TOTALS_PAGING                    ;; 01:416d $e6 $01
     jr   Z, .jr_01_41b5                                ;; 01:416f $28 $44
 .jr_01_4171:
     call call_00_10fb_CheckInputRight                                  ;; 01:4171 $cd $fb $10
@@ -209,7 +253,7 @@ call_01_4000_MenuLoad: ; this is the primary menu loading and updating function
     jr   NZ, .jr_01_4180                               ;; 01:417d $20 $01
     ld   [HL], A                                       ;; 01:417f $77
 .jr_01_4180:
-    call call_01_4265                                  ;; 01:4180 $cd $65 $42
+    call call_01_4265_Menu_IsTotalsPageVisible                                  ;; 01:4180 $cd $65 $42
     jr   Z, .jr_01_4171                                ;; 01:4183 $28 $ec
     jr   .jr_01_419b                                   ;; 01:4185 $18 $14
 .jr_01_4187:
@@ -221,107 +265,122 @@ call_01_4000_MenuLoad: ; this is the primary menu loading and updating function
     jr   Z, .jr_01_4196                                ;; 01:4192 $28 $02
     ld   [HL], $1d                                     ;; 01:4194 $36 $1d
 .jr_01_4196:
-    call call_01_4265                                  ;; 01:4196 $cd $65 $42
+    call call_01_4265_Menu_IsTotalsPageVisible                                  ;; 01:4196 $cd $65 $42
     jr   Z, .jr_01_4187                                ;; 01:4199 $28 $ec
 .jr_01_419b:
-    ld   A, [wD6DA]                                    ;; 01:419b $fa $da $d6
-    call call_01_4d3b                                  ;; 01:419e $cd $3b $4d
+    ld   A, [wD6DA_Menu_TotalsSpriteGroup]                                    ;; 01:419b $fa $da $d6
+    call call_01_4d3b_Menu_EraseSpriteGroup                                  ;; 01:419e $cd $3b $4d
     ld   HL, data_01_57a0                              ;; 01:41a1 $21 $a0 $57
-    call call_01_44cf                                  ;; 01:41a4 $cd $cf $44
+    call call_01_44cf_MenuScript_RunFrom                                  ;; 01:41a4 $cd $cf $44
     ld   HL, data_00_0db6_GfxStreamScript_MenuSprites                                      ;; 01:41a7 $21 $b6 $0d
-    call call_01_4d0a                                  ;; 01:41aa $cd $0a $4d
+    call call_01_4d0a_Menu_StartGfxStream                                  ;; 01:41aa $cd $0a $4d
     ld   A, $01                                        ;; 01:41ad $3e $01
     call call_00_113e_PlaySFX                                  ;; 01:41af $cd $3e $11
     jp   .jp_01_403a                                   ;; 01:41b2 $c3 $3a $40
 .jr_01_41b5:
+    ; B confirms the highlighted option; A, SELECT and START all back out,
+    ; each gated by its own flag. MENU_FLAG_NO_CANCEL short-circuits the lot
     call call_00_1129_CheckInputB                                  ;; 01:41b5 $cd $29 $11
     jr   NZ, .jr_01_41f1                               ;; 01:41b8 $20 $37
-    ld   A, [wD68C]                                    ;; 01:41ba $fa $8c $d6
-    and  A, $40                                        ;; 01:41bd $e6 $40
+    ld   A, [wD68C_Menu_Flags]                                    ;; 01:41ba $fa $8c $d6
+    and  A, MENU_FLAG_NO_CANCEL                        ;; 01:41bd $e6 $40
     jp   NZ, .jr_01_405c_MenuUpdate                               ;; 01:41bf $c2 $5c $40
     call call_00_1123_CheckInputA                                  ;; 01:41c2 $cd $23 $11
     jr   NZ, .jp_01_421e                               ;; 01:41c5 $20 $57
-    ld   A, [wD68C]                                    ;; 01:41c7 $fa $8c $d6
-    and  A, $08                                        ;; 01:41ca $e6 $08
+    ld   A, [wD68C_Menu_Flags]                                    ;; 01:41c7 $fa $8c $d6
+    and  A, MENU_FLAG_SELECT_DISMISSES                 ;; 01:41ca $e6 $08
     call NZ, call_00_1118_CheckInputSelect                              ;; 01:41cc $c4 $18 $11
     jr   NZ, .jp_01_421e                               ;; 01:41cf $20 $4d
-    ld   A, [wD68C]                                    ;; 01:41d1 $fa $8c $d6
-    and  A, $10                                        ;; 01:41d4 $e6 $10
+    ld   A, [wD68C_Menu_Flags]                                    ;; 01:41d1 $fa $8c $d6
+    and  A, MENU_FLAG_START_DISMISSES                  ;; 01:41d4 $e6 $10
     call NZ, call_00_110d_CheckInputStart                              ;; 01:41d6 $c4 $0d $11
     jr   NZ, .jp_01_421e                               ;; 01:41d9 $20 $43
-    ld   A, [wD68C]                                    ;; 01:41db $fa $8c $d6
-    and  A, $20                                        ;; 01:41de $e6 $20
+    ; START on a totals screen opens the pause menu over the top of it, and
+    ; remembers this screen so that closing the pause menu comes back here
+    ld   A, [wD68C_Menu_Flags]                                    ;; 01:41db $fa $8c $d6
+    and  A, MENU_FLAG_START_OPENS_PAUSE                ;; 01:41de $e6 $20
     call NZ, call_00_110d_CheckInputStart                              ;; 01:41e0 $c4 $0d $11
     jp   Z, .jr_01_405c_MenuUpdate                                ;; 01:41e3 $ca $5c $40
     ld   A, [wD6DE_MenuType]                                    ;; 01:41e6 $fa $de $d6
-    ld   [wD6DD], A                                    ;; 01:41e9 $ea $dd $d6
-    ld   A, $00                                        ;; 01:41ec $3e $00
+    ld   [wD6DD_Menu_ReturnToType], A                                    ;; 01:41e9 $ea $dd $d6
+    ld   A, MENU_TYPE_PAUSED_IN_MEDIA_DIMENSION        ;; 01:41ec $3e $00
     jp   .jp_01_4005                                   ;; 01:41ee $c3 $05 $40
 .jr_01_41f1:
+    ; B was pressed. Look up what the highlighted row means. Codes that open
+    ; another menu are handled here; the rest are returned to the caller in A
     call call_00_10eb_WaitUntilNoInputPressed                                  ;; 01:41f1 $cd $eb $10
-    ld   A, [wD68D]                                    ;; 01:41f4 $fa $8d $d6
+    ld   A, [wD68D_Menu_OptionCount]                                    ;; 01:41f4 $fa $8d $d6
     and  A, A                                          ;; 01:41f7 $a7
-    jr   Z, .jp_01_421e                                ;; 01:41f8 $28 $24
+    jr   Z, .jp_01_421e                                ;; 01:41f8 $28 $24 ; nothing selectable
     ld   HL, wD6E0_MenuSelectedRow                                     ;; 01:41fa $21 $e0 $d6
     ld   L, [HL]                                       ;; 01:41fd $6e
     ld   H, $00                                        ;; 01:41fe $26 $00
-    ld   DE, wD6C5                                     ;; 01:4200 $11 $c5 $d6
+    ld   DE, wD6C5_Menu_OptionActions                                     ;; 01:4200 $11 $c5 $d6
     add  HL, DE                                        ;; 01:4203 $19
     ld   A, [HL]                                       ;; 01:4204 $7e
-    cp   A, $10                                        ;; 01:4205 $fe $10
+    cp   A, MENU_OPTION_RESUME                         ;; 01:4205 $fe $10
     ret  Z                                             ;; 01:4207 $c8
-    cp   A, $90                                        ;; 01:4208 $fe $90
+    cp   A, MENU_OPTION_AUDIO_OPTIONS                  ;; 01:4208 $fe $90
     jr   Z, .jr_01_4229                                ;; 01:420a $28 $1d
-    cp   A, $30                                        ;; 01:420c $fe $30
+    cp   A, MENU_OPTION_ENTER_PASSWORD                 ;; 01:420c $fe $30
     jr   Z, .jr_01_422f                                ;; 01:420e $28 $1f
-    cp   A, $40                                        ;; 01:4210 $fe $40
+    cp   A, MENU_OPTION_VIEW_PASSWORD                  ;; 01:4210 $fe $40
     jr   Z, .jr_01_424f                                ;; 01:4212 $28 $3b
-    cp   A, $50                                        ;; 01:4214 $fe $50
+    cp   A, MENU_OPTION_QUIT                           ;; 01:4214 $fe $50
     jr   Z, .jr_01_4257                                ;; 01:4216 $28 $3f
-    cp   A, $60                                        ;; 01:4218 $fe $60
+    cp   A, MENU_OPTION_UNK_60                         ;; 01:4218 $fe $60
     ret  Z                                             ;; 01:421a $c8
-    cp   A, $80                                        ;; 01:421b $fe $80
+    cp   A, MENU_OPTION_UNK_80                         ;; 01:421b $fe $80
     ret  Z                                             ;; 01:421d $c8
 .jp_01_421e:
+    ; leaving the menu. If another screen is waiting underneath, reload it
+    ; instead of returning
     call call_00_10eb_WaitUntilNoInputPressed                                  ;; 01:421e $cd $eb $10
-    ld   A, [wD6DD]                                    ;; 01:4221 $fa $dd $d6
+    ld   A, [wD6DD_Menu_ReturnToType]                                    ;; 01:4221 $fa $dd $d6
     and  A, A                                          ;; 01:4224 $a7
     jp   NZ, call_01_4000_MenuLoad                              ;; 01:4225 $c2 $00 $40
     ret                                                ;; 01:4228 $c9
 .jr_01_4229:
     call call_01_4291_LoadAudioOptionsMenu                                  ;; 01:4229 $cd $91 $42
 .jr_01_422c:
-    ld   A, $00                                        ;; 01:422c $3e $00
+    ld   A, MENU_RESULT_DISMISSED                      ;; 01:422c $3e $00
     ret                                                ;; 01:422e $c9
 .jr_01_422f:
+    ; Password entry. The keyboard and the "wrong password" screen alternate
+    ; until either the player types something valid or backs out entirely
     call call_01_4f87_LoadEnterPasswordMenu                                  ;; 01:422f $cd $87 $4f
     ld   A, MENU_TYPE_ENTER_PASSWORD                                        ;; 01:4232 $3e $0f
     call call_01_4000_MenuLoad                                  ;; 01:4234 $cd $00 $40
-    cp   A, $00                                        ;; 01:4237 $fe $00
+    cp   A, MENU_RESULT_DISMISSED                      ;; 01:4237 $fe $00
     jr   Z, .jr_01_422c                                ;; 01:4239 $28 $f1
 .jr_01_423b:
     call call_01_5271_ProcessPassword                                  ;; 01:423b $cd $71 $52
-    cp   A, $30                                        ;; 01:423e $fe $30
+    cp   A, MENU_RESULT_PASSWORD_GO                    ;; 01:423e $fe $30 ; accepted
     ret  Z                                             ;; 01:4240 $c8
     call call_01_4f87_LoadEnterPasswordMenu                                  ;; 01:4241 $cd $87 $4f
     ld   A, MENU_TYPE_ENTERED_INVALID_PASSWORD                                        ;; 01:4244 $3e $15
     call call_01_4000_MenuLoad                                  ;; 01:4246 $cd $00 $40
-    cp   A, $00                                        ;; 01:4249 $fe $00
+    cp   A, MENU_RESULT_DISMISSED                      ;; 01:4249 $fe $00
     jr   Z, .jr_01_422c                                ;; 01:424b $28 $df
-    jr   .jr_01_423b                                   ;; 01:424d $18 $ec
+    jr   .jr_01_423b                                   ;; 01:424d $18 $ec ; let them try again
 .jr_01_424f:
     call call_01_4fa5_SetupPassword                                  ;; 01:424f $cd $a5 $4f
     ld   A, MENU_TYPE_VIEW_PASSWORD                                        ;; 01:4252 $3e $06
     jp   call_01_4000_MenuLoad                                  ;; 01:4254 $c3 $00 $40
 .jr_01_4257:
+    ; quitting means something different depending on where you are: from the
+    ; hub there is nothing to back out to, so it offers to end the game instead
     ld   A, [wD624_CurrentLevelId]                                    ;; 01:4257 $fa $24 $d6
     and  A, A                                          ;; 01:425a $a7
-    ld   A, $01                                        ;; 01:425b $3e $01
+    ld   A, MENU_TYPE_EXIT_GAME                        ;; 01:425b $3e $01
     jp   Z, .jp_01_4005                                ;; 01:425d $ca $05 $40
-    ld   A, $03                                        ;; 01:4260 $3e $03
+    ld   A, MENU_TYPE_EXIT_TO_MAP                      ;; 01:4260 $3e $03
     jp   .jp_01_4005                                   ;; 01:4262 $c3 $05 $40
 
-call_01_4265:
+call_01_4265_Menu_IsTotalsPageVisible:
+; The totals menu pages through the levels with left/right, but six of the
+; thirty entries are blanks in the level list. Returns Z when the page in
+; wD625_TotalsMenuPage should be skipped over
     ld   HL, wD625_TotalsMenuPage                                     ;; 01:4265 $21 $25 $d6
     ld   L, [HL]                                       ;; 01:4268 $6e
     ld   H, $00                                        ;; 01:4269 $26 $00
@@ -523,7 +582,7 @@ call_01_43c7_LoadCreditsMenus:
     call call_01_4000_MenuLoad                                  ;; 01:43e2 $cd $00 $40
     ret                                                ;; 01:43e5 $c9
 
-call_01_43e6:
+call_01_43e6_Menu_UpdateRasterSplit:
     ld   HL, wD6DE_MenuType                                     ;; 01:43e6 $21 $de $d6
     ld   L, [HL]                                       ;; 01:43e9 $6e
     ld   H, $00                                        ;; 01:43ea $26 $00
@@ -587,7 +646,7 @@ call_01_43e6:
     ld   A, [HL+]                                      ;; 01:4457 $2a
     ld   H, [HL]                                       ;; 01:4458 $66
     ld   L, A                                          ;; 01:4459 $6f
-    jp   call_01_4d0a                                  ;; 01:445a $c3 $0a $4d
+    jp   call_01_4d0a_Menu_StartGfxStream                                  ;; 01:445a $c3 $0a $4d
 .jp_01_445d:
     ld   hl,wD6E0_MenuSelectedRow
     ld   l,[hl]
@@ -598,7 +657,7 @@ call_01_43e6:
     ldi  a,[hl]
     ld   h,[hl]
     ld   l,a
-    jp   call_01_4d0a
+    jp   call_01_4d0a_Menu_StartGfxStream
 .jp_01_446e:
     ret                                                ;; 01:446e $c9
 
@@ -606,21 +665,21 @@ call_01_446f_LoadMenuGraphics:
 ; Load tiles, palettes, and bg map for the menu
     push HL                                            ;; 01:446f $e5
     ld   A, $ff                                        ;; 01:4470 $3e $ff
-    ld   [wD6C1], A                                    ;; 01:4472 $ea $c1 $d6
+    ld   [wD6C1_Menu_CursorSpriteId], A                                    ;; 01:4472 $ea $c1 $d6
     xor  A, A                                          ;; 01:4475 $af
-    ld   [wD6D8], A                                    ;; 01:4476 $ea $d8 $d6
+    ld   [wD6D8_Menu_HideSpritesDelay], A                                    ;; 01:4476 $ea $d8 $d6
     call call_00_0f38_FadeOutAndClearVRAM                                  ;; 01:4479 $cd $38 $0f
     call call_00_0ede_SelectWramBank1                                  ;; 01:447c $cd $de $0e
     pop  HL                                            ;; 01:447f $e1
 .jr_01_4480:
     ld   A, L                                          ;; 01:4480 $7d
-    ld   [wD6B3], A                                    ;; 01:4481 $ea $b3 $d6
+    ld   [wD6B3_MenuScript_PtrLo], A                                    ;; 01:4481 $ea $b3 $d6
     ld   A, H                                          ;; 01:4484 $7c
-    ld   [wD6B4], A                                    ;; 01:4485 $ea $b4 $d6
+    ld   [wD6B4_MenuScript_PtrHi], A                                    ;; 01:4485 $ea $b4 $d6
     ld   A, $ff                                        ;; 01:4488 $3e $ff
-    ld   [wD6D7], A                                    ;; 01:448a $ea $d7 $d6
-    call call_01_44d7                                  ;; 01:448d $cd $d7 $44
-    ld   A, [wD6D7]                                    ;; 01:4490 $fa $d7 $d6
+    ld   [wD6D7_Menu_ChainedScriptId], A                                    ;; 01:448a $ea $d7 $d6
+    call call_01_44d7_MenuScript_RunToEnd                                  ;; 01:448d $cd $d7 $44
+    ld   A, [wD6D7_Menu_ChainedScriptId]                                    ;; 01:4490 $fa $d7 $d6
     cp   A, $ff                                        ;; 01:4493 $fe $ff
     jr   Z, .jr_01_449f                                ;; 01:4495 $28 $08
     ld   DE, data_01_568c                              ;; 01:4497 $11 $8c $56
@@ -639,32 +698,45 @@ call_01_446f_LoadMenuGraphics:
     FARCALL call_0b_5537_BgPalette_LoadMonoOrGetSpriteParams
     ld   A, $ff                                        ;; 01:44ba $3e $ff
     ld   [wD6EB_RasterWobble_StartLine], A                                    ;; 01:44bc $ea $eb $d6
-    call call_01_43e6                                  ;; 01:44bf $cd $e6 $43
+    call call_01_43e6_Menu_UpdateRasterSplit                                  ;; 01:44bf $cd $e6 $43
     ld   A, $06                                        ;; 01:44c2 $3e $06
     call call_00_0bae_RequestLcdIsr                                  ;; 01:44c4 $cd $ae $0b
     ld   A, $d7                                        ;; 01:44c7 $3e $d7
     call call_00_0f56_SetLCDCAndFadeIn                                  ;; 01:44c9 $cd $56 $0f
     jp   call_00_0ab4_WaitForInterrupt                                  ;; 01:44cc $c3 $b4 $0a
 
-call_01_44cf:
+call_01_44cf_MenuScript_RunFrom:
+; Points the script cursor at HL and runs it. Falls through into RunToEnd
     ld   A, L                                          ;; 01:44cf $7d
-    ld   [wD6B3], A                                    ;; 01:44d0 $ea $b3 $d6
+    ld   [wD6B3_MenuScript_PtrLo], A                                    ;; 01:44d0 $ea $b3 $d6
     ld   A, H                                          ;; 01:44d3 $7c
-    ld   [wD6B4], A                                    ;; 01:44d4 $ea $b4 $d6
+    ld   [wD6B4_MenuScript_PtrHi], A                                    ;; 01:44d4 $ea $b4 $d6
 
-call_01_44d7:
-    ld   HL, wD6B3                                     ;; 01:44d7 $21 $b3 $d6
+call_01_44d7_MenuScript_RunToEnd:
+; Runs menu script commands until the terminator $FF. The cursor lives in
+; wD6B3, not in a register, so a command is free to redirect the script
+    ld   HL, wD6B3_MenuScript_PtrLo                                     ;; 01:44d7 $21 $b3 $d6
     ld   A, [HL+]                                      ;; 01:44da $2a
     ld   H, [HL]                                       ;; 01:44db $66
     ld   L, A                                          ;; 01:44dc $6f
     ld   A, [HL]                                       ;; 01:44dd $7e
     cp   A, $ff                                        ;; 01:44de $fe $ff
     ret  Z                                             ;; 01:44e0 $c8
-    call call_01_44e6                                  ;; 01:44e1 $cd $e6 $44
-    jr   call_01_44d7                                  ;; 01:44e4 $18 $f1
+    call call_01_44e6_MenuScript_RunCommand                                  ;; 01:44e1 $cd $e6 $44
+    jr   call_01_44d7_MenuScript_RunToEnd                                  ;; 01:44e4 $18 $f1
 
-call_01_44e6:
-    ld   HL, wD6B3                                     ;; 01:44e6 $21 $b3 $d6
+call_01_44e6_MenuScript_RunCommand:
+; Executes one menu script command. The first byte is a command id, which
+; indexes an 8-byte descriptor in data_01_5324 (copied to wD692..wD697 - the
+; tile dimensions, destination and so on for this kind of command). The next 7
+; bytes of the script are the command's own parameters, copied to wD698..wD69E.
+;
+; Two of those parameters do more than draw. wD69D registers a selectable row:
+; its low nibble is the row index and its high nibble the MENU_OPTION_* code,
+; which is filed into wD6C5_Menu_OptionActions - this is how a menu's script,
+; rather than any code, decides what the options are and what they do. Bit 0 of
+; wD69E marks a command needing extra per-entry setup
+    ld   HL, wD6B3_MenuScript_PtrLo                                     ;; 01:44e6 $21 $b3 $d6
     ld   E, [HL]                                       ;; 01:44e9 $5e
     inc  HL                                            ;; 01:44ea $23
     ld   D, [HL]                                       ;; 01:44eb $56
@@ -685,7 +757,7 @@ call_01_44e6:
     ld   BC, $06                                       ;; 01:4501 $01 $06 $00
     call call_00_07b0_MemCopy                                  ;; 01:4504 $cd $b0 $07
 .jr_01_4507:
-    ld   HL, wD6B3                                     ;; 01:4507 $21 $b3 $d6
+    ld   HL, wD6B3_MenuScript_PtrLo                                     ;; 01:4507 $21 $b3 $d6
     ld   A, [HL+]                                      ;; 01:450a $2a
     ld   H, [HL]                                       ;; 01:450b $66
     ld   L, A                                          ;; 01:450c $6f
@@ -693,14 +765,14 @@ call_01_44e6:
     ld   BC, $07                                       ;; 01:4510 $01 $07 $00
     call call_00_07b0_MemCopy                                  ;; 01:4513 $cd $b0 $07
     ld   A, L                                          ;; 01:4516 $7d
-    ld   [wD6B3], A                                    ;; 01:4517 $ea $b3 $d6
+    ld   [wD6B3_MenuScript_PtrLo], A                                    ;; 01:4517 $ea $b3 $d6
     ld   A, H                                          ;; 01:451a $7c
-    ld   [wD6B4], A                                    ;; 01:451b $ea $b4 $d6
+    ld   [wD6B4_MenuScript_PtrHi], A                                    ;; 01:451b $ea $b4 $d6
     ld   A, [wD69D]                                    ;; 01:451e $fa $9d $d6
     and  A, $0f                                        ;; 01:4521 $e6 $0f
     ld   L, A                                          ;; 01:4523 $6f
     ld   H, $00                                        ;; 01:4524 $26 $00
-    ld   DE, wD6C5                                     ;; 01:4526 $11 $c5 $d6
+    ld   DE, wD6C5_Menu_OptionActions                                     ;; 01:4526 $11 $c5 $d6
     add  HL, DE                                        ;; 01:4529 $19
     ld   A, [wD69D]                                    ;; 01:452a $fa $9d $d6
     and  A, $f0                                        ;; 01:452d $e6 $f0
@@ -824,12 +896,12 @@ call_01_44e6:
     ld   A, [wD69E]                                    ;; 01:45eb $fa $9e $d6
     and  A, $04                                        ;; 01:45ee $e6 $04
     jr   NZ, .jr_01_45fe                               ;; 01:45f0 $20 $0c
-    call call_01_4e5a                                  ;; 01:45f2 $cd $5a $4e
-    call call_01_4e49                                  ;; 01:45f5 $cd $49 $4e
+    call call_01_4e5a_Menu_GetTileDataSize                                  ;; 01:45f2 $cd $5a $4e
+    call call_01_4e49_Menu_GetVramAddrForDestTile                                  ;; 01:45f5 $cd $49 $4e
     ld   HL, wC000_BgMapTileIds                                     ;; 01:45f8 $21 $00 $c0
     jp   call_00_07b0_MemCopy                                  ;; 01:45fb $c3 $b0 $07
 .jr_01_45fe:
-    call call_01_4e49                                  ;; 01:45fe $cd $49 $4e
+    call call_01_4e49_Menu_GetVramAddrForDestTile                                  ;; 01:45fe $cd $49 $4e
     ld   HL, wC000_BgMapTileIds                                     ;; 01:4601 $21 $00 $c0
     ld   A, [wD692]                                    ;; 01:4604 $fa $92 $d6
     ld   C, A                                          ;; 01:4607 $4f
@@ -885,13 +957,13 @@ call_01_4653:
     ld   A, [wD69B]                                    ;; 01:4653 $fa $9b $d6
     ld   DE, data_01_74e9                              ;; 01:4656 $11 $e9 $74
     call call_00_07b9_GetPointerFromTable                                  ;; 01:4659 $cd $b9 $07
-    jp   call_01_4e78                                    ;; 01:465c $c3 $78 $4e
+    jp   call_01_4e78_Menu_StageTileData                                    ;; 01:465c $c3 $78 $4e
 
 call_01_465f:
     ld   A, [wD69B]                                    ;; 01:465f $fa $9b $d6
     ld   DE, data_01_74ed                              ;; 01:4662 $11 $ed $74
     call call_00_07b9_GetPointerFromTable                                  ;; 01:4665 $cd $b9 $07
-    jp   call_01_4e78                                    ;; 01:4668 $c3 $78 $4e
+    jp   call_01_4e78_Menu_StageTileData                                    ;; 01:4668 $c3 $78 $4e
 
 call_01_466b:
     ld   HL, .data_01_46a8                             ;; 01:466b $21 $a8 $46
@@ -909,7 +981,7 @@ call_01_466b:
     ld   A, $05                                        ;; 01:4696 $3e $05
     ld   [wD693], A                                    ;; 01:4698 $ea $93 $d6
     push HL                                            ;; 01:469b $e5
-    call call_01_4e5a                                  ;; 01:469c $cd $5a $4e
+    call call_01_4e5a_Menu_GetTileDataSize                                  ;; 01:469c $cd $5a $4e
     pop  HL                                            ;; 01:469f $e1
     ld   DE, wC000_BgMapTileIds                                     ;; 01:46a0 $11 $00 $c0
     ld   A, $13                                        ;; 01:46a3 $3e $13
@@ -936,11 +1008,11 @@ call_01_4728:
     call call_00_2e3a_MapData_GetTVPaletteId                                  ;; 01:4728 $cd $3a $2e
     ld   DE, data_01_5ee7                              ;; 01:472b $11 $e7 $5e
     call call_00_07b9_GetPointerFromTable                                  ;; 01:472e $cd $b9 $07
-    jp   call_01_4e6f                                  ;; 01:4731 $c3 $6f $4e
+    jp   call_01_4e6f_Menu_SetScriptSrcPtr                                  ;; 01:4731 $c3 $6f $4e
 
 call_01_4734:
     call call_00_2e4c_MapData_GetTextPtr                                  ;; 01:4734 $cd $4c $2e
-    jp   call_01_4e6f                                  ;; 01:4737 $c3 $6f $4e
+    jp   call_01_4e6f_Menu_SetScriptSrcPtr                                  ;; 01:4737 $c3 $6f $4e
 
 call_01_473a:
     ld   A, [wD69B]                                    ;; 01:473a $fa $9b $d6
@@ -952,12 +1024,12 @@ call_01_473a:
     push AF                                            ;; 01:4746 $f5
     and  A, $7f                                        ;; 01:4747 $e6 $7f
     call call_00_2e5f_MapData_GetTextPtr2                                  ;; 01:4749 $cd $5f $2e
-    call call_01_4e6f                                  ;; 01:474c $cd $6f $4e
+    call call_01_4e6f_Menu_SetScriptSrcPtr                                  ;; 01:474c $cd $6f $4e
     pop  AF                                            ;; 01:474f $f1
     bit  7, A                                          ;; 01:4750 $cb $7f
     ret  NZ                                            ;; 01:4752 $c0
     push AF                                            ;; 01:4753 $f5
-    call call_01_4eb1                                  ;; 01:4754 $cd $b1 $4e
+    call call_01_4eb1_Menu_IsMissionRemoteCollected                                  ;; 01:4754 $cd $b1 $4e
     push AF                                            ;; 01:4757 $f5
     ld   C, $ec                                        ;; 01:4758 $0e $ec
     ld   A, [wD59E_OnGBCFlag]                                    ;; 01:475a $fa $9e $d5
@@ -999,9 +1071,9 @@ call_01_473a:
     pop  AF                                            ;; 01:4797 $f1
     add  A, A                                          ;; 01:4798 $87
     add  A, $02                                        ;; 01:4799 $c6 $02
-    ld   [wD6D5], A                                    ;; 01:479b $ea $d5 $d6
+    ld   [wD6D5_Menu_OamSlot], A                                    ;; 01:479b $ea $d5 $d6
     ld   BC, $202                                      ;; 01:479e $01 $02 $02
-    jp   call_01_4e01                                  ;; 01:47a1 $c3 $01 $4e
+    jp   call_01_4e01_Menu_WriteSpriteRect                                  ;; 01:47a1 $c3 $01 $4e
 call_01_47a4:
     ld   a, [wD69B]
     ld   de, .data_01_47b9
@@ -1017,24 +1089,24 @@ call_01_47a4:
 call_01_47c5:
     call call_01_465f                                  ;; 01:47c5 $cd $5f $46
     xor  A, A                                          ;; 01:47c8 $af
-    ld   [wD6B9], A                                    ;; 01:47c9 $ea $b9 $d6
+    ld   [wD6B9_MenuCursor_OamSlot], A                                    ;; 01:47c9 $ea $b9 $d6
     ld   A, [wD692]                                    ;; 01:47cc $fa $92 $d6
-    ld   [wD6BE], A                                    ;; 01:47cf $ea $be $d6
+    ld   [wD6BE_MenuCursor_WidthInColumns], A                                    ;; 01:47cf $ea $be $d6
     ld   A, [wD693]                                    ;; 01:47d2 $fa $93 $d6
-    ld   [wD6BF], A                                    ;; 01:47d5 $ea $bf $d6
+    ld   [wD6BF_MenuCursor_HeightInPixels], A                                    ;; 01:47d5 $ea $bf $d6
     ld   A, $ff                                        ;; 01:47d8 $3e $ff
     ld   [wD6C0], A                                    ;; 01:47da $ea $c0 $d6
     ld   A, [wD69B]                                    ;; 01:47dd $fa $9b $d6
     sub  A, $00                                        ;; 01:47e0 $d6 $00
     add  A, $10                                        ;; 01:47e2 $c6 $10
-    ld   [wD6C1], A                                    ;; 01:47e4 $ea $c1 $d6
-    jp   call_01_4d72                                  ;; 01:47e7 $c3 $72 $4d
+    ld   [wD6C1_Menu_CursorSpriteId], A                                    ;; 01:47e4 $ea $c1 $d6
+    jp   call_01_4d72_Menu_DrawCursor                                  ;; 01:47e7 $c3 $72 $4d
 
 call_01_47ea:
     call call_01_47f6                                  ;; 01:47ea $cd $f6 $47
     call call_01_4ce5                                  ;; 01:47ed $cd $e5 $4c
     ld   HL, wD5A6_TextBuffer                                     ;; 01:47f0 $21 $a6 $d5
-    jp   call_01_4e6f                                  ;; 01:47f3 $c3 $6f $4e
+    jp   call_01_4e6f_Menu_SetScriptSrcPtr                                  ;; 01:47f3 $c3 $6f $4e
 
 call_01_47f6:
     ld   A, [wD69B]                                    ;; 01:47f6 $fa $9b $d6
@@ -1130,9 +1202,9 @@ call_01_4879:
     ld   A, [wD69A]                                    ;; 01:4879 $fa $9a $d6
     and  A, A                                          ;; 01:487c $a7
     jr   Z, .jr_01_4888                                ;; 01:487d $28 $09
-    ld   [wD6D8], A                                    ;; 01:487f $ea $d8 $d6
+    ld   [wD6D8_Menu_HideSpritesDelay], A                                    ;; 01:487f $ea $d8 $d6
     ld   A, [wD69B]                                    ;; 01:4882 $fa $9b $d6
-    ld   [wD6D9], A                                    ;; 01:4885 $ea $d9 $d6
+    ld   [wD6D9_Menu_HideSpritesGroup], A                                    ;; 01:4885 $ea $d9 $d6
 .jr_01_4888:
     ld   A, [wD69B]                                    ;; 01:4888 $fa $9b $d6
     cp   A, $00                                        ;; 01:488b $fe $00
@@ -1172,11 +1244,11 @@ call_01_4879:
     pop  AF                                            ;; 01:48c8 $f1
     ld   [wD624_CurrentLevelId], A                                    ;; 01:48c9 $ea $24 $d6
     ld   A, C                                          ;; 01:48cc $79
-    ld   [wD6DA], A                                    ;; 01:48cd $ea $da $d6
+    ld   [wD6DA_Menu_TotalsSpriteGroup], A                                    ;; 01:48cd $ea $da $d6
 .jr_01_48d0:
     ld   DE, data_01_5aa9                              ;; 01:48d0 $11 $a9 $5a
     call call_00_07b9_GetPointerFromTable                                  ;; 01:48d3 $cd $b9 $07
-    jp   call_01_4dc8                                    ;; 01:48d6 $c3 $c8 $4d
+    jp   call_01_4dc8_Menu_BuildSpriteBlock                                    ;; 01:48d6 $c3 $c8 $4d
 .data_01_48d9:
     db   $98, $98, $98, $a4, $a4, $b0                  ;; 01:48d9 ......
 
@@ -1194,7 +1266,7 @@ call_01_48df:
     ret                                                ;; 01:48f6 $c9
 .jr_01_48f7:
     ld   HL, data_01_5d4b                              ;; 01:48f7 $21 $4b $5d
-    jp   call_01_4e6f                                  ;; 01:48fa $c3 $6f $4e
+    jp   call_01_4e6f_Menu_SetScriptSrcPtr                                  ;; 01:48fa $c3 $6f $4e
 
 call_01_48fd:
     ld   hl,wD69B
@@ -1207,11 +1279,11 @@ call_01_48fd:
     ld   a,$80
     ld   [wD60B],a
     ld   hl,wD60A
-    jp   call_01_4e6f
+    jp   call_01_4e6f_Menu_SetScriptSrcPtr
 
 call_01_4916:
     ld   A, [wD69B]                                    ;; 01:4916 $fa $9b $d6
-    ld   [wD6D7], A                                    ;; 01:4919 $ea $d7 $d6
+    ld   [wD6D7_Menu_ChainedScriptId], A                                    ;; 01:4919 $ea $d7 $d6
     ret                                                ;; 01:491c $c9
 
 call_01_491d:
@@ -1274,7 +1346,7 @@ call_01_4969:
     ldi  a,[hl]
     ld   h,[hl]
     ld   l,a
-    jp   call_01_4e6f
+    jp   call_01_4e6f_Menu_SetScriptSrcPtr
 .data_01_49a7:
     db   $97, $5d, $b0        ;; 01:49a2 ????????
     db   $5d, $c9, $5d, $e2, $5d, $fb, $5d, $14        ;; 01:49aa ????????
@@ -1299,7 +1371,7 @@ call_01_49d7:
     ld   a,$02
     ld   [wD693],a
     push hl
-    call call_01_4e5a
+    call call_01_4e5a_Menu_GetTileDataSize
     pop  hl
     ld   de,wC000_BgMapTileIds
     call call_00_07b0_MemCopy
@@ -1371,7 +1443,7 @@ call_01_4a8f:
     bit  7, [HL]                                       ;; 01:4ad5 $cb $7e
     jr   Z, .jr_01_4acf                                ;; 01:4ad7 $28 $f6
     inc  HL                                            ;; 01:4ad9 $23
-    call call_01_4e6f                                  ;; 01:4ada $cd $6f $4e
+    call call_01_4e6f_Menu_SetScriptSrcPtr                                  ;; 01:4ada $cd $6f $4e
     ld   HL, wD699                                     ;; 01:4add $21 $99 $d6
     ld   A, [wD6DC]                                    ;; 01:4ae0 $fa $dc $d6
     add  A, [HL]                                       ;; 01:4ae3 $86
@@ -1511,7 +1583,7 @@ call_01_4ae7:
     ret                                                ;; 01:4bb6 $c9
 
 call_01_4bb7:
-    call call_01_4e5a                                  ;; 01:4bb7 $cd $5a $4e
+    call call_01_4e5a_Menu_GetTileDataSize                                  ;; 01:4bb7 $cd $5a $4e
     ld   B, A                                          ;; 01:4bba $47
     ld   HL, wC000_BgMapTileIds                                     ;; 01:4bbb $21 $00 $c0
     xor  A, A                                          ;; 01:4bbe $af
@@ -1551,7 +1623,7 @@ call_01_4bd3:
     xor  A, A                                          ;; 01:4be3 $af
     ld   [DE], A                                       ;; 01:4be4 $12
     ld   HL, wD5A6_TextBuffer                                     ;; 01:4be5 $21 $a6 $d5
-    call call_01_4e6f                                  ;; 01:4be8 $cd $6f $4e
+    call call_01_4e6f_Menu_SetScriptSrcPtr                                  ;; 01:4be8 $cd $6f $4e
 .jr_01_4beb:
     call call_01_4c81                                  ;; 01:4beb $cd $81 $4c
     ld   HL, wD692                                     ;; 01:4bee $21 $92 $d6
@@ -1592,7 +1664,7 @@ call_01_4bd3:
     ld   A, [HL]                                       ;; 01:4c1d $7e
     and  A, A                                          ;; 01:4c1e $a7
     jr   Z, .jr_01_4c33                                ;; 01:4c1f $28 $12
-    call call_01_4e6f                                  ;; 01:4c21 $cd $6f $4e
+    call call_01_4e6f_Menu_SetScriptSrcPtr                                  ;; 01:4c21 $cd $6f $4e
 .jr_01_4c24:
     ld   A, [HL+]                                      ;; 01:4c24 $2a
     bit  7, A                                          ;; 01:4c25 $cb $7f
@@ -1608,7 +1680,7 @@ call_01_4bd3:
     ld   A, [wD698]                                    ;; 01:4c33 $fa $98 $d6
     ld   [wD6DB], A                                    ;; 01:4c36 $ea $db $d6
     ld   HL, wD5A6_TextBuffer                                     ;; 01:4c39 $21 $a6 $d5
-    call call_01_4e6f                                  ;; 01:4c3c $cd $6f $4e
+    call call_01_4e6f_Menu_SetScriptSrcPtr                                  ;; 01:4c3c $cd $6f $4e
     ld   A, [wD6A4]                                    ;; 01:4c3f $fa $a4 $d6
     inc  A                                             ;; 01:4c42 $3c
     ld   [wD6DC], A                                    ;; 01:4c43 $ea $dc $d6
@@ -1664,7 +1736,7 @@ call_01_4c81:
 .jr_01_4c8d:
     ld   A, [HL+]                                      ;; 01:4c8d $2a
     push HL                                            ;; 01:4c8e $e5
-    call call_01_4f41                                  ;; 01:4c8f $cd $41 $4f
+    call call_01_4f41_Password_CharToFontTile                                  ;; 01:4c8f $cd $41 $4f
     ld   HL, wD6A1                                     ;; 01:4c92 $21 $a1 $d6
     ld   E, [HL]                                       ;; 01:4c95 $5e
     inc  HL                                            ;; 01:4c96 $23
@@ -1686,7 +1758,7 @@ call_01_4c81:
     ret                                                ;; 01:4caa $c9
 
 call_01_4cab:
-    call call_01_4f41                                  ;; 01:4cab $cd $41 $4f
+    call call_01_4f41_Password_CharToFontTile                                  ;; 01:4cab $cd $41 $4f
     push AF                                            ;; 01:4cae $f5
     ld   HL, wD6A1                                     ;; 01:4caf $21 $a1 $d6
     ld   E, [HL]                                       ;; 01:4cb2 $5e
@@ -1754,10 +1826,15 @@ call_01_4ce5:
     ld   [HL], $80                                     ;; 01:4d07 $36 $80
     ret                                                ;; 01:4d09 $c9
 
-call_01_4d0a:
+call_01_4d0a_Menu_StartGfxStream:
+; Hands a graphics-stream script at HL to the vblank streamer described in
+; bank00_home.asm - three header bytes (chunk count, rows per chunk, source
+; bank) followed by (src, dest) pairs, one pair copied per frame. Spins until
+; any script already running has finished, so menus can queue these back to
+; back without tracking completion themselves
     ld   A, [wD6E2_GfxStream_ChunksRemaining]                                    ;; 01:4d0a $fa $e2 $d6
     and  A, A                                          ;; 01:4d0d $a7
-    jr   NZ, call_01_4d0a                              ;; 01:4d0e $20 $fa
+    jr   NZ, call_01_4d0a_Menu_StartGfxStream                              ;; 01:4d0e $20 $fa
     ld   A, [HL+]                                      ;; 01:4d10 $2a
     ld   [wD6E2_GfxStream_ChunksRemaining], A                                    ;; 01:4d11 $ea $e2 $d6
     ld   A, [HL+]                                      ;; 01:4d14 $2a
@@ -1770,8 +1847,13 @@ call_01_4d0a:
     ld   [wD6EA_GfxStream_ListPtrHi], A                                    ;; 01:4d21 $ea $ea $d6
     ret                                                ;; 01:4d24 $c9
 
-call_01_4d25:
-    ld   HL, wD6D8                                     ;; 01:4d25 $21 $d8 $d6
+call_01_4d25_Menu_TickHideSprites:
+; Counts wD6D8_Menu_HideSpritesDelay down and erases the sprite group named by
+; wD6D9 when it reaches zero. Touching any button forces the counter to 1 so
+; that it fires on this same frame - that is what makes a prompt vanish the
+; instant the player responds to it, rather than after the full delay.
+; A delay of zero disables the whole thing
+    ld   HL, wD6D8_Menu_HideSpritesDelay                                     ;; 01:4d25 $21 $d8 $d6
     ld   A, [HL]                                       ;; 01:4d28 $7e
     and  A, A                                          ;; 01:4d29 $a7
     ret  Z                                             ;; 01:4d2a $c8
@@ -1782,10 +1864,14 @@ call_01_4d25:
 .jr_01_4d33:
     dec  [HL]                                          ;; 01:4d33 $35
     ret  NZ                                            ;; 01:4d34 $c0
-    ld   A, [wD6D9]                                    ;; 01:4d35 $fa $d9 $d6
-    jp   call_01_4d3b                                  ;; 01:4d38 $c3 $3b $4d
+    ld   A, [wD6D9_Menu_HideSpritesGroup]                                    ;; 01:4d35 $fa $d9 $d6
+    jp   call_01_4d3b_Menu_EraseSpriteGroup                                  ;; 01:4d38 $c3 $3b $4d
 
-call_01_4d3b:
+call_01_4d3b_Menu_EraseSpriteGroup:
+; Blanks a named group of sprites in shadow OAM. A is an index into
+; data_01_5aa9, which points at a script in the same format
+; call_01_4dc8_Menu_BuildSpriteBlock consumes - so erasing reuses the layout
+; that drew it, walking the same rectangles and writing zeroes instead
     ld   DE, data_01_5aa9                              ;; 01:4d3b $11 $a9 $5a
     call call_00_07b9_GetPointerFromTable                                  ;; 01:4d3e $cd $b9 $07
     ld   A, [HL+]                                      ;; 01:4d41 $2a
@@ -1832,17 +1918,24 @@ call_01_4d3b:
     jr   NZ, .jr_01_4d60                               ;; 01:4d6e $20 $f0
     jr   .jr_01_4d52                                   ;; 01:4d70 $18 $e0
 
-call_01_4d72:
-    ld   A, [wD6C1]                                    ;; 01:4d72 $fa $c1 $d6
+call_01_4d72_Menu_DrawCursor:
+; Rebuilds the selection cursor's sprite every frame. The position is computed
+; rather than stored: base + step x index, separately for row and column, using
+; the four geometry bytes from the menu record. Repeated addition stands in for
+; the multiply.
+; Cursor id $12 is the password keyboard's highlight, which picks its tile from
+; the cell under the cursor and blinks off bit 4 of wD6D6_Menu_BlinkCounter.
+; $FF means this screen has no cursor and the routine does nothing
+    ld   A, [wD6C1_Menu_CursorSpriteId]                                    ;; 01:4d72 $fa $c1 $d6
     cp   A, $ff                                        ;; 01:4d75 $fe $ff
     ret  Z                                             ;; 01:4d77 $c8
     ld   C, $02                                        ;; 01:4d78 $0e $02
     ld   B, $05                                        ;; 01:4d7a $06 $05
     cp   A, $12                                        ;; 01:4d7c $fe $12
     jr   NZ, .jr_01_4d92                               ;; 01:4d7e $20 $12
-    call call_01_4f30                                  ;; 01:4d80 $cd $30 $4f
+    call call_01_4f30_Password_GetCellTileIndex                                  ;; 01:4d80 $cd $30 $4f
     ld   C, A                                          ;; 01:4d83 $4f
-    ld   A, [wD6D6]                                    ;; 01:4d84 $fa $d6 $d6
+    ld   A, [wD6D6_Menu_BlinkCounter]                                    ;; 01:4d84 $fa $d6 $d6
     and  A, $10                                        ;; 01:4d87 $e6 $10
     jr   Z, .jr_01_4d8f                                ;; 01:4d89 $28 $04
     or   A, $06                                        ;; 01:4d8b $f6 $06
@@ -1852,42 +1945,49 @@ call_01_4d72:
 .jr_01_4d91:
     ld   B, A                                          ;; 01:4d91 $47
 .jr_01_4d92:
-    ld   HL, wD6BC                                     ;; 01:4d92 $21 $bc $d6
+    ld   HL, wD6BC_MenuCursor_TileId                                     ;; 01:4d92 $21 $bc $d6
     ld   [HL], C                                       ;; 01:4d95 $71
-    ld   HL, wD6BD                                     ;; 01:4d96 $21 $bd $d6
+    ld   HL, wD6BD_MenuCursor_Attributes                                     ;; 01:4d96 $21 $bd $d6
     ld   [HL], B                                       ;; 01:4d99 $70
     ld   A, [wD6E0_MenuSelectedRow]                                    ;; 01:4d9a $fa $e0 $d6
     ld   C, A                                          ;; 01:4d9d $4f
     inc  C                                             ;; 01:4d9e $0c
-    ld   A, [wD691]                                    ;; 01:4d9f $fa $91 $d6
+    ld   A, [wD691_Menu_CursorStepY]                                    ;; 01:4d9f $fa $91 $d6
     ld   B, A                                          ;; 01:4da2 $47
-    ld   A, [wD68F]                                    ;; 01:4da3 $fa $8f $d6
+    ld   A, [wD68F_Menu_CursorBaseY]                                    ;; 01:4da3 $fa $8f $d6
     sub  A, B                                          ;; 01:4da6 $90
 .jr_01_4da7:
     add  A, B                                          ;; 01:4da7 $80
     dec  C                                             ;; 01:4da8 $0d
     jr   NZ, .jr_01_4da7                               ;; 01:4da9 $20 $fc
-    ld   [wD6BA], A                                    ;; 01:4dab $ea $ba $d6
+    ld   [wD6BA_MenuCursor_Y], A                                    ;; 01:4dab $ea $ba $d6
     ld   A, [wD6DF_MenuSelectedColumn]                                    ;; 01:4dae $fa $df $d6
     ld   C, A                                          ;; 01:4db1 $4f
     inc  C                                             ;; 01:4db2 $0c
-    ld   A, [wD690]                                    ;; 01:4db3 $fa $90 $d6
+    ld   A, [wD690_Menu_CursorStepX]                                    ;; 01:4db3 $fa $90 $d6
     ld   B, A                                          ;; 01:4db6 $47
-    ld   A, [wD68E]                                    ;; 01:4db7 $fa $8e $d6
+    ld   A, [wD68E_Menu_CursorBaseX]                                    ;; 01:4db7 $fa $8e $d6
     sub  A, B                                          ;; 01:4dba $90
 .jr_01_4dbb:
     add  A, B                                          ;; 01:4dbb $80
     dec  C                                             ;; 01:4dbc $0d
     jr   NZ, .jr_01_4dbb                               ;; 01:4dbd $20 $fc
-    ld   [wD6BB], A                                    ;; 01:4dbf $ea $bb $d6
-    ld   HL, wD6B9                                     ;; 01:4dc2 $21 $b9 $d6
-    jp   call_01_4dc8                                    ;; 01:4dc5 $c3 $c8 $4d
+    ld   [wD6BB_MenuCursor_X], A                                    ;; 01:4dbf $ea $bb $d6
+    ld   HL, wD6B9_MenuCursor_OamSlot                                     ;; 01:4dc2 $21 $b9 $d6
+    jp   call_01_4dc8_Menu_BuildSpriteBlock                                    ;; 01:4dc5 $c3 $c8 $4d
 
-call_01_4dc8:
+call_01_4dc8_Menu_BuildSpriteBlock:
+; Walks a sprite script at HL and emits the sprites into shadow OAM.
+; First byte is the OAM slot to start writing at; then each entry is
+;   Y, X, tile, attributes, width in 8px columns, height in pixels
+; terminated by $FF. Y and X are stored relative to the visible screen, so $10
+; and $08 are added back on. If bit 0 of the tile byte is set the rest of it is
+; an index into wD5AA instead of a literal tile - that indirection is how the
+; same script can draw a digit that changes at runtime
     ld   A, [HL+]                                      ;; 01:4dc8 $2a
     cp   A, $ff                                        ;; 01:4dc9 $fe $ff
     ret  Z                                             ;; 01:4dcb $c8
-    ld   [wD6D5], A                                    ;; 01:4dcc $ea $d5 $d6
+    ld   [wD6D5_Menu_OamSlot], A                                    ;; 01:4dcc $ea $d5 $d6
 .jr_01_4dcf:
     ld   A, [HL+]                                      ;; 01:4dcf $2a
     cp   A, $ff                                        ;; 01:4dd0 $fe $ff
@@ -1917,12 +2017,16 @@ call_01_4dc8:
     ld   B, [HL]                                       ;; 01:4df8 $46
     inc  HL                                            ;; 01:4df9 $23
     push HL                                            ;; 01:4dfa $e5
-    call call_01_4e01                                  ;; 01:4dfb $cd $01 $4e
+    call call_01_4e01_Menu_WriteSpriteRect                                  ;; 01:4dfb $cd $01 $4e
     pop  HL                                            ;; 01:4dfe $e1
     jr   .jr_01_4dcf                                   ;; 01:4dff $18 $ce
 
-call_01_4e01:
-    ld   HL, wD6D5                                     ;; 01:4e01 $21 $d5 $d6
+call_01_4e01_Menu_WriteSpriteRect:
+; Emits one rectangle of 8x16 sprites, C columns wide and B pixels tall,
+; starting at the OAM slot in wD6D5_Menu_OamSlot and advancing it. Tiles run
+; down each column before moving right, stepping the tile id by 2 (8x16 sprites
+; use tile pairs) and Y by $10
+    ld   HL, wD6D5_Menu_OamSlot                                     ;; 01:4e01 $21 $d5 $d6
     ld   L, [HL]                                       ;; 01:4e04 $6e
     ld   H, $00                                        ;; 01:4e05 $26 $00
     add  HL, HL                                        ;; 01:4e07 $29
@@ -1948,9 +2052,9 @@ call_01_4e01:
     ld   [wD5A8], A                                    ;; 01:4e2a $ea $a8 $d5
     ld   A, [wD5A9]                                    ;; 01:4e2d $fa $a9 $d5
     ld   [HL+], A                                      ;; 01:4e30 $22
-    ld   A, [wD6D5]                                    ;; 01:4e31 $fa $d5 $d6
+    ld   A, [wD6D5_Menu_OamSlot]                                    ;; 01:4e31 $fa $d5 $d6
     inc  A                                             ;; 01:4e34 $3c
-    ld   [wD6D5], A                                    ;; 01:4e35 $ea $d5 $d6
+    ld   [wD6D5_Menu_OamSlot], A                                    ;; 01:4e35 $ea $d5 $d6
     dec  B                                             ;; 01:4e38 $05
     jr   NZ, .jr_01_4e17                               ;; 01:4e39 $20 $dc
     ld   A, [wD5A7]                                    ;; 01:4e3b $fa $a7 $d5
@@ -1962,7 +2066,8 @@ call_01_4e01:
     jr   NZ, .jr_01_4e12                               ;; 01:4e46 $20 $ca
     ret                                                ;; 01:4e48 $c9
 
-call_01_4e49:
+call_01_4e49_Menu_GetVramAddrForDestTile:
+; DE = VRAM address of the tile whose index is in wD696 (index x 16 + $8000)
     ld   HL, wD696                                     ;; 01:4e49 $21 $96 $d6
     ld   L, [HL]                                       ;; 01:4e4c $6e
     ld   H, $00                                        ;; 01:4e4d $26 $00
@@ -1976,7 +2081,9 @@ call_01_4e49:
     ld   D, H                                          ;; 01:4e58 $54
     ret                                                ;; 01:4e59 $c9
 
-call_01_4e5a:
+call_01_4e5a_Menu_GetTileDataSize:
+; BC = number of bytes of tile graphics for a wD692 x wD693 block of tiles,
+; that is width x height x 16. The multiply is repeated addition
     ld   HL, wD692                                     ;; 01:4e5a $21 $92 $d6
     ld   C, [HL]                                       ;; 01:4e5d $4e
     inc  HL                                            ;; 01:4e5e $23
@@ -1996,14 +2103,19 @@ call_01_4e5a:
     ld   B, H                                          ;; 01:4e6d $44
     ret                                                ;; 01:4e6e $c9
 
-call_01_4e6f:
+call_01_4e6f_Menu_SetScriptSrcPtr:
+; Stores HL as the current menu command's source pointer
     ld   A, L                                          ;; 01:4e6f $7d
     ld   [wD69B], A                                    ;; 01:4e70 $ea $9b $d6
     ld   A, H                                          ;; 01:4e73 $7c
     ld   [wD69C], A                                    ;; 01:4e74 $ea $9c $d6
     ret                                                ;; 01:4e77 $c9
 
-call_01_4e78:
+call_01_4e78_Menu_StageTileData:
+; Reads a width/height pair from the script at HL, works out how many bytes of
+; tile graphics that is, and stages them at wC000 - which is the background map
+; buffer during gameplay but free scratch while a menu is up. The byte after
+; the pair gates the copy; nonzero means skip it
     ld   A, [wD69A]                                    ;; 01:4e78 $fa $9a $d6
     ld   [wD696], A                                    ;; 01:4e7b $ea $96 $d6
     ld   A, [HL+]                                      ;; 01:4e7e $2a
@@ -2011,7 +2123,7 @@ call_01_4e78:
     ld   A, [HL+]                                      ;; 01:4e82 $2a
     ld   [wD693], A                                    ;; 01:4e83 $ea $93 $d6
     push HL                                            ;; 01:4e86 $e5
-    call call_01_4e5a                                  ;; 01:4e87 $cd $5a $4e
+    call call_01_4e5a_Menu_GetTileDataSize                                  ;; 01:4e87 $cd $5a $4e
     pop  HL                                            ;; 01:4e8a $e1
     ld   DE, wC000_BgMapTileIds                                     ;; 01:4e8b $11 $00 $c0
     ld   A, [HL+]                                      ;; 01:4e8e $2a
@@ -2019,23 +2131,33 @@ call_01_4e78:
     jp   Z, call_00_07b0_MemCopy                               ;; 01:4e90 $ca $b0 $07
     ret                                                ;; 01:4e93 $c9
 
-call_01_4e94:
-    call call_01_4d72                                  ;; 01:4e94 $cd $72 $4d
-    call call_01_4d25                                  ;; 01:4e97 $cd $25 $4d
+call_01_4e94_Menu_WaitForNoInput:
+; Blocks until the player is not holding anything, keeping the menu alive
+; meanwhile - cursor redrawn, timers ticked, one frame per iteration. Called
+; after loading a screen so that the button that opened it does not
+; immediately act on it.
+; On the password keyboard A and B are excluded from the test, because those
+; are the keys used to type and waiting for them would stall
+    call call_01_4d72_Menu_DrawCursor                                  ;; 01:4e94 $cd $72 $4d
+    call call_01_4d25_Menu_TickHideSprites                                  ;; 01:4e97 $cd $25 $4d
     call call_00_0ab4_WaitForInterrupt                                  ;; 01:4e9a $cd $b4 $0a
-    ld   HL, wD6D6                                     ;; 01:4e9d $21 $d6 $d6
+    ld   HL, wD6D6_Menu_BlinkCounter                                     ;; 01:4e9d $21 $d6 $d6
     dec  [HL]                                          ;; 01:4ea0 $35
-    ld   A, [wD68C]                                    ;; 01:4ea1 $fa $8c $d6
-    and  A, $02                                        ;; 01:4ea4 $e6 $02
+    ld   A, [wD68C_Menu_Flags]                                    ;; 01:4ea1 $fa $8c $d6
+    and  A, MENU_FLAG_GRID_CURSOR                      ;; 01:4ea4 $e6 $02
     ld   A, [wD59F_CurrentInputs]                                    ;; 01:4ea6 $fa $9f $d5
     jr   Z, .jr_01_4ead                                ;; 01:4ea9 $28 $02
     and  A, PADF_SELECT | PADF_START | PADF_RIGHT | PADF_LEFT | PADF_UP | PADF_DOWN                                        ;; 01:4eab $e6 $fc
 .jr_01_4ead:
     and  A, A                                          ;; 01:4ead $a7
-    jr   NZ, call_01_4e94                              ;; 01:4eae $20 $e4
+    jr   NZ, call_01_4e94_Menu_WaitForNoInput                              ;; 01:4eae $20 $e4
     ret                                                ;; 01:4eb0 $c9
 
-call_01_4eb1:
+call_01_4eb1_Menu_IsMissionRemoteCollected:
+; A = mission slot 0-2. Returns NZ if that mission's remote has already been
+; collected in the current level, so the mission select screen can grey it out.
+; In a bonus level there is only one objective, so it tests the
+; REMOTE_BONUS_MASK bit instead of the per-mission bits
     ld   E, A                                          ;; 01:4eb1 $5f
     ld   D, $00                                        ;; 01:4eb2 $16 $00
     ld   HL, .data_01_4ecc                             ;; 01:4eb4 $21 $cc $4e
@@ -2044,7 +2166,7 @@ call_01_4eb1:
     ld   A, [wD623_CollectibleMode]                                    ;; 01:4eb9 $fa $23 $d6
     and  A, A                                          ;; 01:4ebc $a7
     jr   Z, .jr_01_4ec1                                ;; 01:4ebd $28 $02
-    ld   B, $20                                        ;; 01:4ebf $06 $20
+    ld   B, REMOTE_BONUS_MASK                          ;; 01:4ebf $06 $20
 .jr_01_4ec1:
     ld   HL, wD624_CurrentLevelId                                     ;; 01:4ec1 $21 $24 $d6
     ld   E, [HL]                                       ;; 01:4ec4 $5e
@@ -2056,18 +2178,22 @@ call_01_4eb1:
 .data_01_4ecc:
     db   $01, $02, $04                                 ;; 01:4ecc ...
 
-call_01_4ecf:
+call_01_4ecf_Password_RefreshCellGfx:
+; Redraws the one keyboard cell the player just typed into. Queues a one-chunk
+; graphics stream copying four tiles from the font at data_01_71e9 to the VRAM
+; tiles that cell occupies. Only the edited cell is touched, so typing does not
+; disturb the rest of the screen
     ld   A, [wD6E2_GfxStream_ChunksRemaining]                                    ;; 01:4ecf $fa $e2 $d6
     and  A, A                                          ;; 01:4ed2 $a7
-    jr   NZ, call_01_4ecf                              ;; 01:4ed3 $20 $fa
+    jr   NZ, call_01_4ecf_Password_RefreshCellGfx                              ;; 01:4ed3 $20 $fa
     ld   A, $01                                        ;; 01:4ed5 $3e $01
     ld   [wD6E2_GfxStream_ChunksRemaining], A                                    ;; 01:4ed7 $ea $e2 $d6
     ld   A, $04                                        ;; 01:4eda $3e $04
     ld   [wD6E3_GfxStream_RowsPerChunk], A                                    ;; 01:4edc $ea $e3 $d6
     ld   A, $01                                        ;; 01:4edf $3e $01
     ld   [wD6E4_GfxStream_SrcBank], A                                    ;; 01:4ee1 $ea $e4 $d6
-    call call_01_4f1b                                  ;; 01:4ee4 $cd $1b $4f
-    call call_01_4f41                                  ;; 01:4ee7 $cd $41 $4f
+    call call_01_4f1b_Password_GetCellUnderCursor                                  ;; 01:4ee4 $cd $1b $4f
+    call call_01_4f41_Password_CharToFontTile                                  ;; 01:4ee7 $cd $41 $4f
     ld   L, A                                          ;; 01:4eea $6f
     ld   H, $00                                        ;; 01:4eeb $26 $00
     add  HL, HL                                        ;; 01:4eed $29
@@ -2082,7 +2208,7 @@ call_01_4ecf:
     ld   [wD6E5_PasswordArrowSprites], A                                    ;; 01:4ef8 $ea $e5 $d6
     ld   A, H                                          ;; 01:4efb $7c
     ld   [wD6E6_PasswordArrowSprites], A                                    ;; 01:4efc $ea $e6 $d6
-    call call_01_4f30                                  ;; 01:4eff $cd $30 $4f
+    call call_01_4f30_Password_GetCellTileIndex                                  ;; 01:4eff $cd $30 $4f
     ld   L, A                                          ;; 01:4f02 $6f
     ld   H, $00                                        ;; 01:4f03 $26 $00
     add  HL, HL                                        ;; 01:4f05 $29
@@ -2096,9 +2222,12 @@ call_01_4ecf:
     ld   A, H                                          ;; 01:4f11 $7c
     ld   [wD6E8_PasswordArrowSprites], A                                    ;; 01:4f12 $ea $e8 $d6
     ld   HL, wD6E2_GfxStream_ChunksRemaining                                     ;; 01:4f15 $21 $e2 $d6
-    jp   call_01_4d0a                                  ;; 01:4f18 $c3 $0a $4d
+    jp   call_01_4d0a_Menu_StartGfxStream                                  ;; 01:4f18 $c3 $0a $4d
 
-call_01_4f1b:
+call_01_4f1b_Password_GetCellUnderCursor:
+; HL = address of the highlighted keyboard cell, A = its current character.
+; The cells are one flat array from wD667_PasswordExitButton, indexed
+; row x 6 + column
     ld   A, [wD6E0_MenuSelectedRow]                                    ;; 01:4f1b $fa $e0 $d6
     add  A, A                                          ;; 01:4f1e $87
     ld   E, A                                          ;; 01:4f1f $5f
@@ -2114,7 +2243,9 @@ call_01_4f1b:
     ld   A, [HL]                                       ;; 01:4f2e $7e
     ret                                                ;; 01:4f2f $c9
 
-call_01_4f30:
+call_01_4f30_Password_GetCellTileIndex:
+; A = index of the first VRAM tile backing the highlighted cell. Each cell is
+; four tiles wide in the tile map, and the keyboard's tiles start at $3E
     ld   A, [wD6E0_MenuSelectedRow]                                    ;; 01:4f30 $fa $e0 $d6
     add  A, A                                          ;; 01:4f33 $87
     ld   L, A                                          ;; 01:4f34 $6f
@@ -2128,8 +2259,10 @@ call_01_4f30:
     add  A, $3e                                        ;; 01:4f3e $c6 $3e
     ret                                                ;; 01:4f40 $c9
 
-call_01_4f41:
-    sub  A, $20                                        ;; 01:4f41 $d6 $20
+call_01_4f41_Password_CharToFontTile:
+; Maps a password character code to its index in the font. The table is indexed
+; from PASSWORD_KEY_BLANK, and entries of $00 are codes with no glyph
+    sub  A, PASSWORD_KEY_BLANK                         ;; 01:4f41 $d6 $20
     ld   E, A                                          ;; 01:4f43 $5f
     ld   D, $00                                        ;; 01:4f44 $16 $00
     ld   HL, .data_01_4f4c                             ;; 01:4f46 $21 $4c $4f
@@ -2486,62 +2619,79 @@ data_01_5324:
     db   $0e, $b2, $05, $00, $00                       ;; 01:556f ?????
 
 data_01_5574_MenuTypeData:
-    dw   data_01_5692                                  ;; 01:5574 pP
-    db   $90, $02, $00, $00, $00, $00                  ;; 01:5576 ......
-    dw   data_01_56ab                                  ;; 01:557c pP
-    db   $90, $02, $00, $00, $00, $00                  ;; 01:557e ......
-    dw   data_01_56c4                                  ;; 01:5584 pP
-    db   $90, $02, $00, $00, $00, $00                  ;; 01:5586 ......
-    dw   data_01_56e5                                  ;; 01:558c pP
-    db   $90, $02, $00, $00, $00, $00
-    dw   data_01_5706        ;; 01:558e ......??
-    db   $89, $03, $00, $00, $00, $00                  ;; 01:5596 ??????
-    dw   data_01_571f                                  ;; 01:559c pP
-    db   $a9, $02, $00, $00, $00, $00
-    dw   data_01_58ca        ;; 01:559e ......??
-    db   $82, $00, $08, $10, $18, $18                  ;; 01:55a6 ??????
-    dw   data_01_57b1                                  ;; 01:55ac pP
-    db   $00, $02, $00, $4c, $00, $0c                  ;; 01:55ae ......
-    dw   data_01_57ca                                  ;; 01:55b4 pP
-    db   $c4, $00, $00, $00, $00, $00
-    dw   data_01_57db        ;; 01:55b6 ......??
-    db   $c0, $01, $00, $50, $00, $18
-    dw   data_01_57f4        ;; 01:55be ????????
-    db   $c0, $02, $00, $40, $00, $20                  ;; 01:55c6 ??????
-    dw   data_01_5815                                  ;; 01:55cc pP
-    db   $c0, $03, $00, $38, $00, $18
-    dw   data_01_5867        ;; 01:55ce ......??
+; One 8-byte record per MENU_TYPE_*, copied into wD68A..wD691 by
+; call_01_4000_MenuLoad. This table plus the script each entry points at is the
+; entire definition of a menu; there is no per-screen code anywhere.
+;
+;   +0  dw  pointer to the menu's script
+;   +2  db  MENU_FLAG_* behaviour flags
+;   +3  db  number of selectable options (or keyboard cells)
+;   +4  db  cursor base X       +6  db  cursor step X per column
+;   +5  db  cursor base Y       +7  db  cursor step Y per row
+;
+; A few things fall out of reading the flags column. The four pause menus and
+; the two totals screens are the only ones the player can back out of at will.
+; Everything with MENU_FLAG_NO_CANCEL - the title cards, the credits, the
+; mission select - can only be left by choosing something. And the four entries
+; with no flags at all (title options, game over, black screen, time up) are
+; the screens that leave on a timer, which is how the title drops into the
+; attract-mode demo if you stand there long enough.
+    dw   data_01_5692                                  ; $00 PAUSED_IN_MEDIA_DIMENSION
+    db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_START_DISMISSES, $02, $00, $00, $00, $00
+    dw   data_01_56ab                                  ; $01 EXIT_GAME
+    db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_START_DISMISSES, $02, $00, $00, $00, $00
+    dw   data_01_56c4                                  ; $02 PAUSED_IN_LEVEL
+    db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_START_DISMISSES, $02, $00, $00, $00, $00
+    dw   data_01_56e5                                  ; $03 EXIT_TO_MAP
+    db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_START_DISMISSES, $02, $00, $00, $00, $00
+    dw   data_01_5706                                  ; $04 GAME_OVER_TOTALS
+    db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_SELECT_DISMISSES | MENU_FLAG_TOTALS_PAGING, $03, $00, $00, $00, $00
+    dw   data_01_571f                                  ; $05 VIEW_TOTALS
+    db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_START_OPENS_PAUSE | MENU_FLAG_SELECT_DISMISSES | MENU_FLAG_TOTALS_PAGING, $02, $00, $00, $00, $00
+    dw   data_01_58ca                                  ; $06 VIEW_PASSWORD - grid, but nothing to type
+    db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_GRID_CURSOR, $00, $08, $10, $18, $18
+    dw   data_01_57b1                                  ; $07 TITLE_OPTIONS - times out into the demo
+    db   $00, $02, $00, $4c, $00, $0c
+    dw   data_01_57ca                                  ; $08 ENTERING_LEVEL_NAME
+    db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_NO_CANCEL | MENU_FLAG_DEMO_COUNTDOWN, $00, $00, $00, $00, $00
+    dw   data_01_57db                                  ; $09 MISSION_SELECT_1_OPTION
+    db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_NO_CANCEL, $01, $00, $50, $00, $18
+    dw   data_01_57f4                                  ; $0A MISSION_SELECT_2_OPTIONS
+    db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_NO_CANCEL, $02, $00, $40, $00, $20
+    dw   data_01_5815                                  ; $0B MISSION_SELECT_3_OPTIONS
+    db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_NO_CANCEL, $03, $00, $38, $00, $18
+    dw   data_01_5867                                  ; $0C GAME_OVER
     db   $00, $00, $00, $00, $00, $00
-    dw   data_01_5870        ;; 01:55d6 ????????
+    dw   data_01_5870                                  ; $0D BLACK_SCREEN
     db   $00, $00, $00, $00, $00, $00
-    dw   data_01_5871        ;; 01:55de ????????
-    db   $c0, $00, $00, $00, $00, $00
-    dw   data_01_58eb        ;; 01:55e6 ????????
-    db   $82, $1e, $08, $10, $18, $18                  ;; 01:55ee ??????
-    dw   data_01_5a26                                  ;; 01:55f4 pP
-    db   $c0, $00, $00, $00, $00, $00
-    dw   data_01_5a2f        ;; 01:55f6 ......??
-    db   $c0, $04, $00, $00, $00, $00
-    dw   data_01_5a58        ;; 01:55fe ????????
-    db   $c0, $00, $00, $00, $00, $00                  ;; 01:5606 ??????
-    dw   data_01_5a61                                  ;; 01:560c pP
-    db   $c0, $00, $00, $00, $00, $00                  ;; 01:560e ......
-    dw   data_01_5a6a                                  ;; 01:5614 pP
-    db   $c0, $00, $00, $00, $00, $00
-    dw   data_01_590c        ;; 01:5616 ......??
-    db   $82, $1e, $08, $10, $18, $18                  ;; 01:561e ??????
-    dw   data_01_5a73                                  ;; 01:5624 pP
-    db   $c0, $00, $00, $00, $00, $00
-    dw   data_01_5a7c        ;; 01:5626 ......??
-    db   $c0, $00, $00, $00, $00, $00
-    dw   data_01_5a85        ;; 01:562e ????????
-    db   $c0, $00, $00, $00, $00, $00
-    dw   data_01_5a8e        ;; 01:5636 ????????
-    db   $c0, $00, $00, $00, $00, $00
-    dw   data_01_5a97        ;; 01:563e ????????
-    db   $c0, $00, $00, $00, $00, $00
-    dw   data_01_5aa0        ;; 01:5646 ????????
-    db   $00, $00, $00, $00, $00, $00                  ;; 01:564e ??????
+    dw   data_01_5871                                  ; $0E CONGRATULATIONS
+    db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_NO_CANCEL, $00, $00, $00, $00, $00
+    dw   data_01_58eb                                  ; $0F ENTER_PASSWORD - 6 x 5 = $1E cells
+    db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_GRID_CURSOR, $1e, $08, $10, $18, $18
+    dw   data_01_5a26                                  ; $10 TITLE_SCREEN
+    db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_NO_CANCEL, $00, $00, $00, $00, $00
+    dw   data_01_5a2f                                  ; $11 AUDIO_OPTIONS_UNUSED
+    db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_NO_CANCEL, $04, $00, $00, $00, $00
+    dw   data_01_5a58                                  ; $12 CREDITS_GREAT_JOB
+    db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_NO_CANCEL, $00, $00, $00, $00, $00
+    dw   data_01_5a61                                  ; $13 TITLE_CRAVE
+    db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_NO_CANCEL, $00, $00, $00, $00, $00
+    dw   data_01_5a6a                                  ; $14 TITLE_SPLASH
+    db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_NO_CANCEL, $00, $00, $00, $00, $00
+    dw   data_01_590c                                  ; $15 ENTERED_INVALID_PASSWORD
+    db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_GRID_CURSOR, $1e, $08, $10, $18, $18
+    dw   data_01_5a73                                  ; $16 TITLE_DAVID
+    db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_NO_CANCEL, $00, $00, $00, $00, $00
+    dw   data_01_5a7c                                  ; $17 CREDITS_1
+    db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_NO_CANCEL, $00, $00, $00, $00, $00
+    dw   data_01_5a85                                  ; $18 CREDITS_2
+    db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_NO_CANCEL, $00, $00, $00, $00, $00
+    dw   data_01_5a8e                                  ; $19 CREDITS_3
+    db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_NO_CANCEL, $00, $00, $00, $00, $00
+    dw   data_01_5a97                                  ; $1A CREDITS_4
+    db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_NO_CANCEL, $00, $00, $00, $00, $00
+    dw   data_01_5aa0                                  ; $1B TIME_UP - leaves on a timer
+    db   $00, $00, $00, $00, $00, $00
 
 data_01_5654:
     db   $d7, $06, $d7, $06, $d7, $06, $d7, $06        ;; 01:5654 ........
@@ -2847,9 +2997,9 @@ data_01_5aa9:
     dw   data_01_5c6f
     dw   data_01_5c7d
     dw   data_01_5c8b
-    dw   wD6B9
-    dw   wD6B9
-    dw   wD6B9
+    dw   wD6B9_MenuCursor_OamSlot
+    dw   wD6B9_MenuCursor_OamSlot
+    dw   wD6B9_MenuCursor_OamSlot
 
 data_01_5acf:
     db   $02, $48        ;; 01:5ac9 ??????w.

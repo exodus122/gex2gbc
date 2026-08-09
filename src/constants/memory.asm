@@ -564,22 +564,35 @@ wD688_FlyAnimationPosition:
 wD689_FlyAnimationTimer:
     ds 1                                               ;; d689
 
-; start data related to current menu (8 bytes from data_01_5574 for a particular menu type)
+; ------------------------------------------------------------------
+; The active menu's 8-byte record, copied here from data_01_5574_MenuTypeData
+; by call_01_4000_MenuLoad. Every screen in the game runs the same loop; this
+; block is the only thing that makes them behave differently
+; ------------------------------------------------------------------
 wD68A_MenuTypeDataPointer:
+; pointer to the menu's script - the list of draw commands that builds the
+; screen, walked by call_01_446f_LoadMenuGraphics
     ds 2                                               ;; d68a
-wD68C:
+wD68C_Menu_Flags:
+; see MENU_FLAG_* in constants.asm
     ds 1                                               ;; d68c
-wD68D:
+wD68D_Menu_OptionCount:
+; number of selectable rows, or for the password keyboard the total number of
+; cells ($1E = 6 x 5). Zero means the screen has nothing to select and only
+; waits to be dismissed
     ds 1                                               ;; d68d
-wD68E:
+wD68E_Menu_CursorBaseX:
+; screen position of the cursor at row 0 / column 0, and the step it moves by.
+; call_01_4d72_Menu_DrawCursor multiplies the step by the selected row/column
+; rather than keeping a coordinate, which is why menus never scroll
     ds 1                                               ;; d68e
-wD68F:
+wD68F_Menu_CursorBaseY:
     ds 1                                               ;; d68f
-wD690:
+wD690_Menu_CursorStepX:
     ds 1                                               ;; d690
-wD691:
+wD691_Menu_CursorStepY:
     ds 1                                               ;; d691
-; end data related to current menu
+; end of the copied menu record
 
 wD692:
     ds 1                                               ;; d692
@@ -667,9 +680,12 @@ wD6B0_FullscreenImage_Bank:
 wD6B1_FullscreenImage_Ptr:
 ; ROM pointer to $F00 bytes of tiles, then $780 more, then a 20x18 attribute map
     ds 2                                               ;; d6b1
-wD6B3:
+wD6B3_MenuScript_PtrLo:
+; read/write cursor into the current menu script. call_01_44e6 pulls one
+; command from here at a time and advances it, and LoadMenuGraphics can point
+; it at a different script mid-run to chain screens together
     ds 1                                               ;; d6b3
-wD6B4:
+wD6B4_MenuScript_PtrHi:
     ds 1                                               ;; d6b4
 wD6B5:
     ds 1                                               ;; d6b5
@@ -679,23 +695,30 @@ wD6B7:
     ds 1                                               ;; d6b7
 wD6B8:
     ds 1                                               ;; d6b8
-wD6B9:
+; ------------------------------------------------------------------
+; Sprite descriptor for the menu cursor, laid out so that
+; call_01_4d72_Menu_DrawCursor can fill in the position and then hand the whole
+; block straight to call_01_4dc8_Menu_BuildSpriteBlock as a script
+; ------------------------------------------------------------------
+wD6B9_MenuCursor_OamSlot:
     ds 1                                               ;; d6b9
-wD6BA:
+wD6BA_MenuCursor_Y:
     ds 1                                               ;; d6ba
-wD6BB:
+wD6BB_MenuCursor_X:
     ds 1                                               ;; d6bb
-wD6BC:
+wD6BC_MenuCursor_TileId:
     ds 1                                               ;; d6bc
-wD6BD:
+wD6BD_MenuCursor_Attributes:
     ds 1                                               ;; d6bd
-wD6BE:
+wD6BE_MenuCursor_WidthInColumns:
     ds 1                                               ;; d6be
-wD6BF:
+wD6BF_MenuCursor_HeightInPixels:
     ds 1                                               ;; d6bf
 wD6C0:
     ds 1                                               ;; d6c0
-wD6C1:
+wD6C1_Menu_CursorSpriteId:
+; which cursor graphic to draw, or $FF for a screen with no cursor at all.
+; $12 is special-cased into the password keyboard's blinking highlight
     ds 1                                               ;; d6c1
 wD6C2:
     ds 1                                               ;; d6c2
@@ -703,25 +726,41 @@ wD6C3:
     ds 1                                               ;; d6c3
 wD6C4:
     ds 1                                               ;; d6c4
-wD6C5:
+wD6C5_Menu_OptionActions:
+; one MENU_OPTION_* code per selectable row, filled in by the menu script as it
+; draws each option. When the player presses B, the code for the highlighted
+; row is what call_01_4000_MenuLoad returns to its caller
     ds 16                                              ;; d6c5
-wD6D5:
+wD6D5_Menu_OamSlot:
+; write cursor into shadow OAM, advanced as sprite blocks are emitted
     ds 1                                               ;; d6d5
-wD6D6:
+wD6D6_Menu_BlinkCounter:
+; free-running counter decremented once per menu frame. Bit 4 drives the
+; password cursor's blink
     ds 1                                               ;; d6d6
-wD6D7:
+wD6D7_Menu_ChainedScriptId:
+; $FF normally. A menu script can set it to hand control to another script from
+; data_01_568c, which is how one menu type builds itself out of several
     ds 1                                               ;; d6d7
-wD6D8:
+wD6D8_Menu_HideSpritesDelay:
+; frames until the sprite group named by wD6D9 is erased. Pressing any button
+; forces it to fire immediately, which is what makes prompts disappear as soon
+; as the player responds. Zero disables it
     ds 1                                               ;; d6d8
-wD6D9:
+wD6D9_Menu_HideSpritesGroup:
+; index into data_01_5aa9 of the sprite group wD6D8 will erase
     ds 1                                               ;; d6d9
-wD6DA:
+wD6DA_Menu_TotalsSpriteGroup:
+; sprite group erased when the totals menu turns the page
     ds 1                                               ;; d6da
 wD6DB:
     ds 1                                               ;; d6db
 wD6DC: ; menu related
     ds 1                                               ;; d6dc
-wD6DD: ; menu related
+wD6DD_Menu_ReturnToType:
+; when START opens the pause menu over another screen (MENU_FLAG_START_OPENS_PAUSE),
+; the screen underneath is remembered here so that dismissing the pause menu
+; reloads it instead of returning to the caller. Zeroed on a fresh MenuLoad
     ds 1                                               ;; d6dd
 wD6DE_MenuType:
 ; 0 = pause in media dimension, 1 = exit game, 2 = pause in world, 3 = exit to map

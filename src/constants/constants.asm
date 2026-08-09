@@ -118,6 +118,51 @@ DEF MENU_TYPE_CREDITS_3                   EQU $19
 DEF MENU_TYPE_CREDITS_4                   EQU $1A
 DEF MENU_TYPE_TIME_UP                     EQU $1B
 
+; ------------------------------------------------------------------
+; Menu behaviour flags (wD68C_Menu_Flags).
+; Byte +2 of each 8-byte record in data_01_5574_MenuTypeData. These are the
+; only thing that distinguishes one menu from another as far as
+; call_01_4000_MenuLoad is concerned - the loop is shared by every screen in
+; the game, from the title to the pause menu to the credits
+; ------------------------------------------------------------------
+DEF MENU_FLAG_TOTALS_PAGING      EQU $01 ; left/right pages wD625_TotalsMenuPage through the levels
+DEF MENU_FLAG_GRID_CURSOR        EQU $02 ; 6x5 password keyboard instead of a vertical list
+DEF MENU_FLAG_DEMO_COUNTDOWN     EQU $04 ; the demo timer keeps running even though the menu waits
+DEF MENU_FLAG_SELECT_DISMISSES   EQU $08
+DEF MENU_FLAG_START_DISMISSES    EQU $10
+DEF MENU_FLAG_START_OPENS_PAUSE  EQU $20 ; START switches to menu type 0, remembering this one
+DEF MENU_FLAG_NO_CANCEL          EQU $40 ; A/SELECT/START cannot back out; only B does anything
+DEF MENU_FLAG_WAIT_FOR_INPUT     EQU $80 ; clear = auto-advance once the timer expires
+
+; ------------------------------------------------------------------
+; Option codes stored in the wD6C5_Menu_OptionActions table, one per selectable
+; row, and returned in A from call_01_4000_MenuLoad when the player picks that
+; row with B. The caller decides what to do with them; MenuLoad only handles
+; the three that open another menu
+; ------------------------------------------------------------------
+DEF MENU_OPTION_RESUME           EQU $10 ; close the menu and carry on playing
+DEF MENU_OPTION_ENTER_PASSWORD   EQU $30
+DEF MENU_OPTION_VIEW_PASSWORD    EQU $40
+DEF MENU_OPTION_QUIT             EQU $50 ; opens the exit-game or exit-to-map confirmation
+DEF MENU_OPTION_UNK_60           EQU $60
+DEF MENU_OPTION_UNK_80           EQU $80
+DEF MENU_OPTION_AUDIO_OPTIONS    EQU $90
+
+; Extra values call_01_4000_MenuLoad can return that are not option codes
+DEF MENU_RESULT_DISMISSED        EQU $00 ; backed out with A/SELECT/START
+DEF MENU_RESULT_PASSWORD_GO      EQU $30 ; the password keyboard's GO key was pressed
+DEF MENU_RESULT_TIMED_OUT        EQU $70 ; the menu's timer expired without any input
+
+; Special keys on the password keyboard, stored in the cell array at
+; wD667_PasswordExitButton like any other character
+DEF PASSWORD_KEY_BLANK           EQU $20
+DEF PASSWORD_KEY_EXIT            EQU $49
+DEF PASSWORD_KEY_GO              EQU $4A
+
+; The password keyboard is a fixed 6 x 5 grid
+DEF PASSWORD_GRID_COLUMNS        EQU $06
+DEF PASSWORD_GRID_ROWS           EQU $05
+
 ; Music
 DEF MUSIC_KUNG_FU_THEATER                 EQU $00
 DEF MUSIC_CIRCUIT_CENTRAL                 EQU $01
