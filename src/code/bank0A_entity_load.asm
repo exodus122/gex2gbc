@@ -1,5 +1,3 @@
-;; Disassembled with BadBoy Disassembler: https://github.com/daid/BadBoy
-
 ; This file handles loading entities (other than Gex).
 ; It contains a list of entities to load on each level.
 
