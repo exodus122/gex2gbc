@@ -446,6 +446,11 @@ DEF ENTITY_FIELD_UNK_0A                     EQU $0A
     DEF UNK_0A_BIT_4                 EQU 4 ; unused?
     DEF UNK_0A_BIT_3                 EQU 3 ; used
     DEF UNK_0A_BIT_2                 EQU 2 ; used
+    ; For the player this bit means "the current action's animation just
+    ; finished its last frame". Every action that ends by handing off to
+    ; another action (death warp, enter tv, tail spin, ...) polls it
+    DEF UNK_0A_ANIM_ENDED_BIT        EQU 2
+    DEF UNK_0A_ANIM_ENDED            EQU $04
     DEF UNK_0A_BIT_1                 EQU 1 ; used
     DEF UNK_0A_BIT_0                 EQU 0 ; used
 DEF ENTITY_FIELD_SPRITE_FRAME_COUNTER_MAX   EQU $0B
@@ -625,6 +630,105 @@ DEF  PLAYER_ACTION_CLIMB                      EQU $1D ; used for both types of c
 DEF  PLAYER_ACTION_GOLD_REMOTE_WARP           EQU $1E
 DEF  PLAYER_ACTION_RIDING_ROCKET              EQU $1F ; disables collision updating?
 DEF  PLAYER_ACTION_NONE_PENDING               EQU $FF
+
+; ------------------------------------------------------------------
+; Player facing (wD20D_Player_FacingFlags).
+; Only bit 5 is meaningful; the sprite builder in bank 3 uses it to pick the
+; mirrored frame set, and Player_ApplyXMovement uses it to negate the X delta.
+; ------------------------------------------------------------------
+DEF  FACING_RIGHT                             EQU $00
+DEF  FACING_LEFT                              EQU $20
+DEF  FACING_LEFT_BIT                          EQU 5
+
+; ------------------------------------------------------------------
+; wD746_Player_ClimbingState. $FF means "not climbing" - every routine in
+; bank 2 that moves Gex normally (facing, X movement, gravity) bails out
+; unless this holds $FF. Values 0-9 index .data_02_44e5 in
+; call_02_44af_PlayerAction_Climb.
+; ------------------------------------------------------------------
+DEF  CLIMB_STATE_BACKGROUND                   EQU $00
+DEF  CLIMB_STATE_BACKGROUND_TAIL_SPIN         EQU $01
+DEF  CLIMB_STATE_WALL                         EQU $02
+DEF  CLIMB_STATE_WALL_TAIL_SPIN               EQU $03
+DEF  CLIMB_STATE_WALL_ALT                     EQU $04 ; same handler as CLIMB_STATE_WALL
+DEF  CLIMB_STATE_WALL_TAIL_SPIN_ALT           EQU $05 ; same handler as CLIMB_STATE_WALL_TAIL_SPIN
+DEF  CLIMB_STATE_BACKGROUND_BOTTOM            EQU $06 ; dismount animation at the bottom
+DEF  CLIMB_STATE_WALL_BOTTOM                  EQU $07
+DEF  CLIMB_STATE_WALL_TOP                     EQU $08
+DEF  CLIMB_STATE_PIPE_TRANSITION              EQU $09
+DEF  CLIMB_STATE_NOT_CLIMBING                 EQU $FF
+
+; wD74B_Player_ClimbingFlags. Bit 6 shifts the sprite builder to the alternate
+; (rotated) climb frame set - see call_03_5ca8_Entity_DrawPlayer
+DEF  CLIMB_FLAG_ALT_FRAMES                    EQU $40
+DEF  CLIMB_FLAG_ALT_FRAMES_BIT                EQU 6
+
+; ------------------------------------------------------------------
+; wD759_ButtonBlockingFlags. Set by actions to swallow button presses until
+; the button is released, so that holding a button cannot re-trigger an action.
+; Filtered into wD75A_CurrentInputsAlt by call_02_4939_Player_UpdateMain
+; ------------------------------------------------------------------
+DEF  BTN_BLOCK_A_BIT                          EQU 0 ; suppress A until released
+DEF  BTN_BLOCK_B_UNTIL_RELEASE_BIT            EQU 6 ; suppress B until released
+DEF  BTN_BLOCK_B_WHILE_RISING_BIT             EQU 7 ; suppress B while Y velocity is upward
+DEF  BTN_BLOCK_B_REPRESS_LATCH_BIT            EQU 4 ; B was released during the rise, so allow one re-press
+
+DEF  BTN_BLOCK_A                              EQU $01
+DEF  BTN_BLOCK_B_REPRESS_LATCH                EQU $10
+DEF  BTN_BLOCK_B_UNTIL_RELEASE                EQU $40
+DEF  BTN_BLOCK_B_WHILE_RISING                 EQU $80
+
+; Sentinels in the per-action input transition lists hanging off
+; data_02_4d15_ActionInputTransitionTable
+DEF  ACTION_INPUT_ANY                         EQU $FE ; matches any nonzero input
+DEF  ACTION_INPUT_END                         EQU $FF ; end of list
+
+; ------------------------------------------------------------------
+; Player physics. Y velocity is a signed byte, positive = upward
+; ------------------------------------------------------------------
+DEF  PLAYER_JUMP_VELOCITY                     EQU $2A
+DEF  PLAYER_DOUBLE_JUMP_VELOCITY              EQU $36
+DEF  PLAYER_HIT_BOUNCE_VELOCITY               EQU $50
+DEF  PLAYER_GRAVITY_PER_FRAME                 EQU $02
+DEF  PLAYER_MAX_FALL_VELOCITY                 EQU $C0 ; -$40 as a signed byte
+DEF  PLAYER_SPRING_VELOCITY_LOW               EQU $4C
+DEF  PLAYER_SPRING_VELOCITY_HIGH              EQU $60
+
+DEF  PLAYER_XSPEED_WALK                       EQU $01
+DEF  PLAYER_XSPEED_RUN                        EQU $02
+
+; Fall-distance thresholds tested on landing (wD763_FallDistanceCounter)
+DEF  FALL_DISTANCE_LANDING_ANIM               EQU $08 ; below this, land with no animation
+DEF  FALL_DISTANCE_HARD_LANDING               EQU $10 ; at or above this, PLAYER_ACTION_COLLAPSE
+
+DEF  PLAYER_DAMAGE_COOLDOWN_LENGTH            EQU $77
+DEF  PLAYER_IDLE_TIMER_LENGTH                 EQU $7D ; frames of standing still before the idle animation
+DEF  PLAYER_KARATE_KICK_LENGTH                EQU $30
+DEF  CLIMB_TAIL_SPIN_LENGTH                   EQU $20 ; frames before dropping back to the plain climb state
+
+; ------------------------------------------------------------------
+; Background collision tile types (wD764/wD765/wD766/wD767).
+; These are the values the player code in bank 2 reacts to; the collision
+; data itself lives at wC800_CurrentCollisionData
+; ------------------------------------------------------------------
+DEF  TILE_TYPE_NO_WALK_LEFT                   EQU $08 ; standing here facing left forces PLAYER_ACTION_STOP_ON_CERTAIN_FLOOR
+DEF  TILE_TYPE_NO_WALK_RIGHT                  EQU $09 ; ...and this one facing right
+DEF  TILE_TYPE_DOOR                           EQU $22 ; press up to enter
+DEF  TILE_TYPE_INSTANT_KILL                   EQU $23
+DEF  TILE_TYPE_LAVA                           EQU $24
+DEF  TILE_TYPE_WATER                          EQU $25
+DEF  TILE_TYPE_CLIMBABLE_BACKGROUND           EQU $26 ; press up to start CLIMB_STATE_BACKGROUND
+DEF  TILE_TYPE_CLIMBABLE_WALL_FACING_LEFT     EQU $2C ; only entered while facing left
+DEF  TILE_TYPE_CLIMBABLE_WALL_FACING_RIGHT    EQU $2D ; only entered while facing right
+DEF  TILE_TYPE_SPRING_LOW                     EQU $CE
+DEF  TILE_TYPE_SPRING_HIGH                    EQU $CF
+DEF  TILE_TYPE_TRAMPOLINE_LOW                 EQU $F0 ; only springs while the circuit power-up is active
+DEF  TILE_TYPE_TRAMPOLINE_HIGH                EQU $F1
+; Tile types $C0 and up are the "attackable" scenery (crates, switches, cages).
+; PlayerAction_TailSpin tests them in complement form: it does cpl then cp $40,
+; which is true exactly when the original tile type is >= $C0
+DEF  TILE_TYPE_INTERACTIVE_MIN                EQU $C0
+DEF  TILE_TYPE_INTERACTIVE_MIN_CPL            EQU $40 ; 256 - TILE_TYPE_INTERACTIVE_MIN
 
 DEF  HUNTER_ACTION_UNK0  EQU $00
 DEF  HUNTER_ACTION_UNK1  EQU $01

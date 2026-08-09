@@ -441,7 +441,7 @@ call_03_5ca8_Entity_DrawPlayer:
     ld   A, [HL+]                                      ;; 03:5d1f $2a
     ld   [DE], A                                       ;; 03:5d20 $12
     inc  E                                             ;; 03:5d21 $1c
-    ld   A, [wD74A_Player_NearbyTileRelated]                                    ;; 03:5d22 $fa $4a $d7
+    ld   A, [wD74A_Player_InWaterOrLava]                                    ;; 03:5d22 $fa $4a $d7
     or   A, [HL]                                       ;; 03:5d25 $b6
     ld   [DE], A                                       ;; 03:5d26 $12
     inc  HL                                            ;; 03:5d27 $23

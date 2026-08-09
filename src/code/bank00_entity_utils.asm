@@ -956,7 +956,7 @@ call_00_35d5_Entity_MoveXAndPushPlayer:
     cp   A, [HL]                                       ;; 00:35eb $be
     jr   NZ, .jr_00_35f3                               ;; 00:35ec $20 $05
     ld   A, C                                          ;; 00:35ee $79
-    ld   [wD75C], A                                    ;; 00:35ef $ea $5c $d7
+    ld   [wD75C_PlayerXDeltaExtra], A                                    ;; 00:35ef $ea $5c $d7
     ret                                                ;; 00:35f2 $c9
 .jr_00_35f3:
     ld   HL, wD74F_Player_PushedMovingPlatformLo                                     ;; 00:35f3 $21 $4f $d7

@@ -538,11 +538,11 @@ call_03_4c76_EntityCollision_Dispatch:
     pop  de
     jp   .jr_03_4d82_CollisionHandler_TouchDamage
 .jr_03_4fcf_CollisionHandler_Unk17:
-; Overlap check; on hit, sets wD758_UnkCollisionRelated=$7F (likely a slide/ice friction override value)
+; Overlap check; on hit, sets wD758_JumpVelocityOverride=$7F (likely a slide/ice friction override value)
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     ld   a,$7F
-    ld   [wD758_UnkCollisionRelated],a
+    ld   [wD758_JumpVelocityOverride],a
     ret  
 .jr_03_4fd9_CollisionHandler_SamuraiBody:
 ; Nearly identical to Ninja: if action is $01 (attacking) and frame is ≥2, checks sword hitbox overlap 
@@ -607,7 +607,7 @@ call_03_4c76_EntityCollision_Dispatch:
     set  MISC_FLAGS_BIT_0,[hl]
     ret  
 .jr_03_5049_CollisionHandler_Geyser:
-; Only active in action $01 (geyser erupting). Sets wD758_UnkCollisionRelated=$50 (likely an upward launch velocity 
+; Only active in action $01 (geyser erupting). Sets wD758_JumpVelocityOverride=$50 (likely an upward launch velocity 
 ; applied to the player) — no damage, just launches
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_ACTION_ID
     ld   a,[hl]
@@ -615,7 +615,7 @@ call_03_4c76_EntityCollision_Dispatch:
     cp   a,$01
     ret  nz
     ld   a,$50
-    ld   [wD758_UnkCollisionRelated],a
+    ld   [wD758_JumpVelocityOverride],a
     ret  
 .jr_03_505d_CollisionHandler_Triceratops:
 ; Checks the horn hitbox first (X offset adjusted for facing direction), within a 12×12 window — 
@@ -1213,7 +1213,7 @@ call_03_536f_CollisionHandler_MovingPlatform:
     ld   A, C                                          ;; 03:53ad $79 ; A = BITNOT(PlayerScreenX + PlatformWidth)
     add  A, B                                          ;; 03:53ae $80 ; A += PlatformXVel / 16
     sub  A, E                                          ;; 03:53af $93 ; A -= PlayerPrevXVel
-    sub  A, D                                          ;; 03:53b0 $92 ; A -= wD75C
+    sub  A, D                                          ;; 03:53b0 $92 ; A -= wD75C_PlayerXDeltaExtra
     bit  7, A                                          ;; 03:53b1 $cb $7f
     jr   NZ, .jr_03_5418_PlayerIsBeingPushedByThisPlatform  ;; 03:53b3 $20 $63 ; jump if distance between player and platform is 0 or negative
     and  A, A                                          ;; 03:53b5 $a7
@@ -1290,7 +1290,7 @@ call_03_536f_CollisionHandler_MovingPlatform:
 
 call_03_5427_MovingPlatform_GetRelativeXSpeed:
 ; Reads the platform's X velocity, shifts right 4× into B (pixel speed). 
-; Loads wD75C/wD75D (player X delta and prev speed) into D/E. Checks bit 5 of player facing angle; 
+; Loads wD75C_PlayerXDeltaExtra/wD75D (player X delta and prev speed) into D/E. Checks bit 5 of player facing angle; 
 ; if set (facing left), negates A and stores into E. Returns B=platform pixel speed, D=player X delta, 
 ; E=adjusted player speed for relative motion comparison
     ld   A, L                                          ;; 03:5427 $7d
@@ -1301,8 +1301,8 @@ call_03_5427_MovingPlatform_GetRelativeXSpeed:
     sra  B                                             ;; 03:542e $cb $28
     sra  B                                             ;; 03:5430 $cb $28
     sra  B                                             ;; 03:5432 $cb $28 B = B / 16
-    ld   A, [wD75C]                                    ;; 03:5434 $fa $5c $d7
-    ld   D, A                                          ;; 03:5437 $57 ; D = wD75C
+    ld   A, [wD75C_PlayerXDeltaExtra]                                    ;; 03:5434 $fa $5c $d7
+    ld   D, A                                          ;; 03:5437 $57 ; D = wD75C_PlayerXDeltaExtra
     ld   A, [wD75D_PlayerXSpeedPrev]                   ;; 03:5438 $fa $5d $d7
     ld   E, A                                          ;; 03:543b $5f ; E = wD75D_PlayerXSpeedPrev
     ld   HL, wD20D_Player_FacingFlags                  ;; 03:543c $21 $0d $d2

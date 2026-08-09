@@ -169,13 +169,13 @@ call_02_6e17_Entities_InitAndSpawnAll:
     ld   [wD74C_Player_KarateKickTimer], A                                    ;; 02:6e2b $ea $4c $d7
     ld   [wD75D_PlayerXSpeedPrev], A                                    ;; 02:6e2e $ea $5d $d7
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:6e31 $ea $5e $d7
-    ld   [wD75C], A                                    ;; 02:6e34 $ea $5c $d7
+    ld   [wD75C_PlayerXDeltaExtra], A                                    ;; 02:6e34 $ea $5c $d7
     ld   [wD760_PlayerYVelocity], A                                    ;; 02:6e37 $ea $60 $d7
     ld   [wD761_PlayerBonkCeilingDownwardsVelocity], A                                    ;; 02:6e3a $ea $61 $d7
     ld   [wD762_PlayerInitialYVelocity], A                                    ;; 02:6e3d $ea $62 $d7
-    ld   [wD763_Player_YVelocityRelated], A                                    ;; 02:6e40 $ea $63 $d7
+    ld   [wD763_FallDistanceCounter], A                                    ;; 02:6e40 $ea $63 $d7
     ld   [wD759_ButtonBlockingFlags], A                                    ;; 02:6e43 $ea $59 $d7
-    ld   [wD758_UnkCollisionRelated], A                                    ;; 02:6e46 $ea $58 $d7
+    ld   [wD758_JumpVelocityOverride], A                                    ;; 02:6e46 $ea $58 $d7
     ld   [wD585_CollisionFlags], A                                    ;; 02:6e49 $ea $85 $d5
     ld   [wD584_CollisionFlagsPrev], A                                    ;; 02:6e4c $ea $84 $d5
     ld   A, PLAYER_ACTION_NONE_PENDING                                        ;; 02:6e4f $3e $ff
@@ -183,7 +183,7 @@ call_02_6e17_Entities_InitAndSpawnAll:
     ld   [wD746_Player_ClimbingState], A                                    ;; 02:6e54 $ea $46 $d7
     xor  A, A                                          ;; 02:6e57 $af
     ld   [wD586_PlayerGfxVramPage], A                                    ;; 02:6e58 $ea $86 $d5
-    ld   [wD74A_Player_NearbyTileRelated], A                                    ;; 02:6e5b $ea $4a $d7
+    ld   [wD74A_Player_InWaterOrLava], A                                    ;; 02:6e5b $ea $4a $d7
     ld   A, $00                                        ;; 02:6e5e $3e $00
     ld   [wD74B_Player_ClimbingFlags], A                                    ;; 02:6e60 $ea $4b $d7
     ld   A, $00                                        ;; 02:6e63 $3e $00
@@ -238,7 +238,7 @@ call_02_6eba_Entities_UpdateAll:
 ; function instead), clears collision bits 5/6, calls call_02_6fda_Entity_TickAction (action tick), calls the sprite/draw farCall. 
 ; After the loop, calls sound queue flush, EntitySpawn_SpawnNextFromList, collision resolution, and draw farCall
     xor  A, A                                          ;; 02:6eba $af
-    ld   [wD75C], A                                    ;; 02:6ebb $ea $5c $d7
+    ld   [wD75C_PlayerXDeltaExtra], A                                    ;; 02:6ebb $ea $5c $d7
     ld   A, $20                                        ;; 02:6ebe $3e $20
     ld   [wD739], A                                    ;; 02:6ec0 $ea $39 $d7
     ld   A, [wD743_Player_UpdateFlag]                                    ;; 02:6ec3 $fa $43 $d7

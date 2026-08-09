@@ -22,7 +22,7 @@ call_03_4915_BgCollision_SidescrollerHandler:
 ; then arithmetic right-shifted 4) stored in wD75F. Calls call_03_4ab3_BgCollision_GetXOffset to get the X offset. 
 ; (1) Wall check: samples 4 tile rows at the leading edge above the player (moving up at the predicted speed), 
 ; ORs all 4 tile collision bytes together into C. If bit 0 of C is set (solid wall), sets wD74C_Player_KarateKickTimer=$01, 
-; zeros wD75C/wD75D, sets bit 6 of collision flags (wall hit). 
+; zeros wD75C_PlayerXDeltaExtra/wD75D, sets bit 6 of collision flags (wall hit). 
 ; (2) Horizontal push check: if no bit-7 collision, calls call_03_4ab3_BgCollision_GetXOffset again and walks either right (C=+1) 
 ; or left (C=−1) through successive tiles calling TileCollisionCheck_Raw, counting how many are solid into B. 
 ; Negates B, ORs into collision flags; if any of the low nibble bits are set, also sets bit 7. 
@@ -122,7 +122,7 @@ call_03_4915_BgCollision_SidescrollerHandler:
     inc  A                                             ;; 03:49af $3c
 .jr_03_49b0:
     xor  A, A                                          ;; 03:49b0 $af
-    ld   [wD75C], A                                    ;; 03:49b1 $ea $5c $d7
+    ld   [wD75C_PlayerXDeltaExtra], A                                    ;; 03:49b1 $ea $5c $d7
     xor  A, A                                          ;; 03:49b4 $af
     ld   [wD75D_PlayerXSpeedPrev], A                                    ;; 03:49b5 $ea $5d $d7
     ld   HL, wD585_CollisionFlags                                     ;; 03:49b8 $21 $85 $d5
@@ -299,7 +299,7 @@ call_03_4915_BgCollision_SidescrollerHandler:
 
 call_03_4ab3_BgCollision_GetXOffset:
 ; Helper. Loads wD75D (previous X speed). If bit 5 of wD20D (facing angle) is set (facing left), 
-; negates the value. Adds wD75C (X sub-pixel accumulator) and returns the result in A. Used to 
+; negates the value. Adds wD75C_PlayerXDeltaExtra (X sub-pixel accumulator) and returns the result in A. Used to 
 ; compute the forward-facing horizontal probe offset
     ld   A, [wD75D_PlayerXSpeedPrev]                                    ;; 03:4ab3 $fa $5d $d7
     ld   HL, wD20D_Player_FacingFlags                                     ;; 03:4ab6 $21 $0d $d2
@@ -308,7 +308,7 @@ call_03_4ab3_BgCollision_GetXOffset:
     cpl                                                ;; 03:4abd $2f
     inc  A                                             ;; 03:4abe $3c
 .jr_03_4abf:
-    ld   HL, wD75C                                     ;; 03:4abf $21 $5c $d7
+    ld   HL, wD75C_PlayerXDeltaExtra                                     ;; 03:4abf $21 $5c $d7
     add  A, [HL]                                       ;; 03:4ac2 $86
     ret                                                ;; 03:4ac3 $c9
 
@@ -387,7 +387,7 @@ call_03_4ac4_BgCollision_ClimbingHandler:
 .jr_03_4b23:
     ld   [wD746_Player_ClimbingState], A                                    ;; 03:4b23 $ea $46 $d7
     xor  A, A                                          ;; 03:4b26 $af
-    ld   [wD747_Player_ClimbingUnkCounter], A                                    ;; 03:4b27 $ea $47 $d7
+    ld   [wD747_Player_ClimbAnimCounter], A                                    ;; 03:4b27 $ea $47 $d7
     ret                                                ;; 03:4b2a $c9
 .jr_03_4b2b:
     ld   A, [HL+]                                      ;; 03:4b2b $2a
@@ -420,7 +420,7 @@ call_03_4ac4_BgCollision_ClimbingHandler:
     ld   A, $09                                        ;; 03:4b5c $3e $09
     ld   [wD746_Player_ClimbingState], A                                    ;; 03:4b5e $ea $46 $d7
     xor  A, A                                          ;; 03:4b61 $af
-    ld   [wD747_Player_ClimbingUnkCounter], A                                    ;; 03:4b62 $ea $47 $d7
+    ld   [wD747_Player_ClimbAnimCounter], A                                    ;; 03:4b62 $ea $47 $d7
     ret                                                ;; 03:4b65 $c9
 .data_03_4b66_ClimbCollisionScriptTable:
 ; 12-entry pointer table (climb state 0–5 × 2 facing directions). States 0–3 (all facings) share 

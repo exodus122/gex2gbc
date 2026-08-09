@@ -925,21 +925,22 @@ wD744_Player_SpawnAction:
 wD745_Player_QueuedAction:
     ds 1                                               ;; d745
 wD746_Player_ClimbingState:
-; 0 = climbing background
-; 1 = climbing background and tail spinning
-; 2 = climbing wall
-; 3 = climbing wall and tail spinning
-; 4 = ?
-; 5 = ?
-; 6 = climbing background - dropping down to floor
-; 7 = climbing wall - reached bottom
-; 8 = climbing wall - reached top
-; 9 = ?
-; FF = default (run normal collision func)
+; Sub-state of PLAYER_ACTION_CLIMB. See CLIMB_STATE_* in constants.asm;
+; call_02_44af_PlayerAction_Climb uses this as an index into .data_02_44e5.
+; $FF (CLIMB_STATE_NOT_CLIMBING) is the normal, non-climbing value and is what
+; Player_UpdateFacing / Player_ApplyXMovement / Player_ApplyYVelocity all
+; check before doing anything - while climbing, gravity and walking are off
+; and the climb handler moves Gex directly
     ds 1                                               ;; d746
-wD747_Player_ClimbingUnkCounter:
+wD747_Player_ClimbAnimCounter:
+; frame counter within the current climb sub-state. The climb handlers derive
+; the sprite frame from (counter >> 2) & 7, and the dismount/tail-spin states
+; use it as their own countdown
     ds 1                                               ;; d747
-wD748_Player_ClimbingRelated:
+wD748_Player_ClimbDirectionIndex:
+; index of the matched record in the climb movement tables (.data_02_47a5 for
+; background climbs, .data_02_4803 for walls). Selects facing, sprite base and
+; the per-frame X/Y delta
     ds 1                                               ;; d748
 wD749_Player_ClimbingDirection:
 ; 0 = up
@@ -947,10 +948,16 @@ wD749_Player_ClimbingDirection:
 ; 4 = down
 ; 6 = left
     ds 1                                               ;; d749
-wD74A_Player_NearbyTileRelated:
+wD74A_Player_InWaterOrLava:
+; $80 = Gex is not touching liquid, $00 = he is (the flag is built by xor $80,
+; so it reads inverted). Set every frame by
+; call_02_4c28_Player_CheckLavaAndWaterTiles and read by the sprite builder in
+; bank 3 to swap in the partially submerged frames
     ds 1                                               ;; d74a
 
 wD74B_Player_ClimbingFlags:
+; bit 6 (CLIMB_FLAG_ALT_FRAMES) selects the rotated climb sprite frame set in
+; call_03_5ca8_Entity_DrawPlayer. Cleared whenever a new action is queued
     ds 1                                               ;; d74b
 
 wD74C_Player_KarateKickTimer: ; gets canceled if done into a wall
@@ -982,7 +989,13 @@ wD756_FlyPowerup2_TimerHi:
 wD757_LanternLitFlag:
     ds 1                                               ;; d757
 
-wD758_UnkCollisionRelated:
+wD758_JumpVelocityOverride:
+; When nonzero this replaces the jump velocity that
+; call_02_4856_Player_GetJumpVelocity would otherwise return, letting an entity
+; launch Gex harder than a normal jump. Entity collision in bank 3 writes it
+; ($50 for the pre-history geyser, $7F for the bouncy mushroom) and
+; call_02_4939_Player_UpdateMain clears it again at the end of every frame,
+; so it only survives for the one frame in which the entity was touched
     ds 1                                               ;; d758
 
 wD759_ButtonBlockingFlags:
@@ -1004,7 +1017,11 @@ wD75A_CurrentInputsAlt:
 wD75B_IdleTimer:
 ; counter used to determine if gex has been idle long enough to do the tongue flick
     ds 1                                               ;; d75b
-wD75C:
+wD75C_PlayerXDeltaExtra:
+; extra horizontal displacement added on top of Gex's own walking speed by
+; call_02_4a77_Player_ApplyXMovement. Written by whatever is carrying or
+; shoving him this frame - moving platforms and powered walkways in bank 2,
+; slope correction in bank 3 - and zeroed again on a wall hit
     ds 1                                               ;; d75c
 wD75D_PlayerXSpeedPrev:
 ; (1 = walk, 2 = run)
@@ -1020,12 +1037,21 @@ wD760_PlayerYVelocity:
 ; can freeze this to levitate
     ds 1                                               ;; d760
 wD761_PlayerBonkCeilingDownwardsVelocity:
-; set to c0 when gex is falling, 0 otherwise?
+; distance in pixels between Gex's feet and the floor below him, measured by
+; the background collision pass in bank 3. Zero means he is resting exactly on
+; the floor, which is what call_02_4b78_Player_ApplyYVelocity treats as the
+; landing frame; a nonzero value is the snap distance it closes on the way down
     ds 1                                               ;; d761
 wD762_PlayerInitialYVelocity:
 ; y velocity when first entered the air (2a = jump, 36 = double jump). also set to 1 if fall off ledge
+; Counts down to zero as the arc plays out, so the jump actions poll it to find
+; out when the jump has finished
     ds 1                                               ;; d762
-wD763_Player_YVelocityRelated:
+wD763_FallDistanceCounter:
+; how long Gex has been falling, incremented once per frame while he is at
+; terminal velocity and capped at $80. Checked on landing to pick between no
+; animation, a walk/run landing, and PLAYER_ACTION_COLLAPSE - see the
+; FALL_DISTANCE_* constants
     ds 1                                               ;; d763
 wD764_TileTypeBehindGexsBody:
     ds 1                                               ;; d764
