@@ -1352,7 +1352,7 @@ call_00_3859_Entity_CheckPlayerXProximity:
 
 call_00_3878_Entity_CheckIfTVButtonVisibleOrInRange:
 ; In non-hub levels, uses slot index into wD798_OverrideSlotTable13 visibility table; 
-; in hub level, checks entity's UNK_19 range values against wD64F–wD651 player position bytes
+; in hub level, checks entity's UNK_19 range values against wD64F_MissionRemoteTotal–wD651_BonusMissionTotal player position bytes
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:3878 $fa $24 $d6
     and  A, A                                          ;; 00:387b $a7
     jr   Z, call_00_3899_Entity_CheckHubProximityToPlayer                                 ;; 00:387c $28 $1b
@@ -1376,24 +1376,24 @@ call_00_3878_Entity_CheckIfTVButtonVisibleOrInRange:
     ret                                                ;; 00:3898 $c9
 
 call_00_3899_Entity_CheckHubProximityToPlayer:
-; Reads three bytes from wD64F–wD651 (player's hub-world position, likely X-block, Y-block, and room/zone index), 
+; Reads three bytes from wD64F_MissionRemoteTotal–wD651_BonusMissionTotal (player's hub-world position, likely X-block, Y-block, and room/zone index), 
 ; masks the sign bit off each (& $7F), and compares each against three consecutive bytes in the entity's 
 ; UNK_19 field (proximity thresholds). If all three values are ≥ their respective thresholds, 
 ; returns A=1 (player is close enough to activate); if any comparison fails, returns A=0.
 ; So it's essentially a 3-axis "is the player within this entity's activation radius?" check used exclusively 
 ; in the hub world, where entities need distance-based activation rather than room-based visibility.
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
-    ld   A, [wD64F]                                    ;; 00:38a1 $fa $4f $d6
+    ld   A, [wD64F_MissionRemoteTotal]                                    ;; 00:38a1 $fa $4f $d6
     and  A, $7f                                        ;; 00:38a4 $e6 $7f
     cp   A, [HL]                                       ;; 00:38a6 $be
     jr   C, .jr_00_38bf                                ;; 00:38a7 $38 $16
     inc  L                                             ;; 00:38a9 $2c
-    ld   A, [wD650]                                    ;; 00:38aa $fa $50 $d6
+    ld   A, [wD650_HiddenRemoteTotal]                                    ;; 00:38aa $fa $50 $d6
     and  A, $7f                                        ;; 00:38ad $e6 $7f
     cp   A, [HL]                                       ;; 00:38af $be
     jr   C, .jr_00_38bf                                ;; 00:38b0 $38 $0d
     inc  L                                             ;; 00:38b2 $2c
-    ld   A, [wD651]                                    ;; 00:38b3 $fa $51 $d6
+    ld   A, [wD651_BonusMissionTotal]                                    ;; 00:38b3 $fa $51 $d6
     and  A, $7f                                        ;; 00:38b6 $e6 $7f
     cp   A, [HL]                                       ;; 00:38b8 $be
     jr   C, .jr_00_38bf                                ;; 00:38b9 $38 $04
@@ -1822,7 +1822,7 @@ call_00_3b8d_Entity_TickAnimationFrames:
 
 call_00_3bf4_Entity_TriggerPaletteSwap:
 ; Only runs in hub level (level 0); maps entity slot to a palette index via a lookup table 
-; and sets wD610 + HDMA flag bit 4 to trigger a palette transfer
+; and sets wD610_MediaDimension_TVScreenId + HDMA flag bit 4 to trigger a palette transfer
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:3bf4 $fa $24 $d6
     and  A, A                                          ;; 00:3bf7 $a7
     ret  NZ                                            ;; 00:3bf8 $c0
@@ -1845,8 +1845,8 @@ call_00_3bf4_Entity_TriggerPaletteSwap:
     ld   A, [HL]                                       ;; 00:3c13 $7e
     cp   A, $ff                                        ;; 00:3c14 $fe $ff
     ret  Z                                             ;; 00:3c16 $c8
-    ld   [wD610], A                                    ;; 00:3c17 $ea $10 $d6
-    ld   HL, wD60F_HDMATransferFlags                                     ;; 00:3c1a $21 $0f $d6
+    ld   [wD610_MediaDimension_TVScreenId], A                                    ;; 00:3c17 $ea $10 $d6
+    ld   HL, wD60F_GfxTransferFlags                                     ;; 00:3c1a $21 $0f $d6
     set  4, [HL]                                       ;; 00:3c1d $cb $e6
     ret                                                ;; 00:3c1f $c9
 .data_00_3c20:

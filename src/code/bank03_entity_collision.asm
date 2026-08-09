@@ -129,13 +129,13 @@ call_03_4c76_EntityCollision_Dispatch:
     ld   a,$04
     jp   call_00_0647_Player_SetUpOrEatFlyPowerup
 .jr_03_4d3f_CollisionHandler_SilverRemote:
-; Overlap check; sets bit 4 of wD64C (silver remote collected flag), 
+; Overlap check; sets bit 4 of wD64C_CurrentLevel_HiddenRemoteFlags (silver remote collected flag), 
 ; plays SFX $03, kills entity and clears its flag slot
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
-    ld   a,[wD64C]
+    ld   a,[wD64C_CurrentLevel_HiddenRemoteFlags]
     or   a,$10
-    ld   [wD64C],a
+    ld   [wD64C_CurrentLevel_HiddenRemoteFlags],a
     ld   c,SFX_SILVER_REMOTE
     call call_00_112f_QueueSFX
     call call_00_3931_Entity_DeactivateSelf

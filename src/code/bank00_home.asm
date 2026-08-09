@@ -1,5 +1,36 @@
 ;; Disassembled with BadBoy Disassembler: https://github.com/daid/BadBoy
 
+; ==================================================================
+; Bank 0 (home). Interrupt vectors, boot, the outer game loop, and the shared
+; video / banking / input / sfx helpers that every other bank calls into.
+;
+; How graphics reach VRAM
+; -----------------------
+; The game never writes VRAM directly from game logic. Instead:
+;
+;   1. Something sets a request bit in wD60F_GfxTransferFlags (GFX_XFER_*).
+;   2. call_00_08fc_SetupEntityVRAMTransfer picks the lowest pending request, banks in
+;      the source and stages 256 bytes into wD100_TilesToLoadBuffer, then raises
+;      GFX_XFER_IN_PROGRESS.
+;   3. call_00_0c11_VBlank_ArmVramStreamIsr (the vblank hook paired with
+;      LCD_ISR_VRAM_STREAM) patches the destination page into the LCD STAT handler
+;      living in wCCA0_LcdIsrCode and arms it by overwriting its leading reti with a
+;      push af.
+;   4. That handler then dribbles 4 bytes per hblank out of the buffer until the page
+;      is done, at which point it disarms itself again.
+;
+; When the LCD is already off (level loads, menus) the same requests are serviced in
+; one shot by call_00_0971_ProcessPendingGfxTransfers instead.
+;
+; Separately, call_00_0ac1_VBlank_UpdateVRAM performs exactly one "big" VRAM write per
+; vblank - a bg map scroll row/column, a tile override, a tileset animation frame or a
+; hud digit reload - chosen by priority.
+;
+; The other LCD STAT handler, LCD_ISR_RASTER_EFFECT, does the hud window split and the
+; horizontal wobble used by the tv warp; its vblank hook
+; (call_00_0d84_VBlank_RunGfxStream) copies one chunk of a menu graphics script.
+; ==================================================================
+
     reti
 
 SECTION "isrVBlank", ROM0[$0040]
@@ -8,7 +39,7 @@ isrVBlank:
 
 SECTION "isrLCDC", ROM0[$0048]
 isrLCDC:
-    jp   wCCA0                                         ;; 00:0048 $c3 $a0 $cc
+    jp   wCCA0_LcdIsrCode                                         ;; 00:0048 $c3 $a0 $cc
 
 SECTION "isrTimer", ROM0[$0050]
 isrTimer:
@@ -69,10 +100,10 @@ call_00_0150_Init:
     ld   A, $8f                                        ;; 00:018a $3e $8f
     ldh  [rWY], A                                      ;; 00:018c $e0 $4a
     ld   A, $e4                                        ;; 00:018e $3e $e4
-    ld   [wDACB], A                                    ;; 00:0190 $ea $cb $da
-    ld   [wDACC], A                                    ;; 00:0193 $ea $cc $da
+    ld   [wDACB_DefaultBGP], A                                    ;; 00:0190 $ea $cb $da
+    ld   [wDACC_DefaultOBP0], A                                    ;; 00:0193 $ea $cc $da
     ld   A, $00                                        ;; 00:0196 $3e $00
-    ld   [wDACD], A                                    ;; 00:0198 $ea $cd $da
+    ld   [wDACD_DefaultOBP1], A                                    ;; 00:0198 $ea $cd $da
     pop  AF                                            ;; 00:019b $f1
     cp   A, $11                                        ;; 00:019c $fe $11
     jr   NZ, .jr_00_01ac                               ;; 00:019e $20 $0c
@@ -82,13 +113,13 @@ call_00_0150_Init:
     ldh  [rVBK], A                                     ;; 00:01a7 $e0 $4f
     call call_00_0f9d_UpdateLCDPalettes                ;; 00:01a9 $cd $9d $0f
 .jr_00_01ac:
-    ld   HL, call_00_0ef7                                      ;; 00:01ac $21 $f7 $0e
-    ld   DE, hFF80                                     ;; 00:01af $11 $80 $ff
+    ld   HL, call_00_0ef7_OamDmaRoutine                                      ;; 00:01ac $21 $f7 $0e
+    ld   DE, hFF80_OamDmaRoutine                                     ;; 00:01af $11 $80 $ff
     ld   BC, $0a                                       ;; 00:01b2 $01 $0a $00
     call call_00_07b0_MemCopy                                  ;; 00:01b5 $cd $b0 $07
-    call call_00_0e87                                  ;; 00:01b8 $cd $87 $0e
+    call call_00_0e87_ClearVRAMAndResetScroll                                  ;; 00:01b8 $cd $87 $0e
     ld   HL, wD59A_PtrToBankStackPosition                                     ;; 00:01bb $21 $9a $d5
-    ld   DE, wD58A                                     ;; 00:01be $11 $8a $d5
+    ld   DE, wD58A_BankStack                                     ;; 00:01be $11 $8a $d5
     ld   A, BANK_01                                        ;; 00:01c1 $3e $01
     ld   [HL], E                                       ;; 00:01c3 $73
     inc  HL                                            ;; 00:01c4 $23
@@ -101,7 +132,7 @@ call_00_0150_Init:
     and  A, $01                                        ;; 00:01d0 $e6 $01
     ld   [MBC1SRamBank], A                                    ;; 00:01d2 $ea $01 $40
     ld   A, $00                                        ;; 00:01d5 $3e $00
-    call call_00_0bb9                                  ;; 00:01d7 $cd $b9 $0b
+    call call_00_0bb9_InstallLcdIsr                                  ;; 00:01d7 $cd $b9 $0b
     xor  A, A                                          ;; 00:01da $af
     ldh  [rIF], A                                      ;; 00:01db $e0 $0f
     ld   A, $08                                        ;; 00:01dd $3e $08
@@ -109,7 +140,7 @@ call_00_0150_Init:
     ld   A, $03                                        ;; 00:01e1 $3e $03
     ldh  [rIE], A                                      ;; 00:01e3 $e0 $ff
     ld   A, $c7                                        ;; 00:01e5 $3e $c7
-    call call_00_0f32                                  ;; 00:01e7 $cd $32 $0f
+    call call_00_0f32_SetLCDC                                  ;; 00:01e7 $cd $32 $0f
     ld   A, $21                                        ;; 00:01ea $3e $21
     ld   [wD788_CurrentAudioBank], A                                    ;; 00:01ec $ea $88 $d7
     FARCALL call_21_4000                              
@@ -162,7 +193,7 @@ call_00_0150_Init:
     ld   L, [HL]                                       ;; 00:0288 $6e
     ld   H, $00                                        ;; 00:0289 $26 $00
     add  HL, HL                                        ;; 00:028b $29
-    ld   DE, data_00_0771                                      ;; 00:028c $11 $71 $07
+    ld   DE, data_00_0771_DemoInputScriptPointers                                      ;; 00:028c $11 $71 $07
     add  HL, DE                                        ;; 00:028f $19
     ld   A, [HL+]                                      ;; 00:0290 $2a
     ld   [wD61B_DemoInputsPointer], A                                    ;; 00:0291 $ea $1b $d6
@@ -188,7 +219,7 @@ call_00_0150_Init:
     ld   HL, wD61D_DemoUnk                                     ;; 00:02be $21 $1d $d6
     ld   L, [HL]                                       ;; 00:02c1 $6e
     ld   H, $00                                        ;; 00:02c2 $26 $00
-    ld   DE, data_00_076d                                      ;; 00:02c4 $11 $6d $07
+    ld   DE, data_00_076d_DemoLevelIds                                      ;; 00:02c4 $11 $6d $07
     add  HL, DE                                        ;; 00:02c7 $19
     ld   A, [HL]                                       ;; 00:02c8 $7e
 .jr_00_02c9:
@@ -198,9 +229,9 @@ call_00_0150_Init:
     xor  A, A                                          ;; 00:02d9 $af
     ld   [wD621_WarpFlags], A                                    ;; 00:02da $ea $21 $d6
     ld   [wD628_MediaDimensionRespawnPoint], A         ;; 00:02dd $ea $28 $d6
-    ld   [wD64F], A                                    ;; 00:02e0 $ea $4f $d6
-    ld   [wD650], A                                    ;; 00:02e3 $ea $50 $d6
-    ld   [wD651], A                                    ;; 00:02e6 $ea $51 $d6
+    ld   [wD64F_MissionRemoteTotal], A                                    ;; 00:02e0 $ea $4f $d6
+    ld   [wD650_HiddenRemoteTotal], A                                    ;; 00:02e3 $ea $50 $d6
+    ld   [wD651_BonusMissionTotal], A                                    ;; 00:02e6 $ea $51 $d6
     ld   A, PLAYER_ACTION_SPAWN                                        ;; 00:02e9 $3e $00
     ld   [wD744_Player_SpawnAction], A                                    ;; 00:02eb $ea $44 $d7
 .jp_00_02ee:
@@ -220,13 +251,13 @@ call_00_0150_Init:
     FARCALL call_01_4297_LoadMissionSelectMenu
     FARCALL call_0b_4000_Collectibles_Init
     FARCALL call_02_6eb1_Entities_ClearFlagsTable
-    call call_00_3c3f                                  ;; 00:0333 $cd $3f $3c
+    call call_00_3c3f_Remotes_RecountAllTotals                                  ;; 00:0333 $cd $3f $3c
     call call_00_12e4_BgMap_InitTileOverrides                                  ;; 00:0336 $cd $e4 $12
     ld   A, $0a                                        ;; 00:0339 $3e $0a
-    ld   [wD613], A                                    ;; 00:033b $ea $13 $d6
+    ld   [wD613_Dragon_SegmentsRemaining], A                                    ;; 00:033b $ea $13 $d6
     xor  A, A                                          ;; 00:033e $af
-    ld   [wD614], A                                    ;; 00:033f $ea $14 $d6
-    ld   [wD617], A                                    ;; 00:0342 $ea $17 $d6
+    ld   [wD614_Dragon_HitTimer], A                                    ;; 00:033f $ea $14 $d6
+    ld   [wD617_TailSpinChargeCounter], A                                    ;; 00:0342 $ea $17 $d6
     ld   A, [wD627_CurrentMission]                                    ;; 00:0345 $fa $27 $d6
     add  A, $0a                                        ;; 00:0348 $c6 $0a
     ld   C, A                                          ;; 00:034a $4f
@@ -237,7 +268,7 @@ call_00_0150_Init:
     ld   [wD618_CheckpointSpawnId], A                                    ;; 00:0351 $ea $18 $d6
     ld   [wD686], A                                    ;; 00:0354 $ea $86 $d6
     ld   [wD625_TotalsMenuPage], A                                    ;; 00:0357 $ea $25 $d6
-    ld   [wD648], A                                    ;; 00:035a $ea $48 $d6
+    ld   [wD648_CollectibleMilestoneIndex], A                                    ;; 00:035a $ea $48 $d6
     ld   HL, wD624_CurrentLevelId                                     ;; 00:035d $21 $24 $d6
     ld   L, [HL]                                       ;; 00:0360 $6e
     ld   H, $00                                        ;; 00:0361 $26 $00
@@ -245,7 +276,7 @@ call_00_0150_Init:
     add  HL, DE                                        ;; 00:0366 $19
     ld   A, [HL]                                       ;; 00:0367 $7e
     and  A, $18                                        ;; 00:0368 $e6 $18
-    ld   [wD64C], A                                    ;; 00:036a $ea $4c $d6
+    ld   [wD64C_CurrentLevel_HiddenRemoteFlags], A                                    ;; 00:036a $ea $4c $d6
     call call_00_0562_Collectible_InitForLevel                                  ;; 00:036d $cd $62 $05
 .jp_00_0370_GameOver:
     xor  A, A                                          ;; 00:0370 $af
@@ -263,11 +294,11 @@ call_00_0150_Init:
     ld   [wD73C_FrameCounter2], A                                    ;; 00:0392 $ea $3c $d7
     ld   [wD6F9_BgMap_LoadingFlags], A                                    ;; 00:0395 $ea $f9 $d6
     ld   [wD60E_HUDDirtyFlags], A                                    ;; 00:0398 $ea $0e $d6
-    ld   [wD60F_HDMATransferFlags], A                                    ;; 00:039b $ea $0f $d6
+    ld   [wD60F_GfxTransferFlags], A                                    ;; 00:039b $ea $0f $d6
     ld   [wD77B_OverrideVRAMWritePending], A                                    ;; 00:039e $ea $7b $d7
     ld   [wD77D_OverrideSequenceStepsRemaining], A                                    ;; 00:03a1 $ea $7d $d7
-    ld   [wD72F], A                                    ;; 00:03a4 $ea $2f $d7
-    ld   [wD71E], A                                    ;; 00:03a7 $ea $1e $d7
+    ld   [wD72F_TilesetAnim_FrameCount], A                                    ;; 00:03a4 $ea $2f $d7
+    ld   [wD71E_EntityGfxQueueCount], A                                    ;; 00:03a7 $ea $1e $d7
     ld   [wD5A3_ConveyorState1], A                                    ;; 00:03aa $ea $a3 $d5
     ld   [wD5A4_ConveyorState2], A                                    ;; 00:03ad $ea $a4 $d5
     ld   [wD5A5_ConveyorState3], A                                    ;; 00:03b0 $ea $a5 $d5
@@ -275,21 +306,21 @@ call_00_0150_Init:
     ld   [wD741_Player_Health], A                                    ;; 00:03b5 $ea $41 $d7
     FARCALL call_0b_4000_Collectibles_Init
     FARCALL call_02_6eb1_Entities_ClearFlagsTable
-    call call_00_3c3f                                  ;; 00:03ce $cd $3f $3c
+    call call_00_3c3f_Remotes_RecountAllTotals                                  ;; 00:03ce $cd $3f $3c
     call call_00_12e4_BgMap_InitTileOverrides                                  ;; 00:03d1 $cd $e4 $12
-    call call_00_0547_FlyPowerup_InitTimers                                  ;; 00:03d4 $cd $47 $05
+    call call_00_0547_LevelTimer_Init                                  ;; 00:03d4 $cd $47 $05
     call call_00_0562_Collectible_InitForLevel                                  ;; 00:03d7 $cd $62 $05
 .jr_00_03da:
     ld   A, $0a                                        ;; 00:03da $3e $0a
-    ld   [wD613], A                                    ;; 00:03dc $ea $13 $d6
+    ld   [wD613_Dragon_SegmentsRemaining], A                                    ;; 00:03dc $ea $13 $d6
     xor  A, A                                          ;; 00:03df $af
-    ld   [wD614], A                                    ;; 00:03e0 $ea $14 $d6
-    ld   [wD617], A                                    ;; 00:03e3 $ea $17 $d6
+    ld   [wD614_Dragon_HitTimer], A                                    ;; 00:03e0 $ea $14 $d6
+    ld   [wD617_TailSpinChargeCounter], A                                    ;; 00:03e3 $ea $17 $d6
     ld   [wD5A3_ConveyorState1], A                                    ;; 00:03e6 $ea $a3 $d5
     ld   [wD5A4_ConveyorState2], A                                    ;; 00:03e9 $ea $a4 $d5
     ld   [wD5A5_ConveyorState3], A                                    ;; 00:03ec $ea $a5 $d5
     ld   A, $ff                                        ;; 00:03ef $3e $ff
-    ld   [wD610], A                                    ;; 00:03f1 $ea $10 $d6
+    ld   [wD610_MediaDimension_TVScreenId], A                                    ;; 00:03f1 $ea $10 $d6
     ld   A, $01                                        ;; 00:03f4 $3e $01
     ld   [wD743_Player_UpdateFlag], A                                    ;; 00:03f6 $ea $43 $d7
     FARCALL call_0b_4efe_Player_SetSpawnPosition
@@ -299,7 +330,7 @@ call_00_0150_Init:
     jr   .jp_00_0428                                   ;; 00:0415 $18 $11
 .jp_00_0417:
     call call_00_1264_BgMap_LoadFull                                  ;; 00:0417 $cd $64 $12
-    FARCALL call_02_71c8_Entities_UpdateSoundsForAll
+    FARCALL call_02_71c8_Entities_QueueGraphicsAndPalettes
     call call_00_0521_DrawEntitiesWrapper                                  ;; 00:0425 $cd $21 $05
 .jp_00_0428:
     call call_00_0ab4_WaitForInterrupt                                  ;; 00:0428 $cd $b4 $0a
@@ -408,32 +439,37 @@ call_00_0150_Init:
     jp   .jp_00_0428                                   ;; 00:051e $c3 $28 $04
 
 call_00_0521_DrawEntitiesWrapper:
+; Builds the OAM list, drains any pending graphics transfers, switches the LCD STAT
+; interrupt over to the VRAM streaming handler, reloads the DMG background palette,
+; then turns the LCD back on and fades in
     FARCALL call_02_6f80_Entities_DrawAll
-    call call_00_0971                                  ;; 00:052c $cd $71 $09
+    call call_00_0971_ProcessPendingGfxTransfers                                  ;; 00:052c $cd $71 $09
     ld   A, $03                                        ;; 00:052f $3e $03
-    call call_00_0bae                                  ;; 00:0531 $cd $ae $0b
+    call call_00_0bae_RequestLcdIsr                                  ;; 00:0531 $cd $ae $0b
     ld   C, $00                                        ;; 00:0534 $0e $00
     FARCALL call_0b_5537_BgPalette_LoadMonoOrGetSpriteParams
     ld   A, $c7                                        ;; 00:0541 $3e $c7
-    call call_00_0f56                                  ;; 00:0543 $cd $56 $0f
+    call call_00_0f56_SetLCDCAndFadeIn                                  ;; 00:0543 $cd $56 $0f
     ret                                                ;; 00:0546 $c9
 
-call_00_0547_FlyPowerup_InitTimers:
-; Initializes fly power-up state. Zeros wD687_FlyAnimationState (fly animation state) and 
-; wD689_FlyAnimationTimer (fly animation timer). Sets wD688_FlyAnimationPosition = $A0 
-; (fly animation position, starting offscreen). Sets wD76F = $03 (remaining lives fly count), 
-; zeros wD770 (BCD score counter), sets wD771 = $3C (score tick timer reload)
+call_00_0547_LevelTimer_Init:
+; Resets the fly power-up popup and arms the bonus level countdown timer.
+; Zeros wD687_FlyAnimationState and wD689_FlyAnimationTimer, parks the fly sprite
+; offscreen at wD688_FlyAnimationPosition = $A0, then sets the timer to 3:00
+; (wD76F_LevelTimer_Minutes = $03, wD770_LevelTimer_SecondsBCD = $00) with a
+; $3C frame tick in wD771_LevelTimer_FrameCounter.
+; The timer only actually counts down in levels where wD623_CollectibleMode is set
     xor  A, A                                          ;; 00:0547 $af
     ld   [wD687_FlyAnimationState], A                                    ;; 00:0548 $ea $87 $d6
     ld   [wD689_FlyAnimationTimer], A                                    ;; 00:054b $ea $89 $d6
     ld   A, $a0                                        ;; 00:054e $3e $a0
     ld   [wD688_FlyAnimationPosition], A                                    ;; 00:0550 $ea $88 $d6
     ld   A, $03                                        ;; 00:0553 $3e $03
-    ld   [wD76F], A                                    ;; 00:0555 $ea $6f $d7
+    ld   [wD76F_LevelTimer_Minutes], A                                    ;; 00:0555 $ea $6f $d7
     xor  A, A                                          ;; 00:0558 $af
-    ld   [wD770], A                                    ;; 00:0559 $ea $70 $d7
+    ld   [wD770_LevelTimer_SecondsBCD], A                                    ;; 00:0559 $ea $70 $d7
     ld   A, $3c                                        ;; 00:055c $3e $3c
-    ld   [wD771], A                                    ;; 00:055e $ea $71 $d7
+    ld   [wD771_LevelTimer_FrameCounter], A                                    ;; 00:055e $ea $71 $d7
     ret                                                ;; 00:0561 $c9
 
 call_00_0562_Collectible_InitForLevel:
@@ -490,19 +526,22 @@ call_00_0562_Collectible_InitForLevel:
     db   $00 ; MAP_UNUSED_1D
     db   $00 ; MAP_BOSS_TV_CHANNEL_Z
 
-call_00_0598_FlyPowerup_TickScoreTimer:
-; Per-frame score countdown tick for the fly power-up. Decrements wD771 timer; reloads to 
-; $3C when expired and sets bit 2 of wD60E_HUDDirtyFlags (score display dirty flag). Decrements wD770 
-; as a BCD value (via daa); if it underflows to $99: reloads to $59 and decrements 
-; wD76F (fly life counter). If wD76F goes negative (bit 7 set): clamps to $00, zeroes wD770, 
-; ORs $14 into wD621_WarpFlags (triggers level end / warp out)
-    ld   HL, wD771                                     ;; 00:0598 $21 $71 $d7
+call_00_0598_LevelTimer_Tick:
+; Per-frame tick of the bonus level countdown timer. Decrements
+; wD771_LevelTimer_FrameCounter; once per second (every $3C frames) it reloads that
+; counter, sets HUD_DIRTY_TIMER in wD60E_HUDDirtyFlags and decrements
+; wD770_LevelTimer_SecondsBCD as a BCD value (via daa). When the seconds underflow past
+; $00 to $99 they reload to $59 and wD76F_LevelTimer_Minutes is decremented.
+; When the minutes go negative they are clamped to $00, the seconds are zeroed and
+; WARP_TIME_UP | WARP_ENTERED_TV is OR'd into wD621_WarpFlags, which boots the player
+; out of the level with the MENU_TYPE_TIME_UP screen
+    ld   HL, wD771_LevelTimer_FrameCounter                                     ;; 00:0598 $21 $71 $d7
     dec  [HL]                                          ;; 00:059b $35
     ret  NZ                                            ;; 00:059c $c0
     ld   [HL], $3c                                     ;; 00:059d $36 $3c
     ld   HL, wD60E_HUDDirtyFlags                                     ;; 00:059f $21 $0e $d6
     set  2, [HL]                                       ;; 00:05a2 $cb $d6
-    ld   HL, wD770                                     ;; 00:05a4 $21 $70 $d7
+    ld   HL, wD770_LevelTimer_SecondsBCD                                     ;; 00:05a4 $21 $70 $d7
     ld   A, [HL]                                       ;; 00:05a7 $7e
     sub  A, $01                                        ;; 00:05a8 $d6 $01
     daa                                                ;; 00:05aa $27
@@ -510,13 +549,13 @@ call_00_0598_FlyPowerup_TickScoreTimer:
     cp   A, $99                                        ;; 00:05ac $fe $99
     ret  NZ                                            ;; 00:05ae $c0
     ld   [HL], $59                                     ;; 00:05af $36 $59
-    ld   HL, wD76F                                     ;; 00:05b1 $21 $6f $d7
+    ld   HL, wD76F_LevelTimer_Minutes                                     ;; 00:05b1 $21 $6f $d7
     dec  [HL]                                          ;; 00:05b4 $35
     bit  7, [HL]                                       ;; 00:05b5 $cb $7e
     ret  Z                                             ;; 00:05b7 $c8
     ld   [HL], $00                                     ;; 00:05b8 $36 $00
     xor  A, A                                          ;; 00:05ba $af
-    ld   [wD770], A                                    ;; 00:05bb $ea $70 $d7
+    ld   [wD770_LevelTimer_SecondsBCD], A                                    ;; 00:05bb $ea $70 $d7
     ld   A, [wD621_WarpFlags]                                    ;; 00:05be $fa $21 $d6
     or   A, $14                                        ;; 00:05c1 $f6 $14
     ld   [wD621_WarpFlags], A                                    ;; 00:05c3 $ea $21 $d6
@@ -536,7 +575,7 @@ call_00_05c7_FlyPowerup_Update:
 ; Bit 1 set and bit 0 clear → fly moving out (increment wD688_FlyAnimationPosition toward $A0 and return)
     ld   A, [wD623_CollectibleMode]                                    ;; 00:05c7 $fa $23 $d6
     and  A, A                                          ;; 00:05ca $a7
-    jr   NZ, call_00_0598_FlyPowerup_TickScoreTimer                                ;; 00:05cb $20 $cb
+    jr   NZ, call_00_0598_LevelTimer_Tick                                ;; 00:05cb $20 $cb
     ld   A, [wD687_FlyAnimationState]                                    ;; 00:05cd $fa $87 $d6
     and  A, $01                                        ;; 00:05d0 $e6 $01
     jr   NZ, .jr_00_05e3                               ;; 00:05d2 $20 $0f
@@ -726,10 +765,10 @@ call_00_06ec_Player_ObtainedCollectible:
 ; If wD623_CollectibleMode (collectible mode quota) is nonzero: returns if warp bit 4 already set in wD621; 
 ; decrements wD649_CollectibleAmount (counting down toward zero). 
 ; If wD623_CollectibleMode is zero (free-collect mode): increments wD649_CollectibleAmount, clamped at $FF. 
-; Looks up wD648 (milestone index) in .data_00_074a_CollectibleMilestoneThresholds ($1E/$28/$32). 
+; Looks up wD648_CollectibleMilestoneIndex (milestone index) in .data_00_074a_CollectibleMilestoneThresholds ($1E/$28/$32). 
 ; If the threshold is $32: checks if wD649 is an exact multiple of $32 — if so and 
-; bit 3 of wD64C not yet set, sets that bit and awards an extra life via Player_ExtraLifeFly_Deactivate. 
-; Otherwise: if wD649 has reached the threshold, resets it to zero, increments wD648 milestone index, 
+; bit 3 of wD64C_CurrentLevel_HiddenRemoteFlags not yet set, sets that bit and awards an extra life via Player_ExtraLifeFly_Deactivate. 
+; Otherwise: if wD649 has reached the threshold, resets it to zero, increments wD648_CollectibleMilestoneIndex milestone index, 
 ; sets bit 3 of wD60E_HUDDirtyFlags (milestone display dirty)
     ld   C, SFX_COLLECTIBLE                                        ;; 00:06ec $0e $06
     call call_00_112f_QueueSFX                                  ;; 00:06ee $cd $2f $11
@@ -754,7 +793,7 @@ call_00_06ec_Player_ObtainedCollectible:
     dec  [HL]                                          ;; 00:0711 $35
     ret                                                ;; 00:0712 $c9
 .jr_00_0713:
-    ld   HL, wD648                                     ;; 00:0713 $21 $48 $d6
+    ld   HL, wD648_CollectibleMilestoneIndex                                     ;; 00:0713 $21 $48 $d6
     ld   L, [HL]                                       ;; 00:0716 $6e
     ld   H, $00                                        ;; 00:0717 $26 $00
     ld   DE, .data_00_074a_CollectibleMilestoneThresholds                                      ;; 00:0719 $11 $4a $07
@@ -766,7 +805,7 @@ call_00_06ec_Player_ObtainedCollectible:
     cp   A, [HL]                                       ;; 00:0725 $be
     ret  NZ                                            ;; 00:0726 $c0
     ld   [HL], $00                                     ;; 00:0727 $36 $00
-    ld   HL, wD648                                     ;; 00:0729 $21 $48 $d6
+    ld   HL, wD648_CollectibleMilestoneIndex                                     ;; 00:0729 $21 $48 $d6
     inc  [HL]                                          ;; 00:072c $34
     ld   HL, wD60E_HUDDirtyFlags                                     ;; 00:072d $21 $0e $d6
     set  3, [HL]                                       ;; 00:0730 $cb $de
@@ -777,7 +816,7 @@ call_00_06ec_Player_ObtainedCollectible:
     sub  A, $32                                        ;; 00:0736 $d6 $32
     ret  C                                             ;; 00:0738 $d8
     jr   NZ, .jr_00_0736                               ;; 00:0739 $20 $fb
-    ld   HL, wD64C                                     ;; 00:073b $21 $4c $d6
+    ld   HL, wD64C_CurrentLevel_HiddenRemoteFlags                                     ;; 00:073b $21 $4c $d6
     bit  3, [HL]                                       ;; 00:073e $cb $5e
     jp   NZ, call_00_068a_Player_ExtraLifeFly                                ;; 00:0740 $c2 $8a $06
     set  3, [HL]                                       ;; 00:0743 $cb $de
@@ -786,7 +825,7 @@ call_00_06ec_Player_ObtainedCollectible:
     ret                                                ;; 00:0749 $c9
 .data_00_074a_CollectibleMilestoneThresholds:
 ; 3-byte table. Successive collectible count thresholds that 
-; trigger milestone rewards, indexed by wD648
+; trigger milestone rewards, indexed by wD648_CollectibleMilestoneIndex
     db   30, 40, 50                                 ;; 00:074a .??
 
 call_00_074d_HUD_MarkDirty:
@@ -818,10 +857,17 @@ call_00_075b_Player_CanBeDamaged:
     ret  NZ                                            ;; 00:076b $c0
     ret                                                ;; 00:076c $c9
 
-data_00_076d:
-    db   $08, $04, $0d, $07
+data_00_076d_DemoLevelIds:
+; level id played by each of the 4 attract-mode demos, indexed by wD61D_DemoUnk
+    db   MAP_TOON_TV_FINE_TOONING
+    db   MAP_CIRCUIT_CENTRAL_WWWDOTCOMCOM
+    db   MAP_KUNG_FU_THEATER_SAMURAI_NIGHT_FEVER
+    db   MAP_PRE_HISTORY_CHANNEL_PANGAEA_90210
 
-data_00_0771:
+data_00_0771_DemoInputScriptPointers:
+; 4 pointers into the demo input scripts that follow. Each script is a run-length
+; list of (frame count, button bits) pairs terminated by $FF, replayed into
+; wD620_DemoInputs while wD61E_DemoModeEnabled is set
     db   $79, $07, $7c, $07        ;; 00:076d ????????
     db   $7f, $07, $9e, $07, $64, $10, $ff, $64        ;; 00:0775 ????????
     db   $10, $ff, $30, $10, $08, $11, $40, $10        ;; 00:077d ????????
@@ -851,7 +897,9 @@ call_00_07b0_MemCopy:
     jr   NZ, call_00_07b0_MemCopy                              ;; 00:07b6 $20 $f8
     ret                                                ;; 00:07b8 $c9
 
-call_00_07b9:
+call_00_07b9_GetPointerFromTable:
+; HL = word read from DE[A]. A is the entry index, DE points at a table of little
+; endian pointers. Used all over the place for jump/frame/palette tables
     ld   L, A                                          ;; 00:07b9 $6f
     ld   H, $00                                        ;; 00:07ba $26 $00
     add  HL, HL                                        ;; 00:07bc $29
@@ -862,14 +910,22 @@ call_00_07b9:
     ld   L, E                                          ;; 00:07c1 $6b
     ret                                                ;; 00:07c2 $c9
 
-call_00_07c3:
-    ld   a,[wD6A5_PasswordTilesBank]
+call_00_07c3_Screen_LoadTilesAndTilemap:
+; Draws a rectangular block of graphics into the top-left of the screen using the
+; parameter block at wD6A5_ScreenDraw_TileDataBank..wD6AE.
+; Copies wD6AD_ScreenDraw_TileDataSize bytes of tiles from
+; wD6AB_ScreenDraw_TileDataPtr to _VRAM + wD6A6_ScreenDraw_FirstTileId * 16, then walks a
+; wD6A7_ScreenDraw_WidthInTiles x wD6A8_ScreenDraw_HeightInTiles tilemap at
+; wD6A9_ScreenDraw_TilemapPtr, writing (tile id + wD6AF_ScreenDraw_TileIdBase) to _SCRN0.
+; On GBC it also writes the matching attribute byte (stored width*height further into
+; the same tilemap) to VRAM bank 1. Used for the password keypad and similar overlays
+    ld   a,[wD6A5_ScreenDraw_TileDataBank]
     call call_00_1089_SwitchBank
-    ld   hl,wD6AD
+    ld   hl,wD6AD_ScreenDraw_TileDataSize
     ld   c,[hl]
     inc  hl
     ld   b,[hl]
-    ld   hl,wD6A6
+    ld   hl,wD6A6_ScreenDraw_FirstTileId
     ld   l,[hl]
     ld   h,$00
     add  hl,hl
@@ -880,22 +936,22 @@ call_00_07c3:
     add  hl,de
     ld   e,l
     ld   d,h
-    ld   hl,wD6AB
+    ld   hl,wD6AB_ScreenDraw_TileDataPtr
     ldi  a,[hl]
     ld   h,[hl]
     ld   l,a
     call call_00_07b0_MemCopy
-    ld   a,[wD6A6]
-    ld   [wD6AF],a
-    ld   hl,wD6A9
+    ld   a,[wD6A6_ScreenDraw_FirstTileId]
+    ld   [wD6AF_ScreenDraw_TileIdBase],a
+    ld   hl,wD6A9_ScreenDraw_TilemapPtr
     ldi  a,[hl]
     ld   h,[hl]
     ld   l,a
     ld   de,_SCRN0
-    ld   a,[wD6A8]
+    ld   a,[wD6A8_ScreenDraw_HeightInTiles]
     ld   b,a
 .jr_00_07fb:
-    ld   a,[wD6A7]
+    ld   a,[wD6A7_ScreenDraw_WidthInTiles]
     ld   c,a
     push de
 .jr_00_0800:
@@ -908,10 +964,10 @@ call_00_07c3:
     push de
     push bc
     ld   c,[hl]
-    ld   hl,wD6A7
+    ld   hl,wD6A7_ScreenDraw_WidthInTiles
     ld   e,[hl]
     ld   d,$00
-    ld   hl,wD6A8
+    ld   hl,wD6A8_ScreenDraw_HeightInTiles
     ld   b,[hl]
     ld   hl,$0000
 .jr_00_081b:
@@ -920,7 +976,7 @@ call_00_07c3:
     jr   nz,.jr_00_081b
     ld   e,l
     ld   d,h
-    ld   hl,wD6A9
+    ld   hl,wD6A9_ScreenDraw_TilemapPtr
     ldi  a,[hl]
     ld   h,[hl]
     ld   l,a
@@ -935,7 +991,7 @@ call_00_07c3:
     ld   a,$00
     ldh  [rVBK], a
 .jr_00_0834:
-    ld   a,[wD6AF]
+    ld   a,[wD6AF_ScreenDraw_TileIdBase]
     add  [hl]
     ld   [de],a
     inc  hl
@@ -953,10 +1009,15 @@ call_00_07c3:
     jr   nz,.jr_00_07fb
     jp   call_00_10a3_RestoreBank
 
-call_00_084d:
-    ld   A, [wD6B0]                                    ;; 00:084d $fa $b0 $d6
+call_00_084d_Screen_LoadFullscreenImage:
+; Loads a full 20x18 screen image (title screens, credits, "great job", etc) from
+; wD6B0_FullscreenImage_Bank / wD6B1_FullscreenImage_Ptr.
+; Copies $F00 bytes of tiles to _VRAM and another $780 to _VRAM+$1000, then on GBC copies
+; the 20x18 attribute map that follows into VRAM bank 1. Finally fills _SCRN0 with a
+; running tile id 0..$FF over 24 rows so the image tiles map 1:1 onto the screen
+    ld   A, [wD6B0_FullscreenImage_Bank]                                    ;; 00:084d $fa $b0 $d6
     call call_00_1089_SwitchBank                                  ;; 00:0850 $cd $89 $10
-    ld   HL, wD6B1                                     ;; 00:0853 $21 $b1 $d6
+    ld   HL, wD6B1_FullscreenImage_Ptr                                     ;; 00:0853 $21 $b1 $d6
     ld   A, [HL+]                                      ;; 00:0856 $2a
     ld   H, [HL]                                       ;; 00:0857 $66
     ld   L, A                                          ;; 00:0858 $6f
@@ -1015,7 +1076,12 @@ call_00_084d:
     jr   NZ, .jr_00_089b                               ;; 00:08ac $20 $ed
     jp   call_00_10a3_RestoreBank                                  ;; 00:08ae $c3 $a3 $10
 
-call_00_08b1:
+call_00_08b1_MediaDimension_CopyTVAttributes:
+; Writes the 6x5 tile GBC attribute block for the currently selected hub tv into the
+; VRAM bank 1 tilemap at HL (the caller sets rVBK = 1 first).
+; Looks up the level's tv palette id, indexes .data_00_08e6_TVAttributeTable_TVAttributeTable to get a
+; bank $13 pointer, skips $240 bytes past the tile data to reach the attributes, and
+; copies 5 rows of 6 bytes with a $20 byte screen stride
     push HL                                            ;; 00:08b1 $e5
     push DE                                            ;; 00:08b2 $d5
     push BC                                            ;; 00:08b3 $c5
@@ -1023,8 +1089,8 @@ call_00_08b1:
     ld   A, $13                                        ;; 00:08b5 $3e $13
     call call_00_1089_SwitchBank                                  ;; 00:08b7 $cd $89 $10
     call call_00_2e3a_MapData_GetTVPaletteId                                  ;; 00:08ba $cd $3a $2e
-    ld   DE, .data_00_08e6                                      ;; 00:08bd $11 $e6 $08
-    call call_00_07b9                                  ;; 00:08c0 $cd $b9 $07
+    ld   DE, .data_00_08e6_TVAttributeTable                                      ;; 00:08bd $11 $e6 $08
+    call call_00_07b9_GetPointerFromTable                                  ;; 00:08c0 $cd $b9 $07
     ld   DE, $240                                      ;; 00:08c3 $11 $40 $02
     add  HL, DE                                        ;; 00:08c6 $19
     ld   E, L                                          ;; 00:08c7 $5d
@@ -1052,21 +1118,31 @@ call_00_08b1:
     pop  DE                                            ;; 00:08e3 $d1
     pop  HL                                            ;; 00:08e4 $e1
     ret                                                ;; 00:08e5 $c9
-.data_00_08e6:
+.data_00_08e6_TVAttributeTable:
     db   $00, $40, $00, $6d, $00, $70, $00, $6a        ;; 00:08e6 ????????
     db   $00, $76, $00, $40                            ;; 00:08ee ????
     dw   $4000                                         ;; 00:08f2 wW
     dw   $6700                                         ;; 00:08f4 wW
     db   $00, $79, $00, $40, $00, $73                  ;; 00:08f6 ??????
 
-call_00_08fc_SetupEntityVRAMTransfer: ; this reads secondary tileset information from other banks and writes to a buffer that gets copied to vram
-    ld   HL, wD60F_HDMATransferFlags                                     ;; 00:08fc $21 $0f $d6
+call_00_08fc_SetupEntityVRAMTransfer:
+; Stages the next pending graphics transfer for the LCD STAT streaming handler.
+; Spins while GFX_XFER_IN_PROGRESS is set, then picks the lowest set request bit in
+; wD60F_GfxTransferFlags and works out (bank, source page) for it:
+;   bit 0 -> Gex tiles, bank $04 + (wD208_Player_SpriteID >> 6), page $40 + (id & $3F)
+;   bit 1 -> entity tiles from wD589_EntityGfxSrcBank / wD588_EntityGfxSrcAddrHi
+;   bit 2 -> secondary tileset from wD726_SecondaryTilesetBank / wD728_SecondaryTilesetAddr
+;   bit 3 -> queued entity gfx from wD71F_GfxCopy_SrcBank / wD721_GfxCopy_SrcAddrHi
+;   bit 4 -> media dimension tv screen, bank $14, page $40 + wD610_MediaDimension_TVScreenId
+; Copies $10 rows ($100 bytes) into wD100_TilesToLoadBuffer and raises
+; GFX_XFER_IN_PROGRESS so the hblank handler starts draining it into VRAM
+    ld   HL, wD60F_GfxTransferFlags                                     ;; 00:08fc $21 $0f $d6
     bit  7, [HL]                                       ;; 00:08ff $cb $7e
     jr   NZ, call_00_08fc_SetupEntityVRAMTransfer                              ;; 00:0901 $20 $f9
     ld   A, [HL]                                       ;; 00:0903 $7e
     and  A, A                                          ;; 00:0904 $a7
     ret  Z                                             ;; 00:0905 $c8
-    ld   HL, wD60F_HDMATransferFlags                                     ;; 00:0906 $21 $0f $d6
+    ld   HL, wD60F_GfxTransferFlags                                     ;; 00:0906 $21 $0f $d6
     bit  0, [HL]                                       ;; 00:0909 $cb $46
     jr   NZ, .jr_00_091e                               ;; 00:090b $20 $11
     bit  1, [HL]                                       ;; 00:090d $cb $4e
@@ -1090,9 +1166,9 @@ call_00_08fc_SetupEntityVRAMTransfer: ; this reads secondary tileset information
     add  A, $40                                        ;; 00:092f $c6 $40
     jr   .jr_00_095e                                   ;; 00:0931 $18 $2b
 .jr_00_0933:
-    ld   A, [wD589]                                    ;; 00:0933 $fa $89 $d5
+    ld   A, [wD589_EntityGfxSrcBank]                                    ;; 00:0933 $fa $89 $d5
     call call_00_1089_SwitchBank                                  ;; 00:0936 $cd $89 $10
-    ld   A, [wD588]                                    ;; 00:0939 $fa $88 $d5
+    ld   A, [wD588_EntityGfxSrcAddrHi]                                    ;; 00:0939 $fa $88 $d5
     jr   .jr_00_095e                                   ;; 00:093c $18 $20
 .jr_00_093e:
     ld   A, [wD726_SecondaryTilesetBank]                                    ;; 00:093e $fa $26 $d7 ; this is where it went when loading seconda tileset info
@@ -1100,39 +1176,44 @@ call_00_08fc_SetupEntityVRAMTransfer: ; this reads secondary tileset information
     ld   A, [wD728_SecondaryTilesetAddr]                                    ;; 00:0944 $fa $28 $d7
     jr   .jr_00_095e                                   ;; 00:0947 $18 $15
 .jr_00_0949:
-    ld   A, [wD71F]                                    ;; 00:0949 $fa $1f $d7
+    ld   A, [wD71F_GfxCopy_SrcBank]                                    ;; 00:0949 $fa $1f $d7
     call call_00_1089_SwitchBank                                  ;; 00:094c $cd $89 $10
-    ld   A, [wD721]                                    ;; 00:094f $fa $21 $d7
+    ld   A, [wD721_GfxCopy_SrcAddrHi]                                    ;; 00:094f $fa $21 $d7
     jr   .jr_00_095e                                   ;; 00:0952 $18 $0a
 .jr_00_0954:
     ld   A, $14                                        ;; 00:0954 $3e $14
     call call_00_1089_SwitchBank                                  ;; 00:0956 $cd $89 $10
-    ld   A, [wD610]                                    ;; 00:0959 $fa $10 $d6
+    ld   A, [wD610_MediaDimension_TVScreenId]                                    ;; 00:0959 $fa $10 $d6
     add  A, $40                                        ;; 00:095c $c6 $40
 .jr_00_095e:
     ld   H, A                                          ;; 00:095e $67
     ld   L, $00                                        ;; 00:095f $2e $00
     ld   DE, wD100_TilesToLoadBuffer                                     ;; 00:0961 $11 $00 $d1
     ld   B, $10                                        ;; 00:0964 $06 $10
-    call call_00_0b6d                                  ;; 00:0966 $cd $6d $0b ; this reads secondary tileset information from other banks
-    ld   HL, wD60F_HDMATransferFlags                                     ;; 00:0969 $21 $0f $d6
+    call call_00_0b6d_CopyTileRows                                  ;; 00:0966 $cd $6d $0b ; this reads secondary tileset information from other banks
+    ld   HL, wD60F_GfxTransferFlags                                     ;; 00:0969 $21 $0f $d6
     set  7, [HL]                                       ;; 00:096c $cb $fe
     jp   call_00_10a3_RestoreBank                                  ;; 00:096e $c3 $a3 $10
 
-call_00_0971:
-    ld   HL, wD60F_HDMATransferFlags                                     ;; 00:0971 $21 $0f $d6
+call_00_0971_ProcessPendingGfxTransfers:
+; Blocking (LCD-off) version of the transfer queue, used when the screen is already
+; blanked. Performs every pending copy with plain MemCopy instead of streaming it a few
+; bytes at a time through the LCD STAT handler
+    ld   HL, wD60F_GfxTransferFlags                                     ;; 00:0971 $21 $0f $d6
     bit  0, [HL]                                       ;; 00:0974 $cb $46
-    call NZ, call_00_098f                              ;; 00:0976 $c4 $8f $09
-    ld   HL, wD60F_HDMATransferFlags                                     ;; 00:0979 $21 $0f $d6
+    call NZ, call_00_098f_CopyPlayerGfxToVRAM                              ;; 00:0976 $c4 $8f $09
+    ld   HL, wD60F_GfxTransferFlags                                     ;; 00:0979 $21 $0f $d6
     bit  1, [HL]                                       ;; 00:097c $cb $4e
-    call NZ, call_00_09be                              ;; 00:097e $c4 $be $09
-    ld   HL, wD60F_HDMATransferFlags                                     ;; 00:0981 $21 $0f $d6
+    call NZ, call_00_09be_CopyEntityGfxToVRAM                              ;; 00:097e $c4 $be $09
+    ld   HL, wD60F_GfxTransferFlags                                     ;; 00:0981 $21 $0f $d6
     bit  2, [HL]                                       ;; 00:0984 $cb $56
-    call NZ, call_00_09e3                              ;; 00:0986 $c4 $e3 $09
-    call call_00_09fd                                  ;; 00:0989 $cd $fd $09
-    jp   call_00_0a21                                    ;; 00:098c $c3 $21 $0a
+    call NZ, call_00_09e3_CopySecondaryTilesetToVRAM                              ;; 00:0986 $c4 $e3 $09
+    call call_00_09fd_CopyTVScreenToVRAM                                  ;; 00:0989 $cd $fd $09
+    jp   call_00_0a21_FlushEntityGfxQueue                                    ;; 00:098c $c3 $21 $0a
 
-call_00_098f:
+call_00_098f_CopyPlayerGfxToVRAM:
+; Clears GFX_XFER_PLAYER_GFX and copies the 256-byte Gex tile page into both VRAM
+; pages $8000 and $8100 so whichever one wD586_PlayerGfxVramPage selects is correct
     res  0, [HL]                                       ;; 00:098f $cb $86
     ld   A, [wD208_Player_SpriteID]                                    ;; 00:0991 $fa $08 $d2
     rlca                                               ;; 00:0994 $07
@@ -1155,11 +1236,12 @@ call_00_098f:
     call call_00_07b0_MemCopy                                  ;; 00:09b8 $cd $b0 $07
     jp   call_00_10a3_RestoreBank                                  ;; 00:09bb $c3 $a3 $10
 
-call_00_09be:
+call_00_09be_CopyEntityGfxToVRAM:
+; Same as above for the entity tile page, filling both $8200 and $8300
     res  1, [HL]                                       ;; 00:09be $cb $8e
-    ld   A, [wD589]                                    ;; 00:09c0 $fa $89 $d5
+    ld   A, [wD589_EntityGfxSrcBank]                                    ;; 00:09c0 $fa $89 $d5
     call call_00_1089_SwitchBank                                  ;; 00:09c3 $cd $89 $10
-    ld   A, [wD588]                                    ;; 00:09c6 $fa $88 $d5
+    ld   A, [wD588_EntityGfxSrcAddrHi]                                    ;; 00:09c6 $fa $88 $d5
     ld   H, A                                          ;; 00:09c9 $67
     ld   L, $00                                        ;; 00:09ca $2e $00
     push HL                                            ;; 00:09cc $e5
@@ -1172,7 +1254,8 @@ call_00_09be:
     call call_00_07b0_MemCopy                                  ;; 00:09dd $cd $b0 $07
     jp   call_00_10a3_RestoreBank                                  ;; 00:09e0 $c3 $a3 $10
 
-call_00_09e3:
+call_00_09e3_CopySecondaryTilesetToVRAM:
+; Clears GFX_XFER_SECONDARY_TILESET and copies $240 bytes to VRAM_TILESET_ADDR_1
     res  2, [HL]                                       ;; 00:09e3 $cb $96
     ld   A, [wD726_SecondaryTilesetBank]                                    ;; 00:09e5 $fa $26 $d7
     call call_00_1089_SwitchBank                                  ;; 00:09e8 $cd $89 $10
@@ -1184,16 +1267,18 @@ call_00_09e3:
     call call_00_07b0_MemCopy                                  ;; 00:09f7 $cd $b0 $07
     jp   call_00_10a3_RestoreBank                                  ;; 00:09fa $c3 $a3 $10
 
-call_00_09fd:
+call_00_09fd_CopyTVScreenToVRAM:
+; Hub only. If wD610_MediaDimension_TVScreenId is not $FF, copies that 256-byte screen
+; image from bank $14 to VRAM_HUD_TILES ($8600)
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:09fd $fa $24 $d6
     and  A, A                                          ;; 00:0a00 $a7
     ret  NZ                                            ;; 00:0a01 $c0
-    ld   A, [wD610]                                    ;; 00:0a02 $fa $10 $d6
+    ld   A, [wD610_MediaDimension_TVScreenId]                                    ;; 00:0a02 $fa $10 $d6
     cp   A, $ff                                        ;; 00:0a05 $fe $ff
     ret  Z                                             ;; 00:0a07 $c8
     ld   A, $14                                        ;; 00:0a08 $3e $14
     call call_00_1089_SwitchBank                                  ;; 00:0a0a $cd $89 $10
-    ld   A, [wD610]                                    ;; 00:0a0d $fa $10 $d6
+    ld   A, [wD610_MediaDimension_TVScreenId]                                    ;; 00:0a0d $fa $10 $d6
     add  A, $40                                        ;; 00:0a10 $c6 $40
     ld   H, A                                          ;; 00:0a12 $67
     ld   L, $00                                        ;; 00:0a13 $2e $00
@@ -1202,41 +1287,49 @@ call_00_09fd:
     call call_00_07b0_MemCopy                                  ;; 00:0a1b $cd $b0 $07
     jp   call_00_10a3_RestoreBank                                  ;; 00:0a1e $c3 $a3 $10
 
-call_00_0a21:
-    FARCALL call_02_722c_SoundQueue_PlayNext
-    ld   HL, wD60F_HDMATransferFlags                                     ;; 00:0a2c $21 $0f $d6
+call_00_0a21_FlushEntityGfxQueue:
+; Drains the entity graphics queue while the LCD is off. Pops a descriptor into
+; wD71F_GfxCopy_SrcBank.., and if GFX_XFER_QUEUED_ENTITY_GFX came back set, does the
+; wD724_GfxCopy_SizeLo-byte copy immediately and loops for the next queue entry
+    FARCALL call_02_722c_EntityGfxQueue_StartNextTransfer
+    ld   HL, wD60F_GfxTransferFlags                                     ;; 00:0a2c $21 $0f $d6
     bit  3, [HL]                                       ;; 00:0a2f $cb $5e
     ret  Z                                             ;; 00:0a31 $c8
     res  3, [HL]                                       ;; 00:0a32 $cb $9e
-    ld   A, [wD71F]                                    ;; 00:0a34 $fa $1f $d7
+    ld   A, [wD71F_GfxCopy_SrcBank]                                    ;; 00:0a34 $fa $1f $d7
     call call_00_1089_SwitchBank                                  ;; 00:0a37 $cd $89 $10
-    ld   HL, wD724                                     ;; 00:0a3a $21 $24 $d7
+    ld   HL, wD724_GfxCopy_SizeLo                                     ;; 00:0a3a $21 $24 $d7
     ld   C, [HL]                                       ;; 00:0a3d $4e
     inc  HL                                            ;; 00:0a3e $23
     ld   B, [HL]                                       ;; 00:0a3f $46
-    ld   HL, wD722                                     ;; 00:0a40 $21 $22 $d7
+    ld   HL, wD722_GfxCopy_DestAddrLo                                     ;; 00:0a40 $21 $22 $d7
     ld   E, [HL]                                       ;; 00:0a43 $5e
     inc  HL                                            ;; 00:0a44 $23
     ld   D, [HL]                                       ;; 00:0a45 $56
-    ld   HL, wD720                                     ;; 00:0a46 $21 $20 $d7
+    ld   HL, wD720_GfxCopy_SrcAddrLo                                     ;; 00:0a46 $21 $20 $d7
     ld   A, [HL+]                                      ;; 00:0a49 $2a
     ld   H, [HL]                                       ;; 00:0a4a $66
     ld   L, A                                          ;; 00:0a4b $6f
     call call_00_07b0_MemCopy                                  ;; 00:0a4c $cd $b0 $07
     call call_00_10a3_RestoreBank                                  ;; 00:0a4f $cd $a3 $10
-    jr   call_00_0a21                                    ;; 00:0a52 $18 $cd
+    jr   call_00_0a21_FlushEntityGfxQueue                                    ;; 00:0a52 $18 $cd
 
 call_00_0a54_MainGameLoop_UpdateAndRenderFrame:
+; VBlank interrupt handler. In order: OAM DMA, the bank 3 VRAM update pass, install a
+; newly requested LCD STAT handler if wCCFD_LcdIsrId still has bit 7 clear, run the
+; vblank hook that pairs with the installed handler (wCCFE_VBlankHookPtrLo), read the
+; joypad, push the shadow LCDC/SCX/SCY and palettes to hardware, then bank in the audio
+; driver for its per-frame tick before restoring the previous bank
     push AF                                            ;; 00:0a54 $f5
     push BC                                            ;; 00:0a55 $c5
     push DE                                            ;; 00:0a56 $d5
     push HL                                            ;; 00:0a57 $e5
-    call hFF80                                         ;; 00:0a58 $cd $80 $ff ; calls oam update code in hram
-    call call_00_0ac1                                  ;; 00:0a5b $cd $c1 $0a
-    ld   A, [wCCFD]                                    ;; 00:0a5e $fa $fd $cc
+    call hFF80_OamDmaRoutine                                         ;; 00:0a58 $cd $80 $ff ; calls oam update code in hram
+    call call_00_0ac1_VBlank_UpdateVRAM                                  ;; 00:0a5b $cd $c1 $0a
+    ld   A, [wCCFD_LcdIsrId]                                    ;; 00:0a5e $fa $fd $cc
     bit  7, A                                          ;; 00:0a61 $cb $7f
-    call Z, call_00_0bb9                               ;; 00:0a63 $cc $b9 $0b
-    ld   HL, wCCFE                                     ;; 00:0a66 $21 $fe $cc
+    call Z, call_00_0bb9_InstallLcdIsr                               ;; 00:0a63 $cc $b9 $0b
+    ld   HL, wCCFE_VBlankHookPtrLo                                     ;; 00:0a66 $21 $fe $cc
     ld   A, [HL+]                                      ;; 00:0a69 $2a
     ld   H, [HL]                                       ;; 00:0a6a $66
     ld   L, A                                          ;; 00:0a6b $6f
@@ -1244,13 +1337,13 @@ call_00_0a54_MainGameLoop_UpdateAndRenderFrame:
     call call_00_10be_ReadJoypadInput                                  ;; 00:0a6f $cd $be $10
     ld   A, $01                                        ;; 00:0a72 $3e $01
     ld   [wD622_InterruptFlag], A                                    ;; 00:0a74 $ea $22 $d6
-    ld   A, [wD5A0]                                    ;; 00:0a77 $fa $a0 $d5
+    ld   A, [wD5A0_LCDCValue]                                    ;; 00:0a77 $fa $a0 $d5
     ldh  [rLCDC], A                                    ;; 00:0a7a $e0 $40
     ld   A, [wD5A1_BgMap_ScrollXLo]                                    ;; 00:0a7c $fa $a1 $d5
     ldh  [rSCX], A                                     ;; 00:0a7f $e0 $43
     ld   A, [wD5A2_BgMap_ScrollYLo]                                    ;; 00:0a81 $fa $a2 $d5
     ldh  [rSCY], A                                     ;; 00:0a84 $e0 $42
-    call call_00_0f80                                  ;; 00:0a86 $cd $80 $0f
+    call call_00_0f80_VBlank_UpdatePalettes                                  ;; 00:0a86 $cd $80 $0f
     ld   A, [wD788_CurrentAudioBank]                                    ;; 00:0a89 $fa $88 $d7
     ld   [MBC1RomBank], A                                    ;; 00:0a8c $ea $01 $20
     swap A                                             ;; 00:0a8f $cb $37
@@ -1274,7 +1367,9 @@ call_00_0a54_MainGameLoop_UpdateAndRenderFrame:
     pop  AF                                            ;; 00:0ab2 $f1
     reti                                               ;; 00:0ab3 $d9
 
-call_00_0ab4_WaitForInterrupt: ; updates tiles in VRAM
+call_00_0ab4_WaitForInterrupt:
+; Clears wD622_InterruptFlag and halts until the vblank handler sets it again,
+; i.e. blocks until the start of the next frame
     xor  A, A                                          ;; 00:0ab4 $af
     ld   [wD622_InterruptFlag], A                                    ;; 00:0ab5 $ea $22 $d6
 .jr_00_0ab8:
@@ -1285,7 +1380,14 @@ call_00_0ab4_WaitForInterrupt: ; updates tiles in VRAM
     jr   Z, .jr_00_0ab8                                ;; 00:0abe $28 $f8
     ret                                                ;; 00:0ac0 $c9
 
-call_00_0ac1:
+call_00_0ac1_VBlank_UpdateVRAM:
+; The one VRAM write the game is allowed to do per vblank, banked into BANK_03.
+; Priority order:
+;   1. a pending bg map scroll column/row (MAP_PENDING_VRAM_TRANSFER)
+;   2. a pending bg tile override palette write (wD77B_OverrideVRAMWritePending)
+;   3. the next secondary tileset animation frame, when its delay expires
+;   4. HUD_DIRTY_COLLECTIBLES / HUD_DIRTY_LIVES / HUD_DIRTY_TIMER reloads
+;   5. otherwise the ordinary animated tile update
     ld   A, BANK_03   ;; 00:0ac1 $3e $03
     ld   [MBC1RomBank], A                                    ;; 00:0ac3 $ea $01 $20
     swap A                                             ;; 00:0ac6 $cb $37
@@ -1313,10 +1415,10 @@ call_00_0ac1:
     res  0, [HL]                                       ;; 00:0af4 $cb $86
     bit  0, A                                          ;; 00:0af6 $cb $47
     jp   NZ, call_00_1779_BgMap_WriteOverridePaletteAttributes                                ;; 00:0af8 $c2 $79 $17
-    ld   A, [wD72F]                                    ;; 00:0afb $fa $2f $d7
+    ld   A, [wD72F_TilesetAnim_FrameCount]                                    ;; 00:0afb $fa $2f $d7
     and  A, A                                          ;; 00:0afe $a7
     jr   Z, .jr_00_0b0c                                ;; 00:0aff $28 $0b
-    ld   HL, wD731                                     ;; 00:0b01 $21 $31 $d7
+    ld   HL, wD731_TilesetAnim_DelayReload                                     ;; 00:0b01 $21 $31 $d7
     ld   A, [HL+]                                      ;; 00:0b04 $2a
     dec  [HL]                                          ;; 00:0b05 $35
     jr   NZ, .jr_00_0b0c                               ;; 00:0b06 $20 $04
@@ -1339,18 +1441,18 @@ call_00_0ac1:
     rrca                                               ;; 00:0b2c $0f
     and  A, $01                                        ;; 00:0b2d $e6 $01
     ld   [MBC1SRamBank], A                                    ;; 00:0b2f $ea $01 $40
-    ld   A, [wD738]                                    ;; 00:0b32 $fa $38 $d7
+    ld   A, [wD738_TilesetAnim_Flags]                                    ;; 00:0b32 $fa $38 $d7
     and  A, $01                                        ;; 00:0b35 $e6 $01
     jr   Z, .jr_00_0b48                                ;; 00:0b37 $28 $0f
-    ld   HL, wD60F_HDMATransferFlags                                     ;; 00:0b39 $21 $0f $d6
+    ld   HL, wD60F_GfxTransferFlags                                     ;; 00:0b39 $21 $0f $d6
     bit  2, [HL]                                       ;; 00:0b3c $cb $56
     ret  NZ                                            ;; 00:0b3e $c0
     xor  A, A                                          ;; 00:0b3f $af
-    ld   [wD72F], A                                    ;; 00:0b40 $ea $2f $d7
-    ld   HL, wD730                                     ;; 00:0b43 $21 $30 $d7
+    ld   [wD72F_TilesetAnim_FrameCount], A                                    ;; 00:0b40 $ea $2f $d7
+    ld   HL, wD730_TilesetAnim_FrameIndex                                     ;; 00:0b43 $21 $30 $d7
     jr   .jr_00_0b51                                   ;; 00:0b46 $18 $09
 .jr_00_0b48:
-    ld   HL, wD72F                                     ;; 00:0b48 $21 $2f $d7
+    ld   HL, wD72F_TilesetAnim_FrameCount                                     ;; 00:0b48 $21 $2f $d7
     ld   A, [HL+]                                      ;; 00:0b4b $2a
     inc  [HL]                                          ;; 00:0b4c $34
     sub  A, [HL]                                       ;; 00:0b4d $96
@@ -1359,7 +1461,7 @@ call_00_0ac1:
 .jr_00_0b51:
     ld   C, [HL]                                       ;; 00:0b51 $4e
     ld   B, $00                                        ;; 00:0b52 $06 $00
-    ld   HL, wD734                                     ;; 00:0b54 $21 $34 $d7
+    ld   HL, wD734_TilesetAnim_DestAddrLo                                     ;; 00:0b54 $21 $34 $d7
     ld   E, [HL]                                       ;; 00:0b57 $5e
     inc  HL                                            ;; 00:0b58 $23
     ld   D, [HL]                                       ;; 00:0b59 $56
@@ -1378,10 +1480,13 @@ call_00_0ac1:
     ld   A, [HL+]                                      ;; 00:0b66 $2a
     ld   H, [HL]                                       ;; 00:0b67 $66
     ld   L, A                                          ;; 00:0b68 $6f
-    ld   A, [wD733]                                    ;; 00:0b69 $fa $33 $d7
+    ld   A, [wD733_TilesetAnim_RowsPerFrame]                                    ;; 00:0b69 $fa $33 $d7
     ld   B, A                                          ;; 00:0b6c $47
 
-call_00_0b6d: ; writes tile data in VRAM, reads from banks
+call_00_0b6d_CopyTileRows:
+; Copies B rows of 16 bytes (one tile each) from HL to DE. The inner loop is unrolled
+; and uses "inc E" for the first 15 bytes, so DE must not cross a page boundary
+; mid-tile; the 16th byte uses "inc DE" to carry into the next page
     ld   A, [HL+]                                      ;; 00:0b6d $2a
     ld   [DE], A                                       ;; 00:0b6e $12
     inc  E                                             ;; 00:0b6f $1c
@@ -1431,19 +1536,25 @@ call_00_0b6d: ; writes tile data in VRAM, reads from banks
     ld   [DE], A                                       ;; 00:0b9b $12
     inc  DE                                            ;; 00:0b9c $13
     dec  B                                             ;; 00:0b9d $05
-    jr   NZ, call_00_0b6d                              ;; 00:0b9e $20 $cd
+    jr   NZ, call_00_0b6d_CopyTileRows                              ;; 00:0b9e $20 $cd
     ret                                                ;; 00:0ba0 $c9
 
-call_00_0ba1:
-    ld   a,[wCCFD]
+call_00_0ba1_WaitForLcdIsrChange:
+; Blocks until the requested LCD STAT handler id has been installed and is LCD_ISR_NONE.
+; Note the "and $7F / cp $00" only exits once the handler id is zero, so this is really
+; "wait until the LCD STAT interrupt has been switched off"
+    ld   a,[wCCFD_LcdIsrId]
     and  a,$7F
     cp   a,$00
     ret  z
     call call_00_0ab4_WaitForInterrupt
-    jr   call_00_0ba1
+    jr   call_00_0ba1_WaitForLcdIsrChange
 
-call_00_0bae:
-    ld   HL, wCCFD                                     ;; 00:0bae $21 $fd $cc
+call_00_0bae_RequestLcdIsr:
+; Requests LCD STAT handler A (one of the LCD_ISR_* ids). If that handler is already
+; installed this is a no-op; otherwise the id is stored with LCD_ISR_INSTALLED clear,
+; which makes the next vblank call call_00_0bb9_InstallLcdIsr
+    ld   HL, wCCFD_LcdIsrId                                     ;; 00:0bae $21 $fd $cc
     or   A, $80                                        ;; 00:0bb1 $f6 $80
     cp   A, [HL]                                       ;; 00:0bb3 $be
     ret  Z                                             ;; 00:0bb4 $c8
@@ -1451,19 +1562,23 @@ call_00_0bae:
     ld   [HL], A                                       ;; 00:0bb7 $77
     ret                                                ;; 00:0bb8 $c9
 
-call_00_0bb9:
+call_00_0bb9_InstallLcdIsr:
+; Copies LCD STAT handler A out of .data_00_0bdc_LcdIsrTable into wCCA0_LcdIsrCode
+; (which isrLCDC jumps straight into) and stores the address just past the copied code
+; into wCCFE_VBlankHookPtrLo - that is the vblank-side routine that arms/services the
+; handler each frame. Sets LCD_ISR_INSTALLED in wCCFD_LcdIsrId
     ld   L, A                                          ;; 00:0bb9 $6f
     ld   H, $00                                        ;; 00:0bba $26 $00
-    ld   DE, .data_00_0bdc                                      ;; 00:0bbc $11 $dc $0b
+    ld   DE, .data_00_0bdc_LcdIsrTable                                      ;; 00:0bbc $11 $dc $0b
     add  HL, DE                                        ;; 00:0bbf $19
     or   A, $80                                        ;; 00:0bc0 $f6 $80
-    ld   [wCCFD], A                                    ;; 00:0bc2 $ea $fd $cc
+    ld   [wCCFD_LcdIsrId], A                                    ;; 00:0bc2 $ea $fd $cc
     ld   B, [HL]                                       ;; 00:0bc5 $46
     inc  HL                                            ;; 00:0bc6 $23
     ld   A, [HL+]                                      ;; 00:0bc7 $2a
     ld   H, [HL]                                       ;; 00:0bc8 $66
     ld   L, A                                          ;; 00:0bc9 $6f
-    ld   DE, wCCA0                                     ;; 00:0bca $11 $a0 $cc
+    ld   DE, wCCA0_LcdIsrCode                                     ;; 00:0bca $11 $a0 $cc
 .jr_00_0bcd:
     ld   A, [HL+]                                      ;; 00:0bcd $2a
     ld   [DE], A                                       ;; 00:0bce $12
@@ -1471,33 +1586,62 @@ call_00_0bb9:
     dec  B                                             ;; 00:0bd0 $05
     jr   NZ, .jr_00_0bcd                               ;; 00:0bd1 $20 $fa
     ld   A, L                                          ;; 00:0bd3 $7d
-    ld   [wCCFE], A                                    ;; 00:0bd4 $ea $fe $cc
+    ld   [wCCFE_VBlankHookPtrLo], A                                    ;; 00:0bd4 $ea $fe $cc
     ld   A, H                                          ;; 00:0bd7 $7c
-    ld   [wCCFF], A                                    ;; 00:0bd8 $ea $ff $cc
+    ld   [wCCFF_VBlankHookPtrHi], A                                    ;; 00:0bd8 $ea $ff $cc
     ret                                                ;; 00:0bdb $c9
-.data_00_0bdc:
-    db   $01, $e5, $0b, $2a, $e7, $0b, $3b, $49        ;; 00:0bdc ........
-    db   $0d, $d9                                      ;; 00:0be4 ..
-    ret                                                ;; 00:0be6 $c9
+.data_00_0bdc_LcdIsrTable:
+; 3 bytes per entry: [length of the handler template, pointer to the template].
+; The vblank hook for an entry lives immediately after its template, so
+; call_00_0bb9_InstallLcdIsr gets it for free from the end of the copy.
+; Indexed directly by the LCD_ISR_* ids, hence the 3-byte spacing
+    db   $01                                           ;; LCD_ISR_NONE: 1 byte
+    dw   .data_00_0be5_LcdIsrTemplate_None
+    db   $2a                                           ;; LCD_ISR_VRAM_STREAM: $2A bytes
+    dw   .data_00_0be7_LcdIsrTemplate_VramStream
+    db   $3b                                           ;; LCD_ISR_RASTER_EFFECT: $3B bytes
+    dw   data_00_0d49_LcdIsrTemplate_RasterEffect
+
+.data_00_0be5_LcdIsrTemplate_None:
+    db   OPCODE_RETI                                   ;; 00:0be5 $d9
+    ret                                                ;; 00:0be6 $c9 - vblank hook: do nothing
+
+.data_00_0be7_LcdIsrTemplate_VramStream:
+; Streams wD100_TilesToLoadBuffer into a single VRAM page, 4 bytes per hblank, walking
+; backwards from $D1FF. Assembled by hand as data because it is copied into
+; wCCA0_LcdIsrCode and then self-modified:
+;   $d9         reti                      ; patched to OPCODE_PUSH_AF to arm it
+;   $e5 $d5     push hl / push de
+;   $21 ff d1   ld hl,$D1FF               ; operand = wCCA4_LcdIsr_SrcAddrLo/Hi
+;   $16 80      ld d,$80                  ; operand = wCCA7_LcdIsr_DestPageHi
+;   $5d         ld e,l
+;   4x ($3a $12 [$1d])                    ; ldd a,[hl] / ld [de],a / dec e
+;   $7d $ea a4 cc  ld a,l / ld [wCCA4],a  ; save the walked-back source pointer
+;   $3c $20 0b  inc a / jr nz,+$0b        ; when it wraps to $FF the page is done
     db   $d9, $e5, $d5, $21, $ff, $d1, $16, $80        ;; 00:0be7 ........
     db   $5d, $3a, $12, $1d, $3a, $12, $1d, $3a        ;; 00:0bef ........
     db   $12, $1d, $3a, $12, $7d, $ea, $a4, $cc        ;; 00:0bf7 ........
     db   $3c, $20, $0b
-    
-;    db   $21, $0f, $d6, $cb, $be        ;; 00:0bff ........
-;    db   $fa, $83, $0d, $ea, $a0, $cc, $d1, $e1        ;; 00:0c07 ........
-;    db   $f1, $d9                                      ;; 00:0c0f ..
 
-    ld   hl,wD60F_HDMATransferFlags
-    res  7,[hl]
-    ld   a,[$0D83]
-    ld   [wCCA0],a
+; ...continued: the page just finished, so clear GFX_XFER_IN_PROGRESS and disarm the
+; handler by writing a reti back over its first byte
+    ld   hl,wD60F_GfxTransferFlags
+    res  GFX_XFER_IN_PROGRESS,[hl]
+    ld   a,[data_00_0d83_RetiOpcode]
+    ld   [wCCA0_LcdIsrCode],a
     pop  de
     pop  hl
     pop  af
-    reti 
+    reti
 
-    ld   HL, wD60F_HDMATransferFlags                ;; 00:0c11 $21 $0f $d6
+call_00_0c11_VBlank_ArmVramStreamIsr:
+; VBlank hook paired with LCD_ISR_VRAM_STREAM. Returns unless a transfer has been staged
+; (GFX_XFER_IN_PROGRESS). Otherwise picks the lowest pending request bit, patches the
+; handler's source pointer (wCCA4/wCCA5 = $D1FF) and destination page
+; (wCCA7_LcdIsr_DestPageHi), arms it by writing OPCODE_PUSH_AF over wCCA0_LcdIsrCode,
+; and clears the request bit. The player/entity cases also flip their VRAM page toggle;
+; the tileset and queued-gfx cases walk a multi-page descriptor instead
+    ld   HL, wD60F_GfxTransferFlags                ;; 00:0c11 $21 $0f $d6
     bit  7, [HL]                                       ;; 00:0c14 $cb $7e
     ret  Z                                             ;; 00:0c16 $c8
     bit  0, [HL]                                       ;; 00:0c17 $cb $46
@@ -1513,113 +1657,117 @@ call_00_0bb9:
     res  7, [HL]                                       ;; 00:0c2e $cb $be
     ret                                                ;; 00:0c30 $c9
 .jr_00_0c31:
-    ld   A, [.data_00_0c54]                            ;; 00:0c31 $fa $54 $0c
-    ld   [wCCA0], A                                    ;; 00:0c34 $ea $a0 $cc
-    ld   HL, wCCA5                                     ;; 00:0c37 $21 $a5 $cc
+    ld   A, [.data_00_0c54_PushAfOpcode]                            ;; 00:0c31 $fa $54 $0c
+    ld   [wCCA0_LcdIsrCode], A                                    ;; 00:0c34 $ea $a0 $cc
+    ld   HL, wCCA5_LcdIsr_SrcAddrHi                                     ;; 00:0c37 $21 $a5 $cc
     ld   A, $d1                                        ;; 00:0c3a $3e $d1
     ld   [HL-], A                                      ;; 00:0c3c $32
     ld   [HL], $ff                                     ;; 00:0c3d $36 $ff
-    ld   A, [wD586_GexSpriteStateFlags]                                    ;; 00:0c3f $fa $86 $d5
+    ld   A, [wD586_PlayerGfxVramPage]                                    ;; 00:0c3f $fa $86 $d5
     add  A, $80                                        ;; 00:0c42 $c6 $80
-    ld   [wCCA7], A                                    ;; 00:0c44 $ea $a7 $cc
+    ld   [wCCA7_LcdIsr_DestPageHi], A                                    ;; 00:0c44 $ea $a7 $cc
     and  A, $01                                        ;; 00:0c47 $e6 $01
     xor  A, $01                                        ;; 00:0c49 $ee $01
-    ld   [wD586_GexSpriteStateFlags], A                                    ;; 00:0c4b $ea $86 $d5
-    ld   HL, wD60F_HDMATransferFlags                                     ;; 00:0c4e $21 $0f $d6
+    ld   [wD586_PlayerGfxVramPage], A                                    ;; 00:0c4b $ea $86 $d5
+    ld   HL, wD60F_GfxTransferFlags                                     ;; 00:0c4e $21 $0f $d6
     res  0, [HL]                                       ;; 00:0c51 $cb $86
     ret                                                ;; 00:0c53 $c9
-.data_00_0c54:
+.data_00_0c54_PushAfOpcode:
     db   $f5                                           ;; 00:0c54 .
 .jr_00_0c55:
-    ld   A, [.data_00_0c54]                            ;; 00:0c55 $fa $54 $0c
-    ld   [wCCA0], A                                    ;; 00:0c58 $ea $a0 $cc
-    ld   HL, wCCA5                                     ;; 00:0c5b $21 $a5 $cc
+    ld   A, [.data_00_0c54_PushAfOpcode]                            ;; 00:0c55 $fa $54 $0c
+    ld   [wCCA0_LcdIsrCode], A                                    ;; 00:0c58 $ea $a0 $cc
+    ld   HL, wCCA5_LcdIsr_SrcAddrHi                                     ;; 00:0c5b $21 $a5 $cc
     ld   A, $d1                                        ;; 00:0c5e $3e $d1
     ld   [HL-], A                                      ;; 00:0c60 $32
     ld   [HL], $ff                                     ;; 00:0c61 $36 $ff
-    ld   A, [wD587]                                    ;; 00:0c63 $fa $87 $d5
+    ld   A, [wD587_EntityGfxVramPage]                                    ;; 00:0c63 $fa $87 $d5
     add  A, $82                                        ;; 00:0c66 $c6 $82
-    ld   [wCCA7], A                                    ;; 00:0c68 $ea $a7 $cc
+    ld   [wCCA7_LcdIsr_DestPageHi], A                                    ;; 00:0c68 $ea $a7 $cc
     and  A, $01                                        ;; 00:0c6b $e6 $01
     xor  A, $01                                        ;; 00:0c6d $ee $01
-    ld   [wD587], A                                    ;; 00:0c6f $ea $87 $d5
-    ld   HL, wD60F_HDMATransferFlags                                     ;; 00:0c72 $21 $0f $d6
+    ld   [wD587_EntityGfxVramPage], A                                    ;; 00:0c6f $ea $87 $d5
+    ld   HL, wD60F_GfxTransferFlags                                     ;; 00:0c72 $21 $0f $d6
     res  1, [HL]                                       ;; 00:0c75 $cb $8e
     ret                                                ;; 00:0c77 $c9
 .jp_00_0c78:
-    ld   A, [.data_00_0c54]                            ;; 00:0c78 $fa $54 $0c
-    ld   [wCCA0], A                                    ;; 00:0c7b $ea $a0 $cc
+    ld   A, [.data_00_0c54_PushAfOpcode]                            ;; 00:0c78 $fa $54 $0c
+    ld   [wCCA0_LcdIsrCode], A                                    ;; 00:0c7b $ea $a0 $cc
     ld   A, $d1                                        ;; 00:0c7e $3e $d1
-    ld   HL, wCCA5                                     ;; 00:0c80 $21 $a5 $cc
+    ld   HL, wCCA5_LcdIsr_SrcAddrHi                                     ;; 00:0c80 $21 $a5 $cc
     ld   [HL-], A                                      ;; 00:0c83 $32
     ld   [HL], $ff                                     ;; 00:0c84 $36 $ff
-    ld   A, [wD72A]                                    ;; 00:0c86 $fa $2a $d7
-    ld   [wCCA7], A                                    ;; 00:0c89 $ea $a7 $cc
-    ld   A, [wD72C]                                    ;; 00:0c8c $fa $2c $d7
+    ld   A, [wD72A_SecondaryTileset_DestAddrHi]                                    ;; 00:0c86 $fa $2a $d7
+    ld   [wCCA7_LcdIsr_DestPageHi], A                                    ;; 00:0c89 $ea $a7 $cc
+    ld   A, [wD72C_SecondaryTileset_PagesRemaining]                                    ;; 00:0c8c $fa $2c $d7
     and  A, A                                          ;; 00:0c8f $a7
     jr   NZ, .jr_00_0c9f                               ;; 00:0c90 $20 $0d
-    ld   A, [wD72B]                                    ;; 00:0c92 $fa $2b $d7
+    ld   A, [wD72B_SecondaryTileset_RowsPerPage]                                    ;; 00:0c92 $fa $2b $d7
     dec  A                                             ;; 00:0c95 $3d
-    ld   [wCCA4], A                                    ;; 00:0c96 $ea $a4 $cc
-    ld   HL, wD60F_HDMATransferFlags                                     ;; 00:0c99 $21 $0f $d6
+    ld   [wCCA4_LcdIsr_SrcAddrLo], A                                    ;; 00:0c96 $ea $a4 $cc
+    ld   HL, wD60F_GfxTransferFlags                                     ;; 00:0c99 $21 $0f $d6
     res  2, [HL]                                       ;; 00:0c9c $cb $96
     ret                                                ;; 00:0c9e $c9
 .jr_00_0c9f:
     ld   HL, wD728_SecondaryTilesetAddr                                     ;; 00:0c9f $21 $28 $d7
     inc  [HL]                                          ;; 00:0ca2 $34
-    ld   HL, wD72A                                     ;; 00:0ca3 $21 $2a $d7
+    ld   HL, wD72A_SecondaryTileset_DestAddrHi                                     ;; 00:0ca3 $21 $2a $d7
     inc  [HL]                                          ;; 00:0ca6 $34
-    ld   HL, wD72C                                     ;; 00:0ca7 $21 $2c $d7
+    ld   HL, wD72C_SecondaryTileset_PagesRemaining                                     ;; 00:0ca7 $21 $2c $d7
     dec  [HL]                                          ;; 00:0caa $35
     ld   A, [HL-]                                      ;; 00:0cab $3a
     or   A, [HL]                                       ;; 00:0cac $b6
     ret  NZ                                            ;; 00:0cad $c0
-    ld   HL, wD60F_HDMATransferFlags                                     ;; 00:0cae $21 $0f $d6
+    ld   HL, wD60F_GfxTransferFlags                                     ;; 00:0cae $21 $0f $d6
     res  2, [HL]                                       ;; 00:0cb1 $cb $96
     ret                                                ;; 00:0cb3 $c9
 .jp_00_0cb4:
-    ld   A, [.data_00_0c54]                            ;; 00:0cb4 $fa $54 $0c
-    ld   [wCCA0], A                                    ;; 00:0cb7 $ea $a0 $cc
+    ld   A, [.data_00_0c54_PushAfOpcode]                            ;; 00:0cb4 $fa $54 $0c
+    ld   [wCCA0_LcdIsrCode], A                                    ;; 00:0cb7 $ea $a0 $cc
     ld   A, $d1                                        ;; 00:0cba $3e $d1
-    ld   HL, wCCA5                                     ;; 00:0cbc $21 $a5 $cc
+    ld   HL, wCCA5_LcdIsr_SrcAddrHi                                     ;; 00:0cbc $21 $a5 $cc
     ld   [HL-], A                                      ;; 00:0cbf $32
     ld   [HL], $ff                                     ;; 00:0cc0 $36 $ff
-    ld   A, [wD723]                                    ;; 00:0cc2 $fa $23 $d7
-    ld   [wCCA7], A                                    ;; 00:0cc5 $ea $a7 $cc
-    ld   A, [wD725]                                    ;; 00:0cc8 $fa $25 $d7
+    ld   A, [wD723_GfxCopy_DestAddrHi]                                    ;; 00:0cc2 $fa $23 $d7
+    ld   [wCCA7_LcdIsr_DestPageHi], A                                    ;; 00:0cc5 $ea $a7 $cc
+    ld   A, [wD725_GfxCopy_SizeHi]                                    ;; 00:0cc8 $fa $25 $d7
     and  A, A                                          ;; 00:0ccb $a7
     jr   NZ, .jr_00_0cdb                               ;; 00:0ccc $20 $0d
-    ld   A, [wD724]                                    ;; 00:0cce $fa $24 $d7
+    ld   A, [wD724_GfxCopy_SizeLo]                                    ;; 00:0cce $fa $24 $d7
     dec  A                                             ;; 00:0cd1 $3d
-    ld   [wCCA4], A                                    ;; 00:0cd2 $ea $a4 $cc
-    ld   HL, wD60F_HDMATransferFlags                                     ;; 00:0cd5 $21 $0f $d6
+    ld   [wCCA4_LcdIsr_SrcAddrLo], A                                    ;; 00:0cd2 $ea $a4 $cc
+    ld   HL, wD60F_GfxTransferFlags                                     ;; 00:0cd5 $21 $0f $d6
     res  3, [HL]                                       ;; 00:0cd8 $cb $9e
     ret                                                ;; 00:0cda $c9
 .jr_00_0cdb:
-    ld   HL, wD721                                     ;; 00:0cdb $21 $21 $d7
+    ld   HL, wD721_GfxCopy_SrcAddrHi                                     ;; 00:0cdb $21 $21 $d7
     inc  [HL]                                          ;; 00:0cde $34
-    ld   HL, wD723                                     ;; 00:0cdf $21 $23 $d7
+    ld   HL, wD723_GfxCopy_DestAddrHi                                     ;; 00:0cdf $21 $23 $d7
     inc  [HL]                                          ;; 00:0ce2 $34
-    ld   HL, wD725                                     ;; 00:0ce3 $21 $25 $d7
+    ld   HL, wD725_GfxCopy_SizeHi                                     ;; 00:0ce3 $21 $25 $d7
     dec  [HL]                                          ;; 00:0ce6 $35
     ld   A, [HL-]                                      ;; 00:0ce7 $3a
     or   A, [HL]                                       ;; 00:0ce8 $b6
     ret  NZ                                            ;; 00:0ce9 $c0
-    ld   HL, wD60F_HDMATransferFlags                                     ;; 00:0cea $21 $0f $d6
+    ld   HL, wD60F_GfxTransferFlags                                     ;; 00:0cea $21 $0f $d6
     res  3, [HL]                                       ;; 00:0ced $cb $9e
     ret                                                ;; 00:0cef $c9
 .jp_00_0cf0:
-    ld   A, [.data_00_0c54]                            ;; 00:0cf0 $fa $54 $0c
-    ld   [wCCA0], A                                    ;; 00:0cf3 $ea $a0 $cc
-    ld   HL, wCCA5                                     ;; 00:0cf6 $21 $a5 $cc
+    ld   A, [.data_00_0c54_PushAfOpcode]                            ;; 00:0cf0 $fa $54 $0c
+    ld   [wCCA0_LcdIsrCode], A                                    ;; 00:0cf3 $ea $a0 $cc
+    ld   HL, wCCA5_LcdIsr_SrcAddrHi                                     ;; 00:0cf6 $21 $a5 $cc
     ld   A, $d1                                        ;; 00:0cf9 $3e $d1
     ld   [HL-], A                                      ;; 00:0cfb $32
     ld   [HL], $ff                                     ;; 00:0cfc $36 $ff
     ld   A, $86                                        ;; 00:0cfe $3e $86
-    ld   [wCCA7], A                                    ;; 00:0d00 $ea $a7 $cc
-    ld   HL, wD60F_HDMATransferFlags                                     ;; 00:0d03 $21 $0f $d6
+    ld   [wCCA7_LcdIsr_DestPageHi], A                                    ;; 00:0d00 $ea $a7 $cc
+    ld   HL, wD60F_GfxTransferFlags                                     ;; 00:0d03 $21 $0f $d6
     res  4, [HL]                                       ;; 00:0d06 $cb $a6
     ret                                                ;; 00:0d08 $c9
+data_00_0d09_RasterWobbleTable:
+; rSCX offsets for the horizontal wobble effect, read as
+; [scanline - wD6EB_RasterWobble_StartLine] + [(wD73B_FrameCounter >> 3) & 7].
+; The repeating 0/-1/0/+1 pattern gives the 4-frame shimmer used by the tv warp
     db   $00, $ff, $00, $01, $00, $ff, $00, $01        ;; 00:0d09 ????????
     db   $00, $ff, $00, $01, $00, $ff, $00, $01        ;; 00:0d11 ????????
     db   $00, $ff, $00, $01, $00, $ff, $00, $01        ;; 00:0d19 ????????
@@ -1628,6 +1776,15 @@ call_00_0bb9:
     db   $00, $ff, $00, $01, $00, $ff, $00, $01        ;; 00:0d31 ????????
     db   $00, $ff, $00, $01, $00, $ff, $00, $01        ;; 00:0d39 ????????
     db   $00, $ff, $00, $01, $00, $ff, $00, $01        ;; 00:0d41 ????????
+
+data_00_0d49_LcdIsrTemplate_RasterEffect:
+; LCD_ISR_RASTER_EFFECT handler template, copied into wCCA0_LcdIsrCode. Unlike the
+; streaming handler this one is armed from the start (its first byte is already
+; $f5 = push af). Per scanline it:
+;   - at rLY == $5F, swaps rLCDC to wD6E1_RasterSplit_LCDCValue (turns the hud window on)
+;   - if rLY is inside the wD6EB_RasterWobble_StartLine .. +wD6EC_RasterWobble_LineCount
+;     band, writes data_00_0d09_RasterWobbleTable[line offset + frame phase] to rSCX
+;   - otherwise forces rSCX to 0
     db   $f5, $e5, $d5, $f0, $44, $fe, $5f, $20        ;; 00:0d49 ........
     db   $05, $fa, $e1, $d6, $e0, $40, $f0, $44        ;; 00:0d51 ........
     db   $21, $eb, $d6, $96, $38, $21, $21, $ec        ;; 00:0d59 ........
@@ -1635,8 +1792,19 @@ call_00_0bb9:
     db   $16, $5f, $16, $00, $fa, $3b, $d7, $0f        ;; 00:0d69 ........
     db   $0f, $0f, $e6, $07, $6f, $26, $00, $19        ;; 00:0d71 ........
     db   $11, $09, $0d, $19, $7e, $e0, $43, $d1        ;; 00:0d79 ........
-    db   $e1, $f1, $d9                                 ;; 00:0d81 ...
-    ld   HL, wD6E2                                     ;; 00:0d84 $21 $e2 $d6
+    db   $e1, $f1                                      ;; 00:0d81 ..
+data_00_0d83_RetiOpcode:
+; The reti at the end of the raster handler doubles as the constant the streaming
+; handler writes over wCCA0_LcdIsrCode to disable itself
+    db   OPCODE_RETI                                   ;; 00:0d83 $d9
+
+call_00_0d84_VBlank_RunGfxStream:
+; VBlank hook paired with LCD_ISR_RASTER_EFFECT. Copies one chunk of a graphics stream
+; script per frame: decrements wD6E2_GfxStream_ChunksRemaining, banks in
+; wD6E4_GfxStream_SrcBank, reads the next (srcPtr, destPtr) pair from
+; wD6E9_GfxStream_ListPtrLo, advances that pointer, and copies
+; wD6E3_GfxStream_RowsPerChunk tiles. Used to animate the menu / cutscene backgrounds
+    ld   HL, wD6E2_GfxStream_ChunksRemaining                                     ;; 00:0d84 $21 $e2 $d6
     ld   A, [HL]                                       ;; 00:0d87 $7e
     and  A, A                                          ;; 00:0d88 $a7
     ret  Z                                             ;; 00:0d89 $c8
@@ -1650,7 +1818,7 @@ call_00_0bb9:
     rrca                                               ;; 00:0d94 $0f
     and  A, $01                                        ;; 00:0d95 $e6 $01
     ld   [MBC1SRamBank], A                                    ;; 00:0d97 $ea $01 $40
-    ld   HL, wD6E9                                     ;; 00:0d9a $21 $e9 $d6
+    ld   HL, wD6E9_GfxStream_ListPtrLo                                     ;; 00:0d9a $21 $e9 $d6
     ld   A, [HL+]                                      ;; 00:0d9d $2a
     ld   H, [HL]                                       ;; 00:0d9e $66
     ld   L, A                                          ;; 00:0d9f $6f
@@ -1664,15 +1832,15 @@ call_00_0bb9:
     ld   D, [HL]                                       ;; 00:0da7 $56
     inc  HL                                            ;; 00:0da8 $23
     ld   A, L                                          ;; 00:0da9 $7d
-    ld   [wD6E9], A                                    ;; 00:0daa $ea $e9 $d6
+    ld   [wD6E9_GfxStream_ListPtrLo], A                                    ;; 00:0daa $ea $e9 $d6
     ld   A, H                                          ;; 00:0dad $7c
-    ld   [wD6EA], A                                    ;; 00:0dae $ea $ea $d6
+    ld   [wD6EA_GfxStream_ListPtrHi], A                                    ;; 00:0dae $ea $ea $d6
     pop  HL                                            ;; 00:0db1 $e1
-    jp   call_00_0b6d                                  ;; 00:0db2 $c3 $6d $0b
+    jp   call_00_0b6d_CopyTileRows                                  ;; 00:0db2 $c3 $6d $0b
 
     ret 
 
-data_00_0db6:
+data_00_0db6_GfxStreamScript_MenuSprites:
     db   $08, $04, $00, $00, $c0                  ;; 00:0db5 ?.....
     dw   $8460                                         ;; 00:0dbb pP
     db   $40, $c0                                      ;; 00:0dbd ..
@@ -1689,7 +1857,7 @@ data_00_0db6:
     dw   $85e0                                         ;; 00:0dd3 pP
     db   $c0, $c1                                      ;; 00:0dd5 ..
     dw   $8620                                         ;; 00:0dd7 pP
-data_00_0dd9:
+data_00_0dd9_GfxStreamScriptTable_Rezopolis:
     db   $dd, $0d, $f8, $0d, $06, $06, $08, $d0        ;; 00:0dd9 ........
     db   $6f                                           ;; 00:0de1 .
     dw   $8cb0                                         ;; 00:0de2 pP
@@ -1716,7 +1884,7 @@ data_00_0dd9:
     db   $f0, $73                                      ;; 00:0e0f ..
     dw   $93f0                                         ;; 00:0e11 pP
 
-data_00_0e13:
+data_00_0e13_GfxStreamScriptTable_ChannelZ:
     db   $1b, $0e, $36, $0e, $51, $0e, $6c, $0e        ;; 00:0e13 ????????
     db   $06, $06, $0c, $e8, $57, $00, $8d, $48        ;; 00:0e1b ????????
     db   $58, $40, $8e, $a8, $58, $80, $90, $08        ;; 00:0e23 ????????
@@ -1733,7 +1901,9 @@ data_00_0e13:
     db   $c8, $5f, $c0, $91, $28, $60, $00, $93        ;; 00:0e7b ????????
     db   $88, $60, $40, $94                            ;; 00:0e83 ????
 
-call_00_0e87:
+call_00_0e87_ClearVRAMAndResetScroll:
+; Zeroes the tile data and both tilemaps (in both VRAM banks on GBC), clears shadow OAM
+; and resets wD5A1_BgMap_ScrollXLo / wD5A2_BgMap_ScrollYLo
     ld   A, [wD59E_OnGBCFlag]                                    ;; 00:0e87 $fa $9e $d5
     and  A, A                                          ;; 00:0e8a $a7
     jr   Z, .jr_00_0e98                                ;; 00:0e8b $28 $0b
@@ -1754,7 +1924,7 @@ call_00_0e87:
     ldh  [rVBK], A                                     ;; 00:0eaa $e0 $4f
 .jr_00_0eac:
     call call_00_0eba_ClearVRAMBgMap                                  ;; 00:0eac $cd $ba $0e
-    call call_00_0ee8                                  ;; 00:0eaf $cd $e8 $0e
+    call call_00_0ee8_ClearShadowOAM                                  ;; 00:0eaf $cd $e8 $0e
     xor  A, A                                          ;; 00:0eb2 $af
     ld   [wD5A1_BgMap_ScrollXLo], A                                    ;; 00:0eb3 $ea $a1 $d5
     ld   [wD5A2_BgMap_ScrollYLo], A                                    ;; 00:0eb6 $ea $a2 $d5
@@ -1794,7 +1964,8 @@ call_00_0ec4_ClearTileVRAM:
     jr   NZ, .jr_00_0ec7                               ;; 00:0edb $20 $ea
     ret                                                ;; 00:0edd $c9
 
-call_00_0ede:
+call_00_0ede_SelectWramBank1:
+; GBC only: makes sure SVBK selects WRAM bank 1, since $D000-$DFFF is used for game state
     ld   A, [wD59E_OnGBCFlag]                                    ;; 00:0ede $fa $9e $d5
     and  A, A                                          ;; 00:0ee1 $a7
     ret  Z                                             ;; 00:0ee2 $c8
@@ -1802,15 +1973,17 @@ call_00_0ede:
     ldh  [rSVBK], A                                    ;; 00:0ee5 $e0 $70
     ret                                                ;; 00:0ee7 $c9
 
-call_00_0ee8:
-    ld   HL, wCC00                                     ;; 00:0ee8 $21 $00 $cc
-    ld   DE, wCC01                                     ;; 00:0eeb $11 $01 $cc
+call_00_0ee8_ClearShadowOAM:
+    ld   HL, wCC00_ShadowOAM                                     ;; 00:0ee8 $21 $00 $cc
+    ld   DE, wCC01_ShadowOAM_EntitySprites                                     ;; 00:0eeb $11 $01 $cc
     ld   BC, $9f                                       ;; 00:0eee $01 $9f $00
     ld   [HL], $00                                     ;; 00:0ef1 $36 $00
     call call_00_07b0_MemCopy                                  ;; 00:0ef3 $cd $b0 $07
     ret                                                ;; 00:0ef6 $c9
 
-call_00_0ef7:
+call_00_0ef7_OamDmaRoutine:
+; Copied to hFF80_OamDmaRoutine at boot and called from vblank. Kicks off an OAM DMA
+; from wCC00_ShadowOAM ($CC00) and busy-waits the required 160 cycles
     ld   a,$CC
     ldh   [rDMA],a
     ld   a,$28
@@ -1819,37 +1992,45 @@ call_00_0ef7:
     jr   nz,.jr_00_0EFD
     ret  
 
-call_00_0f01:
+call_00_0f01_ResetVideoState:
+; Tears down everything that could still write to VRAM: selects LCD_ISR_NONE, clears the
+; map loading / hud dirty / graphics transfer / tile override / tileset animation /
+; graphics stream / fade state, clears the queued SFX, turns the LCD off in
+; wD5A0_LCDCValue and waits one frame for it to take effect
     ld   A, $00                                        ;; 00:0f01 $3e $00
-    ld   [wCCFD], A                                    ;; 00:0f03 $ea $fd $cc
+    ld   [wCCFD_LcdIsrId], A                                    ;; 00:0f03 $ea $fd $cc
     xor  A, A                                          ;; 00:0f06 $af
     ld   [wD6F9_BgMap_LoadingFlags], A                                    ;; 00:0f07 $ea $f9 $d6
     ld   [wD60E_HUDDirtyFlags], A                                    ;; 00:0f0a $ea $0e $d6
-    ld   [wD60F_HDMATransferFlags], A                                    ;; 00:0f0d $ea $0f $d6
+    ld   [wD60F_GfxTransferFlags], A                                    ;; 00:0f0d $ea $0f $d6
     ld   [wD77B_OverrideVRAMWritePending], A                                    ;; 00:0f10 $ea $7b $d7
-    ld   [wD72F], A                                    ;; 00:0f13 $ea $2f $d7
+    ld   [wD72F_TilesetAnim_FrameCount], A                                    ;; 00:0f13 $ea $2f $d7
     ld   [wD611_AnimatedTileId], A                                    ;; 00:0f16 $ea $11 $d6
-    ld   [wD6E2], A                                    ;; 00:0f19 $ea $e2 $d6
-    ld   [wDAD9], A                                    ;; 00:0f1c $ea $d9 $da
-    ld   [wD71E], A                                    ;; 00:0f1f $ea $1e $d7
+    ld   [wD6E2_GfxStream_ChunksRemaining], A                                    ;; 00:0f19 $ea $e2 $d6
+    ld   [wDAD9_FadeMode], A                                    ;; 00:0f1c $ea $d9 $da
+    ld   [wD71E_EntityGfxQueueCount], A                                    ;; 00:0f1f $ea $1e $d7
     ld   A, $ff                                        ;; 00:0f22 $3e $ff
     ld   [wD789_QueuedSFX], A                                    ;; 00:0f24 $ea $89 $d7
-    ld   A, [wD5A0]                                    ;; 00:0f27 $fa $a0 $d5
+    ld   A, [wD5A0_LCDCValue]                                    ;; 00:0f27 $fa $a0 $d5
     and  A, $7f                                        ;; 00:0f2a $e6 $7f
-    ld   [wD5A0], A                                    ;; 00:0f2c $ea $a0 $d5
+    ld   [wD5A0_LCDCValue], A                                    ;; 00:0f2c $ea $a0 $d5
     jp   call_00_0ab4_WaitForInterrupt                                  ;; 00:0f2f $c3 $b4 $0a
 
-call_00_0f32:
-    ld   [wD5A0], A                                    ;; 00:0f32 $ea $a0 $d5
+call_00_0f32_SetLCDC:
+; Writes A to both the shadow (wD5A0_LCDCValue) and the real rLCDC
+    ld   [wD5A0_LCDCValue], A                                    ;; 00:0f32 $ea $a0 $d5
     ldh  [rLCDC], A                                    ;; 00:0f35 $e0 $40
     ret                                                ;; 00:0f37 $c9
 
-call_00_0f38:
-    call call_00_0f64                                  ;; 00:0f38 $cd $64 $0f
+call_00_0f38_FadeOutAndClearVRAM:
+; Starts a fade to white and blocks until wDACE_CurrentBGP..wDAD0_CurrentOBP1 have
+; reached wDAD4_TargetBGP..wDAD6_TargetOBP1, then tears down the video state and wipes
+; VRAM. On GBC the fade state never moves, so this falls straight through
+    call call_00_0f64_FadeToWhite                                  ;; 00:0f38 $cd $64 $0f
 .jr_00_0f3b:
     call call_00_0ab4_WaitForInterrupt                                  ;; 00:0f3b $cd $b4 $0a
-    ld   HL, wDAD4                                     ;; 00:0f3e $21 $d4 $da
-    ld   DE, wDACE                                     ;; 00:0f41 $11 $ce $da
+    ld   HL, wDAD4_TargetBGP                                     ;; 00:0f3e $21 $d4 $da
+    ld   DE, wDACE_CurrentBGP                                     ;; 00:0f41 $11 $ce $da
     ld   B, $03                                        ;; 00:0f44 $06 $03
 .jr_00_0f46:
     ld   A, [DE]                                       ;; 00:0f46 $1a
@@ -1859,50 +2040,61 @@ call_00_0f38:
     inc  HL                                            ;; 00:0f4b $23
     dec  B                                             ;; 00:0f4c $05
     jr   NZ, .jr_00_0f46                               ;; 00:0f4d $20 $f7
-    call call_00_0f01                                  ;; 00:0f4f $cd $01 $0f
-    call call_00_0e87                                  ;; 00:0f52 $cd $87 $0e
+    call call_00_0f01_ResetVideoState                                  ;; 00:0f4f $cd $01 $0f
+    call call_00_0e87_ClearVRAMAndResetScroll                                  ;; 00:0f52 $cd $87 $0e
     ret                                                ;; 00:0f55 $c9
 
-call_00_0f56:
-    call call_00_0f32                                  ;; 00:0f56 $cd $32 $0f
-    call call_00_0f72                                  ;; 00:0f59 $cd $72 $0f
+call_00_0f56_SetLCDCAndFadeIn:
+; Turns the LCD on with the LCDC value in A, then fades the DMG palettes back up
+    call call_00_0f32_SetLCDC                                  ;; 00:0f56 $cd $32 $0f
+    call call_00_0f72_FadeIn                                  ;; 00:0f59 $cd $72 $0f
     ret                                                ;; 00:0f5c $c9
 
-call_00_0f5d:
-    ld   A, $03                                        ;; 00:0f5d $3e $03
+call_00_0f5d_FadeToBlack:
+; Fade mask $FDFF: bit 0 of the low byte fades BGP, bit 0 of the high byte fades OBP0,
+; bit 1 is clear so OBP1 is left alone. Used on death so Gex stays visible while the
+; world darkens around him
+    ld   A, FADE_MODE_TO_BLACK                         ;; 00:0f5d $3e $03
     ld   DE, $fdff                                     ;; 00:0f5f $11 $ff $fd
-    jr   jr_00_0f69                                    ;; 00:0f62 $18 $05
+    jr   jr_00_0f69_Fade_SetMaskAndStart                                    ;; 00:0f62 $18 $05
 
-call_00_0f64:
-    ld   A, $02                                        ;; 00:0f64 $3e $02
+call_00_0f64_FadeToWhite:
+; Fade mask $FFFF - all three palette registers fade
+    ld   A, FADE_MODE_TO_WHITE                         ;; 00:0f64 $3e $02
     ld   DE, rIE                                       ;; 00:0f66 $11 $ff $ff
 
-jr_00_0f69:
-    ld   HL, wDAD7                                     ;; 00:0f69 $21 $d7 $da
+jr_00_0f69_Fade_SetMaskAndStart:
+; Stores DE into wDAD7_FadeMaskLo/wDAD8_FadeMaskHi and starts fade mode A
+    ld   HL, wDAD7_FadeMaskLo                                     ;; 00:0f69 $21 $d7 $da
     ld   [HL], E                                       ;; 00:0f6c $73
     inc  HL                                            ;; 00:0f6d $23
     ld   [HL], D                                       ;; 00:0f6e $72
-    jp   call_00_0fbc                                    ;; 00:0f6f $c3 $bc $0f
+    jp   call_00_0fbc_Fade_Start                                    ;; 00:0f6f $c3 $bc $0f
 
-call_00_0f72:
-    ld   A, $01                                        ;; 00:0f72 $3e $01
+call_00_0f72_FadeIn:
+; Fades all three palette registers back to the level palettes in
+; wDAD1_LevelBGP / wDAD2_LevelOBP0 / wDAD3_LevelOBP1
+    ld   A, FADE_MODE_IN                               ;; 00:0f72 $3e $01
     ld   DE, rIE                                       ;; 00:0f74 $11 $ff $ff
-    ld   HL, wDAD7                                     ;; 00:0f77 $21 $d7 $da
+    ld   HL, wDAD7_FadeMaskLo                                     ;; 00:0f77 $21 $d7 $da
     ld   [HL], E                                       ;; 00:0f7a $73
     inc  HL                                            ;; 00:0f7b $23
     ld   [HL], D                                       ;; 00:0f7c $72
-    jp   call_00_0fbc                                    ;; 00:0f7d $c3 $bc $0f
+    jp   call_00_0fbc_Fade_Start                                    ;; 00:0f7d $c3 $bc $0f
 
-call_00_0f80:
+call_00_0f80_VBlank_UpdatePalettes:
+; On DMG: ticks the fade and pushes wDACE_CurrentBGP/wDACF_CurrentOBP0/wDAD0_CurrentOBP1
+; to rBGP/rOBP0/rOBP1. On GBC: uploads the full CGB palette rams instead (there is no
+; fade on GBC)
     ld   A, [wD59E_OnGBCFlag]                                    ;; 00:0f80 $fa $9e $d5
     and  A, A                                          ;; 00:0f83 $a7
     jr   NZ, .jr_00_0f99                               ;; 00:0f84 $20 $13
-    call call_00_1004                                  ;; 00:0f86 $cd $04 $10
-    ld   A, [wDACE]                                    ;; 00:0f89 $fa $ce $da
+    call call_00_1004_Fade_Update                                  ;; 00:0f86 $cd $04 $10
+    ld   A, [wDACE_CurrentBGP]                                    ;; 00:0f89 $fa $ce $da
     ldh  [rBGP], A                                     ;; 00:0f8c $e0 $47
-    ld   A, [wDACF]                                    ;; 00:0f8e $fa $cf $da
+    ld   A, [wDACF_CurrentOBP0]                                    ;; 00:0f8e $fa $cf $da
     ldh  [rOBP0], A                                    ;; 00:0f91 $e0 $48
-    ld   A, [wDAD0]                                    ;; 00:0f93 $fa $d0 $da
+    ld   A, [wDAD0_CurrentOBP1]                                    ;; 00:0f93 $fa $d0 $da
     ldh  [rOBP1], A                                    ;; 00:0f96 $e0 $49
     ret                                                ;; 00:0f98 $c9
 .jr_00_0f99:
@@ -1930,8 +2122,11 @@ call_00_0f9d_UpdateLCDPalettes:
     jr   NZ, .jr_00_0fb5                               ;; 00:0fb9 $20 $fa
     ret                                                ;; 00:0fbb $c9
 
-call_00_0fbc:
-    ld   HL, wDAD9                                     ;; 00:0fbc $21 $d9 $da
+call_00_0fbc_Fade_Start:
+; Starts fade mode A (FADE_MODE_*). No-op if that mode is already running. Resets the
+; step delay to 4 frames and dispatches through .data_00_0fd7_FadeTargetSetters to fill
+; in wDAD4_TargetBGP..wDAD6_TargetOBP1
+    ld   HL, wDAD9_FadeMode                                     ;; 00:0fbc $21 $d9 $da
     cp   A, [HL]                                       ;; 00:0fbf $be
     ret  Z                                             ;; 00:0fc0 $c8
     ld   [HL], A                                       ;; 00:0fc1 $77
@@ -1939,85 +2134,97 @@ call_00_0fbc:
     ld   L, A                                          ;; 00:0fc3 $6f
     ld   H, $00                                        ;; 00:0fc4 $26 $00
     add  HL, HL                                        ;; 00:0fc6 $29
-    ld   DE, .data_00_0fd7                                      ;; 00:0fc7 $11 $d7 $0f
+    ld   DE, .data_00_0fd7_FadeTargetSetters                    ;; 00:0fc7 $11 $d7 $0f
     add  HL, DE                                        ;; 00:0fca $19
     ld   A, [HL+]                                      ;; 00:0fcb $2a
     ld   H, [HL]                                       ;; 00:0fcc $66
     ld   L, A                                          ;; 00:0fcd $6f
     ld   A, $04                                        ;; 00:0fce $3e $04
-    ld   [wDADA], A                                    ;; 00:0fd0 $ea $da $da
-    ld   [wDADB], A                                    ;; 00:0fd3 $ea $db $da
+    ld   [wDADA_FadeStepDelay], A                                    ;; 00:0fd0 $ea $da $da
+    ld   [wDADB_FadeStepCounter], A                                    ;; 00:0fd3 $ea $db $da
     jp   HL                                            ;; 00:0fd6 $e9
-.data_00_0fd7:
-    dw   .data_00_0fdd                                 ;; 00:0fd7 pP
-    dw   .data_00_0fed                                 ;; 00:0fd9 pP
-    dw   .data_00_0ff8                                 ;; 00:0fdb pP
-.data_00_0fdd:
-    ld   HL, wDAD1                                     ;; 00:0fdd $21 $d1 $da
+.data_00_0fd7_FadeTargetSetters:
+; indexed by FADE_MODE_* - 1
+    dw   .jp_00_0fdd_FadeTarget_LevelPalettes          ;; 00:0fd7 pP
+    dw   .jp_00_0fed_FadeTarget_White                  ;; 00:0fd9 pP
+    dw   .jp_00_0ff8_FadeTarget_Black                  ;; 00:0fdb pP
+.jp_00_0fdd_FadeTarget_LevelPalettes:
+    ld   HL, wDAD1_LevelBGP                                     ;; 00:0fdd $21 $d1 $da
     ld   A, [HL+]                                      ;; 00:0fe0 $2a
-    ld   [wDAD4], A                                    ;; 00:0fe1 $ea $d4 $da
+    ld   [wDAD4_TargetBGP], A                                    ;; 00:0fe1 $ea $d4 $da
     ld   A, [HL+]                                      ;; 00:0fe4 $2a
-    ld   [wDAD5], A                                    ;; 00:0fe5 $ea $d5 $da
+    ld   [wDAD5_TargetOBP0], A                                    ;; 00:0fe5 $ea $d5 $da
     ld   A, [HL+]                                      ;; 00:0fe8 $2a
-    ld   [wDAD6], A                                    ;; 00:0fe9 $ea $d6 $da
+    ld   [wDAD6_TargetOBP1], A                                    ;; 00:0fe9 $ea $d6 $da
     ret                                                ;; 00:0fec $c9
-.data_00_0fed:
+.jp_00_0fed_FadeTarget_White:
     xor  A, A                                          ;; 00:0fed $af
-    ld   [wDAD4], A                                    ;; 00:0fee $ea $d4 $da
-    ld   [wDAD5], A                                    ;; 00:0ff1 $ea $d5 $da
-    ld   [wDAD6], A                                    ;; 00:0ff4 $ea $d6 $da
+    ld   [wDAD4_TargetBGP], A                                    ;; 00:0fee $ea $d4 $da
+    ld   [wDAD5_TargetOBP0], A                                    ;; 00:0ff1 $ea $d5 $da
+    ld   [wDAD6_TargetOBP1], A                                    ;; 00:0ff4 $ea $d6 $da
     ret                                                ;; 00:0ff7 $c9
-.data_00_0ff8:
+.jp_00_0ff8_FadeTarget_Black:
     ld   A, $ff                                        ;; 00:0ff8 $3e $ff
-    ld   [wDAD4], A                                    ;; 00:0ffa $ea $d4 $da
-    ld   [wDAD5], A                                    ;; 00:0ffd $ea $d5 $da
-    ld   [wDAD6], A                                    ;; 00:1000 $ea $d6 $da
+    ld   [wDAD4_TargetBGP], A                                    ;; 00:0ffa $ea $d4 $da
+    ld   [wDAD5_TargetOBP0], A                                    ;; 00:0ffd $ea $d5 $da
+    ld   [wDAD6_TargetOBP1], A                                    ;; 00:1000 $ea $d6 $da
     ret                                                ;; 00:1003 $c9
 
-call_00_1004:
-    ld   A, [wDAD9]                                    ;; 00:1004 $fa $d9 $da
+call_00_1004_Fade_Update:
+; Runs one fade step every wDADA_FadeStepDelay frames, then nudges each palette register
+; selected by wDAD7_FadeMaskLo / wDAD8_FadeMaskHi one shade toward its target
+    ld   A, [wDAD9_FadeMode]                                    ;; 00:1004 $fa $d9 $da
     and  A, A                                          ;; 00:1007 $a7
     ret  Z                                             ;; 00:1008 $c8
-    ld   HL, wDADB                                     ;; 00:1009 $21 $db $da
+    ld   HL, wDADB_FadeStepCounter                                     ;; 00:1009 $21 $db $da
     dec  [HL]                                          ;; 00:100c $35
     ret  NZ                                            ;; 00:100d $c0
-    ld   A, [wDADA]                                    ;; 00:100e $fa $da $da
+    ld   A, [wDADA_FadeStepDelay]                                    ;; 00:100e $fa $da $da
     ld   [HL], A                                       ;; 00:1011 $77
-    ld   HL, wDAD9                                     ;; 00:1012 $21 $d9 $da
+    ld   HL, wDAD9_FadeMode                                     ;; 00:1012 $21 $d9 $da
     ld   L, [HL]                                       ;; 00:1015 $6e
     dec  L                                             ;; 00:1016 $2d
     ld   H, $00                                        ;; 00:1017 $26 $00
     add  HL, HL                                        ;; 00:1019 $29
-    ld   DE, .data_00_1043                                     ;; 00:101a $11 $43 $10
+    ld   DE, .data_00_1043_FadeStepHooks                       ;; 00:101a $11 $43 $10
     add  HL, DE                                        ;; 00:101d $19
     ld   A, [HL+]                                      ;; 00:101e $2a
     ld   H, [HL]                                       ;; 00:101f $66
     ld   L, A                                          ;; 00:1020 $6f
     call call_00_10bd_JumpHL                                  ;; 00:1021 $cd $bd $10
-    ld   HL, wDAD7                                     ;; 00:1024 $21 $d7 $da
+    ld   HL, wDAD7_FadeMaskLo                                     ;; 00:1024 $21 $d7 $da
     bit  0, [HL]                                       ;; 00:1027 $cb $46
     ld   A, $00                                        ;; 00:1029 $3e $00
-    call NZ, call_00_104a                              ;; 00:102b $c4 $4a $10
-    ld   HL, wDAD8                                     ;; 00:102e $21 $d8 $da
+    call NZ, call_00_104a_Fade_StepPaletteRegister                              ;; 00:102b $c4 $4a $10
+    ld   HL, wDAD8_FadeMaskHi                                     ;; 00:102e $21 $d8 $da
     bit  0, [HL]                                       ;; 00:1031 $cb $46
     ld   A, $01                                        ;; 00:1033 $3e $01
-    call NZ, call_00_104a                              ;; 00:1035 $c4 $4a $10
-    ld   HL, wDAD8                                     ;; 00:1038 $21 $d8 $da
+    call NZ, call_00_104a_Fade_StepPaletteRegister                              ;; 00:1035 $c4 $4a $10
+    ld   HL, wDAD8_FadeMaskHi                                     ;; 00:1038 $21 $d8 $da
     bit  1, [HL]                                       ;; 00:103b $cb $4e
     ld   A, $02                                        ;; 00:103d $3e $02
-    call NZ, call_00_104a                              ;; 00:103f $c4 $4a $10
+    call NZ, call_00_104a_Fade_StepPaletteRegister                              ;; 00:103f $c4 $4a $10
     ret                                                ;; 00:1042 $c9
-.data_00_1043:
-    db   $49, $10, $49, $10, $49, $10, $c9             ;; 00:1043 ???????
+.data_00_1043_FadeStepHooks:
+; per-mode pre-step hook, indexed by FADE_MODE_* - 1. All three point at the ret at
+; $1049, so no mode currently does anything extra
+    dw   .ret_00_1049
+    dw   .ret_00_1049
+    dw   .ret_00_1049
+.ret_00_1049:
+    ret                                                ;; 00:1049 $c9
 
-call_00_104a:
+call_00_104a_Fade_StepPaletteRegister:
+; Moves palette register A (0 = BGP, 1 = OBP0, 2 = OBP1) one shade closer to its target.
+; Compares each of the four 2-bit colour entries in wDACE_CurrentBGP + A against the
+; matching entry in wDAD4_TargetBGP + A and increments or decrements it by one
     ld   E, A                                          ;; 00:104a $5f
     ld   D, $00                                        ;; 00:104b $16 $00
-    ld   HL, wDACE                                     ;; 00:104d $21 $ce $da
+    ld   HL, wDACE_CurrentBGP                                     ;; 00:104d $21 $ce $da
     add  HL, DE                                        ;; 00:1050 $19
     push HL                                            ;; 00:1051 $e5
     ld   C, [HL]                                       ;; 00:1052 $4e
-    ld   HL, wDAD4                                     ;; 00:1053 $21 $d4 $da
+    ld   HL, wDAD4_TargetBGP                                     ;; 00:1053 $21 $d4 $da
     add  HL, DE                                        ;; 00:1056 $19
     ld   E, [HL]                                       ;; 00:1057 $5e
     ld   B, $04                                        ;; 00:1058 $06 $04
@@ -2199,15 +2406,20 @@ call_00_112f_QueueSFX:
     ret                                                ;; 00:1137 $c9
 
 call_00_1138_NoSFXIsQueued:
+; Returns if nothing is queued, otherwise falls through to play the queued sfx
     ld   A, [wD789_QueuedSFX]                                    ;; 00:1138 $fa $89 $d7
     cp   A, SFX_NONE                                        ;; 00:113b $fe $ff
     ret  Z                                             ;; 00:113d $c8
 
-call_00_113e:
+call_00_113e_PlaySFX:
+; Plays sfx A. .data_00_116c_SFXChannelTable_SFXChannelTable holds a (channel mask, sound id) pair per
+; sfx; for each set bit of the mask it calls the audio driver's play routine in
+; wD788_CurrentAudioBank with an incrementing channel index, then clears
+; wD789_QueuedSFX back to SFX_NONE
     ld   L, A                                          ;; 00:113e $6f
     ld   H, $00                                        ;; 00:113f $26 $00
     add  HL, HL                                        ;; 00:1141 $29
-    ld   DE, .data_00_116c                                     ;; 00:1142 $11 $6c $11
+    ld   DE, .data_00_116c_SFXChannelTable                                     ;; 00:1142 $11 $6c $11
     add  HL, DE                                        ;; 00:1145 $19
     push HL                                            ;; 00:1146 $e5
     ld   A, [wD788_CurrentAudioBank]                                    ;; 00:1147 $fa $88 $d7
@@ -2233,7 +2445,7 @@ call_00_113e:
     ld   A, $ff                                        ;; 00:1164 $3e $ff
     ld   [wD789_QueuedSFX], A                                    ;; 00:1166 $ea $89 $d7
     jp   call_00_10a3_RestoreBank                                  ;; 00:1169 $c3 $a3 $10
-.data_00_116c:
+.data_00_116c_SFXChannelTable:
     db   $01, $00, $01, $01, $01, $02, $01, $03        ;; 00:116c ....????
     db   $01, $04, $01, $05, $01, $06, $01, $07        ;; 00:1174 ????..??
     db   $01, $08, $01, $09, $01, $0a, $01, $0b        ;; 00:117c ????????
@@ -2327,7 +2539,7 @@ call_00_120c_SetupMusic:
     jr   NZ, .jr_00_122d                               ;; 00:123a $20 $f1
     call call_00_10a3_RestoreBank                                  ;; 00:123c $cd $a3 $10
     ld   A, $00                                        ;; 00:123f $3e $00
-    jp   call_00_113e                                  ;; 00:1241 $c3 $3e $11
+    jp   call_00_113e_PlaySFX                                  ;; 00:1241 $c3 $3e $11
 .data_00_1244_MusicList:
 ; this is the list of music [first byte is bank number]
     db   BANK_21, $04, $0f, $00
@@ -2345,17 +2557,22 @@ INCLUDE "code/bank00_mission_preview.asm"
 INCLUDE "code/bank00_map_init_data.asm"
 INCLUDE "code/bank00_entity_utils.asm"
 
-call_00_3c3f:
-    ld   C, $07                                        ;; 00:3c3f $0e $07
-    ld   HL, wD64F                                     ;; 00:3c41 $21 $4f $d6
-    call call_00_3c54                                  ;; 00:3c44 $cd $54 $3c
-    ld   C, $18                                        ;; 00:3c47 $0e $18
-    ld   HL, wD650                                     ;; 00:3c49 $21 $50 $d6
-    call call_00_3c54                                  ;; 00:3c4c $cd $54 $3c
-    ld   C, $20                                        ;; 00:3c4f $0e $20
-    ld   HL, wD651                                     ;; 00:3c51 $21 $51 $d6
+call_00_3c3f_Remotes_RecountAllTotals:
+; Recomputes the three collection totals shown on the totals screen and used to gate
+; which hub tvs are open. Falls through into the last count
+    ld   C, REMOTE_MISSION_MASK                        ;; 00:3c3f $0e $07
+    ld   HL, wD64F_MissionRemoteTotal                                     ;; 00:3c41 $21 $4f $d6
+    call call_00_3c54_Remotes_CountAndStore                                  ;; 00:3c44 $cd $54 $3c
+    ld   C, REMOTE_HIDDEN_MASK                         ;; 00:3c47 $0e $18
+    ld   HL, wD650_HiddenRemoteTotal                                     ;; 00:3c49 $21 $50 $d6
+    call call_00_3c54_Remotes_CountAndStore                                  ;; 00:3c4c $cd $54 $3c
+    ld   C, REMOTE_BONUS_MASK                          ;; 00:3c4f $0e $20
+    ld   HL, wD651_BonusMissionTotal                                     ;; 00:3c51 $21 $51 $d6
 
-call_00_3c54:
+call_00_3c54_Remotes_CountAndStore:
+; Counts the set bits of (wD629_RemoteProgressFlags[n] & C) over all 30 levels and stores
+; the total at [HL]. If the total changed, REMOTE_TOTAL_CHANGED (bit 7) is also set so
+; the hub knows to play the "new tv unlocked" animation
     push HL                                            ;; 00:3c54 $e5
     ld   HL, wD629_RemoteProgressFlags                                     ;; 00:3c55 $21 $29 $d6
     ld   B, $1e                                        ;; 00:3c58 $06 $1e

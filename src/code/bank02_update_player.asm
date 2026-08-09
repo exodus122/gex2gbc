@@ -649,11 +649,11 @@ call_02_4c4f_Player_CheckTileInteractions:
     ld   A, PLAYER_ACTION_ENTER_DOOR                                        ;; 02:4c76 $3e $1a
     jr   Z, call_02_4ccd_Player_RequestAction                               ;; 02:4c78 $28 $53
     ld   A, [wD764_TileTypeBehindGexsBody]                                    ;; 02:4c7a $fa $64 $d7
-    ld   [wD769], A                                    ;; 02:4c7d $ea $69 $d7
+    ld   [wD769_ClimbSurfaceTileType], A                                    ;; 02:4c7d $ea $69 $d7
     cp   A, $26                                        ;; 02:4c80 $fe $26
     jr   Z, .jr_02_4ca2                                ;; 02:4c82 $28 $1e
     ld   A, [wD766_TileTypeBehindGexsFace]                                    ;; 02:4c84 $fa $66 $d7
-    ld   [wD769], A                                    ;; 02:4c87 $ea $69 $d7
+    ld   [wD769_ClimbSurfaceTileType], A                                    ;; 02:4c87 $ea $69 $d7
     cp   A, $2c                                        ;; 02:4c8a $fe $2c
     jr   Z, .jr_02_4c9b                                ;; 02:4c8c $28 $0d
     cp   A, $2d                                        ;; 02:4c8e $fe $2d

@@ -182,17 +182,17 @@ call_02_6e17_Entities_InitAndSpawnAll:
     ld   [wD745_Player_QueuedAction], A                                    ;; 02:6e51 $ea $45 $d7
     ld   [wD746_Player_ClimbingState], A                                    ;; 02:6e54 $ea $46 $d7
     xor  A, A                                          ;; 02:6e57 $af
-    ld   [wD586_GexSpriteStateFlags], A                                    ;; 02:6e58 $ea $86 $d5
+    ld   [wD586_PlayerGfxVramPage], A                                    ;; 02:6e58 $ea $86 $d5
     ld   [wD74A_Player_NearbyTileRelated], A                                    ;; 02:6e5b $ea $4a $d7
     ld   A, $00                                        ;; 02:6e5e $3e $00
     ld   [wD74B_Player_ClimbingFlags], A                                    ;; 02:6e60 $ea $4b $d7
     ld   A, $00                                        ;; 02:6e63 $3e $00
     ld   [wD20D_Player_FacingFlags], A                                    ;; 02:6e65 $ea $0d $d2
 call_02_6e68_Entities_InitNPCSlots:
-; Subset of above — only zeros entity interaction-tracking vars (wD74D–wD74F, wD587) and 
+; Subset of above — only zeros entity interaction-tracking vars (wD74D–wD74F, wD587_EntityGfxVramPage) and 
 ; fills the 7 NPC slots (D220–D3E0) with $FF
     xor  A, A                                          ;; 02:6e68 $af
-    ld   [wD587], A                                    ;; 02:6e69 $ea $87 $d5
+    ld   [wD587_EntityGfxVramPage], A                                    ;; 02:6e69 $ea $87 $d5
     ld   [wD74D_Player_EntityStoodOnLo], A                                    ;; 02:6e6c $ea $4d $d7
     ld   [wD74E_Player_PushedStationaryPlatformLo], A                                    ;; 02:6e6f $ea $4e $d7
     ld   [wD74F_Player_PushedMovingPlatformLo], A                                    ;; 02:6e72 $ea $4f $d7
@@ -325,7 +325,7 @@ call_02_6eba_Entities_UpdateAll:
     jr   NZ, .jr_02_6f11                               ;; 02:6f61 $20 $ae
     call call_00_1138_NoSFXIsQueued                                  ;; 02:6f63 $cd $38 $11
     FARCALL call_0a_7a7c_EntitySpawn_SpawnNextFromList
-    call call_02_722c_SoundQueue_PlayNext                                  ;; 02:6f71 $cd $2c $72
+    call call_02_722c_EntityGfxQueue_StartNextTransfer                                  ;; 02:6f71 $cd $2c $72
     FARCALL call_03_6540_Entity_BuildAllSprites
     ret                                                ;; 02:6f7f $c9
     
@@ -341,7 +341,7 @@ call_02_6f80_Entities_DrawAll:
     ld   A, $00                                        ;; 02:6f8b $3e $00
     ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:6f8d $ea $00 $d3
     FARCALL call_03_5ca8_Entity_DrawPlayer
-    ld   HL, wD60F_HDMATransferFlags                                     ;; 02:6f9b $21 $0f $d6
+    ld   HL, wD60F_GfxTransferFlags                                     ;; 02:6f9b $21 $0f $d6
     set  0, [HL]                                       ;; 02:6f9e $cb $c6
 .jr_02_6fa0:
     ld   A, $20                                        ;; 02:6fa0 $3e $20
@@ -358,7 +358,7 @@ call_02_6f80_Entities_DrawAll:
     ld   L, A                                          ;; 02:6fb2 $6f
     bit  7, [HL]                                       ;; 02:6fb3 $cb $7e
     jr   Z, .jr_02_6fbc                                ;; 02:6fb5 $28 $05
-    ld   HL, wD60F_HDMATransferFlags                                     ;; 02:6fb7 $21 $0f $d6
+    ld   HL, wD60F_GfxTransferFlags                                     ;; 02:6fb7 $21 $0f $d6
     set  1, [HL]                                       ;; 02:6fba $cb $ce
 .jr_02_6fbc:
     FARCALL call_03_5ebf_Entity_BuildSprites
@@ -445,11 +445,11 @@ call_02_6fda_Entity_TickAction:
 call_02_7030_Entity_NotifyActionChanged:
 ; Called after an action change. If the current entity is the player (address 0), sets HDMA bit 0 and returns. 
 ; Otherwise checks bit 7 of UNK_0A; if set, reads entity ID, looks it up in .data_02_7061 to get a sound ID, 
-; writes it to wD589/wD588, and sets HDMA bit 1 to trigger a sound update
+; writes it to wD589_EntityGfxSrcBank/wD588_EntityGfxSrcAddrHi, and sets HDMA bit 1 to trigger a sound update
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:7030 $fa $00 $d3
     and  A, A                                          ;; 02:7033 $a7
     jr   NZ, .jr_02_703c                               ;; 02:7034 $20 $06
-    ld   HL, wD60F_HDMATransferFlags                                     ;; 02:7036 $21 $0f $d6
+    ld   HL, wD60F_GfxTransferFlags                                     ;; 02:7036 $21 $0f $d6
     set  0, [HL]                                       ;; 02:7039 $cb $c6
     ret                                                ;; 02:703b $c9
 .jr_02_703c:
@@ -462,7 +462,7 @@ call_02_7030_Entity_NotifyActionChanged:
     xor  A, $02                                        ;; 02:7045 $ee $02
     ld   L, A                                          ;; 02:7047 $6f
     ld   A, [HL]                                       ;; 02:7048 $7e
-    ld   [wD588], A                                    ;; 02:7049 $ea $88 $d5
+    ld   [wD588_EntityGfxSrcAddrHi], A                                    ;; 02:7049 $ea $88 $d5
     ld   A, L                                          ;; 02:704c $7d
     xor  A, $08                                        ;; 02:704d $ee $08
     ld   L, A                                          ;; 02:704f $6f
@@ -471,8 +471,8 @@ call_02_7030_Entity_NotifyActionChanged:
     ld   DE, .data_02_7061                             ;; 02:7053 $11 $61 $70
     add  HL, DE                                        ;; 02:7056 $19
     ld   A, [HL]                                       ;; 02:7057 $7e
-    ld   [wD589], A                                    ;; 02:7058 $ea $89 $d5
-    ld   HL, wD60F_HDMATransferFlags                                     ;; 02:705b $21 $0f $d6
+    ld   [wD589_EntityGfxSrcBank], A                                    ;; 02:7058 $ea $89 $d5
+    ld   HL, wD60F_GfxTransferFlags                                     ;; 02:705b $21 $0f $d6
     set  1, [HL]                                       ;; 02:705e $cb $ce
     ret                                                ;; 02:7060 $c9
 .data_02_7061:
@@ -659,10 +659,13 @@ call_02_7196_MapScroll_CheckHorizontal:
     ld   [HL], A                                       ;; 02:71c6 $77
     ret                                                ;; 02:71c7 $c9
     
-call_02_71c8_Entities_UpdateSoundsForAll:
-; Iterates all 7 NPC slots; for each active entity looks up its entity ID in data_02_743c to get 
-; a (sound-id, bank) pair, calls call_02_7211_SoundQueue_Enqueue to queue the sound if non-zero, then optionally calls 
-; a sound-play farCall if wD59E_OnGBCFlag is set. After the loop, calls call_0b_5f1b_FlyPowerup_LoadParticlePalette (sound flush)
+call_02_71c8_Entities_QueueGraphicsAndPalettes:
+; Iterates all 7 NPC slots; for each active entity looks up its entity ID in
+; data_02_743c_EntityGfxAndPaletteTable to get a (gfx-set id, palette id) pair.
+; The gfx-set id (if non-zero) is queued with call_02_7211_EntityGfxQueue_Enqueue so the
+; entity's tiles get streamed into VRAM; on GBC the palette id is loaded via
+; call_0b_5f57_Entity_LoadGBCPalette. After the loop, refreshes the fly power-up
+; particle palette
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:71c8 $fa $00 $d3
     push AF                                            ;; 02:71cb $f5
     ld   A, $20                                        ;; 02:71cc $3e $20
@@ -676,12 +679,12 @@ call_02_71c8_Entities_UpdateSoundsForAll:
     ld   L, A                                          ;; 02:71d9 $6f
     ld   H, $00                                        ;; 02:71da $26 $00
     add  HL, HL                                        ;; 02:71dc $29
-    ld   DE, data_02_743c_EntitySoundTable                              ;; 02:71dd $11 $3c $74
+    ld   DE, data_02_743c_EntityGfxAndPaletteTable                              ;; 02:71dd $11 $3c $74
     add  HL, DE                                        ;; 02:71e0 $19
     ld   A, [HL+]                                      ;; 02:71e1 $2a
     push HL                                            ;; 02:71e2 $e5
     and  A, A                                          ;; 02:71e3 $a7
-    call NZ, call_02_7211_SoundQueue_Enqueue                              ;; 02:71e4 $c4 $11 $72
+    call NZ, call_02_7211_EntityGfxQueue_Enqueue                              ;; 02:71e4 $c4 $11 $72
     pop  HL                                            ;; 02:71e7 $e1
     ld   A, [wD59E_OnGBCFlag]                                    ;; 02:71e8 $fa $9e $d5
     and  A, A                                          ;; 02:71eb $a7
@@ -697,13 +700,14 @@ call_02_71c8_Entities_UpdateSoundsForAll:
     ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:720d $ea $00 $d3
     ret                                                ;; 02:7210 $c9
 
-call_02_7211_SoundQueue_Enqueue:
-; Checks if A (sound ID) is already present in the 4-entry queue at wD71A–wD71D; 
-; if found, returns without duplication. If the queue has space (checked via wD71E count), 
-; writes A into the next free slot and increments the count
-    ld   HL, wD71E                                     ;; 02:7211 $21 $1e $d7
+call_02_7211_EntityGfxQueue_Enqueue:
+; Checks if A (entity graphics set id) is already present in the 4-entry queue at
+; wD71A_EntityGfxQueue; if found, returns without duplicating it. If the queue has space
+; (checked via wD71E_EntityGfxQueueCount), writes A into the next free slot and
+; increments the count
+    ld   HL, wD71E_EntityGfxQueueCount                                     ;; 02:7211 $21 $1e $d7
     ld   E, [HL]                                       ;; 02:7214 $5e
-    ld   HL, wD71A                                     ;; 02:7215 $21 $1a $d7
+    ld   HL, wD71A_EntityGfxQueue                                     ;; 02:7215 $21 $1a $d7
     ld   D, $04                                        ;; 02:7218 $16 $04
 .jr_02_721a:
     dec  E                                             ;; 02:721a $1d
@@ -717,52 +721,54 @@ call_02_7211_SoundQueue_Enqueue:
     ret                                                ;; 02:7225 $c9
 .jr_02_7226:
     ld   [HL], A                                       ;; 02:7226 $77
-    ld   HL, wD71E                                     ;; 02:7227 $21 $1e $d7
+    ld   HL, wD71E_EntityGfxQueueCount                                     ;; 02:7227 $21 $1e $d7
     inc  [HL]                                          ;; 02:722a $34
     ret                                                ;; 02:722b $c9
 
-call_02_722c_SoundQueue_PlayNext:
-; If HDMA bit 3 is set, returns immediately (DMA busy). Otherwise decrements the queue count in wD71E, 
-; reads the next sound ID from wD71A, indexes into .data_02_726c (7-byte sound parameter records: 
-; VRAM dest, tile count, source bank, source address, priority, and two more), writes the 7 bytes into wD71F–wD725, 
-; and sets HDMA bit 3 to trigger the sound transfer
-    ld   HL, wD60F_HDMATransferFlags                                     ;; 02:722c $21 $0f $d6
+call_02_722c_EntityGfxQueue_StartNextTransfer:
+; If GFX_XFER_QUEUED_ENTITY_GFX is already set, returns immediately (a transfer is still
+; pending). Otherwise pops the next entry off wD71A_EntityGfxQueue, indexes
+; .data_02_726c_EntityGfxDescriptors_EntityGfxDescriptors (8-byte records: src bank, src addr lo/hi,
+; dest addr lo/hi, size lo/hi, pad), copies the record into
+; wD71F_GfxCopy_SrcBank..wD725_GfxCopy_SizeHi and raises GFX_XFER_QUEUED_ENTITY_GFX
+; so call_00_0a21_FlushEntityGfxQueue performs the copy
+    ld   HL, wD60F_GfxTransferFlags                                     ;; 02:722c $21 $0f $d6
     bit  3, [HL]                                       ;; 02:722f $cb $5e
     ret  NZ                                            ;; 02:7231 $c0
-    ld   HL, wD71E                                     ;; 02:7232 $21 $1e $d7
+    ld   HL, wD71E_EntityGfxQueueCount                                     ;; 02:7232 $21 $1e $d7
     ld   A, [HL]                                       ;; 02:7235 $7e
     and  A, A                                          ;; 02:7236 $a7
     ret  Z                                             ;; 02:7237 $c8
     dec  [HL]                                          ;; 02:7238 $35
     ld   L, [HL]                                       ;; 02:7239 $6e
     ld   H, $00                                        ;; 02:723a $26 $00
-    ld   DE, wD71A                                     ;; 02:723c $11 $1a $d7
+    ld   DE, wD71A_EntityGfxQueue                                     ;; 02:723c $11 $1a $d7
     add  HL, DE                                        ;; 02:723f $19
     ld   L, [HL]                                       ;; 02:7240 $6e
     ld   H, $00                                        ;; 02:7241 $26 $00
     add  HL, HL                                        ;; 02:7243 $29
     add  HL, HL                                        ;; 02:7244 $29
     add  HL, HL                                        ;; 02:7245 $29
-    ld   DE, .data_02_726c                             ;; 02:7246 $11 $6c $72
+    ld   DE, .data_02_726c_EntityGfxDescriptors                             ;; 02:7246 $11 $6c $72
     add  HL, DE                                        ;; 02:7249 $19
     ld   A, [HL+]                                      ;; 02:724a $2a
-    ld   [wD71F], A                                    ;; 02:724b $ea $1f $d7
+    ld   [wD71F_GfxCopy_SrcBank], A                                    ;; 02:724b $ea $1f $d7
     ld   A, [HL+]                                      ;; 02:724e $2a
-    ld   [wD720], A                                    ;; 02:724f $ea $20 $d7
+    ld   [wD720_GfxCopy_SrcAddrLo], A                                    ;; 02:724f $ea $20 $d7
     ld   A, [HL+]                                      ;; 02:7252 $2a
-    ld   [wD721], A                                    ;; 02:7253 $ea $21 $d7
+    ld   [wD721_GfxCopy_SrcAddrHi], A                                    ;; 02:7253 $ea $21 $d7
     ld   A, [HL+]                                      ;; 02:7256 $2a
-    ld   [wD722], A                                    ;; 02:7257 $ea $22 $d7
+    ld   [wD722_GfxCopy_DestAddrLo], A                                    ;; 02:7257 $ea $22 $d7
     ld   A, [HL+]                                      ;; 02:725a $2a
-    ld   [wD723], A                                    ;; 02:725b $ea $23 $d7
+    ld   [wD723_GfxCopy_DestAddrHi], A                                    ;; 02:725b $ea $23 $d7
     ld   A, [HL+]                                      ;; 02:725e $2a
-    ld   [wD724], A                                    ;; 02:725f $ea $24 $d7
+    ld   [wD724_GfxCopy_SizeLo], A                                    ;; 02:725f $ea $24 $d7
     ld   A, [HL+]                                      ;; 02:7262 $2a
-    ld   [wD725], A                                    ;; 02:7263 $ea $25 $d7
-    ld   HL, wD60F_HDMATransferFlags                                     ;; 02:7266 $21 $0f $d6
+    ld   [wD725_GfxCopy_SizeHi], A                                    ;; 02:7263 $ea $25 $d7
+    ld   HL, wD60F_GfxTransferFlags                                     ;; 02:7266 $21 $0f $d6
     set  3, [HL]                                       ;; 02:7269 $cb $de
     ret                                                ;; 02:726b $c9
-.data_02_726c:
+.data_02_726c_EntityGfxDescriptors:
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 02:726c ????????
     db   $12, $00, $40                                 ;; 02:7274 ...
     dw   $8400                                         ;; 02:7277 pP
@@ -827,7 +833,7 @@ call_02_722c_SoundQueue_PlayNext:
     db   $00, $02, $00, $11, $00, $59, $00, $85        ;; 02:7431 ????????
     db   $00, $01, $00                                 ;; 02:7439 ???
 
-data_02_743c_EntitySoundTable:
+data_02_743c_EntityGfxAndPaletteTable:
 ; Parallel array to the entity type list; each 2-byte entry is (sound-id, sound-bank) 
 ; used when spawning or re-initializing an entity to trigger the appropriate sound effect
     db   $00, $00, $00, $01, $00, $02, $00, $06        ;; 02:743c ??????.w

@@ -247,11 +247,11 @@ data_03_5a8a_SpriteFrameTable_Alt:
     db   $20                                           ;; 03:5b5a ?
 
 call_03_5b5b_HUD_BuildSprites:
-; Builds the OAM entries for the player HUD/status display (health hearts etc.) into wCC80. 
+; Builds the OAM entries for the player HUD/status display (health hearts etc.) into wCC80_ShadowOAM_HudSprites. 
 ; Selects one of 5 different 3-byte data layouts depending on game state: level 0 uses .data_03_5beb, 
 ; other levels use .data_03_5bd3, demo mode uses a specific layout, and if a special condition 
-; (wD623_CollectibleMode set, wD770/wD771 in range) uses .data_03_5c1b (a "low health" or special display variant). 
-; Writes 8 OAM entries as (palette, tile, bank) triplets to wCC80. If wD687_FlyAnimationState bit 7 is set, falls into 
+; (wD623_CollectibleMode set, wD770_LevelTimer_SecondsBCD/wD771_LevelTimer_FrameCounter in range) uses .data_03_5c1b (a "low health" or special display variant). 
+; Writes 8 OAM entries as (palette, tile, bank) triplets to wCC80_ShadowOAM_HudSprites. If wD687_FlyAnimationState bit 7 is set, falls into 
 ; .jp_03_5c33_HUD_BuildSprites_HealthBased (health-based tile select path)
     ld   A, [wD688_FlyAnimationPosition]                                    ;; 03:5b5b $fa $88 $d6
     ld   C, A                                          ;; 03:5b5e $4f
@@ -268,15 +268,15 @@ call_03_5b5b_HUD_BuildSprites:
     and  A, A                                          ;; 03:5b76 $a7
     jr   Z, .jr_03_5b98                                ;; 03:5b77 $28 $1f
     ld   DE, .data_03_5c03                             ;; 03:5b79 $11 $03 $5c
-    ld   A, [wD76F]                                    ;; 03:5b7c $fa $6f $d7
+    ld   A, [wD76F_LevelTimer_Minutes]                                    ;; 03:5b7c $fa $6f $d7
     and  A, A                                          ;; 03:5b7f $a7
     jr   NZ, .jr_03_5ba7                               ;; 03:5b80 $20 $25
-    ld   A, [wD770]                                    ;; 03:5b82 $fa $70 $d7
+    ld   A, [wD770_LevelTimer_SecondsBCD]                                    ;; 03:5b82 $fa $70 $d7
     and  A, A                                          ;; 03:5b85 $a7
     jr   Z, .jr_03_5ba7                                ;; 03:5b86 $28 $1f
     and  A, $f0                                        ;; 03:5b88 $e6 $f0
     jr   NZ, .jr_03_5ba7                               ;; 03:5b8a $20 $1b
-    ld   A, [wD771]                                    ;; 03:5b8c $fa $71 $d7
+    ld   A, [wD771_LevelTimer_FrameCounter]                                    ;; 03:5b8c $fa $71 $d7
     cp   A, $0f                                        ;; 03:5b8f $fe $0f
     jr   NC, .jr_03_5ba7                               ;; 03:5b91 $30 $14
     ld   DE, .data_03_5c1b                             ;; 03:5b93 $11 $1b $5c
@@ -289,7 +289,7 @@ call_03_5b5b_HUD_BuildSprites:
     ld   C, A                                          ;; 03:5ba3 $4f
     ld   DE, .data_03_5bbb                             ;; 03:5ba4 $11 $bb $5b
 .jr_03_5ba7:
-    ld   HL, wCC80                                     ;; 03:5ba7 $21 $80 $cc
+    ld   HL, wCC80_ShadowOAM_HudSprites                                     ;; 03:5ba7 $21 $80 $cc
     ld   B, $08                                        ;; 03:5baa $06 $08
 .jr_03_5bac:
     ld   A, C                                          ;; 03:5bac $79
@@ -339,7 +339,7 @@ call_03_5b5b_HUD_BuildSprites:
     ld   D, A                                          ;; 03:5c3f $57
     ld   A, [wD688_FlyAnimationPosition]                                    ;; 03:5c40 $fa $88 $d6
     ld   C, A                                          ;; 03:5c43 $4f
-    ld   HL, wCC80                                     ;; 03:5c44 $21 $80 $cc
+    ld   HL, wCC80_ShadowOAM_HudSprites                                     ;; 03:5c44 $21 $80 $cc
     ld   B, $08                                        ;; 03:5c47 $06 $08
 .jr_03_5c49:
     ld   A, C                                          ;; 03:5c49 $79
@@ -367,14 +367,14 @@ call_03_5b5b_HUD_BuildSprites:
     db   $5c, $68, $64, $6a, $74, $68, $7c, $6a        ;; 03:5ca0 ........
 
 call_03_5ca8_Entity_DrawPlayer:
-; Main Gex sprite builder. Reads wD586_GexSpriteStateFlags (base sprite state index), adjusts by +2 if facing 
+; Main Gex sprite builder. Reads wD586_PlayerGfxVramPage (base sprite state index), adjusts by +2 if facing 
 ; left (bit 5 of wD20D), +4 if climbing (bit 6 of wD74B_Player_ClimbingFlags). Uses this to index .data_03_5d6f 
-; via call_00_07b9 to get the frame pointer. Computes player screen X/Y from world position 
+; via call_00_07b9_GetPointerFromTable to get the frame pointer. Computes player screen X/Y from world position 
 ; minus map scroll origin (wD6ED/wD6EF) plus offsets ($08/$10), stores into wD212/wD213. 
 ; Checks action ID for $11 (special state), invincibility flags (wD755_FlyPowerup2_TimerLo/wD753_FlyPowerup1_TimerLo/wD751_Player_CircuitPowerUpTimerLo), 
 ; and wD73B_FrameCounter bit 3 — if any special condition is active, substitutes .data_03_5e7f 
-; (invincible/stunned sprite). Writes up to 8 OAM entries into wCC00, each as (Y+B, X+C, tile+wD73A, attr
-    ld   A, [wD586_GexSpriteStateFlags]                                    ;; 03:5ca8 $fa $86 $d5
+; (invincible/stunned sprite). Writes up to 8 OAM entries into wCC00_ShadowOAM, each as (Y+B, X+C, tile+wD73A, attr
+    ld   A, [wD586_PlayerGfxVramPage]                                    ;; 03:5ca8 $fa $86 $d5
     ld   HL, wD20D_Player_FacingFlags                                     ;; 03:5cab $21 $0d $d2
     bit  5, [HL]                                       ;; 03:5cae $cb $6e
     jr   Z, .jr_03_5cb4                                ;; 03:5cb0 $28 $02
@@ -386,7 +386,7 @@ call_03_5ca8_Entity_DrawPlayer:
     add  A, $04                                        ;; 03:5cbb $c6 $04
 .jr_03_5cbd:
     ld   DE, .data_03_5d6f_GexSpriteFramePointerTable                             ;; 03:5cbd $11 $6f $5d
-    call call_00_07b9                                  ;; 03:5cc0 $cd $b9 $07
+    call call_00_07b9_GetPointerFromTable                                  ;; 03:5cc0 $cd $b9 $07
     ld   A, [wD6ED_BgMap_ScrollX]                                    ;; 03:5cc3 $fa $ed $d6
     ld   C, A                                          ;; 03:5cc6 $4f
     ld   A, [wD20E_Player_XPositionLo]                                    ;; 03:5cc7 $fa $0e $d2
@@ -426,7 +426,7 @@ call_03_5ca8_Entity_DrawPlayer:
     ld   HL, .data_03_5e7f_SpriteData_Invincible                             ;; 03:5d0b $21 $7f $5e
     ld   BC, $00                                       ;; 03:5d0e $01 $00 $00
 .jr_03_5d11:
-    ld   DE, wCC00                                     ;; 03:5d11 $11 $00 $cc
+    ld   DE, wCC00_ShadowOAM                                     ;; 03:5d11 $11 $00 $cc
     ld   A, $08                                        ;; 03:5d14 $3e $08
 .jr_03_5d16:
     push AF                                            ;; 03:5d16 $f5
@@ -665,7 +665,7 @@ call_03_5ebf_Entity_BuildSprites:
     ld   E, A                                          ;; 03:5f6f $5f
     ld   A, [DE]                                       ;; 03:5f70 $1a
     swap A                                             ;; 03:5f71 $cb $37
-    ld   HL, wD587                                     ;; 03:5f73 $21 $87 $d5
+    ld   HL, wD587_EntityGfxVramPage                                     ;; 03:5f73 $21 $87 $d5
     or   A, [HL]                                       ;; 03:5f76 $b6
     push AF                                            ;; 03:5f77 $f5
     ld   A, E                                          ;; 03:5f78 $7b
@@ -690,7 +690,7 @@ call_03_5ebf_Entity_BuildSprites:
     add  A, [HL]                                       ;; 03:5f96 $86
     ld   DE, data_03_5566_SpriteFrameTable_Main                              ;; 03:5f97 $11 $66 $55
 .jr_03_5f9a:
-    call call_00_07b9                                  ;; 03:5f9a $cd $b9 $07
+    call call_00_07b9_GetPointerFromTable                                  ;; 03:5f9a $cd $b9 $07
     ld   A, [wD739]                                    ;; 03:5f9d $fa $39 $d7
     ld   E, A                                          ;; 03:5fa0 $5f
     ld   D, $cc                                        ;; 03:5fa1 $16 $cc
@@ -727,13 +727,13 @@ call_03_5ebf_Entity_BuildSprites:
     jp   call_03_4c76_EntityCollision_Dispatch                                    ;; 03:5fc8 $c3 $76 $4c
 .jr_03_5fcb_Entity_BuildSprites_FacingBased:
 ; Sprite path for entities with UNK_0A bit 7 set. Reads FACING_DIRECTION field directly 
-; (instead of UNK_0A) for the palette/flip byte, swaps nibbles and ORs with wD587, 
+; (instead of UNK_0A) for the palette/flip byte, swaps nibbles and ORs with wD587_EntityGfxVramPage, 
 ; then proceeds identically to the standard path: looks up sprite count and frame data 
 ; from data_03_5447/data_03_5566/data_03_5a8a, writes OAM entries
     LOAD_OBJ_FIELD_TO_DE ENTITY_FIELD_FACING_FLAGS
     ld   A, [DE]                                       ;; 03:5fd3 $1a
     swap A                                             ;; 03:5fd4 $cb $37
-    ld   HL, wD587                                     ;; 03:5fd6 $21 $87 $d5
+    ld   HL, wD587_EntityGfxVramPage                                     ;; 03:5fd6 $21 $87 $d5
     or   A, [HL]                                       ;; 03:5fd9 $b6
     push AF                                            ;; 03:5fda $f5
     ld   A, E                                          ;; 03:5fdb $7b
@@ -758,7 +758,7 @@ call_03_5ebf_Entity_BuildSprites:
     add  A, [HL]                                       ;; 03:5ff9 $86
     ld   DE, data_03_5566_SpriteFrameTable_Main                              ;; 03:5ffa $11 $66 $55
 .jr_03_5ffd:
-    call call_00_07b9                                  ;; 03:5ffd $cd $b9 $07
+    call call_00_07b9_GetPointerFromTable                                  ;; 03:5ffd $cd $b9 $07
     ld   A, [wD739]                                    ;; 03:6000 $fa $39 $d7
     ld   E, A                                          ;; 03:6003 $5f
     ld   D, $cc                                        ;; 03:6004 $16 $cc
@@ -1189,7 +1189,7 @@ call_03_6484_OAM_ClearUnusedEntries:
     ret                                                ;; 03:6498 $c9
 
 call_03_6499_Collectible_BuildSprites:
-; Builds OAM entries for collectible sub-hitbox sparkle/coin sprites into wCC60. 
+; Builds OAM entries for collectible sub-hitbox sparkle/coin sprites into wCC60_ShadowOAM_CollectibleSprites. 
 ; Reads map scroll position (wD6ED/wD6EF), computes sub-pixel offsets into wD64D/wD64E. 
 ; Reads collectible slot data from wC4xx/wC5xx (two parallel arrays of X and Y positions). 
 ; For each active slot: computes screen position, writes tile 7E with attribute $01 (a sparkle tile). 
@@ -1234,7 +1234,7 @@ call_03_6499_Collectible_BuildSprites:
     swap A                                             ;; 03:64ce $cb $37
     or   A, B                                          ;; 03:64d0 $b0
     ld   B, A                                          ;; 03:64d1 $47
-    ld   HL, wCC60                                     ;; 03:64d2 $21 $60 $cc
+    ld   HL, wCC60_ShadowOAM_CollectibleSprites                                     ;; 03:64d2 $21 $60 $cc
     pop  AF                                            ;; 03:64d5 $f1
 .jr_03_64d6:
     push AF                                            ;; 03:64d6 $f5

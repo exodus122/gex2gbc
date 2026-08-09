@@ -413,7 +413,7 @@ call_0a_7a7c_EntitySpawn_SpawnNextFromList:
     push HL                                            ;; 0a:7b78 $e5
     and  A, A                                          ;; 0a:7b79 $a7
     jr   Z, .jr_0a_7b87                                ;; 0a:7b7a $28 $0b
-    FARCALL call_02_7211_SoundQueue_Enqueue
+    FARCALL call_02_7211_EntityGfxQueue_Enqueue
 .jr_0a_7b87:
     pop  HL                                            ;; 0a:7b87 $e1
     ld   A, [wD59E_OnGBCFlag]                                    ;; 0a:7b88 $fa $9e $d5
@@ -561,7 +561,7 @@ call_0a_7b9a_EntitySpawn_SpawnChildEntity:
     push HL                                            ;; 0a:7c34 $e5
     and  A, A                                          ;; 0a:7c35 $a7
     jr   Z, .jr_0a_7c43                                ;; 0a:7c36 $28 $0b
-    FARCALL call_02_7211_SoundQueue_Enqueue
+    FARCALL call_02_7211_EntityGfxQueue_Enqueue
 .jr_0a_7c43:
     pop  HL                                            ;; 0a:7c43 $e1
     ld   A, [wD59E_OnGBCFlag]                                    ;; 0a:7c44 $fa $9e $d5

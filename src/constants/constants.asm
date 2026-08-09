@@ -229,6 +229,52 @@ DEF MAP_SCROLL_RIGHT             EQU $04 ;
 DEF MAP_SCROLL_UP                EQU $02 ;
 DEF MAP_SCROLL_DOWN              EQU $01 ;
 
+; LCD STAT interrupt handler ids, passed to call_00_0bae_RequestLcdIsr /
+; call_00_0bb9_InstallLcdIsr and stored in the low 7 bits of wCCFD_LcdIsrId.
+; Each id is a byte offset into .data_00_0bdc_LcdIsrTable (3 bytes per entry).
+DEF LCD_ISR_NONE                 EQU $00 ; handler is just a reti
+DEF LCD_ISR_VRAM_STREAM          EQU $03 ; copies wD100_TilesToLoadBuffer to a VRAM page, 4 bytes per hblank
+DEF LCD_ISR_RASTER_EFFECT        EQU $06 ; hud window split at scanline $5F + horizontal wobble band
+DEF LCD_ISR_INSTALLED            EQU $80 ; bit 7 of wCCFD_LcdIsrId
+
+; Opcodes the LCD STAT handler patches into itself (see .data_00_0c54_PushAfOpcode
+; and data_00_0d83_RetiOpcode)
+DEF OPCODE_PUSH_AF               EQU $F5 ; written to wCCA0_LcdIsrCode to arm the handler
+DEF OPCODE_RETI                  EQU $D9 ; written to wCCA0_LcdIsrCode to disable it
+
+; wD60F_GfxTransferFlags - pending VRAM transfers, serviced lowest bit first
+DEF GFX_XFER_PLAYER_GFX          EQU 0 ; 256 bytes of Gex tiles -> $8000 / $8100
+DEF GFX_XFER_ENTITY_GFX          EQU 1 ; 256 bytes of entity tiles -> $8200 / $8300
+DEF GFX_XFER_SECONDARY_TILESET   EQU 2 ; secondary tileset -> $9000
+DEF GFX_XFER_QUEUED_ENTITY_GFX   EQU 3 ; descriptor at wD71F_GfxCopy_SrcBank
+DEF GFX_XFER_MEDIA_DIMENSION_TV  EQU 4 ; hub tv screen image -> $8600
+DEF GFX_XFER_IN_PROGRESS         EQU 7 ; an hblank-driven transfer is currently running
+
+; wD60E_HUDDirtyFlags
+DEF HUD_DIRTY_LIVES              EQU 1
+DEF HUD_DIRTY_TIMER              EQU 2
+DEF HUD_DIRTY_COLLECTIBLES       EQU 3
+
+; wD621_WarpFlags
+DEF WARP_TIME_UP                 EQU $10
+DEF WARP_ENTERED_DOOR            EQU $08
+DEF WARP_ENTERED_TV              EQU $04
+DEF WARP_DIED                    EQU $02
+
+; wD629_RemoteProgressFlags bit groups. call_00_3c3f_Remotes_RecountAllTotals counts
+; the set bits under each mask across all 30 levels
+DEF REMOTE_MISSION_MASK          EQU $07 ; one bit per selectable mission (red remotes)
+DEF REMOTE_HIDDEN_MASK           EQU $18 ; silver remote (08) + gold remote (10)
+DEF REMOTE_BONUS_MASK            EQU $20 ; collectible-quota mission completed
+DEF REMOTE_TOTAL_COUNT_MASK      EQU $7F ; low bits of wD64F/wD650/wD651
+DEF REMOTE_TOTAL_CHANGED         EQU $80 ; bit 7 of the same
+
+; wDAD9_FadeMode (DMG only)
+DEF FADE_MODE_NONE               EQU $00
+DEF FADE_MODE_IN                 EQU $01 ; fade back to wDAD1_LevelBGP / OBP0 / OBP1
+DEF FADE_MODE_TO_WHITE           EQU $02 ; fade all selected registers to $00
+DEF FADE_MODE_TO_BLACK           EQU $03 ; fade all selected registers to $FF
+
 ; Entities
 DEF ENTITY_GEX                              EQU $00
 DEF ENTITY_COLLECTIBLE_SPAWN                EQU $01

@@ -1,7 +1,7 @@
 call_0b_5537_BgPalette_LoadMonoOrGetSpriteParams:
 ; Mono-mode (DMG) background palette loader, or sprite params setter in GBC mode. 
 ; If wD59E_OnGBCFlag is zero (DMG): loads wD624 (level ID) to index either .data_0b_555f (C=0, primary BG) 
-; or .data_0b_55db (C≠0, secondary BG), copies 3 bytes into wDAD1–wDAD3 (DMG palette register values). 
+; or .data_0b_55db (C≠0, secondary BG), copies 3 bytes into wDAD1_LevelBGP–wDAD3_LevelOBP1 (DMG palette register values). 
 ; If GBC (wD59E_OnGBCFlag nonzero), branches to call_0b_561b_GBC_LoadLevelBgPalette
     ld   A, [wD59E_OnGBCFlag]                                    ;; 0b:5537 $fa $9e $d5
     and  A, A                                          ;; 0b:553a $a7
@@ -20,11 +20,11 @@ call_0b_5537_BgPalette_LoadMonoOrGetSpriteParams:
     add  HL, HL                                        ;; 0b:5550 $29
     add  HL, DE                                        ;; 0b:5551 $19
     ld   A, [HL+]                                      ;; 0b:5552 $2a
-    ld   [wDAD1], A                                    ;; 0b:5553 $ea $d1 $da
+    ld   [wDAD1_LevelBGP], A                                    ;; 0b:5553 $ea $d1 $da
     ld   A, [HL+]                                      ;; 0b:5556 $2a
-    ld   [wDAD2], A                                    ;; 0b:5557 $ea $d2 $da
+    ld   [wDAD2_LevelOBP0], A                                    ;; 0b:5557 $ea $d2 $da
     ld   A, [HL+]                                      ;; 0b:555a $2a
-    ld   [wDAD3], A                                    ;; 0b:555b $ea $d3 $da
+    ld   [wDAD3_LevelOBP1], A                                    ;; 0b:555b $ea $d3 $da
     ret                                                ;; 0b:555e $c9
 .data_0b_555f:
     db   $1b, $1f, $1f, $00, $e4, $1f, $1f, $00        ;; 0b:555f ????????
@@ -294,7 +294,7 @@ call_0b_5d4b_MediaDimension_LoadTVPalette:
     ret  Z                                             ;; 0b:5d4f $c8
     call call_00_2e3a_MapData_GetTVPaletteId                                  ;; 0b:5d50 $cd $3a $2e
     ld   DE, .data_0b_5d62                             ;; 0b:5d53 $11 $62 $5d
-    call call_00_07b9                                  ;; 0b:5d56 $cd $b9 $07
+    call call_00_07b9_GetPointerFromTable                                  ;; 0b:5d56 $cd $b9 $07
     ld   DE, wDA7B_MediaDimensionTVPalette                                     ;; 0b:5d59 $11 $7b $da
     ld   BC, $10                                       ;; 0b:5d5c $01 $10 $00
     jp   call_00_07b0_MemCopy                                  ;; 0b:5d5f $c3 $b0 $07

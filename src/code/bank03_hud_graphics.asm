@@ -33,7 +33,7 @@ call_03_6941_HUD_LoadCollectibleSprites:
 ; Loads the collectible sprite tiles for the current level. Calls call_03_6be5_HUD_LoadCollectiblePalette first (to set up the palette). 
 ; Uses wD624 (level ID) to index .data_image_collectibles_03_6967 — a 31-entry pointer table mapping each 
 ; level to one of 6 world-specific collectible tile sets (Toon TV, Scream TV, Circuit Central, Kung Fu Theater,
-;  Prehistory Channel, Rezopolis). Then uses wD648 (collectible type index, swap-shifted) as a sub-index 
+;  Prehistory Channel, Rezopolis). Then uses wD648_CollectibleMilestoneIndex (collectible type index, swap-shifted) as a sub-index 
 ; within that set to select the specific tile frame, and copies 1 tile ($10 bytes) to VRAM $87E0 via VRAM_Copy32Bytes
     ld   HL, wD60E_HUDDirtyFlags                                     ;; 03:6941 $21 $0e $d6
     res  3, [HL]                                       ;; 03:6944 $cb $9e
@@ -47,7 +47,7 @@ call_03_6941_HUD_LoadCollectibleSprites:
     ld   E, [HL]                                       ;; 03:6954 $5e
     inc  HL                                            ;; 03:6955 $23
     ld   D, [HL]                                       ;; 03:6956 $56
-    ld   A, [wD648]                                    ;; 03:6957 $fa $48 $d6
+    ld   A, [wD648_CollectibleMilestoneIndex]                                    ;; 03:6957 $fa $48 $d6
     swap A                                             ;; 03:695a $cb $37
     ld   L, A                                          ;; 03:695c $6f
     ld   H, $00                                        ;; 03:695d $26 $00
@@ -103,7 +103,7 @@ call_03_6941_HUD_LoadCollectibleSprites:
 call_03_6be5_HUD_LoadCollectiblePalette:
 ; Loads the GBC palette for the collectible icon into wDA13_EntityPalettes_Slot1 (8 bytes = 4 colors × 2 bytes). 
 ; Returns immediately if wD59E_OnGBCFlag is zero (mono/non-GBC mode). Uses wD624 (level ID) to index 
-; .data_03_6c1d_collectible_palettes for a world-specific palette pointer, then uses wD648 × 8 
+; .data_03_6c1d_collectible_palettes for a world-specific palette pointer, then uses wD648_CollectibleMilestoneIndex × 8 
 ; as a sub-index to select the specific color entry within that palette block, copying 8 bytes to wDA13_EntityPalettes_Slot1
     ld   A, [wD59E_OnGBCFlag]                                    ;; 03:6be5 $fa $9e $d5
     and  A, A                                          ;; 03:6be8 $a7
@@ -117,7 +117,7 @@ call_03_6be5_HUD_LoadCollectiblePalette:
     ld   E, [HL]                                       ;; 03:6bf5 $5e
     inc  HL                                            ;; 03:6bf6 $23
     ld   D, [HL]                                       ;; 03:6bf7 $56
-    ld   HL, wD648                                     ;; 03:6bf8 $21 $48 $d6
+    ld   HL, wD648_CollectibleMilestoneIndex                                     ;; 03:6bf8 $21 $48 $d6
     ld   L, [HL]                                       ;; 03:6bfb $6e
     ld   H, $00                                        ;; 03:6bfc $26 $00
     add  HL, HL                                        ;; 03:6bfe $29
@@ -195,20 +195,21 @@ call_03_6be5_HUD_LoadCollectiblePalette:
     INCBIN "gfx/misc_sprites/collectibles/palettes/palette_rezopolis_collectibles.bin"
 
 call_03_6ceb_HUD_LoadTimerDigits:
-; Loads timer display tiles. Clears bit 2 of wD60E_HUDDirtyFlags. Reads wD76F (timer hundreds), wD770 high nibble (tens), 
-; and wD770 low nibble (ones), calling call_03_6d88_HUD_LoadDigitTile for each to write digit tiles to VRAM $8748, $8768, 
+; Loads the bonus level countdown timer digits. Clears bit 2 of wD60E_HUDDirtyFlags.
+; Reads wD76F_LevelTimer_Minutes (minutes), wD770_LevelTimer_SecondsBCD high nibble (tens of seconds),
+; and wD770_LevelTimer_SecondsBCD low nibble (seconds), calling call_03_6d88_HUD_LoadDigitTile for each to write digit tiles to VRAM $8748, $8768,
 ; $8788 respectively. Falls through to call_03_6d5e_HUD_LoadCollectibleCountDigits to also load the collectible count digits
     ld   HL, wD60E_HUDDirtyFlags                                     ;; 03:6ceb $21 $0e $d6
     res  2, [HL]                                       ;; 03:6cee $cb $96
-    ld   A, [wD76F]                                    ;; 03:6cf0 $fa $6f $d7
+    ld   A, [wD76F_LevelTimer_Minutes]                                    ;; 03:6cf0 $fa $6f $d7
     ld   DE, VRAM_DIGIT_HUNDREDS                                     ;; 03:6cf3 $11 $48 $87
     call call_03_6d88_HUD_LoadDigitTile                                  ;; 03:6cf6 $cd $88 $6d
-    ld   A, [wD770]                                    ;; 03:6cf9 $fa $70 $d7
+    ld   A, [wD770_LevelTimer_SecondsBCD]                                    ;; 03:6cf9 $fa $70 $d7
     swap A                                             ;; 03:6cfc $cb $37
     and  A, $0f                                        ;; 03:6cfe $e6 $0f
     ld   DE, VRAM_DIGIT_TENS                                     ;; 03:6d00 $11 $68 $87
     call call_03_6d88_HUD_LoadDigitTile                                  ;; 03:6d03 $cd $88 $6d
-    ld   A, [wD770]                                    ;; 03:6d06 $fa $70 $d7
+    ld   A, [wD770_LevelTimer_SecondsBCD]                                    ;; 03:6d06 $fa $70 $d7
     and  A, $0f                                        ;; 03:6d09 $e6 $0f
     ld   DE, VRAM_DIGIT_ONES                                     ;; 03:6d0b $11 $88 $87
     call call_03_6d88_HUD_LoadDigitTile                                  ;; 03:6d0e $cd $88 $6d

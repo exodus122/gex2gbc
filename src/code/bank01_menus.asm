@@ -167,7 +167,7 @@ call_01_4000_MenuLoad: ; this is the primary menu loading and updating function
     jp   .jp_01_403a                                   ;; 01:412f $c3 $3a $40
 .jp_01_4132:
     ld   A, $00                                        ;; 01:4132 $3e $00
-    call call_00_113e                                  ;; 01:4134 $cd $3e $11
+    call call_00_113e_PlaySFX                                  ;; 01:4134 $cd $3e $11
     jp   .jp_01_403a                                   ;; 01:4137 $c3 $3a $40
 .jp_01_413a:
     ld   A, [wD68D]                                    ;; 01:413a $fa $8d $d6
@@ -192,7 +192,7 @@ call_01_4000_MenuLoad: ; this is the primary menu loading and updating function
     inc  [HL]                                          ;; 01:415e $34
 .jr_01_415f:
     ld   A, $00                                        ;; 01:415f $3e $00
-    call call_00_113e                                  ;; 01:4161 $cd $3e $11
+    call call_00_113e_PlaySFX                                  ;; 01:4161 $cd $3e $11
     call call_01_43e6                                  ;; 01:4164 $cd $e6 $43
     jp   .jp_01_403a                                   ;; 01:4167 $c3 $3a $40
 .jr_01_416a:
@@ -228,10 +228,10 @@ call_01_4000_MenuLoad: ; this is the primary menu loading and updating function
     call call_01_4d3b                                  ;; 01:419e $cd $3b $4d
     ld   HL, data_01_57a0                              ;; 01:41a1 $21 $a0 $57
     call call_01_44cf                                  ;; 01:41a4 $cd $cf $44
-    ld   HL, data_00_0db6                                      ;; 01:41a7 $21 $b6 $0d
+    ld   HL, data_00_0db6_GfxStreamScript_MenuSprites                                      ;; 01:41a7 $21 $b6 $0d
     call call_01_4d0a                                  ;; 01:41aa $cd $0a $4d
     ld   A, $01                                        ;; 01:41ad $3e $01
-    call call_00_113e                                  ;; 01:41af $cd $3e $11
+    call call_00_113e_PlaySFX                                  ;; 01:41af $cd $3e $11
     jp   .jp_01_403a                                   ;; 01:41b2 $c3 $3a $40
 .jr_01_41b5:
     call call_00_1129_CheckInputB                                  ;; 01:41b5 $cd $29 $11
@@ -389,7 +389,7 @@ call_01_42bd_EnterTV:
     add  A, A                                          ;; 01:42eb $87
     add  A, E                                          ;; 01:42ec $83
     ld   E, A                                          ;; 01:42ed $5f
-    ld   A, [wD647]                                    ;; 01:42ee $fa $47 $d6
+    ld   A, [wD647_ExitTVButtonIndex]                                    ;; 01:42ee $fa $47 $d6
     add  A, E                                          ;; 01:42f1 $83
     ld   E, A                                          ;; 01:42f2 $5f
     ld   HL, .data_01_4337                             ;; 01:42f3 $21 $37 $43
@@ -400,7 +400,7 @@ call_01_42bd_EnterTV:
     ld   H, $00                                        ;; 01:42fc $26 $00
     ld   DE, wD629_RemoteProgressFlags                                     ;; 01:42fe $11 $29 $d6
     add  HL, DE                                        ;; 01:4301 $19
-    ld   A, [wD64C]                                    ;; 01:4302 $fa $4c $d6
+    ld   A, [wD64C_CurrentLevel_HiddenRemoteFlags]                                    ;; 01:4302 $fa $4c $d6
     or   A, C                                          ;; 01:4305 $b1
     or   A, [HL]                                       ;; 01:4306 $b6
     ld   [HL], A                                       ;; 01:4307 $77
@@ -568,9 +568,9 @@ call_01_43e6:
     dec  E                                             ;; 01:4438 $1d
     bit  7, E                                          ;; 01:4439 $cb $7b
     jr   Z, .jr_01_4437                                ;; 01:443b $28 $fa
-    ld   HL, wD6EB                                     ;; 01:443d $21 $eb $d6
+    ld   HL, wD6EB_RasterWobble_StartLine                                     ;; 01:443d $21 $eb $d6
     ld   [HL], A                                       ;; 01:4440 $77
-    ld   HL, wD6EC                                     ;; 01:4441 $21 $ec $d6
+    ld   HL, wD6EC_RasterWobble_LineCount                                     ;; 01:4441 $21 $ec $d6
     ld   [HL], B                                       ;; 01:4444 $70
     ret                                                ;; 01:4445 $c9
 .jp_01_4446:
@@ -582,7 +582,7 @@ call_01_43e6:
     ld   L, [HL]                                       ;; 01:444f $6e
     ld   H, $00                                        ;; 01:4450 $26 $00
     add  HL, HL                                        ;; 01:4452 $29
-    ld   DE, data_00_0dd9                                      ;; 01:4453 $11 $d9 $0d
+    ld   DE, data_00_0dd9_GfxStreamScriptTable_Rezopolis                                      ;; 01:4453 $11 $d9 $0d
     add  HL, DE                                        ;; 01:4456 $19
     ld   A, [HL+]                                      ;; 01:4457 $2a
     ld   H, [HL]                                       ;; 01:4458 $66
@@ -593,7 +593,7 @@ call_01_43e6:
     ld   l,[hl]
     ld   h,$00
     add  hl,hl
-    ld   de,data_00_0e13
+    ld   de,data_00_0e13_GfxStreamScriptTable_ChannelZ
     add  hl,de
     ldi  a,[hl]
     ld   h,[hl]
@@ -609,8 +609,8 @@ call_01_446f_LoadMenuGraphics:
     ld   [wD6C1], A                                    ;; 01:4472 $ea $c1 $d6
     xor  A, A                                          ;; 01:4475 $af
     ld   [wD6D8], A                                    ;; 01:4476 $ea $d8 $d6
-    call call_00_0f38                                  ;; 01:4479 $cd $38 $0f
-    call call_00_0ede                                  ;; 01:447c $cd $de $0e
+    call call_00_0f38_FadeOutAndClearVRAM                                  ;; 01:4479 $cd $38 $0f
+    call call_00_0ede_SelectWramBank1                                  ;; 01:447c $cd $de $0e
     pop  HL                                            ;; 01:447f $e1
 .jr_01_4480:
     ld   A, L                                          ;; 01:4480 $7d
@@ -624,7 +624,7 @@ call_01_446f_LoadMenuGraphics:
     cp   A, $ff                                        ;; 01:4493 $fe $ff
     jr   Z, .jr_01_449f                                ;; 01:4495 $28 $08
     ld   DE, data_01_568c                              ;; 01:4497 $11 $8c $56
-    call call_00_07b9                                  ;; 01:449a $cd $b9 $07
+    call call_00_07b9_GetPointerFromTable                                  ;; 01:449a $cd $b9 $07
     jr   .jr_01_4480                                   ;; 01:449d $18 $e1
 .jr_01_449f:
     ld   HL, wD6DE_MenuType                                     ;; 01:449f $21 $de $d6
@@ -634,16 +634,16 @@ call_01_446f_LoadMenuGraphics:
     ld   DE, data_01_5654                              ;; 01:44a6 $11 $54 $56
     add  HL, DE                                        ;; 01:44a9 $19
     ld   A, [HL+]                                      ;; 01:44aa $2a
-    ld   [wD6E1], A                                    ;; 01:44ab $ea $e1 $d6
+    ld   [wD6E1_RasterSplit_LCDCValue], A                                    ;; 01:44ab $ea $e1 $d6
     ld   C, [HL]                                       ;; 01:44ae $4e
     FARCALL call_0b_5537_BgPalette_LoadMonoOrGetSpriteParams
     ld   A, $ff                                        ;; 01:44ba $3e $ff
-    ld   [wD6EB], A                                    ;; 01:44bc $ea $eb $d6
+    ld   [wD6EB_RasterWobble_StartLine], A                                    ;; 01:44bc $ea $eb $d6
     call call_01_43e6                                  ;; 01:44bf $cd $e6 $43
     ld   A, $06                                        ;; 01:44c2 $3e $06
-    call call_00_0bae                                  ;; 01:44c4 $cd $ae $0b
+    call call_00_0bae_RequestLcdIsr                                  ;; 01:44c4 $cd $ae $0b
     ld   A, $d7                                        ;; 01:44c7 $3e $d7
-    call call_00_0f56                                  ;; 01:44c9 $cd $56 $0f
+    call call_00_0f56_SetLCDCAndFadeIn                                  ;; 01:44c9 $cd $56 $0f
     jp   call_00_0ab4_WaitForInterrupt                                  ;; 01:44cc $c3 $b4 $0a
 
 call_01_44cf:
@@ -712,7 +712,7 @@ call_01_44e6:
     sub  A, $e0                                        ;; 01:453b $d6 $e0
     jr   C, .jr_01_4548                                ;; 01:453d $38 $09
     ld   DE, .data_01_4633                             ;; 01:453f $11 $33 $46
-    call call_00_07b9                                  ;; 01:4542 $cd $b9 $07
+    call call_00_07b9_GetPointerFromTable                                  ;; 01:4542 $cd $b9 $07
     call call_00_10bd_JumpHL                                  ;; 01:4545 $cd $bd $10
 .jr_01_4548:
     ld   A, [wD69E]                                    ;; 01:4548 $fa $9e $d6
@@ -764,7 +764,7 @@ call_01_44e6:
     ld   A, [wD697]                                    ;; 01:459d $fa $97 $d6
     cp   A, $ff                                        ;; 01:45a0 $fe $ff
     jr   NZ, .jr_01_45af                               ;; 01:45a2 $20 $0b
-    call call_00_08b1                                  ;; 01:45a4 $cd $b1 $08
+    call call_00_08b1_MediaDimension_CopyTVAttributes                                  ;; 01:45a4 $cd $b1 $08
     ld   A, $00                                        ;; 01:45a7 $3e $00
     ldh  [rVBK], A                                     ;; 01:45a9 $e0 $4f
     pop  BC                                            ;; 01:45ab $c1
@@ -884,13 +884,13 @@ call_01_44e6:
 call_01_4653:
     ld   A, [wD69B]                                    ;; 01:4653 $fa $9b $d6
     ld   DE, data_01_74e9                              ;; 01:4656 $11 $e9 $74
-    call call_00_07b9                                  ;; 01:4659 $cd $b9 $07
+    call call_00_07b9_GetPointerFromTable                                  ;; 01:4659 $cd $b9 $07
     jp   call_01_4e78                                    ;; 01:465c $c3 $78 $4e
 
 call_01_465f:
     ld   A, [wD69B]                                    ;; 01:465f $fa $9b $d6
     ld   DE, data_01_74ed                              ;; 01:4662 $11 $ed $74
-    call call_00_07b9                                  ;; 01:4665 $cd $b9 $07
+    call call_00_07b9_GetPointerFromTable                                  ;; 01:4665 $cd $b9 $07
     jp   call_01_4e78                                    ;; 01:4668 $c3 $78 $4e
 
 call_01_466b:
@@ -901,7 +901,7 @@ call_01_466b:
     FARCALL call_0b_5d4b_MediaDimension_LoadTVPalette
     call call_00_2e3a_MapData_GetTVPaletteId                                  ;; 01:4682 $cd $3a $2e
     ld   DE, data_01_5cb9                              ;; 01:4685 $11 $b9 $5c
-    call call_00_07b9                                  ;; 01:4688 $cd $b9 $07
+    call call_00_07b9_GetPointerFromTable                                  ;; 01:4688 $cd $b9 $07
     ld   A, [wD69A]                                    ;; 01:468b $fa $9a $d6
     ld   [wD696], A                                    ;; 01:468e $ea $96 $d6
     ld   A, $06                                        ;; 01:4691 $3e $06
@@ -935,7 +935,7 @@ call_01_466b:
 call_01_4728:
     call call_00_2e3a_MapData_GetTVPaletteId                                  ;; 01:4728 $cd $3a $2e
     ld   DE, data_01_5ee7                              ;; 01:472b $11 $e7 $5e
-    call call_00_07b9                                  ;; 01:472e $cd $b9 $07
+    call call_00_07b9_GetPointerFromTable                                  ;; 01:472e $cd $b9 $07
     jp   call_01_4e6f                                  ;; 01:4731 $c3 $6f $4e
 
 call_01_4734:
@@ -1005,11 +1005,11 @@ call_01_473a:
 call_01_47a4:
     ld   a, [wD69B]
     ld   de, .data_01_47b9
-    call call_00_07b9
-    ld   de, wD6A5_PasswordTilesBank
+    call call_00_07b9_GetPointerFromTable
+    ld   de, wD6A5_ScreenDraw_TileDataBank
     ld   bc, $000a
     call call_00_07b0_MemCopy
-    jp   call_00_07c3
+    jp   call_00_07c3_Screen_LoadTilesAndTilemap
 .data_01_47b9:
     db   $bb, $47, $09, $b6, $14, $12, $d0, $42,       ;; 01:47b4 ????????
     db   $00, $40, $d0, $02                               ;; 01:47bc ????????
@@ -1039,7 +1039,7 @@ call_01_47ea:
 call_01_47f6:
     ld   A, [wD69B]                                    ;; 01:47f6 $fa $9b $d6
     ld   DE, .data_01_4800                             ;; 01:47f9 $11 $00 $48
-    call call_00_07b9                                  ;; 01:47fc $cd $b9 $07
+    call call_00_07b9_GetPointerFromTable                                  ;; 01:47fc $cd $b9 $07
     jp   HL                                            ;; 01:47ff $e9
 .data_01_4800:
     dw   .jr_01_4814                                 ;; 01:4800 pP
@@ -1068,25 +1068,25 @@ call_01_47f6:
     ld   C, $20                                        ;; 01:4824 $0e $20
     jr   .jr_01_4852                                   ;; 01:4826 $18 $2a
 .jr_01_4828:
-    ld   a,[wD648]
+    ld   a,[wD648_CollectibleMilestoneIndex]
     cp   a,$01
     ld   a,$1E
     ret  nc
     ld   a,[wD649_CollectibleAmount]
     ret  
 .jr_01_4834:
-    ld   a,[wD648]
+    ld   a,[wD648_CollectibleMilestoneIndex]
     cp   a,$02
     ld   a,$28
     ret  nc
-    ld   a,[wD648]
+    ld   a,[wD648_CollectibleMilestoneIndex]
     cp   a,$01
     ld   a,[wD649_CollectibleAmount]
     ret  nc
     xor  a
     ret  
 .jr_01_4847:
-    ld   a,[wD648]
+    ld   a,[wD648_CollectibleMilestoneIndex]
     cp   a,$02
     ld   a,[wD649_CollectibleAmount]
     ret  nc
@@ -1175,7 +1175,7 @@ call_01_4879:
     ld   [wD6DA], A                                    ;; 01:48cd $ea $da $d6
 .jr_01_48d0:
     ld   DE, data_01_5aa9                              ;; 01:48d0 $11 $a9 $5a
-    call call_00_07b9                                  ;; 01:48d3 $cd $b9 $07
+    call call_00_07b9_GetPointerFromTable                                  ;; 01:48d3 $cd $b9 $07
     jp   call_01_4dc8                                    ;; 01:48d6 $c3 $c8 $4d
 .data_01_48d9:
     db   $98, $98, $98, $a4, $a4, $b0                  ;; 01:48d9 ......
@@ -1217,11 +1217,11 @@ call_01_4916:
 call_01_491d:
     ld   A, [wD69B]                                    ;; 01:491d $fa $9b $d6
     ld   DE, .data_01_4932                             ;; 01:4920 $11 $32 $49
-    call call_00_07b9                                  ;; 01:4923 $cd $b9 $07
-    ld   DE, wD6B0                                     ;; 01:4926 $11 $b0 $d6
+    call call_00_07b9_GetPointerFromTable                                  ;; 01:4923 $cd $b9 $07
+    ld   DE, wD6B0_FullscreenImage_Bank                                     ;; 01:4926 $11 $b0 $d6
     ld   BC, $03                                       ;; 01:4929 $01 $03 $00
     call call_00_07b0_MemCopy                                  ;; 01:492c $cd $b0 $07
-    jp   call_00_084d                                    ;; 01:492f $c3 $4d $08
+    jp   call_00_084d_Screen_LoadFullscreenImage                                    ;; 01:492f $c3 $4d $08
 
 .data_01_4932:
     db   $48, $49, $4b, $49, $4e, $49, $51, $49        ;; 01:4932 ....????
@@ -1291,7 +1291,7 @@ call_01_49d7:
     call call_00_07b0_MemCopy
     ld   a,[wD624_CurrentLevelId]
     ld   de,data_01_7c0f_collectible_images
-    call call_00_07b9
+    call call_00_07b9_GetPointerFromTable
     ld   a,$92
     ld   [wD696],a
     ld   a,$03
@@ -1755,19 +1755,19 @@ call_01_4ce5:
     ret                                                ;; 01:4d09 $c9
 
 call_01_4d0a:
-    ld   A, [wD6E2]                                    ;; 01:4d0a $fa $e2 $d6
+    ld   A, [wD6E2_GfxStream_ChunksRemaining]                                    ;; 01:4d0a $fa $e2 $d6
     and  A, A                                          ;; 01:4d0d $a7
     jr   NZ, call_01_4d0a                              ;; 01:4d0e $20 $fa
     ld   A, [HL+]                                      ;; 01:4d10 $2a
-    ld   [wD6E2], A                                    ;; 01:4d11 $ea $e2 $d6
+    ld   [wD6E2_GfxStream_ChunksRemaining], A                                    ;; 01:4d11 $ea $e2 $d6
     ld   A, [HL+]                                      ;; 01:4d14 $2a
-    ld   [wD6E3], A                                    ;; 01:4d15 $ea $e3 $d6
+    ld   [wD6E3_GfxStream_RowsPerChunk], A                                    ;; 01:4d15 $ea $e3 $d6
     ld   A, [HL+]                                      ;; 01:4d18 $2a
-    ld   [wD6E4], A                                    ;; 01:4d19 $ea $e4 $d6
+    ld   [wD6E4_GfxStream_SrcBank], A                                    ;; 01:4d19 $ea $e4 $d6
     ld   A, L                                          ;; 01:4d1c $7d
-    ld   [wD6E9], A                                    ;; 01:4d1d $ea $e9 $d6
+    ld   [wD6E9_GfxStream_ListPtrLo], A                                    ;; 01:4d1d $ea $e9 $d6
     ld   A, H                                          ;; 01:4d20 $7c
-    ld   [wD6EA], A                                    ;; 01:4d21 $ea $ea $d6
+    ld   [wD6EA_GfxStream_ListPtrHi], A                                    ;; 01:4d21 $ea $ea $d6
     ret                                                ;; 01:4d24 $c9
 
 call_01_4d25:
@@ -1787,7 +1787,7 @@ call_01_4d25:
 
 call_01_4d3b:
     ld   DE, data_01_5aa9                              ;; 01:4d3b $11 $a9 $5a
-    call call_00_07b9                                  ;; 01:4d3e $cd $b9 $07
+    call call_00_07b9_GetPointerFromTable                                  ;; 01:4d3e $cd $b9 $07
     ld   A, [HL+]                                      ;; 01:4d41 $2a
     cp   A, $ff                                        ;; 01:4d42 $fe $ff
     ret  Z                                             ;; 01:4d44 $c8
@@ -1796,7 +1796,7 @@ call_01_4d3b:
     ld   H, $00                                        ;; 01:4d47 $26 $00
     add  HL, HL                                        ;; 01:4d49 $29
     add  HL, HL                                        ;; 01:4d4a $29
-    ld   DE, wCC00                                     ;; 01:4d4b $11 $00 $cc
+    ld   DE, wCC00_ShadowOAM                                     ;; 01:4d4b $11 $00 $cc
     add  HL, DE                                        ;; 01:4d4e $19
     ld   E, L                                          ;; 01:4d4f $5d
     ld   D, H                                          ;; 01:4d50 $54
@@ -1927,7 +1927,7 @@ call_01_4e01:
     ld   H, $00                                        ;; 01:4e05 $26 $00
     add  HL, HL                                        ;; 01:4e07 $29
     add  HL, HL                                        ;; 01:4e08 $29
-    ld   DE, wCC00                                     ;; 01:4e09 $11 $00 $cc
+    ld   DE, wCC00_ShadowOAM                                     ;; 01:4e09 $11 $00 $cc
     add  HL, DE                                        ;; 01:4e0c $19
     srl  B                                             ;; 01:4e0d $cb $38
     ld   A, [wD5A6_TextBuffer]                                    ;; 01:4e0f $fa $a6 $d5
@@ -2057,15 +2057,15 @@ call_01_4eb1:
     db   $01, $02, $04                                 ;; 01:4ecc ...
 
 call_01_4ecf:
-    ld   A, [wD6E2]                                    ;; 01:4ecf $fa $e2 $d6
+    ld   A, [wD6E2_GfxStream_ChunksRemaining]                                    ;; 01:4ecf $fa $e2 $d6
     and  A, A                                          ;; 01:4ed2 $a7
     jr   NZ, call_01_4ecf                              ;; 01:4ed3 $20 $fa
     ld   A, $01                                        ;; 01:4ed5 $3e $01
-    ld   [wD6E2], A                                    ;; 01:4ed7 $ea $e2 $d6
+    ld   [wD6E2_GfxStream_ChunksRemaining], A                                    ;; 01:4ed7 $ea $e2 $d6
     ld   A, $04                                        ;; 01:4eda $3e $04
-    ld   [wD6E3], A                                    ;; 01:4edc $ea $e3 $d6
+    ld   [wD6E3_GfxStream_RowsPerChunk], A                                    ;; 01:4edc $ea $e3 $d6
     ld   A, $01                                        ;; 01:4edf $3e $01
-    ld   [wD6E4], A                                    ;; 01:4ee1 $ea $e4 $d6
+    ld   [wD6E4_GfxStream_SrcBank], A                                    ;; 01:4ee1 $ea $e4 $d6
     call call_01_4f1b                                  ;; 01:4ee4 $cd $1b $4f
     call call_01_4f41                                  ;; 01:4ee7 $cd $41 $4f
     ld   L, A                                          ;; 01:4eea $6f
@@ -2095,7 +2095,7 @@ call_01_4ecf:
     ld   [wD6E7_PasswordArrowSprites], A                                    ;; 01:4f0e $ea $e7 $d6
     ld   A, H                                          ;; 01:4f11 $7c
     ld   [wD6E8_PasswordArrowSprites], A                                    ;; 01:4f12 $ea $e8 $d6
-    ld   HL, wD6E2                                     ;; 01:4f15 $21 $e2 $d6
+    ld   HL, wD6E2_GfxStream_ChunksRemaining                                     ;; 01:4f15 $21 $e2 $d6
     jp   call_01_4d0a                                  ;; 01:4f18 $c3 $0a $4d
 
 call_01_4f1b:

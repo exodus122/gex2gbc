@@ -1,5 +1,5 @@
 call_00_2329_MissionPreview_LoadAndRun:
-; Runs the animated mission preview cutscene shown when entering a level. Saves B to wD775 (skippable flag). 
+; Runs the animated mission preview cutscene shown when entering a level. Saves B to wD775_MissionPreview_Skippable (skippable flag). 
 ; Uses wD624 (level ID) × 16 + B as an index into .data_00_2472_CutsceneIndexLookupTable (a 512-byte sparse lookup table, 
 ; $FF = no cutscene for this level/slot) to get a cutscene script index. Indexes .data_00_2662_CutsceneScriptPointerTable to 
 ; get the script pointer. Saves world state (call_00_3628), temporarily moves Gex to the cutscene starting position. 
@@ -12,7 +12,7 @@ call_00_2329_MissionPreview_LoadAndRun:
 ; (3) Hold phase: waits 180 frames ($B4) for the player to view the scene. Restores world state, player position, 
 ; and map on exit
     ld   A, B                                          ;; 00:2329 $78
-    ld   [wD775], A                                    ;; 00:232a $ea $75 $d7
+    ld   [wD775_MissionPreview_Skippable], A                                    ;; 00:232a $ea $75 $d7
     ld   B, $00                                        ;; 00:232d $06 $00
     ld   HL, wD624_CurrentLevelId                                     ;; 00:232f $21 $24 $d6
     ld   L, [HL]                                       ;; 00:2332 $6e
@@ -87,7 +87,7 @@ call_00_2329_MissionPreview_LoadAndRun:
     ld   [wD79B_MissionPreviewCutsceneRelated+1], A                                    ;; 00:239c $ea $9c $d7
     push HL                                            ;; 00:239f $e5
 .jr_00_23a0:
-    ld   A, [wD775]                                    ;; 00:23a0 $fa $75 $d7
+    ld   A, [wD775_MissionPreview_Skippable]                                    ;; 00:23a0 $fa $75 $d7
     and  A, A                                          ;; 00:23a3 $a7
     jr   Z, .jr_00_23b1                                ;; 00:23a4 $28 $0b
     ld   A, [wD59F_CurrentInputs]                                    ;; 00:23a6 $fa $9f $d5
@@ -126,7 +126,7 @@ call_00_2329_MissionPreview_LoadAndRun:
     jr   Z, .jr_00_241e                                ;; 00:23ed $28 $2f
     call call_00_1f80_SpecialTile_RunScript                                  ;; 00:23ef $cd $80 $1f
 .jr_00_23f2:
-    ld   A, [wD775]                                    ;; 00:23f2 $fa $75 $d7
+    ld   A, [wD775_MissionPreview_Skippable]                                    ;; 00:23f2 $fa $75 $d7
     and  A, A                                          ;; 00:23f5 $a7
     jr   Z, .jr_00_23fe                                ;; 00:23f6 $28 $06
     ld   A, [wD59F_CurrentInputs]                                    ;; 00:23f8 $fa $9f $d5
@@ -150,7 +150,7 @@ call_00_2329_MissionPreview_LoadAndRun:
     call call_00_0ab4_WaitForInterrupt                                  ;; 00:2421 $cd $b4 $0a
     FARCALL call_02_6eba_Entities_UpdateAll
     call call_00_08fc_SetupEntityVRAMTransfer                                  ;; 00:242f $cd $fc $08
-    ld   A, [wD775]                                    ;; 00:2432 $fa $75 $d7
+    ld   A, [wD775_MissionPreview_Skippable]                                    ;; 00:2432 $fa $75 $d7
     and  A, A                                          ;; 00:2435 $a7
     jr   Z, .jr_00_2441                                ;; 00:2436 $28 $09
     ld   A, [wD59F_CurrentInputs]                                    ;; 00:2438 $fa $9f $d5
@@ -176,12 +176,12 @@ call_00_2329_MissionPreview_LoadAndRun:
     ld   [HL], B                                       ;; 00:2456 $70
     dec  HL                                            ;; 00:2457 $2b
     ld   [HL], C                                       ;; 00:2458 $71
-    ld   A, [wD775]                                    ;; 00:2459 $fa $75 $d7
+    ld   A, [wD775_MissionPreview_Skippable]                                    ;; 00:2459 $fa $75 $d7
     and  A, A                                          ;; 00:245c $a7
     ret  NZ                                            ;; 00:245d $c0
     call call_00_13a6_BgMap_UpdateWindowFromPlayerPos                                  ;; 00:245e $cd $a6 $13
     call call_00_1264_BgMap_LoadFull                                  ;; 00:2461 $cd $64 $12
-    FARCALL call_02_71c8_Entities_UpdateSoundsForAll
+    FARCALL call_02_71c8_Entities_QueueGraphicsAndPalettes
     jp   call_00_0521_DrawEntitiesWrapper                                  ;; 00:246f $c3 $21 $05
 .data_00_2472_CutsceneIndexLookupTable:
 ; 512-byte sparse table (31 levels × 16 bytes each, $FF = no cutscene). Maps (level ID, cutscene slot) 

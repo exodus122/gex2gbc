@@ -343,7 +343,7 @@ call_02_4371_PlayerAction_Death:
     ret                                                ;; 02:437a $c9
 
 call_02_437b_PlayerAction_DeathSetUpWarp:
-; On first frame: zeroes X speed, calls call_00_0f5d (set up respawn warp data), plays death SFX. 
+; On first frame: zeroes X speed, calls call_00_0f5d_FadeToBlack (set up respawn warp data), plays death SFX. 
 ; Each frame: sets wD750_Player_DamageCooldownTimer=$77. On animation end: sets spawn action to $00, sets bit 1 of 
 ; wD621 (warp flags) to trigger respawn warp
     ld   A, [wD209_Player_ActionState]                                    ;; 02:437b $fa $09 $d2
@@ -351,7 +351,7 @@ call_02_437b_PlayerAction_DeathSetUpWarp:
     jr   Z, .jr_02_438e                                ;; 02:4380 $28 $0c
     xor  A, A                                          ;; 02:4382 $af
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:4383 $ea $5e $d7
-    call call_00_0f5d                                  ;; 02:4386 $cd $5d $0f
+    call call_00_0f5d_FadeToBlack                                  ;; 02:4386 $cd $5d $0f
     ld   C, SFX_GEX_DEATH                                        ;; 02:4389 $0e $0f
     call call_00_112f_QueueSFX                                  ;; 02:438b $cd $2f $11
 .jr_02_438e:
@@ -540,7 +540,7 @@ call_02_4483_PlayerAction_HitBounce:
 
 call_02_44af_PlayerAction_Climb:
 ; On first frame: sets B-lock, zeroes climb counter/X speed/Y velocity/falling flag. 
-; Sets climb state to 0 (background) or 2 (wall) based on tile type $26 in wD769. 
+; Sets climb state to 0 (background) or 2 (wall) based on tile type $26 in wD769_ClimbSurfaceTileType. 
 ; Each frame: dispatches via .data_02_44e5 jump table on wD746 (climb state 0–9)
     ld   A, [wD209_Player_ActionState]                                    ;; 02:44af $fa $09 $d2
     and  A, ACTION_STATE_IS_FIRST_FRAME                                        ;; 02:44b2 $e6 $20
@@ -552,7 +552,7 @@ call_02_44af_PlayerAction_Climb:
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:44bf $ea $5e $d7
     ld   [wD760_PlayerYVelocity], A                                    ;; 02:44c2 $ea $60 $d7
     ld   [wD761_PlayerBonkCeilingDownwardsVelocity], A                                    ;; 02:44c5 $ea $61 $d7
-    ld   A, [wD769]                                    ;; 02:44c8 $fa $69 $d7
+    ld   A, [wD769_ClimbSurfaceTileType]                                    ;; 02:44c8 $fa $69 $d7
     cp   A, $26                                        ;; 02:44cb $fe $26
     ld   A, $00                                        ;; 02:44cd $3e $00
     jr   Z, .jr_02_44d3                                ;; 02:44cf $28 $02
@@ -616,7 +616,7 @@ call_02_44af_PlayerAction_Climb:
     cp   A, [HL]                                       ;; 02:4528 $be
     jr   Z, .jr_02_4531                                ;; 02:4529 $28 $06
     ld   [HL], A                                       ;; 02:452b $77
-    ld   HL, wD60F_HDMATransferFlags                                     ;; 02:452c $21 $0f $d6
+    ld   HL, wD60F_GfxTransferFlags                                     ;; 02:452c $21 $0f $d6
     set  0, [HL]                                       ;; 02:452f $cb $c6
 .jr_02_4531:
     ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:4531 $fa $5a $d7
@@ -673,7 +673,7 @@ call_02_44af_PlayerAction_Climb:
     ld   [wD20D_Player_FacingFlags],a
     ld   a,$00
     ld   [wD74B_Player_ClimbingFlags],a
-    ld   hl,wD60F_HDMATransferFlags
+    ld   hl,wD60F_GfxTransferFlags
     set  0,[hl]
     ld   a,[wD747_Player_ClimbingUnkCounter]
     cp   a,$20
@@ -724,7 +724,7 @@ call_02_44af_PlayerAction_Climb:
     cp   [hl]
     jr   z,.jr_02_45F0
     ld   [hl],a
-    ld   hl,wD60F_HDMATransferFlags
+    ld   hl,wD60F_GfxTransferFlags
     set  0,[hl]
 .jr_02_45F0:
     ld   a,[wD75A_CurrentInputsAlt]
@@ -775,7 +775,7 @@ call_02_44af_PlayerAction_Climb:
     cp   [hl]
     ret  z
     ld   [hl],a
-    ld   hl,wD60F_HDMATransferFlags
+    ld   hl,wD60F_GfxTransferFlags
     set  0,[hl]
     ld   a,[wD747_Player_ClimbingUnkCounter]
     cp   a,$20
@@ -912,7 +912,7 @@ call_02_44af_PlayerAction_Climb:
     ld   [wD74B_Player_ClimbingFlags],a
     ldi  a,[hl]
     ld   [wD208_Player_SpriteID],a
-    ld   hl,wD60F_HDMATransferFlags
+    ld   hl,wD60F_GfxTransferFlags
     set  0,[hl]
     ret     
 .data_02_472e:
@@ -1025,7 +1025,7 @@ call_02_480f_Player_UpdateSpriteIfChanged:
     cp   A, [HL]                                       ;; 02:4812 $be
     ret  Z                                             ;; 02:4813 $c8
     ld   [HL], A                                       ;; 02:4814 $77
-    ld   HL, wD60F_HDMATransferFlags                                     ;; 02:4815 $21 $0f $d6
+    ld   HL, wD60F_GfxTransferFlags                                     ;; 02:4815 $21 $0f $d6
     set  0, [HL]                                       ;; 02:4818 $cb $c6
     ret                                                ;; 02:481a $c9
 

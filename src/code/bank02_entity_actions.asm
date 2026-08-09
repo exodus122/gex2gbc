@@ -437,7 +437,7 @@ call_02_51ea_EntityAction_TVButton_unk0:
     ld   A, [wD624_CurrentLevelId]                                    ;; 02:5211 $fa $24 $d6
     and  A, A                                          ;; 02:5214 $a7
     jr   Z, .jr_02_521b                                ;; 02:5215 $28 $04
-    ld   HL, wD647                                     ;; 02:5217 $21 $47 $d6
+    ld   HL, wD647_ExitTVButtonIndex                                     ;; 02:5217 $21 $47 $d6
     ld   [HL], E                                       ;; 02:521a $73
 .jr_02_521b:
     call call_00_34f5_Entity_CompareMiscFlags                                  ;; 02:521b $cd $f5 $34
@@ -474,7 +474,7 @@ call_02_5252_EntityAction_TVButton_unk1:
 call_02_5253_EntityAction_RedRemote_unk0:
     call call_00_34ea_Entity_IsFirstFrameOfAction                                  ;; 02:5253 $cd $ea $34
     call NZ, call_00_3bf4_Entity_TriggerPaletteSwap                              ;; 02:5256 $c4 $f4 $3b
-    ld   HL, wD60F_HDMATransferFlags                                     ;; 02:5259 $21 $0f $d6
+    ld   HL, wD60F_GfxTransferFlags                                     ;; 02:5259 $21 $0f $d6
     bit  4, [HL]                                       ;; 02:525c $cb $66
     call Z, call_00_0634_FlyPowerup_StartEntry                               ;; 02:525e $cc $34 $06
     ld   A, [wD59E_OnGBCFlag]                                    ;; 02:5261 $fa $9e $d5
@@ -2339,9 +2339,9 @@ call_02_5efa_EntityAction_CannonProjectile_unk1:
     add  a,$08
     cp   a,$10
     ret  nc
-    ld   hl,wD613
+    ld   hl,wD613_Dragon_SegmentsRemaining
     dec  [hl]
-    ld   hl,wD614
+    ld   hl,wD614_Dragon_HitTimer
     ld   [hl],$80
     jp   call_00_3910_Entity_ClearSlot
 
@@ -2351,21 +2351,21 @@ call_02_5f48_EntityAction_Dragonfly_Update:
     jp   call_00_36f7_Entity_MoveXByFacingMomentum_BoundsChecked
 
 call_02_5f50_EntityAction_DragonBodySegment_Update:
-    ld   a,[wD614]
+    ld   a,[wD614_Dragon_HitTimer]
     and  a
     jr   z,.jr_02_5F5A
     dec  a
-    ld   [wD614],a
+    ld   [wD614_Dragon_HitTimer],a
 .jr_02_5F5A:
     call call_02_613f_DragonHead_Sub2
-    ld   a,[wD613]
+    ld   a,[wD613_Dragon_SegmentsRemaining]
     and  a
     jp   z,call_00_3985_Entity_ParticleBurstInit
     jp   call_02_6029_DragonHead_Sub1
 
 call_02_5f67_EntityAction_DragonHead_Update:
     call call_02_613f_DragonHead_Sub2
-    ld   a,[wD613]
+    ld   a,[wD613_Dragon_SegmentsRemaining]
     and  a
     jp   nz,.jr_02_5F79
     ld   a,$02
@@ -2412,7 +2412,7 @@ call_02_5f67_EntityAction_DragonHead_Update:
     ld   c,[hl]
     inc  hl
     ld   b,[hl]
-    ld   hl,wD588
+    ld   hl,wD588_EntityGfxSrcAddrHi
     ld   a,c
     add  a,$73
     cp   [hl]
@@ -2420,7 +2420,7 @@ call_02_5f67_EntityAction_DragonHead_Update:
     ld   [hl],a
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
     ld   [hl],b
-    ld   hl,wD60F_HDMATransferFlags
+    ld   hl,wD60F_GfxTransferFlags
     set  1,[hl]
 .data_02_5fdf:
     ret  
@@ -2544,7 +2544,7 @@ call_02_6029_DragonHead_Sub1:
 call_02_613f_DragonHead_Sub2:    
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_0A
     res  UNK_0A_BIT_3,[hl]
-    ld   a,[wD614]
+    ld   a,[wD614_Dragon_HitTimer]
     and  a,$02
     ret  z
     set  UNK_0A_BIT_3,[hl]
@@ -3142,7 +3142,7 @@ call_02_650f_EntityAction_ActivatedRedPlatform_Update:
     res  2,[hl]
     ret  
 .jr_02_654F:
-    ld   a,[wD617]
+    ld   a,[wD617_TailSpinChargeCounter]
     cp   a,$40
     ret  c
     set  0,[hl]
@@ -3257,19 +3257,19 @@ call_02_65E2_TailSpinGear_Sub1:
     ret  
 
 call_02_6611_TailSpinGear_Sub2:
-    ld   a,[wD617]
+    ld   a,[wD617_TailSpinChargeCounter]
     and  a
     ret  z
     dec  a
-    ld   [wD617],a
+    ld   [wD617_TailSpinChargeCounter],a
     ret  
 
 call_02_661B_TailSpinGear_Sub3:
-    ld   a,[wD617]
+    ld   a,[wD617_TailSpinChargeCounter]
     cp   a,$40
     ret  nc
     inc  a
-    ld   [wD617],a
+    ld   [wD617_TailSpinChargeCounter],a
     ret  
     
 call_02_6626_EntityAction_Unk6B_Update:
@@ -3344,7 +3344,7 @@ call_02_666c_EntityAction_AntSpawner_Update:
     ld   a,[wD649_CollectibleAmount]
     and  a
     ret  z
-    ld   a,[wD617]
+    ld   a,[wD617_TailSpinChargeCounter]
     cp   a,$40
     ret  c
     set  0,[hl]
@@ -4009,7 +4009,7 @@ call_02_6c18_EntityAction_Rez_unk0:
     call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_6C38
     ld   a,$0A
-    ld   [wD616],a
+    ld   [wD616_FinalBattleButtonFlags],a
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
     ldi  a,[hl]
     ld   h,[hl]
@@ -4091,7 +4091,7 @@ call_02_6ca6_EntityAction_Rez_unk10:
     ret  
 
 call_02_6Ca7_Rez_Unk5Sub:
-    ld   hl,wD616
+    ld   hl,wD616_FinalBattleButtonFlags
     bit  7,[hl]
     ret  z
     res  7,[hl]
@@ -4214,7 +4214,7 @@ call_02_6d5d_EntityAction_FinalBattleButtonProjectile_unk0:
     ld   a,h
     cp   a,$7D
     ret  c
-    ld   hl,wD616
+    ld   hl,wD616_FinalBattleButtonFlags
     set  7,[hl]
     ld   c,SFX_FINAL_BATTLE_BUTTON
     call call_00_112f_QueueSFX
@@ -4227,7 +4227,7 @@ call_02_6d80_EntityAction_FinalBattleButton_unk0:
     call call_00_34f5_Entity_CompareMiscFlags
     bit  0,b
     ret  z
-    ld   a,[wD616]
+    ld   a,[wD616_FinalBattleButtonFlags]
     and  a,$7F
     ret  z
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
@@ -4278,7 +4278,7 @@ call_02_6de3_EntityAction_RezPortal_Update:
     call call_00_3843_Entity_CheckAnimFlag_Bit2
     ret  z
     xor  a
-    ld   [wD647],a
+    ld   [wD647_ExitTVButtonIndex],a
     ld   a,PLAYER_ACTION_ENTER_TV_ALT
     jp   call_02_4ccd_Player_RequestAction
 
@@ -4299,7 +4299,7 @@ call_02_6df1_EntityAction_MediaDimensionMovingPlatform_Update:
     ld   A, [HL]                                       ;; 02:6e05 $7e
     cp   A, $ff                                        ;; 02:6e06 $fe $ff
     jr   Z, .jr_02_6e11                                ;; 02:6e08 $28 $07
-    ld   A, [wD64F]                                    ;; 02:6e0a $fa $4f $d6
+    ld   A, [wD64F_MissionRemoteTotal]                                    ;; 02:6e0a $fa $4f $d6
     and  A, $7f                                        ;; 02:6e0d $e6 $7f
     cp   A, [HL]                                       ;; 02:6e0f $be
     ret  C                                             ;; 02:6e10 $d8

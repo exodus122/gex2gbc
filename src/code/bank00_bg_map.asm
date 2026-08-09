@@ -1,12 +1,12 @@
 call_00_1264_BgMap_LoadFull:
 ; Top-level map initialization. Queries all map metadata (bank numbers for map data, blockset override, 
 ; blockset+collision, tileset; tileset offset; override bit) and stores them to wD6F5–wD700_BgMap_TilesetBankOffset. 
-; Calls call_00_0f38 (unknown init), then WriteTilesToVRAM. Resets secondary tileset index to $FF, 
+; Calls call_00_0f38_FadeOutAndClearVRAM (unknown init), then WriteTilesToVRAM. Resets secondary tileset index to $FF, 
 ; clears wD77B_OverrideVRAMWritePending/wD77D_OverrideSequenceStepsRemaining. Then loops 22 ($16) times: 
 ; sets wD6F9_BgMap_LoadingFlags=$01 (dirty flag), calls LoadBgMapDirtyRegions 
 ; and BgMap_WriteScrollColumn, advances wD6EF (Y map position) by 8 each iteration — effectively rendering 
 ; the full visible map column by column. Clears dirty flag, loads HUD tiles, updates map window
-    call call_00_0ede                                  ;; 00:1264 $cd $de $0e
+    call call_00_0ede_SelectWramBank1                                  ;; 00:1264 $cd $de $0e
     call call_00_2e77_MapData_GetMapBank                                  ;; 00:1267 $cd $77 $2e
     ld   [wD6F5_BgMap_MapBank], A                                    ;; 00:126a $ea $f5 $d6
     call call_00_2e80_MapData_GetExtendedMapBank                                  ;; 00:126d $cd $80 $2e
@@ -22,7 +22,7 @@ call_00_1264_BgMap_LoadFull:
     ld   [HL], E                                       ;; 00:128b $73
     inc  HL                                            ;; 00:128c $23
     ld   [HL], D                                       ;; 00:128d $72
-    call call_00_0f38                                  ;; 00:128e $cd $38 $0f
+    call call_00_0f38_FadeOutAndClearVRAM                                  ;; 00:128e $cd $38 $0f
     call call_00_1419_BgMap_LoadTileset                                  ;; 00:1291 $cd $19 $14
     ld   A, $ff                                        ;; 00:1294 $3e $ff
     ld   [wD72D_SecondaryTilesetIndex], A                                    ;; 00:1296 $ea $2d $d7
@@ -59,8 +59,8 @@ call_00_12e4_BgMap_InitTileOverrides:
 ; Looks up current level ID in .data_00_1356_LevelTileOverrideBitTable to get a tile flag byte, then 
 ; rotates its 3 low bits into wD798_OverrideSlotTable13–wD79A_OverrideSlotTable15 (1 bit each via rrca/rl). 
 ; If level ID is 0 (Media Dimension), iterates over .data_00_1375_MediaDimension_BgTileOverrideList 
-; (a $FF-terminated list of 12-byte override records): compares wD64F (low 7 bits) against the record's 
-; threshold — if equal and bit 7 of wD64F is set, marks the matching wD78B_OverrideSlotTable slot as $02. 
+; (a $FF-terminated list of 12-byte override records): compares wD64F_MissionRemoteTotal (low 7 bits) against the record's 
+; threshold — if equal and bit 7 of wD64F_MissionRemoteTotal is set, marks the matching wD78B_OverrideSlotTable slot as $02. 
 ; If greater, loads the record's tile coordinates into wD782_OverrideTargetBlockX/wD783_OverrideTargetBlockY 
 ; and pointer into wD780_OverrideDataPtrLo/wD781_OverrideDataPtrHi, sets wD784_OverrideWidth/
 ; wD785_OverrideHeight=$02, calls UpdateBgTileFlags. Advances by $0C per record
@@ -95,12 +95,12 @@ call_00_12e4_BgMap_InitTileOverrides:
     cp   A, $ff                                        ;; 00:1311 $fe $ff
     ret  Z                                             ;; 00:1313 $c8
     push HL                                            ;; 00:1314 $e5
-    ld   A, [wD64F]                                    ;; 00:1315 $fa $4f $d6
+    ld   A, [wD64F_MissionRemoteTotal]                                    ;; 00:1315 $fa $4f $d6
     and  A, $7f                                        ;; 00:1318 $e6 $7f
     cp   A, [HL]                                       ;; 00:131a $be
     jr   C, .jr_00_134f                                ;; 00:131b $38 $32
     jr   NZ, .jr_00_1332                               ;; 00:131d $20 $13
-    ld   A, [wD64F]                                    ;; 00:131f $fa $4f $d6
+    ld   A, [wD64F_MissionRemoteTotal]                                    ;; 00:131f $fa $4f $d6
     bit  7, A                                          ;; 00:1322 $cb $7f
     jr   Z, .jr_00_1332                                ;; 00:1324 $28 $0c
     inc  HL                                            ;; 00:1326 $23
@@ -1259,9 +1259,9 @@ call_00_1922_BgMap_LoadSecondaryTileset:
 ; from wD72D (current secondary tileset). If different: stores the new index to wD72D, computes the 
 ; tileset address using .data_LevelSecondaryTilesetBankTable (bank + offset per level), stores to 
 ; wD728/wD726. Loads 36 ($24) palette ID bytes into wCF00. If the tileset has animation data 
-; (wD72F nonzero): loads wD738, animation frame pointer, speed wD730–wD735, pointer to wD736/wD737. 
+; (wD72F_TilesetAnim_FrameCount nonzero): loads wD738_TilesetAnim_Flags, animation frame pointer, speed wD730_TilesetAnim_FrameIndex–wD735_TilesetAnim_DestAddrHi, pointer to wD736_TilesetAnim_FrameTablePtrLo/wD737_TilesetAnim_FrameTablePtrHi. 
 ; Sets bit 2 of wD60F to trigger HDMA transfer. Calls MediaDimension_LoadActiveTVPalette
-    ld   A, [wD60F_HDMATransferFlags]                                    ;; 00:1922 $fa $0f $d6
+    ld   A, [wD60F_GfxTransferFlags]                                    ;; 00:1922 $fa $0f $d6
     bit  2, A                                          ;; 00:1925 $cb $57
     ret  NZ                                            ;; 00:1927 $c0
     ld   DE, $0b                                       ;; 00:1928 $11 $0b $00
@@ -1325,16 +1325,16 @@ call_00_1922_BgMap_LoadSecondaryTileset:
     ld   [wD72E_SecondaryTilesetBank2], A                                    ;; 00:1977 $ea $2e $d7
     call call_00_1089_SwitchBank                                  ;; 00:197a $cd $89 $10
     xor  A, A                                          ;; 00:197d $af
-    ld   [wD727], A                                    ;; 00:197e $ea $27 $d7
+    ld   [wD727_SecondaryTileset_SrcAddrLo], A                                    ;; 00:197e $ea $27 $d7
     ld   A, $00                                        ;; 00:1981 $3e $00
-    ld   [wD729], A                                    ;; 00:1983 $ea $29 $d7
+    ld   [wD729_SecondaryTileset_DestAddrLo], A                                    ;; 00:1983 $ea $29 $d7
     ld   A, $90                                        ;; 00:1986 $3e $90
-    ld   [wD72A], A                                    ;; 00:1988 $ea $2a $d7
+    ld   [wD72A_SecondaryTileset_DestAddrHi], A                                    ;; 00:1988 $ea $2a $d7
     ld   A, $40                                        ;; 00:198b $3e $40
-    ld   [wD72B], A                                    ;; 00:198d $ea $2b $d7
+    ld   [wD72B_SecondaryTileset_RowsPerPage], A                                    ;; 00:198d $ea $2b $d7
     ld   A, $02                                        ;; 00:1990 $3e $02
-    ld   [wD72C], A                                    ;; 00:1992 $ea $2c $d7
-    ld   HL, wD727                                     ;; 00:1995 $21 $27 $d7
+    ld   [wD72C_SecondaryTileset_PagesRemaining], A                                    ;; 00:1992 $ea $2c $d7
+    ld   HL, wD727_SecondaryTileset_SrcAddrLo                                     ;; 00:1995 $21 $27 $d7
     ld   A, [HL+]                                      ;; 00:1998 $2a
     ld   H, [HL]                                       ;; 00:1999 $66
     ld   L, A                                          ;; 00:199a $6f
@@ -1349,11 +1349,11 @@ call_00_1922_BgMap_LoadSecondaryTileset:
     dec  B                                             ;; 00:19a7 $05
     jr   NZ, .jr_00_19a4                               ;; 00:19a8 $20 $fa
     ld   A, [HL+]                                      ;; 00:19aa $2a
-    ld   [wD72F], A                                    ;; 00:19ab $ea $2f $d7
+    ld   [wD72F_TilesetAnim_FrameCount], A                                    ;; 00:19ab $ea $2f $d7
     and  A, A                                          ;; 00:19ae $a7
     jr   Z, .jr_00_19dc                                ;; 00:19af $28 $2b
     ld   A, [HL+]                                      ;; 00:19b1 $2a
-    ld   [wD738], A                                    ;; 00:19b2 $ea $38 $d7
+    ld   [wD738_TilesetAnim_Flags], A                                    ;; 00:19b2 $ea $38 $d7
     ld   E, [HL]                                       ;; 00:19b5 $5e
     inc  HL                                            ;; 00:19b6 $23
     ld   D, [HL]                                       ;; 00:19b7 $56
@@ -1362,22 +1362,22 @@ call_00_1922_BgMap_LoadSecondaryTileset:
     jr   Z, .jr_00_19be                                ;; 00:19bb $28 $01
     ld   A, [DE]                                       ;; 00:19bd $1a
 .jr_00_19be:
-    ld   [wD730], A                                    ;; 00:19be $ea $30 $d7
+    ld   [wD730_TilesetAnim_FrameIndex], A                                    ;; 00:19be $ea $30 $d7
     ld   A, [HL+]                                      ;; 00:19c1 $2a
-    ld   [wD731], A                                    ;; 00:19c2 $ea $31 $d7
-    ld   [wD732], A                                    ;; 00:19c5 $ea $32 $d7
+    ld   [wD731_TilesetAnim_DelayReload], A                                    ;; 00:19c2 $ea $31 $d7
+    ld   [wD732_TilesetAnim_DelayCounter], A                                    ;; 00:19c5 $ea $32 $d7
     ld   A, [HL+]                                      ;; 00:19c8 $2a
-    ld   [wD733], A                                    ;; 00:19c9 $ea $33 $d7
+    ld   [wD733_TilesetAnim_RowsPerFrame], A                                    ;; 00:19c9 $ea $33 $d7
     ld   A, [HL+]                                      ;; 00:19cc $2a
-    ld   [wD734], A                                    ;; 00:19cd $ea $34 $d7
+    ld   [wD734_TilesetAnim_DestAddrLo], A                                    ;; 00:19cd $ea $34 $d7
     ld   A, [HL+]                                      ;; 00:19d0 $2a
-    ld   [wD735], A                                    ;; 00:19d1 $ea $35 $d7
+    ld   [wD735_TilesetAnim_DestAddrHi], A                                    ;; 00:19d1 $ea $35 $d7
     ld   A, L                                          ;; 00:19d4 $7d
-    ld   [wD736], A                                    ;; 00:19d5 $ea $36 $d7
+    ld   [wD736_TilesetAnim_FrameTablePtrLo], A                                    ;; 00:19d5 $ea $36 $d7
     ld   A, H                                          ;; 00:19d8 $7c
-    ld   [wD737], A                                    ;; 00:19d9 $ea $37 $d7
+    ld   [wD737_TilesetAnim_FrameTablePtrHi], A                                    ;; 00:19d9 $ea $37 $d7
 .jr_00_19dc:
-    ld   HL, wD60F_HDMATransferFlags                                     ;; 00:19dc $21 $0f $d6
+    ld   HL, wD60F_GfxTransferFlags                                     ;; 00:19dc $21 $0f $d6
     set  2, [HL]                                       ;; 00:19df $cb $d6
     call call_00_10a3_RestoreBank                                  ;; 00:19e1 $cd $a3 $10
     FARCALL call_0b_5df8_MediaDimension_LoadActiveTVPalette
@@ -1488,7 +1488,7 @@ call_00_1e5b_BgMap_TickOverrideSequence:
 ; re-enters the step loop (.jr_00_1e6f). Decrements wD77D_OverrideSequenceStepsRemaining; 
 ; returns if now zero. Dereferences wD780/wD781 as a pointer into the script and reads the step's 
 ; flag byte into wD77C_OverrideSequenceFlags. If bit 5 set: reads a bank argument byte and calls 
-; call_00_113e (farcall dispatcher — used to play a SFX or trigger an effect mid-sequence). Saves 
+; call_00_113e_PlaySFX (farcall dispatcher — used to play a SFX or trigger an effect mid-sequence). Saves 
 ; updated pointer back to wD780/wD781. 
 ; Dispatches on remaining flag bits: 
 ; bit 1 → BgMap_UpdateCollisionFlags; 
@@ -1526,7 +1526,7 @@ call_00_1e5b_BgMap_TickOverrideSequence:
     jr   Z, .jr_00_1e8a                                ;; 00:1e82 $28 $06
     ld   A, [HL+]                                      ;; 00:1e84 $2a
     push HL                                            ;; 00:1e85 $e5
-    call call_00_113e                                  ;; 00:1e86 $cd $3e $11
+    call call_00_113e_PlaySFX                                  ;; 00:1e86 $cd $3e $11
     pop  HL                                            ;; 00:1e89 $e1
 .jr_00_1e8a:
     ld   A, L                                          ;; 00:1e8a $7d

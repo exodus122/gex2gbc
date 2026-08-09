@@ -17,37 +17,71 @@ wC800_CurrentCollisionData:
 ;C800 to CC00 is the collision data currently loaded (for current 32x32 tile bg map)
     ds 1024
 
-wCC00:
+; ------------------------------------------------------------------
+; Shadow OAM ($CC00-$CC9F).
+; call_00_0ef7_OamDmaRoutine (copied to hFF80_OamDmaRoutine) writes $CC to rDMA
+; every vblank, so this whole 160-byte block is DMA'd into OAM.
+; ------------------------------------------------------------------
+wCC00_ShadowOAM:
     ds 1                                               ;; cc00
 
-wCC01:
+wCC01_ShadowOAM_EntitySprites:
+; sprite slots used by the player and the loaded entities
     ds 95                                              ;; cc01
 
-wCC60:
+wCC60_ShadowOAM_CollectibleSprites:
+; 8 sprite slots built by call_03_6499_Collectible_BuildSprites
     ds 32                                              ;; cc60
 
-wCC80:
+wCC80_ShadowOAM_HudSprites:
+; 8 sprite slots built by call_03_5b5b_HUD_BuildSprites (fly icon, health, etc)
     ds 32                                              ;; cc80
 
-wCCA0:
+; ------------------------------------------------------------------
+; LCD STAT interrupt trampoline ($CCA0-$CCFC).
+; isrLCDC does "jp wCCA0_LcdIsrCode", and call_00_0bb9_InstallLcdIsr copies one of
+; the handler templates in bank 0 into this buffer. The handler is self-modifying:
+; wCCA0_LcdIsrCode holds $D9 (reti = disabled) until something arms it by writing
+; $F5 (push AF) there, and wCCA4/wCCA5/wCCA7 are the immediate operands of the
+; copied code rather than ordinary variables.
+; ------------------------------------------------------------------
+wCCA0_LcdIsrCode:
     ds 4                                               ;; cca0
 
-wCCA4:
+wCCA4_LcdIsr_SrcAddrLo:
+; low byte of the "ld HL, nnnn" operand inside the copied handler.
+; For the VRAM streaming handler this walks backwards through
+; wD100_TilesToLoadBuffer, 4 bytes per hblank
     ds 1                                               ;; cca4
 
-wCCA5:
-    ds 2                                               ;; cca5
+wCCA5_LcdIsr_SrcAddrHi:
+; high byte of the same operand (always $D1 for the VRAM streaming handler)
+    ds 1                                               ;; cca5
 
-wCCA7:
-    ds 86                                              ;; cca7
+wCCA6_LcdIsr_CodeCont:
+; opcode byte of the "ld D, n" that follows; not a variable
+    ds 1                                               ;; cca6
 
-wCCFD:
+wCCA7_LcdIsr_DestPageHi:
+; operand of that "ld D, n" - the high byte of the VRAM page the handler writes to
+; ($80/$81 player gfx, $82/$83 entity gfx, $86 media dimension tv, $90 tileset)
+    ds 1                                               ;; cca7
+
+    ds 85                                              ;; cca8
+
+wCCFD_LcdIsrId:
+; which LCD STAT handler is installed. Low 7 bits = handler id
+; (see LCD_ISR_* in constants.asm), bit 7 = "already installed".
+; call_00_0bae_RequestLcdIsr clears bit 7 to request a change and the vblank
+; handler picks it up
     ds 1                                               ;; ccfd
 
-wCCFE:
+wCCFE_VBlankHookPtrLo:
+; pointer to the vblank-side routine that pairs with the installed LCD STAT
+; handler; called every frame from the vblank isr
     ds 1                                               ;; ccfe
 
-wCCFF:
+wCCFF_VBlankHookPtrHi:
     ds 1                                             ;; ccff
 
 wCD00_BgTileFlags:
@@ -70,10 +104,12 @@ wD000_EntityFlags:
     ds 256                                             ;; d000
 
 wD100_TilesToLoadBuffer:
+; 256-byte staging buffer. Filled by call_00_08fc_SetupEntityVRAMTransfer and then
+; streamed into a single VRAM page by the LCD STAT handler, 4 bytes per hblank
     ds 256                                             ;; d100
 
 ; From D200 to D300 is the loaded entities space
-; Each entity takes up 0x20 of space, and there can be up to 8 entities. 
+; Each entity takes up 0x20 of space, and there can be up to 8 entities.
 ; Gex occupies the first slot. The entity instance fields are defined in constants.asm
 wD200_EntityMemory:
 wD200_Player_EntityId:
@@ -219,27 +255,35 @@ wD584_CollisionFlagsPrev:
 wD585_CollisionFlags: ; aka player state flags
 ; bit 7 (80) = grounded or climbing
 ; bit 6 (40) = pushing wall
-; bit 5 (20) = 
-; bit 4 (10) = 
-; bit 3 (08) = 
-; bit 2 (04) = 
+; bit 5 (20) =
+; bit 4 (10) =
+; bit 3 (08) =
+; bit 2 (04) =
 ; bit 1 (02) = walking up slope?
 ; bit 0 (01) = walking up slope?
     ds 1                                               ;; d585
 
-wD586_GexSpriteStateFlags:
+wD586_PlayerGfxVramPage:
+; 0 or 1. The player's 256-byte tile set is double buffered across VRAM pages
+; $8000 and $8100; this selects which page the next streamed frame goes to and
+; the sprite builder in bank 3 uses it to pick the matching tile ids
     ds 1                                               ;; d586
 
-wD587:
+wD587_EntityGfxVramPage:
+; same idea for the shared entity tile pages $8200 / $8300
     ds 1                                               ;; d587
 
-wD588:
+wD588_EntityGfxSrcAddrHi:
+; high byte of the ROM address holding the entity tile page to stream in
     ds 1                                               ;; d588
 
-wD589:
+wD589_EntityGfxSrcBank:
+; ROM bank holding that entity tile page
     ds 1                                               ;; d589
 
-wD58A:
+wD58A_BankStack:
+; stack of previously selected ROM banks, used by call_00_1089_SwitchBank /
+; call_00_10a3_RestoreBank. wD59A_PtrToBankStackPosition points at the top
     ds 16                                              ;; d58a
 
 wD59A_PtrToBankStackPosition:
@@ -257,7 +301,9 @@ wD59E_OnGBCFlag:
 wD59F_CurrentInputs: ; inputs defined in hardware.inc
     ds 1                                               ;; d59f
 
-wD5A0:
+wD5A0_LCDCValue:
+; shadow copy of rLCDC. Written to the real register at the start of every vblank
+; so LCDC changes always take effect between frames
     ds 1                                               ;; d5a0
 
 wD5A1_BgMap_ScrollXLo:
@@ -294,12 +340,25 @@ wD60B:
     ds 3                                               ;; d60b
 
 wD60E_HUDDirtyFlags:
+; bit 1 (02) = lives counter changed, reload the lives digits
+; bit 2 (04) = level timer changed, reload the timer digits
+; bit 3 (08) = collectible milestone changed, reload the collectible sprites
     ds 1                                               ;; d60e
 
-wD60F_HDMATransferFlags:
+wD60F_GfxTransferFlags:
+; queue of pending VRAM transfers, serviced in priority order (bit 0 first).
+; See GFX_XFER_* in constants.asm
+; bit 0 (01) = player sprite page
+; bit 1 (02) = entity sprite page
+; bit 2 (04) = secondary tileset
+; bit 3 (08) = queued entity graphics (wD71F_GfxCopy_SrcBank block)
+; bit 4 (10) = media dimension tv screen image
+; bit 7 (80) = an hblank-driven transfer is currently running
     ds 1                                               ;; d60f
 
-wD610:
+wD610_MediaDimension_TVScreenId:
+; which tv screen image is being shown in the hub. $FF = none.
+; Used as a page index into bank $14 and copied to VRAM $8600
     ds 1                                               ;; d610
 
 wD611_AnimatedTileId:
@@ -307,19 +366,24 @@ wD611_AnimatedTileId:
 wD612_AnimatedTime_FrameCounter:
     ds 1                                               ;; d612
 
-wD613:
+wD613_Dragon_SegmentsRemaining:
+; kung fu theater dragon boss. Set to $0A on level start and decremented as body
+; segments are destroyed; at 0 the head bursts
     ds 1                                               ;; d613
 
-wD614:
+wD614_Dragon_HitTimer:
+; counts down after the dragon is hit; bit 1 makes the body segments flash
     ds 1                                               ;; d614
 
 wD615_Cannon_FacingDirection:
     ds 1                                               ;; d615
 
-wD616:
+wD616_FinalBattleButtonFlags:
+; channel z final battle. bit 7 set = a button was just slammed down
     ds 1                                               ;; d616
 
-wD617:
+wD617_TailSpinChargeCounter:
+; charge level (0-$40) built up by tail spinning on a rezopolis gear/platform
     ds 1                                               ;; d617
 
 wD618_CheckpointSpawnId:
@@ -349,14 +413,14 @@ wD620_DemoInputs:
     ds 1                                               ;; d620
 
 wD621_WarpFlags:
-; bit 7 (80) = 
-; bit 6 (40) = 
-; bit 5 (20) = 
-; bit 4 (10) = unknown (related to gold remote?)
+; bit 7 (80) =
+; bit 6 (40) =
+; bit 5 (20) =
+; bit 4 (10) = time up in a bonus/collectible level
 ; bit 3 (08) = entered door
 ; bit 2 (04) = entered tv / collected gold remote
 ; bit 1 (02) = died
-; bit 0 (01) = 
+; bit 0 (01) =
     ds 1                                               ;; d621
 
 wD622_InterruptFlag:
@@ -364,6 +428,7 @@ wD622_InterruptFlag:
     ds 1                                               ;; d622
 
 wD623_CollectibleMode:
+; nonzero in the bonus levels that have a collectible quota and a countdown timer
     ds 1                                               ;; d623
 
 wD624_CurrentLevelId:
@@ -380,7 +445,12 @@ wD628_MediaDimensionRespawnPoint:
 ; which tv you respawn at if you die in media dimension
 ; also where you go if you quit current level
     ds 1                                               ;; d628
-wD629_RemoteProgressFlags: 
+wD629_RemoteProgressFlags:
+; one byte per level. Bit meanings (see REMOTE_*_MASK in constants.asm):
+;   bits 0-2 (07) = mission remotes collected (one per selectable mission)
+;   bit  3   (08) = hidden (silver) remote collected
+;   bit  4   (10) = gold remote collected
+;   bit  5   (20) = bonus/collectible mission completed
     ds 30                                              ;; d629
 ; D62A : out of toon obtained remotes bitfield (1F = all)
 ; D62B : smellraiser obtained remotes bitfield (1F = all)
@@ -406,13 +476,18 @@ wD629_RemoteProgressFlags:
 ; D642 : texas chainsaw manicure obtained remotes bitfield (01 = all)
 ; D643 : mazed and confused obtained remotes bitfield (03 = all)
 
-wD647:
+wD647_ExitTVButtonIndex:
+; which exit tv button (0-2) the player pushed to finish the level.
+; Selects which mission remote bit gets awarded in wD629_RemoteProgressFlags
     ds 1                                               ;; d647
 
-wD648:
+wD648_CollectibleMilestoneIndex:
+; index into .data_00_074a_CollectibleMilestoneThresholds (30 / 40 / 50)
     ds 1                                               ;; d648
 
 wD649_CollectibleAmount:
+; in a bonus level this counts down toward zero (the remaining quota);
+; otherwise it counts up toward the next milestone
     ds 1                                               ;; d649
 
 wD64A:
@@ -421,7 +496,9 @@ wD64A:
 wD64B:
     ds 1                                               ;; d64b
 
-wD64C:
+wD64C_CurrentLevel_HiddenRemoteFlags:
+; the current level's silver+gold remote bits (wD629 & $18), snapshotted on entry
+; and OR'd back in when the level is completed
     ds 1                                               ;; d64c
 
 wD64D:
@@ -430,13 +507,19 @@ wD64D:
 wD64E:
     ds 1                                               ;; d64e
 
-wD64F:
+; The three totals below are recomputed by call_00_3c3f_Remotes_RecountAllTotals.
+; Low 7 bits = the count, bit 7 = the count changed since the last recount
+; (used by the hub to pop open newly unlocked tvs).
+wD64F_MissionRemoteTotal:
+; number of mission remotes collected across every level (mask $07)
     ds 1                                               ;; d64f
 
-wD650:
+wD650_HiddenRemoteTotal:
+; number of hidden + gold remotes collected across every level (mask $18)
     ds 1                                               ;; d650
 
-wD651:
+wD651_BonusMissionTotal:
+; number of bonus/collectible missions completed across every level (mask $20)
     ds 1                                               ;; d651
 
 wD652:
@@ -463,7 +546,7 @@ wD668_PasswordValues: ; password on call screen and in game
 ; 20 is blank
 ; solid color arrows: 45 right, 46 left, 47 up, 48 down
 ; outlined arrows:  41 right, 42 left, 43 up, 44 down
-; bug: the first time you enter a value after going into the "enter password" screen, 
+; bug: the first time you enter a value after going into the "enter password" screen,
 ; it updates the value, but not visually
     ds 28                                              ;; d668
 wD684_PasswordGoButton: ; Password go button (value 4a)
@@ -549,28 +632,40 @@ wD6A3:
 wD6A4:
     ds 1                                              ;; d6a4
 
-; Password related memory
-wD6A5_PasswordTilesBank:
+; ------------------------------------------------------------------
+; Parameter block for call_00_07c3_Screen_LoadTilesAndTilemap.
+; The 10 bytes wD6A5..wD6AE are copied in one go from a ROM descriptor
+; (see .data_01_47b9 and friends) before the call.
+; ------------------------------------------------------------------
+wD6A5_ScreenDraw_TileDataBank:
     ds 1
-wD6A6:
-    ds 1 
-wD6A7:
-    ds 1 
-wD6A8:
+wD6A6_ScreenDraw_FirstTileId:
+; tile id the graphics get loaded at; also added to every tilemap byte
     ds 1
-wD6A9:
+wD6A7_ScreenDraw_WidthInTiles:
+    ds 1
+wD6A8_ScreenDraw_HeightInTiles:
+    ds 1
+wD6A9_ScreenDraw_TilemapPtr:
+; ROM pointer to width*height tile indices, immediately followed by the same
+; number of GBC attribute bytes
     ds 2
-wD6AB:
+wD6AB_ScreenDraw_TileDataPtr:
+; ROM pointer to the tile graphics
     ds 2
-wD6AD:
+wD6AD_ScreenDraw_TileDataSize:
+; number of bytes of tile graphics to copy
     ds 2
-wD6AF:
+wD6AF_ScreenDraw_TileIdBase:
+; working copy of wD6A6_ScreenDraw_FirstTileId used while writing the tilemap
     ds 1
 
 ; Menu related memory starts here
-wD6B0:
+wD6B0_FullscreenImage_Bank:
+; parameters for call_00_084d_Screen_LoadFullscreenImage (title/credit screens)
     ds 1                                               ;; d6b0
-wD6B1:
+wD6B1_FullscreenImage_Ptr:
+; ROM pointer to $F00 bytes of tiles, then $780 more, then a 20x18 attribute map
     ds 2                                               ;; d6b1
 wD6B3:
     ds 1                                               ;; d6b3
@@ -628,7 +723,7 @@ wD6DC: ; menu related
     ds 1                                               ;; d6dc
 wD6DD: ; menu related
     ds 1                                               ;; d6dd
-wD6DE_MenuType: 
+wD6DE_MenuType:
 ; 0 = pause in media dimension, 1 = exit game, 2 = pause in world, 3 = exit to map
 ; 5 = view totals, 6 = current password, B = mission select, F = enter password
     ds 1                                               ;; d6de
@@ -636,13 +731,23 @@ wD6DF_MenuSelectedColumn: ; used for password menu, but not totals screen
     ds 1                                               ;; d6df
 wD6E0_MenuSelectedRow: ; used for password menu, title screen, mission select, and leaving maps
     ds 1                                               ;; d6e0
-wD6E1:
+wD6E1_RasterSplit_LCDCValue:
+; LCDC value the raster-effect LCD STAT handler installs at scanline $5F,
+; used to turn the window on for the bottom of the screen
     ds 1                                               ;; d6e1
-wD6E2:
+
+; ------------------------------------------------------------------
+; Scripted graphics streamer, run from the vblank hook that pairs with the
+; raster-effect LCD STAT handler (call_00_0d84_VBlank_RunGfxStream).
+; The script is [chunks, rowsPerChunk, bank] followed by (srcPtr, destPtr) pairs;
+; one pair is copied per frame.
+; ------------------------------------------------------------------
+wD6E2_GfxStream_ChunksRemaining:
     ds 1                                               ;; d6e2
-wD6E3:
+wD6E3_GfxStream_RowsPerChunk:
+; each row is 16 bytes (one tile)
     ds 1                                               ;; d6e3
-wD6E4:
+wD6E4_GfxStream_SrcBank:
     ds 1                                               ;; d6e4
 wD6E5_PasswordArrowSprites:
     ds 1                                               ;; d6e5
@@ -652,13 +757,16 @@ wD6E7_PasswordArrowSprites:
     ds 1                                               ;; d6e7
 wD6E8_PasswordArrowSprites:
     ds 1                                               ;; d6e8
-wD6E9:
+wD6E9_GfxStream_ListPtrLo:
+; pointer to the next (srcPtr, destPtr) pair in the script
     ds 1                                               ;; d6e9
-wD6EA:
+wD6EA_GfxStream_ListPtrHi:
     ds 1                                               ;; d6ea
-wD6EB:
+wD6EB_RasterWobble_StartLine:
+; first scanline of the horizontal wobble effect
     ds 1                                               ;; d6eb
-wD6EC:
+wD6EC_RasterWobble_LineCount:
+; how many scanlines the wobble covers; outside this band rSCX is forced to 0
     ds 1                                               ;; d6ec
 
 ; BgMap related memory starts here
@@ -708,64 +816,83 @@ wD70F_BgMap_TempScratchColumnMetaTileOverrideBits:
 ; where blockset override (extended map) bits are set for the loaded column tiles
     ds 11                                              ;; d70f
 
-; Sound related
-wD71A:
+; ------------------------------------------------------------------
+; Entity graphics queue.
+; call_02_7211_EntityGfxQueue_Enqueue collects up to 4 pending graphics loads
+; (one per on-screen entity type) and call_02_722c_EntityGfxQueue_StartNext
+; expands the next one into the wD71F.. descriptor and raises
+; GFX_XFER_QUEUED_ENTITY_GFX.
+; (this block was previously labelled "sound related" - it is not)
+; ------------------------------------------------------------------
+wD71A_EntityGfxQueue:
     ds 4                                               ;; d71a
-wD71E:
+wD71E_EntityGfxQueueCount:
     ds 1                                               ;; d71e
-wD71F:
+
+; Descriptor for the pending entity graphics copy
+wD71F_GfxCopy_SrcBank:
     ds 1                                               ;; d71f
-wD720:
+wD720_GfxCopy_SrcAddrLo:
     ds 1                                               ;; d720
-wD721:
+wD721_GfxCopy_SrcAddrHi:
     ds 1                                               ;; d721
-wD722:
+wD722_GfxCopy_DestAddrLo:
     ds 1                                               ;; d722
-wD723:
+wD723_GfxCopy_DestAddrHi:
     ds 1                                               ;; d723
-wD724:
+wD724_GfxCopy_SizeLo:
     ds 1                                               ;; d724
-wD725:
+wD725_GfxCopy_SizeHi:
     ds 1                                               ;; d725
 
 ; Secondary Tileset related
 wD726_SecondaryTilesetBank:
     ds 1                                               ;; d726
-wD727: ; always 0?
+wD727_SecondaryTileset_SrcAddrLo: ; always 0
     ds 1                                               ;; d727
 wD728_SecondaryTilesetAddr: ; this determines which secondary tilset to load (and is loading)
     ds 1                                               ;; d728
-wD729:
+wD729_SecondaryTileset_DestAddrLo:
     ds 1                                               ;; d729
-wD72A:
+wD72A_SecondaryTileset_DestAddrHi: ; $90 -> VRAM_TILESET_ADDR_1
     ds 1                                               ;; d72a
-wD72B:
+wD72B_SecondaryTileset_RowsPerPage: ; $40 tiles = $400 bytes
     ds 1                                               ;; d72b
-wD72C:
+wD72C_SecondaryTileset_PagesRemaining:
     ds 1                                               ;; d72c
 wD72D_SecondaryTilesetIndex:
     ds 1                                               ;; d72d
 wD72E_SecondaryTilesetBank2:
     ds 1                                               ;; d72e
-wD72F:
+
+; ------------------------------------------------------------------
+; Secondary tileset animation player. Loaded alongside the secondary tileset;
+; ticked from call_00_0ac1_VBlank_UpdateVRAM.
+; ------------------------------------------------------------------
+wD72F_TilesetAnim_FrameCount:
+; number of animation frames; 0 = this tileset has no animation
     ds 1                                               ;; d72f
-wD730:
+wD730_TilesetAnim_FrameIndex:
     ds 1                                               ;; d730
-wD731:
+wD731_TilesetAnim_DelayReload:
     ds 1                                               ;; d731
-wD732:
+wD732_TilesetAnim_DelayCounter:
     ds 1                                               ;; d732
-wD733:
+wD733_TilesetAnim_RowsPerFrame:
+; number of 16-byte tiles copied per frame
     ds 1                                               ;; d733
-wD734:
+wD734_TilesetAnim_DestAddrLo:
+; read into DE but immediately overwritten by the frame table entry - dead
     ds 1                                               ;; d734
-wD735:
+wD735_TilesetAnim_DestAddrHi:
     ds 1                                               ;; d735
-wD736:
+wD736_TilesetAnim_FrameTablePtrLo:
+; table of 4-byte (destPtr, srcPtr) entries, one per animation frame
     ds 1                                               ;; d736
-wD737:
+wD737_TilesetAnim_FrameTablePtrHi:
     ds 1                                               ;; d737
-wD738:
+wD738_TilesetAnim_Flags:
+; bit 0 = play once and stop instead of looping
     ds 1                                               ;; d738
 
 ; Entity graphics related
@@ -861,11 +988,11 @@ wD758_UnkCollisionRelated:
 wD759_ButtonBlockingFlags:
 ; bit 7 (80) = suppresses b button during upward velocity
 ; bit 6 (40) = suppresses b button
-; bit 5 (20) = 
+; bit 5 (20) =
 ; bit 4 (10) = can hold b to double jump when landing
-; bit 3 (08) = 
-; bit 2 (04) = 
-; bit 1 (02) = 
+; bit 3 (08) =
+; bit 2 (04) =
+; bit 1 (02) =
 ; bit 0 (01) = suppresses a button
     ds 1                                               ;; d759
 
@@ -909,7 +1036,8 @@ wD766_TileTypeBehindGexsFace: ; also set to 22 in front of doors?
 wD767_FloorTileType:
     ds 1                                               ;; d767
     ds 1
-wD769:
+wD769_ClimbSurfaceTileType:
+; tile type that triggered the climb; $26 = climbable background, otherwise wall
     ds 1                                               ;; d769
 wD76A_PlayerXPositionBlock:
     ds 1                                               ;; d76a
@@ -924,13 +1052,19 @@ wD76D_PlayerScreenYPosition_CopyMinus20:
 wD76E:
     ds 1                                               ;; d76e
 
-wD76F:
+; ------------------------------------------------------------------
+; Bonus level countdown timer (only ticks while wD623_CollectibleMode is set).
+; Displayed by call_03_6ceb_HUD_LoadTimerDigits as hundreds/tens/ones.
+; Starts at 3:00; when it runs out, bits 2 and 4 of wD621_WarpFlags are set,
+; which kicks the player out with the MENU_TYPE_TIME_UP screen.
+; ------------------------------------------------------------------
+wD76F_LevelTimer_Minutes:
     ds 1                                               ;; d76f
-
-wD770:
+wD770_LevelTimer_SecondsBCD:
+; BCD seconds, decremented with daa
     ds 1                                               ;; d770
-
-wD771:
+wD771_LevelTimer_FrameCounter:
+; counts down from $3C (60 frames = 1 second)
     ds 1                                               ;; d771
 
 wD772:
@@ -942,8 +1076,9 @@ wD773:
 wD774:
     ds 1                                               ;; d774
 
-wD775:
-    ds 3                                               ;; d775
+wD775_MissionPreview_Skippable:
+    ds 1                                               ;; d775
+    ds 2
 
 wD778_OverrideSlotWriteHead:
 ; Index into wD78B_OverrideSlotTable slot table; incremented by BgMap_UpdateCollisionFlags as slots are filled
@@ -957,16 +1092,16 @@ wD77A_PlayerYPositionBlock:
 
 ; Bg override related memory
 wD77B_OverrideVRAMWritePending:
-; Bit 0 set = BgMap_WriteOverrideTiles has queued a VRAM write that hasn't completed yet; 
+; Bit 0 set = BgMap_WriteOverrideTiles has queued a VRAM write that hasn't completed yet;
 ; gates BgMap_TickOverrideAnimation and SpecialTile_OnPlayerAttack
     ds 1                                               ;; d77b
 wD77C_OverrideSequenceFlags:
-; Flags for current sequence step: 
-; bit 0 = loop immediately, 
-; bit 1 = call UpdateCollisionFlags, 
-; bit 2 = call FindAndWriteOverrideBlock, 
-; bit 3 = call WriteOverrideTiles, 
-; bit 5 = call call_00_113e (SFX/effect) before proceeding
+; Flags for current sequence step:
+; bit 0 = loop immediately,
+; bit 1 = call UpdateCollisionFlags,
+; bit 2 = call FindAndWriteOverrideBlock,
+; bit 3 = call WriteOverrideTiles,
+; bit 5 = call call_00_113e_PlaySFX before proceeding
     ds 1                                               ;; d77c
 wD77D_OverrideSequenceStepsRemaining:
 ; Countdown of remaining steps in the active tile animation sequence; zero = sequence idle
@@ -982,7 +1117,7 @@ wD780_OverrideDataPtrLo:
 wD781_OverrideDataPtrHi:
     ds 1                                               ;; d781
 wD782_OverrideTargetBlockX:
-; Block X coordinate of the tile being overridden (player world X × 8, high byte); 
+; Block X coordinate of the tile being overridden (player world X × 8, high byte);
 ; used by UpdateCollisionFlags and FindAndWriteOverrideBlock
     ds 1                                               ;; d782
 wD783_OverrideTargetBlockY:
@@ -1009,12 +1144,12 @@ wD78A_MusicId: ; multiplied by 4 and used as index into .data_00_1244_MusicList
     ds 1                                               ;; d78a
 
 wD78B_OverrideSlotTable:
-; 16-byte table of slot states: 
-; $00 = empty, 
-; $01 = armed/active, 
-; $02 = triggered/counting-up, 
-; $FF = completed. 
-; Each slot tracks one interactive tile region's state. Slots 0–15 correspond to tile 
+; 16-byte table of slot states:
+; $00 = empty,
+; $01 = armed/active,
+; $02 = triggered/counting-up,
+; $FF = completed.
+; Each slot tracks one interactive tile region's state. Slots 0–15 correspond to tile
 ; override regions registered by UpdateCollisionFlags
     ds 4                                              ;; d78b
 wD78F_OverrideSlotTable4:
@@ -1069,57 +1204,74 @@ wDA7B_MediaDimensionTVPalette:
 wDAAB_MenuBgMapTileIds:
     ds 32                                              ;; daab
 
-wDACB:
+; ------------------------------------------------------------------
+; DMG palette fading ($DACB-$DADB).
+; Only used when wD59E_OnGBCFlag is clear - on GBC the palettes are written
+; straight out by call_00_0f9d_UpdateLCDPalettes instead.
+; call_00_1004_Fade_Update walks wDACE/wDACF/wDAD0 one shade at a time toward
+; wDAD4/wDAD5/wDAD6, and call_00_0f80_VBlank_UpdatePalettes pushes them to the
+; hardware registers.
+; ------------------------------------------------------------------
+wDACB_DefaultBGP: ; written to $E4 at boot, never read back
     ds 1                                               ;; dacb
 
-wDACC:
+wDACC_DefaultOBP0: ; written to $E4 at boot, never read back
     ds 1                                               ;; dacc
 
-wDACD:
+wDACD_DefaultOBP1: ; written to $00 at boot, never read back
     ds 1                                               ;; dacd
 
-wDACE:
+wDACE_CurrentBGP:
     ds 1                                               ;; dace
 
-wDACF:
+wDACF_CurrentOBP0:
     ds 1                                               ;; dacf
 
-wDAD0:
+wDAD0_CurrentOBP1:
     ds 1                                               ;; dad0
 
-wDAD1:
+wDAD1_LevelBGP:
+; the level's "real" palettes, set by call_0b_5537_BgPalette_LoadMonoOrGetSpriteParams.
+; These are what FADE_MODE_IN fades back to
     ds 1                                               ;; dad1
 
-wDAD2:
+wDAD2_LevelOBP0:
     ds 1                                               ;; dad2
 
-wDAD3:
+wDAD3_LevelOBP1:
     ds 1                                               ;; dad3
 
-wDAD4:
+wDAD4_TargetBGP:
     ds 1                                               ;; dad4
 
-wDAD5:
+wDAD5_TargetOBP0:
     ds 1                                               ;; dad5
 
-wDAD6:
+wDAD6_TargetOBP1:
     ds 1                                               ;; dad6
 
-wDAD7:
+wDAD7_FadeMaskLo:
+; bit 0 = fade BGP
     ds 1                                               ;; dad7
 
-wDAD8:
+wDAD8_FadeMaskHi:
+; bit 0 = fade OBP0, bit 1 = fade OBP1.
+; The death fade leaves OBP1 alone so Gex stays visible
     ds 1                                               ;; dad8
 
-wDAD9:
+wDAD9_FadeMode:
+; 0 = idle, otherwise one of the FADE_MODE_* values in constants.asm
     ds 1                                               ;; dad9
 
-wDADA:
+wDADA_FadeStepDelay:
+; frames between fade steps (always $04)
     ds 1                                               ;; dada
 
-wDADB:
-    ds 2                                               ;; dadb
-    
+wDADB_FadeStepCounter:
+    ds 1                                               ;; dadb
+
+    ds 1                                               ;; dadc
+
 ; DADD through DFAD might be be unused memory?
     ds 1233
 
@@ -1203,7 +1355,8 @@ wDFFE:
 
 SECTION "hram", HRAM[$ff80]
 
-hFF80:
+hFF80_OamDmaRoutine:
+; call_00_0ef7_OamDmaRoutine is copied here at boot and called every vblank
     ds 112                                             ;; ff80
 
 hFFF0:
