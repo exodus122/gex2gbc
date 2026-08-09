@@ -216,7 +216,7 @@ wD55C:
 wD584_CollisionFlagsPrev:
 ; copy of the value that wD585_CollisionFlags had at the start of the frame
     ds 1                                               ;; d584
-wD585_CollisionFlags:
+wD585_CollisionFlags: ; aka player state flags
 ; bit 7 (80) = grounded or climbing
 ; bit 6 (40) = pushing wall
 ; bit 5 (20) = 

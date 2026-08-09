@@ -1,5 +1,3 @@
-;; Disassembled with BadBoy Disassembler: https://github.com/daid/BadBoy
-
 ; This file handles various menus in the game
 
 call_01_4000_MenuLoad: ; this is the primary menu loading and updating function

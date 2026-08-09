@@ -1,5 +1,3 @@
-;; Disassembled with BadBoy Disassembler: https://github.com/daid/BadBoy
-
 call_0b_5537_BgPalette_LoadMonoOrGetSpriteParams:
 ; Mono-mode (DMG) background palette loader, or sprite params setter in GBC mode. 
 ; If wD59E_OnGBCFlag is zero (DMG): loads wD624 (level ID) to index either .data_0b_555f (C=0, primary BG) 

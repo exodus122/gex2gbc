@@ -33,7 +33,7 @@ entry:
     db   CART_INDICATOR_GB                             ;; 00:0146
     db   CART_ROM_MBC5, CART_ROM_1024KB, CART_SRAM_NONE ;; 00:0147
     db   CART_DEST_NON_JAPANESE, $33, $00              ;; 00:014a $01 $33 $00
-    ds   3                                             ;; 00:014d
+    ds   $03                                           ;; 00:014d
 
 SECTION "bank00_0150", ROM0[$0150]
 

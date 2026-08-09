@@ -11,11 +11,11 @@ call_03_4900_BgCollision_Update:
     ld   A, [wD201_Player_ActionId]                                    ;; 03:4909 $fa $01 $d2
     and  A, PLAYER_ACTION_MASK                                        ;; 03:490c $e6 $1f
     cp   A, PLAYER_ACTION_RIDING_ROCKET                                        ;; 03:490e $fe $1f
-    jr   NZ, call_03_4915_BgCollision_Sidescroller                                ;; 03:4910 $20 $03
+    jr   NZ, call_03_4915_BgCollision_SidescrollerHandler                                ;; 03:4910 $20 $03
     set  7, [HL]                                       ;; 03:4912 $cb $fe
     ret                                                ;; 03:4914 $c9
 
-call_03_4915_BgCollision_Sidescroller:
+call_03_4915_BgCollision_SidescrollerHandler:
 ; Main sidescroller collision dispatcher. Sets bit 7 of collision flags if wD74D (interacted entity) is nonzero 
 ; (indoor/special room = no normal collision). If wD746 (climbing state) ≠ $FF, jumps to the climb collision 
 ; handler instead. Otherwise: computes a Y-velocity-derived lookahead value (Y velocity − 2, clamped to $C0, 
@@ -34,7 +34,7 @@ call_03_4915_BgCollision_Sidescroller:
 .jr_03_491d:
     ld   A, [wD746_Player_ClimbingState]                                    ;; 03:491d $fa $46 $d7
     cp   A, $ff                                        ;; 03:4920 $fe $ff
-    jp   NZ, call_03_4ac4_BgCollision_Climb        ; 03:4922 $c2 $c4 $4a ; if climb state byte is not ff, run alternate collision func
+    jp   NZ, call_03_4ac4_BgCollision_ClimbingHandler        ; 03:4922 $c2 $c4 $4a ; if climb state byte is not ff, run alternate collision func
     ld   A, [wD760_PlayerYVelocity]                                    ;; 03:4925 $fa $60 $d7
     sub  A, $02                                        ;; 03:4928 $d6 $02
     bit  7, A                                          ;; 03:492a $cb $7f
@@ -312,7 +312,7 @@ call_03_4ab3_BgCollision_GetXOffset:
     add  A, [HL]                                       ;; 03:4ac2 $86
     ret                                                ;; 03:4ac3 $c9
 
-call_03_4ac4_BgCollision_Climb:
+call_03_4ac4_BgCollision_ClimbingHandler:
 ; Handles collision while Gex is climbing (ladder/pole). Always sets bit 7 of collision flags 
 ; (no normal movement collision). Returns immediately if climb state ≥ 6 (dismounting). 
 ; Computes an index = (climb state × 2) + facing-left bit, looks up a climb script pointer 
