@@ -613,21 +613,21 @@ call_0a_7b9a_EntitySpawn_SpawnChildEntity:
 .data_0a_7c92_EntityChildSpawnData:
 ; 8-byte records (child entity ID + signed 16-bit X offset + signed 16-bit Y offset + padding) 
 ; defining where each spawnable child appears relative to its parent.
-    db   ENTITY_SCREAM_TV_HEAD_GHOST_HEAD, $06, $00, $f2, $ff, $00, $00, $00        ;; 0a:7c92 ????????
-    db   ENTITY_SCREAM_TV_FLOATING_SKULL_PROJECTILE, $00, $00, $0c, $00, $00, $00, $00        ;; 0a:7c9a ????????
-    db   ENTITY_SCREAM_TV_ZOMBIE_HEAD, $00, $00, $ee, $ff, $00, $00, $00        ;; 0a:7ca2 ????????
-    db   ENTITY_TOON_TV_FLOWER_HAMMER, $f5, $ff, $fc, $ff, $00, $00, $00        ;; 0a:7caa w???????
-    db   ENTITY_KUNG_FU_THEATER_NINJA_PROJECTILE, $08, $00, $00, $00, $00, $00, $00        ;; 0a:7cb2 ????????
-    db   ENTITY_KUNG_FU_THEATER_SAMURAI_HEAD, $00, $00, $e8, $ff, $00, $00, $00        ;; 0a:7cba ????????
-    db   ENTITY_PRE_HISTORY_FIRE_PLANT_PROJECTILES, $00, $00, $08, $00, $00, $00, $00        ;; 0a:7cc2 ????????
-    db   ENTITY_PRE_HISTORY_TRICERATOPS_HORN, $14, $00, $00, $00, $00, $00, $00        ;; 0a:7cca ????????
-    db   ENTITY_TOON_TV_MUSHROOM_PROJECTILE, $00, $00, $f8, $ff, $00, $00, $00        ;; 0a:7cd2 w???????
-    db   ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT_GEAR, $00, $00, $10, $00, $00, $00, $00        ;; 0a:7cda ????????
-    db   ENTITY_CHANNEL_Z_GUN_PROJECTILE_EXPLOSION, $00, $00, $00, $00, $00, $00, $00        ;; 0a:7ce2 ????????
-    db   ENTITY_TOON_TV_HUNTER_BULLET, $10, $00, $00, $00, $00, $00, $00        ;; 0a:7cea ????????
-    db   ENTITY_KUNG_FU_THEATER_DRAGON_PROJECTILE, $00, $00, $00, $00, $00, $00, $00        ;; 0a:7cf2 ????????
-    db   ENTITY_KUNG_FU_THEATER_CANNON_PROJECTILE, $14, $00, $00, $00, $00, $00, $00        ;; 0a:7cfa ????????
-    db   ENTITY_REZOPOLIS_ANT, $00, $00, $08, $00, $00, $00, $00        ;; 0a:7d02 ????????
-    db   ENTITY_FINAL_BATTLE_BUTTON_PROJECTILE, $4c, $00, $68, $ff, $00, $00, $00        ;; 0a:7d0a ????????
-    db   ENTITY_FINAL_BATTLE_BUTTON_PROJECTILE, $b4, $ff, $68, $ff, $00, $00, $00        ;; 0a:7d12 ????????
-    db   ENTITY_CHANNEL_Z_REZ_PORTAL, $00, $00, $00, $00, $00, $00, $00        ;; 0a:7d1a ?
+    EntityChildSpawnData ENTITY_SCREAM_TV_HEAD_GHOST_HEAD,             $0006, -$000E
+    EntityChildSpawnData ENTITY_SCREAM_TV_FLOATING_SKULL_PROJECTILE,   $0000, $000C
+    EntityChildSpawnData ENTITY_SCREAM_TV_ZOMBIE_HEAD,                 $0000, -$0012
+    EntityChildSpawnData ENTITY_TOON_TV_FLOWER_HAMMER,                -$000B, -$0004
+    EntityChildSpawnData ENTITY_KUNG_FU_THEATER_NINJA_PROJECTILE,      $0008, $0000
+    EntityChildSpawnData ENTITY_KUNG_FU_THEATER_SAMURAI_HEAD,          $0000, -$0018
+    EntityChildSpawnData ENTITY_PRE_HISTORY_FIRE_PLANT_PROJECTILES,    $0000, $0008
+    EntityChildSpawnData ENTITY_PRE_HISTORY_TRICERATOPS_HORN,          $0014, $0000
+    EntityChildSpawnData ENTITY_TOON_TV_MUSHROOM_PROJECTILE,           $0000, -$0008
+    EntityChildSpawnData ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT_GEAR,     $0000, $0010
+    EntityChildSpawnData ENTITY_CHANNEL_Z_GUN_PROJECTILE_EXPLOSION,    $0000, $0000
+    EntityChildSpawnData ENTITY_TOON_TV_HUNTER_BULLET,                 $0010, $0000
+    EntityChildSpawnData ENTITY_KUNG_FU_THEATER_DRAGON_PROJECTILE,     $0000, $0000
+    EntityChildSpawnData ENTITY_KUNG_FU_THEATER_CANNON_PROJECTILE,     $0014, $0000
+    EntityChildSpawnData ENTITY_REZOPOLIS_ANT,                         $0000, $0008
+    EntityChildSpawnData ENTITY_FINAL_BATTLE_BUTTON_PROJECTILE,        $004C, -$0098
+    EntityChildSpawnData ENTITY_FINAL_BATTLE_BUTTON_PROJECTILE,       -$004C, -$0098
+    EntityChildSpawnData ENTITY_CHANNEL_Z_REZ_PORTAL,                  $0000, $0000

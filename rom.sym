@@ -1454,7 +1454,7 @@
 02:5a41 call_02_5a28_EntityAction_Mushroom_Update.jr_02_5a41
 02:5a55 call_02_5a28_EntityAction_Mushroom_Update.jr_02_5a55
 02:5a61 call_02_5a28_EntityAction_Mushroom_Update.jr_02_5a61
-02:5a73 call_02_5a73_EntityAction_Unk28_Update
+02:5a73 call_02_5a73_EntityAction_MushroomProjectile_Update
 02:5a7d call_02_5a7d_EntityAction_Lizard_Update
 02:5a84 call_02_5a7d_EntityAction_Lizard_Update.jr_02_5A84
 02:5a8c call_02_5a8c_EntityAction_HappyFace_unk0

@@ -58,3 +58,9 @@ MACRO SET_ACTION
     ld a, \1
     jp call_02_7102_Entity_SetAction
 ENDM
+
+MACRO EntityChildSpawnData
+    db \1
+    dw \2, \3
+    db 0, 0, 0
+ENDM
