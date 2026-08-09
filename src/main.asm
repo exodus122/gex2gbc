@@ -65,10 +65,10 @@ image_009_4000.bin:
     INCBIN "gfx/secondary_tilesets/image_009_4000_data.bin"
 
 SECTION "bank0a", ROMX[$4000], BANK[$0a]
-INCLUDE "code/bank0A_load_entities.asm"
+INCLUDE "code/bank0A_entity_load.asm"
 
 SECTION "bank0b", ROMX[$4000], BANK[$0b]
-INCLUDE "code/bank0B_load_collectibles.asm"
+INCLUDE "code/bank0B_collectible_load.asm"
 INCLUDE "code/bank0B_map_spawns.asm"
 INCLUDE "code/bank0B_palettes.asm"
 

@@ -141,7 +141,7 @@ data_0a_75fd_EntityAttributeTable:
     db   $00, $10, $10, COLLISION_TYPE_NONE, $08, $07, $00, $00 ; 0a:7724 ...ww??? ; ENTITY_TOON_TV_FLOWER
     db   $00, $0a, $10, COLLISION_TYPE_HUNTER, $00, $07, $00, $00 ; 0a:772c ???????. ; ENTITY_TOON_TV_HUNTER
     db   $00, $0c, $08, COLLISION_TYPE_MUSHROOM, $0b, $05, $00, $00 ; 0a:7734 ...ww??? ; ENTITY_TOON_TV_MUSHROOM
-    db   $00, $04, $08, COLLISION_TYPE_NONE, $23, $05, $00, $00 ; 0a:773c ...ww??? ; ENTITY_UNK_28
+    db   $00, $04, $08, COLLISION_TYPE_NONE, $23, $05, $00, $00 ; 0a:773c ...ww??? ; ENTITY_TOON_TV_MUSHROOM_PROJECTILE
     db   $00, $10, $08, COLLISION_TYPE_GENERIC_ENEMY, $09, $07, $00, $00 ; 0a:7744 ???????. ; ENTITY_TOON_TV_LIZARD
     db   $00, $0c, $10, COLLISION_TYPE_GENERIC_ENEMY, $00, $07, $00, $00 ; 0a:774c ....w??? ; ENTITY_TOON_TV_HAPPY_FACE
     db   $70, $08, $10, COLLISION_TYPE_STATIONARY_PLATFORM | COLLISION_TYPE_UNK_PLATFORM_FLAG, $10, $05, $00, $00 ; 0a:7754 ???????? ; ENTITY_TOON_TV_VANISHING_BLOCK
@@ -236,13 +236,13 @@ data_0a_75fd_EntityAttributeTable:
     db   $60, $08, $08, COLLISION_TYPE_NONE, $32, $05, $00, $00 ; 0a:7a1c ???????? ; ENTITY_CHANNEL_Z_ARCED_GUN_PROJECTILE2
     db   $60, $08, $08, COLLISION_TYPE_NONE, $32, $05, $00, $00 ; 0a:7a24 ???????? ; ENTITY_CHANNEL_Z_GUN_PROJECTILE
     db   $10, $10, $10, COLLISION_TYPE_REZ, $00, $07, $00, $00 ; 0a:7a2c ???????? ; ENTITY_CHANNEL_Z_REZ
-    db   $70, $10, $08, COLLISION_TYPE_MOVING_PLATFORM | COLLISION_TYPE_UNK_PLATFORM_FLAG, $32, $04, $00, $00 ; 0a:7a34 ???????? ; ENTITY_UNK_87
-    db   $00, $10, $08, COLLISION_TYPE_MOVING_PLATFORM | COLLISION_TYPE_UNK_PLATFORM_FLAG, $32, $04, $00, $00 ; 0a:7a3c ???????? ; ENTITY_UNK_88
+    db   $70, $10, $08, COLLISION_TYPE_MOVING_PLATFORM | COLLISION_TYPE_UNK_PLATFORM_FLAG, $32, $04, $00, $00 ; 0a:7a34 ???????? ; ENTITY_CHANNEL_Z_UNUSED_PLATFORM_1
+    db   $00, $10, $08, COLLISION_TYPE_MOVING_PLATFORM | COLLISION_TYPE_UNK_PLATFORM_FLAG, $32, $04, $00, $00 ; 0a:7a3c ???????? ; ENTITY_CHANNEL_Z_UNUSED_PLATFORM_2
     db   $00, $08, $08, COLLISION_TYPE_NONE, $32, $06, $00, $00 ; 0a:7a44 ???????? ; ENTITY_CHANNEL_Z_REZ_FOLLOWING_FIRE
     db   $00, $08, $08, COLLISION_TYPE_TOUCH_DAMAGE, $32, $03, $00, $00 ; 0a:7a4c ???????? ; ENTITY_CHANNEL_Z_GUN_PROJECTILE_EXPLOSION
-    db   $00, $10, $10, COLLISION_TYPE_NONE, $37, $05, $00, $00 ; 0a:7a54 ???????? ; ENTITY_UNK_8B
+    db   $00, $10, $10, COLLISION_TYPE_NONE, $37, $05, $00, $00 ; 0a:7a54 ???????? ; ENTITY_FINAL_BATTLE_BUTTON_PROJECTILE
     db   $40, $08, $08, COLLISION_TYPE_STATIONARY_PLATFORM | COLLISION_TYPE_UNK_PLATFORM_FLAG, $39, $04, $00, $00 ; 0a:7a5c ???????? ; ENTITY_CHANNEL_Z_FINAL_BATTLE_BUTTON
-    db   $00, $10, $10, COLLISION_TYPE_NONE, $00, $07, $00, $00 ; 0a:7a64 ???????? ; ENTITY_UNK_8D
+    db   $00, $10, $10, COLLISION_TYPE_NONE, $00, $07, $00, $00 ; 0a:7a64 ???????? ; ENTITY_CHANNEL_Z_REZ_PORTAL
     db   $00, $00, $00, COLLISION_TYPE_NONE, $00, $07, $00, $00 ; 0a:7a6c ???????. ; ENTITY_UNK_8E
     db   $70, $10, $08, COLLISION_TYPE_MOVING_PLATFORM | COLLISION_TYPE_UNK_PLATFORM_FLAG, $35, $05, $00, $00 ; 0a:7a74 ...ww?? ; ENTITY_MEDIA_DIMENSION_MOVING_PLATFORM
 
@@ -621,13 +621,13 @@ call_0a_7b9a_EntitySpawn_SpawnChildEntity:
     db   ENTITY_KUNG_FU_THEATER_SAMURAI_HEAD, $00, $00, $e8, $ff, $00, $00, $00        ;; 0a:7cba ????????
     db   ENTITY_PRE_HISTORY_FIRE_PLANT_PROJECTILES, $00, $00, $08, $00, $00, $00, $00        ;; 0a:7cc2 ????????
     db   ENTITY_PRE_HISTORY_TRICERATOPS_HORN, $14, $00, $00, $00, $00, $00, $00        ;; 0a:7cca ????????
-    db   ENTITY_UNK_28, $00, $00, $f8, $ff, $00, $00, $00        ;; 0a:7cd2 w???????
+    db   ENTITY_TOON_TV_MUSHROOM_PROJECTILE, $00, $00, $f8, $ff, $00, $00, $00        ;; 0a:7cd2 w???????
     db   ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT_GEAR, $00, $00, $10, $00, $00, $00, $00        ;; 0a:7cda ????????
     db   ENTITY_CHANNEL_Z_GUN_PROJECTILE_EXPLOSION, $00, $00, $00, $00, $00, $00, $00        ;; 0a:7ce2 ????????
     db   ENTITY_TOON_TV_HUNTER_BULLET, $10, $00, $00, $00, $00, $00, $00        ;; 0a:7cea ????????
     db   ENTITY_KUNG_FU_THEATER_DRAGON_PROJECTILE, $00, $00, $00, $00, $00, $00, $00        ;; 0a:7cf2 ????????
     db   ENTITY_KUNG_FU_THEATER_CANNON_PROJECTILE, $14, $00, $00, $00, $00, $00, $00        ;; 0a:7cfa ????????
     db   ENTITY_REZOPOLIS_ANT, $00, $00, $08, $00, $00, $00, $00        ;; 0a:7d02 ????????
-    db   ENTITY_UNK_8B, $4c, $00, $68, $ff, $00, $00, $00        ;; 0a:7d0a ????????
-    db   ENTITY_UNK_8B, $b4, $ff, $68, $ff, $00, $00, $00        ;; 0a:7d12 ????????
-    db   ENTITY_UNK_8D, $00, $00, $00, $00, $00, $00, $00        ;; 0a:7d1a ?
+    db   ENTITY_FINAL_BATTLE_BUTTON_PROJECTILE, $4c, $00, $68, $ff, $00, $00, $00        ;; 0a:7d0a ????????
+    db   ENTITY_FINAL_BATTLE_BUTTON_PROJECTILE, $b4, $ff, $68, $ff, $00, $00, $00        ;; 0a:7d12 ????????
+    db   ENTITY_CHANNEL_Z_REZ_PORTAL, $00, $00, $00, $00, $00, $00, $00        ;; 0a:7d1a ?

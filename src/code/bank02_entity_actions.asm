@@ -114,8 +114,8 @@ data_02_4eef:                        ;; ENTITY_TOON_TV_HUNTER
     dw   call_02_59ed_EntityAction_Hunter_unk5, data_02_778a
 data_02_4f07:                        ;; ENTITY_TOON_TV_MUSHROOM
     dw   call_02_5a28_EntityAction_Mushroom_Update, data_02_7a1b
-data_02_4f0b:                        ;; ENTITY_UNK_28
-    dw   call_02_5a73_EntityAction_Unk28_Update, data_02_7a21
+data_02_4f0b:                        ;; ENTITY_TOON_TV_MUSHROOM_PROJECTILE
+    dw   call_02_5a73_EntityAction_MushroomProjectile_Update, data_02_7a21
 data_02_4f0f:                        ;; ENTITY_TOON_TV_LIZARD
     dw   call_02_5a7d_EntityAction_Lizard_Update, data_02_7a3a
 data_02_4f13:                        ;; ENTITY_TOON_TV_HAPPY_FACE
@@ -369,22 +369,22 @@ data_02_515f:                        ;; ENTITY_CHANNEL_Z_REZ
     dw   call_02_6c99_EntityAction_Rez_unk5, data_02_78f1
     dw   call_02_6c9d_EntityAction_Rez_unk9, data_02_78fc
     dw   call_02_6ca6_EntityAction_Rez_unk10, data_02_790b
-data_02_518b:                        ;; ENTITY_UNK_87
-    dw   call_02_6d11_EntityAction_Unk87_Update, data_02_7c75
-data_02_518f:                        ;; ENTITY_UNK_88
-    dw   call_02_6d23_EntityAction_Unk88_Update, data_02_7c75
+data_02_518b:                        ;; ENTITY_CHANNEL_Z_UNUSED_PLATFORM_1
+    dw   call_02_6d11_EntityAction_ChannelZUnusedPlatform1_Update, data_02_7c75
+data_02_518f:                        ;; ENTITY_CHANNEL_Z_UNUSED_PLATFORM_2
+    dw   call_02_6d23_EntityAction_ChannelZUnusedPlatform2_Update, data_02_7c75
 data_02_5193:                        ;; ENTITY_CHANNEL_Z_REZ_FOLLOWING_FIRE
     dw   call_02_6cca_EntityAction_RezFollowingFire_Update, data_02_7ca1
 data_02_5197:                        ;; ENTITY_CHANNEL_Z_GUN_PROJECTILE_EXPLOSION
     dw   call_02_6d24_EntityAction_GunProjectileExplosion_Update, data_02_7caa
-data_02_519b:                        ;; ENTITY_UNK_8B
-    dw   call_02_6d5d_EntityAction_Unk8B_unk0, data_02_7cb6
-    dw   call_02_6d7f_EntityAction_Unk8B_unk1, data_02_7cb6
+data_02_519b:                        ;; ENTITY_FINAL_BATTLE_BUTTON_PROJECTILE
+    dw   call_02_6d5d_EntityAction_FinalBattleButtonProjectile_unk0, data_02_7cb6
+    dw   call_02_6d7f_EntityAction_FinalBattleButtonProjectile_unk1, data_02_7cb6
 data_02_51a3:                        ;; ENTITY_CHANNEL_Z_FINAL_BATTLE_BUTTON
     dw   call_02_6d80_EntityAction_FinalBattleButton_unk0, data_02_7cbc
     dw   call_02_6db8_EntityAction_FinalBattleButton_unk1, data_02_7cc2
-data_02_51ab:                        ;; ENTITY_UNK_8D
-    dw   call_02_6de3_EntityAction_Unk8D_Update, data_02_7894
+data_02_51ab:                        ;; ENTITY_CHANNEL_Z_REZ_PORTAL
+    dw   call_02_6de3_EntityAction_RezPortal_Update, data_02_7894
 data_02_51af:                        ;; ENTITY_UNK_8E
     dw   call_02_6df0_EntityAction_Unk8E_Update, data_02_791a
 data_02_51b3:                        ;; ENTITY_MEDIA_DIMENSION_MOVING_PLATFORM
@@ -703,7 +703,7 @@ call_02_53ad_EntityAction_HeadGhost_unk0:
 .jr_02_53C3:
     call call_00_3843_Entity_CheckAnimFlag_Bit2
     ret  z
-    ld   c,$00
+    ld   c,SPAWN_CHILD_ENTITY_GHOST_HEAD
     FARCALL call_0a_7b9a_EntitySpawn_SpawnChildEntity
     ld   a,$01
     jp   call_02_7102_Entity_SetAction
@@ -787,7 +787,7 @@ call_02_5440_EntityAction_FloatingSkull_unk1:
     ret  z
     ld   c,SFX_MULTI_PROJECTILE
     call call_00_112f_QueueSFX
-    ld   c,$01
+    ld   c,SPAWN_CHILD_ENTITY_FLOATING_SKULL_PROJECTILE
     FARCALL call_0a_7b9a_EntitySpawn_SpawnChildEntity
     ld   a,$02
     jp   call_02_7102_Entity_SetAction
@@ -828,7 +828,7 @@ call_02_5480_EntityAction_Zombie_unk0:
     and  a,$1F
     cp   a,$00
     jr   nz,.jr_02_54AF
-    ld   c,$02
+    ld   c,SPAWN_CHILD_ENTITY_ZOMBIE_HEAD
     FARCALL call_0a_7b9a_EntitySpawn_SpawnChildEntity
 .jr_02_54AF:
     ld   a,$02
@@ -1497,7 +1497,7 @@ call_02_592d_EntityAction_Flower_Update:
     and  A, A                                          ;; 02:595a $a7
     ret  NZ                                            ;; 02:595b $c0
     ld   [HL], $3c                                     ;; 02:595c $36 $3c
-    ld   C, $03                                        ;; 02:595e $0e $03
+    ld   C, SPAWN_CHILD_ENTITY_FLOWER_HAMMER                                        ;; 02:595e $0e $03
     FARCALL call_0a_7b9a_EntitySpawn_SpawnChildEntity
     ret                                                ;; 02:596b $c9
 
@@ -1535,7 +1535,7 @@ call_02_5993_EntityAction_Hunter_unk0:
     call call_00_36bd_Entity_FaceTowardsPlayer
     ld   c,SFX_HUNTER
     call call_00_112f_QueueSFX
-    ld   c,$0B
+    ld   c,SPAWN_CHILD_ENTITY_HUNTER_BULLET
     FARCALL call_0a_7b9a_EntitySpawn_SpawnChildEntity
     ld   a,HUNTER_ACTION_UNK1
     jp   call_02_7102_Entity_SetAction
@@ -1609,7 +1609,7 @@ call_02_5a28_EntityAction_Mushroom_Update:
     ld   HL, wD79A_OverrideSlotTable15                                     ;; 02:5a3c $21 $9a $d7
     ld   [HL], $02                                     ;; 02:5a3f $36 $02
 .jr_02_5a41:
-    ld   C, $08                                        ;; 02:5a41 $0e $08
+    ld   C, SPAWN_CHILD_ENTITY_MUSHROOM_PROJECTILE                                        ;; 02:5a41 $0e $08
     FARCALL call_0a_7b9a_EntitySpawn_SpawnChildEntity
     call call_00_3985_Entity_ParticleBurstInit                                  ;; 02:5a4e $cd $85 $39
     ld   H, $d2                                        ;; 02:5a51 $26 $d2
@@ -1637,7 +1637,7 @@ call_02_5a28_EntityAction_Mushroom_Update:
     ld   [HL], A                                       ;; 02:5a71 $77
     ret                                                ;; 02:5a72 $c9
 
-call_02_5a73_EntityAction_Unk28_Update:
+call_02_5a73_EntityAction_MushroomProjectile_Update:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped                                  ;; 02:5a73 $cd $af $30
     call call_00_3154_Entity_MoveYDownWithFloorBound                                  ;; 02:5a76 $cd $54 $31
     jp   NC, call_00_3910_Entity_ClearSlot                              ;; 02:5a79 $d2 $10 $39
@@ -2122,7 +2122,7 @@ call_02_5db2_EntityAction_FirePlant_unk1:
     ret  c
     ld   c,SFX_MULTI_PROJECTILE
     call call_00_112f_QueueSFX
-    ld   c,$06
+    ld   c,SPAWN_CHILD_ENTITY_FIRE_PLANT_PROJECTILES
     FARCALL call_0a_7b9a_EntitySpawn_SpawnChildEntity
     ld   a,$02
     jp   call_02_7102_Entity_SetAction
@@ -2177,7 +2177,7 @@ call_02_5e0c_EntityAction_Dinosaur_Update:
 call_02_5e26_EntityAction_Triceratops_Update:
     call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_5E38
-    ld   c,$07
+    ld   c,SPAWN_CHILD_ENTITY_TRICERATOPS_HORN
     FARCALL call_0a_7b9a_EntitySpawn_SpawnChildEntity
 .jr_02_5E38:
     ld   c,$08
@@ -2288,7 +2288,7 @@ call_02_5ebd_EntityAction_Cannon_Update:
     ld   hl,wD615_Cannon_FacingDirection
     ld   c,[hl]
     call call_00_3290_Entity_SetFacingDirection
-    ld   c,$0D
+    ld   c,SPAWN_CHILD_ENTITY_CANNON_PROJECTILE
     FARCALL call_0a_7b9a_EntitySpawn_SpawnChildEntity
     ld   c,SFX_CANNON
     call call_00_112f_QueueSFX
@@ -2382,7 +2382,7 @@ call_02_5f67_EntityAction_DragonHead_Update:
     ld   a,[hl]
     and  a
     jr   nz,.jr_02_5FA0
-    ld   c,$0C
+    ld   c,SPAWN_CHILD_ENTITY_DRAGON_PROJECTILE
     FARCALL call_0a_7b9a_EntitySpawn_SpawnChildEntity
     ld   c,SFX_DRAGON
     call call_00_112f_QueueSFX
@@ -2655,7 +2655,7 @@ call_02_621c_EntityAction_Ninja_unk2:
     call call_00_36bd_Entity_FaceTowardsPlayer
     call call_00_3843_Entity_CheckAnimFlag_Bit2
     ret  z
-    ld   c,$04
+    ld   c,SPAWN_CHILD_ENTITY_NINJA_PROJECTILE
     FARCALL call_0a_7b9a_EntitySpawn_SpawnChildEntity
     ld   a,$00
     jp   call_02_7102_Entity_SetAction
@@ -2674,7 +2674,7 @@ call_02_6235_EntityAction_Ninja_Jump:
 call_02_624c_EntityAction_SamuraiBody_unk0:
     call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_625E
-    ld   c,$05
+    ld   c,SPAWN_CHILD_ENTITY_SAMURAI_HEAD
     FARCALL call_0a_7b9a_EntitySpawn_SpawnChildEntity
 .jr_02_625E:
     ld   c,$10
@@ -3365,7 +3365,7 @@ call_02_666c_EntityAction_AntSpawner_Update:
     ld   a,c
     cp   a,$02
     ret  nc
-    ld   c,$0E
+    ld   c,SPAWN_CHILD_ENTITY_ANT
     FARCALL call_0a_7b9a_EntitySpawn_SpawnChildEntity
     ld   c,SFX_COLLECTIBLE
     call call_00_112f_QueueSFX
@@ -3438,7 +3438,7 @@ call_02_6723_EntityAction_Unk79_Update:
 call_02_6724_EntityAction_LittleRobot_unk0:
     call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_6736
-    ld   c,$09
+    ld   c,SPAWN_CHILD_ENTITY_LITTLE_ROBOT_GEAR
     FARCALL call_0a_7b9a_EntitySpawn_SpawnChildEntity
 .jr_02_6736:
     ld   c,$08
@@ -4001,7 +4001,7 @@ call_02_6bf8_GunProjectile_Sub2:
 call_02_6c03_GunProjectile_Sub:
     ld   c,SFX_REZ_PROJECTILE
     call call_00_112f_QueueSFX
-    ld   c,$0A
+    ld   c,SPAWN_CHILD_ENTITY_GUN_PROJECTILE_EXPLOSION
     FARCALL call_0a_7b9a_EntitySpawn_SpawnChildEntity
     jp   call_00_3910_Entity_ClearSlot
 
@@ -4098,7 +4098,7 @@ call_02_6Ca7_Rez_Unk5Sub:
     dec  [hl]
     ld   a,$09
     jp   nz,call_02_7102_Entity_SetAction
-    ld   c,$11
+    ld   c,SPAWN_CHILD_ENTITY_REZ_PORTAL
     FARCALL call_0a_7b9a_EntitySpawn_SpawnChildEntity
     ld   c,SFX_REZ_PROJECTILE
     call call_00_112f_QueueSFX
@@ -4161,7 +4161,7 @@ call_02_6cca_EntityAction_RezFollowingFire_Update:
     ld   [hl],d
     ret  
 
-call_02_6d11_EntityAction_Unk87_Update:
+call_02_6d11_EntityAction_ChannelZUnusedPlatform1_Update:
     call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_6D1D
     ld   a,l
@@ -4174,7 +4174,7 @@ call_02_6d11_EntityAction_Unk87_Update:
     call call_00_3559_Entity_ApplyVelocityXY_SubpixelBoth
     jp   call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip
 
-call_02_6d23_EntityAction_Unk88_Update:
+call_02_6d23_EntityAction_ChannelZUnusedPlatform2_Update:
     ret  
 
 call_02_6d24_EntityAction_GunProjectileExplosion_Update:
@@ -4202,7 +4202,7 @@ call_02_6d24_EntityAction_GunProjectileExplosion_Update:
     db   $00, $00, $20, $00, $00, $00, $00, $08
     db   $20, $00, $00, $08, $00, $00
 
-call_02_6d5d_EntityAction_Unk8B_unk0:
+call_02_6d5d_EntityAction_FinalBattleButtonProjectile_unk0:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
     ldi  a,[hl]
@@ -4216,11 +4216,11 @@ call_02_6d5d_EntityAction_Unk8B_unk0:
     ret  c
     ld   hl,wD616
     set  7,[hl]
-    ld   c,SFX_UNK8B
+    ld   c,SFX_FINAL_BATTLE_BUTTON
     call call_00_112f_QueueSFX
     jp   call_00_3931_Entity_DeactivateSelf
 
-call_02_6d7f_EntityAction_Unk8B_unk1:
+call_02_6d7f_EntityAction_FinalBattleButtonProjectile_unk1:
     ret  
 
 call_02_6d80_EntityAction_FinalBattleButton_unk0:
@@ -4233,9 +4233,9 @@ call_02_6d80_EntityAction_FinalBattleButton_unk0:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
     ld   a,[hl]
     cp   a,$01
-    ld   c,$0F
+    ld   c,SPAWN_CHILD_ENTITY_FINAL_BATTLE_BUTTON_PROJECTILE_1
     jr   z,.jr_02_6D9D
-    ld   c,$10
+    ld   c,SPAWN_CHILD_ENTITY_FINAL_BATTLE_BUTTON_PROJECTILE_2
 .jr_02_6D9D:
     FARCALL call_0a_7b9a_EntitySpawn_SpawnChildEntity
     ld   bc,$0005
@@ -4274,7 +4274,7 @@ call_02_6db8_EntityAction_FinalBattleButton_unk1:
     ld   a,$00
     jp   call_02_7102_Entity_SetAction
 
-call_02_6de3_EntityAction_Unk8D_Update:
+call_02_6de3_EntityAction_RezPortal_Update:
     call call_00_3843_Entity_CheckAnimFlag_Bit2
     ret  z
     xor  a
