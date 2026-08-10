@@ -1404,7 +1404,7 @@ call_01_4a8f:
     add  HL, HL                                        ;; 01:4a95 $29
     add  HL, HL                                        ;; 01:4a96 $29
     add  HL, HL                                        ;; 01:4a97 $29
-    ld   DE, data_01_65fe                              ;; 01:4a98 $11 $fe $65
+    ld   DE, data_01_65fe_FontDescriptors                              ;; 01:4a98 $11 $fe $65
     add  HL, DE                                        ;; 01:4a9b $19
     ld   DE, wD69F                                     ;; 01:4a9c $11 $9f $d6
     ld   BC, $06                                       ;; 01:4a9f $01 $06 $00
@@ -3116,7 +3116,31 @@ data_01_5cb9:
 
 INCLUDE "code/bank01_text.asm"
 
-data_01_65fe:
+data_01_65fe_FontDescriptors:
+; Four font descriptors, 8 bytes each, indexed by wD69A. call_01_4a8f copies the first 6 bytes
+; of the selected one to wD69F-wD6A4; the trailing two bytes are padding and never read.
+;
+;   +0  dw  glyph bitmap base       -> wD69F/wD6A0
+;   +2  dw  advance-width table     -> wD6A1/wD6A2  (one byte per glyph, in pixels)
+;   +4  db  glyph width in 8px columns -> wD6A3
+;   +5  db  glyph height in PIXELS     -> wD6A4
+;   +6  db  $00, $00                   (padding)
+;
+; The height is a pixel count, not a tile count, so the glyph bitmaps have no 8-row tile
+; structure at all - which is why their sizes are not multiples of $10 and why rgbgfx cannot
+; read them. call_01_4cab computes a glyph's address as
+;
+;   stride    = width_cols * height_px * 2
+;   glyph_ptr = base + index * stride
+;
+; and takes no special case for index 0, so there is no header on the blobs: byte 0 is the
+; first pixel row of glyph 0. Inside a glyph the layout is column major - all height_px rows
+; of column 0, then all height_px rows of column 1 - with each row being two bytes of ordinary
+; GB 2bpp (plane 0, plane 1), the pair that call_01_4ae7 loads into E and C.
+;
+; Glyph indices come from call_01_4f41_Password_CharToFontTile and run $00-$29: $00 space,
+; $01-$1A A-Z, $1B-$24 0-9, $25-$29 punctuation. That is 42 glyphs, and the width tables all
+; have 42 entries, but only the first font actually has 42 bitmaps - see the note there.
     dw   data_01_66a7_font                                  ;; 01:65fe pP
     dw   data_01_661e                                         ;; 01:6600 wW
     db   $01, $06, $00, $00                            ;; 01:6602 ..??
@@ -3162,15 +3186,22 @@ data_01_669c:
     db   $10, $10, $10, $10, $10                       ;; 01:66a2 ?????
 
 data_01_66a7_font:
-    INCBIN "gfx/fonts/image_001_66a7_font.bin"
+; 8x6 glyphs, stride 12. $1F8 bytes = 42 glyphs, matching the 42-entry width table exactly
+    INCBIN ".gfx/fonts/image_001_66a7_font.bin"
 
 data_01_689f_font:
-    INCBIN "gfx/fonts/image_001_689f_font.bin"
+; 8x7 glyphs, stride 14. $23E bytes = 41 glyphs, one short of the 42-entry width table - index
+; $29 (apostrophe) would read into data_01_6add_font. The width table still carries a $02 for
+; it, so the entry is reachable in principle; presumably no string in this font uses one
+    INCBIN ".gfx/fonts/image_001_689f_font.bin"
 
 data_01_6add_font:
-    INCBIN "gfx/fonts/image_001_6add_font.bin"
+; 16x11 glyphs, stride 44. $70C bytes = 41 glyphs, same one-short situation as $689F
+    INCBIN ".gfx/fonts/image_001_6add_font.bin"
 
 data_01_71e9:
+; 16x16 glyphs, stride 64. $300 bytes = 12 glyphs, and its width table (data_01_669c) has only
+; 11 entries, all $10 - a restricted set, not the full $00-$29 charset
     INCBIN ".gfx/misc_sprites/password/image_001_71e9.bin"
 
 data_01_74e9:
