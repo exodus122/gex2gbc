@@ -3367,61 +3367,47 @@ data_01_65fe_FontDescriptors:
 ; Glyph indices come from call_01_4f41_Password_CharToFontTile and run $00-$29: $00 space,
 ; $01-$1A A-Z, $1B-$24 0-9, $25-$29 punctuation. That is 42 glyphs, and the width tables all
 ; have 42 entries, but only the first font actually has 42 bitmaps - see the note there.
-    dw   data_01_66a7_font                                  ;; 01:65fe pP
-    dw   data_01_661e                                         ;; 01:6600 wW
-    db   $01, $06, $00, $00                            ;; 01:6602 ..??
-	
-    dw   data_01_689f_font                                  ;; 01:6606 pP
-    dw   data_01_6648                                         ;; 01:6608 wW
-    db   $01, $07, $00, $00                            ;; 01:660a ..??
-	
-    dw   data_01_6add_font                                  ;; 01:660e pP
-    dw   data_01_6672                                         ;; 01:6610 wW
+    dw   .data_01_66a7_font, .data_01_661e
+    db   $01, $06, $00, $00
+    dw   .data_01_689f_font, .data_01_6648
+    db   $01, $07, $00, $00
+    dw   .data_01_6add_font, .data_01_6672
     db   $02, $0b, $00, $00
-	
-    dw   data_01_71e9
-    dw   data_01_669c        ;; 01:6612 ..??????
+    dw   data_01_71e9, .data_01_669c
     db   $02, $10, $00, $00
-
-data_01_661e:
-    db   $03, $03, $03, $03        ;; 01:661a ????..ww
+.data_01_661e:
+    db   $03, $03, $03, $03
     db   $03, $03, $03, $03, $03, $03, $03, $03        ;; 01:6622 ..www.w.
     db   $03, $05, $03, $03, $03, $03, $03, $03        ;; 01:662a wwwww?ww
     db   $03, $03, $03, $05, $03, $03, $03, $03        ;; 01:6632 w..ww..w
     db   $03, $03, $03, $03, $03, $03, $03, $03        ;; 01:663a ..?ww???
     db   $03, $01, $02, $01, $03, $02
-
-data_01_6648:
-    db   $04, $06        ;; 01:6642 ..????..
+.data_01_6648:
+    db   $04, $06
     db   $05, $06, $06, $05, $06, $05, $06, $02        ;; 01:664a ??.w??..
     db   $06, $06, $05, $06, $06, $06, $06, $06        ;; 01:6652 ?...ww.w
     db   $06, $05, $05, $06, $07, $06, $07, $06        ;; 01:665a www.?...
     db   $07, $06, $05, $05, $05, $05, $06, $05        ;; 01:6662 ????????
     db   $05, $05, $05, $02, $02, $03, $04, $02        ;; 01:666a ?????.??
-
-data_01_6672:
+.data_01_6672:
     db   $05, $0a, $0a, $0a, $0b, $09, $08, $09        ;; 01:6672 ..?..w?.
     db   $09, $04, $0b, $0a, $09, $0b, $0a, $0a        ;; 01:667a ?.???...
     db   $09, $0b, $0a, $09, $09, $0a, $0b, $0b        ;; 01:6682 ww.ww..?
     db   $0b, $0b, $0b, $0a, $07, $09, $08, $09        ;; 01:668a .???????
     db   $09, $09, $09, $09, $09, $04, $04, $05        ;; 01:6692 ?????.??
     db   $06, $04
-
-data_01_669c:
-    db   $10, $10, $10, $10, $10, $10        ;; 01:669a ????????
+.data_01_669c:
+    db   $10, $10, $10, $10, $10, $10
     db   $10, $10, $10, $10, $10                       ;; 01:66a2 ?????
-
-data_01_66a7_font:
+.data_01_66a7_font:
 ; 8x6 glyphs, stride 12. $1F8 bytes = 42 glyphs, matching the 42-entry width table exactly
     INCBIN ".gfx/fonts/image_001_66a7_font.bin"
-
-data_01_689f_font:
+.data_01_689f_font:
 ; 8x7 glyphs, stride 14. $23E bytes = 41 glyphs, one short of the 42-entry width table - index
 ; $29 (apostrophe) would read into data_01_6add_font. The width table still carries a $02 for
 ; it, so the entry is reachable in principle; presumably no string in this font uses one
     INCBIN ".gfx/fonts/image_001_689f_font.bin"
-
-data_01_6add_font:
+.data_01_6add_font:
 ; 16x11 glyphs, stride 44. $70C bytes = 41 glyphs, same one-short situation as $689F
     INCBIN ".gfx/fonts/image_001_6add_font.bin"
 
