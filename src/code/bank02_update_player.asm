@@ -180,10 +180,37 @@ call_02_48b7_Player_SpawnOpeningDoorEntity:
 .data_02_491a_LevelSpecificEntityIdTable:
 ; 31-byte table indexed by level ID. Non-zero entries ($18) indicate which levels spawn a special 
 ; entity via call_02_48b7. Entries $18 appear at indices 2, 3, 11, 16, 25
-    db   $00, $00, ENTITY_SCREAM_TV_DOOR_OPENING, ENTITY_SCREAM_TV_DOOR_OPENING, $00, $00, $00, $00        ;; 02:491a ????????
-    db   $00, $00, $00, ENTITY_SCREAM_TV_DOOR_OPENING, $00, $00, $00, $00        ;; 02:4922 ????????
-    db   ENTITY_SCREAM_TV_DOOR_OPENING, $00, $00, $00, $00, $00, $00, $00        ;; 02:492a ????????
-    db   $00, ENTITY_SCREAM_TV_DOOR_OPENING, $00, $00, $00, $00, $00             ;; 02:4932 ???????
+    db   $00                             ; MAP_MEDIA_DIMENSION
+    db   $00                             ; MAP_TOON_TV_OUT_OF_TOON
+    db   ENTITY_SCREAM_TV_DOOR_OPENING   ; MAP_SCREAM_TV_SMELLRAISER
+    db   ENTITY_SCREAM_TV_DOOR_OPENING   ; MAP_SCREAM_TV_FRANKENSTEINFELD
+    db   $00                             ; MAP_CIRCUIT_CENTRAL_WWWDOTCOMCOM
+    db   $00                             ; MAP_KUNG_FU_THEATER_MAO_TSE_TONGUE
+    db   $00                             ; MAP_UNUSED_06
+    db   $00                             ; MAP_PRE_HISTORY_CHANNEL_PANGAEA_90210
+    db   $00                             ; MAP_TOON_TV_FINE_TOONING
+    db   $00                             ; MAP_PRE_HISTORY_CHANNEL_THIS_OLD_CAVE
+    db   $00                             ; MAP_CIRCUIT_CENTRAL_HONEY_I_SHRUNK_THE_GECKO
+    db   ENTITY_SCREAM_TV_DOOR_OPENING   ; MAP_SCREAM_TV_POLTERGEX
+    db   $00                             ; MAP_UNUSED_0C
+    db   $00                             ; MAP_KUNG_FU_THEATER_SAMURAI_NIGHT_FEVER
+    db   $00                             ; MAP_REZOPOLIS_NO_WEDDINGS_AND_A_FUNERAL
+    db   $00                             ; MAP_UNUSED_0F
+    db   ENTITY_SCREAM_TV_DOOR_OPENING   ; MAP_SCREAM_TV_THURSDAY_THE_12TH
+    db   $00                             ; MAP_UNUSED_11
+    db   $00                             ; MAP_UNUSED_12
+    db   $00                             ; MAP_UNUSED_13
+    db   $00                             ; MAP_UNUSED_14
+    db   $00                             ; MAP_KUNG_FU_THEATER_LIZARD_IN_A_CHINA_SHOP
+    db   $00                             ; MAP_REZOPOLIS_BUGGED_OUT
+    db   $00                             ; MAP_CIRCUIT_CENTRAL_CHIPS_AND_DIPS
+    db   $00                             ; MAP_PRE_HISTORY_CHANNEL_LAVA_DABBA_DOO
+    db   ENTITY_SCREAM_TV_DOOR_OPENING   ; MAP_SCREAM_TV_TEXAS_CHAINSAW_MANICURE
+    db   $00                             ; MAP_REZOPOLIS_MAZED_AND_CONFUSED
+    db   $00                             ; MAP_UNUSED_1B
+    db   $00                             ; MAP_UNUSED_1C
+    db   $00                             ; MAP_UNUSED_1D
+    db   $00                             ; MAP_BOSS_TV_CHANNEL_Z
 
 call_02_4939_Player_UpdateMain:
 ; The per-frame player update - see the file header for the ordering and why it matters.
@@ -877,10 +904,38 @@ call_02_4ccd_Player_RequestAction:
 ; PLAYER_ACTION_EXIT_TV ($14) are instant but interruptible; the four death and tv-entry
 ; actions ($10-$13) are instant and locked, so once Gex starts dying or warping out nothing
 ; the player does can pull him back out of it
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 02:4cf5 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $01        ;; 02:4cfd ????????
-    db   $03, $03, $03, $03, $01, $00, $00, $00        ;; 02:4d05 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 02:4d0d ????????
+    db   $00    ; $00 PLAYER_ACTION_SPAWN
+    db   $00    ; $01 PLAYER_ACTION_INTRO_WARP
+    db   $00    ; $02 PLAYER_ACTION_STAND
+    db   $00    ; $03 PLAYER_ACTION_IDLE_ANIMATION
+    db   $00    ; $04 PLAYER_ACTION_WALK
+    db   $00    ; $05 PLAYER_ACTION_RUN
+    db   $00    ; $06 PLAYER_ACTION_SKID
+    db   $00    ; $07 PLAYER_ACTION_STOP_ON_CERTAIN_FLOOR
+    db   $00    ; $08 PLAYER_ACTION_CROUCH
+    db   $00    ; $09 PLAYER_ACTION_JUMP
+    db   $00    ; $0A PLAYER_ACTION_DOUBLE_JUMP
+    db   $00    ; $0B PLAYER_ACTION_NONE
+    db   $00    ; $0C PLAYER_ACTION_KARATE_KICK
+    db   $00    ; $0D PLAYER_ACTION_TAIL_SPIN
+    db   $00    ; $0E PLAYER_ACTION_EAT_FLY
+    db   $01    ; $0F PLAYER_ACTION_TAKE_DAMAGE
+    db   $03    ; $10 PLAYER_ACTION_DEATH
+    db   $03    ; $11 PLAYER_ACTION_DEATH_SET_UP_WARP
+    db   $03    ; $12 PLAYER_ACTION_ENTER_TV
+    db   $03    ; $13 PLAYER_ACTION_ENTER_TV_ALT
+    db   $01    ; $14 PLAYER_ACTION_EXIT_TV
+    db   $00    ; $15 PLAYER_ACTION_STANDING_PUSH
+    db   $00    ; $16 PLAYER_ACTION_WALKING_PUSH
+    db   $00    ; $17 PLAYER_ACTION_FREEFALL
+    db   $00    ; $18 PLAYER_ACTION_STOP_IMMEDIATE
+    db   $00    ; $19 PLAYER_ACTION_COLLAPSE
+    db   $00    ; $1A PLAYER_ACTION_ENTER_DOOR
+    db   $00    ; $1B PLAYER_ACTION_LEAVE_DOOR
+    db   $00    ; $1C PLAYER_ACTION_HIT_BOUNCE
+    db   $00    ; $1D PLAYER_ACTION_CLIMB
+    db   $00    ; $1E PLAYER_ACTION_GOLD_REMOTE_WARP
+    db   $00    ; $1F PLAYER_ACTION_RIDING_ROCKET
 
 data_02_4d15_ActionInputTransitionTable:
 ; This is Gex's control scheme, as data. One pointer per action id; each list is pairs of
@@ -896,22 +951,38 @@ data_02_4d15_ActionInputTransitionTable:
 ; A null pointer means the action ignores input entirely. That is how the death, damage and
 ; tv actions become uninterruptible - not by checking anything, but by simply having no
 ; transitions to offer
-    dw   .transitions_Spawn,      $0000                        ; $00 $01
-    dw   .transitions_Stand,      .transitions_Stand           ; $02 $03 - idle shares Stand's controls
-    dw   .transitions_Walk,       .transitions_Run             ; $04 $05
-    dw   .transitions_Skid,       .transitions_StopOnFloor     ; $06 $07
-    dw   .transitions_Crouch,     .transitions_Jump            ; $08 $09
-    dw   .transitions_DoubleJump, .transitions_None0B          ; $0A $0B
-    dw   .transitions_KarateKick, .transitions_TailSpin        ; $0C $0D
-    dw   .transitions_EatFly,     $0000                        ; $0E $0F
-    dw   $0000, $0000                                          ; $10 $11 - death, no way out
-    dw   $0000, $0000                                          ; $12 $13 - entering a tv, no way out
-    dw   $0000, .transitions_StandingPush                      ; $14 $15
-    dw   .transitions_WalkingPush, $0000                       ; $16 $17
-    dw   $0000, $0000                                          ; $18 $19
-    dw   $0000, $0000                                          ; $1A $1B
-    dw   $0000, $0000                                          ; $1C $1D
-    dw   $0000, $0000                                          ; $1E $1F
+    dw   .transitions_Spawn            ; $00 PLAYER_ACTION_SPAWN
+    dw   $0000                         ; $01 PLAYER_ACTION_INTRO_WARP
+    dw   .transitions_Stand            ; $02 PLAYER_ACTION_STAND
+    dw   .transitions_Stand            ; $03 PLAYER_ACTION_IDLE_ANIMATION
+    dw   .transitions_Walk             ; $04 PLAYER_ACTION_WALK
+    dw   .transitions_Run              ; $05 PLAYER_ACTION_RUN
+    dw   .transitions_Skid             ; $06 PLAYER_ACTION_SKID
+    dw   .transitions_StopOnFloor      ; $07 PLAYER_ACTION_STOP_ON_CERTAIN_FLOOR
+    dw   .transitions_Crouch           ; $08 PLAYER_ACTION_CROUCH
+    dw   .transitions_Jump             ; $09 PLAYER_ACTION_JUMP
+    dw   .transitions_DoubleJump       ; $0A PLAYER_ACTION_DOUBLE_JUMP
+    dw   .transitions_None0B           ; $0B PLAYER_ACTION_NONE
+    dw   .transitions_KarateKick       ; $0C PLAYER_ACTION_KARATE_KICK
+    dw   .transitions_TailSpin         ; $0D PLAYER_ACTION_TAIL_SPIN
+    dw   .transitions_EatFly           ; $0E PLAYER_ACTION_EAT_FLY
+    dw   $0000                         ; $0F PLAYER_ACTION_TAKE_DAMAGE
+    dw   $0000                         ; $10 PLAYER_ACTION_DEATH
+    dw   $0000                         ; $11 PLAYER_ACTION_DEATH_SET_UP_WARP
+    dw   $0000                         ; $12 PLAYER_ACTION_ENTER_TV
+    dw   $0000                         ; $13 PLAYER_ACTION_ENTER_TV_ALT
+    dw   $0000                         ; $14 PLAYER_ACTION_EXIT_TV
+    dw   .transitions_StandingPush     ; $15 PLAYER_ACTION_STANDING_PUSH
+    dw   .transitions_WalkingPush      ; $16 PLAYER_ACTION_WALKING_PUSH
+    dw   $0000                         ; $17 PLAYER_ACTION_FREEFALL
+    dw   $0000                         ; $18 PLAYER_ACTION_STOP_IMMEDIATE
+    dw   $0000                         ; $19 PLAYER_ACTION_COLLAPSE
+    dw   $0000                         ; $1A PLAYER_ACTION_ENTER_DOOR
+    dw   $0000                         ; $1B PLAYER_ACTION_LEAVE_DOOR
+    dw   $0000                         ; $1C PLAYER_ACTION_HIT_BOUNCE
+    dw   $0000                         ; $1D PLAYER_ACTION_CLIMB
+    dw   $0000                         ; $1E PLAYER_ACTION_GOLD_REMOTE_WARP
+    dw   $0000                         ; $1F PLAYER_ACTION_RIDING_ROCKET
 
 .transitions_Spawn:
     db   ACTION_INPUT_ANY,             PLAYER_ACTION_INTRO_WARP  ; any key skips the spawn

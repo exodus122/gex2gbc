@@ -44,7 +44,7 @@ def extract_sprites_vertical():
                 os.system('rgbgfx --reverse '+str(width)+' --columns -o banks/bank_'+bank+'/image_'+bank+'_'+addr_str+'.bin banks/bank_'+bank+'/image_'+bank+'_'+addr_str+'.png')
                 
                 out2 = open('./banks/bank_'+bank+'/text.txt', "a")
-                out2.write('image_'+bank+'_'+addr_str+'.bin:\n    INCBIN \"./gfx/image_'+bank+'_'+addr_str+'.bin\"\n\n')
+                out2.write('image_'+bank+'_'+addr_str+':\n    INCBIN \"./gfx/image_'+bank+'_'+addr_str+'.bin\"\n\n')
                 out2.close()
                 
                 addr = addr + next_chunk
@@ -55,7 +55,7 @@ def extract_secondary_tilesets_horizontal():
     
     banks = [0x9, 0xd, 0xe, 0xf, 0x10, 0x13, 0x1d, 0x1e, 0x1f, 0x26, 0x36, 0x37, 0x3d]
     banks = [0xd, 0xe, 0xf, 0x10, 0x13]
-    banks = [0x9]
+    #banks = [0x9]
     
     chunk_counter = 0
     for b in banks:
@@ -88,6 +88,7 @@ def extract_secondary_tilesets_horizontal():
                 
             if b == 0xd or b == 0xe or b == 0xf or b == 0x10 or b == 0x13:
                 next_chunk = 0x240
+                width = 6
             elif b != 0xc:
                 width = 0x6
             
@@ -125,9 +126,9 @@ def extract_secondary_tilesets_horizontal():
                 
                 out2 = open('./banks/bank_'+bank+'/text.txt', "a")
                 if count % 2 == 0:
-                    out2.write('image_'+bank+'_'+f"{count2:02d}"+'.bin:\n    INCBIN \"./gfx/secondary_tilesets/image_'+bank+'_'+f"{count2:02d}"+'.bin\"\n\n')
+                    out2.write('image_'+bank+'_'+f"{count2:02d}"+':\n    INCBIN \"./gfx/secondary_tilesets/image_'+bank+'_'+f"{count2:02d}"+'.bin\"\n\n')
                 else:    
-                    out2.write('image_'+bank+'_'+f"{count2:02d}"+'_palette_ids.bin:\n    INCBIN \"../gfx/secondary_tilesets/palette_ids/image_'+bank+'_'+f"{count2:02d}"+'_palette_ids.bin\"\n\n')
+                    out2.write('image_'+bank+'_'+f"{count2:02d}"+'_palette_ids:\n    INCBIN \"../gfx/secondary_tilesets/palette_ids/image_'+bank+'_'+f"{count2:02d}"+'_palette_ids.bin\"\n\n')
                 out2.close()
                 
                 if b == 0xd or b == 0xe or b == 0xf or b == 0x10 or b == 0x13:
@@ -400,10 +401,10 @@ def extract_bank_09():
 
 #extract_banks()
 #extract_sprites_vertical()
-#extract_secondary_tilesets_horizontal()
+extract_secondary_tilesets_horizontal()
 #extract_splash()
 #extract_bank03()
 #extract_bank03_new()
 #extract_bank_09()
-extract_bank_01()
+#extract_bank_01()
 #extract_bank_00()

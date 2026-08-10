@@ -7,9 +7,15 @@ MACRO FARCALL
 ENDM
 
 ; Store an address and the associated bank.
-macro FARPOINTER
+macro farpointer
     db   BANK(\1)
     dw   \1
+endm
+
+; Store a high address and the associated bank.
+macro farpointer2
+    db   HIGH(\1)
+    db   BANK(\1)
 endm
 
 MACRO LOAD_OBJ_FIELD_TO_HL

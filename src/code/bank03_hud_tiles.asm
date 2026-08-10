@@ -65,37 +65,37 @@ call_03_6941_HUD_LoadCollectibleSprites:
     ld   DE, VRAM_COLLECTIBLE_SPRITES                                     ;; 03:6961 $11 $e0 $87
     jp   call_03_6efd_VRAM_Copy32Bytes                                  ;; 03:6964 $c3 $fd $6e
 .data_image_collectibles_03_6967:
-    dw   .image_collectibles_toon_tv_003_69a5
-    dw   .image_collectibles_toon_tv_003_69a5
-    dw   .image_collectibles_scream_tv_003_6a05
-    dw   .image_collectibles_scream_tv_003_6a05
-    dw   .image_collectibles_circuit_central_003_6a65
-    dw   .image_collectibles_kung_fu_theater_003_6ac5
-    dw   .image_collectibles_toon_tv_003_69a5
-    dw   .image_collectibles_prehistory_channel_003_6b25
-    dw   .image_collectibles_toon_tv_003_69a5
-    dw   .image_collectibles_prehistory_channel_003_6b25
-    dw   .image_collectibles_circuit_central_003_6a65
-    dw   .image_collectibles_scream_tv_003_6a05
-    dw   .image_collectibles_toon_tv_003_69a5
-    dw   .image_collectibles_kung_fu_theater_003_6ac5
-    dw   .image_collectibles_rezopolis_003_6b85
-    dw   .image_collectibles_toon_tv_003_69a5
-    dw   .image_collectibles_scream_tv_003_6a05
-    dw   .image_collectibles_toon_tv_003_69a5
-    dw   .image_collectibles_toon_tv_003_69a5
-    dw   .image_collectibles_toon_tv_003_69a5
-    dw   .image_collectibles_toon_tv_003_69a5
-    dw   .image_collectibles_kung_fu_theater_003_6ac5
-    dw   .image_collectibles_rezopolis_003_6b85
-    dw   .image_collectibles_circuit_central_003_6a65
-    dw   .image_collectibles_prehistory_channel_003_6b25
-    dw   .image_collectibles_scream_tv_003_6a05
-    dw   .image_collectibles_rezopolis_003_6b85
-    dw   .image_collectibles_toon_tv_003_69a5
-    dw   .image_collectibles_toon_tv_003_69a5
-    dw   .image_collectibles_toon_tv_003_69a5
-    dw   .image_collectibles_toon_tv_003_69a5
+    dw   .image_collectibles_toon_tv_003_69a5             ; MAP_MEDIA_DIMENSION
+    dw   .image_collectibles_toon_tv_003_69a5             ; MAP_TOON_TV_OUT_OF_TOON
+    dw   .image_collectibles_scream_tv_003_6a05           ; MAP_SCREAM_TV_SMELLRAISER
+    dw   .image_collectibles_scream_tv_003_6a05           ; MAP_SCREAM_TV_FRANKENSTEINFELD
+    dw   .image_collectibles_circuit_central_003_6a65     ; MAP_CIRCUIT_CENTRAL_WWWDOTCOMCOM
+    dw   .image_collectibles_kung_fu_theater_003_6ac5     ; MAP_KUNG_FU_THEATER_MAO_TSE_TONGUE
+    dw   .image_collectibles_toon_tv_003_69a5             ; MAP_UNUSED_06
+    dw   .image_collectibles_prehistory_channel_003_6b25  ; MAP_PRE_HISTORY_CHANNEL_PANGAEA_90210
+    dw   .image_collectibles_toon_tv_003_69a5             ; MAP_TOON_TV_FINE_TOONING
+    dw   .image_collectibles_prehistory_channel_003_6b25  ; MAP_PRE_HISTORY_CHANNEL_THIS_OLD_CAVE
+    dw   .image_collectibles_circuit_central_003_6a65     ; MAP_CIRCUIT_CENTRAL_HONEY_I_SHRUNK_THE_GECKO
+    dw   .image_collectibles_scream_tv_003_6a05           ; MAP_SCREAM_TV_POLTERGEX
+    dw   .image_collectibles_toon_tv_003_69a5             ; MAP_UNUSED_0C
+    dw   .image_collectibles_kung_fu_theater_003_6ac5     ; MAP_KUNG_FU_THEATER_SAMURAI_NIGHT_FEVER
+    dw   .image_collectibles_rezopolis_003_6b85           ; MAP_REZOPOLIS_NO_WEDDINGS_AND_A_FUNERAL
+    dw   .image_collectibles_toon_tv_003_69a5             ; MAP_UNUSED_0F
+    dw   .image_collectibles_scream_tv_003_6a05           ; MAP_SCREAM_TV_THURSDAY_THE_12TH
+    dw   .image_collectibles_toon_tv_003_69a5             ; MAP_UNUSED_11
+    dw   .image_collectibles_toon_tv_003_69a5             ; MAP_UNUSED_12
+    dw   .image_collectibles_toon_tv_003_69a5             ; MAP_UNUSED_13
+    dw   .image_collectibles_toon_tv_003_69a5             ; MAP_UNUSED_14
+    dw   .image_collectibles_kung_fu_theater_003_6ac5     ; MAP_KUNG_FU_THEATER_LIZARD_IN_A_CHINA_SHOP
+    dw   .image_collectibles_rezopolis_003_6b85           ; MAP_REZOPOLIS_BUGGED_OUT
+    dw   .image_collectibles_circuit_central_003_6a65     ; MAP_CIRCUIT_CENTRAL_CHIPS_AND_DIPS
+    dw   .image_collectibles_prehistory_channel_003_6b25  ; MAP_PRE_HISTORY_CHANNEL_LAVA_DABBA_DOO
+    dw   .image_collectibles_scream_tv_003_6a05           ; MAP_SCREAM_TV_TEXAS_CHAINSAW_MANICURE
+    dw   .image_collectibles_rezopolis_003_6b85           ; MAP_REZOPOLIS_MAZED_AND_CONFUSED
+    dw   .image_collectibles_toon_tv_003_69a5             ; MAP_UNUSED_1B
+    dw   .image_collectibles_toon_tv_003_69a5             ; MAP_UNUSED_1C
+    dw   .image_collectibles_toon_tv_003_69a5             ; MAP_UNUSED_1D
+    dw   .image_collectibles_toon_tv_003_69a5             ; MAP_BOSS_TV_CHANNEL_Z
 .image_collectibles_toon_tv_003_69a5:
     INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_toon_tv.bin"
 .image_collectibles_scream_tv_003_6a05:
@@ -159,37 +159,37 @@ call_03_6be5_HUD_LoadCollectiblePalette:
     ld   [DE], A                                       ;; 03:6c1b $12
     ret                                                ;; 03:6c1c $c9
 .data_03_6c1d_collectible_palettes:
-    dw   .palette_toon_tv_collectibles
-    dw   .palette_toon_tv_collectibles
-    dw   .palette_scream_tv_collectibles
-    dw   .palette_scream_tv_collectibles
-    dw   .palette_circuit_central_collectibles
-    dw   .palette_kung_fu_theater_collectibles
-    dw   .palette_toon_tv_collectibles
-    dw   .palette_prehistory_channel_collectibles
-    dw   .palette_toon_tv_collectibles
-    dw   .palette_prehistory_channel_collectibles
-    dw   .palette_circuit_central_collectibles
-    dw   .palette_scream_tv_collectibles
-    dw   .palette_toon_tv_collectibles
-    dw   .palette_kung_fu_theater_collectibles
-    dw   .palette_rezopolis_collectibles
-    dw   .palette_toon_tv_collectibles
-    dw   .palette_scream_tv_collectibles
-    dw   .palette_toon_tv_collectibles
-    dw   .palette_toon_tv_collectibles
-    dw   .palette_toon_tv_collectibles
-    dw   .palette_toon_tv_collectibles
-    dw   .palette_kung_fu_theater_collectibles
-    dw   .palette_rezopolis_collectibles
-    dw   .palette_circuit_central_collectibles
-    dw   .palette_prehistory_channel_collectibles
-    dw   .palette_scream_tv_collectibles
-    dw   .palette_rezopolis_collectibles
-    dw   .palette_toon_tv_collectibles
-    dw   .palette_toon_tv_collectibles
-    dw   .palette_toon_tv_collectibles
-    dw   .palette_toon_tv_collectibles
+    dw   .palette_toon_tv_collectibles             ; MAP_MEDIA_DIMENSION
+    dw   .palette_toon_tv_collectibles             ; MAP_TOON_TV_OUT_OF_TOON
+    dw   .palette_scream_tv_collectibles           ; MAP_SCREAM_TV_SMELLRAISER
+    dw   .palette_scream_tv_collectibles           ; MAP_SCREAM_TV_FRANKENSTEINFELD
+    dw   .palette_circuit_central_collectibles     ; MAP_CIRCUIT_CENTRAL_WWWDOTCOMCOM
+    dw   .palette_kung_fu_theater_collectibles     ; MAP_KUNG_FU_THEATER_MAO_TSE_TONGUE
+    dw   .palette_toon_tv_collectibles             ; MAP_UNUSED_06
+    dw   .palette_prehistory_channel_collectibles  ; MAP_PRE_HISTORY_CHANNEL_PANGAEA_90210
+    dw   .palette_toon_tv_collectibles             ; MAP_TOON_TV_FINE_TOONING
+    dw   .palette_prehistory_channel_collectibles  ; MAP_PRE_HISTORY_CHANNEL_THIS_OLD_CAVE
+    dw   .palette_circuit_central_collectibles     ; MAP_CIRCUIT_CENTRAL_HONEY_I_SHRUNK_THE_GECKO
+    dw   .palette_scream_tv_collectibles           ; MAP_SCREAM_TV_POLTERGEX
+    dw   .palette_toon_tv_collectibles             ; MAP_UNUSED_0C
+    dw   .palette_kung_fu_theater_collectibles     ; MAP_KUNG_FU_THEATER_SAMURAI_NIGHT_FEVER
+    dw   .palette_rezopolis_collectibles           ; MAP_REZOPOLIS_NO_WEDDINGS_AND_A_FUNERAL
+    dw   .palette_toon_tv_collectibles             ; MAP_UNUSED_0F
+    dw   .palette_scream_tv_collectibles           ; MAP_SCREAM_TV_THURSDAY_THE_12TH
+    dw   .palette_toon_tv_collectibles             ; MAP_UNUSED_11
+    dw   .palette_toon_tv_collectibles             ; MAP_UNUSED_12
+    dw   .palette_toon_tv_collectibles             ; MAP_UNUSED_13
+    dw   .palette_toon_tv_collectibles             ; MAP_UNUSED_14
+    dw   .palette_kung_fu_theater_collectibles     ; MAP_KUNG_FU_THEATER_LIZARD_IN_A_CHINA_SHOP
+    dw   .palette_rezopolis_collectibles           ; MAP_REZOPOLIS_BUGGED_OUT
+    dw   .palette_circuit_central_collectibles     ; MAP_CIRCUIT_CENTRAL_CHIPS_AND_DIPS
+    dw   .palette_prehistory_channel_collectibles  ; MAP_PRE_HISTORY_CHANNEL_LAVA_DABBA_DOO
+    dw   .palette_scream_tv_collectibles           ; MAP_SCREAM_TV_TEXAS_CHAINSAW_MANICURE
+    dw   .palette_rezopolis_collectibles           ; MAP_REZOPOLIS_MAZED_AND_CONFUSED
+    dw   .palette_toon_tv_collectibles             ; MAP_UNUSED_1B
+    dw   .palette_toon_tv_collectibles             ; MAP_UNUSED_1C
+    dw   .palette_toon_tv_collectibles             ; MAP_UNUSED_1D
+    dw   .palette_toon_tv_collectibles             ; MAP_BOSS_TV_CHANNEL_Z
 .palette_toon_tv_collectibles: ;; 03:6c5b
     INCBIN "gfx/misc_sprites/collectibles/palettes/palette_toon_tv_collectibles.bin"
 .palette_scream_tv_collectibles: ;; 03:6c73
@@ -317,3 +317,118 @@ call_03_6d88_HUD_LoadDigitTile:
     INCBIN ".gfx/misc_sprites/numbers_003_6d9d.bin"
 .numbers_003_6e4d:
     INCBIN ".gfx/misc_sprites/numbers_003_6e4d.bin"
+
+call_03_6efd_VRAM_Copy32Bytes:
+; Unrolled copy of exactly 32 bytes from HL to DE - the first 16 here, then falling into
+; call_03_6f2d_VRAM_Copy16Bytes for the rest.
+;
+; 32 bytes is TWO 8x8 tiles. A GB 2bpp tile is 16 bytes total - two bytes per row, eight
+; rows - and that does not change on GBC, which adds a second VRAM bank for attributes
+; rather than doubling tile size.
+;
+; Note the join: this half ends on `inc DE` rather than `inc E`, so the pair carries correctly
+; across a page boundary between the two tiles
+    ld   A, [HL+]                                      ;; 03:6efd $2a
+    ld   [DE], A                                       ;; 03:6efe $12
+    inc  E                                             ;; 03:6eff $1c
+    ld   A, [HL+]                                      ;; 03:6f00 $2a
+    ld   [DE], A                                       ;; 03:6f01 $12
+    inc  E                                             ;; 03:6f02 $1c
+    ld   A, [HL+]                                      ;; 03:6f03 $2a
+    ld   [DE], A                                       ;; 03:6f04 $12
+    inc  E                                             ;; 03:6f05 $1c
+    ld   A, [HL+]                                      ;; 03:6f06 $2a
+    ld   [DE], A                                       ;; 03:6f07 $12
+    inc  E                                             ;; 03:6f08 $1c
+    ld   A, [HL+]                                      ;; 03:6f09 $2a
+    ld   [DE], A                                       ;; 03:6f0a $12
+    inc  E                                             ;; 03:6f0b $1c
+    ld   A, [HL+]                                      ;; 03:6f0c $2a
+    ld   [DE], A                                       ;; 03:6f0d $12
+    inc  E                                             ;; 03:6f0e $1c
+    ld   A, [HL+]                                      ;; 03:6f0f $2a
+    ld   [DE], A                                       ;; 03:6f10 $12
+    inc  E                                             ;; 03:6f11 $1c
+    ld   A, [HL+]                                      ;; 03:6f12 $2a
+    ld   [DE], A                                       ;; 03:6f13 $12
+    inc  E                                             ;; 03:6f14 $1c
+    ld   A, [HL+]                                      ;; 03:6f15 $2a
+    ld   [DE], A                                       ;; 03:6f16 $12
+    inc  E                                             ;; 03:6f17 $1c
+    ld   A, [HL+]                                      ;; 03:6f18 $2a
+    ld   [DE], A                                       ;; 03:6f19 $12
+    inc  E                                             ;; 03:6f1a $1c
+    ld   A, [HL+]                                      ;; 03:6f1b $2a
+    ld   [DE], A                                       ;; 03:6f1c $12
+    inc  E                                             ;; 03:6f1d $1c
+    ld   A, [HL+]                                      ;; 03:6f1e $2a
+    ld   [DE], A                                       ;; 03:6f1f $12
+    inc  E                                             ;; 03:6f20 $1c
+    ld   A, [HL+]                                      ;; 03:6f21 $2a
+    ld   [DE], A                                       ;; 03:6f22 $12
+    inc  E                                             ;; 03:6f23 $1c
+    ld   A, [HL+]                                      ;; 03:6f24 $2a
+    ld   [DE], A                                       ;; 03:6f25 $12
+    inc  E                                             ;; 03:6f26 $1c
+    ld   A, [HL+]                                      ;; 03:6f27 $2a
+    ld   [DE], A                                       ;; 03:6f28 $12
+    inc  E                                             ;; 03:6f29 $1c
+    ld   A, [HL+]                                      ;; 03:6f2a $2a
+    ld   [DE], A                                       ;; 03:6f2b $12
+    inc  DE                                            ;; 03:6f2c $13
+call_03_6f2d_VRAM_Copy16Bytes:
+; Unrolled copy of exactly 16 bytes - one 8x8 2bpp tile - from HL to DE. The fundamental
+; tile-write primitive, used throughout the HUD system.
+;
+; Fifteen `inc E` and then a final `inc DE`, so D is held fixed across the tile but does
+; carry on the last byte, leaving DE pointing at the next tile even across a page boundary.
+; leaving DE pointing at the next tile even across a page boundary
+    ld   A, [HL+]                                      ;; 03:6f2d $2a
+    ld   [DE], A                                       ;; 03:6f2e $12
+    inc  E                                             ;; 03:6f2f $1c
+    ld   A, [HL+]                                      ;; 03:6f30 $2a
+    ld   [DE], A                                       ;; 03:6f31 $12
+    inc  E                                             ;; 03:6f32 $1c
+    ld   A, [HL+]                                      ;; 03:6f33 $2a
+    ld   [DE], A                                       ;; 03:6f34 $12
+    inc  E                                             ;; 03:6f35 $1c
+    ld   A, [HL+]                                      ;; 03:6f36 $2a
+    ld   [DE], A                                       ;; 03:6f37 $12
+    inc  E                                             ;; 03:6f38 $1c
+    ld   A, [HL+]                                      ;; 03:6f39 $2a
+    ld   [DE], A                                       ;; 03:6f3a $12
+    inc  E                                             ;; 03:6f3b $1c
+    ld   A, [HL+]                                      ;; 03:6f3c $2a
+    ld   [DE], A                                       ;; 03:6f3d $12
+    inc  E                                             ;; 03:6f3e $1c
+    ld   A, [HL+]                                      ;; 03:6f3f $2a
+    ld   [DE], A                                       ;; 03:6f40 $12
+    inc  E                                             ;; 03:6f41 $1c
+    ld   A, [HL+]                                      ;; 03:6f42 $2a
+    ld   [DE], A                                       ;; 03:6f43 $12
+    inc  E                                             ;; 03:6f44 $1c
+    ld   A, [HL+]                                      ;; 03:6f45 $2a
+    ld   [DE], A                                       ;; 03:6f46 $12
+    inc  E                                             ;; 03:6f47 $1c
+    ld   A, [HL+]                                      ;; 03:6f48 $2a
+    ld   [DE], A                                       ;; 03:6f49 $12
+    inc  E                                             ;; 03:6f4a $1c
+    ld   A, [HL+]                                      ;; 03:6f4b $2a
+    ld   [DE], A                                       ;; 03:6f4c $12
+    inc  E                                             ;; 03:6f4d $1c
+    ld   A, [HL+]                                      ;; 03:6f4e $2a
+    ld   [DE], A                                       ;; 03:6f4f $12
+    inc  E                                             ;; 03:6f50 $1c
+    ld   A, [HL+]                                      ;; 03:6f51 $2a
+    ld   [DE], A                                       ;; 03:6f52 $12
+    inc  E                                             ;; 03:6f53 $1c
+    ld   A, [HL+]                                      ;; 03:6f54 $2a
+    ld   [DE], A                                       ;; 03:6f55 $12
+    inc  E                                             ;; 03:6f56 $1c
+    ld   A, [HL+]                                      ;; 03:6f57 $2a
+    ld   [DE], A                                       ;; 03:6f58 $12
+    inc  E                                             ;; 03:6f59 $1c
+    ld   A, [HL+]                                      ;; 03:6f5a $2a
+    ld   [DE], A                                       ;; 03:6f5b $12
+    inc  DE                                            ;; 03:6f5c $13
+    ret                                                ;; 03:6f5d $c9

@@ -135,13 +135,37 @@ call_00_12e4_BlockPatch_Init:
 ; 31-byte table indexed by level ID. The low three bits are rotated into the block patch
 ; slots 13, 14 and 15 by call_00_12e4_BlockPatch_Init, pre-arming those three slots for
 ; levels that start with some geometry already changed.
-;
-; This is the block patch system. It has nothing to do with the alt blockset layer, whose
-; per-level mask comes from the map record as MAPDATA_ALT_BLOCKSET_MASK
-    db   $00, $01, $05, $07, $03, $03, $00, $03        ;; 00:1356 ...?????
-    db   $03, $07, $07, $03, $00, $07, $01, $00        ;; 00:135e ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:1366 ????????
-    db   $01, $01, $03, $00, $00, $00, $00
+    db   $00    ; MAP_MEDIA_DIMENSION
+    db   $01    ; MAP_TOON_TV_OUT_OF_TOON
+    db   $05    ; MAP_SCREAM_TV_SMELLRAISER
+    db   $07    ; MAP_SCREAM_TV_FRANKENSTEINFELD
+    db   $03    ; MAP_CIRCUIT_CENTRAL_WWWDOTCOMCOM
+    db   $03    ; MAP_KUNG_FU_THEATER_MAO_TSE_TONGUE
+    db   $00    ; MAP_UNUSED_06
+    db   $03    ; MAP_PRE_HISTORY_CHANNEL_PANGAEA_90210
+    db   $03    ; MAP_TOON_TV_FINE_TOONING
+    db   $07    ; MAP_PRE_HISTORY_CHANNEL_THIS_OLD_CAVE
+    db   $07    ; MAP_CIRCUIT_CENTRAL_HONEY_I_SHRUNK_THE_GECKO
+    db   $03    ; MAP_SCREAM_TV_POLTERGEX
+    db   $00    ; MAP_UNUSED_0C
+    db   $07    ; MAP_KUNG_FU_THEATER_SAMURAI_NIGHT_FEVER
+    db   $01    ; MAP_REZOPOLIS_NO_WEDDINGS_AND_A_FUNERAL
+    db   $00    ; MAP_UNUSED_0F
+    db   $00    ; MAP_SCREAM_TV_THURSDAY_THE_12TH
+    db   $00    ; MAP_UNUSED_11
+    db   $00    ; MAP_UNUSED_12
+    db   $00    ; MAP_UNUSED_13
+    db   $00    ; MAP_UNUSED_14
+    db   $00    ; MAP_KUNG_FU_THEATER_LIZARD_IN_A_CHINA_SHOP
+    db   $00    ; MAP_REZOPOLIS_BUGGED_OUT
+    db   $00    ; MAP_CIRCUIT_CENTRAL_CHIPS_AND_DIPS
+    db   $01    ; MAP_PRE_HISTORY_CHANNEL_LAVA_DABBA_DOO
+    db   $01    ; MAP_SCREAM_TV_TEXAS_CHAINSAW_MANICURE
+    db   $03    ; MAP_REZOPOLIS_MAZED_AND_CONFUSED
+    db   $00    ; MAP_UNUSED_1B
+    db   $00    ; MAP_UNUSED_1C
+    db   $00    ; MAP_UNUSED_1D
+    db   $00    ; MAP_BOSS_TV_CHANNEL_Z
 .data_00_1375_MediaDimension_InitialPatches:
 ; $FF-terminated list of 12-byte records for Media Dimension block patches:
 ;   +0  db  remote-total threshold
@@ -1401,49 +1425,72 @@ call_00_1922_BgMap_LoadSecondaryTileset:
 .data_LevelSecondaryTilesetBankTable:
 ; 62-byte table (31 levels × 2 bytes): each pair is (base offset byte, bank number) for the level's secondary 
 ; tileset data. Used by LoadSecondaryTileset to compute the ROM address of the secondary tileset
-    db   $40, $13, $40, $0e, $40, $0f, $40, $0f        ;; 00:19f0 ?.?.?.??
-    db   $61, $0d, $40, $10, $40, $13, $5b, $0e        ;; 00:19f8 ????????
-    db   $40, $0e, $5b, $0e, $61, $0d, $40, $0f        ;; 00:1a00 ????????
-    db   $40, $13, $40, $10, $40, $0d, $40, $13        ;; 00:1a08 ????????
-    db   $40, $0f, $40, $13, $40, $13, $40, $13        ;; 00:1a10 ????????
-    db   $40, $13, $40, $10, $40, $0d, $61, $0d        ;; 00:1a18 ????????
-    db   $5b, $0e, $40, $0f, $40, $0d, $40, $13        ;; 00:1a20 ????????
-    db   $40, $13, $40, $13, $73, $0e
+    farpointer2 media_dimension_secondary_tilesets       ; MAP_MEDIA_DIMENSION
+    farpointer2 toon_tv_secondary_tilesets               ; MAP_TOON_TV_OUT_OF_TOON
+    farpointer2 scream_tv_secondary_tilesets             ; MAP_SCREAM_TV_SMELLRAISER
+    farpointer2 scream_tv_secondary_tilesets             ; MAP_SCREAM_TV_FRANKENSTEINFELD
+    farpointer2 circuit_central_secondary_tilesets       ; MAP_CIRCUIT_CENTRAL_WWWDOTCOMCOM
+    farpointer2 kung_fu_theater_secondary_tilesets       ; MAP_KUNG_FU_THEATER_MAO_TSE_TONGUE
+    farpointer2 media_dimension_secondary_tilesets       ; MAP_UNUSED_06
+    farpointer2 prehistory_channel_secondary_tilesets    ; MAP_PRE_HISTORY_CHANNEL_PANGAEA_90210
+    farpointer2 toon_tv_secondary_tilesets               ; MAP_TOON_TV_FINE_TOONING
+    farpointer2 prehistory_channel_secondary_tilesets    ; MAP_PRE_HISTORY_CHANNEL_THIS_OLD_CAVE
+    farpointer2 circuit_central_secondary_tilesets       ; MAP_CIRCUIT_CENTRAL_HONEY_I_SHRUNK_THE_GECKO
+    farpointer2 scream_tv_secondary_tilesets             ; MAP_SCREAM_TV_POLTERGEX
+    farpointer2 media_dimension_secondary_tilesets       ; MAP_UNUSED_0C
+    farpointer2 kung_fu_theater_secondary_tilesets       ; MAP_KUNG_FU_THEATER_SAMURAI_NIGHT_FEVER
+    farpointer2 rezopolis_secondary_tilesets             ; MAP_REZOPOLIS_NO_WEDDINGS_AND_A_FUNERAL
+    farpointer2 media_dimension_secondary_tilesets       ; MAP_UNUSED_0F
+    farpointer2 scream_tv_secondary_tilesets             ; MAP_SCREAM_TV_THURSDAY_THE_12TH
+    farpointer2 media_dimension_secondary_tilesets       ; MAP_UNUSED_11
+    farpointer2 media_dimension_secondary_tilesets       ; MAP_UNUSED_12
+    farpointer2 media_dimension_secondary_tilesets       ; MAP_UNUSED_13
+    farpointer2 media_dimension_secondary_tilesets       ; MAP_UNUSED_14
+    farpointer2 kung_fu_theater_secondary_tilesets       ; MAP_KUNG_FU_THEATER_LIZARD_IN_A_CHINA_SHOP
+    farpointer2 rezopolis_secondary_tilesets             ; MAP_REZOPOLIS_BUGGED_OUT
+    farpointer2 circuit_central_secondary_tilesets       ; MAP_CIRCUIT_CENTRAL_CHIPS_AND_DIPS
+    farpointer2 prehistory_channel_secondary_tilesets    ; MAP_PRE_HISTORY_CHANNEL_LAVA_DABBA_DOO
+    farpointer2 scream_tv_secondary_tilesets             ; MAP_SCREAM_TV_TEXAS_CHAINSAW_MANICURE
+    farpointer2 rezopolis_secondary_tilesets             ; MAP_REZOPOLIS_MAZED_AND_CONFUSED
+    farpointer2 media_dimension_secondary_tilesets       ; MAP_UNUSED_1B
+    farpointer2 media_dimension_secondary_tilesets       ; MAP_UNUSED_1C
+    farpointer2 media_dimension_secondary_tilesets       ; MAP_UNUSED_1D
+    farpointer2 channel_z_secondary_tilesets             ; MAP_BOSS_TV_CHANNEL_Z
 .data_00_1a2e_LevelSecondaryTilesetIndexTable:
 ; 31 pointer entries (one per level) to per-world secondary tileset index arrays. Levels sharing a world 
 ; theme share the same pointer. Worlds: Media Dimension, Toon TV, Scream TV, Circuit Central, Kung Fu Theater, 
 ; Prehistory Channel, Rezopolis, Channel Z
-    dw   .secondary_tileset_data_media_dimension
-    dw   .secondary_tileset_data_toon_tv
-    dw   .secondary_tileset_data_scream_tv
-    dw   .secondary_tileset_data_scream_tv        ;; 00:1a2e ??????..
-    dw   .secondary_tileset_data_circuit_central
-    dw   .secondary_tileset_data_kung_fu_theater
-    dw   .secondary_tileset_data_media_dimension
-    dw   .secondary_tileset_data_prehistory_channel       ;; 00:1a ....????
-    dw   .secondary_tileset_data_toon_tv
-    dw   .secondary_tileset_data_prehistory_channel
-    dw   .secondary_tileset_data_circuit_central
-    dw   .secondary_tileset_data_scream_tv        ;; 00:1a3e ????????
-    dw   .secondary_tileset_data_media_dimension
-    dw   .secondary_tileset_data_kung_fu_theater
-    dw   .secondary_tileset_data_rezopolis
-    dw   .secondary_tileset_data_media_dimension        ;; 00:1a ????????
-    dw   .secondary_tileset_data_scream_tv
-    dw   .secondary_tileset_data_media_dimension
-    dw   .secondary_tileset_data_media_dimension
-    dw   .secondary_tileset_data_media_dimension        ;; 00:1a4e ????????
-    dw   .secondary_tileset_data_media_dimension
-    dw   .secondary_tileset_data_kung_fu_theater
-    dw   .secondary_tileset_data_rezopolis
-    dw   .secondary_tileset_data_circuit_central        ;; 00:1a ????????
-    dw   .secondary_tileset_data_prehistory_channel
-    dw   .secondary_tileset_data_scream_tv
-    dw   .secondary_tileset_data_rezopolis
-    dw   .secondary_tileset_data_media_dimension        ;; 00:1a5e ????????
-    dw   .secondary_tileset_data_media_dimension
-    dw   .secondary_tileset_data_media_dimension
-    dw   .secondary_tileset_data_channel_z
+    dw   .secondary_tileset_data_media_dimension       ; MAP_MEDIA_DIMENSION
+    dw   .secondary_tileset_data_toon_tv               ; MAP_TOON_TV_OUT_OF_TOON
+    dw   .secondary_tileset_data_scream_tv             ; MAP_SCREAM_TV_SMELLRAISER
+    dw   .secondary_tileset_data_scream_tv             ; MAP_SCREAM_TV_FRANKENSTEINFELD
+    dw   .secondary_tileset_data_circuit_central       ; MAP_CIRCUIT_CENTRAL_WWWDOTCOMCOM
+    dw   .secondary_tileset_data_kung_fu_theater       ; MAP_KUNG_FU_THEATER_MAO_TSE_TONGUE
+    dw   .secondary_tileset_data_media_dimension       ; MAP_UNUSED_06
+    dw   .secondary_tileset_data_prehistory_channel    ; MAP_PRE_HISTORY_CHANNEL_PANGAEA_90210
+    dw   .secondary_tileset_data_toon_tv               ; MAP_TOON_TV_FINE_TOONING
+    dw   .secondary_tileset_data_prehistory_channel    ; MAP_PRE_HISTORY_CHANNEL_THIS_OLD_CAVE
+    dw   .secondary_tileset_data_circuit_central       ; MAP_CIRCUIT_CENTRAL_HONEY_I_SHRUNK_THE_GECKO
+    dw   .secondary_tileset_data_scream_tv             ; MAP_SCREAM_TV_POLTERGEX
+    dw   .secondary_tileset_data_media_dimension       ; MAP_UNUSED_0C
+    dw   .secondary_tileset_data_kung_fu_theater       ; MAP_KUNG_FU_THEATER_SAMURAI_NIGHT_FEVER
+    dw   .secondary_tileset_data_rezopolis             ; MAP_REZOPOLIS_NO_WEDDINGS_AND_A_FUNERAL
+    dw   .secondary_tileset_data_media_dimension       ; MAP_UNUSED_0F
+    dw   .secondary_tileset_data_scream_tv             ; MAP_SCREAM_TV_THURSDAY_THE_12TH
+    dw   .secondary_tileset_data_media_dimension       ; MAP_UNUSED_11
+    dw   .secondary_tileset_data_media_dimension       ; MAP_UNUSED_12
+    dw   .secondary_tileset_data_media_dimension       ; MAP_UNUSED_13
+    dw   .secondary_tileset_data_media_dimension       ; MAP_UNUSED_14
+    dw   .secondary_tileset_data_kung_fu_theater       ; MAP_KUNG_FU_THEATER_LIZARD_IN_A_CHINA_SHOP
+    dw   .secondary_tileset_data_rezopolis             ; MAP_REZOPOLIS_BUGGED_OUT
+    dw   .secondary_tileset_data_circuit_central       ; MAP_CIRCUIT_CENTRAL_CHIPS_AND_DIPS
+    dw   .secondary_tileset_data_prehistory_channel    ; MAP_PRE_HISTORY_CHANNEL_LAVA_DABBA_DOO
+    dw   .secondary_tileset_data_scream_tv             ; MAP_SCREAM_TV_TEXAS_CHAINSAW_MANICURE
+    dw   .secondary_tileset_data_rezopolis             ; MAP_REZOPOLIS_MAZED_AND_CONFUSED
+    dw   .secondary_tileset_data_media_dimension       ; MAP_UNUSED_1B
+    dw   .secondary_tileset_data_media_dimension       ; MAP_UNUSED_1C
+    dw   .secondary_tileset_data_media_dimension       ; MAP_UNUSED_1D
+    dw   .secondary_tileset_data_channel_z             ; MAP_BOSS_TV_CHANNEL_Z
 .secondary_tileset_data_media_dimension:
     INCBIN "data/maps/media_dimension/secondary_tileset_data_media_dimension.bin"
 .secondary_tileset_data_toon_tv:
