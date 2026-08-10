@@ -326,22 +326,44 @@ wD5A4_ConveyorState2:
 wD5A5_ConveyorState3:
     ds 1                                               ;; d5a5
 
+; ------------------------------------------------------------------
+; Shared menu scratch. This region wears two hats depending on who is using it,
+; which is worth knowing before trusting the names:
+;
+;   - call_01_4bd3_Text_WrapAndAlign copies the string being rendered here and
+;     wraps it in place, so during text rendering the whole run is one string
+;     buffer (hence wD5A6_TextBuffer, good until at least $D5CC)
+;   - call_01_4dc8_Menu_BuildSpriteBlock and call_01_4e01_Menu_WriteSpriteRect
+;     instead use the first four bytes as the OAM fields of the sprite currently
+;     being emitted, and wD5AA as an indirection table of runtime tile ids
+;
+; Nothing uses both at once, but wD5A6 being read as a sprite Y coordinate in the
+; sprite path is a genuine trap when reading that code
+; ------------------------------------------------------------------
 wD5A6_TextBuffer: ; goes until at least D5CC
+; also the sprite Y coordinate in the sprite-block path
     ds 1                                               ;; d5a6
 
-wD5A7:
+wD5A7_Sprite_X:
     ds 1                                               ;; d5a7
 
-wD5A8:
+wD5A8_Sprite_TileId:
+; stepped by 2 per sprite, since the menus run in 8x16 sprite mode
     ds 1                                               ;; d5a8
 
-wD5A9:
+wD5A9_Sprite_Attributes:
     ds 1                                               ;; d5a9
 
-wD5AA:
+wD5AA_Sprite_TileIdTable:
+; runtime tile ids for sprite scripts. If bit 0 of a script's tile byte is set,
+; the byte >> 1 indexes here instead of being a literal tile - which is how a
+; fixed script draws digits and icons that change as you play
     ds 96                                              ;; d5aa
 
-wD60A:
+wD60A_OneCharString:
+; a two-byte string built on the fly: the character, then $80 to end the line.
+; call_01_48fd_MenuCmd_SetPasswordCharText uses it to render one password cell
+; through the normal text path without needing a string in ROM for every letter
     ds 1                                               ;; d60a
 
 wD60B:
@@ -530,22 +552,36 @@ wD651_BonusMissionTotal:
 ; number of bonus/collectible missions completed across every level (mask $20)
     ds 1                                               ;; d651
 
-wD652:
+; ------------------------------------------------------------------
+; Password payload, in two mirrored 10-byte copies: wD652 is what gets ENCODED
+; into a password to show the player, wD65C is what a typed password DECODES to.
+; Same layout both sides - 8 bytes of packed progress, then lives, then a
+; checksum - which is what makes the two halves verifiable against each other.
+;
+; 8 bytes = 64 progress bits + 8 lives bits + 8 checksum bits = 80, and the
+; password carries 28 boxes x 3 bits = 84, so there are four spare bits
+; ------------------------------------------------------------------
+wD652_Password_EncodeBuffer:
+; packed progress, built by call_01_4349_LoadEnteringMenu by walking every level
+; and folding wD629_RemoteProgressFlags through a per-level mask
     ds 8                                               ;; d652
 
-wD65A:
+wD65A_Password_EncodeLives:
     ds 1                                               ;; d65a
 
-wD65B:
+wD65B_Password_EncodeChecksum:
+; sum of the 9 bytes above, truncated to 8 bits
     ds 1                                               ;; d65b
 
-wD65C:
+wD65C_Password_DecodeBuffer:
+; the decode side of the same struct, filled by call_01_5271_ProcessPassword
     ds 8                                               ;; d65c
 
-wD664:
+wD664_Password_DecodeLives:
     ds 1                                               ;; d664
 
-wD665:
+wD665_Password_DecodeChecksum:
+; a typed password is rejected unless the sum of the 9 preceding bytes matches
     ds 2                                               ;; d665
 
 wD667_PasswordExitButton: ; Password exit button (value 49)
@@ -847,13 +883,18 @@ wD6E3_GfxStream_RowsPerChunk:
     ds 1                                               ;; d6e3
 wD6E4_GfxStream_SrcBank:
     ds 1                                               ;; d6e4
-wD6E5_PasswordArrowSprites:
+; The four bytes below are the source and destination pointers of the pending
+; graphics stream, not sprites - they sit at the end of the wD6E2..wD6E8 block
+; that call_01_4d0a_Menu_StartGfxStream is handed as one unit, which is why they
+; are never read through their own symbols.
+; call_01_4ecf_Password_RefreshCellGfx is the main user
+wD6E5_GfxStream_SrcPtrLo:
     ds 1                                               ;; d6e5
-wD6E6_PasswordArrowSprites:
+wD6E6_GfxStream_SrcPtrHi:
     ds 1                                               ;; d6e6
-wD6E7_PasswordArrowSprites:
+wD6E7_GfxStream_DestPtrLo:
     ds 1                                               ;; d6e7
-wD6E8_PasswordArrowSprites:
+wD6E8_GfxStream_DestPtrHi:
     ds 1                                               ;; d6e8
 wD6E9_GfxStream_ListPtrLo:
 ; pointer to the next (srcPtr, destPtr) pair in the script

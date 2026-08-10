@@ -153,16 +153,6 @@ DEF MENU_RESULT_DISMISSED        EQU $00 ; backed out with A/SELECT/START
 DEF MENU_RESULT_PASSWORD_GO      EQU $30 ; the password keyboard's GO key was pressed
 DEF MENU_RESULT_TIMED_OUT        EQU $70 ; the menu's timer expired without any input
 
-; Special keys on the password keyboard, stored in the cell array at
-; wD667_PasswordExitButton like any other character
-DEF PASSWORD_KEY_BLANK           EQU $20
-DEF PASSWORD_KEY_EXIT            EQU $49
-DEF PASSWORD_KEY_GO              EQU $4A
-
-; The password keyboard is a fixed 6 x 5 grid
-DEF PASSWORD_GRID_COLUMNS        EQU $06
-DEF PASSWORD_GRID_ROWS           EQU $05
-
 ; Music
 DEF MUSIC_KUNG_FU_THEATER                 EQU $00
 DEF MUSIC_CIRCUIT_CENTRAL                 EQU $01
@@ -476,6 +466,59 @@ DEF CUTSCENE_NONE                           EQU $FF ; no cutscene for this level
 DEF CUTSCENE_MOVE_END                       EQU $FF ; terminator in a movement command list
 DEF CUTSCENE_MOVE_SPEED_MAX                 EQU $10 ; 16/16ths = exactly one pixel per frame
 DEF CUTSCENE_HOLD_FRAMES                    EQU $B4 ; 180 frames (3s) of dwell before returning
+
+; ------------------------------------------------------------------
+; Password system (bank01_menus.asm)
+;
+; The password is 28 boxes of one letter each, A-H, so 3 bits per box and 84 bits
+; total. It carries a 10-byte payload: 8 bytes of packed level progress, then
+; lives, then a checksum - 80 bits, leaving four spare.
+;
+; Encode and decode are not symmetrical implementations. Decoding is a tight
+; bit-packing loop; encoding instead walks .data_01_4fef_Password_BitMap, an
+; explicit table of (source address, source mask, dest address, dest mask) that
+; scatters one bit per entry.
+; ------------------------------------------------------------------
+
+DEF PASSWORD_BOX_COUNT                      EQU $1C ; 28 letters
+DEF PASSWORD_BITS_PER_BOX                   EQU 3   ; so letters run A-H
+DEF PASSWORD_CHAR_BASE                      EQU $41 ; 'A'; value 0-7 plus this is the letter
+                                                    ; (PASSWORD_KEY_BLANK above marks an empty
+                                                    ; box; any blank rejects the password)
+DEF PASSWORD_CHECKSUM_BYTES                 EQU 9   ; progress + lives, summed to 8 bits
+DEF PASSWORD_PAYLOAD_BYTES                  EQU 10  ; the above plus the checksum itself
+
+; (PASSWORD_GRID_COLUMNS / _ROWS are defined above; cell index = row * cols + col)
+DEF PASSWORD_CELL_TILE_WIDTH                EQU 4   ; tiles backing one cell
+DEF PASSWORD_KEYBOARD_TILE_BASE             EQU $3E ; first VRAM tile of the keyboard
+
+; Special keys on the password keyboard, stored in the cell array at
+; wD667_PasswordExitButton like any other character
+DEF PASSWORD_KEY_BLANK           EQU $20
+DEF PASSWORD_KEY_EXIT            EQU $49
+DEF PASSWORD_KEY_GO              EQU $4A
+
+; The password keyboard is a fixed 6 x 5 grid
+DEF PASSWORD_GRID_COLUMNS        EQU $06
+DEF PASSWORD_GRID_ROWS           EQU $05
+
+; ------------------------------------------------------------------
+; Menu sprite scripts (bank01_menus.asm, call_01_4dc8_Menu_BuildSpriteBlock)
+;
+; A sprite script is a starting OAM slot followed by entries of
+;   Y, X, tile, attributes, width in 8px columns, height in pixels
+; and terminated by SPRITE_SCRIPT_END. Menus run in 8x16 sprite mode, so tile ids
+; step by 2 and a rectangle is emitted column by column.
+; ------------------------------------------------------------------
+DEF SPRITE_SCRIPT_END                       EQU $FF ; ends a sprite script
+DEF SPRITE_TILE_INDIRECT                    EQU $01 ; bit 0 of a tile byte: the rest is
+                                                    ; (byte >> 1) indexing
+                                                    ; wD5AA_Sprite_TileIdTable
+DEF SPRITE_TILE_STEP                        EQU 2   ; 8x16 sprites consume tiles in pairs
+
+DEF MENU_CURSOR_NONE                        EQU $FF ; this screen has no cursor
+DEF MENU_CURSOR_PASSWORD                    EQU $12 ; password keyboard highlight - takes its
+                                                    ; tile from the cell underneath and blinks
 
 ; ------------------------------------------------------------------
 ; Menu script commands (bank01_menus.asm, call_01_44e6_MenuScript_RunCommand)

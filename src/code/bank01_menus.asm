@@ -492,7 +492,19 @@ call_01_42bd_EnterTV:
     db   $00, $00                                      ;; 01:4347 ??
 
 call_01_4349_LoadEnteringMenu:
-    ld   HL, wD652                                     ;; 01:4349 $21 $52 $d6
+; Packs the whole save state into wD652_Password_EncodeBuffer, ready for
+; call_01_4fa5_SetupPassword to spell out.
+;
+; It walks every level id from 0 to MAP_BOSS_TV_CHANNEL_Z, and for each one takes
+; a mask from .data_01_43b6 - which bits of that level's wD629_RemoteProgressFlags
+; are worth saving - then shifts mask and flags together, emitting one payload bit
+; per set mask bit. So levels with fewer objectives cost fewer bits, which is how
+; 30 levels fit in 64.
+;
+; Lives and a checksum are appended, the checksum being a plain 8-bit sum of the
+; 9 bytes before it. Note wD624_CurrentLevelId is borrowed as the loop counter and
+; restored afterwards
+    ld   HL, wD652_Password_EncodeBuffer                                     ;; 01:4349 $21 $52 $d6
     ld   B, $0a                                        ;; 01:434c $06 $0a
     xor  A, A                                          ;; 01:434e $af
 .jr_01_434f:
@@ -503,7 +515,7 @@ call_01_4349_LoadEnteringMenu:
     push AF                                            ;; 01:4356 $f5
     xor  A, A                                          ;; 01:4357 $af
     ld   [wD624_CurrentLevelId], A                                    ;; 01:4358 $ea $24 $d6
-    ld   HL, wD652                                     ;; 01:435b $21 $52 $d6
+    ld   HL, wD652_Password_EncodeBuffer                                     ;; 01:435b $21 $52 $d6
     ld   C, $80                                        ;; 01:435e $0e $80
 .jr_01_4360:
     push HL                                            ;; 01:4360 $e5
@@ -547,8 +559,8 @@ call_01_4349_LoadEnteringMenu:
     pop  AF                                            ;; 01:439d $f1
     ld   [wD624_CurrentLevelId], A                                    ;; 01:439e $ea $24 $d6
     ld   A, [wD73D_LivesRemaining]                                    ;; 01:43a1 $fa $3d $d7
-    ld   [wD65A], A                                    ;; 01:43a4 $ea $5a $d6
-    ld   HL, wD652                                     ;; 01:43a7 $21 $52 $d6
+    ld   [wD65A_Password_EncodeLives], A                                    ;; 01:43a4 $ea $5a $d6
+    ld   HL, wD652_Password_EncodeBuffer                                     ;; 01:43a7 $21 $52 $d6
     ld   B, $09                                        ;; 01:43aa $06 $09
     xor  A, A                                          ;; 01:43ac $af
 .jr_01_43ad:
@@ -556,7 +568,7 @@ call_01_4349_LoadEnteringMenu:
     inc  HL                                            ;; 01:43ae $23
     dec  B                                             ;; 01:43af $05
     jr   NZ, .jr_01_43ad                               ;; 01:43b0 $20 $fb
-    ld   [wD65B], A                                    ;; 01:43b2 $ea $5b $d6
+    ld   [wD65B_Password_EncodeChecksum], A                                    ;; 01:43b2 $ea $5b $d6
     ret                                                ;; 01:43b5 $c9
 .data_01_43b6:
     db   $1f, $1b, $19, $03, $01, $20, $00
@@ -980,8 +992,9 @@ call_01_44e6_MenuScript_RunCommand:
 ;   $EB  set the text to a single password cell, as a one-character string
 ;   $EC  set wD6D7_Menu_ChainedScriptId - queue another screen to load next
 ;   $ED  load a fullscreen image from a 3-byte bank/pointer descriptor
-;   $EE  remote progress, related to $E9 - not fully traced
-;   $EF  not traced
+;   $EE  set the text to a mission status line, chosen by how many of the level's
+;        three mission remotes you hold
+;   $EF  stage the current level's collectible icon as a 3x2 block
     dw   call_01_4653_MenuCmd_StageImage1                                 ;; 01:4633 pP
     dw   call_01_465f_MenuCmd_StageImage2                                  ;; 01:4635 pP
     dw   call_01_466b_MenuCmd_StageTVScreen                                  ;; 01:4637 pP
@@ -996,8 +1009,8 @@ call_01_44e6_MenuScript_RunCommand:
     dw   call_01_48fd_MenuCmd_SetPasswordCharText                                      ;; 01:4649 ??
     dw   call_01_4916_MenuCmd_SetChainedScript                                  ;; 01:464b pP
     dw   call_01_491d_MenuCmd_LoadFullscreenImage                                  ;; 01:464d pP
-    dw   call_01_4969
-    dw   call_01_49d7                            ;; 01:464f ????
+    dw   call_01_4969_MenuCmd_SetMissionStatusText
+    dw   call_01_49d7_MenuCmd_StageCollectibleIcon                            ;; 01:464f ????
 call_01_4653_MenuCmd_StageImage1:
     ld   A, [wD69B_Text_SrcPtrLo]                                    ;; 01:4653 $fa $9b $d6
     ld   DE, data_01_74e9                              ;; 01:4656 $11 $e9 $74
@@ -1091,7 +1104,7 @@ call_01_473a_MenuCmd_SetMissionText:
     ld   C, $f4                                        ;; 01:476c $0e $f4
 .jr_01_476e:
     ld   A, C                                          ;; 01:476e $79
-    ld   [wD5A8], A                                    ;; 01:476f $ea $a8 $d5
+    ld   [wD5A8_Sprite_TileId], A                                    ;; 01:476f $ea $a8 $d5
     ld   A, [wD695_MenuCmd_DestTileY]                                    ;; 01:4772 $fa $95 $d6
     add  A, $02                                        ;; 01:4775 $c6 $02
     add  A, A                                          ;; 01:4777 $87
@@ -1105,14 +1118,14 @@ call_01_473a_MenuCmd_SetMissionText:
     add  A, A                                          ;; 01:4784 $87
     add  A, A                                          ;; 01:4785 $87
     sub  A, $02                                        ;; 01:4786 $d6 $02
-    ld   [wD5A7], A                                    ;; 01:4788 $ea $a7 $d5
+    ld   [wD5A7_Sprite_X], A                                    ;; 01:4788 $ea $a7 $d5
     ld   A, B                                          ;; 01:478b $78
     cp   A, $20                                        ;; 01:478c $fe $20
     ld   A, $05                                        ;; 01:478e $3e $05
     jr   Z, .jr_01_4794                                ;; 01:4790 $28 $02
     ld   A, $03                                        ;; 01:4792 $3e $03
 .jr_01_4794:
-    ld   [wD5A9], A                                    ;; 01:4794 $ea $a9 $d5
+    ld   [wD5A9_Sprite_Attributes], A                                    ;; 01:4794 $ea $a9 $d5
     pop  AF                                            ;; 01:4797 $f1
     add  A, A                                          ;; 01:4798 $87
     add  A, $02                                        ;; 01:4799 $c6 $02
@@ -1268,7 +1281,7 @@ call_01_4879_MenuCmd_DrawRemoteIcons:
     ld   DE, wD629_RemoteProgressFlags                                     ;; 01:48a6 $11 $29 $d6
     add  HL, DE                                        ;; 01:48a9 $19
     ld   C, [HL]                                       ;; 01:48aa $4e
-    ld   HL, wD5AA                                     ;; 01:48ab $21 $aa $d5
+    ld   HL, wD5AA_Sprite_TileIdTable                                     ;; 01:48ab $21 $aa $d5
     ld   DE, .data_01_48d9                             ;; 01:48ae $11 $d9 $48
     ld   B, $06                                        ;; 01:48b1 $06 $06
 .jr_01_48b3:
@@ -1320,10 +1333,10 @@ call_01_48fd_MenuCmd_SetPasswordCharText:
     ld   de,wD667_PasswordExitButton
     add  hl,de
     ld   a,[hl]
-    ld   [wD60A],a
+    ld   [wD60A_OneCharString],a
     ld   a,$80
     ld   [wD60B],a
-    ld   hl,wD60A
+    ld   hl,wD60A_OneCharString
     jp   call_01_4e6f_Menu_SetScriptSrcPtr
 
 call_01_4916_MenuCmd_SetChainedScript:
@@ -1349,7 +1362,17 @@ call_01_491d_MenuCmd_LoadFullscreenImage:
     db   $1e, $00, $40, $1e, $e8, $57, $1d, $00        ;; 01:495a ...?????
     db   $40, $1d, $e8, $57, $3d, $00, $40
     
-call_01_4969:
+call_01_4969_MenuCmd_SetMissionStatusText:
+; Picks the "how are you doing on this level" string from a 2D table, and points
+; the source pointer at it so the next MENUCMD_DRAW_TEXT block renders it.
+;
+; Row is the level's remote progress id; column is how many of its three mission
+; remotes you hold, counted straight out of wD629_RemoteProgressFlags by the
+; `srl C / adc A,$00` popcount of bits 0-2 - so 0 to 3. Progress id 5 is the odd
+; one out and tests bit 5 instead, giving a plain yes/no.
+;
+; Address is .data_01_49a7_MissionStatusText + row*8 + column*2, so the table is
+; eight rows of four pointers
     call call_00_2e43_MapData_GetRemoteProgressId
     push af
     push af
@@ -1386,13 +1409,15 @@ call_01_4969:
     add  hl,hl
     add  hl,hl
     add  hl,de
-    ld   de,.data_01_49a7
+    ld   de,.data_01_49a7_MissionStatusText
     add  hl,de
     ldi  a,[hl]
     ld   h,[hl]
     ld   l,a
     jp   call_01_4e6f_Menu_SetScriptSrcPtr
-.data_01_49a7:
+.data_01_49a7_MissionStatusText:
+; 8 rows x 4 pointers, indexed [remote progress id][missions collected]. Several
+; columns repeat the same address, which is how one string covers "1 or 2 done"
     db   $97, $5d, $b0        ;; 01:49a2 ????????
     db   $5d, $c9, $5d, $e2, $5d, $fb, $5d, $14        ;; 01:49aa ????????
     db   $5e, $2d, $5e, $2d, $5e, $46, $5e, $5f        ;; 01:49b2 ????????
@@ -1401,7 +1426,13 @@ call_01_4969:
     db   $5e, $5f, $5e, $5f, $5e, $78, $5e, $92        ;; 01:49ca ????????
     db   $5e, $92, $5e, $92, $5e
 
-call_01_49d7:
+call_01_49d7_MenuCmd_StageCollectibleIcon:
+; Stages the current level's collectible icon - the fruit/bug/whatever that level
+; uses - as a 3x2 tile block starting at tile id $92.
+;
+; The graphics come from data_01_7c0f_collectible_images indexed by level id, and
+; the 24 bytes immediately after them in ROM are the icon's tilemap ids, copied on
+; to wDAAB_MenuBgMapTileIds. The 128-byte blob loaded first is the CGB palette set
     ld   hl,.data_01_4a0f
     ld   de,wDA4B_DynamicPalette
     ld   bc,$0080
@@ -2054,11 +2085,11 @@ call_01_4d72_Menu_DrawCursor:
 ; the cell under the cursor and blinks off bit 4 of wD6D6_Menu_BlinkCounter.
 ; $FF means this screen has no cursor and the routine does nothing
     ld   A, [wD6C1_Menu_CursorSpriteId]                                    ;; 01:4d72 $fa $c1 $d6
-    cp   A, $ff                                        ;; 01:4d75 $fe $ff
+    cp   A, MENU_CURSOR_NONE                           ;; 01:4d75 $fe $ff
     ret  Z                                             ;; 01:4d77 $c8
     ld   C, $02                                        ;; 01:4d78 $0e $02
     ld   B, $05                                        ;; 01:4d7a $06 $05
-    cp   A, $12                                        ;; 01:4d7c $fe $12
+    cp   A, MENU_CURSOR_PASSWORD                       ;; 01:4d7c $fe $12
     jr   NZ, .jr_01_4d92                               ;; 01:4d7e $20 $12
     call call_01_4f30_Password_GetCellTileIndex                                  ;; 01:4d80 $cd $30 $4f
     ld   C, A                                          ;; 01:4d83 $4f
@@ -2109,21 +2140,21 @@ call_01_4dc8_Menu_BuildSpriteBlock:
 ;   Y, X, tile, attributes, width in 8px columns, height in pixels
 ; terminated by $FF. Y and X are stored relative to the visible screen, so $10
 ; and $08 are added back on. If bit 0 of the tile byte is set the rest of it is
-; an index into wD5AA instead of a literal tile - that indirection is how the
+; an index into wD5AA_Sprite_TileIdTable instead of a literal tile - that indirection is how the
 ; same script can draw a digit that changes at runtime
     ld   A, [HL+]                                      ;; 01:4dc8 $2a
-    cp   A, $ff                                        ;; 01:4dc9 $fe $ff
+    cp   A, SPRITE_SCRIPT_END                          ;; 01:4dc9 $fe $ff
     ret  Z                                             ;; 01:4dcb $c8
     ld   [wD6D5_Menu_OamSlot], A                                    ;; 01:4dcc $ea $d5 $d6
 .jr_01_4dcf:
     ld   A, [HL+]                                      ;; 01:4dcf $2a
-    cp   A, $ff                                        ;; 01:4dd0 $fe $ff
+    cp   A, SPRITE_SCRIPT_END                          ;; 01:4dd0 $fe $ff
     ret  Z                                             ;; 01:4dd2 $c8
     add  A, $10                                        ;; 01:4dd3 $c6 $10
     ld   [wD5A6_TextBuffer], A                                    ;; 01:4dd5 $ea $a6 $d5
     ld   A, [HL+]                                      ;; 01:4dd8 $2a
     add  A, $08                                        ;; 01:4dd9 $c6 $08
-    ld   [wD5A7], A                                    ;; 01:4ddb $ea $a7 $d5
+    ld   [wD5A7_Sprite_X], A                                    ;; 01:4ddb $ea $a7 $d5
     ld   A, [HL+]                                      ;; 01:4dde $2a
     bit  0, A                                          ;; 01:4ddf $cb $47
     jr   Z, .jr_01_4def                                ;; 01:4de1 $28 $0c
@@ -2131,14 +2162,14 @@ call_01_4dc8_Menu_BuildSpriteBlock:
     srl  A                                             ;; 01:4de4 $cb $3f
     ld   E, A                                          ;; 01:4de6 $5f
     ld   D, $00                                        ;; 01:4de7 $16 $00
-    ld   HL, wD5AA                                     ;; 01:4de9 $21 $aa $d5
+    ld   HL, wD5AA_Sprite_TileIdTable                                     ;; 01:4de9 $21 $aa $d5
     add  HL, DE                                        ;; 01:4dec $19
     ld   A, [HL]                                       ;; 01:4ded $7e
     pop  HL                                            ;; 01:4dee $e1
 .jr_01_4def:
-    ld   [wD5A8], A                                    ;; 01:4def $ea $a8 $d5
+    ld   [wD5A8_Sprite_TileId], A                                    ;; 01:4def $ea $a8 $d5
     ld   A, [HL+]                                      ;; 01:4df2 $2a
-    ld   [wD5A9], A                                    ;; 01:4df3 $ea $a9 $d5
+    ld   [wD5A9_Sprite_Attributes], A                                    ;; 01:4df3 $ea $a9 $d5
     ld   C, [HL]                                       ;; 01:4df6 $4e
     inc  HL                                            ;; 01:4df7 $23
     ld   B, [HL]                                       ;; 01:4df8 $46
@@ -2171,22 +2202,22 @@ call_01_4e01_Menu_WriteSpriteRect:
     ld   [HL+], A                                      ;; 01:4e1a $22
     add  A, $10                                        ;; 01:4e1b $c6 $10
     ld   [wD5A6_TextBuffer], A                                    ;; 01:4e1d $ea $a6 $d5
-    ld   A, [wD5A7]                                    ;; 01:4e20 $fa $a7 $d5
+    ld   A, [wD5A7_Sprite_X]                                    ;; 01:4e20 $fa $a7 $d5
     ld   [HL+], A                                      ;; 01:4e23 $22
-    ld   A, [wD5A8]                                    ;; 01:4e24 $fa $a8 $d5
+    ld   A, [wD5A8_Sprite_TileId]                                    ;; 01:4e24 $fa $a8 $d5
     ld   [HL+], A                                      ;; 01:4e27 $22
-    add  A, $02                                        ;; 01:4e28 $c6 $02
-    ld   [wD5A8], A                                    ;; 01:4e2a $ea $a8 $d5
-    ld   A, [wD5A9]                                    ;; 01:4e2d $fa $a9 $d5
+    add  A, SPRITE_TILE_STEP                           ;; 01:4e28 $c6 $02
+    ld   [wD5A8_Sprite_TileId], A                                    ;; 01:4e2a $ea $a8 $d5
+    ld   A, [wD5A9_Sprite_Attributes]                                    ;; 01:4e2d $fa $a9 $d5
     ld   [HL+], A                                      ;; 01:4e30 $22
     ld   A, [wD6D5_Menu_OamSlot]                                    ;; 01:4e31 $fa $d5 $d6
     inc  A                                             ;; 01:4e34 $3c
     ld   [wD6D5_Menu_OamSlot], A                                    ;; 01:4e35 $ea $d5 $d6
     dec  B                                             ;; 01:4e38 $05
     jr   NZ, .jr_01_4e17                               ;; 01:4e39 $20 $dc
-    ld   A, [wD5A7]                                    ;; 01:4e3b $fa $a7 $d5
+    ld   A, [wD5A7_Sprite_X]                                    ;; 01:4e3b $fa $a7 $d5
     add  A, $08                                        ;; 01:4e3e $c6 $08
-    ld   [wD5A7], A                                    ;; 01:4e40 $ea $a7 $d5
+    ld   [wD5A7_Sprite_X], A                                    ;; 01:4e40 $ea $a7 $d5
     pop  AF                                            ;; 01:4e43 $f1
     pop  BC                                            ;; 01:4e44 $c1
     dec  C                                             ;; 01:4e45 $0d
@@ -2332,9 +2363,9 @@ call_01_4ecf_Password_RefreshCellGfx:
     ld   DE, data_01_71e9                              ;; 01:4ef3 $11 $e9 $71
     add  HL, DE                                        ;; 01:4ef6 $19
     ld   A, L                                          ;; 01:4ef7 $7d
-    ld   [wD6E5_PasswordArrowSprites], A                                    ;; 01:4ef8 $ea $e5 $d6
+    ld   [wD6E5_GfxStream_SrcPtrLo], A                                    ;; 01:4ef8 $ea $e5 $d6
     ld   A, H                                          ;; 01:4efb $7c
-    ld   [wD6E6_PasswordArrowSprites], A                                    ;; 01:4efc $ea $e6 $d6
+    ld   [wD6E6_GfxStream_SrcPtrHi], A                                    ;; 01:4efc $ea $e6 $d6
     call call_01_4f30_Password_GetCellTileIndex                                  ;; 01:4eff $cd $30 $4f
     ld   L, A                                          ;; 01:4f02 $6f
     ld   H, $00                                        ;; 01:4f03 $26 $00
@@ -2345,9 +2376,9 @@ call_01_4ecf_Password_RefreshCellGfx:
     ld   DE, _VRAM                                     ;; 01:4f09 $11 $00 $80
     add  HL, DE                                        ;; 01:4f0c $19
     ld   A, L                                          ;; 01:4f0d $7d
-    ld   [wD6E7_PasswordArrowSprites], A                                    ;; 01:4f0e $ea $e7 $d6
+    ld   [wD6E7_GfxStream_DestPtrLo], A                                    ;; 01:4f0e $ea $e7 $d6
     ld   A, H                                          ;; 01:4f11 $7c
-    ld   [wD6E8_PasswordArrowSprites], A                                    ;; 01:4f12 $ea $e8 $d6
+    ld   [wD6E8_GfxStream_DestPtrHi], A                                    ;; 01:4f12 $ea $e8 $d6
     ld   HL, wD6E2_GfxStream_ChunksRemaining                                     ;; 01:4f15 $21 $e2 $d6
     jp   call_01_4d0a_Menu_StartGfxStream                                  ;; 01:4f18 $c3 $0a $4d
 
@@ -2382,8 +2413,8 @@ call_01_4f30_Password_GetCellTileIndex:
     ld   A, [wD6DF_MenuSelectedColumn]                                    ;; 01:4f38 $fa $df $d6
     add  A, L                                          ;; 01:4f3b $85
     add  A, A                                          ;; 01:4f3c $87
-    add  A, A                                          ;; 01:4f3d $87
-    add  A, $3e                                        ;; 01:4f3e $c6 $3e
+    add  A, A                                          ;; 01:4f3d $87 ; x PASSWORD_CELL_TILE_WIDTH
+    add  A, PASSWORD_KEYBOARD_TILE_BASE                ;; 01:4f3e $c6 $3e
     ret                                                ;; 01:4f40 $c9
 
 call_01_4f41_Password_CharToFontTile:
@@ -2421,6 +2452,16 @@ call_01_4f87_LoadEnterPasswordMenu:
     ret                                                ;; 01:4fa4 $c9
 
 call_01_4fa5_SetupPassword:
+; Builds the password to SHOW the player: blanks the keyboard, scatters the
+; encode buffer's bits into the 28 boxes, then turns each 0-7 value into a letter
+; by adding PASSWORD_CHAR_BASE.
+;
+; The scatter is table driven rather than a loop - .data_01_4fef_Password_BitMap
+; holds one 8-byte entry per bit, (src addr, src mask, dst addr, dst mask), and
+; the walk stops when it reads a null source address. Being an explicit table
+; means the bit order is arbitrary and does not have to match the tidy MSB-first
+; packing that call_01_5271_ProcessPassword uses coming back the other way, which
+; is presumably the point - it scrambles the mapping
     ld   HL, wD667_PasswordExitButton                                     ;; 01:4fa5 $21 $67 $d6
     ld   DE, wD668_PasswordValues                                     ;; 01:4fa8 $11 $68 $d6
     ld   BC, $1d                                       ;; 01:4fab $01 $1d $00
@@ -2432,7 +2473,7 @@ call_01_4fa5_SetupPassword:
     ld   [wD684_PasswordGoButton], A                                    ;; 01:4fba $ea $84 $d6
     ld   A, $4b                                        ;; 01:4fbd $3e $4b
     ld   [wD685_PasswordUnkButton], A                                    ;; 01:4fbf $ea $85 $d6
-    ld   HL, .data_01_4fef                             ;; 01:4fc2 $21 $ef $4f
+    ld   HL, .data_01_4fef_Password_BitMap                             ;; 01:4fc2 $21 $ef $4f
 .jr_01_4fc5:
     push HL                                            ;; 01:4fc5 $e5
     ld   A, [HL+]                                      ;; 01:4fc6 $2a
@@ -2461,115 +2502,134 @@ call_01_4fa5_SetupPassword:
 .jr_01_4fe1:
     pop  HL                                            ;; 01:4fe1 $e1
     ld   HL, wD668_PasswordValues                                     ;; 01:4fe2 $21 $68 $d6
-    ld   B, $1c                                        ;; 01:4fe5 $06 $1c
+    ld   B, PASSWORD_BOX_COUNT                         ;; 01:4fe5 $06 $1c
 .jr_01_4fe7:
     ld   A, [HL]                                       ;; 01:4fe7 $7e
-    add  A, $41                                        ;; 01:4fe8 $c6 $41
+    add  A, PASSWORD_CHAR_BASE                         ;; 01:4fe8 $c6 $41
     ld   [HL+], A                                      ;; 01:4fea $22
     dec  B                                             ;; 01:4feb $05
     jr   NZ, .jr_01_4fe7                               ;; 01:4fec $20 $f9
     ret                                                ;; 01:4fee $c9
-.data_01_4fef: ; this is used to encode the password to and from the bitmap
-    dw   wD652, $0080, wD668_PasswordValues, $0004        ;; 01:4fef ????????
-    dw   wD652, $0040, wD668_PasswordValues, $0002        ;; 01:4ff7 ????????
-    dw   wD652, $0020, wD668_PasswordValues, $0001        ;; 01:4fff ????????
-    dw   wD652, $0010, wD668_PasswordValues+1, $0004        ;; 01:5007 ????????
-    dw   wD652, $0008, wD668_PasswordValues+1, $0002        ;; 01:500f ????????
-    dw   wD652, $0004, wD668_PasswordValues+1, $0001        ;; 01:5017 ????????
-    dw   wD652, $0002, wD668_PasswordValues+2, $0004        ;; 01:501f ????????
-    dw   wD652, $0001, wD668_PasswordValues+2, $0002        ;; 01:5027 ????????
-    dw   wD652+1, $0080, wD668_PasswordValues+2, $0001        ;; 01:502f ????????
-    dw   wD652+1, $0040, wD668_PasswordValues+3, $0004        ;; 01:5037 ????????
-    dw   wD652+1, $0020, wD668_PasswordValues+3, $0002        ;; 01:503f ????????
-    dw   wD652+1, $0010, wD668_PasswordValues+3, $0001        ;; 01:5047 ????????
-    dw   wD652+1, $0008, wD668_PasswordValues+4, $0004        ;; 01:504f ????????
-    dw   wD652+1, $0004, wD668_PasswordValues+4, $0002        ;; 01:5057 ????????
-    dw   wD652+1, $0002, wD668_PasswordValues+4, $0001        ;; 01:505f ????????
-    dw   wD652+1, $0001, wD668_PasswordValues+5, $0004        ;; 01:5067 ????????
-    dw   wD652+2, $0080, wD668_PasswordValues+5, $0002        ;; 01:506f ????????
-    dw   wD652+2, $0040, wD668_PasswordValues+5, $0001        ;; 01:5077 ????????
-    dw   wD652+2, $0020, wD668_PasswordValues+6, $0004        ;; 01:507f ????????
-    dw   wD652+2, $0010, wD668_PasswordValues+6, $0002        ;; 01:5087 ????????
-    dw   wD652+2, $0008, wD668_PasswordValues+6, $0001        ;; 01:508f ????????
-    dw   wD652+2, $0004, wD668_PasswordValues+7, $0004        ;; 01:5097 ????????
-    dw   wD652+2, $0002, wD668_PasswordValues+7, $0002        ;; 01:509f ????????
-    dw   wD652+2, $0001, wD668_PasswordValues+7, $0001        ;; 01:50a7 ????????
-    dw   wD652+3, $0080, wD668_PasswordValues+8, $0004        ;; 01:50af ????????
-    dw   wD652+3, $0040, wD668_PasswordValues+8, $0002        ;; 01:50b7 ????????
-    dw   wD652+3, $0020, wD668_PasswordValues+8, $0001        ;; 01:50bf ????????
-    dw   wD652+3, $0010, wD668_PasswordValues+9, $0004        ;; 01:50c7 ????????
-    dw   wD652+3, $0008, wD668_PasswordValues+9, $0002        ;; 01:50cf ????????
-    dw   wD652+3, $0004, wD668_PasswordValues+9, $0001        ;; 01:50d7 ????????
-    dw   wD652+3, $0002, wD668_PasswordValues+10, $0004        ;; 01:50df ????????
-    dw   wD652+3, $0001, wD668_PasswordValues+10, $0002        ;; 01:50e7 ????????
-    dw   wD652+4, $0080, wD668_PasswordValues+10, $0001        ;; 01:50ef ????????
-    dw   wD652+4, $0040, wD668_PasswordValues+11, $0004        ;; 01:50f7 ????????
-    dw   wD652+4, $0020, wD668_PasswordValues+11, $0002        ;; 01:50ff ????????
-    dw   wD652+4, $0010, wD668_PasswordValues+11, $0001        ;; 01:5107 ????????
-    dw   wD652+4, $0008, wD668_PasswordValues+12, $0004        ;; 01:510f ????????
-    dw   wD652+4, $0004, wD668_PasswordValues+12, $0002        ;; 01:5117 ????????
-    dw   wD652+4, $0002, wD668_PasswordValues+12, $0001        ;; 01:511f ????????
-    dw   wD652+4, $0001, wD668_PasswordValues+13, $0004        ;; 01:5127 ????????
-    dw   wD652+5, $0080, wD668_PasswordValues+13, $0002        ;; 01:512f ????????
-    dw   wD652+5, $0040, wD668_PasswordValues+13, $0001        ;; 01:5137 ????????
-    dw   wD652+5, $0020, wD668_PasswordValues+14, $0004        ;; 01:513f ????????
-    dw   wD652+5, $0010, wD668_PasswordValues+14, $0002        ;; 01:5147 ????????
-    dw   wD652+5, $0008, wD668_PasswordValues+14, $0001        ;; 01:514f ????????
-    dw   wD652+5, $0004, wD668_PasswordValues+15, $0004        ;; 01:5157 ????????
-    dw   wD652+5, $0002, wD668_PasswordValues+15, $0002        ;; 01:515f ????????
-    dw   wD652+5, $0001, wD668_PasswordValues+15, $0001        ;; 01:5167 ????????
-    dw   wD652+6, $0080, wD668_PasswordValues+16, $0004        ;; 01:516f ????????
-    dw   wD652+6, $0040, wD668_PasswordValues+16, $0002        ;; 01:5177 ????????
-    dw   wD652+6, $0020, wD668_PasswordValues+16, $0001        ;; 01:517f ????????
-    dw   wD652+6, $0010, wD668_PasswordValues+17, $0004        ;; 01:5187 ????????
-    dw   wD652+6, $0008, wD668_PasswordValues+17, $0002        ;; 01:518f ????????
-    dw   wD652+6, $0004, wD668_PasswordValues+17, $0001        ;; 01:5197 ????????
-    dw   wD652+6, $0002, wD668_PasswordValues+18, $0004        ;; 01:519f ????????
-    dw   wD652+6, $0001, wD668_PasswordValues+18, $0002        ;; 01:51a7 ????????
-    dw   wD652+7, $0080, wD668_PasswordValues+18, $0001        ;; 01:51af ????????
-    dw   wD652+7, $0040, wD668_PasswordValues+19, $0004        ;; 01:51b7 ????????
-    dw   wD652+7, $0020, wD668_PasswordValues+19, $0002        ;; 01:51bf ????????
-    dw   wD652+7, $0010, wD668_PasswordValues+19, $0001        ;; 01:51c7 ????????
-    dw   wD652+7, $0008, wD668_PasswordValues+20, $0004        ;; 01:51cf ????????
-    dw   wD652+7, $0004, wD668_PasswordValues+20, $0002        ;; 01:51d7 ????????
-    dw   wD652+7, $0002, wD668_PasswordValues+20, $0001        ;; 01:51df ????????
-    dw   wD652+7, $0001, wD668_PasswordValues+21, $0004        ;; 01:51e7 ????????
-    dw   wD652+8, $0080, wD668_PasswordValues+21, $0002        ;; 01:51ef ????????
-    dw   wD652+8, $0040, wD668_PasswordValues+21, $0001        ;; 01:51f7 ????????
-    dw   wD652+8, $0020, wD668_PasswordValues+22, $0004        ;; 01:51ff ????????
-    dw   wD652+8, $0010, wD668_PasswordValues+22, $0002        ;; 01:5207 ????????
-    dw   wD652+8, $0008, wD668_PasswordValues+22, $0001        ;; 01:520f ????????
-    dw   wD652+8, $0004, wD668_PasswordValues+23, $0004        ;; 01:5217 ????????
-    dw   wD652+8, $0002, wD668_PasswordValues+23, $0002        ;; 01:521f ????????
-    dw   wD652+8, $0001, wD668_PasswordValues+23, $0001        ;; 01:5227 ????????
-    dw   wD652+9, $0080, wD668_PasswordValues+24, $0004        ;; 01:522f ????????
-    dw   wD652+9, $0040, wD668_PasswordValues+24, $0002        ;; 01:5237 ????????
-    dw   wD652+9, $0020, wD668_PasswordValues+24, $0001        ;; 01:523f ????????
-    dw   wD652+9, $0010, wD668_PasswordValues+25, $0004        ;; 01:5247 ????????
-    dw   wD652+9, $0008, wD668_PasswordValues+25, $0002        ;; 01:524f ????????
-    dw   wD652+9, $0004, wD668_PasswordValues+25, $0001        ;; 01:5257 ????????
-    dw   wD652+9, $0002, wD668_PasswordValues+26, $0004        ;; 01:525f ????????
-    dw   wD652+9, $0001, wD668_PasswordValues+26, $0002        ;; 01:5267 ????????
+.data_01_4fef_Password_BitMap:
+; One entry per bit of the payload, 8 bytes each:
+;   dw source address, dw source mask, dw dest address, dw dest mask
+; A null source address ends the table. Only the low byte of each mask is read,
+; so the words are really bytes with padding.
+;
+; The destination masks cycle $04, $02, $01 - the three bits of one password box -
+; so consecutive entries fill a box MSB first, and a box is finished every third
+; entry. Reading down the source column shows the payload walked in order too,
+; which means this table is not actually a scramble; it is a straight bit copy
+; written out longhand
+    dw   wD652_Password_EncodeBuffer, $0080, wD668_PasswordValues, $0004        ;; 01:4fef ????????
+    dw   wD652_Password_EncodeBuffer, $0040, wD668_PasswordValues, $0002        ;; 01:4ff7 ????????
+    dw   wD652_Password_EncodeBuffer, $0020, wD668_PasswordValues, $0001        ;; 01:4fff ????????
+    dw   wD652_Password_EncodeBuffer, $0010, wD668_PasswordValues+1, $0004        ;; 01:5007 ????????
+    dw   wD652_Password_EncodeBuffer, $0008, wD668_PasswordValues+1, $0002        ;; 01:500f ????????
+    dw   wD652_Password_EncodeBuffer, $0004, wD668_PasswordValues+1, $0001        ;; 01:5017 ????????
+    dw   wD652_Password_EncodeBuffer, $0002, wD668_PasswordValues+2, $0004        ;; 01:501f ????????
+    dw   wD652_Password_EncodeBuffer, $0001, wD668_PasswordValues+2, $0002        ;; 01:5027 ????????
+    dw   wD652_Password_EncodeBuffer+1, $0080, wD668_PasswordValues+2, $0001        ;; 01:502f ????????
+    dw   wD652_Password_EncodeBuffer+1, $0040, wD668_PasswordValues+3, $0004        ;; 01:5037 ????????
+    dw   wD652_Password_EncodeBuffer+1, $0020, wD668_PasswordValues+3, $0002        ;; 01:503f ????????
+    dw   wD652_Password_EncodeBuffer+1, $0010, wD668_PasswordValues+3, $0001        ;; 01:5047 ????????
+    dw   wD652_Password_EncodeBuffer+1, $0008, wD668_PasswordValues+4, $0004        ;; 01:504f ????????
+    dw   wD652_Password_EncodeBuffer+1, $0004, wD668_PasswordValues+4, $0002        ;; 01:5057 ????????
+    dw   wD652_Password_EncodeBuffer+1, $0002, wD668_PasswordValues+4, $0001        ;; 01:505f ????????
+    dw   wD652_Password_EncodeBuffer+1, $0001, wD668_PasswordValues+5, $0004        ;; 01:5067 ????????
+    dw   wD652_Password_EncodeBuffer+2, $0080, wD668_PasswordValues+5, $0002        ;; 01:506f ????????
+    dw   wD652_Password_EncodeBuffer+2, $0040, wD668_PasswordValues+5, $0001        ;; 01:5077 ????????
+    dw   wD652_Password_EncodeBuffer+2, $0020, wD668_PasswordValues+6, $0004        ;; 01:507f ????????
+    dw   wD652_Password_EncodeBuffer+2, $0010, wD668_PasswordValues+6, $0002        ;; 01:5087 ????????
+    dw   wD652_Password_EncodeBuffer+2, $0008, wD668_PasswordValues+6, $0001        ;; 01:508f ????????
+    dw   wD652_Password_EncodeBuffer+2, $0004, wD668_PasswordValues+7, $0004        ;; 01:5097 ????????
+    dw   wD652_Password_EncodeBuffer+2, $0002, wD668_PasswordValues+7, $0002        ;; 01:509f ????????
+    dw   wD652_Password_EncodeBuffer+2, $0001, wD668_PasswordValues+7, $0001        ;; 01:50a7 ????????
+    dw   wD652_Password_EncodeBuffer+3, $0080, wD668_PasswordValues+8, $0004        ;; 01:50af ????????
+    dw   wD652_Password_EncodeBuffer+3, $0040, wD668_PasswordValues+8, $0002        ;; 01:50b7 ????????
+    dw   wD652_Password_EncodeBuffer+3, $0020, wD668_PasswordValues+8, $0001        ;; 01:50bf ????????
+    dw   wD652_Password_EncodeBuffer+3, $0010, wD668_PasswordValues+9, $0004        ;; 01:50c7 ????????
+    dw   wD652_Password_EncodeBuffer+3, $0008, wD668_PasswordValues+9, $0002        ;; 01:50cf ????????
+    dw   wD652_Password_EncodeBuffer+3, $0004, wD668_PasswordValues+9, $0001        ;; 01:50d7 ????????
+    dw   wD652_Password_EncodeBuffer+3, $0002, wD668_PasswordValues+10, $0004        ;; 01:50df ????????
+    dw   wD652_Password_EncodeBuffer+3, $0001, wD668_PasswordValues+10, $0002        ;; 01:50e7 ????????
+    dw   wD652_Password_EncodeBuffer+4, $0080, wD668_PasswordValues+10, $0001        ;; 01:50ef ????????
+    dw   wD652_Password_EncodeBuffer+4, $0040, wD668_PasswordValues+11, $0004        ;; 01:50f7 ????????
+    dw   wD652_Password_EncodeBuffer+4, $0020, wD668_PasswordValues+11, $0002        ;; 01:50ff ????????
+    dw   wD652_Password_EncodeBuffer+4, $0010, wD668_PasswordValues+11, $0001        ;; 01:5107 ????????
+    dw   wD652_Password_EncodeBuffer+4, $0008, wD668_PasswordValues+12, $0004        ;; 01:510f ????????
+    dw   wD652_Password_EncodeBuffer+4, $0004, wD668_PasswordValues+12, $0002        ;; 01:5117 ????????
+    dw   wD652_Password_EncodeBuffer+4, $0002, wD668_PasswordValues+12, $0001        ;; 01:511f ????????
+    dw   wD652_Password_EncodeBuffer+4, $0001, wD668_PasswordValues+13, $0004        ;; 01:5127 ????????
+    dw   wD652_Password_EncodeBuffer+5, $0080, wD668_PasswordValues+13, $0002        ;; 01:512f ????????
+    dw   wD652_Password_EncodeBuffer+5, $0040, wD668_PasswordValues+13, $0001        ;; 01:5137 ????????
+    dw   wD652_Password_EncodeBuffer+5, $0020, wD668_PasswordValues+14, $0004        ;; 01:513f ????????
+    dw   wD652_Password_EncodeBuffer+5, $0010, wD668_PasswordValues+14, $0002        ;; 01:5147 ????????
+    dw   wD652_Password_EncodeBuffer+5, $0008, wD668_PasswordValues+14, $0001        ;; 01:514f ????????
+    dw   wD652_Password_EncodeBuffer+5, $0004, wD668_PasswordValues+15, $0004        ;; 01:5157 ????????
+    dw   wD652_Password_EncodeBuffer+5, $0002, wD668_PasswordValues+15, $0002        ;; 01:515f ????????
+    dw   wD652_Password_EncodeBuffer+5, $0001, wD668_PasswordValues+15, $0001        ;; 01:5167 ????????
+    dw   wD652_Password_EncodeBuffer+6, $0080, wD668_PasswordValues+16, $0004        ;; 01:516f ????????
+    dw   wD652_Password_EncodeBuffer+6, $0040, wD668_PasswordValues+16, $0002        ;; 01:5177 ????????
+    dw   wD652_Password_EncodeBuffer+6, $0020, wD668_PasswordValues+16, $0001        ;; 01:517f ????????
+    dw   wD652_Password_EncodeBuffer+6, $0010, wD668_PasswordValues+17, $0004        ;; 01:5187 ????????
+    dw   wD652_Password_EncodeBuffer+6, $0008, wD668_PasswordValues+17, $0002        ;; 01:518f ????????
+    dw   wD652_Password_EncodeBuffer+6, $0004, wD668_PasswordValues+17, $0001        ;; 01:5197 ????????
+    dw   wD652_Password_EncodeBuffer+6, $0002, wD668_PasswordValues+18, $0004        ;; 01:519f ????????
+    dw   wD652_Password_EncodeBuffer+6, $0001, wD668_PasswordValues+18, $0002        ;; 01:51a7 ????????
+    dw   wD652_Password_EncodeBuffer+7, $0080, wD668_PasswordValues+18, $0001        ;; 01:51af ????????
+    dw   wD652_Password_EncodeBuffer+7, $0040, wD668_PasswordValues+19, $0004        ;; 01:51b7 ????????
+    dw   wD652_Password_EncodeBuffer+7, $0020, wD668_PasswordValues+19, $0002        ;; 01:51bf ????????
+    dw   wD652_Password_EncodeBuffer+7, $0010, wD668_PasswordValues+19, $0001        ;; 01:51c7 ????????
+    dw   wD652_Password_EncodeBuffer+7, $0008, wD668_PasswordValues+20, $0004        ;; 01:51cf ????????
+    dw   wD652_Password_EncodeBuffer+7, $0004, wD668_PasswordValues+20, $0002        ;; 01:51d7 ????????
+    dw   wD652_Password_EncodeBuffer+7, $0002, wD668_PasswordValues+20, $0001        ;; 01:51df ????????
+    dw   wD652_Password_EncodeBuffer+7, $0001, wD668_PasswordValues+21, $0004        ;; 01:51e7 ????????
+    dw   wD652_Password_EncodeBuffer+8, $0080, wD668_PasswordValues+21, $0002        ;; 01:51ef ????????
+    dw   wD652_Password_EncodeBuffer+8, $0040, wD668_PasswordValues+21, $0001        ;; 01:51f7 ????????
+    dw   wD652_Password_EncodeBuffer+8, $0020, wD668_PasswordValues+22, $0004        ;; 01:51ff ????????
+    dw   wD652_Password_EncodeBuffer+8, $0010, wD668_PasswordValues+22, $0002        ;; 01:5207 ????????
+    dw   wD652_Password_EncodeBuffer+8, $0008, wD668_PasswordValues+22, $0001        ;; 01:520f ????????
+    dw   wD652_Password_EncodeBuffer+8, $0004, wD668_PasswordValues+23, $0004        ;; 01:5217 ????????
+    dw   wD652_Password_EncodeBuffer+8, $0002, wD668_PasswordValues+23, $0002        ;; 01:521f ????????
+    dw   wD652_Password_EncodeBuffer+8, $0001, wD668_PasswordValues+23, $0001        ;; 01:5227 ????????
+    dw   wD652_Password_EncodeBuffer+9, $0080, wD668_PasswordValues+24, $0004        ;; 01:522f ????????
+    dw   wD652_Password_EncodeBuffer+9, $0040, wD668_PasswordValues+24, $0002        ;; 01:5237 ????????
+    dw   wD652_Password_EncodeBuffer+9, $0020, wD668_PasswordValues+24, $0001        ;; 01:523f ????????
+    dw   wD652_Password_EncodeBuffer+9, $0010, wD668_PasswordValues+25, $0004        ;; 01:5247 ????????
+    dw   wD652_Password_EncodeBuffer+9, $0008, wD668_PasswordValues+25, $0002        ;; 01:524f ????????
+    dw   wD652_Password_EncodeBuffer+9, $0004, wD668_PasswordValues+25, $0001        ;; 01:5257 ????????
+    dw   wD652_Password_EncodeBuffer+9, $0002, wD668_PasswordValues+26, $0004        ;; 01:525f ????????
+    dw   wD652_Password_EncodeBuffer+9, $0001, wD668_PasswordValues+26, $0002        ;; 01:5267 ????????
     dw   $0000                             ;; 01:526f ??
 
-call_01_5271_ProcessPassword: ; handles setting save data from password 
+call_01_5271_ProcessPassword: ; handles setting save data from password
+; The inverse of call_01_4349_LoadEnteringMenu plus call_01_4fa5_SetupPassword.
+; Three ways to fail, in order: any blank box, then a checksum mismatch, and the
+; caller treats a rejection by swapping in the "wrong password" screen.
+;
+; Unpacking is a plain bit loop rather than the table the encoder uses - subtract
+; PASSWORD_CHAR_BASE to get 0-7, then shift the three bits out MSB first into
+; wD65C_Password_DecodeBuffer, walking C as a rotating bit mask and stepping HL
+; whenever it wraps. On success the payload is expanded back out into
+; wD629_RemoteProgressFlags level by level, mirroring the encoder's mask walk
     ; check if any of the boxes are blank. if so, it is an invalid password
     ld   HL, wD668_PasswordValues                      ;; 01:5271 $21 $68 $d6
-    ld   B, $1c                                        ;; 01:5274 $06 $1c ; 1c is the number of password boxes [28]
+    ld   B, PASSWORD_BOX_COUNT                         ;; 01:5274 $06 $1c ; 28 password boxes
 .jr_01_5276:
     ld   A, [HL+]                                      ;; 01:5276 $2a
-    cp   A, $20                                        ;; 01:5277 $fe $20
+    cp   A, PASSWORD_KEY_BLANK                         ;; 01:5277 $fe $20
     jp   Z, .jp_01_531a                                ;; 01:5279 $ca $1a $53
     dec  B                                             ;; 01:527c $05
     jr   NZ, .jr_01_5276                               ;; 01:527d $20 $f7 
-    ld   HL, wD65C                                     ;; 01:527f $21 $5c $d6 ; set these 11 bytes to 0
+    ld   HL, wD65C_Password_DecodeBuffer                                     ;; 01:527f $21 $5c $d6 ; set these 11 bytes to 0
     ld   B, $0b                                        ;; 01:5282 $06 $0b ; b = 11
     xor  A, A                                          ;; 01:5284 $af ; a = 0
 .jr_01_5285:
     ld   [HL+], A                                      ;; 01:5285 $22
     dec  B                                             ;; 01:5286 $05
     jr   NZ, .jr_01_5285                               ;; 01:5287 $20 $fc
-    ld   HL, wD65C                                     ;; 01:5289 $21 $5c $d6 ; decode the password into wD65C array of 11 bytes
+    ld   HL, wD65C_Password_DecodeBuffer                                     ;; 01:5289 $21 $5c $d6 ; decode the password into wD65C_Password_DecodeBuffer array of 11 bytes
     ld   DE, wD668_PasswordValues                      ;; 01:528c $11 $68 $d6
     ld   A, $1c                                        ;; 01:528f $3e $1c ; 28
     ld   C, $80                                        ;; 01:5291 $0e $80 ; 128
@@ -2577,9 +2637,9 @@ call_01_5271_ProcessPassword: ; handles setting save data from password
     push AF                                            ;; 01:5293 $f5
     push DE                                            ;; 01:5294 $d5
     ld   A, [DE]                                       ;; 01:5295 $1a ; a = value in password box
-    sub  A, $41                                        ;; 01:5296 $d6 $41 ; subtract 0x41 to make value 0-7
+    sub  A, PASSWORD_CHAR_BASE                         ;; 01:5296 $d6 $41 ; 'A'-'H' becomes 0-7
     ld   E, A                                          ;; 01:5298 $5f
-    ld   B, $03                                        ;; 01:5299 $06 $03
+    ld   B, PASSWORD_BITS_PER_BOX                      ;; 01:5299 $06 $03
 .jr_01_529b:
     bit  2, E                                          ;; 01:529b $cb $53
     jr   Z, .jr_01_52a2                                ;; 01:529d $28 $03
@@ -2599,7 +2659,7 @@ call_01_5271_ProcessPassword: ; handles setting save data from password
     pop  AF                                            ;; 01:52ae $f1
     dec  A                                             ;; 01:52af $3d
     jr   NZ, .jr_01_5293                               ;; 01:52b0 $20 $e1
-    ld   HL, wD65C                                     ;; 01:52b2 $21 $5c $d6 ; add up all the values into a
+    ld   HL, wD65C_Password_DecodeBuffer                                     ;; 01:52b2 $21 $5c $d6 ; add up all the values into a
     ld   B, $09                                        ;; 01:52b5 $06 $09
     xor  A, A                                          ;; 01:52b7 $af
 .jr_01_52b8:
@@ -2607,16 +2667,16 @@ call_01_5271_ProcessPassword: ; handles setting save data from password
     inc  HL                                            ;; 01:52b9 $23
     dec  B                                             ;; 01:52ba $05
     jr   NZ, .jr_01_52b8                               ;; 01:52bb $20 $fb
-    ld   HL, wD665                                     ;; 01:52bd $21 $65 $d6 ; invalid password if the sum of values is not equal to value in wD665
+    ld   HL, wD665_Password_DecodeChecksum                                     ;; 01:52bd $21 $65 $d6 ; invalid password if the sum of values is not equal to value in wD665_Password_DecodeChecksum
     cp   A, [HL]                                       ;; 01:52c0 $be
     jr   NZ, .jp_01_531a                               ;; 01:52c1 $20 $57
-    ld   A, [wD664]                                    ;; 01:52c3 $fa $64 $d6 ; set lives to value in wD664
+    ld   A, [wD664_Password_DecodeLives]                                    ;; 01:52c3 $fa $64 $d6 ; set lives to value in wD664_Password_DecodeLives
     ld   [wD73D_LivesRemaining], A                                    ;; 01:52c6 $ea $3d $d7
     ld   A, [wD624_CurrentLevelId]                     ;; 01:52c9 $fa $24 $d6 ; set current level to 0
     push AF                                            ;; 01:52cc $f5
     xor  A, A                                          ;; 01:52cd $af
     ld   [wD624_CurrentLevelId], A                                    ;; 01:52ce $ea $24 $d6
-    ld   HL, wD65C                                     ;; 01:52d1 $21 $5c $d6 ; set remote bitfields
+    ld   HL, wD65C_Password_DecodeBuffer                                     ;; 01:52d1 $21 $5c $d6 ; set remote bitfields
     ld   C, $80                                        ;; 01:52d4 $0e $80
 .jr_01_52d6:
     push HL                                            ;; 01:52d6 $e5
