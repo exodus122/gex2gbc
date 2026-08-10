@@ -156,32 +156,11 @@ call_0b_561b_GBC_LoadLevelBgPalette:
 .image_title_screen_008_0_palette: ; Palette for 4th title screen splash (big gex image) ; 5703
     INCBIN "gfx/menus/palettes/image_title_screen_008_0_palette.bin"    
 .data_5743_Palette: ; Palette for Password Entering Screen on title screen ; 5743
-    db   $00, $00, $4a, $29, $73, $52, $5a, $6b        ;; 0b:5743 ........
-    db   $00, $00, $8c, $01, $c0, $02, $5a, $03        ;; 0b:574b ........
-    db   $00, $00, $10, $42, $18, $63, $ff, $7f        ;; 0b:5753 ........
-    db   $00, $00, $e0, $01, $e0, $02, $e0, $03        ;; 0b:575b ........
-    db   $00, $00, $ef, $3d, $f7, $5e, $ff, $7f        ;; 0b:5763 ........
-    db   $00, $00, $ef, $01, $f7, $02, $ff, $03        ;; 0b:576b ........
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:5773 ........
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:577b ........
+    INCBIN "gfx/menus/palettes/data_5743_Palette.bin"    
 .data_5783_Palette: ; Palette for ??? ; 5783
-    db   $00, $00, $4a, $29, $73, $52, $5a, $6b        ;; 0b:5783 ????????
-    db   $00, $00, $8c, $01, $c0, $02, $5a, $03        ;; 0b:578b ????????
-    db   $00, $00, $10, $42, $18, $63, $ff, $7f        ;; 0b:5793 ????????
-    db   $00, $00, $e0, $01, $e0, $02, $e0, $03        ;; 0b:579b ????????
-    db   $00, $00, $ef, $3d, $f7, $5e, $ff, $7f        ;; 0b:57a3 ????????
-    db   $00, $00, $ef, $01, $f7, $02, $ff, $03        ;; 0b:57ab ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:57b3 ????????
-    db   $00, $00, $00, $00, $6b, $2d, $5a, $6b        ;; 0b:57bb ????????
+    INCBIN "gfx/menus/palettes/data_5783_Palette.bin"   
 .data_57c3_Palette: ; Palette for ??? ; 57c3
-    db   $e0, $01, $e0, $01, $e0, $01, $e0, $01        ;; 0b:57c3 ????????
-    db   $00, $00, $8d, $00, $74, $01, $bc, $02        ;; 0b:57cb ????????
-    db   $00, $00, $0c, $01, $36, $02, $00, $7c        ;; 0b:57d3 ????????
-    db   $00, $00, $0c, $01, $36, $02, $bc, $02        ;; 0b:57db ????????
-    db   $00, $00, $0c, $01, $36, $02, $7f, $33        ;; 0b:57e3 ????????
-    db   $00, $00, $05, $25, $4e, $52, $12, $6f        ;; 0b:57eb ????????
-    db   $00, $00, $8d, $00, $36, $02, $bc, $02        ;; 0b:57f3 ????????
-    db   $00, $00, $3b, $04, $41, $69, $e0, $76        ;; 0b:57fb ????????
+    INCBIN "gfx/menus/palettes/data_57c3_Palette.bin"   
 .image_great_job_00c_2_palette: ; Palette for "Great Job! Thanks for Playing- The GEX Team" ; 5803
     INCBIN "gfx/menus/palettes/image_great_job_00c_2_palette.bin"
 .image_splash_01f_1_palette: ; Palette for first title screen splash (gex enter the gecko) ; 5843
@@ -191,77 +170,21 @@ call_0b_561b_GBC_LoadLevelBgPalette:
 .image_david_01e_0_palette: ; Palette for 3rd title screen splash (David A Palmer Productions) ; 58c3
     INCBIN "gfx/menus/palettes/image_david_01e_0_palette.bin"
 .data_5903_Palette: ; Palette for credits?
-    db   $ff, $7f, $bf, $63, $f7, $4a, $00, $00        ;; 0b:5903 ........
-    db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:590b ........
-    db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:5913 ........
-    db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:591b ........
-    db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:5923 ........
-    db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:592b ........
-    db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:5933 ........
-    db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:593b ........
+    INCBIN "gfx/menus/palettes/data_5903_Palette.bin"   
 .data_5943_Palette: ; Palette for credits?
-    db   $ff, $7f, $bf, $63, $f7, $4a, $00, $00        ;; 0b:5943 ????????
-    db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:594b ????????
-    db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:5953 ????????
-    db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:595b ????????
-    db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:5963 ????????
-    db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:596b ????????
-    db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:5973 ????????
-    db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:597b ????????
+    INCBIN "gfx/menus/palettes/data_5943_Palette.bin"   
 .data_5983_Palette: ; Palette for credits?
-    db   $ff, $7f, $bf, $63, $f7, $4a, $00, $00        ;; 0b:5983 ????????
-    db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:598b ????????
-    db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:5993 ????????
-    db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:599b ????????
-    db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:59a3 ????????
-    db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:59ab ????????
-    db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:59b3 ????????
-    db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:59bb ????????
+    INCBIN "gfx/menus/palettes/data_5983_Palette.bin"   
 .data_59c3_Palette: ; Palette for credits?
-    db   $ff, $7f, $bf, $63, $f7, $4a, $00, $00        ;; 0b:59c3 ????????
-    db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:59cb ????????
-    db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:59d3 ????????
-    db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:59db ????????
-    db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:59e3 ????????
-    db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:59eb ????????
-    db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:59f3 ????????
-    db   $e0, $03, $e0, $03, $e0, $03, $e0, $03        ;; 0b:59fb ????????
+    INCBIN "gfx/menus/palettes/data_59c3_Palette.bin"   
 .data_5a03_Palette: ; unknown palette. may be unused.
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:5a03 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:5a0b ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:5a13 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:5a1b ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:5a23 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:5a2b ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:5a33 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:5a3b ????????
-; unknown palette. may be unused.
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:5a43 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:5a4b ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:5a53 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:5a5b ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:5a63 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:5a6b ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:5a73 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:5a7b ????????
+    INCBIN "gfx/menus/palettes/data_5a03_Palette.bin"   
+.data_5a43_Palette: ; unknown palette. may be unused.
+    INCBIN "gfx/menus/palettes/data_5a43_Palette.bin"   
 .data_5a83_Palette: ; Palette for "Entering <level>" screen, also the 4 pause screens (main, exit to map, quit game, totals)
-    db   $00, $00, $00, $02, $00, $00, $e0, $03        ;; 0b:5a83 ........
-    db   $00, $00, $8c, $01, $c0, $02, $5a, $03        ;; 0b:5a8b ........
-    db   $00, $00, $10, $42, $18, $63, $ff, $7f        ;; 0b:5a93 ........
-    db   $00, $00, $e0, $01, $e0, $02, $e0, $03        ;; 0b:5a9b ........
-    db   $00, $00, $ef, $3d, $f7, $5e, $ff, $7f        ;; 0b:5aa3 ........
-    db   $00, $00, $ef, $01, $f7, $02, $ff, $03        ;; 0b:5aab ........
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:5ab3 ........
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:5abb ........
-; unknown palette
-    db   $00, $00, $00, $02, $00, $00, $e0, $03        ;; 0b:5ac3 ........
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:5acb ........
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:5ad3 ........
-    db   $00, $00, $0f, $00, $17, $00, $1f, $00        ;; 0b:5adb ........
-    db   $00, $00, $ef, $3d, $f7, $5e, $ff, $7f        ;; 0b:5ae3 ........
-    db   $00, $00, $ef, $01, $f7, $02, $ff, $03        ;; 0b:5aeb ........
-    db   $00, $00, $00, $00, $20, $03, $bf, $0b        ;; 0b:5af3 ........
-    db   $00, $00, $1f, $00, $ff, $01, $7f, $03        ;; 0b:5afb ........
+    INCBIN "gfx/menus/palettes/data_5a83_Palette.bin"   
+.data_5ac3_Palette: ; unknown palette. may be unused.
+    INCBIN "gfx/menus/palettes/data_5ac3_Palette.bin"   
 .data_gex_entity_palette2:
     db   $00, $00, $00, $00, $8a, $02, $fd, $03        ;; 0b:5b03 ........
 .palette_media_dimension:

@@ -187,7 +187,7 @@ DEF SFX_13                                 EQU $13 ; unused?
 DEF SFX_MENU_UNK_1                         EQU $14
 DEF SFX_MENU_UNK_2                         EQU $15
 DEF SFX_16                                 EQU $16 ; unused?
-DEF SFX_ENEMY_DEFEATED                         EQU $17
+DEF SFX_ENEMY_DEFEATED                     EQU $17
 DEF SFX_18                                 EQU $18 ; unused?
 DEF SFX_HARD_HEAD_AREA_HAZARD              EQU $19
 DEF SFX_FALLING_HAZARD                     EQU $1A
@@ -896,7 +896,7 @@ DEF COLLISION_TYPE_POWERED_WALKWAY            EQU $21
 DEF COLLISION_TYPE_POWER_UP                   EQU $22
 DEF COLLISION_TYPE_DRAGON_PROJECTILE          EQU $23
 DEF COLLISION_TYPE_REZ                        EQU $24
-DEF COLLISION_TYPE_UNK_PLATFORM_FLAG          EQU $80
+DEF COLLISION_TYPE_PLATFORM                   EQU $80
 
 ; Text
 DEF END_TEXT        EQU $80

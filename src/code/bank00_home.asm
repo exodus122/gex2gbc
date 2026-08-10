@@ -889,13 +889,19 @@ data_00_0771_DemoInputScriptPointers:
 ; 4 pointers into the demo input scripts that follow. Each script is a run-length
 ; list of (frame count, button bits) pairs terminated by $FF, replayed into
 ; wD620_DemoInputs while wD61E_DemoModeEnabled is set
-    db   $79, $07, $7c, $07        ;; 00:076d ????????
-    db   $7f, $07, $9e, $07, $64, $10, $ff, $64        ;; 00:0775 ????????
-    db   $10, $ff, $30, $10, $08, $11, $40, $10        ;; 00:077d ????????
-    db   $08, $11, $a4, $10, $40, $00, $60, $10        ;; 00:0785 ????????
-    db   $04, $12, $6c, $10, $20, $20, $08, $21        ;; 00:078d ????????
-    db   $20, $20, $10, $22, $50, $20, $a0, $10        ;; 00:0795 ????????
-    db   $ff, $64, $10, $ff                            ;; 00:079d ????
+    dw   .data_00_0779, .data_00_077c
+    dw   .data_00_077f, .data_00_$079e
+.data_00_0779:
+    db   $64, $10, $ff
+.data_00_077c:
+    db   $64, $10, $ff
+.data_00_077f:
+    db   $30, $10, $08, $11, $40, $10, $08, $11
+    db   $a4, $10, $40, $00, $60, $10, $04, $12
+    db   $6c, $10, $20, $20, $08, $21, $20, $20
+    db   $10, $22, $50, $20, $a0, $10, $ff
+.data_00_$079e:
+    db   $64, $10, $ff
 
 call_00_07a1_FarMemCopy:
     push HL                                            ;; 00:07a1 $e5
@@ -1140,11 +1146,17 @@ call_00_08b1_MediaDimension_CopyTVAttributes:
     pop  HL                                            ;; 00:08e4 $e1
     ret                                                ;; 00:08e5 $c9
 .data_00_08e6_TVAttributeTable:
-    db   $00, $40, $00, $6d, $00, $70, $00, $6a        ;; 00:08e6 ????????
-    db   $00, $76, $00, $40                            ;; 00:08ee ????
-    dw   $4000                                         ;; 00:08f2 wW
-    dw   $6700                                         ;; 00:08f4 wW
-    db   $00, $79, $00, $40, $00, $73                  ;; 00:08f6 ??????
+    dw   image_013_00_scream_tv_screen
+    dw   image_013_15_circuit_central_screen
+    dw   image_013_16_kung_fu_theater_screen
+    dw   image_013_14_prehistory_channel_screen
+    dw   image_013_18_rezopolis_screen
+    dw   image_013_00_scream_tv_screen
+    dw   image_013_00_scream_tv_screen
+    dw   image_013_13_toon_tv_screen
+    dw   image_013_19_bonus_tv_screen
+    dw   image_013_00_scream_tv_screen
+    dw   image_013_17_channel_z_screen
 
 call_00_08fc_StageNextGfxTransfer:
 ; Stages the next pending graphics transfer for the LCD STAT streaming handler.
@@ -1635,27 +1647,34 @@ call_00_0bb9_InstallLcdIsr:
 
 .data_00_0be7_LcdIsrTemplate_VramStream:
 ; Streams wD100_TilesToLoadBuffer into a single VRAM page, 4 bytes per hblank, walking
-; backwards from $D1FF. Assembled by hand as data because it is copied into
-; wCCA0_LcdIsrCode and then self-modified:
-;   $d9         reti                      ; patched to OPCODE_PUSH_AF to arm it
-;   $e5 $d5     push hl / push de
-;   $21 ff d1   ld hl,$D1FF               ; operand = wCCA4_LcdIsr_SrcAddrLo/Hi
-;   $16 80      ld d,$80                  ; operand = wCCA7_LcdIsr_DestPageHi
-;   $5d         ld e,l
-;   4x ($3a $12 [$1d])                    ; ldd a,[hl] / ld [de],a / dec e
-;   $7d $ea a4 cc  ld a,l / ld [wCCA4],a  ; save the walked-back source pointer
-;   $3c $20 0b  inc a / jr nz,+$0b        ; when it wraps to $FF the page is done
-    db   $d9, $e5, $d5, $21, $ff, $d1, $16, $80        ;; 00:0be7 ........
-    db   $5d, $3a, $12, $1d, $3a, $12, $1d, $3a        ;; 00:0bef ........
-    db   $12, $1d, $3a, $12, $7d, $ea, $a4, $cc        ;; 00:0bf7 ........
-    db   $3c, $20, $0b
-
-; ...continued: the page just finished, so clear GFX_XFER_IN_PROGRESS and disarm the
+; backwards from $D1FF. clear GFX_XFER_IN_PROGRESS and disarm the
 ; handler by writing a reti back over its first byte
+    db   OPCODE_RETI                                   ;; 00:0be5 $d9
+    push hl
+    push de
+    ld   hl,$D1FF
+    ld   d,$80
+    ld   e,l
+    ldd  a,[hl]
+    ld   [de],a
+    dec  e
+    ldd  a,[hl]
+    ld   [de],a
+    dec  e
+    ldd  a,[hl]
+    ld   [de],a
+    dec  e
+    ldd  a,[hl]
+    ld   [de],a
+    ld   a,l
+    ld   [wCCA4_LcdIsr_SrcAddrLo],a
+    inc  a
+    jr   nz, .jr_00_0C0D
     ld   hl,wD60F_GfxTransferFlags
     res  GFX_XFER_IN_PROGRESS,[hl]
     ld   a,[data_00_0d83_RetiOpcode]
     ld   [wCCA0_LcdIsrCode],a
+.jr_00_0C0D:
     pop  de
     pop  hl
     pop  af
@@ -2509,21 +2528,64 @@ call_00_113e_PlaySFX:
     ld   [wD789_QueuedSFX], A                                    ;; 00:1166 $ea $89 $d7
     jp   call_00_10a3_RestoreBank                                  ;; 00:1169 $c3 $a3 $10
 .data_00_116c_SFXChannelTable:
-    db   $01, $00, $01, $01, $01, $02, $01, $03        ;; 00:116c ....????
-    db   $01, $04, $01, $05, $01, $06, $01, $07        ;; 00:1174 ????..??
-    db   $01, $08, $01, $09, $01, $0a, $01, $0b        ;; 00:117c ????????
-    db   $01, $0c, $01, $0d, $01, $0e, $01, $0f        ;; 00:1184 ........
-    db   $01, $10, $01, $11, $01, $12, $01, $13        ;; 00:118c ??..????
-    db   $01, $14, $01, $15, $01, $16, $01, $17        ;; 00:1194 ??????..
-    db   $01, $18, $01, $19, $01, $1a, $01, $1b        ;; 00:119c ??....??
-    db   $01, $1d, $01, $1e, $01, $1f, $01, $20        ;; 00:11a4 ..??????
-    db   $01, $21, $01, $22, $01, $23, $01, $24        ;; 00:11ac ????????
-    db   $01, $26, $01, $27, $01, $29, $01, $2a        ;; 00:11b4 ..??????
-    db   $01, $2b, $01, $2c, $01, $2d, $01, $2e        ;; 00:11bc ????????
-    db   $01, $2f, $01, $30, $01, $31, $01, $33        ;; 00:11c4 ????????
-    db   $01, $34, $01, $35, $01, $36, $01, $37        ;; 00:11cc ????????
-    db   $01, $38, $01, $39, $01, $3a, $01, $3b        ;; 00:11d4 ????????
-    db   $01, $3c, $01, $3d                            ;; 00:11dc ????
+    db   $01, $00
+    db   $01, $01
+    db   $01, $02
+    db   $01, $03
+    db   $01, $04
+    db   $01, $05
+    db   $01, $06
+    db   $01, $07
+    db   $01, $08
+    db   $01, $09
+    db   $01, $0a
+    db   $01, $0b
+    db   $01, $0c
+    db   $01, $0d
+    db   $01, $0e
+    db   $01, $0f
+    db   $01, $10
+    db   $01, $11
+    db   $01, $12
+    db   $01, $13
+    db   $01, $14
+    db   $01, $15
+    db   $01, $16
+    db   $01, $17
+    db   $01, $18
+    db   $01, $19
+    db   $01, $1a
+    db   $01, $1b
+    db   $01, $1d
+    db   $01, $1e
+    db   $01, $1f
+    db   $01, $20
+    db   $01, $21
+    db   $01, $22
+    db   $01, $23
+    db   $01, $24
+    db   $01, $26
+    db   $01, $27
+    db   $01, $29
+    db   $01, $2a
+    db   $01, $2b
+    db   $01, $2c
+    db   $01, $2d
+    db   $01, $2e
+    db   $01, $2f
+    db   $01, $30
+    db   $01, $31
+    db   $01, $33
+    db   $01, $34
+    db   $01, $35
+    db   $01, $36
+    db   $01, $37
+    db   $01, $38
+    db   $01, $39
+    db   $01, $3a
+    db   $01, $3b
+    db   $01, $3c
+    db   $01, $3d
 
 call_00_11e0_PlayMusicBasedOnLevel:
     ld   HL, wD624_CurrentLevelId                                     ;; 00:11e0 $21 $24 $d6

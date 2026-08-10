@@ -235,8 +235,9 @@ image_012_6000:
 
 SECTION "bank13", ROMX[$4000], BANK[$13]
 media_dimension_secondary_tilesets:
-    INCBIN ".gfx/secondary_tilesets/media_dimension/image_013_00.bin"
-    INCBIN "gfx/secondary_tilesets/media_dimension/palette_ids/image_013_00_palette_ids.bin"
+image_013_00_scream_tv_screen:
+    INCBIN ".gfx/secondary_tilesets/media_dimension/image_013_00_scream_tv_screen.bin"
+    INCBIN "gfx/secondary_tilesets/media_dimension/palette_ids/image_013_00_scream_tv_screen_palette_ids.bin"
     INCBIN ".gfx/secondary_tilesets/media_dimension/image_013_01.bin"
     INCBIN "gfx/secondary_tilesets/media_dimension/palette_ids/image_013_01_palette_ids.bin"
     INCBIN ".gfx/secondary_tilesets/media_dimension/image_013_02.bin"
@@ -261,20 +262,27 @@ media_dimension_secondary_tilesets:
     INCBIN "gfx/secondary_tilesets/media_dimension/palette_ids/image_013_11_palette_ids.bin"
     INCBIN ".gfx/secondary_tilesets/media_dimension/image_013_12.bin"
     INCBIN "gfx/secondary_tilesets/media_dimension/palette_ids/image_013_12_palette_ids.bin"
-    INCBIN ".gfx/secondary_tilesets/media_dimension/image_013_13.bin"
-    INCBIN "gfx/secondary_tilesets/media_dimension/palette_ids/image_013_13_palette_ids.bin"
-    INCBIN ".gfx/secondary_tilesets/media_dimension/image_013_14.bin"
-    INCBIN "gfx/secondary_tilesets/media_dimension/palette_ids/image_013_14_palette_ids.bin"
-    INCBIN ".gfx/secondary_tilesets/media_dimension/image_013_15.bin"
-    INCBIN "gfx/secondary_tilesets/media_dimension/palette_ids/image_013_15_palette_ids.bin"
-    INCBIN ".gfx/secondary_tilesets/media_dimension/image_013_16.bin"
-    INCBIN "gfx/secondary_tilesets/media_dimension/palette_ids/image_013_16_palette_ids.bin"
-    INCBIN ".gfx/secondary_tilesets/media_dimension/image_013_17.bin"
-    INCBIN "gfx/secondary_tilesets/media_dimension/palette_ids/image_013_17_palette_ids.bin"
-    INCBIN ".gfx/secondary_tilesets/media_dimension/image_013_18.bin"
-    INCBIN "gfx/secondary_tilesets/media_dimension/palette_ids/image_013_18_palette_ids.bin"
-    INCBIN ".gfx/secondary_tilesets/media_dimension/image_013_19.bin"
-    INCBIN "gfx/secondary_tilesets/media_dimension/palette_ids/image_013_19_palette_ids.bin"
+image_013_13_toon_tv_screen:
+    INCBIN ".gfx/secondary_tilesets/media_dimension/image_013_13_toon_tv_screen.bin"
+    INCBIN "gfx/secondary_tilesets/media_dimension/palette_ids/image_013_13_toon_tv_screen_palette_ids.bin"
+image_013_14_prehistory_channel_screen:
+    INCBIN ".gfx/secondary_tilesets/media_dimension/image_013_14_prehistory_channel_screen.bin"
+    INCBIN "gfx/secondary_tilesets/media_dimension/palette_ids/image_013_14_prehistory_channel_screen_palette_ids.bin"
+image_013_15_circuit_central_screen:
+    INCBIN ".gfx/secondary_tilesets/media_dimension/image_013_15_circuit_central_screen.bin"
+    INCBIN "gfx/secondary_tilesets/media_dimension/palette_ids/image_013_15_circuit_central_screen_palette_ids.bin"
+image_013_16_kung_fu_theater_screen:
+    INCBIN ".gfx/secondary_tilesets/media_dimension/image_013_16_kung_fu_theater_screen.bin"
+    INCBIN "gfx/secondary_tilesets/media_dimension/palette_ids/image_013_16_kung_fu_theater_screen_palette_ids.bin"
+image_013_17_channel_z_screen:
+    INCBIN ".gfx/secondary_tilesets/media_dimension/image_013_17_channel_z_screen.bin"
+    INCBIN "gfx/secondary_tilesets/media_dimension/palette_ids/image_013_17_channel_z_screen_palette_ids.bin"
+image_013_18_rezopolis_screen:
+    INCBIN ".gfx/secondary_tilesets/media_dimension/image_013_18_rezopolis_screen.bin"
+    INCBIN "gfx/secondary_tilesets/media_dimension/palette_ids/image_013_18_rezopolis_screen_palette_ids.bin"
+image_013_19_bonus_tv_screen:
+    INCBIN ".gfx/secondary_tilesets/media_dimension/image_013_19_bonus_tv_screen.bin"
+    INCBIN "gfx/secondary_tilesets/media_dimension/palette_ids/image_013_19_bonus_tv_screen_palette_ids.bin"
 
 SECTION "bank14", ROMX[$4000], BANK[$14]
 image_014_4000:
