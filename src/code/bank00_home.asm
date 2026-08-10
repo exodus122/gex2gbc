@@ -2738,7 +2738,20 @@ call_00_3c54_Remotes_CountAndStore:
     set  7, [HL]                                       ;; 00:3c6f $cb $fe
     ret                                                ;; 00:3c71 $c9
 
-data_00_3c72:
+data_00_3c72_Image_PasswordHeadings:
+; The words the three password screens put across the top, in one 28x2 tile strip:
+; "Enter" "Current" "Invalid" "Password". Entry 7 of data_01_74ed_ImageTable2 - the
+; only image in that table that lives outside bank 01, which is presumably just
+; where there was room for it.
+;
+; data_01_592d_MenuScript_PasswordCells stages the whole strip at tile $06, filling
+; $06-$3D exactly up to PASSWORD_KEYBOARD_TILE_BASE. The tiles are column major
+; (rgbgfx --columns, see the Makefile), so each 8x16 sprite column is a tile pair and
+; the three header sprite scripts just index into the strip: $06 picks "Enter", $10
+; "Current", $1E "Invalid", and all three follow it with $2C for "Password".
+;
+; The three header bytes are the usual width / height / skip-copy flag. The $FE after
+; the graphics is a stray byte at the very end of the bank, not part of the image
     db   $1c, $02, $00
-    INCBIN ".gfx/misc_sprites/image_000_3c75.bin"  
+    INCBIN ".gfx/misc_sprites/image_password_headings.bin"
     db   $fe  

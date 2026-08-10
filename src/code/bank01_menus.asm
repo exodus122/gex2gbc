@@ -2444,7 +2444,7 @@ call_01_4e94_Menu_WaitForNoInput:
     and  A, MENU_FLAG_GRID_CURSOR                      ;; 01:4ea4 $e6 $02
     ld   A, [wD59F_CurrentInputs]                                    ;; 01:4ea6 $fa $9f $d5
     jr   Z, .jr_01_4ead                                ;; 01:4ea9 $28 $02
-    and  A, PADF_SELECT | PADF_START | PADF_RIGHT | PADF_LEFT | PADF_UP | PADF_DOWN                                        ;; 01:4eab $e6 $fc
+    and  A, PADF_SELECT | PADF_START | PADF_RIGHT | PADF_LEFT | PADF_UP | PADF_DOWN    ;; 01:4eab $e6 $fc
 .jr_01_4ead:
     and  A, A                                          ;; 01:4ead $a7
     jr   NZ, call_01_4e94_Menu_WaitForNoInput                              ;; 01:4eae $20 $e4
@@ -4055,7 +4055,8 @@ data_01_5c13_SpriteScript_Totals_StatsPage:
     db   SPRITE_SCRIPT_END
 
 data_01_5c6f_SpriteScript_EnterPasswordHeader:
-; Header sprites over the ENTER PASSWORD keyboard
+; "Enter Password" - two slices of data_00_3c72_Image_PasswordHeadings, staged at
+; tile $06, so the words are sprites rather than part of the tilemap
     db   $02                                            ; first OAM slot
     ;     Y,   X,  tile, attr, w, h
     db   $30, $3c, $06, $07, 5, 2                       
@@ -4063,7 +4064,7 @@ data_01_5c6f_SpriteScript_EnterPasswordHeader:
     db   SPRITE_SCRIPT_END
 
 data_01_5c7d_SpriteScript_ViewPasswordHeader:
-; Header sprites over the VIEW PASSWORD screen
+; "Current Password" - same strip, starting at tile $10 instead
     db   $02                                            ; first OAM slot
     ;     Y,   X,  tile, attr, w, h
     db   $30, $34, $10, $07, 7, 2                       
@@ -4071,7 +4072,7 @@ data_01_5c7d_SpriteScript_ViewPasswordHeader:
     db   SPRITE_SCRIPT_END
 
 data_01_5c8b_SpriteScript_InvalidPasswordHeader:
-; Header sprites over the "wrong password" screen
+; "Invalid Password" - same strip again, starting at tile $1E
     db   $02                                            ; first OAM slot
     ;     Y,   X,  tile, attr, w, h
     db   $30, $34, $1e, $07, 7, 2                       
@@ -4099,17 +4100,17 @@ data_01_5cb9_TVScreenImageTable:
 ; The Media Dimension TV pictures, one per TV palette id (MAPDATA_TV_PALETTE_ID).
 ; These are raw addresses in ROM bank $13, staged as a 6x5 tile block by
 ; call_01_466b_MenuCmd_StageTVScreen
-    dw   $4000                                          ; GAME STATS
-    dw   $6d00                                          ; CIRCUIT CENTRAL
-    dw   $7000                                          ; KUNG-FU THEATRE
-    dw   $6a00                                          ; PREHIST CHANNEL
-    dw   $7600                                          ; REZOPOLIS
-    dw   $4000                                          ; ROCKET CHANNEL
-    dw   $4000                                          ; SCREAM TV
-    dw   $6700                                          ; TOON TV
-    dw   $7900                                          ; BONUS BONANZA
-    dw   $4000                                          ; SECRET STATION
-    dw   $7300                                          ; BOSS TV
+    dw   image_013_00_scream_tv_screen                       ; GAME STATS
+    dw   image_013_15_circuit_central_screen                 ; CIRCUIT CENTRAL
+    dw   image_013_16_kung_fu_theater_screen                 ; KUNG-FU THEATRE
+    dw   image_013_14_prehistory_channel_screen              ; PREHIST CHANNEL
+    dw   image_013_18_rezopolis_screen                       ; REZOPOLIS
+    dw   image_013_00_scream_tv_screen                       ; ROCKET CHANNEL
+    dw   image_013_00_scream_tv_screen                       ; SCREAM TV
+    dw   image_013_13_toon_tv_screen                         ; TOON TV
+    dw   image_013_19_bonus_tv_screen                        ; BONUS BONANZA
+    dw   image_013_00_scream_tv_screen                       ; SECRET STATION
+    dw   image_013_17_channel_z_screen                       ; BOSS TV
 
 INCLUDE "code/bank01_text.asm"
 
@@ -4190,7 +4191,8 @@ data_01_71e9_PasswordFont:
 ; and a divider bar
     INCBIN ".gfx/misc_sprites/password/image_password_keys.bin"
 
-; The two image tables the staging sub-handlers index. Every entry points at a blob
+; The two image tables the staging sub-handlers index. Entry 7 aside, every entry
+; points at a blob
 ; whose first three bytes are its own header - width in tiles, height in tiles, and a
 ; flag that when non-zero means "reserve the space but do not copy" - which is why the
 ; scripts never have to state an image's size.
@@ -4199,10 +4201,17 @@ data_01_71e9_PasswordFont:
 ; before data_01_74ed_ImageTable2, so MENUCMD_SUB_STAGE_IMAGE1 can reach the title
 ; cursor while MENUCMD_SUB_STAGE_IMAGE2 starts at the menu cursor
 data_01_74e9_ImageTable1:
-    dw   data_01_74fd_Image_ArrowLeft, data_01_7540_Image_ArrowRight                            ;; 01:74e9 ....
+    dw   data_01_74fd_Image_ArrowLeft
+    dw   data_01_7540_Image_ArrowRight
 data_01_74ed_ImageTable2:
-    dw   data_01_7540_Image_ArrowRight, data_01_7540_Image_ArrowRight, data_01_7540_Image_ArrowRight, data_01_7b89_Image_GexHead       ;; 01:74ed ??..??..
-    dw   data_01_7bcc_Image_Hand, data_01_7583_Image_MissionRemoteMarkers, data_01_7706_Image_RemoteIcons, data_00_3c72        ;; 01:74f5 ......??
+    dw   data_01_7540_Image_ArrowRight
+    dw   data_01_7540_Image_ArrowRight
+    dw   data_01_7540_Image_ArrowRight
+    dw   data_01_7b89_Image_GexHead
+    dw   data_01_7bcc_Image_Hand
+    dw   data_01_7583_Image_MissionRemoteMarkers
+    dw   data_01_7706_Image_RemoteIcons
+    dw   data_00_3c72_Image_PasswordHeadings
 data_01_74fd_Image_ArrowLeft:
 ; 2x2 tiles - the left page-turn arrow on the totals screen
     db   $02, $02, $00                                 ;; 01:74fd ...
@@ -4225,12 +4234,12 @@ data_01_7706_Image_RemoteIcons:
     db   $12, $04, $00                                 ;; 01:7706 ...
     INCBIN ".gfx/menu_sprites/image_remote_icons.bin"
 data_01_7b89_Image_GexHead:
-; 2x2 tiles - Gex's face. Totals screen decoration, staged as background tiles at
+; 2x2 tiles - gex head. Totals screen decoration, staged as background tiles at
 ; $84; never drawn as a sprite
     db   $02, $02, $00                                 ;; 01:7b89 ...
     INCBIN ".gfx/menu_sprites/image_gex_head.bin"
 data_01_7bcc_Image_Hand:
-; 2x2 tiles - a gecko hand print, the totals screen decoration beside the gead head
+; 2x2 tiles - a gecko hand print, the totals screen decoration beside the gex head
     db   $02, $02, $00                                 ;; 01:7bcc ...
     INCBIN ".gfx/menu_sprites/image_hand.bin"
 
@@ -4241,14 +4250,37 @@ data_01_7c0f_CollectibleIconTable:
 ; call_01_49d7_MenuCmd_StageCollectibleIcon copies in one pass.
 ;
 ; Levels on the same channel share a blob, so the table is 31 pointers to six images
-    dw   .data_01_7c4d_ToonTV, .data_01_7c4d_ToonTV, .data_01_7cc5_ScreamTV, .data_01_7cc5_ScreamTV        ;; 01:7c0f ????????
-    dw   .data_01_7d3d_CircuitCentral, .data_01_7db5_KungFuTheater, .data_01_7c4d_ToonTV, .data_01_7e2d_PrehistoryChannel        ;; 01:7c17 ????????
-    dw   .data_01_7c4d_ToonTV, .data_01_7e2d_PrehistoryChannel, .data_01_7d3d_CircuitCentral, .data_01_7cc5_ScreamTV        ;; 01:7c1f ????????
-    dw   .data_01_7c4d_ToonTV, .data_01_7db5_KungFuTheater, .data_01_7ea5_Rezopolis, .data_01_7c4d_ToonTV        ;; 01:7c27 ????????
-    dw   .data_01_7cc5_ScreamTV, .data_01_7c4d_ToonTV, .data_01_7c4d_ToonTV, .data_01_7c4d_ToonTV        ;; 01:7c2f ????????
-    dw   .data_01_7c4d_ToonTV, .data_01_7db5_KungFuTheater, .data_01_7ea5_Rezopolis, .data_01_7d3d_CircuitCentral        ;; 01:7c37 ????????
-    dw   .data_01_7e2d_PrehistoryChannel, .data_01_7cc5_ScreamTV, .data_01_7ea5_Rezopolis, .data_01_7c4d_ToonTV        ;; 01:7c3f ????????
-    dw   .data_01_7c4d_ToonTV, .data_01_7c4d_ToonTV, .data_01_7c4d_ToonTV
+    dw   .data_01_7c4d_ToonTV              ; MAP_MEDIA_DIMENSION
+    dw   .data_01_7c4d_ToonTV              ; MAP_TOON_TV_OUT_OF_TOON
+    dw   .data_01_7cc5_ScreamTV            ; MAP_SCREAM_TV_SMELLRAISER
+    dw   .data_01_7cc5_ScreamTV            ; MAP_SCREAM_TV_FRANKENSTEINFELD
+    dw   .data_01_7d3d_CircuitCentral      ; MAP_CIRCUIT_CENTRAL_WWWDOTCOMCOM
+    dw   .data_01_7db5_KungFuTheater       ; MAP_KUNG_FU_THEATER_MAO_TSE_TONGUE
+    dw   .data_01_7c4d_ToonTV              ; MAP_UNUSED_06
+    dw   .data_01_7e2d_PrehistoryChannel   ; MAP_PRE_HISTORY_CHANNEL_PANGAEA_90210
+    dw   .data_01_7c4d_ToonTV              ; MAP_TOON_TV_FINE_TOONING
+    dw   .data_01_7e2d_PrehistoryChannel   ; MAP_PRE_HISTORY_CHANNEL_THIS_OLD_CAVE
+    dw   .data_01_7d3d_CircuitCentral      ; MAP_CIRCUIT_CENTRAL_HONEY_I_SHRUNK_THE_GECKO
+    dw   .data_01_7cc5_ScreamTV            ; MAP_SCREAM_TV_POLTERGEX
+    dw   .data_01_7c4d_ToonTV              ; MAP_UNUSED_0C
+    dw   .data_01_7db5_KungFuTheater       ; MAP_KUNG_FU_THEATER_SAMURAI_NIGHT_FEVER
+    dw   .data_01_7ea5_Rezopolis           ; MAP_REZOPOLIS_NO_WEDDINGS_AND_A_FUNERAL
+    dw   .data_01_7c4d_ToonTV              ; MAP_UNUSED_0F
+    dw   .data_01_7cc5_ScreamTV            ; MAP_SCREAM_TV_THURSDAY_THE_12TH
+    dw   .data_01_7c4d_ToonTV              ; MAP_UNUSED_11
+    dw   .data_01_7c4d_ToonTV              ; MAP_UNUSED_12
+    dw   .data_01_7c4d_ToonTV              ; MAP_UNUSED_13
+    dw   .data_01_7c4d_ToonTV              ; MAP_UNUSED_14
+    dw   .data_01_7db5_KungFuTheater       ; MAP_KUNG_FU_THEATER_LIZARD_IN_A_CHINA_SHOP
+    dw   .data_01_7ea5_Rezopolis           ; MAP_REZOPOLIS_BUGGED_OUT
+    dw   .data_01_7d3d_CircuitCentral      ; MAP_CIRCUIT_CENTRAL_CHIPS_AND_DIPS
+    dw   .data_01_7e2d_PrehistoryChannel   ; MAP_PRE_HISTORY_CHANNEL_LAVA_DABBA_DOO
+    dw   .data_01_7cc5_ScreamTV            ; MAP_SCREAM_TV_TEXAS_CHAINSAW_MANICURE
+    dw   .data_01_7ea5_Rezopolis           ; MAP_REZOPOLIS_MAZED_AND_CONFUSED
+    dw   .data_01_7c4d_ToonTV              ; MAP_UNUSED_1B
+    dw   .data_01_7c4d_ToonTV              ; MAP_UNUSED_1C
+    dw   .data_01_7c4d_ToonTV              ; MAP_UNUSED_1D
+    dw   .data_01_7c4d_ToonTV              ; MAP_BOSS_TV_CHANNEL_Z
 .data_01_7c4d_ToonTV:
     INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_toon_tv.bin"
     INCBIN "gfx/misc_sprites/collectibles/palettes/palette_toon_tv_collectibles.bin"

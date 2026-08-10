@@ -567,7 +567,7 @@
 00:3c5c call_00_3c54_Remotes_CountAndStore.jr_00_3c5c
 00:3c60 call_00_3c54_Remotes_CountAndStore.jr_00_3c60
 00:3c64 call_00_3c54_Remotes_CountAndStore.jr_00_3c64
-00:3c72 data_00_3c72
+00:3c72 data_00_3c72_Image_PasswordHeadings
 01:4000 call_01_4000_MenuLoad
 01:4005 call_01_4000_MenuLoad.jp_01_4005
 01:402e call_01_4000_MenuLoad.jr_01_402e
