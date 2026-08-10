@@ -1046,22 +1046,7 @@ call_01_466b_MenuCmd_StageTVScreen:
     ld   A, $13                                        ;; 01:46a3 $3e $13
     jp   call_00_07a1_FarMemCopy                                    ;; 01:46a5 $c3 $a1 $07
 .data_01_46a8:
-    db   $00, $00, $00, $02, $00, $00, $e0, $03        ;; 01:46a8 ........
-    db   $00, $00, $8c, $01, $c0, $02, $5a, $03        ;; 01:46b0 ........
-    db   $00, $00, $10, $42, $18, $63, $ff, $7f        ;; 01:46b8 ........
-    db   $00, $00, $e0, $01, $e0, $02, $e0, $03        ;; 01:46c0 ........
-    db   $00, $00, $ef, $3d, $f7, $5e, $ff, $7f        ;; 01:46c8 ........
-    db   $00, $00, $ef, $01, $f7, $02, $ff, $03        ;; 01:46d0 ........
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 01:46d8 ........
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 01:46e0 ........
-    db   $00, $00, $00, $02, $00, $00, $e0, $03        ;; 01:46e8 ........
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 01:46f0 ........
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 01:46f8 ........
-    db   $00, $00, $0f, $00, $17, $00, $1f, $00        ;; 01:4700 ........
-    db   $00, $00, $ef, $3d, $f7, $5e, $ff, $7f        ;; 01:4708 ........
-    db   $00, $00, $ef, $01, $f7, $02, $ff, $03        ;; 01:4710 ........
-    db   $00, $00, $00, $00, $20, $03, $bf, $0b        ;; 01:4718 ........
-    db   $00, $00, $1f, $00, $ff, $01, $7f, $03        ;; 01:4720 ........
+    INCBIN "gfx/menus/palettes/data_01_46a8_mission_select_menu_palette.bin"
 
 call_01_4728_MenuCmd_SetTVNameText:
     call call_00_2e3a_MapData_GetTVPaletteId                                  ;; 01:4728 $cd $3a $2e
@@ -1142,8 +1127,9 @@ call_01_47a4_MenuCmd_LoadScreen:
     call call_00_07b0_MemCopy
     jp   call_00_07c3_Screen_LoadTilesAndTilemap
 .data_01_47b9:
-    db   $bb, $47, $09, $b6, $14, $12, $d0, $42,       ;; 01:47b4 ????????
-    db   $00, $40, $d0, $02                               ;; 01:47bc ????????
+    dw   .data_01_47bb
+.data_01_47bb:
+    db   $09, $b6, $14, $12, $d0, $42, $00, $40, $d0, $02
 
 call_01_47c5_MenuCmd_DrawCursorSprite:
     call call_01_465f_MenuCmd_StageImage2                                  ;; 01:47c5 $cd $5f $46
@@ -1353,15 +1339,32 @@ call_01_491d_MenuCmd_LoadFullscreenImage:
     ld   BC, $03                                       ;; 01:4929 $01 $03 $00
     call call_00_07b0_MemCopy                                  ;; 01:492c $cd $b0 $07
     jp   call_00_084d_Screen_LoadFullscreenImage                                    ;; 01:492f $c3 $4d $08
-
 .data_01_4932:
-    db   $48, $49, $4b, $49, $4e, $49, $51, $49        ;; 01:4932 ....????
-    db   $54, $49, $57, $49, $5a, $49, $5d, $49        ;; 01:493a ......??
-    db   $60, $49, $63, $49, $66, $49, $08, $00        ;; 01:4942 ??????..
-    db   $40, $08, $e8, $57, $0c, $00, $40, $0c        ;; 01:494a ....????
-    db   $e8, $60, $1f, $00, $40, $1f, $e8, $57        ;; 01:4952 ??......
-    db   $1e, $00, $40, $1e, $e8, $57, $1d, $00        ;; 01:495a ...?????
-    db   $40, $1d, $e8, $57, $3d, $00, $40
+    dw   .data_01_4948, .data_01_494b, .data_01_494e, .data_01_4951        ;; 01:4932 ....????
+    dw   .data_01_4954, .data_01_4957, .data_01_495a, .data_01_495d        ;; 01:493a ......??
+    dw   .data_01_4960, .data_01_4963, .data_01_4966
+.data_01_4948:
+    farpointer image_title_screen_008_0
+.data_01_494b:
+    farpointer image_title_screen_008_1
+.data_01_494e:
+    farpointer image_audio_menu_00c_0
+.data_01_4951:
+    farpointer image_great_job_0c_2
+.data_01_4954:
+    farpointer image_crave_01f_0
+.data_01_4957:
+    farpointer image_splash_01f_1
+.data_01_495a:
+    farpointer image_david_01e_0
+.data_01_495d:
+    farpointer image_credits1_01e_1
+.data_01_4960:
+    farpointer image_credits2_01d_0
+.data_01_4963:
+    farpointer image_credits3_01d_1
+.data_01_4966:
+    farpointer image_credits4_03d_0
     
 call_01_4969_MenuCmd_SetMissionStatusText:
 ; Picks the "how are you doing on this level" string from a 2D table, and points
@@ -1419,13 +1422,12 @@ call_01_4969_MenuCmd_SetMissionStatusText:
 .data_01_49a7_MissionStatusText:
 ; 8 rows x 4 pointers, indexed [remote progress id][missions collected]. Several
 ; columns repeat the same address, which is how one string covers "1 or 2 done"
-    db   $97, $5d, $b0        ;; 01:49a2 ????????
-    db   $5d, $c9, $5d, $e2, $5d, $fb, $5d, $14        ;; 01:49aa ????????
-    db   $5e, $2d, $5e, $2d, $5e, $46, $5e, $5f        ;; 01:49b2 ????????
-    db   $5e, $5f, $5e, $5f, $5e, $fb, $5d, $14        ;; 01:49ba ????????
-    db   $5e, $2d, $5e, $2d, $5e, $46, $5e, $5f        ;; 01:49c2 ????????
-    db   $5e, $5f, $5e, $5f, $5e, $78, $5e, $92        ;; 01:49ca ????????
-    db   $5e, $92, $5e, $92, $5e
+    dw   data_01_5d97, data_01_5db0, data_01_5dc9, data_01_5de2
+    dw   data_01_5dfb, data_01_5e14, data_01_5e2d, data_01_5e2d
+    dw   data_01_5e46, data_01_5e5f, data_01_5e5f, data_01_5e5f
+    dw   data_01_5dfb, data_01_5e14, data_01_5e2d, data_01_5e2d
+    dw   data_01_5e46, data_01_5e5f, data_01_5e5f, data_01_5e5f
+    dw   data_01_5e78, data_01_5e92, data_01_5e92, data_01_5e92
 
 call_01_49d7_MenuCmd_StageCollectibleIcon:
 ; Stages the current level's collectible icon - the fruit/bug/whatever that level
@@ -1456,23 +1458,7 @@ call_01_49d7_MenuCmd_StageCollectibleIcon:
     ld   bc,$0018
     jp   call_00_07b0_MemCopy
 .data_01_4a0f:
-    db   $00, $00, $00                                 
-    db   $02, $00, $00, $e0, $03, $00, $00, $8c        ;; 01:4a12 ????????
-    db   $01, $c0, $02, $5a, $03, $00, $00, $10        ;; 01:4a1a ????????
-    db   $42, $18, $63, $ff, $7f, $00, $00, $e0        ;; 01:4a22 ????????
-    db   $01, $e0, $02, $e0, $03, $00, $00, $ef        ;; 01:4a2a ????????
-    db   $3d, $f7, $5e, $ff, $7f, $00, $00, $ef        ;; 01:4a32 ????????
-    db   $01, $f7, $02, $ff, $03, $00, $00, $00        ;; 01:4a3a ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 01:4a42 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 01:4a4a ????????
-    db   $02, $00, $00, $e0, $03, $00, $00, $0f        ;; 01:4a52 ????????
-    db   $00, $17, $00, $1f, $00, $00, $00, $ef        ;; 01:4a5a ????????
-    db   $3d, $f7, $5e, $ff, $7f, $00, $00, $ef        ;; 01:4a62 ????????
-    db   $01, $f7, $02, $ff, $03, $00, $00, $00        ;; 01:4a6a ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 01:4a72 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 01:4a7a ????????
-    db   $00, $20, $03, $bf, $0b, $00, $00, $1f        ;; 01:4a82 ????????
-    db   $00, $ff, $01, $7f, $03                       ;; 01:4a8a ?????
+    INCBIN "gfx/menus/palettes/data_01_4a0f_pause_menu_palette.bin"
 
 call_01_4a8f_Text_Render:
 ; Renders a string into the wC000 staging buffer as a proportional, word-wrapped,

@@ -38,16 +38,27 @@ data_01_5d62:
     db   "REWARD", END_TEXT
     db   "HIDDEN", END_TEXT
     db   "PRESS B TO CONTINUE", END_TEXT
+data_01_5d97:
     db   "0 OF 3 RED REMOTES FOUND", END_TEXT
+data_01_5db0:
     db   "1 OF 3 RED REMOTES FOUND", END_TEXT
+data_01_5dc9:
     db   "2 OF 3 RED REMOTES FOUND", END_TEXT
+data_01_5de2:
     db   "3 OF 3 RED REMOTES FOUND", END_TEXT
+data_01_5dfb:
     db   "0 OF 2 RED REMOTES FOUND", END_TEXT
+data_01_5e14:
     db   "1 OF 2 RED REMOTES FOUND", END_TEXT
+data_01_5e2d:
     db   "2 OF 2 RED REMOTES FOUND", END_TEXT
+data_01_5e46:
     db   "0 OF 1 RED REMOTES FOUND", END_TEXT
+data_01_5e5f:
     db   "1 OF 1 RED REMOTES FOUND", END_TEXT
+data_01_5e78:
     db   "0 OF 1 GOLD REMOTES FOUND", END_TEXT
+data_01_5e92:
     db   "1 OF 1 GOLD REMOTES FOUND", END_TEXT
     db   "CHOOSE A HINT THEN PRESS B TO CONTINUE", END_TEXT
     db   "PRESS B TO CONTINUE", END_TEXT
