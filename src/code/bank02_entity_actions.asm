@@ -642,7 +642,7 @@ call_02_5348_EntityAction_ScreamTVMovingPlatform_Update:
     and  A, $0f                                        ;; 02:5361 $e6 $0f
     ld   L, A                                          ;; 02:5363 $6f
     ld   H, $00                                        ;; 02:5364 $26 $00
-    ld   DE, wD78B_OverrideSlotTable                                     ;; 02:5366 $11 $8b $d7
+    ld   DE, wD78B_BlockPatch_SlotTable                                     ;; 02:5366 $11 $8b $d7
     add  HL, DE                                        ;; 02:5369 $19
     ld   A, [HL]                                       ;; 02:536a $7e
     and  A, A                                          ;; 02:536b $a7
@@ -658,7 +658,7 @@ call_02_5373_EntityAction_ScreamTVPushBlock_Update:
     ld   a,[hl]
     sbc  a,$02
     ret  nc
-    ld   hl,wD78B_OverrideSlotTable
+    ld   hl,wD78B_BlockPatch_SlotTable
     ld   a,[hl]
     and  a
     ret  nz
@@ -1133,7 +1133,7 @@ call_02_56af_EntityAction_MonaLisaElevator_Update:
     dec  l
     ld   [hl],a
 .jr_02_56BB:
-    ld   a,[wD78B_OverrideSlotTable]
+    ld   a,[wD78B_BlockPatch_SlotTable]
     and  a
     ret  z
     call call_00_3559_Entity_ApplyVelocityXY_SubpixelBoth
@@ -1606,7 +1606,7 @@ call_02_5a28_EntityAction_Mushroom_Update:
     ld   A, [HL]                                       ;; 02:5a37 $7e
     cp   A, $05                                        ;; 02:5a38 $fe $05
     jr   NZ, .jr_02_5a41                               ;; 02:5a3a $20 $05
-    ld   HL, wD79A_OverrideSlotTable15                                     ;; 02:5a3c $21 $9a $d7
+    ld   HL, wD79A_BlockPatch_SlotTable15                                     ;; 02:5a3c $21 $9a $d7
     ld   [HL], $02                                     ;; 02:5a3f $36 $02
 .jr_02_5a41:
     ld   C, SPAWN_CHILD_ENTITY_MUSHROOM_PROJECTILE                                        ;; 02:5a41 $0e $08
@@ -1686,7 +1686,7 @@ call_02_5aab_EntityAction_ToonTVVanishingBlock_unk0:
     inc  l
     ld   l,[hl]
     ld   h,$00
-    ld   de,wD78B_OverrideSlotTable
+    ld   de,wD78B_BlockPatch_SlotTable
     add  hl,de
     ld   a,[hl]
     and  a
@@ -1837,7 +1837,7 @@ call_02_5bb6_EntityAction_MovingLog_Update:
     and  A, $0f                                        ;; 02:5bcf $e6 $0f
     ld   L, A                                          ;; 02:5bd1 $6f
     ld   H, $00                                        ;; 02:5bd2 $26 $00
-    ld   DE, wD78B_OverrideSlotTable                                     ;; 02:5bd4 $11 $8b $d7
+    ld   DE, wD78B_BlockPatch_SlotTable                                     ;; 02:5bd4 $11 $8b $d7
     add  HL, DE                                        ;; 02:5bd7 $19
     ld   A, [HL]                                       ;; 02:5bd8 $7e
     and  A, A                                          ;; 02:5bd9 $a7
@@ -2369,7 +2369,7 @@ call_02_5f67_EntityAction_DragonHead_Update:
     and  a
     jp   nz,.jr_02_5F79
     ld   a,$02
-    ld   [wD78F_OverrideSlotTable4],a
+    ld   [wD78F_BlockPatch_SlotTable4],a
     jp   call_00_3985_Entity_ParticleBurstInit
 .jr_02_5F79:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_PARAM
@@ -2941,7 +2941,7 @@ call_02_6409_EntityAction_KungFuMovingPlatform_Update:
     and  a,$0F
     ld   l,a
     ld   h,$00
-    ld   de,wD78B_OverrideSlotTable
+    ld   de,wD78B_BlockPatch_SlotTable
     add  hl,de
     ld   a,[hl]
     and  a

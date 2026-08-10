@@ -944,7 +944,7 @@ wD6FC_BgMap_ColumnWritePos:
     ds 1                                               ;; d6fc
 wD6FD_BgMap_ColumnWritePosHi:
     ds 1                                               ;; d6fd
-wD6FE_BgMap_BlocksetOverrideBitMask:
+wD6FE_BgMap_AltBlocksetMask:
     ds 1                                               ;; d6fe
 wD6FF_BgMap_TilesetBank:
     ds 1                                               ;; d6ff
@@ -953,13 +953,13 @@ wD700_BgMap_TilesetBankOffset:
 wD702_BgMap_TempScratchRowMetaTileIDs:
 ; where block ids get written temporarily when a row is loaded
     ds 1                                               ;; d702
-wD703_BgMap_TempScratchRowMetaTileOverrideBits:
+wD703_BgMap_TempScratchRowAltBlocksetFlags:
 ; where blockset override (extended map) bits are set for the loaded row tiles
     ds 11                                              ;; d703
 wD70E_BgMap_TempScratchColumnMetaTileIDs:
 ; where block ids get written temporarily when a column is loaded
     ds 1                                               ;; d70e
-wD70F_BgMap_TempScratchColumnMetaTileOverrideBits:
+wD70F_BgMap_TempScratchColumnAltBlocksetFlags:
 ; where blockset override (extended map) bits are set for the loaded column tiles
     ds 11                                              ;; d70f
 
@@ -1260,7 +1260,7 @@ wD772_BreakablesDestroyedCount:
 
 wD773_HuntersDefeatedCount:
 ; bumped each time a toon tv hunter is beaten. On the second one the collision
-; handler writes $02 into wD799_OverrideSlotTable14, opening the way onward
+; handler writes $02 into wD799_BlockPatch_SlotTable14, opening the way onward
     ds 1                                               ;; d773
 
 wD774:
@@ -1272,8 +1272,8 @@ wD775_Cutscene_Skippable:
     ds 1                                               ;; d775
     ds 2
 
-wD778_OverrideSlotWriteHead:
-; Index into wD78B_OverrideSlotTable slot table; incremented by BgMap_UpdateCollisionFlags as slots are filled
+wD778_BlockPatch_SlotWriteHead:
+; Index into wD78B_BlockPatch_SlotTable slot table; incremented by BgMap_UpdateCollisionFlags as slots are filled
     ds 1                                               ;; d778
 
 wD779_RelatedToXPosition:
@@ -1283,49 +1283,51 @@ wD77A_PlayerYPositionBlock:
     ds 1                                               ;; d77a
 
 ; Bg override related memory
-wD77B_OverrideVRAMWritePending:
-; Bit 0 set = BgMap_WriteOverrideTiles has queued a VRAM write that hasn't completed yet;
-; gates BgMap_TickOverrideAnimation and TileHit_OnPlayerAttack
+wD77B_BlockPatch_VramWritePending:
+; Bit 0 set = BlockPatch_WriteTiles has queued a VRAM write that hasn't completed yet;
+; gates BlockPatch_TickSequence and TileHit_OnPlayerAttack
     ds 1                                               ;; d77b
-wD77C_OverrideSequenceFlags:
-; Flags for current sequence step - see the OVERRIDE_STEP_* constants:
-; bit 0 = loop immediately (OVERRIDE_STEP_LOOP),
-; bit 1 = call call_00_1ec9_BgMap_RegisterOverrideRegion (OVERRIDE_STEP_REGISTER),
-; bit 2 = call call_00_1f05_BgMap_FindAndWriteCollisionBlock (OVERRIDE_STEP_COLLISION),
-; bit 3 = call call_00_169f_BgMap_WriteOverrideTiles (OVERRIDE_STEP_TILES),
+wD77C_BlockPatch_StepFlags:
+; Flags for current sequence step - see the BLOCKPATCH_STEP_* constants:
+; bit 0 = loop immediately (BLOCKPATCH_STEP_LOOP),
+; bit 1 = call call_00_1ec9_BlockPatch_Register (BLOCKPATCH_STEP_REGISTER),
+; bit 2 = call call_00_1f05_BgMap_FindAndWriteCollisionBlock (BLOCKPATCH_STEP_COLLISION),
+; bit 3 = call call_00_169f_BlockPatch_WriteTiles (BLOCKPATCH_STEP_TILES),
 ; bit 5 = call call_00_113e_PlaySFX before proceeding; the step carries one extra argument
-;         byte after the flags for this (OVERRIDE_STEP_SFX)
+;         byte after the flags for this (BLOCKPATCH_STEP_SFX)
     ds 1                                               ;; d77c
-wD77D_OverrideSequenceStepsRemaining:
+wD77D_BlockPatch_StepsRemaining:
 ; Countdown of remaining steps in the active tile animation sequence; zero = sequence idle
     ds 1                                               ;; d77d
-wD77E_OverrideTilemapAddrLo:
-; VRAM tilemap address where BgMap_WriteOverrideTiles will write the expanded tile block
+wD77E_BlockPatch_TilemapAddrLo:
+; VRAM tilemap address where BlockPatch_WriteTiles will write the expanded tile block
     ds 1                                               ;; d77e
-wD77F_OverrideTilemapAddrHi:
+wD77F_BlockPatch_TilemapAddrHi:
     ds 1                                               ;; d77f
-wD780_OverrideDataPtrLo:
+wD780_BlockPatch_DataPtrLo:
 ; Pointer into ROM script data; advances by (width × height × 2) after each step
     ds 1                                               ;; d780
-wD781_OverrideDataPtrHi:
+wD781_BlockPatch_DataPtrHi:
     ds 1                                               ;; d781
-wD782_OverrideTargetBlockX:
+wD782_BlockPatch_TargetBlockX:
 ; Block X coordinate of the tile being overridden (player world X × 8, high byte);
-; used by UpdateCollisionFlags and FindAndWriteOverrideBlock
+; used by call_00_1ec9_BlockPatch_Register and call_00_1f05_BlockPatch_WriteCollision
+; (the old comment named UpdateCollisionFlags and FindAndWriteOverrideBlock, neither of
+; which is a symbol in this tree)
     ds 1                                               ;; d782
-wD783_OverrideTargetBlockY:
+wD783_BlockPatch_TargetBlockY:
 ; Block Y coordinate of the tile being overridden
     ds 1                                               ;; d783
-wD784_OverrideWidth:
+wD784_BlockPatch_Width:
 ; Width in metatiles of the override rectangle
     ds 1                                               ;; d784
-wD785_OverrideHeight:
+wD785_BlockPatch_Height:
 ; Height in metatiles of the override rectangle
     ds 1                                               ;; d785
-wD786_OverrideStepTimer:
+wD786_BlockPatch_StepTimer:
 ; Counts down to zero before the next sequence step fires; reloaded from wD787 each step
     ds 1                                               ;; d786
-wD787_OverrideStepTimerReload:
+wD787_BlockPatch_StepTimerReload:
 ; Per-script frame delay between animation steps
     ds 1                                               ;; d787
 
@@ -1336,7 +1338,7 @@ wD789_QueuedSFX:
 wD78A_MusicId: ; multiplied by 4 and used as index into .data_00_1244_MusicList
     ds 1                                               ;; d78a
 
-wD78B_OverrideSlotTable:
+wD78B_BlockPatch_SlotTable:
 ; 16-byte table of slot states:
 ; $00 = empty,
 ; $01 = armed/active,
@@ -1350,13 +1352,13 @@ wD78B_OverrideSlotTable:
 ; wD78B, so an offset can run past this `ds 4` into the labels below - see
 ; call_00_2225_Switch_ArmSlotByPosition, which reaches slots 0-8
     ds 4                                              ;; d78b
-wD78F_OverrideSlotTable4:
+wD78F_BlockPatch_SlotTable4:
     ds 9
-wD798_OverrideSlotTable13:
+wD798_BlockPatch_SlotTable13:
     ds 1                                               ;; d798
-wD799_OverrideSlotTable14:
+wD799_BlockPatch_SlotTable14:
     ds 1                                               ;; d799
-wD79A_OverrideSlotTable15:
+wD79A_BlockPatch_SlotTable15:
     ds 1                                               ;; d79a
 
 ; Mission preview cutscene related variables and backup buffers

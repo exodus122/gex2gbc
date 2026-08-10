@@ -1441,7 +1441,7 @@ call_00_3878_Entity_CheckTVButtonEnabled:
 ; In the hub (level id 0) it falls through to call_00_3899, which checks collection
 ; totals against the entity's requirements. Everywhere else it derives a slot index
 ; from the entity's list index - (index - 1) >> 1 - looks it up from
-; wD798_OverrideSlotTable13 and returns whether that slot is nonzero.
+; wD798_BlockPatch_SlotTable13 and returns whether that slot is nonzero.
 ;
 ; Neither path involves distance, despite the old name's "OrInRange"
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:3878 $fa $24 $d6
@@ -1460,7 +1460,7 @@ call_00_3878_Entity_CheckTVButtonEnabled:
     dec  A                                             ;; 00:388e $3d
     srl  A                                             ;; 00:388f $cb $3f
     ld   E, A                                          ;; 00:3891 $5f
-    ld   HL, wD798_OverrideSlotTable13                                     ;; 00:3892 $21 $98 $d7
+    ld   HL, wD798_BlockPatch_SlotTable13                                     ;; 00:3892 $21 $98 $d7
     add  HL, DE                                        ;; 00:3895 $19
     ld   A, [HL]                                       ;; 00:3896 $7e
     and  A, A                                          ;; 00:3897 $a7

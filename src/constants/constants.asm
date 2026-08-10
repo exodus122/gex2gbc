@@ -199,12 +199,12 @@ DEF SFX_1F                                 EQU $1F ; unused?
 DEF SFX_HUNTER                             EQU $20
 DEF SFX_21                                 EQU $21 ; unused?
 DEF SFX_22                                 EQU $22 ; used: the counted-breakable tile scripts
-                                                   ; play it via OVERRIDE_STEP_SFX
+                                                   ; play it via BLOCKPATCH_STEP_SFX
 DEF SFX_23                                 EQU $23 ; unused?
 DEF SFX_ENEMY_BOUNCE                       EQU $24
 DEF SFX_25                                 EQU $25 ; unused?
 DEF SFX_26                                 EQU $26 ; used: .script_0D in bank00_cutscenes.asm
-                                                   ; plays it via OVERRIDE_STEP_SFX
+                                                   ; plays it via BLOCKPATCH_STEP_SFX
 DEF SFX_FALLING_PLATFORM                   EQU $27
 DEF SFX_28                                 EQU $28 ; unused?
 DEF SFX_29                                 EQU $29 ; unused?
@@ -506,6 +506,32 @@ DEF PASSWORD_GRID_COLUMNS        EQU $06
 DEF PASSWORD_GRID_ROWS           EQU $05
 
 ; ------------------------------------------------------------------
+; Per-map descriptor record (.data_00_2ebf_MapData in bank00_map_init_data.asm)
+;
+; One 16-byte record per map, indexed by wD624_CurrentLevelId. Only 11 of the 16
+; bytes are used - the record is padded to a power of two so the lookup is four
+; `add HL,HL` shifts instead of a multiply. Every MapData_Get* accessor is the same
+; three instructions: fetch the record base, add one of these offsets, read.
+; ------------------------------------------------------------------
+DEF MAPDATA_TV_PALETTE_ID                   EQU $00 ; index into .data_0b_5d62
+DEF MAPDATA_REMOTE_PROGRESS_ID              EQU $01 ; row for the mission status tables
+DEF MAPDATA_TEXT_BLOCK_PTR                  EQU $02 ; word -> list of text pointers:
+                                                    ; entry 0 is the level name, entries
+                                                    ; 1..n are the mission descriptions
+DEF MAPDATA_MAP_BANK                        EQU $04
+DEF MAPDATA_EXTENDED_MAP_BANK               EQU $05
+DEF MAPDATA_BLOCKSET_COLLISION_BANK         EQU $06
+                                                    ; $07 unused, always $00
+DEF MAPDATA_ALT_BLOCKSET_MASK               EQU $08 ; single-bit mask, ANDed over the
+                                                    ; secondary blockset bytes
+DEF MAPDATA_TILESET_BANK                    EQU $09
+DEF MAPDATA_TILESET_OFFSET                  EQU $0A ; word
+                                                    ; $0C-$0F unused, always $00
+DEF MAPDATA_RECORD_SIZE                     EQU $10
+
+DEF MAPDATA_TEXT_MISSION_BASE               EQU $02 ; mission N is at text block + this + N*2
+
+; ------------------------------------------------------------------
 ; Menu sprite scripts (bank01_menus.asm, call_01_4dc8_Menu_BuildSpriteBlock)
 ;
 ; A sprite script is a starting OAM slot followed by entries of
@@ -570,28 +596,53 @@ DEF FONT_GLYPH_COUNT                        EQU $2A ; $00 space, $01-$1A A-Z, $1
 DEF FONT_BYTES_PER_ROW                      EQU 2   ; 2bpp: plane 0 then plane 1
 
 ; ------------------------------------------------------------------
-; Tile-override sequence step flags (wD77C_OverrideSequenceFlags)
+; TWO SYSTEMS, ONE OLD NAME
+;
+; Everything below used to be called "override", and so did an unrelated mechanism.
+; They are separate and worth keeping straight:
+;
+;   ALT BLOCKSET - static, per level, a rendering variant. Each metatile in a strip
+;     carries a flag byte saying "expand me from blockset page $50 instead of $40".
+;     MAPDATA_ALT_BLOCKSET_MASK gates which of those flags survive for this level,
+;     and BgMap_MaskAltBlocksetFlags does the gating. Nothing here changes at
+;     runtime; it is just which of two blocksets a given metatile draws from.
+;
+;   BLOCK PATCH - dynamic, per playthrough, a world mutation. Rectangles of
+;     replacement blocks registered into the wCC00/wCD00/wCE00/wCF00 slot tables by
+;     tile hit scripts and cutscene animation blocks, animated a step at a time by
+;     BlockPatch_TickSequence, and re-applied to any strip that scrolls back into
+;     view by BgMap_ApplyBlockPatchesToRow / ...ToColumn. A smashed block or an
+;     opened door.
+;
+; They meet in exactly one place: each cell of a block patch's replacement data is
+; two bytes, and the second is an alt-blockset flag for that cell. So a patch says
+; both "put this metatile here" and "draw it from that blockset". Otherwise they
+; share no state, no WRAM and no code.
+;
+; (wD758_JumpVelocityOverride is a third, wholly unrelated use of the word.)
+;
+; Block patch step flags (wD77C_BlockPatch_StepFlags)
 ;
 ; One flag byte heads every step of an override sequence, whether the sequence came from a
-; tile hit script or from a cutscene's animation block. BgMap_TickOverrideSequence dispatches on
+; tile hit script or from a cutscene's animation block. BlockPatch_TickSequence dispatches on
 ; the bits in this order: SFX (which consumes an extra argument byte from the step), then
 ; REGISTER, then COLLISION, then TILES, then LOOP.
 ; ------------------------------------------------------------------
-DEF OVERRIDE_STEP_LOOP                      EQU $01 ; bit 0 - run the next step in the same frame
-DEF OVERRIDE_STEP_REGISTER                  EQU $02 ; bit 1 - BgMap_RegisterOverrideRegion: commit
+DEF BLOCKPATCH_STEP_LOOP                      EQU $01 ; bit 0 - run the next step in the same frame
+DEF BLOCKPATCH_STEP_REGISTER                  EQU $02 ; bit 1 - BlockPatch_Register: commit
                                                     ;         the rectangle to the wCD00/wCE00
                                                     ;         slot tables so it survives a reload
-DEF OVERRIDE_STEP_COLLISION                 EQU $04 ; bit 2 - BgMap_FindAndWriteCollisionBlock
-DEF OVERRIDE_STEP_TILES                     EQU $08 ; bit 3 - BgMap_WriteOverrideTiles: draw this
+DEF BLOCKPATCH_STEP_COLLISION                 EQU $04 ; bit 2 - BgMap_FindAndWriteCollisionBlock
+DEF BLOCKPATCH_STEP_TILES                     EQU $08 ; bit 3 - BlockPatch_WriteTiles: draw this
                                                     ;         step's blocks into the tilemap
-DEF OVERRIDE_STEP_SFX                       EQU $20 ; bit 5 - PlaySFX; step carries one extra byte
+DEF BLOCKPATCH_STEP_SFX                       EQU $20 ; bit 5 - PlaySFX; step carries one extra byte
 
 ; bit numbers for the same flags, for `bit n,[hl]` rather than `and`
-DEF OVERRIDE_STEP_LOOP_BIT                  EQU 0
-DEF OVERRIDE_STEP_REGISTER_BIT              EQU 1
-DEF OVERRIDE_STEP_COLLISION_BIT             EQU 2
-DEF OVERRIDE_STEP_TILES_BIT                 EQU 3
-DEF OVERRIDE_STEP_SFX_BIT                   EQU 5
+DEF BLOCKPATCH_STEP_LOOP_BIT                  EQU 0
+DEF BLOCKPATCH_STEP_REGISTER_BIT              EQU 1
+DEF BLOCKPATCH_STEP_COLLISION_BIT             EQU 2
+DEF BLOCKPATCH_STEP_TILES_BIT                 EQU 3
+DEF BLOCKPATCH_STEP_SFX_BIT                   EQU 5
 
 ; ==================================================================
 ; ENTITY INSTANCE STRUCT

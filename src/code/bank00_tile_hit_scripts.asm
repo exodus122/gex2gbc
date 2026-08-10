@@ -1,14 +1,14 @@
 call_00_1f46_TileHit_OnPlayerAttack:
 ; Entry point called each frame during TailSpin when the tile under Gex is interactive (type < $C0, inverted in C). 
-; Guards: returns if wD77D_OverrideSequenceStepsRemaining nonzero (sequence already running), 
-; wD77B_OverrideVRAMWritePending nonzero, or wD76B_Player_IsAttacking zero. Clears wD76B. Converts player X and Y 
+; Guards: returns if wD77D_BlockPatch_StepsRemaining nonzero (sequence already running), 
+; wD77B_BlockPatch_VramWritePending nonzero, or wD76B_Player_IsAttacking zero. Clears wD76B. Converts player X and Y 
 ; world positions to block coordinates (world_pos × 8, high byte) and stores preliminary values to wD782/wD783. 
 ; Uses inverted tile type C × 2 as index into data_00_1ff6_TileHitScriptTable — returns if null. 
 ; Falls into TileHitScript_Run
-    ld   A, [wD77D_OverrideSequenceStepsRemaining]                                    ;; 00:1f46 $fa $7d $d7
+    ld   A, [wD77D_BlockPatch_StepsRemaining]                                    ;; 00:1f46 $fa $7d $d7
     and  A, A                                          ;; 00:1f49 $a7
     ret  NZ                                            ;; 00:1f4a $c0
-    ld   A, [wD77B_OverrideVRAMWritePending]                                    ;; 00:1f4b $fa $7b $d7
+    ld   A, [wD77B_BlockPatch_VramWritePending]                                    ;; 00:1f4b $fa $7b $d7
     and  A, A                                          ;; 00:1f4e $a7
     ret  NZ                                            ;; 00:1f4f $c0
     ld   A, [wD76B_Player_IsAttacking]                                    ;; 00:1f50 $fa $6b $d7
@@ -24,7 +24,7 @@ call_00_1f46_TileHit_OnPlayerAttack:
     add  HL, HL                                        ;; 00:1f60 $29
     add  HL, HL                                        ;; 00:1f61 $29
     ld   A, H                                          ;; 00:1f62 $7c
-    ld   [wD782_OverrideTargetBlockX], A                                    ;; 00:1f63 $ea $82 $d7
+    ld   [wD782_BlockPatch_TargetBlockX], A                                    ;; 00:1f63 $ea $82 $d7
     ld   HL, wD210_Player_YPositionLo                                     ;; 00:1f66 $21 $10 $d2
     ld   A, [HL+]                                      ;; 00:1f69 $2a
     ld   H, [HL]                                       ;; 00:1f6a $66
@@ -33,7 +33,7 @@ call_00_1f46_TileHit_OnPlayerAttack:
     add  HL, HL                                        ;; 00:1f6d $29
     add  HL, HL                                        ;; 00:1f6e $29
     ld   A, H                                          ;; 00:1f6f $7c
-    ld   [wD783_OverrideTargetBlockY], A                                    ;; 00:1f70 $ea $83 $d7
+    ld   [wD783_BlockPatch_TargetBlockY], A                                    ;; 00:1f70 $ea $83 $d7
     ld   L, C                                          ;; 00:1f73 $69
     ld   H, $00                                        ;; 00:1f74 $26 $00
     add  HL, HL                                        ;; 00:1f76 $29
@@ -53,7 +53,7 @@ call_00_1f80_TileHitScript_Run:
 ; rectangle from player Y (low byte masked $E0) shifted left 2 and D × 32, combined with player X low 
 ; byte + E × 32 masked to $1C → stored to wD77E/wD77F. Recalculates wD782/wD783 as player block 
 ; coords + D/E offset (the final target block coordinates for collision lookup). 
-; Zeroes wD786_OverrideStepTimer. Pops and conditionally calls DE if nonzero
+; Zeroes wD786_BlockPatch_StepTimer. Pops and conditionally calls DE if nonzero
     ld   E, [HL]                                       ;; 00:1f80 $5e
     inc  HL                                            ;; 00:1f81 $23
     ld   D, [HL]                                       ;; 00:1f82 $56
@@ -62,21 +62,21 @@ call_00_1f80_TileHitScript_Run:
     ld   A, [HL+]                                      ;; 00:1f85 $2a
     and  A, A                                          ;; 00:1f86 $a7
     jr   Z, .jr_00_1fef                                ;; 00:1f87 $28 $66
-    ld   [wD77D_OverrideSequenceStepsRemaining], A                                    ;; 00:1f89 $ea $7d $d7
+    ld   [wD77D_BlockPatch_StepsRemaining], A                                    ;; 00:1f89 $ea $7d $d7
     ld   A, [HL+]                                      ;; 00:1f8c $2a
-    ld   [wD787_OverrideStepTimerReload], A                                    ;; 00:1f8d $ea $87 $d7
+    ld   [wD787_BlockPatch_StepTimerReload], A                                    ;; 00:1f8d $ea $87 $d7
     ld   E, [HL]                                       ;; 00:1f90 $5e
     inc  HL                                            ;; 00:1f91 $23
     ld   D, [HL]                                       ;; 00:1f92 $56
     inc  HL                                            ;; 00:1f93 $23
     ld   A, [HL+]                                      ;; 00:1f94 $2a
-    ld   [wD784_OverrideWidth], A                                    ;; 00:1f95 $ea $84 $d7
+    ld   [wD784_BlockPatch_Width], A                                    ;; 00:1f95 $ea $84 $d7
     ld   A, [HL+]                                      ;; 00:1f98 $2a
-    ld   [wD785_OverrideHeight], A                                    ;; 00:1f99 $ea $85 $d7
+    ld   [wD785_BlockPatch_Height], A                                    ;; 00:1f99 $ea $85 $d7
     ld   A, L                                          ;; 00:1f9c $7d
-    ld   [wD780_OverrideDataPtrLo], A                                    ;; 00:1f9d $ea $80 $d7
+    ld   [wD780_BlockPatch_DataPtrLo], A                                    ;; 00:1f9d $ea $80 $d7
     ld   A, H                                          ;; 00:1fa0 $7c
-    ld   [wD781_OverrideDataPtrHi], A                                    ;; 00:1fa1 $ea $81 $d7
+    ld   [wD781_BlockPatch_DataPtrHi], A                                    ;; 00:1fa1 $ea $81 $d7
     ld   A, D                                          ;; 00:1fa4 $7a
     add  A, A                                          ;; 00:1fa5 $87
     add  A, A                                          ;; 00:1fa6 $87
@@ -104,10 +104,10 @@ call_00_1f80_TileHitScript_Run:
     rrca                                               ;; 00:1fc2 $0f
     and  A, $1c                                        ;; 00:1fc3 $e6 $1c
     or   A, L                                          ;; 00:1fc5 $b5
-    ld   [wD77E_OverrideTilemapAddrLo], A                                    ;; 00:1fc6 $ea $7e $d7
+    ld   [wD77E_BlockPatch_TilemapAddrLo], A                                    ;; 00:1fc6 $ea $7e $d7
     ld   A, H                                          ;; 00:1fc9 $7c
     add  A, $c0                                        ;; 00:1fca $c6 $c0
-    ld   [wD77F_OverrideTilemapAddrHi], A                                    ;; 00:1fcc $ea $7f $d7
+    ld   [wD77F_BlockPatch_TilemapAddrHi], A                                    ;; 00:1fcc $ea $7f $d7
     ld   HL, wD20E_Player_XPositionLo                                     ;; 00:1fcf $21 $0e $d2
     ld   A, [HL+]                                      ;; 00:1fd2 $2a
     ld   H, [HL]                                       ;; 00:1fd3 $66
@@ -117,7 +117,7 @@ call_00_1f80_TileHitScript_Run:
     add  HL, HL                                        ;; 00:1fd7 $29
     ld   A, H                                          ;; 00:1fd8 $7c
     add  A, E                                          ;; 00:1fd9 $83
-    ld   [wD782_OverrideTargetBlockX], A                                    ;; 00:1fda $ea $82 $d7
+    ld   [wD782_BlockPatch_TargetBlockX], A                                    ;; 00:1fda $ea $82 $d7
     ld   HL, wD210_Player_YPositionLo                                     ;; 00:1fdd $21 $10 $d2
     ld   A, [HL+]                                      ;; 00:1fe0 $2a
     ld   H, [HL]                                       ;; 00:1fe1 $66
@@ -127,9 +127,9 @@ call_00_1f80_TileHitScript_Run:
     add  HL, HL                                        ;; 00:1fe5 $29
     ld   A, H                                          ;; 00:1fe6 $7c
     add  A, D                                          ;; 00:1fe7 $82
-    ld   [wD783_OverrideTargetBlockY], A                                    ;; 00:1fe8 $ea $83 $d7
+    ld   [wD783_BlockPatch_TargetBlockY], A                                    ;; 00:1fe8 $ea $83 $d7
     xor  A, A                                          ;; 00:1feb $af
-    ld   [wD786_OverrideStepTimer], A                                    ;; 00:1fec $ea $86 $d7
+    ld   [wD786_BlockPatch_StepTimer], A                                    ;; 00:1fec $ea $86 $d7
 .jr_00_1fef:
     pop  HL                                            ;; 00:1fef $e1
     ld   A, L                                          ;; 00:1ff0 $7d
@@ -151,9 +151,9 @@ data_00_1ff6_TileHitScriptTable:
 ; Offsets are signed and relative to the tile that was hit. Step count = 0 means fire-and-forget
 ; (callback only, no sequence).
 ;
-; The step data that follows is consumed by BgMap_TickOverrideSequence one step at a time. Each step
-; is an OVERRIDE_STEP_* flag byte, then width x height 16-bit cell entries - so 2 bytes per cell plus
-; the leading flag, and one further byte if the step sets OVERRIDE_STEP_SFX to play a sound.
+; The step data that follows is consumed by BlockPatch_TickSequence one step at a time. Each step
+; is an BLOCKPATCH_STEP_* flag byte, then width x height 16-bit cell entries - so 2 bytes per cell plus
+; the leading flag, and one further byte if the step sets BLOCKPATCH_STEP_SFX to play a sound.
     dw   data_00_2074_TileHitScript_CheckpointTV_Left
     dw   data_00_20d3_TileHitScript_FlyTV2_1
     dw   data_00_20ff_TileHitScript_FlyTV_Health1
@@ -200,12 +200,12 @@ data_00_2080_TileHitScript_CheckpointTV_Right:
     db   $2a, $02, $ea, $01
 call_00_208c_Checkpoint_WriteSpawnId:
 ; Searches .data_00_20b6_CheckpointBlockCoordTable for a record matching 
-; current level ID + wD782_OverrideTargetBlockX + wD783_OverrideTargetBlockY. 
+; current level ID + wD782_BlockPatch_TargetBlockX + wD783_BlockPatch_TargetBlockY. 
 ; On match: writes the record's 4th byte (checkpoint ID) to wD618_CheckpointSpawnId. 
 ; Records are 4 bytes each: [level_id, block_x, block_y, checkpoint_id], $FF-terminated
-    ld   hl,wD782_OverrideTargetBlockX
+    ld   hl,wD782_BlockPatch_TargetBlockX
     ld   c,[hl]
-    ld   hl,wD783_OverrideTargetBlockY
+    ld   hl,wD783_BlockPatch_TargetBlockY
     ld   b,[hl]
     ld   hl,.data_00_20b6_CheckpointBlockCoordTable
     ld   de,$0004
@@ -334,12 +334,12 @@ call_00_2186_CountedBreakable_OnHit:
     ld   hl,wD772_BreakablesDestroyedCount
     inc  [hl]
     ld   c,$05
-    ld   de,wD799_OverrideSlotTable14
+    ld   de,wD799_BlockPatch_SlotTable14
     ld   a,[wD624_CurrentLevelId]
     cp   a,MAP_SCREAM_TV_SMELLRAISER
     jr   z,.jr_00_219b
     ld   c,$08
-    ld   de,wD79A_OverrideSlotTable15
+    ld   de,wD79A_BlockPatch_SlotTable15
 .jr_00_219b:
     ld   a,c
     cp   [hl]
@@ -354,7 +354,7 @@ data_00_21ae_TileHitScript_SlotSwitch_Wide:
     dw   call_00_21bc_SlotSwitch_TriggerSlot0
     db   $01, $00, $ff, $00, $02, $01, $2c, $26, $c9, $01, $ca, $01
 call_00_21bc_SlotSwitch_TriggerSlot0:
-    ld   hl,wD78B_OverrideSlotTable
+    ld   hl,wD78B_BlockPatch_SlotTable
     ld   [hl],$02
     ret  
 
@@ -362,8 +362,8 @@ data_00_21c2_TileHitScript_Breakable_RightTile:
 ; Multi-stage breakable, no callback, 5 steps at 8 frames, 2x1 blocks, x offset -1
 ; so the rectangle covers the pair when the RIGHT half is hit.
 ;
-; Worth noting the final step's flags are $0C = OVERRIDE_STEP_COLLISION |
-; OVERRIDE_STEP_TILES, not the $0A the cutscene animations use. Bit 2 rewrites the
+; Worth noting the final step's flags are $0C = BLOCKPATCH_STEP_COLLISION |
+; BLOCKPATCH_STEP_TILES, not the $0A the cutscene animations use. Bit 2 rewrites the
 ; collision block, so the last frame of the crumble is what actually makes the
 ; block passable - the four frames before it are cosmetic
     db   $00, $00, $05, $08        ;; 00:21be ????????
@@ -383,7 +383,7 @@ data_00_2206_TileHitScript_SlotSwitch_Single:
     dw   call_00_2211_SlotSwitch_TriggerSlot0Alt
     db   $01, $00, $00, $00, $01, $01, $0a, $c7, $01
 call_00_2211_SlotSwitch_TriggerSlot0Alt:
-    ld   hl,wD78B_OverrideSlotTable
+    ld   hl,wD78B_BlockPatch_SlotTable
     ld   [hl],$02
     ret  
 
@@ -397,14 +397,14 @@ call_00_2225_Switch_ArmSlotByPosition:
 ; Walks .data_00_2253_SwitchBlockCoordTable looking for a (block x, block y) pair
 ; matching the tile that was hit; the match's position in the table is the slot
 ; index. So the nine switches in the table each own one entry of
-; wD78B_OverrideSlotTable, and adding a switch means adding coordinates here.
+; wD78B_BlockPatch_SlotTable, and adding a switch means adding coordinates here.
 ;
 ; Already-nonzero slots return early, making the switch one-shot. Slot 6 is
 ; special-cased to $02 instead of $01 - it skips the armed state and goes straight
 ; to triggered
-    ld   hl,wD782_OverrideTargetBlockX
+    ld   hl,wD782_BlockPatch_TargetBlockX
     ld   c,[hl]
-    ld   hl,wD783_OverrideTargetBlockY
+    ld   hl,wD783_BlockPatch_TargetBlockY
     ld   b,[hl]
     ld   hl,.data_00_2253_SwitchBlockCoordTable
     ld   e,$00
@@ -424,7 +424,7 @@ call_00_2225_Switch_ArmSlotByPosition:
     ret  
 .jr_00_2242:
     ld   d,$00
-    ld   hl,wD78B_OverrideSlotTable
+    ld   hl,wD78B_BlockPatch_SlotTable
     add  hl,de
     ld   a,[hl]
     and  a
@@ -437,7 +437,7 @@ call_00_2225_Switch_ArmSlotByPosition:
     ret  
 .data_00_2253_SwitchBlockCoordTable:
 ; Nine (block x, block y) pairs, $FF terminated. Index in this table = index into
-; wD78B_OverrideSlotTable, so the order here defines which slot each switch owns
+; wD78B_BlockPatch_SlotTable, so the order here defines which slot each switch owns
     db   $25, $59, $2a
     db   $59, $2f, $59, $47, $51, $54, $55, $5a        ;; 00:2256 ????????
     db   $55, $29, $4a, $39, $64, $10, $47, $ff        ;; 00:225e ????????
@@ -449,9 +449,9 @@ data_00_2266_TileHitScript_KungFu_DoorSwitch:
     db   $00, $08, $00, $00, $01, $01
     db   $28, $1b, $f8, $01, $f9, $01
 call_00_2274_DoorSwitch_UpdateState:
-    ld   hl,wD782_OverrideTargetBlockX
+    ld   hl,wD782_BlockPatch_TargetBlockX
     ld   c,[hl]
-    ld   hl,wD783_OverrideTargetBlockY
+    ld   hl,wD783_BlockPatch_TargetBlockY
     ld   b,[hl]
     ld   hl,.data_00_22a7_MaoTseTongue_DoorSwitchCoordTable
     ld   a,[wD624_CurrentLevelId]
@@ -476,7 +476,7 @@ call_00_2274_DoorSwitch_UpdateState:
     ret  
 .jr_00_229b:
     ld   d,$00
-    ld   hl,wD78B_OverrideSlotTable
+    ld   hl,wD78B_BlockPatch_SlotTable
     add  hl,de
     ld   a,[hl]
     and  a
@@ -515,14 +515,14 @@ call_00_22ff_Cannon_FaceLeft:
     ld   [wD615_Cannon_FacingDirection],a
     ret  
 
-call_00_2305_OverrideSlotTable_Tick:
-; Scans all 16 wD78B_OverrideSlotTable slots. For each slot with value ≥ 2: increments it. 
+call_00_2305_BlockPatch_TickSlots:
+; Scans all 16 wD78B_BlockPatch_SlotTable slots. For each slot with value ≥ 2: increments it. 
 ; If the increment wraps to zero (overflowed from $FF): decrements back to $FF, checks wD77D 
 ; and wD77B (if either nonzero, a sequence is busy — returns without triggering). Otherwise 
 ; sets the slot to $01, re-arming it for the next attack. Slots with value 0 or 1 are skipped. 
 ; This drives the per-frame countdown for triggered tiles (state $02 = just triggered, counts 
 ; up to $FF = expired, then re-arms to $01 = active/waiting)
-    ld   HL, wD78B_OverrideSlotTable                                     ;; 00:2305 $21 $8b $d7
+    ld   HL, wD78B_BlockPatch_SlotTable                                     ;; 00:2305 $21 $8b $d7
     ld   B, $00                                        ;; 00:2308 $06 $00
     ld   C, $00                                        ;; 00:230a $0e $00
 .jr_00_230c:
@@ -540,10 +540,10 @@ call_00_2305_OverrideSlotTable_Tick:
     ret                                                ;; 00:231b $c9
 .jr_00_231c:
     dec  [HL]                                          ;; 00:231c $35
-    ld   A, [wD77D_OverrideSequenceStepsRemaining]                                    ;; 00:231d $fa $7d $d7
+    ld   A, [wD77D_BlockPatch_StepsRemaining]                                    ;; 00:231d $fa $7d $d7
     and  A, A                                          ;; 00:2320 $a7
     ret  NZ                                            ;; 00:2321 $c0
-    ld   A, [wD77B_OverrideVRAMWritePending]                                    ;; 00:2322 $fa $7b $d7
+    ld   A, [wD77B_BlockPatch_VramWritePending]                                    ;; 00:2322 $fa $7b $d7
     and  A, A                                          ;; 00:2325 $a7
     ret  NZ                                            ;; 00:2326 $c0
     ld   [HL], $01                                     ;; 00:2327 $36 $01

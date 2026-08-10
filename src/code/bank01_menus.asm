@@ -405,7 +405,7 @@ call_01_4297_MenuLoad_MissionSelect:
     ld   [wD626], A                                    ;; 01:4298 $ea $26 $d6
 .jr_01_429b:
     push AF                                            ;; 01:429b $f5
-    call call_00_2e5f_MapData_GetTextPtr2                                  ;; 01:429c $cd $5f $2e
+    call call_00_2e5f_MapData_GetMissionText                                  ;; 01:429c $cd $5f $2e
     bit  7, [HL]                                       ;; 01:429f $cb $7e
     jr   NZ, .jr_01_42a7                               ;; 01:42a1 $20 $04
     ld   HL, wD626                                     ;; 01:42a3 $21 $26 $d6
@@ -1070,7 +1070,7 @@ call_01_4728_MenuCmd_SetTVNameText:
     jp   call_01_4e6f_Menu_SetScriptSrcPtr                                  ;; 01:4731 $c3 $6f $4e
 
 call_01_4734_MenuCmd_SetLevelText:
-    call call_00_2e4c_MapData_GetTextPtr                                  ;; 01:4734 $cd $4c $2e
+    call call_00_2e4c_MapData_GetLevelNameText                                  ;; 01:4734 $cd $4c $2e
     jp   call_01_4e6f_Menu_SetScriptSrcPtr                                  ;; 01:4737 $c3 $6f $4e
 
 call_01_473a_MenuCmd_SetMissionText:
@@ -1082,7 +1082,7 @@ call_01_473a_MenuCmd_SetMissionText:
 .jr_01_4746:
     push AF                                            ;; 01:4746 $f5
     and  A, $7f                                        ;; 01:4747 $e6 $7f
-    call call_00_2e5f_MapData_GetTextPtr2                                  ;; 01:4749 $cd $5f $2e
+    call call_00_2e5f_MapData_GetMissionText                                  ;; 01:4749 $cd $5f $2e
     call call_01_4e6f_Menu_SetScriptSrcPtr                                  ;; 01:474c $cd $6f $4e
     pop  AF                                            ;; 01:474f $f1
     bit  7, A                                          ;; 01:4750 $cb $7f

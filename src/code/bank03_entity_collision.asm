@@ -361,7 +361,7 @@ call_03_4c76_EntityCollision_Dispatch:
 ; Checks MISC_FLAGS bit 0 first (already shooting, skip). Touch → damage player. 
 ; Attack/stomp: decrements MISC_TIMER timer; if not zero, sets the "shooting" bit and returns. 
 ; When timer hits zero, spawns a projectile, increments wD773_HuntersDefeatedCount (hunter shot count), 
-; and if count reaches 2 sets wD799_OverrideSlotTable14=$02 (likely triggers a level flag)
+; and if count reaches 2 sets wD799_BlockPatch_SlotTable14=$02 (likely triggers a level flag)
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     bit  MISC_FLAGS_BIT_0,[hl]
     ret  nz
@@ -381,7 +381,7 @@ call_03_4c76_EntityCollision_Dispatch:
     ld   a,[hl]
     cp   a,$02
     ret  nz
-    ld   hl,wD799_OverrideSlotTable14
+    ld   hl,wD799_BlockPatch_SlotTable14
     ld   [hl],$02
     ret  
 .jr_03_4eb4_CollisionHandler_Mushroom:
@@ -555,7 +555,7 @@ call_03_4c76_EntityCollision_Dispatch:
     inc  hl
     ld   l,[hl]
     ld   h,$00
-    ld   de,wD78B_OverrideSlotTable
+    ld   de,wD78B_BlockPatch_SlotTable
     add  hl,de
     ld   [hl],$02
     jp   call_00_3985_Entity_ParticleBurstInit

@@ -1,25 +1,50 @@
+; ==================================================================
+; PER-MAP DESCRIPTOR ACCESSORS
+;
+; Everything the engine needs to know about a map - which banks its data lives in,
+; which tileset and palette it uses, where its text is - comes from one 16-byte
+; record per map in .data_00_2ebf_MapData, and every accessor below is the same
+; shape: call MapData_GetRecordAddr, add a MAPDATA_* offset, read.
+;
+; All of them read wD624_CurrentLevelId implicitly, so there is no "which map"
+; argument anywhere - callers that want another map's data set wD624, call, and put
+; it back. call_01_48df_MenuCmd_SetTotalsPageText and
+; call_00_4349_LoadEnteringMenu both do exactly that.
+; ==================================================================
+
 call_00_2e3a_MapData_GetTVPaletteId:
-    call call_00_2eb0_MapData_GetMapDataAddr                                  ;; 00:2e3a $cd $b0 $2e
-    ld   DE, $00                                       ;; 00:2e3d $11 $00 $00
+; A = palette id for this map's tv screen, an index into .data_0b_5d62.
+; The `ld DE,$00 / add HL,DE` is a no-op kept for symmetry with its neighbours
+    call call_00_2eb0_MapData_GetRecordAddr                                  ;; 00:2e3a $cd $b0 $2e
+    ld   DE, MAPDATA_TV_PALETTE_ID                     ;; 00:2e3d $11 $00 $00
     add  HL, DE                                        ;; 00:2e40 $19
     ld   A, [HL]                                       ;; 00:2e41 $7e
     ret                                                ;; 00:2e42 $c9
 
 call_00_2e43_MapData_GetRemoteProgressId:
-    call call_00_2eb0_MapData_GetMapDataAddr                                  ;; 00:2e43 $cd $b0 $2e
-    ld   DE, $01                                       ;; 00:2e46 $11 $01 $00
+; A = this map's row in the remote/mission progress tables. Several maps share a
+; row, which is how levels with the same mission structure share status strings -
+; see call_00_4969_MenuCmd_SetMissionStatusText
+    call call_00_2eb0_MapData_GetRecordAddr                                  ;; 00:2e43 $cd $b0 $2e
+    ld   DE, MAPDATA_REMOTE_PROGRESS_ID                ;; 00:2e46 $11 $01 $00
     add  HL, DE                                        ;; 00:2e49 $19
     ld   A, [HL]                                       ;; 00:2e4a $7e
     ret                                                ;; 00:2e4b $c9
 
-call_00_2e4c_MapData_GetTextPtr:
-    call call_00_2eb0_MapData_GetMapDataAddr                                  ;; 00:2e4c $cd $b0 $2e
-    ld   DE, $02                                       ;; 00:2e4f $11 $02 $00
+call_00_2e4c_MapData_GetLevelNameText:
+; HL = pointer to this map's NAME string.
+;
+; The record holds a pointer to a text BLOCK, which is itself a list of string
+; pointers; entry 0 is the level name. Was called MapData_GetTextPtr, which said
+; nothing about which of the block's strings it returns - its only caller is
+; call_01_4734_MenuCmd_SetLevelText
+    call call_00_2eb0_MapData_GetRecordAddr                                  ;; 00:2e4c $cd $b0 $2e
+    ld   DE, MAPDATA_TEXT_BLOCK_PTR                    ;; 00:2e4f $11 $02 $00
     add  HL, DE                                        ;; 00:2e52 $19
     ld   E, [HL]                                       ;; 00:2e53 $5e
     inc  HL                                            ;; 00:2e54 $23
     ld   D, [HL]                                       ;; 00:2e55 $56
-    ld   HL, $00                                       ;; 00:2e56 $21 $00 $00
+    ld   HL, $00                                       ;; 00:2e56 $21 $00 $00 ; entry 0 of the block
     add  HL, DE                                        ;; 00:2e59 $19
     ld   E, [HL]                                       ;; 00:2e5a $5e
     inc  HL                                            ;; 00:2e5b $23
@@ -27,71 +52,95 @@ call_00_2e4c_MapData_GetTextPtr:
     ld   L, E                                          ;; 00:2e5d $6b
     ret                                                ;; 00:2e5e $c9
 
-call_00_2e5f_MapData_GetTextPtr2:
-    call call_00_2eb0_MapData_GetMapDataAddr                                  ;; 00:2e5f $cd $b0 $2e
-    ld   DE, $02                                       ;; 00:2e62 $11 $02 $00
+call_00_2e5f_MapData_GetMissionText:
+; HL = pointer to mission A's description string. Same text block as the level name
+; above, but indexed past it: block + MAPDATA_TEXT_MISSION_BASE + A*2, so mission 0
+; is entry 1.
+;
+; Was called MapData_GetTextPtr2. Its callers are
+; call_01_473a_MenuCmd_SetMissionText and the mission select screen, both of which
+; pass a mission index in A
+    call call_00_2eb0_MapData_GetRecordAddr                                  ;; 00:2e5f $cd $b0 $2e
+    ld   DE, MAPDATA_TEXT_BLOCK_PTR                    ;; 00:2e62 $11 $02 $00
     add  HL, DE                                        ;; 00:2e65 $19
     ld   E, [HL]                                       ;; 00:2e66 $5e
     inc  HL                                            ;; 00:2e67 $23
-    ld   D, [HL]                                       ;; 00:2e68 $56 ; DE is now 0x2-0x3 in the level data
-    ld   HL, $02                                       ;; 00:2e69 $21 $02 $00
-    add  HL, DE                                        ;; 00:2e6c $19 ; HL is 2 + DE
-    add  A, A                                          ;; 00:2e6d $87
+    ld   D, [HL]                                       ;; 00:2e68 $56 ; DE = the text block
+    ld   HL, MAPDATA_TEXT_MISSION_BASE                 ;; 00:2e69 $21 $02 $00
+    add  HL, DE                                        ;; 00:2e6c $19
+    add  A, A                                          ;; 00:2e6d $87 ; A*2 for a pointer index
     ld   E, A                                          ;; 00:2e6e $5f
     ld   D, $00                                        ;; 00:2e6f $16 $00
-    add  HL, DE                                        ;; 00:2e71 $19 ; HL is 2 + 0x2-0x3 in the level data + A*2
+    add  HL, DE                                        ;; 00:2e71 $19
     ld   E, [HL]                                       ;; 00:2e72 $5e
     inc  HL                                            ;; 00:2e73 $23
     ld   H, [HL]                                       ;; 00:2e74 $66
-    ld   L, E                                          ;; 00:2e75 $6b ; HL is value in [2 + 0x2-0x3 in the level data + A*2]
+    ld   L, E                                          ;; 00:2e75 $6b
     ret                                                ;; 00:2e76 $c9
 
 call_00_2e77_MapData_GetMapBank:
-    call call_00_2eb0_MapData_GetMapDataAddr                                  ;; 00:2e77 $cd $b0 $2e
-    ld   DE, $04                                       ;; 00:2e7a $11 $04 $00
+; A = ROM bank holding this map's tilemap data
+    call call_00_2eb0_MapData_GetRecordAddr                                  ;; 00:2e77 $cd $b0 $2e
+    ld   DE, MAPDATA_MAP_BANK                          ;; 00:2e7a $11 $04 $00
     add  HL, DE                                        ;; 00:2e7d $19
     ld   A, [HL]                                       ;; 00:2e7e $7e
     ret                                                ;; 00:2e7f $c9
 
 call_00_2e80_MapData_GetExtendedMapBank:
-    call call_00_2eb0_MapData_GetMapDataAddr                                  ;; 00:2e80 $cd $b0 $2e
-    ld   DE, $05                                       ;; 00:2e83 $11 $05 $00
+; A = ROM bank holding the secondary blockset layer for this map
+    call call_00_2eb0_MapData_GetRecordAddr                                  ;; 00:2e80 $cd $b0 $2e
+    ld   DE, MAPDATA_EXTENDED_MAP_BANK                 ;; 00:2e83 $11 $05 $00
     add  HL, DE                                        ;; 00:2e86 $19
     ld   A, [HL]                                       ;; 00:2e87 $7e
     ret                                                ;; 00:2e88 $c9
 
 call_00_2e89_MapData_GetBlocksetAndCollisionBank:
-    call call_00_2eb0_MapData_GetMapDataAddr                                  ;; 00:2e89 $cd $b0 $2e
-    ld   DE, $06                                       ;; 00:2e8c $11 $06 $00
+; A = ROM bank holding both the blockset (metatile definitions) and the collision
+; table for this map - the two live together, which is why one accessor covers both
+    call call_00_2eb0_MapData_GetRecordAddr                                  ;; 00:2e89 $cd $b0 $2e
+    ld   DE, MAPDATA_BLOCKSET_COLLISION_BANK           ;; 00:2e8c $11 $06 $00
     add  HL, DE                                        ;; 00:2e8f $19
     ld   A, [HL]                                       ;; 00:2e90 $7e
     ret                                                ;; 00:2e91 $c9
-    ret                                                ;; 00:2e92 $c9
+    ret                                                ;; 00:2e92 $c9 ; unreachable - a stray second ret
 
-call_00_2e93_MapData_GetExtendedMapBit:
-    call call_00_2eb0_MapData_GetMapDataAddr                                  ;; 00:2e93 $cd $b0 $2e
-    ld   DE, $08                                       ;; 00:2e96 $11 $08 $00
+call_00_2e93_MapData_GetAltBlocksetMask:
+; A = the single-bit mask selecting which secondary blockset layer this map uses.
+; Stored to wD6FE_BgMap_AltBlocksetMask and ANDed over six bytes at a time
+; by call_00_1e3c_BgMap_MaskAltBlocksetFlags.
+;
+; Was MapData_GetExtendedMapBit, so this one byte had two vocabularies - "extended
+; map bit" here and "blockset override bit mask" at the destination. Named after
+; the consumer, since that is where its meaning is visible
+    call call_00_2eb0_MapData_GetRecordAddr                                  ;; 00:2e93 $cd $b0 $2e
+    ld   DE, MAPDATA_ALT_BLOCKSET_MASK                 ;; 00:2e96 $11 $08 $00
     add  HL, DE                                        ;; 00:2e99 $19
     ld   A, [HL]                                       ;; 00:2e9a $7e
     ret                                                ;; 00:2e9b $c9
 
 call_00_2e9c_MapData_GetTilesetBank:
-    call call_00_2eb0_MapData_GetMapDataAddr                                  ;; 00:2e9c $cd $b0 $2e
-    ld   DE, $09                                       ;; 00:2e9f $11 $09 $00
+; A = ROM bank holding this map's tileset graphics
+    call call_00_2eb0_MapData_GetRecordAddr                                  ;; 00:2e9c $cd $b0 $2e
+    ld   DE, MAPDATA_TILESET_BANK                      ;; 00:2e9f $11 $09 $00
     add  HL, DE                                        ;; 00:2ea2 $19
     ld   A, [HL]                                       ;; 00:2ea3 $7e
     ret                                                ;; 00:2ea4 $c9
 
 call_00_2ea5_MapData_GetTilesetBankOffset:
-    call call_00_2eb0_MapData_GetMapDataAddr                                  ;; 00:2ea5 $cd $b0 $2e
-    ld   DE, $0a                                       ;; 00:2ea8 $11 $0a $00
+; DE = offset of the tileset within its bank. The only accessor besides the text
+; pair that returns a word rather than a byte
+    call call_00_2eb0_MapData_GetRecordAddr                                  ;; 00:2ea5 $cd $b0 $2e
+    ld   DE, MAPDATA_TILESET_OFFSET                    ;; 00:2ea8 $11 $0a $00
     add  HL, DE                                        ;; 00:2eab $19
     ld   E, [HL]                                       ;; 00:2eac $5e
     inc  HL                                            ;; 00:2ead $23
     ld   D, [HL]                                       ;; 00:2eae $56
     ret                                                ;; 00:2eaf $c9
 
-call_00_2eb0_MapData_GetMapDataAddr:
+call_00_2eb0_MapData_GetRecordAddr:
+; HL = base of the current map's 16-byte record. Four `add HL,HL` shifts multiply
+; the level id by MAPDATA_RECORD_SIZE, which is why the record is padded to 16
+; bytes when only 11 are used
     ld   HL, wD624_CurrentLevelId                                     ;; 00:2eb0 $21 $24 $d6
     ld   L, [HL]                                       ;; 00:2eb3 $6e
     ld   H, $00                                        ;; 00:2eb4 $26 $00
@@ -103,21 +152,25 @@ call_00_2eb0_MapData_GetMapDataAddr:
     add  HL, DE                                        ;; 00:2ebd $19
     ret                                                ;; 00:2ebe $c9 ; HL is now the pointer to the level data
 .data_00_2ebf_MapData:
-; Bank numbers and pointers for the 31 maps. 0x10 bytes each
-; 0x0 tv palette number (index into .data_0b_5d62)
-; 0x1 remote progress related
-; 0x2-0x3 is a pointer to the level's text (level name, mission names)
-; 0x4 is map bank number
-; 0x5 is extended map bank
-; 0x6 is blockset/collision data bank
-; 0x7 unused (always 0)
-; 0x8 is the bit to use in the extended map data bank, for this map
-; 0x9 is tileset bank
-; 0xa-0xb is tileset bank offset
-; 0xc unused (always 0)
-; 0xd unused (always 0)
-; 0xe unused (always 0)
-; 0xf unused (always 0)
+; One MAPDATA_RECORD_SIZE ($10) byte record per map, 31 of them, indexed by
+; wD624_CurrentLevelId. See the MAPDATA_* constants for the field offsets:
+;
+;   $00       MAPDATA_TV_PALETTE_ID            index into .data_0b_5d62
+;   $01       MAPDATA_REMOTE_PROGRESS_ID       row in the mission status tables
+;   $02-$03   MAPDATA_TEXT_BLOCK_PTR           -> list of string pointers; entry 0
+;                                              is the level name, 1..n the missions
+;   $04       MAPDATA_MAP_BANK
+;   $05       MAPDATA_EXTENDED_MAP_BANK        secondary blockset layer
+;   $06       MAPDATA_BLOCKSET_COLLISION_BANK  blockset and collision share a bank
+;   $07                                        unused, always $00
+;   $08       MAPDATA_ALT_BLOCKSET_MASK        which secondary layer this map uses
+;   $09       MAPDATA_TILESET_BANK
+;   $0A-$0B   MAPDATA_TILESET_OFFSET
+;   $0C-$0F                                    unused, always $00
+;
+; Five of the sixteen bytes are dead. The record is padded to a power of two so
+; call_00_2eb0_MapData_GetRecordAddr can index it with four `add HL,HL` shifts
+; instead of a multiply - 80 bytes of ROM spent to avoid a multiply routine
     db   $00, $06                                      ;; 00:2ebf ?w
     dw   data_01_5f88                                         ;; 00:2ec1 wW
     db   $30, $34, $38, $00, $04, $36, $00, $40        ;; 00:2ec3 ...?....

@@ -180,13 +180,13 @@ call_00_2329_Cutscene_LoadAndRun:
     jr   NZ, .jp_00_2445                               ;; 00:23fc $20 $47
 .jr_00_23fe:
     call call_00_0ab4_WaitForInterrupt                                  ;; 00:23fe $cd $b4 $0a
-    call call_00_1e5b_BgMap_TickOverrideSequence                                  ;; 00:2401 $cd $5b $1e
+    call call_00_1e5b_BlockPatch_TickSequence                                  ;; 00:2401 $cd $5b $1e
     FARCALL call_02_6eba_Entities_UpdateAll
     call call_00_08fc_StageNextGfxTransfer                                  ;; 00:240f $cd $fc $08
-    ld   A, [wD77D_OverrideSequenceStepsRemaining]                                    ;; 00:2412 $fa $7d $d7
+    ld   A, [wD77D_BlockPatch_StepsRemaining]                                    ;; 00:2412 $fa $7d $d7
     and  A, A                                          ;; 00:2415 $a7
     jr   NZ, .jr_00_23f2                               ;; 00:2416 $20 $da
-    ld   A, [wD77B_OverrideVRAMWritePending]                                    ;; 00:2418 $fa $7b $d7
+    ld   A, [wD77B_BlockPatch_VramWritePending]                                    ;; 00:2418 $fa $7b $d7
     and  A, A                                          ;; 00:241b $a7
     jr   NZ, .jr_00_23f2                               ;; 00:241c $20 $d4
 .jr_00_241e:
@@ -282,7 +282,7 @@ call_00_2329_Cutscene_LoadAndRun:
 ; block laid out immediately after it, so a script and its data are one contiguous run.
 ;
 ; The animation block is not cutscene-specific: it is an override sequence in exactly the format
-; TileHitScript_Run / BgMap_TickOverrideSequence consume for switches and breakable scenery.
+; TileHitScript_Run / BlockPatch_TickSequence consume for switches and breakable scenery.
 ; Header is 8 bytes:
 ;
 ;   +0  dw  callback, run at setup ($0000 = none)
@@ -293,9 +293,9 @@ call_00_2329_Cutscene_LoadAndRun:
 ;   +6  db  width in blocks
 ;   +7  db  height in blocks
 ;
-; then one step per count: an OVERRIDE_STEP_* flag byte followed by width * height 16-bit block
+; then one step per count: an BLOCKPATCH_STEP_* flag byte followed by width * height 16-bit block
 ; entries - the new contents of the rectangle for that step. So a 2x2 rectangle costs 9 bytes
-; per step, and a step carrying OVERRIDE_STEP_SFX costs one more for its argument - .script_0D
+; per step, and a step carrying BLOCKPATCH_STEP_SFX costs one more for its argument - .script_0D
 ; is the only one here that does, opening with $28 (TILES|SFX) and an SFX id of $26. Every other
 ; step in the blob is a plain $08, with $0A (TILES|REGISTER) on the last one of each block.
 ; That last step is what makes the reveal permanent - the tiles are redrawn
@@ -467,7 +467,7 @@ call_00_2329_Cutscene_LoadAndRun:
 .script_0D:
 ;   startX $00BC  startY $0340  no movement  anim $281D
 ;   anim: no callback, 2 steps, 60 frames each, 2x1 blocks at (0,0) from Gex.
-;   The only block in the file with OVERRIDE_STEP_SFX - step 1's flags are $28 and it carries
+;   The only block in the file with BLOCKPATCH_STEP_SFX - step 1's flags are $28 and it carries
 ;   an SFX id of $26 before its block entries
     db   $bc, $00, $40, $03, $00, $00, $1d             ;; 00:2815
     db   $28, $00, $00, $02, $3c, $00, $00, $02        ;; 00:281c ????????

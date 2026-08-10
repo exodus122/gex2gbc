@@ -252,7 +252,7 @@ call_00_0150_Init:
     FARCALL call_0b_4000_Collectibles_Init
     FARCALL call_02_6eb1_Entities_ClearFlagsTable
     call call_00_3c3f_Remotes_RecountAllTotals                                  ;; 00:0333 $cd $3f $3c
-    call call_00_12e4_BgMap_InitTileOverrides                                  ;; 00:0336 $cd $e4 $12
+    call call_00_12e4_BlockPatch_Init                                  ;; 00:0336 $cd $e4 $12
     ld   A, $0a                                        ;; 00:0339 $3e $0a
     ld   [wD613_Dragon_SegmentsRemaining], A                                    ;; 00:033b $ea $13 $d6
     xor  A, A                                          ;; 00:033e $af
@@ -295,8 +295,8 @@ call_00_0150_Init:
     ld   [wD6F9_BgMap_LoadingFlags], A                                    ;; 00:0395 $ea $f9 $d6
     ld   [wD60E_HUDDirtyFlags], A                                    ;; 00:0398 $ea $0e $d6
     ld   [wD60F_GfxTransferFlags], A                                    ;; 00:039b $ea $0f $d6
-    ld   [wD77B_OverrideVRAMWritePending], A                                    ;; 00:039e $ea $7b $d7
-    ld   [wD77D_OverrideSequenceStepsRemaining], A                                    ;; 00:03a1 $ea $7d $d7
+    ld   [wD77B_BlockPatch_VramWritePending], A                                    ;; 00:039e $ea $7b $d7
+    ld   [wD77D_BlockPatch_StepsRemaining], A                                    ;; 00:03a1 $ea $7d $d7
     ld   [wD72F_TilesetAnim_FrameCount], A                                    ;; 00:03a4 $ea $2f $d7
     ld   [wD71E_EntityGfxQueueCount], A                                    ;; 00:03a7 $ea $1e $d7
     ld   [wD5A3_ConveyorState1], A                                    ;; 00:03aa $ea $a3 $d5
@@ -307,7 +307,7 @@ call_00_0150_Init:
     FARCALL call_0b_4000_Collectibles_Init
     FARCALL call_02_6eb1_Entities_ClearFlagsTable
     call call_00_3c3f_Remotes_RecountAllTotals                                  ;; 00:03ce $cd $3f $3c
-    call call_00_12e4_BgMap_InitTileOverrides                                  ;; 00:03d1 $cd $e4 $12
+    call call_00_12e4_BlockPatch_Init                                  ;; 00:03d1 $cd $e4 $12
     call call_00_0547_LevelTimer_Init                                  ;; 00:03d4 $cd $47 $05
     call call_00_0562_Collectible_InitForLevel                                  ;; 00:03d7 $cd $62 $05
 .jr_00_03da:
@@ -415,8 +415,8 @@ call_00_0150_Init:
 .jr_00_04e0:
     FARCALL call_02_6eba_Entities_UpdateAll
     call call_00_1455_BgMap_LoadDirtyRegions                                  ;; 00:04eb $cd $55 $14
-    call call_00_2305_OverrideSlotTable_Tick                                  ;; 00:04ee $cd $05 $23
-    call call_00_1e5b_BgMap_TickOverrideSequence                                  ;; 00:04f1 $cd $5b $1e
+    call call_00_2305_BlockPatch_TickSlots                                  ;; 00:04ee $cd $05 $23
+    call call_00_1e5b_BlockPatch_TickSequence                                  ;; 00:04f1 $cd $5b $1e
     call call_00_05c7_FlyPowerup_Update                                  ;; 00:04f4 $cd $c7 $05
     call call_00_08fc_StageNextGfxTransfer                                  ;; 00:04f7 $cd $fc $08
     FARCALL call_0b_5ec3_UpdatePlayerObjPalette
@@ -1412,7 +1412,7 @@ call_00_0ac1_VBlank_UpdateVRAM:
 ; The one VRAM write the game is allowed to do per vblank, banked into BANK_03.
 ; Priority order:
 ;   1. a pending bg map scroll column/row (MAP_PENDING_VRAM_TRANSFER)
-;   2. a pending bg tile override palette write (wD77B_OverrideVRAMWritePending)
+;   2. a pending bg tile override palette write (wD77B_BlockPatch_VramWritePending)
 ;   3. the next secondary tileset animation frame, when its delay expires
 ;   4. HUD_DIRTY_COLLECTIBLES / HUD_DIRTY_LIVES / HUD_DIRTY_TIMER reloads
 ;   5. otherwise the ordinary animated tile update
@@ -1438,11 +1438,11 @@ call_00_0ac1_VBlank_UpdateVRAM:
     ld   [wD6F9_BgMap_LoadingFlags], A                                    ;; 00:0aec $ea $f9 $d6
     ret                                                ;; 00:0aef $c9
 .jr_00_0af0:
-    ld   HL, wD77B_OverrideVRAMWritePending                                     ;; 00:0af0 $21 $7b $d7
+    ld   HL, wD77B_BlockPatch_VramWritePending                                     ;; 00:0af0 $21 $7b $d7
     ld   A, [HL]                                       ;; 00:0af3 $7e
     res  0, [HL]                                       ;; 00:0af4 $cb $86
     bit  0, A                                          ;; 00:0af6 $cb $47
-    jp   NZ, call_00_1779_BgMap_WriteOverridePaletteAttributes                                ;; 00:0af8 $c2 $79 $17
+    jp   NZ, call_00_1779_BlockPatch_WriteAttributes                                ;; 00:0af8 $c2 $79 $17
     ld   A, [wD72F_TilesetAnim_FrameCount]                                    ;; 00:0afb $fa $2f $d7
     and  A, A                                          ;; 00:0afe $a7
     jr   Z, .jr_00_0b0c                                ;; 00:0aff $28 $0b
@@ -2032,7 +2032,7 @@ call_00_0f01_ResetVideoState:
     ld   [wD6F9_BgMap_LoadingFlags], A                                    ;; 00:0f07 $ea $f9 $d6
     ld   [wD60E_HUDDirtyFlags], A                                    ;; 00:0f0a $ea $0e $d6
     ld   [wD60F_GfxTransferFlags], A                                    ;; 00:0f0d $ea $0f $d6
-    ld   [wD77B_OverrideVRAMWritePending], A                                    ;; 00:0f10 $ea $7b $d7
+    ld   [wD77B_BlockPatch_VramWritePending], A                                    ;; 00:0f10 $ea $7b $d7
     ld   [wD72F_TilesetAnim_FrameCount], A                                    ;; 00:0f13 $ea $2f $d7
     ld   [wD611_AnimatedTileId], A                                    ;; 00:0f16 $ea $11 $d6
     ld   [wD6E2_GfxStream_ChunksRemaining], A                                    ;; 00:0f19 $ea $e2 $d6
