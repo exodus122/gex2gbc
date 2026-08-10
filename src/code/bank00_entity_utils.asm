@@ -25,8 +25,16 @@ call_00_30af_Entity_ApplyGravityAndMoveY_Clamped:
     jp   call_00_37d8_Entity_MoveY                                  ;; 00:30d7 $c3 $d8 $37
     
 call_00_30da_Entity_ApplyGravityMoveY_WithFloorCollision:
-; Same gravity logic as above but without the sign-extension trick; moves Y position and calls 
-; floor collision, then compares result against current Y pos and zeroes Y velocity if floor reached
+; Same gravity and clamp as above, and it keeps the sign-extension - what it drops
+; is the `cpl / inc A` NEGATION. That is not a cosmetic difference: for the same
+; stored YVEL the two routines move the entity in OPPOSITE directions.
+;
+; Applies the delta to YPOS inline, then calls Entity_GetMinYBound and, if YPOS has
+; not passed it, snaps YPOS to the bound and zeroes YVEL.
+;
+; The code after the `ret` below is a separate routine that used to run on from
+; here unlabelled - now split out as call_00_3125_Entity_SetYFloorToCurrentPos,
+; which is the setter for the clamp in call_00_3137 just past it
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YVEL
     ld   a,[hl]
     sub  a,$02
@@ -55,7 +63,7 @@ call_00_30da_Entity_ApplyGravityMoveY_WithFloorCollision:
     ld   a,[hl]
     adc  b
     ld   [hl],a
-    call call_00_349c_Entity_GetLowerYBound
+    call call_00_349c_Entity_GetMinYBound
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
     ld   a,e
     sub  [hl]
@@ -72,6 +80,20 @@ call_00_30da_Entity_ApplyGravityMoveY_WithFloorCollision:
     xor  a
     ld   [hl],a
     ret  
+
+call_00_3125_Entity_SetYFloorToCurrentPos:
+; Records the entity's current Y as its floor, by copying the 16-bit YPOS into the
+; ENTITY_FIELD_MISC_PARAM pair ($1A/$1B).
+;
+; This is the setter half of a pair: call_00_3137_Entity_ClampYToStoredFloor
+; reads those same two bytes back and snaps YPOS to them whenever the entity has
+; sunk past. So together they mean "remember where I am now, and never let me fall
+; below it" - used by entities that need a floor at wherever they happened to
+; spawn or land, rather than one from the bounding-box tables.
+;
+; The `xor $0A` reaches MISC_PARAM from YPOS ($10 xor $0A = $1A). In this use the
+; $1A/$1B pair is a coordinate rather than a parameter byte, which is one of the
+; several unrelated things ENTITY_FIELD_MISC_PARAM holds depending on entity type
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
     ld   e,[hl]
     inc  l
@@ -83,10 +105,15 @@ call_00_30da_Entity_ApplyGravityMoveY_WithFloorCollision:
     ld   [hl],d
     ret  
 
-call_00_3137_Entity_ClampYToBound_OtherFlags:
-; Reads a bound from OTHER_FLAGS sub-fields (not from the standard bound helpers) 
-; and clamps Y position similarly to below functions
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_OTHER_FLAGS
+call_00_3137_Entity_ClampYToStoredFloor:
+; Enforces the floor recorded by call_00_3125_Entity_SetYFloorToCurrentPos: reads
+; the 16-bit value back out of ENTITY_FIELD_MISC_PARAM / +1, and if the entity has
+; sunk to or past it, snaps YPOS back and zeroes YVEL.
+;
+; Deliberately not one of the Entity_Get{Min,Max}{X,Y}Bound helpers - those derive
+; a bound from the bounding-box tables, whereas this one uses a floor the entity
+; captured for itself at runtime
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_PARAM
     ld   e,[hl]
     inc  l
     ld   d,[hl]
@@ -108,9 +135,13 @@ call_00_3137_Entity_ClampYToBound_OtherFlags:
     ret  
 
 call_00_3154_Entity_MoveYDownWithFloorBound:
-; Calls call_00_34ba_Entity_GetUpperYBound (get lower Y bound), compares entity Y against it; 
-; if below bound, clamps Y to bound and zeroes Y velocity
-    call call_00_34ba_Entity_GetUpperYBound                                  ;; 00:3154 $cd $ba $34
+; Calls Entity_GetMaxYBound - the floor - compares entity Y against it, and if the
+; entity has fallen past it, snaps Y to the bound and zeroes Y velocity.
+;
+; (The old comment glossed the callee as "get lower Y bound", contradicting the
+; name it was calling. Both were confusing; Min/Max is now the numeric range and
+; larger Y is further down the screen)
+    call call_00_34ba_Entity_GetMaxYBound                                  ;; 00:3154 $cd $ba $34
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
     ld   A, [HL+]                                      ;; 00:315f $2a
     sub  A, E                                          ;; 00:3160 $93
@@ -130,7 +161,7 @@ call_00_3154_Entity_MoveYDownWithFloorBound:
 call_00_316e_Entity_MoveYDownWithOffsetFloorBound:
 ; Same as above but adds a BC offset to the bound before comparing, allowing a relative floor threshold
     push BC                                            ;; 00:316e $c5
-    call call_00_34ba_Entity_GetUpperYBound                                  ;; 00:316f $cd $ba $34
+    call call_00_34ba_Entity_GetMaxYBound                                  ;; 00:316f $cd $ba $34
     pop  HL                                            ;; 00:3172 $e1
     add  HL, DE                                        ;; 00:3173 $19
     ld   E, L                                          ;; 00:3174 $5d
@@ -152,9 +183,20 @@ call_00_316e_Entity_MoveYDownWithOffsetFloorBound:
     ret                                                ;; 00:318c $c9
 
 call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip:
-; Complex patrol logic: checks for movement mode (horizontal vs vertical, 
-; forward vs backward), calls appropriate bound helper, then nudges a speed counter and 
-; flips direction when a bound is hit; also zeroes velocity sub-fields on direction change
+; Patrol driver for moving platforms. MISC_FLAGS bit 1 picks the axis (clear = X,
+; set = Y); bits 7 and 6 hold the current direction on those axes. Each leg calls
+; the matching Entity_Get{Min,Max}{X,Y}Bound helper, and while inside the range it
+; nudges a speed counter toward its cap; on reaching the bound it toggles the
+; direction bit and falls into the shared flip path.
+;
+; The flip path zeroes four consecutive bytes at MISC_FLAGS xor $0b = $1C, which is
+; XVEL, XVEL_RELATED, YVEL and UNK_1F - so a direction change wipes the velocity
+; block outright rather than reversing it.
+;
+; It also reads ENTITY_FIELD_ENTITY_ID and special-cases the value $17: that entity
+; type skips the MISC_FLAGS bit 3/0 handling and goes straight to the velocity
+; wipe. The $17 is an entity id, not a field offset, despite sitting next to a lot
+; of field arithmetic
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     bit  MISC_FLAGS_BIT_3, [HL]                                       ;; 00:3195 $cb $5e
     jr   Z, .jr_00_319c                                ;; 00:3197 $28 $03
@@ -165,7 +207,7 @@ call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip:
     jr   NZ, .jr_00_3202                               ;; 00:319e $20 $62
     bit  MISC_FLAGS_BIT_7, [HL]                                       ;; 00:31a0 $cb $7e
     jr   NZ, .jr_00_31de                               ;; 00:31a2 $20 $3a
-    call call_00_347e_Entity_GetLeftXBound                                  ;; 00:31a4 $cd $7e $34
+    call call_00_347e_Entity_GetMaxXBound                                  ;; 00:31a4 $cd $7e $34
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
     ld   A, [HL+]                                      ;; 00:31af $2a
     sub  A, E                                          ;; 00:31b0 $93
@@ -208,7 +250,7 @@ call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip:
     ld   [HL], A                                       ;; 00:31dc $77
     ret                                                ;; 00:31dd $c9
 .jr_00_31de:
-    call call_00_3460_Entity_GetRightXBound                                  ;; 00:31de $cd $60 $34
+    call call_00_3460_Entity_GetMinXBound                                  ;; 00:31de $cd $60 $34
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
     ld   A, [HL+]                                      ;; 00:31e9 $2a
     sub  A, E                                          ;; 00:31ea $93
@@ -234,7 +276,7 @@ call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip:
 .jr_00_3202:
     bit  MISC_FLAGS_BIT_6, [HL]                                       ;; 00:3202 $cb $76
     jr   NZ, .jr_00_322a                               ;; 00:3204 $20 $24
-    call call_00_34ba_Entity_GetUpperYBound                                  ;; 00:3206 $cd $ba $34
+    call call_00_34ba_Entity_GetMaxYBound                                  ;; 00:3206 $cd $ba $34
    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
     ld   A, [HL+]                                      ;; 00:3211 $2a
     sub  A, E                                          ;; 00:3212 $93
@@ -258,7 +300,7 @@ call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip:
     set  MISC_FLAGS_BIT_6, [HL]                                       ;; 00:3226 $cb $f6
     jr   .jp_00_31c4                                   ;; 00:3228 $18 $9a
 .jr_00_322a:
-    call call_00_349c_Entity_GetLowerYBound                                  ;; 00:322a $cd $9c $34
+    call call_00_349c_Entity_GetMinYBound                                  ;; 00:322a $cd $9c $34
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
     ld   A, [HL+]                                      ;; 00:3235 $2a
     sub  A, E                                          ;; 00:3236 $93
@@ -456,7 +498,7 @@ call_00_3316_Entity_NudgeYVelocityTowardC_Signed:
     ret  
 
 call_00_333a_Entity_CheckIfXVelocityIsZero:
-; Same zero-check for X velocity
+; Loads X velocity into A and ANDs with itself; sets Z if zero
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XVEL
     ld   a,[hl]
     and  a
@@ -566,7 +608,10 @@ call_00_3364_Entity_ApproachPlayerXWithBounds:
 
 call_00_33dd_Entity_ApplyXVelocityFriction:
 ; First checks SPRITE_FLAG_ON_SCREEN — if clear, returns immediately (offscreen entities are not simulated).
-; Then reads a direction flag from UNK_1D bit 1 to determine whether to add or subtract friction:
+; Then branches on a bit of ENTITY_FIELD_MISC_FLAGS ($17) to decide add or subtract. NOT field $1D:
+; the `xor $1D` is applied to L while it still holds SPRITE_FLAGS ($0A), and $0A xor $1D = $17. The
+; bit is also spelled with a SPRITE_FLAG_* constant, which is the wrong family for a MISC_FLAGS read
+; even though the number happens to work:
 ; Bit 1 clear (.jr_02_33F2): Adds X velocity (C) into a subpixel accumulator. Includes a clamping check 
 ;   — if the accumulator would overflow past $80 (i.e. exceed half-range), it saturates and folds the 
 ;   remainder back through C before applying. Then adds the adjusted C into the X position subpixel field 
@@ -664,8 +709,15 @@ call_00_3442_Entity_MoveXByFacingSpeed:
     ld   b,a
     jp   call_00_37c9_Entity_MoveX
 
-call_00_3460_Entity_GetRightXBound:
-; Looks up wD30A_EntityBoundingBoxXMin for this entity slot, scales by 32, adds $30 offset; result in DE = right patrol bound
+call_00_3460_Entity_GetMinXBound:
+; DE = the LOW end of this entity's X patrol range: wD30A_EntityBoundingBoxXMin
+; for this slot, scaled by 32 (blocks to pixels), plus $30.
+;
+; Was called GetRightXBound. It is not the right edge - the patrol code in
+; call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip calls this on the
+; leftward leg and flips when XPOS drops BELOW the result, which is a minimum.
+; Named Min/Max now to match the source variable and sidestep the question of
+; which screen edge that is
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3460 $fa $00 $d3
     rrca                                               ;; 00:3463 $0f
     rrca                                               ;; 00:3464 $0f
@@ -688,8 +740,10 @@ call_00_3460_Entity_GetRightXBound:
     ld   D, H                                          ;; 00:347c $54
     ret                                                ;; 00:347d $c9
 
-call_00_347e_Entity_GetLeftXBound:
-; Same as above but uses wD309_EntityBoundingBoxXMax, subtracts $10 (adds $FFF0); result in DE = left patrol bound
+call_00_347e_Entity_GetMaxXBound:
+; DE = the HIGH end of the X patrol range: wD309_EntityBoundingBoxXMax scaled by
+; 32, minus $10. Was called GetLeftXBound; the patrol code calls it on the
+; rightward leg and flips when XPOS rises above the result
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:347e $fa $00 $d3
     rrca                                               ;; 00:3481 $0f
     rrca                                               ;; 00:3482 $0f
@@ -712,8 +766,9 @@ call_00_347e_Entity_GetLeftXBound:
     ld   D, H                                          ;; 00:349a $54
     ret                                                ;; 00:349b $c9
 
-call_00_349c_Entity_GetLowerYBound:
-; Uses wD30C_EntityBoundingBoxYMin, scales by 32, adds $30; result in DE = lower Y bound
+call_00_349c_Entity_GetMinYBound:
+; DE = low end of the Y range: wD30C_EntityBoundingBoxYMin scaled by 32, plus $30.
+; Smaller Y is higher on screen, so this is the CEILING despite reading as "min"
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:349c $fa $00 $d3
     rrca                                               ;; 00:349f $0f
     rrca                                               ;; 00:34a0 $0f
@@ -736,8 +791,10 @@ call_00_349c_Entity_GetLowerYBound:
     ld   D, H                                          ;; 00:34b8 $54
     ret                                                ;; 00:34b9 $c9
 
-call_00_34ba_Entity_GetUpperYBound:
-; Uses wD30B_EntityBoundingBoxYMax, scales by 32, subtracts $10; result in DE = upper Y bound
+call_00_34ba_Entity_GetMaxYBound:
+; DE = high end of the Y range: wD30B_EntityBoundingBoxYMax scaled by 32, minus
+; $10. Larger Y is lower on screen, so this is the FLOOR - which is why the
+; "move down until floor" helpers all call this one
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:34ba $fa $00 $d3
     rrca                                               ;; 00:34bd $0f
     rrca                                               ;; 00:34be $0f
@@ -939,8 +996,18 @@ call_00_3597_Entity_ApplyVelocityXY_Subpixel_NoPlayerPush:
     jp   call_00_37c9_Entity_MoveX
 
 call_00_35d5_Entity_MoveXAndPushPlayer:
-; Moves entity X by BC, then if entity is interacting with player, 
-; pushes the player's X position by the platform's movement delta (conveyor/moving platform behavior)
+; Moves entity X by BC, then does one of two different things to the player.
+;
+; If the player is STANDING ON this entity (wD74D_Player_EntityStoodOnLo matches
+; the slot base) it just records the delta C in wD75C_PlayerXDeltaExtra, so the
+; player gets carried along - a moving platform.
+;
+; If instead the player is being PUSHED by it (wD74F_Player_PushedMovingPlatformLo)
+; it does not apply a delta at all: it compares the player's screen X against the
+; entity's and snaps the player's absolute X to whichever side of the entity they
+; are on. That is a collision resolution, not a carry.
+;
+; Anything else returns without touching the player
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
     ld   A, [HL]                                       ;; 00:35dd $7e
     add  A, C                                          ;; 00:35de $81
@@ -991,7 +1058,12 @@ call_00_35d5_Entity_MoveXAndPushPlayer:
     ret                                                ;; 00:3627 $c9
 
 call_00_3628_Entity_SaveWorldState:
-; Backs up camera/interaction pointers (wD74D_Player_EntityStoodOnLo–wD74F_Player_PushedMovingPlatformLo, 
+; Note the side effect the old comment omitted: as well as backing up
+; wD688_FlyAnimationPosition, it OVERWRITES it with $A0. So calling this does not
+; only save state, it parks the fly animation - which matters because the cutscene
+; code brackets whole previews with Save/Restore.
+;
+; Backs up camera/interaction pointers (wD74D_Player_EntityStoodOnLo–wD74F_Player_PushedMovingPlatformLo,
 ; wD688_FlyAnimationPosition), copies entity table (wD000), player entity (wD200), 
 ; slot table (wD301_EntityListIndexesForCurrentEntities), and bounding box (wD309_EntityBoundingBoxXMax) into 
 ; save buffers at wD79F_BackupBuffer_EntityFlags/wD89F_BackupBuffer_EntityMemory/
@@ -1259,7 +1331,8 @@ call_00_37d8_Entity_MoveY:
     ret                                                ;; 00:37e6 $c9
 
 call_00_37e7_Entity_SetSlotCounter:
-; Writes C into wD32D-indexed slot counter for this entity
+; Writes C into the wD32D entry for this entity's slot. Nothing here is specific
+; to projectiles, despite how some callers describe it
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:37e7 $fa $00 $d3
     rlca                                               ;; 00:37ea $07
     rlca                                               ;; 00:37eb $07
@@ -1314,17 +1387,29 @@ call_00_382f_Entity_SetWidth:
     ret  
 
 call_00_3839_Entity_GetSpriteCounter:
+; A = ENTITY_FIELD_SPRITE_COUNTER, the index into the current frame list
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_SPRITE_COUNTER
     ld   a,[hl]
     ret  
 
-call_00_3843_Entity_CheckAnimFlag_Bit2:
-; Tests SPRITE_FLAG_ANIM_ENDED (the animation wrapped this frame)
+call_00_3843_Entity_CheckAnimationEnded:
+; Z if the current action's animation did NOT wrap this frame, NZ if it just
+; finished its last frame. Tests SPRITE_FLAG_ANIM_ENDED_BIT, which is a one-frame
+; pulse, so this only reads true on the frame the wrap happens.
+;
+; This is how nearly every action hands off to the next one - it has around 45
+; call sites in bank02_entity_actions.asm, easily the most-used helper here
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_SPRITE_FLAGS
     bit  SPRITE_FLAG_ANIM_ENDED_BIT, [HL]                                       ;; 00:384b $cb $56
     ret                                                ;; 00:384d $c9
 
-call_00_384e_Entity_CheckAnimFlag_Bit6:
+call_00_384e_Entity_CheckSpriteIdChanged:
+; NZ if the entity's sprite id changed this frame and its tiles need refetching.
+; Tests SPRITE_FLAG_ID_CHANGED_BIT, another one-frame pulse.
+;
+; Nothing in the disassembly calls this - unlike its neighbour above, which is
+; everywhere. Either the graphics streaming path checks the flag inline, or this
+; is a leftover
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_SPRITE_FLAGS
     bit  SPRITE_FLAG_ID_CHANGED_BIT,[hl]
     ret  
@@ -1350,12 +1435,18 @@ call_00_3859_Entity_CheckPlayerXProximity:
     sbc  A, $00                                        ;; 00:3875 $de $00
     ret                                                ;; 00:3877 $c9
 
-call_00_3878_Entity_CheckIfTVButtonVisibleOrInRange:
-; In non-hub levels, uses slot index into wD798_OverrideSlotTable13 visibility table; 
-; in hub level, checks entity's TIMER_2 range values against wD64F_MissionRemoteTotal-wD651_BonusMissionTotal player position bytes
+call_00_3878_Entity_CheckTVButtonEnabled:
+; Is this TV button active? Two entirely different tests depending on where you are.
+;
+; In the hub (level id 0) it falls through to call_00_3899, which checks collection
+; totals against the entity's requirements. Everywhere else it derives a slot index
+; from the entity's list index - (index - 1) >> 1 - looks it up from
+; wD798_OverrideSlotTable13 and returns whether that slot is nonzero.
+;
+; Neither path involves distance, despite the old name's "OrInRange"
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:3878 $fa $24 $d6
     and  A, A                                          ;; 00:387b $a7
-    jr   Z, call_00_3899_Entity_CheckHubProximityToPlayer                                 ;; 00:387c $28 $1b
+    jr   Z, call_00_3899_Entity_CheckRemoteTotalsUnlock                                 ;; 00:387c $28 $1b
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:387e $fa $00 $d3
     rlca                                               ;; 00:3881 $07
     rlca                                               ;; 00:3882 $07
@@ -1375,13 +1466,25 @@ call_00_3878_Entity_CheckIfTVButtonVisibleOrInRange:
     and  A, A                                          ;; 00:3897 $a7
     ret                                                ;; 00:3898 $c9
 
-call_00_3899_Entity_CheckHubProximityToPlayer:
-; Reads three bytes from wD64F_MissionRemoteTotal–wD651_BonusMissionTotal (player's hub-world position, likely X-block, Y-block, and room/zone index), 
-; masks the sign bit off each (& $7F), and compares each against three consecutive bytes in the entity's 
-; TIMER_2 field (proximity thresholds). If all three values are >= their respective thresholds,
-; returns A=1 (player is close enough to activate); if any comparison fails, returns A=0.
-; So it's essentially a 3-axis "is the player within this entity's activation radius?" check used exclusively 
-; in the hub world, where entities need distance-based activation rather than room-based visibility.
+call_00_3899_Entity_CheckRemoteTotalsUnlock:
+; Hub-world unlock gate: has the player collected enough remotes for this entity?
+;
+; Reads the three running totals wD64F_MissionRemoteTotal, wD650_HiddenRemoteTotal
+; and wD651_BonusMissionTotal, masks off the top bit of each (& $7F), and compares
+; each against three consecutive bytes starting at the entity's TIMER_2 field,
+; which hold that entity's required counts. Returns A=1 only if all three totals
+; meet or exceed their requirement, A=0 otherwise.
+;
+; The three requirement bytes at $19/$1A/$1B are not hardcoded: they are the three
+; spawn parameters from the level's entity list, routed there by spawn mask $70 -
+; which is precisely the mask ENTITY_TV_BUTTON and ENTITY_RED_REMOTE carry in
+; bank0A_entity_load.asm. So each hub TV's unlock condition is three numbers in
+; data.
+;
+; This was called CheckHubProximityToPlayer and described as a distance/activation
+; radius check. Nothing here reads a position - the three variables are collection
+; totals, per their own names and their use elsewhere. It is a progress
+; requirement, which is why it gates the hub TVs
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
     ld   A, [wD64F_MissionRemoteTotal]                                    ;; 00:38a1 $fa $4f $d6
     and  A, $7f                                        ;; 00:38a4 $e6 $7f
@@ -1406,10 +1509,10 @@ call_00_3899_Entity_CheckHubProximityToPlayer:
 
 call_00_38c1_Entity_CheckRedRemoteProgressFlag:
 ; In non-hub levels, maps slot to a bitmask via a 3-byte table and ANDs against 
-; wD629 remote progress flags; in hub delegates to call_00_3899_Entity_CheckHubProximityToPlayer
+; wD629 remote progress flags; in hub delegates to call_00_3899_Entity_CheckRemoteTotalsUnlock
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:38c1 $fa $24 $d6
     and  A, A                                          ;; 00:38c4 $a7
-    jr   Z, call_00_3899_Entity_CheckHubProximityToPlayer                                 ;; 00:38c5 $28 $d2
+    jr   Z, call_00_3899_Entity_CheckRemoteTotalsUnlock                                 ;; 00:38c5 $28 $d2
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:38c7 $fa $00 $d3
     rlca                                               ;; 00:38ca $07
     rlca                                               ;; 00:38cb $07
@@ -1438,8 +1541,13 @@ call_00_38c1_Entity_CheckRedRemoteProgressFlag:
     db   $01, $02, $04                                 ;; 00:38ed .?.
 
 call_00_38f0_Entity_ClearAllSlots:
-; Iterates all 8 entity slots (addresses $D220–D3E0 step $20); 
-; for each non-FF entity, calls call_00_3910_Entity_ClearSlot to clear it
+; Iterates the seven NPC entity slots - $D220 to $D2E0 in steps of $20, stopping
+; when the low byte wraps to $00 - and calls call_00_3910_Entity_ClearSlot on each
+; one that is not already free. $D200 is the player and is never touched.
+;
+; Seven, not eight, and the range ends at $D2E0 rather than $D3E0; the same seven
+; are what call_00_3951_Entity_SpawnEffectAtPlayer scans for a free slot.
+; wD300_CurrentEntityAddrLo is saved and restored around the loop
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:38f0 $fa $00 $d3
     push AF                                            ;; 00:38f3 $f5
     ld   A, $20                                        ;; 00:38f4 $3e $20
@@ -1459,8 +1567,10 @@ call_00_38f0_Entity_ClearAllSlots:
     ret                                                ;; 00:390f $c9
 
 call_00_3910_Entity_ClearSlot:
-; Sets entity ID to $FF, then follows the slot-index link to the D0xx entity-flags table 
-; and clears the flag byte to 0
+; Sets entity ID to $FF, then follows the slot-index link to the wD000 entity-flags
+; table and writes $00 there - but only if the entry is not already $FF, which the
+; old comment omitted. Compare call_00_393c_Entity_SetFlagsEntryNone, which writes
+; $FF to the same byte
     LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_ENTITY_ID
     ld   [HL], $ff                                     ;; 00:3918 $36 $ff
     ld   A, L                                          ;; 00:391a $7d
@@ -1486,8 +1596,14 @@ call_00_3931_Entity_DeactivateSelf:
     ld   [HL], $ff                                     ;; 00:3939 $36 $ff
     ret                                                ;; 00:393b $c9
 
-call_00_393c_Entity_ClearFlags:
-; Clears the D0xx entity-flags entry corresponding to this entity's slot index
+call_00_393c_Entity_SetFlagsEntryNone:
+; Writes $FF into this entity's wD000_EntityFlags entry, following the slot index
+; through wD301.
+;
+; It writes $FF, not zero, so the old name "ClearFlags" was misleading - and note
+; call_00_3910_Entity_ClearSlot writes $00 to the very same table. The two are
+; opposites despite both having been described as clearing. $FF matches the
+; ENTITY_ID_NONE convention: this marks the entry unused rather than blanking it
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:393c $fa $00 $d3
     rlca                                               ;; 00:393f $07
     rlca                                               ;; 00:3940 $07
@@ -1502,9 +1618,25 @@ call_00_393c_Entity_ClearFlags:
     ld   [HL], $ff                                     ;; 00:394e $36 $ff
     ret                                                ;; 00:3950 $c9
 
-call_00_3951_Entity_SpawnPlayerClone:
-; Finds a free NPC entity slot (ID=$FF), copies player position/velocity into it, 
-; inits projectile fields; used for player-spawned entities
+call_00_3951_Entity_SpawnEffectAtPlayer:
+; Spawns a cosmetic burst effect at the player's feet. The entity it creates has
+; no collision handler, so it cannot interact with anything.
+;
+; Scans entity slots $D220, $D240 ... $D2E0 (seven of them; $D200 is the player
+; and is skipped) for one whose first byte is $FF, meaning free. Gives up
+; silently if all seven are busy, so the effect is droppable under load.
+;
+; Into the free slot it copies four bytes from wD20E_Player_XPositionLo - the
+; 16-bit X and 16-bit Y. Position only; no velocity is written, so the effect
+; does not move.
+;
+; call_00_3985_Entity_ParticleBurstInit then does the rest, and that is where the
+; evidence sits: it zeroes ENTITY_FIELD_COLLISION_TYPE, which means the entity has
+; no collision handler at all and can neither hit nor be hit. It also sets action
+; 0, loads animation set 1, and queues SFX_ENEMY_DEFEATED. A decoration.
+;
+; wD300_CurrentEntityAddrLo is borrowed for the duration and restored, since the
+; init helpers all work on "the current entity"
     ld   h,$D2
     ld   a,$20
 .jr_02_3955:
@@ -1542,9 +1674,17 @@ call_00_3951_Entity_SpawnPlayerClone:
     ret  
 
 call_00_3985_Entity_ParticleBurstInit:
-; Sets projectile slot counter to 1, clears collision type, sets UNK_16=$07, 
-; clears MISC_FLAGS and OTHER_FLAGS, loads animation type 1, clears entity table slot,
-; sets action to 0, plays sound $17
+; Finishes initialising the burst entity that call_00_3951 just placed. In order:
+; slot counter = 1, ENTITY_FIELD_COLLISION_TYPE = $00 (no collision handler, so
+; the entity is inert), ENTITY_FIELD_ENTITY_ID = $07 - which is the write that
+; actually claims the slot, since $FF there means free - then MISC_FLAGS and
+; FACING_FLAGS cleared, animation set 1 loaded, the wD000 flags entry reset,
+; action 0, and SFX_ENEMY_DEFEATED queued.
+;
+; The field walk is a chain of XORs on L rather than fresh loads, and it is
+; CUMULATIVE: starting from $16, `xor $16` lands on $00, then `xor $17` on $17,
+; then `xor $1a` on $17 xor $1a = $0D. So the last write is FACING_FLAGS ($0D),
+; not MISC_PARAM ($1A) as the operand suggests at a glance
     ld   C, $01                                        ;; 00:3985 $0e $01
     call call_00_37e7_Entity_SetSlotCounter                                  ;; 00:3987 $cd $e7 $37
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_COLLISION_TYPE
@@ -1563,7 +1703,7 @@ call_00_3985_Entity_ParticleBurstInit:
     ld   [HL], $00                                     ;; 00:39a4 $36 $00
     ld   C, $01                                        ;; 00:39a6 $0e $01
     call call_00_3a23_Entity_LoadAnimationData                                  ;; 00:39a8 $cd $23 $3a
-    call call_00_393c_Entity_ClearFlags                                  ;; 00:39ab $cd $3c $39
+    call call_00_393c_Entity_SetFlagsEntryNone                                  ;; 00:39ab $cd $3c $39
     xor  A, A                                          ;; 00:39ae $af
     FARCALL call_02_7102_Entity_SetAction
     ld   C, SFX_ENEMY_DEFEATED                                        ;; 00:39ba $0e $17

@@ -104,7 +104,7 @@ wD000_EntityFlags:
     ds 256                                             ;; d000
 
 wD100_TilesToLoadBuffer:
-; 256-byte staging buffer. Filled by call_00_08fc_SetupEntityVRAMTransfer and then
+; 256-byte staging buffer. Filled by call_00_08fc_StageNextGfxTransfer and then
 ; streamed into a single VRAM page by the LCD STAT handler, 4 bytes per hblank
     ds 256                                             ;; d100
 
@@ -1244,8 +1244,10 @@ wD771_LevelTimer_FrameCounter:
 
 ; Three per-level progress counters, zeroed together on level entry. Each
 ; counts one kind of event and unlocks something once it reaches a threshold
-wD772:
-; incremented by a special tile script in bank 0
+wD772_BreakablesDestroyedCount:
+; how many counted-breakable tile objects have been destroyed this level.
+; call_00_2186_CountedBreakable_OnHit compares it against a per-level quota - 5 in
+; Smellraiser, 8 elsewhere - and opens an override slot on the exact match
     ds 1                                               ;; d772
 
 wD773_HuntersDefeatedCount:
@@ -1333,7 +1335,12 @@ wD78B_OverrideSlotTable:
 ; $02 = triggered/counting-up,
 ; $FF = completed.
 ; Each slot tracks one interactive tile region's state. Slots 0–15 correspond to tile
-; override regions registered by UpdateCollisionFlags
+; override regions registered by UpdateCollisionFlags.
+;
+; The 16 bytes are contiguous ($D78B-$D79A) but declared in four pieces so that the
+; slots code refers to by name get their own labels. Code indexes straight off
+; wD78B, so an offset can run past this `ds 4` into the labels below - see
+; call_00_2225_Switch_ArmSlotByPosition, which reaches slots 0-8
     ds 4                                              ;; d78b
 wD78F_OverrideSlotTable4:
     ds 9

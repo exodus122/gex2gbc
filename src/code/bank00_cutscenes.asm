@@ -148,7 +148,7 @@ call_00_2329_Cutscene_LoadAndRun:
     FARCALL call_02_715a_MapWindow_Update
     FARCALL call_02_6eba_Entities_UpdateAll
     call call_00_1455_BgMap_LoadDirtyRegions                                  ;; 00:23cd $cd $55 $14
-    call call_00_08fc_SetupEntityVRAMTransfer                                  ;; 00:23d0 $cd $fc $08
+    call call_00_08fc_StageNextGfxTransfer                                  ;; 00:23d0 $cd $fc $08
     ld   HL, wD79B_Cutscene_MoveFramesRemaining                                     ;; 00:23d3 $21 $9b $d7
     ld   A, [HL]                                       ;; 00:23d6 $7e
     sub  A, $01                                        ;; 00:23d7 $d6 $01
@@ -182,7 +182,7 @@ call_00_2329_Cutscene_LoadAndRun:
     call call_00_0ab4_WaitForInterrupt                                  ;; 00:23fe $cd $b4 $0a
     call call_00_1e5b_BgMap_TickOverrideSequence                                  ;; 00:2401 $cd $5b $1e
     FARCALL call_02_6eba_Entities_UpdateAll
-    call call_00_08fc_SetupEntityVRAMTransfer                                  ;; 00:240f $cd $fc $08
+    call call_00_08fc_StageNextGfxTransfer                                  ;; 00:240f $cd $fc $08
     ld   A, [wD77D_OverrideSequenceStepsRemaining]                                    ;; 00:2412 $fa $7d $d7
     and  A, A                                          ;; 00:2415 $a7
     jr   NZ, .jr_00_23f2                               ;; 00:2416 $20 $da
@@ -195,7 +195,7 @@ call_00_2329_Cutscene_LoadAndRun:
     push AF                                            ;; 00:2420 $f5
     call call_00_0ab4_WaitForInterrupt                                  ;; 00:2421 $cd $b4 $0a
     FARCALL call_02_6eba_Entities_UpdateAll
-    call call_00_08fc_SetupEntityVRAMTransfer                                  ;; 00:242f $cd $fc $08
+    call call_00_08fc_StageNextGfxTransfer                                  ;; 00:242f $cd $fc $08
     ld   A, [wD775_Cutscene_Skippable]                                    ;; 00:2432 $fa $75 $d7
     and  A, A                                          ;; 00:2435 $a7
     jr   Z, .jr_00_2441                                ;; 00:2436 $28 $09

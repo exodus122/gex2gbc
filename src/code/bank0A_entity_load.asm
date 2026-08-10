@@ -141,7 +141,12 @@ data_0a_75fd_EntityAttributeTable:
 ; bit is clear is zeroed instead. That is how one spawn record format configures a moving
 ; platform's velocity and a timer-driven hazard's countdown without either knowing about the
 ; other. See SPAWN_PARAM_TO_* in constants.asm; $70 - route the three parameters to
-; TIMER_2 / OTHER_FLAGS / UNK_1B - is by far the most common value
+; TIMER_2 / MISC_PARAM / UNK_1B ($19/$1A/$1B) - is by far the most common value.
+;
+; ENTITY_TV_BUTTON and ENTITY_RED_REMOTE both use $70, and those three bytes are
+; exactly what call_00_3899_Entity_CheckRemoteTotalsUnlock reads back as the
+; mission / hidden / bonus remote requirements. So a hub TV's unlock condition is
+; three numbers in the level's entity list, not anything in code
     db   $00, $00, COLLISION_TYPE_NONE, $00, $00, $00, $00      ; 0a:75fd ???????  ; ENTITY_GEX
     db   $00, $2c, $10, COLLISION_TYPE_COLLECTIBLE, $00, $01, $00, $00 ; 0a:7604 ???????? ; ENTITY_COLLECTIBLE_SPAWN
     db   $00, $08, $08, COLLISION_TYPE_EXTRA_LIFE, $00, $02, $00, $00 ; 0a:760c ???????. ; ENTITY_UNK_02

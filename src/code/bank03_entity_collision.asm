@@ -170,7 +170,7 @@ call_03_4c76_EntityCollision_Dispatch:
     ld   c,SFX_SILVER_REMOTE
     call call_00_112f_QueueSFX
     call call_00_3931_Entity_DeactivateSelf
-    jp   call_00_393c_Entity_ClearFlags
+    jp   call_00_393c_Entity_SetFlagsEntryNone
 .jr_03_4d56_CollisionHandler_GoldRemote:
 ; Guards against double-collection (checks wD621_WarpFlags bit 4). On overlap, sets bit 5 in the 
 ; level's wD629 remote progress flag byte, kills entity, clears flag slot, then triggers 
@@ -189,7 +189,7 @@ call_03_4c76_EntityCollision_Dispatch:
     or   a,$20
     ld   [hl],a
     call call_00_3931_Entity_DeactivateSelf
-    call call_00_393c_Entity_ClearFlags
+    call call_00_393c_Entity_SetFlagsEntryNone
     ld   a,PLAYER_ACTION_GOLD_REMOTE_WARP
     FARCALL call_02_4ccd_Player_RequestAction
     ret  

@@ -198,11 +198,13 @@ DEF SFX_ROCKET                             EQU $1E
 DEF SFX_1F                                 EQU $1F ; unused?
 DEF SFX_HUNTER                             EQU $20
 DEF SFX_21                                 EQU $21 ; unused?
-DEF SFX_22                                 EQU $22 ; unused?
+DEF SFX_22                                 EQU $22 ; used: the counted-breakable tile scripts
+                                                   ; play it via OVERRIDE_STEP_SFX
 DEF SFX_23                                 EQU $23 ; unused?
 DEF SFX_ENEMY_BOUNCE                       EQU $24
 DEF SFX_25                                 EQU $25 ; unused?
-DEF SFX_26                                 EQU $26 ; unused?
+DEF SFX_26                                 EQU $26 ; used: .script_0D in bank00_cutscenes.asm
+                                                   ; plays it via OVERRIDE_STEP_SFX
 DEF SFX_FALLING_PLATFORM                   EQU $27
 DEF SFX_28                                 EQU $28 ; unused?
 DEF SFX_29                                 EQU $29 ; unused?
@@ -584,6 +586,13 @@ DEF OVERRIDE_STEP_TILES                     EQU $08 ; bit 3 - BgMap_WriteOverrid
                                                     ;         step's blocks into the tilemap
 DEF OVERRIDE_STEP_SFX                       EQU $20 ; bit 5 - PlaySFX; step carries one extra byte
 
+; bit numbers for the same flags, for `bit n,[hl]` rather than `and`
+DEF OVERRIDE_STEP_LOOP_BIT                  EQU 0
+DEF OVERRIDE_STEP_REGISTER_BIT              EQU 1
+DEF OVERRIDE_STEP_COLLISION_BIT             EQU 2
+DEF OVERRIDE_STEP_TILES_BIT                 EQU 3
+DEF OVERRIDE_STEP_SFX_BIT                   EQU 5
+
 ; ==================================================================
 ; ENTITY INSTANCE STRUCT
 ;
@@ -699,8 +708,19 @@ DEF ENTITY_FIELD_MISC_FLAGS                 EQU $17 ; different entities use the
     DEF MISC_FLAGS_BIT_0                 EQU 0 ; used
 DEF ENTITY_FIELD_MISC_TIMER                 EQU $18 ; general countdown; several entities despawn when it hits 0
 DEF ENTITY_FIELD_TIMER_2                    EQU $19
-DEF ENTITY_FIELD_OTHER_FLAGS                EQU $1A ; used by tv buttons, etc. Also read as a pair of movement
-                                                    ; bounds by the hub's clamping helpers in bank 0
+; General-purpose per-entity byte. Not a flags field - it is one of the six spawn
+; parameter slots (see SPAWN_PARAM_TO_MISC_PARAM), so the entity list supplies a
+; value at spawn and each entity type reads it however it likes. Observed uses:
+;   - a bitfield      (gun projectiles test bit 0)
+;   - a table index   ($FF means none, otherwise masked to the low nibble)
+;   - a counter       (read-and-increment, e.g. the multi-shot actions)
+;   - a small state id (compared against $01/$03, or multiplied by 8)
+;   - an unlock threshold, compared against wD64F_MissionRemoteTotal & $7F
+;   - the HIGH half of a 16-bit Y coordinate stored across $1A/$1B by
+;     call_00_3125_Entity_SetYFloorToCurrentPos and read back by
+;     call_00_3137_Entity_ClampYToStoredFloor
+; The last one is why $1B has no meaning of its own in that case
+DEF ENTITY_FIELD_MISC_PARAM                 EQU $1A
 DEF ENTITY_FIELD_UNK_1B                     EQU $1B ; never referenced through the field macros
 DEF ENTITY_FIELD_XVEL                       EQU $1C
 DEF ENTITY_FIELD_XVEL_RELATED               EQU $1D
@@ -750,7 +770,7 @@ DEF ENTITY_SPAWN_RECORD_SIZE                EQU $10 ; 4 bytes of the record are 
 ; record's parameter bytes this entity type consumes
 DEF SPAWN_PARAM_TO_MISC_TIMER               EQU $80 ; -> ENTITY_FIELD_MISC_TIMER   ($18)
 DEF SPAWN_PARAM_TO_TIMER_2                  EQU $40 ; -> ENTITY_FIELD_TIMER_2      ($19)
-DEF SPAWN_PARAM_TO_OTHER_FLAGS              EQU $20 ; -> ENTITY_FIELD_OTHER_FLAGS  ($1A)
+DEF SPAWN_PARAM_TO_MISC_PARAM               EQU $20 ; -> ENTITY_FIELD_MISC_PARAM   ($1A)
 DEF SPAWN_PARAM_TO_UNK_1B                   EQU $10 ; -> ENTITY_FIELD_UNK_1B       ($1B)
 DEF SPAWN_PARAM_TO_XVEL                     EQU $08 ; -> ENTITY_FIELD_XVEL         ($1C)
 DEF SPAWN_PARAM_TO_XVEL_RELATED             EQU $04 ; -> ENTITY_FIELD_XVEL_RELATED ($1D)

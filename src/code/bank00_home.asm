@@ -9,7 +9,7 @@
 ; The game never writes VRAM directly from game logic. Instead:
 ;
 ;   1. Something sets a request bit in wD60F_GfxTransferFlags (GFX_XFER_*).
-;   2. call_00_08fc_SetupEntityVRAMTransfer picks the lowest pending request, banks in
+;   2. call_00_08fc_StageNextGfxTransfer picks the lowest pending request, banks in
 ;      the source and stages 256 bytes into wD100_TilesToLoadBuffer, then raises
 ;      GFX_XFER_IN_PROGRESS.
 ;   3. call_00_0c11_VBlank_ArmVramStreamIsr (the vblank hook paired with
@@ -35,7 +35,7 @@
 
 SECTION "isrVBlank", ROM0[$0040]
 isrVBlank:
-    jp   call_00_0a54_MainGameLoop_UpdateAndRenderFrame                                    ;; 00:0040 $c3 $54 $0a
+    jp   call_00_0a54_VBlank_Handler                                    ;; 00:0040 $c3 $54 $0a
 
 SECTION "isrLCDC", ROM0[$0048]
 isrLCDC:
@@ -288,7 +288,7 @@ call_00_0150_Init:
     ld   [wD756_FlyPowerup2_TimerHi], A                                    ;; 00:0380 $ea $56 $d7
     ld   [wD753_FlyPowerup1_TimerLo], A                                    ;; 00:0383 $ea $53 $d7
     ld   [wD754_FlyPowerup1_TimerHi], A                                    ;; 00:0386 $ea $54 $d7
-    ld   [wD772], A                                    ;; 00:0389 $ea $72 $d7
+    ld   [wD772_BreakablesDestroyedCount], A                 ;; 00:0389 $ea $72 $d7
     ld   [wD773_HuntersDefeatedCount], A               ;; 00:038c $ea $73 $d7
     ld   [wD774], A                                    ;; 00:038f $ea $74 $d7
     ld   [wD73C_FrameCounter2], A                                    ;; 00:0392 $ea $3c $d7
@@ -418,7 +418,7 @@ call_00_0150_Init:
     call call_00_2305_OverrideSlotTable_Tick                                  ;; 00:04ee $cd $05 $23
     call call_00_1e5b_BgMap_TickOverrideSequence                                  ;; 00:04f1 $cd $5b $1e
     call call_00_05c7_FlyPowerup_Update                                  ;; 00:04f4 $cd $c7 $05
-    call call_00_08fc_SetupEntityVRAMTransfer                                  ;; 00:04f7 $cd $fc $08
+    call call_00_08fc_StageNextGfxTransfer                                  ;; 00:04f7 $cd $fc $08
     FARCALL call_0b_5ec3_UpdatePlayerObjPalette
     ld   HL, wD73C_FrameCounter2                                     ;; 00:0505 $21 $3c $d7
     inc  [HL]                                          ;; 00:0508 $34
@@ -439,6 +439,10 @@ call_00_0150_Init:
     jp   .jp_00_0428                                   ;; 00:051e $c3 $28 $04
 
 call_00_0521_DrawEntitiesWrapper:
+; Despite the name this is a screen bring-up routine, not a thin wrapper: drawing
+; the entities is only its first step and it finishes by switching the LCD back on
+; and starting a fade in. Callers use it to make a freshly built screen visible.
+;
 ; Builds the OAM list, drains any pending graphics transfers, switches the LCD STAT
 ; interrupt over to the VRAM streaming handler, reloads the DMG background palette,
 ; then turns the LCD back on and fades in
@@ -562,8 +566,9 @@ call_00_0598_LevelTimer_Tick:
     ret                                                ;; 00:05c6 $c9
 
 call_00_05c7_FlyPowerup_Update:
-; Main per-frame fly power-up logic dispatcher. If wD623_CollectibleMode (collectible mode) is nonzero, 
-; delegates to FlyPowerup_TickScoreTimer and returns. 
+; Main per-frame fly power-up logic dispatcher. If wD623_CollectibleMode is nonzero,
+; delegates to call_00_0598_LevelTimer_Tick and returns - the comment here used to
+; name a FlyPowerup_TickScoreTimer, which does not exist.
 ; Otherwise dispatches on wD687_FlyAnimationState animation state flags: 
 ; bit 0 set → fly is moving in (decrement wD688_FlyAnimationPosition toward $88; 
 ; on reaching $88, sets wD689_FlyAnimationTimer to $05 if Media Dimension else $FF as hold timer; 
@@ -660,11 +665,20 @@ call_00_0647_Player_SetUpOrEatFlyPowerup:
 ; Then dispatches on the old power-up ID (C): 
 ; if $03 → Player_ResetHealth (the health fly was active, restore health on swap-out); 
 ; if $04 → Player_ExtraLifeFly (extra life); 
-; if $01 → stores zero to wD755_FlyPowerup2_TimerLo/wD756_FlyPowerup2_TimerHi and loads $0708 
-;   into wD753_FlyPowerup1_TimerLo/wD754_FlyPowerup1_TimerHi (deactivates one timer pair, arms the other); 
-; if $02 → stores zero to wD753_FlyPowerup1_TimerLo/wD754_FlyPowerup1_TimerHi and loads $0708 
-;   into wD755_FlyPowerup2_TimerLo/wD756_FlyPowerup2_TimerHi (mirror of the $01 case). 
-; Returns without action if old power-up was $00 or any other value
+; if $01 → arms wD753_FlyPowerup1_Timer with $0708, and writes A to
+;   wD755_FlyPowerup2_TimerLo/Hi - see the note below;
+; if $02 → zeroes wD753_FlyPowerup1_Timer and arms wD755_FlyPowerup2_Timer with $0708.
+; Returns without action if old power-up was $00 or any other value.
+;
+; The two branches are NOT mirror images, though they look it. The $02 path does
+; `xor a` first, so it genuinely clears the other timer. The $01 path jumps in
+; straight off `cp a,$01` with A still holding $01, so instead of clearing
+; wD755/wD756 it writes $01 to both - a timer value of $0101.
+;
+; That is very likely a bug rather than intent: call_00_075b_Player_CanBeDamaged
+; treats any nonzero value in that pair as an active shield, so swapping out fly
+; $01 leaves the other power-up's shield reading as live for $0101 ticks. Not
+; verified on hardware; the asymmetry is plain in the code either way
     ld   hl,wD742_Player_CurrentFly
     ld   c,[hl]
     ld   [hl],a
@@ -766,8 +780,12 @@ call_00_06ec_Player_ObtainedCollectible:
 ; decrements wD649_CollectibleAmount (counting down toward zero). 
 ; If wD623_CollectibleMode is zero (free-collect mode): increments wD649_CollectibleAmount, clamped at $FF. 
 ; Looks up wD648_CollectibleMilestoneIndex (milestone index) in .data_00_074a_CollectibleMilestoneThresholds ($1E/$28/$32). 
-; If the threshold is $32: checks if wD649 is an exact multiple of $32 — if so and 
-; bit 3 of wD64C_CurrentLevel_HiddenRemoteFlags not yet set, sets that bit and awards an extra life via Player_ExtraLifeFly_Deactivate. 
+; If the threshold is $32: repeatedly subtracts $32 to test whether wD649 is an exact
+; multiple of 50, and if it is, branches on bit 3 of wD64C_CurrentLevel_HiddenRemoteFlags.
+; Note the sense - the extra life is awarded when that bit is ALREADY SET; when it is
+; clear the routine merely sets it, zeroes the counter and returns empty handed. So the
+; first 50 arms the flag and every later multiple pays out. The old comment had this
+; backwards and named a Player_ExtraLifeFly_Deactivate that does not exist.
 ; Otherwise: if wD649 has reached the threshold, resets it to zero, increments wD648_CollectibleMilestoneIndex milestone index, 
 ; sets bit 3 of wD60E_HUDDirtyFlags (milestone display dirty)
     ld   C, SFX_COLLECTIBLE                                        ;; 00:06ec $0e $06
@@ -840,10 +858,14 @@ call_00_074d_HUD_MarkDirty:
     ret                                                ;; 00:075a $c9
 
 call_00_075b_Player_CanBeDamaged:
-; Returns NZ (cannot be damaged) if wD750_Player_DamageCooldownTimer is nonzero (invincibility 
-; timer active), or if wD755_FlyPowerup2_TimerLo/wD756_FlyPowerup2_TimerHi (fly type $01 shield 
-; timer) are nonzero, or if wD753_FlyPowerup1_TimerLo/wD754_FlyPowerup1_TimerHi (fly type $02 
-; shield timer) are nonzero. Returns Z (can be damaged) only if all three are clear
+; Returns NZ if the player CANNOT be damaged and Z if they can - the sense is the
+; opposite way round from the name, so callers read `call ... / ret NZ`.
+;
+; NZ if wD750_Player_DamageCooldownTimer is nonzero (post-hit invincibility), or if
+; either shield timer pair is nonzero: wD755/wD756 for fly type $02 and wD753/wD754
+; for fly type $01. The old comment had those two the wrong way round;
+; call_00_0647_Player_SetUpOrEatFlyPowerup is what pins it down, arming
+; FlyPowerup1 when the outgoing fly was $01 and FlyPowerup2 when it was $02
     ld   A, [wD750_Player_DamageCooldownTimer]                                    ;; 00:075b $fa $50 $d7
     and  A, A                                          ;; 00:075e $a7
     ret  NZ                                            ;; 00:075f $c0
@@ -1125,8 +1147,10 @@ call_00_08b1_MediaDimension_CopyTVAttributes:
     dw   $6700                                         ;; 00:08f4 wW
     db   $00, $79, $00, $40, $00, $73                  ;; 00:08f6 ??????
 
-call_00_08fc_SetupEntityVRAMTransfer:
+call_00_08fc_StageNextGfxTransfer:
 ; Stages the next pending graphics transfer for the LCD STAT streaming handler.
+; Was called SetupEntityVRAMTransfer, but entity tiles are only one of the five
+; sources it handles - see the bit list below.
 ; Spins while GFX_XFER_IN_PROGRESS is set, then picks the lowest set request bit in
 ; wD60F_GfxTransferFlags and works out (bank, source page) for it:
 ;   bit 0 -> Gex tiles, bank $04 + (wD208_Player_SpriteID >> 6), page $40 + (id & $3F)
@@ -1138,7 +1162,7 @@ call_00_08fc_SetupEntityVRAMTransfer:
 ; GFX_XFER_IN_PROGRESS so the hblank handler starts draining it into VRAM
     ld   HL, wD60F_GfxTransferFlags                                     ;; 00:08fc $21 $0f $d6
     bit  7, [HL]                                       ;; 00:08ff $cb $7e
-    jr   NZ, call_00_08fc_SetupEntityVRAMTransfer                              ;; 00:0901 $20 $f9
+    jr   NZ, call_00_08fc_StageNextGfxTransfer                              ;; 00:0901 $20 $f9
     ld   A, [HL]                                       ;; 00:0903 $7e
     and  A, A                                          ;; 00:0904 $a7
     ret  Z                                             ;; 00:0905 $c8
@@ -1314,8 +1338,12 @@ call_00_0a21_FlushEntityGfxQueue:
     call call_00_10a3_RestoreBank                                  ;; 00:0a4f $cd $a3 $10
     jr   call_00_0a21_FlushEntityGfxQueue                                    ;; 00:0a52 $18 $cd
 
-call_00_0a54_MainGameLoop_UpdateAndRenderFrame:
-; VBlank interrupt handler. In order: OAM DMA, the bank 3 VRAM update pass, install a
+call_00_0a54_VBlank_Handler:
+; The VBlank interrupt handler - isrVBlank at $0040 is a bare `jp` to here, and this
+; ends in `reti`. It was called MainGameLoop_UpdateAndRenderFrame, which it is not:
+; the main loop is elsewhere and calls call_00_0ab4_WaitForInterrupt to sync to this.
+;
+; In order: OAM DMA, the bank 3 VRAM update pass, install a
 ; newly requested LCD STAT handler if wCCFD_LcdIsrId still has bit 7 clear, run the
 ; vblank hook that pairs with the installed handler (wCCFE_VBlankHookPtrLo), read the
 ; joypad, push the shadow LCDC/SCX/SCY and palettes to hardware, then bank in the audio

@@ -1522,7 +1522,7 @@ call_00_1e5b_BgMap_TickOverrideSequence:
     ld   L, A                                          ;; 00:1e7b $6f
     ld   A, [HL+]                                      ;; 00:1e7c $2a
     ld   [wD77C_OverrideSequenceFlags], A                                    ;; 00:1e7d $ea $7c $d7
-    bit  5, A                                          ;; 00:1e80 $cb $6f
+    bit  OVERRIDE_STEP_SFX_BIT, A                      ;; 00:1e80 $cb $6f
     jr   Z, .jr_00_1e8a                                ;; 00:1e82 $28 $06
     ld   A, [HL+]                                      ;; 00:1e84 $2a
     push HL                                            ;; 00:1e85 $e5
@@ -1534,13 +1534,13 @@ call_00_1e5b_BgMap_TickOverrideSequence:
     ld   A, H                                          ;; 00:1e8e $7c
     ld   [wD781_OverrideDataPtrHi], A                                    ;; 00:1e8f $ea $81 $d7
     ld   HL, wD77C_OverrideSequenceFlags                                     ;; 00:1e92 $21 $7c $d7
-    bit  1, [HL]                                       ;; 00:1e95 $cb $4e
+    bit  OVERRIDE_STEP_REGISTER_BIT, [HL]              ;; 00:1e95 $cb $4e
     call NZ, call_00_1ec9_BgMap_RegisterOverrideRegion                              ;; 00:1e97 $c4 $c9 $1e
     ld   HL, wD77C_OverrideSequenceFlags                                     ;; 00:1e9a $21 $7c $d7
-    bit  2, [HL]                                       ;; 00:1e9d $cb $56
+    bit  OVERRIDE_STEP_COLLISION_BIT, [HL]             ;; 00:1e9d $cb $56
     call NZ, call_00_1f05_BgMap_FindAndWriteCollisionBlock                              ;; 00:1e9f $c4 $05 $1f
     ld   HL, wD77C_OverrideSequenceFlags                                     ;; 00:1ea2 $21 $7c $d7
-    bit  3, [HL]                                       ;; 00:1ea5 $cb $5e
+    bit  OVERRIDE_STEP_TILES_BIT, [HL]                 ;; 00:1ea5 $cb $5e
     call NZ, call_00_169f_BgMap_WriteOverrideTiles                              ;; 00:1ea7 $c4 $9f $16
     ld   HL, wD785_OverrideHeight                                     ;; 00:1eaa $21 $85 $d7
     ld   B, [HL]                                       ;; 00:1ead $46
@@ -1559,7 +1559,7 @@ call_00_1e5b_BgMap_TickOverrideSequence:
     adc  A, [HL]                                       ;; 00:1ebf $8e
     ld   [HL], A                                       ;; 00:1ec0 $77
     ld   HL, wD77C_OverrideSequenceFlags                                     ;; 00:1ec1 $21 $7c $d7
-    bit  0, [HL]                                       ;; 00:1ec4 $cb $46
+    bit  OVERRIDE_STEP_LOOP_BIT, [HL]                  ;; 00:1ec4 $cb $46
     jr   NZ, .jr_00_1e6f                               ;; 00:1ec6 $20 $a7
     ret                                                ;; 00:1ec8 $c9
 
@@ -1568,8 +1568,17 @@ call_00_1ec9_BgMap_RegisterOverrideRegion:
 ; advances wD778_OverrideSlotWriteHead. Reads starting block coordinates from 
 ; wD782_OverrideTargetBlockX/wD783_OverrideTargetBlockY into C/B. Reads the data pointer from 
 ; wD780/wD781 into DE. Sets HL = $CE00 + slot index from wD778. For each cell in the width × height 
-; rectangle: writes B (current Y block coord) to $CE[slot], writes C (current X block coord) to $CD[slot], 
-; then reads 2 bytes from DE and writes them to `$CE[slot
+; rectangle: writes B (current Y block coord) to $CE[slot], writes C (current X block coord) to $CD[slot],
+; then reads the cell's 2 bytes from DE and writes them to $CF[slot] and $CC[slot] - the `set 7,L` /
+; `dec H` pair walks between the four parallel $CC/$CD/$CE/$CF tables that together hold one override
+; entry. C is bumped per column and B per row, so each cell is registered under its own map
+; coordinates.
+;
+; This is the step that makes a change PERMANENT: WriteOverrideTiles only paints the tilemap, whereas
+; this records what the region should look like so the strip loaders
+; (BgMap_PatchVerticalStripWithOverrides and its horizontal twin) can reapply it when the camera
+; scrolls the area back into view. That is why sequences set OVERRIDE_STEP_REGISTER on their final
+; step only - the intermediate animation frames are not meant to survive
     ld   HL, wD782_OverrideTargetBlockX                                     ;; 00:1ec9 $21 $82 $d7
     ld   C, [HL]                                       ;; 00:1ecc $4e
     ld   HL, wD783_OverrideTargetBlockY                                     ;; 00:1ecd $21 $83 $d7

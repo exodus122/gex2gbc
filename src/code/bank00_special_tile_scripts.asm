@@ -137,34 +137,41 @@ call_00_1f80_SpecialTile_RunScript:
     call NZ, call_00_10bd_JumpHL                              ;; 00:1ff2 $c4 $bd $10
     ret                                                ;; 00:1ff5 $c9
 data_00_1ff6_SpecialTileScriptTable:
-; Sparse pointer table of 64 entries (indexed by inverted tile type × 2). Null entries ($0000) mean 
-; the tile is non-interactive when attacked. Non-null entries point to tile-specific override scripts. 
-; Populated indices cover: breakable blocks (0–1, mirrored at 96–103), checkpoint TVs (2–5 and mirrors), 
-; Scream TV clone spawners (6, 10), multi-stage breakables/crates (7–9), springs (15), Circuit Central 
-; switches (32), Kung Fu Theater / Circuit Central door switches (50), rotating doors (96–97)
+; Sparse pointer table of 63 entries (indexed by inverted tile type x 2), running from $1FF6 up to
+; the first script at $2074 - 126 bytes, which is what fixes the count. Null entries ($0000) mean the
+; tile is non-interactive when attacked; non-null entries point to tile-specific override scripts.
+; The labels below say which is which, so no index list is repeated here.
 ;
-; Script record format (used by SpecialTile_RunScript): [callback_ptr(2), step_count(1), timer_reload(1), 
-; x_offset(1), y_offset(1), width(1), height(1), tile_data...]. Step count = 0 means fire-and-forget 
-; (callback only, no sequence). The tile data that follows is consumed by BgMap_TickOverrideSequence 
-; step-by-step, 2 bytes per cell per step.
+; Note that scripts come in pairs for multi-block objects: the two halves get separate table entries
+; whose only difference is the x/y offset, so that hitting either half places the rectangle over the
+; whole object. CountedBreakable at 5 and 10, and Breakable_Left/RightTile at 7 and 8, are examples.
+;
+; Script record format (used by SpecialTile_RunScript), 8-byte header:
+;   [callback_ptr(2), step_count(1), timer_reload(1), x_offset(1), y_offset(1), width(1), height(1)]
+; Offsets are signed and relative to the tile that was hit. Step count = 0 means fire-and-forget
+; (callback only, no sequence).
+;
+; The step data that follows is consumed by BgMap_TickOverrideSequence one step at a time. Each step
+; is an OVERRIDE_STEP_* flag byte, then width x height 16-bit cell entries - so 2 bytes per cell plus
+; the leading flag, and one further byte if the step sets OVERRIDE_STEP_SFX to play a sound.
     dw   data_00_2074_SpecialTileScript_CheckpointTV_Left
     dw   data_00_20d3_SpecialTileScript_FlyTV2_1
     dw   data_00_20ff_SpecialTileScript_FlyTV_Health1
     dw   data_00_211c_SpecialTileScript_FlyTV1_1
     dw   data_00_2139_SpecialTileScript_FlyTV_Life1
-    dw   data_00_2156
-    dw   data_00_21ae
-    dw   data_00_21c2
-    dw   data_00_21e4
-    dw   data_00_2206
-    dw   data_00_216e
+    dw   data_00_2156_SpecialTileScript_CountedBreakable_LowerTile
+    dw   data_00_21ae_SpecialTileScript_SlotSwitch_Wide
+    dw   data_00_21c2_SpecialTileScript_Breakable_RightTile
+    dw   data_00_21e4_SpecialTileScript_Breakable_LeftTile
+    dw   data_00_2206_SpecialTileScript_SlotSwitch_Single
+    dw   data_00_216e_SpecialTileScript_CountedBreakable_UpperTile
     dw   $0000, $0000, $0000, $0000
     dw   data_00_20eb_SpecialTileScript_FlyTV2_3
     dw   $0000, $0000, $0000, $0000
     dw   $0000, $0000, $0000, $0000
     dw   $0000, $0000, $0000, $0000
     dw   $0000, $0000, $0000, $0000
-    dw   data_00_2217
+    dw   data_00_2217_SpecialTileScript_PositionedSwitch
     dw   $0000, $0000, $0000, $0000
     dw   $0000, $0000, $0000, $0000
     dw   $0000, $0000, $0000, $0000
@@ -288,18 +295,43 @@ call_00_2151_HitFlyTV_ExtraLife:
     ld   a,$04
     jp   call_00_0647_Player_SetUpOrEatFlyPowerup
 
-data_00_2156:
-    dw   call_00_2186
+data_00_2156_SpecialTileScript_CountedBreakable_LowerTile:
+; A destructible 1x2 object that counts toward a per-level quota. 3 steps at 60
+; frames, offset (0,-1) - the -1 marks this as the LOWER tile of the pair, since
+; the rectangle has to start one block above the tile actually hit. The upper tile
+; has the identical script at offset (0,0).
+;
+; Step 1's flags are $23 = LOOP | REGISTER | SFX, so it plays SFX $22, commits the
+; change immediately, and falls straight into step 2 in the same frame. Registering
+; on the FIRST step rather than the last is the opposite of the cutscene sequences,
+; and it is why a destroyed object stays destroyed while its animation is still
+; playing out
+    dw   call_00_2186_CountedBreakable_OnHit
     db   $03, $3c, $00, $ff, $01, $02        ;; 00:2156 ????????
     db   $23, $22, $00, $00, $e2, $01, $08, $d9        ;; 00:215e ????????
     db   $01, $da, $01, $08, $00, $00, $e2, $01        ;; 00:2166 ????????
-data_00_216e:
-    dw   call_00_2186
+data_00_216e_SpecialTileScript_CountedBreakable_UpperTile:
+; Same script as the lower tile but offset (0,0). Both sit in the script table -
+; indices 5 and 10 - so either half of the object can be hit
+    dw   call_00_2186_CountedBreakable_OnHit
     db   $03, $3c, $00, $00, $01, $02        ;; 00:216e ????????
     db   $23, $22, $00, $00, $e2, $01, $08, $d9        ;; 00:2176 ????????
     db   $01, $da, $01, $08, $00, $00, $e2, $01        ;; 00:217e ????????
-call_00_2186:
-    ld   hl,wD772
+call_00_2186_CountedBreakable_OnHit:
+; Counts one more of these objects destroyed, and opens the way onward once the
+; level's quota is met.
+;
+; The quota is level dependent: Smellraiser wants 5 and opens override slot 14,
+; every other level wants 8 and opens slot 15. Hitting exactly the quota writes
+; $02 into that slot, the "triggered" state - the same mechanism the toon tv
+; hunters use through wD773_HuntersDefeatedCount.
+;
+; The comparison is `cp [hl]` against the running count, so it fires only on the
+; exact hit; destroying more past the quota does not re-trigger it.
+;
+; The entity call is decoration only - a collisionless burst at the player's
+; position. Nothing is spawned that the player can interact with
+    ld   hl,wD772_BreakablesDestroyedCount
     inc  [hl]
     ld   c,$05
     ld   de,wD799_OverrideSlotTable14
@@ -315,47 +347,66 @@ call_00_2186:
     ld   a,$02
     ld   [de],a
 .jr_00_21a2:
-    FARCALL call_00_3951_Entity_SpawnPlayerClone
+    FARCALL call_00_3951_Entity_SpawnEffectAtPlayer
     ret  
 
-data_00_21ae:
-    dw   call_00_21bc
+data_00_21ae_SpecialTileScript_SlotSwitch_Wide:
+    dw   call_00_21bc_SlotSwitch_TriggerSlot0
     db   $01, $00, $ff, $00, $02, $01, $2c, $26, $c9, $01, $ca, $01
-call_00_21bc:
+call_00_21bc_SlotSwitch_TriggerSlot0:
     ld   hl,wD78B_OverrideSlotTable
     ld   [hl],$02
     ret  
 
-data_00_21c2:
+data_00_21c2_SpecialTileScript_Breakable_RightTile:
+; Multi-stage breakable, no callback, 5 steps at 8 frames, 2x1 blocks, x offset -1
+; so the rectangle covers the pair when the RIGHT half is hit.
+;
+; Worth noting the final step's flags are $0C = OVERRIDE_STEP_COLLISION |
+; OVERRIDE_STEP_TILES, not the $0A the cutscene animations use. Bit 2 rewrites the
+; collision block, so the last frame of the crumble is what actually makes the
+; block passable - the four frames before it are cosmetic
     db   $00, $00, $05, $08        ;; 00:21be ????????
     db   $ff, $00, $02, $01, $2a, $25, $d3, $01        ;; 00:21c6 ????????
     db   $d4, $01, $08, $d1, $01, $d2, $01, $08        ;; 00:21ce ????????
     db   $cf, $01, $d0, $01, $08, $cd, $01, $ce        ;; 00:21d6 ????????
     db   $01, $0c, $cb, $01, $cc, $01
-data_00_21e4:
+data_00_21e4_SpecialTileScript_Breakable_LeftTile:
+; The same five frames at x offset 0, for when the left half is hit
     db   $00, $00        ;; 00:21de ????????
     db   $05, $08, $00, $00, $02, $01, $2a, $25        ;; 00:21e6 ????????
     db   $d3, $01, $d4, $01, $08, $d1, $01, $d2        ;; 00:21ee ????????
     db   $01, $08, $cf, $01, $d0, $01, $08, $cd        ;; 00:21f6 ????????
     db   $01, $ce, $01, $0c, $cb, $01, $cc, $01        ;; 00:21fe ????????
 
-data_00_2206:
-    dw   call_00_2211
+data_00_2206_SpecialTileScript_SlotSwitch_Single:
+    dw   call_00_2211_SlotSwitch_TriggerSlot0Alt
     db   $01, $00, $00, $00, $01, $01, $0a, $c7, $01
-call_00_2211:
+call_00_2211_SlotSwitch_TriggerSlot0Alt:
     ld   hl,wD78B_OverrideSlotTable
     ld   [hl],$02
     ret  
 
-data_00_2217:
-    dw   call_00_2225
+data_00_2217_SpecialTileScript_PositionedSwitch:
+    dw   call_00_2225_Switch_ArmSlotByPosition
     db   $01, $08, $00, $ff, $01, $02, $28, $1b, $f8, $01, $f9, $01
-call_00_2225:    
+call_00_2225_Switch_ArmSlotByPosition:
+; Arms the override slot belonging to THIS switch, identified by where it sits on
+; the map rather than by any id in the script.
+;
+; Walks .data_00_2253_SwitchBlockCoordTable looking for a (block x, block y) pair
+; matching the tile that was hit; the match's position in the table is the slot
+; index. So the nine switches in the table each own one entry of
+; wD78B_OverrideSlotTable, and adding a switch means adding coordinates here.
+;
+; Already-nonzero slots return early, making the switch one-shot. Slot 6 is
+; special-cased to $02 instead of $01 - it skips the armed state and goes straight
+; to triggered
     ld   hl,wD782_OverrideTargetBlockX
     ld   c,[hl]
     ld   hl,wD783_OverrideTargetBlockY
     ld   b,[hl]
-    ld   hl,.data_00_2253
+    ld   hl,.data_00_2253_SwitchBlockCoordTable
     ld   e,$00
 .jr_00_2232:
     ldi  a,[hl]
@@ -384,7 +435,9 @@ call_00_2225:
     ret  nz
     inc  [hl]
     ret  
-.data_00_2253:
+.data_00_2253_SwitchBlockCoordTable:
+; Nine (block x, block y) pairs, $FF terminated. Index in this table = index into
+; wD78B_OverrideSlotTable, so the order here defines which slot each switch owns
     db   $25, $59, $2a
     db   $59, $2f, $59, $47, $51, $54, $55, $5a        ;; 00:2256 ????????
     db   $55, $29, $4a, $39, $64, $10, $47, $ff        ;; 00:225e ????????
