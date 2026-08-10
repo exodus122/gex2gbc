@@ -40,7 +40,7 @@ call_03_6941_HUD_LoadCollectibleSprites:
 ;  Prehistory Channel, Rezopolis). Then uses wD648_CollectibleMilestoneIndex (collectible type index, swap-shifted) as a sub-index
 ; within that set to select the specific tile frame, and copies TWO tiles ($20 bytes) to VRAM $87E0
 ; via VRAM_Copy32Bytes - the collectible icon is an 8x16 sprite, so it is two tiles, not the one
-; tile / $10 bytes the old comment claimed.
+; collectible icon is an 8x16 sprite.
 ;
 ; Also clears HUD_DIRTY_COLLECTIBLES (bit 3 of wD60E_HUDDirtyFlags) on entry, which the old
 ; comment did not mention - this is the routine that services that dirty flag

@@ -35,8 +35,7 @@ call_00_2e4c_MapData_GetLevelNameText:
 ; HL = pointer to this map's NAME string.
 ;
 ; The record holds a pointer to a text BLOCK, which is itself a list of string
-; pointers; entry 0 is the level name. Was called MapData_GetTextPtr, which said
-; nothing about which of the block's strings it returns - its only caller is
+; pointers; entry 0 is the level name. Only caller is
 ; call_01_4734_MenuCmd_SetLevelText
     call call_00_2eb0_MapData_GetRecordAddr                                  ;; 00:2e4c $cd $b0 $2e
     ld   DE, MAPDATA_TEXT_BLOCK_PTR                    ;; 00:2e4f $11 $02 $00
@@ -57,9 +56,8 @@ call_00_2e5f_MapData_GetMissionText:
 ; above, but indexed past it: block + MAPDATA_TEXT_MISSION_BASE + A*2, so mission 0
 ; is entry 1.
 ;
-; Was called MapData_GetTextPtr2. Its callers are
-; call_01_473a_MenuCmd_SetMissionText and the mission select screen, both of which
-; pass a mission index in A
+; Callers are call_01_473a_MenuCmd_SetMissionText and the mission select screen,
+; both of which pass a mission index in A
     call call_00_2eb0_MapData_GetRecordAddr                                  ;; 00:2e5f $cd $b0 $2e
     ld   DE, MAPDATA_TEXT_BLOCK_PTR                    ;; 00:2e62 $11 $02 $00
     add  HL, DE                                        ;; 00:2e65 $19
@@ -108,10 +106,6 @@ call_00_2e93_MapData_GetAltBlocksetMask:
 ; A = the single-bit mask selecting which secondary blockset layer this map uses.
 ; Stored to wD6FE_BgMap_AltBlocksetMask and ANDed over six bytes at a time
 ; by call_00_1e3c_BgMap_MaskAltBlocksetFlags.
-;
-; Was MapData_GetExtendedMapBit, so this one byte had two vocabularies - "extended
-; map bit" here and "blockset override bit mask" at the destination. Named after
-; the consumer, since that is where its meaning is visible
     call call_00_2eb0_MapData_GetRecordAddr                                  ;; 00:2e93 $cd $b0 $2e
     ld   DE, MAPDATA_ALT_BLOCKSET_MASK                 ;; 00:2e96 $11 $08 $00
     add  HL, DE                                        ;; 00:2e99 $19

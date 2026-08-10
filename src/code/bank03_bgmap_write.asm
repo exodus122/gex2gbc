@@ -1,10 +1,9 @@
 call_03_6f5e_BgMap_WriteRowForVerticalScroll:
-; Writes one horizontal ROW of 31 tilemap entries. Was called BgMap_WriteScrollColumn,
-; named for the scroll axis rather than the strip: the loop does `inc L / inc E`, walking
-; CONSECUTIVE tilemap addresses, and the start address is masked with $E0 to snap to the
-; beginning of a row. Consecutive entries are a row; a column would step by $20, which is
-; what the other routine in this file does. Called on MAP_SCROLL_DOWN | MAP_SCROLL_UP,
-; and scrolling vertically is exactly when a new row comes into view.
+; Writes one horizontal ROW of 31 tilemap entries. The loop does `inc L / inc E`, walking
+; CONSECUTIVE tilemap addresses, and the start is masked with $E0 to snap to the beginning
+; of a row; a column would instead step by $20, which is what the other routine here does.
+; Called on MAP_SCROLL_DOWN | MAP_SCROLL_UP, since scrolling vertically is exactly when a
+; new row comes into view.
 ;
 ; Reads wD6FA_BgMap_RowWritePosLo
 ; to compute the target BG map address in 9800/9800/9800/C000 space. If wD59E_OnGBCFlag is set (GBC mode): 
@@ -299,10 +298,9 @@ call_03_6f5e_BgMap_WriteRowForVerticalScroll:
     ret                                                ;; 03:708c $c9
 
 call_03_708d_BgMap_WriteColumnForHorizontalScroll:
-; Writes one vertical COLUMN of 32 tilemap entries - the mirror of the routine above, and
-; renamed the same way: it was BgMap_WriteScrollRow. Each step does `add A,$20`, the tilemap
-; row stride, so it walks down a column; the start is masked with $1F to pick the column
-; index. Called on MAP_SCROLL_RIGHT | MAP_SCROLL_LEFT.
+; Writes one vertical COLUMN of 32 tilemap entries - the mirror of the routine above. Each
+; step does `add A,$20`, the tilemap row stride, so it walks down a column; the start is
+; masked with $1F to pick the column index. Called on MAP_SCROLL_RIGHT | MAP_SCROLL_LEFT.
 ;
 ; Reads wD6FC_BgMap_ColumnWritePos to compute the $9800 address, uses the same $CF indirect attribute
 ; read pattern for GBC bank 1 attributes (32 tiles across 4 VRAM rows with inc D/inc H to cross 

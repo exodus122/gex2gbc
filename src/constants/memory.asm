@@ -928,9 +928,8 @@ wD6F7_BgMap_BlocksetAndCollisionBank:
 wD6F9_BgMap_LoadingFlags:
 ; see constants.asm for values
     ds 1                                               ;; d6f9
-; Where the next pending tilemap strip goes. These were named for the scroll AXIS,
-; which is the opposite of the strip they locate - scrolling vertically writes a
-; horizontal row, scrolling horizontally writes a vertical column. Renamed to match
+; Where the next pending tilemap strip goes. Scrolling vertically writes a horizontal
+; row, scrolling horizontally writes a vertical column - see
 ; call_03_6f5e_BgMap_WriteRowForVerticalScroll and its column twin.
 wD6FA_BgMap_RowWritePosLo:
 ; 16-bit. The row writer masks the low byte with $E0 to snap to the start of a
@@ -954,13 +953,15 @@ wD702_BgMap_TempScratchRowMetaTileIDs:
 ; where block ids get written temporarily when a row is loaded
     ds 1                                               ;; d702
 wD703_BgMap_TempScratchRowAltBlocksetFlags:
-; where blockset override (extended map) bits are set for the loaded row tiles
+; alt blockset flags for the loaded row tiles - one per metatile, gated by
+; wD6FE_BgMap_AltBlocksetMask
     ds 11                                              ;; d703
 wD70E_BgMap_TempScratchColumnMetaTileIDs:
 ; where block ids get written temporarily when a column is loaded
     ds 1                                               ;; d70e
 wD70F_BgMap_TempScratchColumnAltBlocksetFlags:
-; where blockset override (extended map) bits are set for the loaded column tiles
+; alt blockset flags for the loaded column tiles - one per metatile, gated by
+; wD6FE_BgMap_AltBlocksetMask
     ds 11                                              ;; d70f
 
 ; ------------------------------------------------------------------
@@ -969,7 +970,6 @@ wD70F_BgMap_TempScratchColumnAltBlocksetFlags:
 ; (one per on-screen entity type) and call_02_722c_EntityGfxQueue_StartNext
 ; expands the next one into the wD71F.. descriptor and raises
 ; GFX_XFER_QUEUED_ENTITY_GFX.
-; (this block was previously labelled "sound related" - it is not)
 ; ------------------------------------------------------------------
 wD71A_EntityGfxQueue:
     ds 4                                               ;; d71a
@@ -1255,7 +1255,7 @@ wD771_LevelTimer_FrameCounter:
 wD772_BreakablesDestroyedCount:
 ; how many counted-breakable tile objects have been destroyed this level.
 ; call_00_2186_CountedBreakable_OnHit compares it against a per-level quota - 5 in
-; Smellraiser, 8 elsewhere - and opens an override slot on the exact match
+; Smellraiser, 8 elsewhere - and opens a block patch slot on the exact match
     ds 1                                               ;; d772
 
 wD773_HuntersDefeatedCount:
@@ -1282,7 +1282,8 @@ wD779_RelatedToXPosition:
 wD77A_PlayerYPositionBlock:
     ds 1                                               ;; d77a
 
-; Bg override related memory
+; Block patch state - runtime replacement of map blocks. Not to be confused with the
+; alt blockset flags above, which are a static per-level rendering variant
 wD77B_BlockPatch_VramWritePending:
 ; Bit 0 set = BlockPatch_WriteTiles has queued a VRAM write that hasn't completed yet;
 ; gates BlockPatch_TickSequence and TileHit_OnPlayerAttack
@@ -1312,17 +1313,15 @@ wD781_BlockPatch_DataPtrHi:
 wD782_BlockPatch_TargetBlockX:
 ; Block X coordinate of the tile being overridden (player world X × 8, high byte);
 ; used by call_00_1ec9_BlockPatch_Register and call_00_1f05_BlockPatch_WriteCollision
-; (the old comment named UpdateCollisionFlags and FindAndWriteOverrideBlock, neither of
-; which is a symbol in this tree)
     ds 1                                               ;; d782
 wD783_BlockPatch_TargetBlockY:
 ; Block Y coordinate of the tile being overridden
     ds 1                                               ;; d783
 wD784_BlockPatch_Width:
-; Width in metatiles of the override rectangle
+; Width in metatiles of the patch rectangle
     ds 1                                               ;; d784
 wD785_BlockPatch_Height:
-; Height in metatiles of the override rectangle
+; Height in metatiles of the patch rectangle
     ds 1                                               ;; d785
 wD786_BlockPatch_StepTimer:
 ; Counts down to zero before the next sequence step fires; reloaded from wD787 each step
@@ -1345,7 +1344,7 @@ wD78B_BlockPatch_SlotTable:
 ; $02 = triggered/counting-up,
 ; $FF = completed.
 ; Each slot tracks one interactive tile region's state. Slots 0–15 correspond to tile
-; override regions registered by UpdateCollisionFlags.
+; block patch regions registered by call_00_1ec9_BlockPatch_Register.
 ;
 ; The 16 bytes are contiguous ($D78B-$D79A) but declared in four pieces so that the
 ; slots code refers to by name get their own labels. Code indexes straight off

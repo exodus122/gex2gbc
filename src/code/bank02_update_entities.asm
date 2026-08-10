@@ -868,7 +868,7 @@ call_02_722c_EntityGfxQueue_StartNextTransfer:
 data_02_743c_EntityGfxAndPaletteTable:
 ; Two bytes per entity id: the graphics-set id to stream in, and the GBC palette to load.
 ; A graphics-set id of $00 means the entity has no tiles of its own to fetch.
-; (this was previously described as a sound table - it is not; the ids index
+; (the ids index
 ; .data_02_726c_EntityGfxDescriptors and the bank 0B palette loader)
     db   $00, $00, $00, $01, $00, $02, $00, $06        ;; 02:743c ??????.w
     db   $00, $07, $00, $07, $00, $07, $00, $00        ;; 02:7444 .w??????

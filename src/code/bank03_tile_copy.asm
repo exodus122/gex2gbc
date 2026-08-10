@@ -1,12 +1,10 @@
 call_03_6efd_VRAM_Copy32Bytes:
 ; Unrolled copy of exactly 32 bytes from HL to DE - the first 16 here, then falling into
-; call_03_6f2d_VRAM_Copy16Bytes for the rest. (The old comment said it fell into
-; VRAM_Copy32Bytes, i.e. itself.)
+; call_03_6f2d_VRAM_Copy16Bytes for the rest.
 ;
-; 32 bytes is TWO 8x8 tiles, not one. A GB 2bpp tile is 16 bytes total - two bytes per row,
-; eight rows - and that does not change on GBC, which adds a second VRAM bank for attributes
-; rather than doubling tile size. The old "16 bytes per plane x 2 for GBC" was wrong on both
-; counts.
+; 32 bytes is TWO 8x8 tiles. A GB 2bpp tile is 16 bytes total - two bytes per row, eight
+; rows - and that does not change on GBC, which adds a second VRAM bank for attributes
+; rather than doubling tile size.
 ;
 ; Note the join: this half ends on `inc DE` rather than `inc E`, so the pair carries correctly
 ; across a page boundary between the two tiles
@@ -64,7 +62,7 @@ call_03_6f2d_VRAM_Copy16Bytes:
 ;
 ; Fifteen `inc E` and then a final `inc DE`, so D is held fixed across the tile but does
 ; carry on the last byte, leaving DE pointing at the next tile even across a page boundary.
-; The old comment claimed D stays fixed throughout, which misses that last increment
+; leaving DE pointing at the next tile even across a page boundary
     ld   A, [HL+]                                      ;; 03:6f2d $2a
     ld   [DE], A                                       ;; 03:6f2e $12
     inc  E                                             ;; 03:6f2f $1c

@@ -23,7 +23,7 @@
 ; one shot by call_00_0971_ProcessPendingGfxTransfers instead.
 ;
 ; Separately, call_00_0ac1_VBlank_UpdateVRAM performs exactly one "big" VRAM write per
-; vblank - a bg map scroll row/column, a tile override, a tileset animation frame or a
+; vblank - a bg map scroll row/column, a block patch, a tileset animation frame or a
 ; hud digit reload - chosen by priority.
 ;
 ; The other LCD STAT handler, LCD_ISR_RASTER_EFFECT, does the hud window split and the
@@ -439,9 +439,9 @@ call_00_0150_Init:
     jp   .jp_00_0428                                   ;; 00:051e $c3 $28 $04
 
 call_00_0521_Screen_PresentAndFadeIn:
-; Makes a freshly built screen visible. Was called DrawEntitiesWrapper, but drawing
-; the entities is only the first of five steps and the routine ends by switching the
-; LCD back on and starting a fade in - callers use it for that, not for the draw.
+; Makes a freshly built screen visible. Drawing the entities is only the first of five
+; steps; the routine ends by switching the LCD back on and starting a fade in, which is
+; what callers want from it.
 ;
 ; Builds the OAM list, drains any pending graphics transfers, switches the LCD STAT
 ; interrupt over to the VRAM streaming handler, reloads the DMG background palette,
@@ -784,8 +784,7 @@ call_00_06ec_Player_ObtainedCollectible:
 ; multiple of 50, and if it is, branches on bit 3 of wD64C_CurrentLevel_HiddenRemoteFlags.
 ; Note the sense - the extra life is awarded when that bit is ALREADY SET; when it is
 ; clear the routine merely sets it, zeroes the counter and returns empty handed. So the
-; first 50 arms the flag and every later multiple pays out. The old comment had this
-; backwards and named a Player_ExtraLifeFly_Deactivate that does not exist.
+; first 50 arms the flag and every later multiple pays out.
 ; Otherwise: if wD649 has reached the threshold, resets it to zero, increments wD648_CollectibleMilestoneIndex milestone index, 
 ; sets bit 3 of wD60E_HUDDirtyFlags (milestone display dirty)
     ld   C, SFX_COLLECTIBLE                                        ;; 00:06ec $0e $06
@@ -863,9 +862,9 @@ call_00_075b_Player_CanBeDamaged:
 ;
 ; NZ if wD750_Player_DamageCooldownTimer is nonzero (post-hit invincibility), or if
 ; either shield timer pair is nonzero: wD755/wD756 for fly type $02 and wD753/wD754
-; for fly type $01. The old comment had those two the wrong way round;
-; call_00_0647_Player_SetUpOrEatFlyPowerup is what pins it down, arming
-; FlyPowerup1 when the outgoing fly was $01 and FlyPowerup2 when it was $02
+; for fly type $01. call_00_0647_Player_SetUpOrEatFlyPowerup is what pins that
+; pairing down, arming FlyPowerup1 when the outgoing fly was $01 and FlyPowerup2
+; when it was $02
     ld   A, [wD750_Player_DamageCooldownTimer]                                    ;; 00:075b $fa $50 $d7
     and  A, A                                          ;; 00:075e $a7
     ret  NZ                                            ;; 00:075f $c0
@@ -1149,8 +1148,7 @@ call_00_08b1_MediaDimension_CopyTVAttributes:
 
 call_00_08fc_StageNextGfxTransfer:
 ; Stages the next pending graphics transfer for the LCD STAT streaming handler.
-; Was called SetupEntityVRAMTransfer, but entity tiles are only one of the five
-; sources it handles - see the bit list below.
+; Entity tiles are only one of the five sources it handles - see the bit list below.
 ; Spins while GFX_XFER_IN_PROGRESS is set, then picks the lowest set request bit in
 ; wD60F_GfxTransferFlags and works out (bank, source page) for it:
 ;   bit 0 -> Gex tiles, bank $04 + (wD208_Player_SpriteID >> 6), page $40 + (id & $3F)
@@ -1340,8 +1338,8 @@ call_00_0a21_FlushEntityGfxQueue:
 
 call_00_0a54_VBlank_Handler:
 ; The VBlank interrupt handler - isrVBlank at $0040 is a bare `jp` to here, and this
-; ends in `reti`. It was called MainGameLoop_UpdateAndRenderFrame, which it is not:
-; the main loop is elsewhere and calls call_00_0ab4_WaitForInterrupt to sync to this.
+; ends in `reti`. The main loop is elsewhere and calls call_00_0ab4_WaitForInterrupt
+; to sync to this.
 ;
 ; In order: OAM DMA, the bank 3 VRAM update pass, install a
 ; newly requested LCD STAT handler if wCCFD_LcdIsrId still has bit 7 clear, run the
@@ -1412,7 +1410,7 @@ call_00_0ac1_VBlank_UpdateVRAM:
 ; The one VRAM write the game is allowed to do per vblank, banked into BANK_03.
 ; Priority order:
 ;   1. a pending bg map scroll column/row (MAP_PENDING_VRAM_TRANSFER)
-;   2. a pending bg tile override palette write (wD77B_BlockPatch_VramWritePending)
+;   2. a pending block patch attribute write (wD77B_BlockPatch_VramWritePending)
 ;   3. the next secondary tileset animation frame, when its delay expires
 ;   4. HUD_DIRTY_COLLECTIBLES / HUD_DIRTY_LIVES / HUD_DIRTY_TIMER reloads
 ;   5. otherwise the ordinary animated tile update
@@ -1570,8 +1568,8 @@ call_00_0b6d_CopyTileRows:
 call_00_0ba1_WaitUntilLcdIsrNone:
 ; Spins a frame at a time until the LCD STAT handler id is LCD_ISR_NONE, i.e. until
 ; the STAT interrupt has been switched off. It does not wait for an arbitrary change,
-; which is what the old name WaitForLcdIsrChange implied - the `and $7F / cp $00`
-; only ever exits on zero. (The `cp $00` is redundant; `and` has already set Z.)
+; The `and $7F / cp $00` only ever exits on zero, and it does not wait for an
+; arbitrary change. (The `cp $00` is redundant; `and` has already set Z.)
     ld   a,[wCCFD_LcdIsrId]
     and  a,$7F
     cp   a,$00
@@ -2023,7 +2021,7 @@ call_00_0ef7_OamDmaRoutine:
 
 call_00_0f01_ResetVideoState:
 ; Tears down everything that could still write to VRAM: selects LCD_ISR_NONE, clears the
-; map loading / hud dirty / graphics transfer / tile override / tileset animation /
+; map loading / hud dirty / graphics transfer / block patch / tileset animation /
 ; graphics stream / fade state, clears the queued SFX, turns the LCD off in
 ; wD5A0_LCDCValue and waits one frame for it to take effect
     ld   A, $00                                        ;; 00:0f01 $3e $00
@@ -2141,8 +2139,7 @@ call_00_0f9d_UploadCgbPalettes:
 ; to the index registers first.
 ;
 ; GBC only - it is the whole of the GBC branch of call_00_0f80_VBlank_UpdatePalettes,
-; which is why there is no DMG fade here. Was called UpdateLCDPalettes, which reads
-; as though it applied to both hardware types
+; which is why there is no DMG fade here
     ld   A, $80                                        ;; 00:0f9d $3e $80
     ldh  [rBCPS], A                                    ;; 00:0f9f $e0 $68
     ld   HL, wD9CB_Bg_Palettes                         ;; 00:0fa1 $21 $cb $d9
@@ -2473,8 +2470,7 @@ call_00_112f_QueueSFX:
 
 call_00_1138_PlayQueuedSFX:
 ; Plays whatever call_00_112f_QueueSFX left pending, or returns if the slot is empty.
-; It is an action, not the predicate its old name NoSFXIsQueued suggested - on the
-; non-empty path it falls straight through into call_00_113e_PlaySFX
+; On the non-empty path it falls straight through into call_00_113e_PlaySFX
     ld   A, [wD789_QueuedSFX]                                    ;; 00:1138 $fa $89 $d7
     cp   A, SFX_NONE                                        ;; 00:113b $fe $ff
     ret  Z                                             ;; 00:113d $c8

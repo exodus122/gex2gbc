@@ -46,10 +46,10 @@ call_00_1f46_TileHit_OnPlayerAttack:
     ret  Z                                             ;; 00:1f7f $c8
 call_00_1f80_TileHitScript_Run:
 ; Also called directly by the mission preview cutscene system. Reads a callback function pointer (DE) 
-; and a step count byte from the script. If count is zero: skips override setup, jumps straight to 
+; and a step count byte from the script. If count is zero: skips block patch setup, jumps straight to
 ; calling DE (fire-and-forget). If nonzero: stores count to wD77D (sequence length), next byte 
 ; to wD787 (timer reload), reads X/Y block offset into E/D, reads width/height into wD784/wD785, 
-; stores remaining script pointer to wD780/wD781. Computes the VRAM tilemap address for the override 
+; stores remaining script pointer to wD780/wD781. Computes the VRAM tilemap address for the patch
 ; rectangle from player Y (low byte masked $E0) shifted left 2 and D × 32, combined with player X low 
 ; byte + E × 32 masked to $1C → stored to wD77E/wD77F. Recalculates wD782/wD783 as player block 
 ; coords + D/E offset (the final target block coordinates for collision lookup). 
@@ -139,7 +139,7 @@ call_00_1f80_TileHitScript_Run:
 data_00_1ff6_TileHitScriptTable:
 ; Sparse pointer table of 63 entries (indexed by inverted tile type x 2), running from $1FF6 up to
 ; the first script at $2074 - 126 bytes, which is what fixes the count. Null entries ($0000) mean the
-; tile is non-interactive when attacked; non-null entries point to tile-specific override scripts.
+; tile is non-interactive when attacked; non-null entries point to that tile type's hit script.
 ; The labels below say which is which, so no index list is repeated here.
 ;
 ; Note that scripts come in pairs for multi-block objects: the two halves get separate table entries
@@ -321,7 +321,7 @@ call_00_2186_CountedBreakable_OnHit:
 ; Counts one more of these objects destroyed, and opens the way onward once the
 ; level's quota is met.
 ;
-; The quota is level dependent: Smellraiser wants 5 and opens override slot 14,
+; The quota is level dependent: Smellraiser wants 5 and opens block patch slot 14,
 ; every other level wants 8 and opens slot 15. Hitting exactly the quota writes
 ; $02 into that slot, the "triggered" state - the same mechanism the toon tv
 ; hunters use through wD773_HuntersDefeatedCount.
@@ -391,7 +391,7 @@ data_00_2217_TileHitScript_PositionedSwitch:
     dw   call_00_2225_Switch_ArmSlotByPosition
     db   $01, $08, $00, $ff, $01, $02, $28, $1b, $f8, $01, $f9, $01
 call_00_2225_Switch_ArmSlotByPosition:
-; Arms the override slot belonging to THIS switch, identified by where it sits on
+; Arms the block patch slot belonging to THIS switch, identified by where it sits on
 ; the map rather than by any id in the script.
 ;
 ; Walks .data_00_2253_SwitchBlockCoordTable looking for a (block x, block y) pair

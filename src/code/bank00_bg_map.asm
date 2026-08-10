@@ -1,6 +1,6 @@
 call_00_1264_BgMap_LoadFull:
-; Top-level map initialization. Queries all map metadata (bank numbers for map data, blockset override, 
-; blockset+collision, tileset; tileset offset; override bit) and stores them to wD6F5–wD700_BgMap_TilesetBankOffset. 
+; Top-level map initialization. Queries all map metadata (bank numbers for map data, alt blockset,
+; blockset+collision, tileset; tileset offset; alt blockset mask) and stores them to wD6F5–wD700_BgMap_TilesetBankOffset.
 ; Calls call_00_0f38_FadeOutAndClearVRAM, then call_00_1419_BgMap_LoadTileset. Resets secondary tileset index to $FF,
 ; clears wD77B_BlockPatch_VramWritePending/wD77D_BlockPatch_StepsRemaining. Then loops 22 ($16) times: 
 ; sets wD6F9_BgMap_LoadingFlags=$01 (dirty flag), calls LoadBgMapDirtyRegions 
@@ -56,16 +56,15 @@ call_00_1264_BgMap_LoadFull:
     ret                                                ;; 00:12e3 $c9
 
 call_00_12e4_BlockPatch_Init:
-; Clears 16 bytes at wD78B_BlockPatch_SlotTable (per-tile override slots) and wD778_BlockPatch_SlotWriteHead. 
+; Clears 16 bytes at wD78B_BlockPatch_SlotTable and wD778_BlockPatch_SlotWriteHead.
 ; Looks up current level ID in .data_00_1356_LevelInitialPatchSlots to get a tile flag byte, then 
 ; rotates its 3 low bits into wD798_BlockPatch_SlotTable13–wD79A_BlockPatch_SlotTable15 (1 bit each via rrca/rl). 
 ; If level ID is 0 (Media Dimension), iterates over .data_00_1375_MediaDimension_InitialPatches 
-; (a $FF-terminated list of 12-byte override records): compares wD64F_MissionRemoteTotal (low 7 bits) against the record's 
+; (a $FF-terminated list of 12-byte patch records): compares wD64F_MissionRemoteTotal (low 7 bits) against the record's
 ; threshold — if equal and bit 7 of wD64F_MissionRemoteTotal is set, marks the matching wD78B_BlockPatch_SlotTable slot as $02. 
 ; If greater, loads the record's tile coordinates into wD782_BlockPatch_TargetBlockX/wD783_BlockPatch_TargetBlockY 
 ; and pointer into wD780_BlockPatch_DataPtrLo/wD781_BlockPatch_DataPtrHi, sets wD784_BlockPatch_Width/
 ; wD785_BlockPatch_Height=$02, calls call_00_1ec9_BlockPatch_Register. Advances $0C per record.
-; (The old comment called that last one UpdateBgTileFlags, which is not a symbol in this tree)
     ld   HL, wD78B_BlockPatch_SlotTable                                     ;; 00:12e4 $21 $8b $d7
     ld   B, $10                                        ;; 00:12e7 $06 $10
     xor  A, A                                          ;; 00:12e9 $af
@@ -137,18 +136,16 @@ call_00_12e4_BlockPatch_Init:
 ; slots 13, 14 and 15 by call_00_12e4_BlockPatch_Init, pre-arming those three slots for
 ; levels that start with some geometry already changed.
 ;
-; This is the BLOCK PATCH system, not the alt blockset one. The old comment sent it to
-; call_00_1e3c_BgMap_MaskAltBlocksetFlags and described it as masking tile data from banks
-; $34/$35 - that is the other system entirely, and its per-level mask comes from the map
-; record (MAPDATA_ALT_BLOCKSET_MASK), not from here
+; This is the block patch system. It has nothing to do with the alt blockset layer, whose
+; per-level mask comes from the map record as MAPDATA_ALT_BLOCKSET_MASK
     db   $00, $01, $05, $07, $03, $03, $00, $03        ;; 00:1356 ...?????
     db   $03, $07, $07, $03, $00, $07, $01, $00        ;; 00:135e ????????
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:1366 ????????
     db   $01, $01, $03, $00, $00, $00, $00
 .data_00_1375_MediaDimension_InitialPatches:
-; $FF-terminated list of 12-byte records for Media Dimension tile overrides:
+; $FF-terminated list of 12-byte records for Media Dimension block patches:
 ;   +0  db  remote-total threshold
-;   +1  db  override slot index
+;   +1  db  block patch slot index
 ;   +2  db  block X          +3  db  block Y
 ;   +4  8 bytes              the 2x2 block of replacement tiles
 ; There is no size field - the caller hardcodes width and height to $02, which is why the
@@ -296,19 +293,17 @@ call_00_1455_BgMap_LoadDirtyRegions:
     ret                                                ;; 00:1471 $c9
 
 call_00_1472_BgMap_LoadRowForVerticalScroll:
-; Naming note: this pair used to be LoadVerticalStrip / LoadHorizontalStrip, named after
-; the SCROLL AXIS rather than the strip. That is backwards from how it reads - scrolling
-; vertically exposes a new horizontal ROW, scrolling horizontally exposes a new vertical
-; COLUMN - and the old comments had to spend their first line undoing the name. Now named
-; for what they load and when.
-;
 ; Loads one horizontal row of 6 metatiles into the BG tilemap for vertical camera scrolling.
+; Scrolling vertically exposes a new horizontal ROW; the column twin below handles horizontal
+; scrolling, which exposes a vertical COLUMN.
 ; Determines whether to load the top or bottom edge row based on wD6F9_BgMap_LoadingFlags bit 1. 
 ; Computes map data addresses from current X/Y scroll positions (wD6ED/wD6EF). 
 ; Reads 6 metatile IDs from the map bank (wD6F5) into wD702_BgMap_TempScratchRowMetaTileIDs–wD70C 
-; (every other byte), reads corresponding override flags from the secondary bank (wD6F6) into 
-; wD703_BgMap_TempScratchRowAltBlocksetFlags–wD70D. Calls call_00_18a7_BgMap_ApplyBlockPatchesToRow 
-; to resolve secondary tileset overrides. Switches to blockset/collision bank (wD6F7), then expands 
+; (every other byte), reads corresponding alt blockset flags from the secondary bank (wD6F6) into
+; wD703_BgMap_TempScratchRowAltBlocksetFlags–wD70D. Calls call_00_18a7_BgMap_ApplyBlockPatchesToRow,
+; which applies BOTH fix-ups to that scratch buffer before it is expanded: the alt blockset mask over
+; the flag bytes, then any registered block patches over the metatile ids. Switches to
+; blockset/collision bank (wD6F7), then expands
 ; each metatile into 8 tile IDs (2×4 tiles, GBC attribute bits set on alternating writes via set 3, H /
 ; set 5, B) and writes them to the GBC tilemap at computed VRAM addresses. Handles tilemap row wrap at 
 ; $20-byte boundaries
@@ -511,7 +506,7 @@ call_00_1472_BgMap_LoadRowForVerticalScroll:
 call_00_157a_BgMap_LoadColumnForHorizontalScroll:
 ; Loads one vertical column of 6 metatiles for horizontal camera scrolling. Mirrors the 
 ; structure of LoadVerticalBgStrip: determines left or right edge column from wD6F9_BgMap_LoadingFlags bit 3, 
-; reads 6 metatile IDs (stepping $80 bytes = one map row apart) from the map bank and override 
+; reads 6 metatile IDs (stepping $80 bytes = one map row apart) from the map bank and alt blockset
 ; bank into wD70E_BgMap_TempScratchColumnMetaTileIDs–wD71C. Calls call_00_18e4_BgMap_ApplyBlockPatchesToColumn for secondary tileset resolution. Expands each metatile 
 ; into 8 tile IDs and writes to VRAM column-wise, advancing HL by $20 (one tilemap row) per pair, 
 ; with GBC attribute toggling via set 3, H / set 5, B. Handles tilemap column wrap at 32-tile ($20) 
@@ -736,8 +731,10 @@ call_00_169f_BlockPatch_WriteTiles:
 ; Writes a rectangular block of metatile graphics to the GBC BG tilemap, using metatile 
 ; indices from wD780/wD781 (data pointer) and the tilemap VRAM address from wD77E/wD77F. 
 ; Switches to wD6F7_BgMap_BlocksetAndCollisionBank. For each metatile in the width × height rectangle: 
-; reads 2 bytes from the data pointer (blockset index C, secondary override flag); sets B=$40 as 
-; the blockset page base, or $50 if the override flag is nonzero (selects alternate blockset); 
+; reads 2 bytes from the data pointer (blockset index C, alt blockset flag); sets B=$40 as
+; the blockset page base, or $50 if the alt blockset flag is nonzero. This is the one place the
+; two systems meet: a block patch's per-cell data carries an alt blockset selector alongside the
+; metatile id;
 ; expands the metatile to 8 tile IDs by reading 8 consecutive bytes from [BC] in the blockset bank. 
 ; Writes them to the tilemap in a 4×2 pattern: first row left-to-right, second row right-to-left, 
 ; with set 3, H toggling between the two halves of the interleaved GBC tilemap layout. 
@@ -918,7 +915,7 @@ call_00_169f_BlockPatch_WriteTiles:
     jp   call_00_10a3_RestoreBank                                  ;; 00:1776 $c3 $a3 $10
 
 call_00_1779_BlockPatch_WriteAttributes:
-; Writes GBC palette attribute bytes and tile IDs to the BG tilemap for an override rectangle. 
+; Writes GBC palette attribute bytes and tile IDs to the BG tilemap for a block patch rectangle.
 ; On GBC (wD59E_OnGBCFlag nonzero): switches to VRAM bank 1; for each of the width × height metatiles, 
 ; reads 4 tile IDs per sub-row from the $C0xx block coordinate cache (using H bits 0–1 + $C0 as page), 
 ; looks up the palette attribute for each from $CFxx via B=$CF as page base, and writes the 
@@ -1173,7 +1170,7 @@ call_00_1779_BlockPatch_WriteAttributes:
 call_00_18a7_BgMap_ApplyBlockPatchesToRow:
 ; Same as above but for vertical camera strips. Calls BgMap_MaskAltBlocksetFlags, then scans
 ; $CD00 slots for entries whose X coord matches wD779. Checks Y coord within 6 rows of wD77A. On match, 
-; patches the column buffer at HL+1 + (Y_coord - wD77A) × 2 with the override data from `$CD[E
+; patches the column buffer at HL+1 + (Y_coord - wD77A) × 2 with the block patch data from $CD[E]
     call call_00_1e3c_BgMap_MaskAltBlocksetFlags                                  ;; 00:18a7 $cd $3c $1e
     ld   A, [wD778_BlockPatch_SlotWriteHead]                                    ;; 00:18aa $fa $78 $d7
     and  A, A                                          ;; 00:18ad $a7
@@ -1220,7 +1217,7 @@ call_00_18a7_BgMap_ApplyBlockPatchesToRow:
     jr   call_00_1922_BgMap_LoadSecondaryTileset                                    ;; 00:18e2 $18 $3e
 
 call_00_18e4_BgMap_ApplyBlockPatchesToColumn:
-; Same as above but for horizontal strip loading: scans $CDB0 for overrides matching X block coordinate wD779, 
+; Same as above but for horizontal strip loading: scans $CDB0 for block patches matching X block coordinate wD779,
 ; within 6 rows of wD77A, and patches the wD70E_BgMap_TempScratchColumnMetaTileIDs metatile column buffer accordingly. 
 ; Falls through to SecondaryTileset_Load
     call call_00_1e3c_BgMap_MaskAltBlocksetFlags                                  ;; 00:18e4 $cd $3c $1e
@@ -1273,7 +1270,7 @@ call_00_1922_BgMap_LoadSecondaryTileset:
 ; Checks wD60F bit 2 (HDMA active) — returns if set. Advances HL by $0B to reach the tile area 
 ; index within the strip. Looks up the current level ID in .data_00_1a2e_LevelSecondaryTilesetIndexTable 
 ; to get a per-world data pointer. Reads the first byte (base index C). Scans 6 entries backward 
-; through the strip (from wD719 downward), checking each non-zero override byte against the world's 
+; through the strip (from wD719 downward), checking each non-zero alt blockset byte against the world's
 ; secondary tileset index table — if a non-null entry is found, checks if its tileset index differs 
 ; from wD72D (current secondary tileset). If different: stores the new index to wD72D, computes the 
 ; tileset address using .data_LevelSecondaryTilesetBankTable (bank + offset per level), stores to 
@@ -1466,10 +1463,10 @@ call_00_1922_BgMap_LoadSecondaryTileset:
 
 call_00_1e3c_BgMap_MaskAltBlocksetFlags:
 ; Reads wD6FE_BgMap_AltBlocksetMask into C. Masks 6 consecutive bytes at HL+1 through HL+6 each with 
-; AND C in place. The 6 bytes are the secondary blockset override flags in the horizontal/vertical 
+; AND C in place. The 6 bytes are the alt blockset flags in the horizontal/vertical
 ; strip buffer (alternating bytes at wD703_BgMap_TempScratchRowAltBlocksetFlags/wD705/... or 
 ; wD70F_BgMap_TempScratchColumnAltBlocksetFlags/... depending on caller). 
-; Effectively zeroes the override layer for levels whose bitmask has that layer's bit clear
+; Effectively zeroes the alt blockset layer for levels whose mask has that layer's bit clear
     push HL                                            ;; 00:1e3c $e5
     ld   A, [wD6FE_BgMap_AltBlocksetMask]                                    ;; 00:1e3d $fa $fe $d6
     ld   C, A                                          ;; 00:1e40 $4f
@@ -1501,7 +1498,7 @@ call_00_1e3c_BgMap_MaskAltBlocksetFlags:
     ret                                                ;; 00:1e5a $c9
 
 call_00_1e5b_BlockPatch_TickSequence:
-; Per-frame driver for tile override animations. Decrements wD786_BlockPatch_StepTimer if nonzero. 
+; Per-frame driver for block patch animations. Decrements wD786_BlockPatch_StepTimer if nonzero.
 ; Returns early if wD77B_BlockPatch_VramWritePending is set (VRAM write not yet flushed by VBLANK) 
 ; or if timer is still nonzero. Otherwise reloads timer from wD787_BlockPatch_StepTimerReload and 
 ; re-enters the step loop (.jr_00_1e6f). Decrements wD77D_BlockPatch_StepsRemaining; 
@@ -1583,13 +1580,13 @@ call_00_1e5b_BlockPatch_TickSequence:
     ret                                                ;; 00:1ec8 $c9
 
 call_00_1ec9_BlockPatch_Register:
-; Registers a rectangular tile override region into the wCE00/wCD00 block coordinate tables and 
+; Registers a rectangular block patch region into the wCE00/wCD00 block coordinate tables and
 ; advances wD778_BlockPatch_SlotWriteHead. Reads starting block coordinates from 
 ; wD782_BlockPatch_TargetBlockX/wD783_BlockPatch_TargetBlockY into C/B. Reads the data pointer from 
 ; wD780/wD781 into DE. Sets HL = $CE00 + slot index from wD778. For each cell in the width × height 
 ; rectangle: writes B (current Y block coord) to $CE[slot], writes C (current X block coord) to $CD[slot],
 ; then reads the cell's 2 bytes from DE and writes them to $CF[slot] and $CC[slot] - the `set 7,L` /
-; `dec H` pair walks between the four parallel $CC/$CD/$CE/$CF tables that together hold one override
+; `dec H` pair walks between the four parallel $CC/$CD/$CE/$CF tables that together hold one patch
 ; entry. C is bumped per column and B per row, so each cell is registered under its own map
 ; coordinates.
 ;

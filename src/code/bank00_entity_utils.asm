@@ -138,9 +138,6 @@ call_00_3154_Entity_MoveYDownWithFloorBound:
 ; Calls Entity_GetMaxYBound - the floor - compares entity Y against it, and if the
 ; entity has fallen past it, snaps Y to the bound and zeroes Y velocity.
 ;
-; (The old comment glossed the callee as "get lower Y bound", contradicting the
-; name it was calling. Both were confusing; Min/Max is now the numeric range and
-; larger Y is further down the screen)
     call call_00_34ba_Entity_GetMaxYBound                                  ;; 00:3154 $cd $ba $34
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
     ld   A, [HL+]                                      ;; 00:315f $2a
@@ -713,11 +710,8 @@ call_00_3460_Entity_GetMinXBound:
 ; DE = the LOW end of this entity's X patrol range: wD30A_EntityBoundingBoxXMin
 ; for this slot, scaled by 32 (blocks to pixels), plus $30.
 ;
-; Was called GetRightXBound. It is not the right edge - the patrol code in
-; call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip calls this on the
-; leftward leg and flips when XPOS drops BELOW the result, which is a minimum.
-; Named Min/Max now to match the source variable and sidestep the question of
-; which screen edge that is
+; call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip calls this on the leftward
+; leg and flips when XPOS drops BELOW the result
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3460 $fa $00 $d3
     rrca                                               ;; 00:3463 $0f
     rrca                                               ;; 00:3464 $0f
@@ -742,8 +736,8 @@ call_00_3460_Entity_GetMinXBound:
 
 call_00_347e_Entity_GetMaxXBound:
 ; DE = the HIGH end of the X patrol range: wD309_EntityBoundingBoxXMax scaled by
-; 32, minus $10. Was called GetLeftXBound; the patrol code calls it on the
-; rightward leg and flips when XPOS rises above the result
+; 32, minus $10. The patrol code calls it on the rightward leg and flips when
+; XPOS rises above the result
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:347e $fa $00 $d3
     rrca                                               ;; 00:3481 $0f
     rrca                                               ;; 00:3482 $0f
@@ -1058,7 +1052,7 @@ call_00_35d5_Entity_MoveXAndPushPlayer:
     ret                                                ;; 00:3627 $c9
 
 call_00_3628_Entity_SaveWorldState:
-; Note the side effect the old comment omitted: as well as backing up
+; Note the side effect: as well as backing up
 ; wD688_FlyAnimationPosition, it OVERWRITES it with $A0. So calling this does not
 ; only save state, it parks the fly animation - which matters because the cutscene
 ; code brackets whole previews with Save/Restore.
@@ -1443,7 +1437,7 @@ call_00_3878_Entity_CheckTVButtonEnabled:
 ; from the entity's list index - (index - 1) >> 1 - looks it up from
 ; wD798_BlockPatch_SlotTable13 and returns whether that slot is nonzero.
 ;
-; Neither path involves distance, despite the old name's "OrInRange"
+; Neither path involves distance
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:3878 $fa $24 $d6
     and  A, A                                          ;; 00:387b $a7
     jr   Z, call_00_3899_Entity_CheckRemoteTotalsUnlock                                 ;; 00:387c $28 $1b
@@ -1481,10 +1475,8 @@ call_00_3899_Entity_CheckRemoteTotalsUnlock:
 ; bank0A_entity_load.asm. So each hub TV's unlock condition is three numbers in
 ; data.
 ;
-; This was called CheckHubProximityToPlayer and described as a distance/activation
-; radius check. Nothing here reads a position - the three variables are collection
-; totals, per their own names and their use elsewhere. It is a progress
-; requirement, which is why it gates the hub TVs
+; Nothing here reads a position - the three variables are collection totals. It is
+; a progress requirement, which is why it gates the hub TVs
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
     ld   A, [wD64F_MissionRemoteTotal]                                    ;; 00:38a1 $fa $4f $d6
     and  A, $7f                                        ;; 00:38a4 $e6 $7f
@@ -1568,9 +1560,8 @@ call_00_38f0_Entity_ClearAllSlots:
 
 call_00_3910_Entity_ClearSlot:
 ; Sets entity ID to $FF, then follows the slot-index link to the wD000 entity-flags
-; table and writes $00 there - but only if the entry is not already $FF, which the
-; old comment omitted. Compare call_00_393c_Entity_SetFlagsEntryNone, which writes
-; $FF to the same byte
+; table and writes $00 there - but only if the entry is not already $FF. Compare
+; call_00_393c_Entity_SetFlagsEntryNone, which writes $FF to the same byte
     LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_ENTITY_ID
     ld   [HL], $ff                                     ;; 00:3918 $36 $ff
     ld   A, L                                          ;; 00:391a $7d
@@ -1600,10 +1591,9 @@ call_00_393c_Entity_SetFlagsEntryNone:
 ; Writes $FF into this entity's wD000_EntityFlags entry, following the slot index
 ; through wD301.
 ;
-; It writes $FF, not zero, so the old name "ClearFlags" was misleading - and note
-; call_00_3910_Entity_ClearSlot writes $00 to the very same table. The two are
-; opposites despite both having been described as clearing. $FF matches the
-; ENTITY_ID_NONE convention: this marks the entry unused rather than blanking it
+; It writes $FF, not zero. Note call_00_3910_Entity_ClearSlot writes $00 to the very
+; same table - the two are opposites. $FF matches the ENTITY_ID_NONE convention:
+; this marks the entry unused rather than blanking it
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:393c $fa $00 $d3
     rlca                                               ;; 00:393f $07
     rlca                                               ;; 00:3940 $07

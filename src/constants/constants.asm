@@ -596,10 +596,9 @@ DEF FONT_GLYPH_COUNT                        EQU $2A ; $00 space, $01-$1A A-Z, $1
 DEF FONT_BYTES_PER_ROW                      EQU 2   ; 2bpp: plane 0 then plane 1
 
 ; ------------------------------------------------------------------
-; TWO SYSTEMS, ONE OLD NAME
+; TWO SEPARATE SYSTEMS ACT ON THE BACKGROUND MAP
 ;
-; Everything below used to be called "override", and so did an unrelated mechanism.
-; They are separate and worth keeping straight:
+; Easy to conflate, so worth stating side by side:
 ;
 ;   ALT BLOCKSET - static, per level, a rendering variant. Each metatile in a strip
 ;     carries a flag byte saying "expand me from blockset page $50 instead of $40".
@@ -619,11 +618,9 @@ DEF FONT_BYTES_PER_ROW                      EQU 2   ; 2bpp: plane 0 then plane 1
 ; both "put this metatile here" and "draw it from that blockset". Otherwise they
 ; share no state, no WRAM and no code.
 ;
-; (wD758_JumpVelocityOverride is a third, wholly unrelated use of the word.)
-;
 ; Block patch step flags (wD77C_BlockPatch_StepFlags)
 ;
-; One flag byte heads every step of an override sequence, whether the sequence came from a
+; One flag byte heads every step of a block patch sequence, whether the sequence came from a
 ; tile hit script or from a cutscene's animation block. BlockPatch_TickSequence dispatches on
 ; the bits in this order: SFX (which consumes an extra argument byte from the step), then
 ; REGISTER, then COLLISION, then TILES, then LOOP.

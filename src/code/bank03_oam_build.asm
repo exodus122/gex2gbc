@@ -1085,9 +1085,8 @@ call_03_6540_Oam_FinishFrame:
 ; NPC region: collectible sprites, then the HUD row, then blank every slot the frame
 ; did not use.
 ;
-; Was called HUD_BuildAllSprites, which is too narrow twice over - only the middle
-; step is HUD, and it does not build all sprites, it finishes a list the entity code
-; started
+; Only the middle step is HUD, and it does not build all the sprites - it finishes a
+; list the entity code started
     call call_03_6499_Collectible_BuildSprites                                  ;; 03:6540 $cd $99 $64
     call call_03_5b5b_HUD_BuildSprites                                  ;; 03:6543 $cd $5b $5b
     jp   call_03_6484_OAM_ClearUnusedEntries                                    ;; 03:6546 $c3 $84 $64

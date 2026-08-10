@@ -9,11 +9,11 @@
 ; That split is visible in the data. A mission preview has a movement list and no animation;
 ; a "here is the tv" scene is usually the opposite - a fixed camera position with an
 ; animation block, or nothing at all beyond repositioning and holding for
-; CUTSCENE_HOLD_FRAMES. The animation block is a background tile-override sequence, in the
+; CUTSCENE_HOLD_FRAMES. The animation block is a block patch sequence, in the
 ; same format the special-tile runner uses; its layout is documented on
 ; .data_00_2662_CutsceneScriptPointerTable. That is also where the small `ld A,$xx /
 ; ld [$D7xx],A / ret` stubs scattered through the data come from - they are the sequence's
-; callback field, run at setup, and they poke an override slot because the scene has
+; callback field, run at setup, and they poke a block patch slot because the scene has
 ; permanently revealed something.
 ;
 ; The trick behind it is that there is no camera. Gex himself is teleported to the start of
@@ -281,7 +281,7 @@ call_00_2329_Cutscene_LoadAndRun:
 ; header described on call_00_2329_Cutscene_LoadAndRun, with its movement list and/or animation
 ; block laid out immediately after it, so a script and its data are one contiguous run.
 ;
-; The animation block is not cutscene-specific: it is an override sequence in exactly the format
+; The animation block is not cutscene-specific: it is a block patch sequence in exactly the format
 ; TileHitScript_Run / BlockPatch_TickSequence consume for switches and breakable scenery.
 ; Header is 8 bytes:
 ;
@@ -299,7 +299,7 @@ call_00_2329_Cutscene_LoadAndRun:
 ; is the only one here that does, opening with $28 (TILES|SFX) and an SFX id of $26. Every other
 ; step in the blob is a plain $08, with $0A (TILES|REGISTER) on the last one of each block.
 ; That last step is what makes the reveal permanent - the tiles are redrawn
-; every step, but only the last one registers the rectangle in the override slot tables, so the
+; every step, but only the last one registers the rectangle in the block patch slot tables, so the
 ; change survives the BgMap_LoadFull on the way out of the scene.
 ;
 ; Note the rectangle is placed relative to *Gex*, not in map coordinates, which is why a scene
@@ -618,7 +618,7 @@ call_00_2329_Cutscene_LoadAndRun:
 .script_1E:
 ;   startX $0CE0  startY $06B0  no movement  anim $2A85
 ;   anim: no callback, 2 steps, 60 frames each, 2x2 blocks at (-2,0) from Gex - the same two
-;   steps as .script_1D one block over, but with no callback to poke an override slot
+;   steps as .script_1D one block over, but with no callback to poke a block patch slot
     db   $e0, $0c, $b0, $06, $00, $00, $85             ;; 00:2a7d
     db   $2a, $00, $00, $02, $3c, $fe, $00, $02        ;; 00:2a84 ????????
     db   $02, $08, $03, $00, $ce, $01, $11, $00        ;; 00:2a8c ????????
@@ -664,7 +664,7 @@ call_00_2329_Cutscene_LoadAndRun:
     db   $01, $08, $88, $01, $89, $01, $08, $8a        ;; 00:2b0c ????????
     db   $01, $8b, $01, $0a, $8c, $01, $8d, $01        ;; 00:2b14 ????????
 ;   $3E $EF $EA $94 $D7 $C9 = "ld A,$EF / ld [$D794],A / ret" - the animation script
-;   runner calls into its own data, so a scene can poke an override slot when it finishes
+;   runner calls into its own data, so a scene can poke a block patch slot when it finishes
     db   $3e, $ef, $ea, $94, $d7, $c9                  ;; 00:2b1c
 .script_24:
 ;   startX $0800  startY $0CB0  no movement  anim $2B2A
