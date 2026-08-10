@@ -1166,7 +1166,7 @@ wD774:
 ; used as a table index - a "how many of these have been triggered" counter
     ds 1                                               ;; d774
 
-wD775_MissionPreview_Skippable:
+wD775_Cutscene_Skippable:
     ds 1                                               ;; d775
     ds 2
 

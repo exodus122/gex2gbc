@@ -262,7 +262,7 @@ call_00_0150_Init:
     add  A, CUTSCENE_SLOT_MISSION_BASE                 ;; 00:0348 $c6 $0a
     ld   C, A                                          ;; 00:034a $4f ; C = cutscene slot
     ld   B, $01                                        ;; 00:034b $06 $01 ; B = skippable
-    call call_00_2329_MissionPreview_LoadAndRun                                  ;; 00:034d $cd $29 $23
+    call call_00_2329_Cutscene_LoadAndRun                                  ;; 00:034d $cd $29 $23
 .jr_00_0350:
     xor  A, A                                          ;; 00:0350 $af
     ld   [wD618_CheckpointSpawnId], A                                    ;; 00:0351 $ea $18 $d6

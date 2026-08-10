@@ -3114,7 +3114,7 @@ data_01_5cb9:
     db   $00, $76, $00, $40, $00, $40, $00, $67        ;; 01:5cc1 ????....
     db   $00, $79, $00, $40, $00, $73                  ;; 01:5cc9 ????....
 
-INCLUDE "data/bank01_text.asm"
+INCLUDE "code/bank01_text.asm"
 
 data_01_65fe:
     dw   data_01_66a7_font                                  ;; 01:65fe pP
@@ -3225,7 +3225,7 @@ data_01_7c0f_collectible_images:
     INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_rezopolis.bin"
     INCBIN "gfx/misc_sprites/collectibles/palettes/palette_rezopolis_collectibles.bin"
 
-; the below bytes are an incomplete copy of palette_rezopolis_collectibles.bin
+; the below bytes are an incomplete portion of palette_rezopolis_collectibles.bin
     db   $00, $b4, $01, $7f, $3f, $00, $00, $6f                             ;; 01:7f08 ????????
     db   $00, $bf, $04, $ff, $31, $00, $00, $00
     db   $00, $9c, $02, $7f, $03

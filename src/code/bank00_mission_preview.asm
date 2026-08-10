@@ -1,7 +1,16 @@
 ; ==================================================================
-; MISSION PREVIEW CUTSCENES
+; CUTSCENES
 ;
-; The fly-over shown when you pick a mission, panning from Gex to whatever the objective is.
+; Every in-level scripted camera move lives here. Most are mission previews - the fly-over
+; shown when you pick a mission, panning from Gex to the objective - but they are not the
+; only kind. Completing an objective also plays a short scene showing you where the exit tv
+; is, and those use the same machinery with a different slot.
+;
+; That split is visible in the data. A mission preview has a movement list and no animation;
+; a "here is the tv" scene is usually the opposite - a fixed camera position with an
+; animation block, or nothing at all beyond repositioning and holding for
+; CUTSCENE_HOLD_FRAMES. It is also why some scenes end by poking a tile-override slot
+; through the embedded code stubs: the scene has permanently revealed something.
 ;
 ; The trick behind it is that there is no camera. Gex himself is teleported to the start of
 ; the shot and then *walked* along a scripted path, with the normal map window logic following
@@ -16,12 +25,14 @@
 ; the stack across all three phases.
 ; ==================================================================
 
-call_00_2329_MissionPreview_LoadAndRun:
+call_00_2329_Cutscene_LoadAndRun:
 ; B = skippable (nonzero means any button aborts), C = which cutscene slot to play.
 ;
-; The normal entry from the mission select screen passes C = CUTSCENE_SLOT_MISSION_BASE +
-; wD627_CurrentMission, which is why the lookup table below is mostly empty except for a
-; column of three at slots $0A-$0C.
+; The only call site is in call_00_0150_Init and passes C = CUTSCENE_SLOT_MISSION_BASE +
+; wD627_CurrentMission, which is why the lookup table below has a column of three at slots
+; $0A-$0C. The other slots are reached by the same expression with wD627 holding something
+; other than a mission number - so a scene is selected purely by what that variable contains
+; when the level is (re)initialised, and there is no separate "play cutscene" entry point.
 ;
 ; Two levels of lookup: (level, slot) gives a script index via
 ; .data_00_2472_CutsceneIndexLookupTable, and CUTSCENE_NONE there means this level has
@@ -43,7 +54,7 @@ call_00_2329_MissionPreview_LoadAndRun:
 ; own update, entity update, and the VRAM transfer setup. Skipping jumps straight to the
 ; restore code, and only a non-skipped preview bothers to rebuild the map on the way out
     ld   A, B                                          ;; 00:2329 $78
-    ld   [wD775_MissionPreview_Skippable], A                                    ;; 00:232a $ea $75 $d7
+    ld   [wD775_Cutscene_Skippable], A                                    ;; 00:232a $ea $75 $d7
     ld   B, $00                                        ;; 00:232d $06 $00
     ld   HL, wD624_CurrentLevelId                                     ;; 00:232f $21 $24 $d6
     ld   L, [HL]                                       ;; 00:2332 $6e
@@ -118,7 +129,7 @@ call_00_2329_MissionPreview_LoadAndRun:
     ld   [wD79B_Cutscene_MoveFramesRemaining+1], A                                    ;; 00:239c $ea $9c $d7
     push HL                                            ;; 00:239f $e5
 .jr_00_23a0:
-    ld   A, [wD775_MissionPreview_Skippable]                                    ;; 00:23a0 $fa $75 $d7
+    ld   A, [wD775_Cutscene_Skippable]                                    ;; 00:23a0 $fa $75 $d7
     and  A, A                                          ;; 00:23a3 $a7
     jr   Z, .jr_00_23b1                                ;; 00:23a4 $28 $0b
     ld   A, [wD59F_CurrentInputs]                                    ;; 00:23a6 $fa $9f $d5
@@ -129,7 +140,7 @@ call_00_2329_MissionPreview_LoadAndRun:
     jp   .jp_00_2445                                   ;; 00:23ae $c3 $45 $24
 .jr_00_23b1:
     call call_00_0ab4_WaitForInterrupt                                  ;; 00:23b1 $cd $b4 $0a
-    call call_00_2dbf_MissionPreview_UpdateMovement                                  ;; 00:23b4 $cd $bf $2d
+    call call_00_2dbf_Cutscene_UpdateMovement                                  ;; 00:23b4 $cd $bf $2d
     FARCALL call_02_715a_MapWindow_Update
     FARCALL call_02_6eba_Entities_UpdateAll
     call call_00_1455_BgMap_LoadDirtyRegions                                  ;; 00:23cd $cd $55 $14
@@ -157,7 +168,7 @@ call_00_2329_MissionPreview_LoadAndRun:
     jr   Z, .jr_00_241e                                ;; 00:23ed $28 $2f
     call call_00_1f80_SpecialTile_RunScript                                  ;; 00:23ef $cd $80 $1f
 .jr_00_23f2:
-    ld   A, [wD775_MissionPreview_Skippable]                                    ;; 00:23f2 $fa $75 $d7
+    ld   A, [wD775_Cutscene_Skippable]                                    ;; 00:23f2 $fa $75 $d7
     and  A, A                                          ;; 00:23f5 $a7
     jr   Z, .jr_00_23fe                                ;; 00:23f6 $28 $06
     ld   A, [wD59F_CurrentInputs]                                    ;; 00:23f8 $fa $9f $d5
@@ -181,7 +192,7 @@ call_00_2329_MissionPreview_LoadAndRun:
     call call_00_0ab4_WaitForInterrupt                                  ;; 00:2421 $cd $b4 $0a
     FARCALL call_02_6eba_Entities_UpdateAll
     call call_00_08fc_SetupEntityVRAMTransfer                                  ;; 00:242f $cd $fc $08
-    ld   A, [wD775_MissionPreview_Skippable]                                    ;; 00:2432 $fa $75 $d7
+    ld   A, [wD775_Cutscene_Skippable]                                    ;; 00:2432 $fa $75 $d7
     and  A, A                                          ;; 00:2435 $a7
     jr   Z, .jr_00_2441                                ;; 00:2436 $28 $09
     ld   A, [wD59F_CurrentInputs]                                    ;; 00:2438 $fa $9f $d5
@@ -207,7 +218,7 @@ call_00_2329_MissionPreview_LoadAndRun:
     ld   [HL], B                                       ;; 00:2456 $70
     dec  HL                                            ;; 00:2457 $2b
     ld   [HL], C                                       ;; 00:2458 $71
-    ld   A, [wD775_MissionPreview_Skippable]                                    ;; 00:2459 $fa $75 $d7
+    ld   A, [wD775_Cutscene_Skippable]                                    ;; 00:2459 $fa $75 $d7
     and  A, A                                          ;; 00:245c $a7
     ret  NZ                                            ;; 00:245d $c0
     call call_00_13a6_BgMap_UpdateWindowFromPlayerPos                                  ;; 00:245e $cd $a6 $13
@@ -218,15 +229,16 @@ call_00_2329_MissionPreview_LoadAndRun:
 ; 31 rows of CUTSCENE_SLOTS_PER_LEVEL bytes, indexed by (level id, slot). The value is an
 ; index into .data_00_2662_CutsceneScriptPointerTable, or CUTSCENE_NONE for nothing.
 ;
-; The shape tells you what the slots mean. Slots $0A-$0C are the three mission previews
-; (CUTSCENE_SLOT_MISSION_BASE + mission), which is why almost every playable level has a run
-; of two or three entries there and nothing else. Slots $0E/$0F appear only on the earliest
-; levels, and slot $00 only on four - one-off scenes rather than mission previews.
+; The shape tells you what the slots mean. Slots $0A-$0C are the three mission previews,
+; which is why almost every playable level has a run of two or three entries there.
+; Everything else is the other kind of scene - the short "the exit tv is over there" clip
+; played once an objective is met - which matches those entries pointing at scripts with no
+; movement list.
 ;
-; Mao Tse Tongue and Samurai Night Fever are the exceptions, filling slots $00-$09 as well.
-; Both are Kung Fu Theater levels, so those are presumably the boss/set-piece scenes.
+; Mao Tse Tongue and Samurai Night Fever fill slots $00-$09 as well, nineteen scripts between
+; them. Both are Kung Fu Theater levels.
 ;
-; The all-$FF rows are levels with no previews at all: the unused ids, the hub variants
+; The all-$FF rows are levels with no scenes at all: the unused ids, the hub variants
 ; ($11-$14), and everything from Lizard in a China Shop onward except four
 ;         slot: 0    1    2    3    4    5    6    7    8    9    a    b    c    d    e    f
     db   $00, $01, $02, $03, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff ; 00 media dimension
@@ -299,43 +311,43 @@ call_00_2329_MissionPreview_LoadAndRun:
     dw   .script_1B    ; $1b  mao tse tongue, slot 6
     dw   .script_1C    ; $1c  mao tse tongue, slot 7
     dw   .script_1D    ; $1d  mao tse tongue, slot 8
-    dw   $2a7d         ; $1e  mao tse tongue, slot 9
-    dw   $2a9f         ; $1f  pangaea 90210, mission 1
-    dw   $2ab1         ; $20  pangaea 90210, mission 2
-    dw   $2acf         ; $21  fine tooning, mission 1
-    dw   $2ae1         ; $22  fine tooning, mission 2
-    dw   $2af3         ; $23  fine tooning, slot 6
-    dw   $2b22         ; $24  fine tooning, slot 9
-    dw   $2b51         ; $25  fine tooning, slot $0E
-    dw   $2b6b         ; $26  this old cave, mission 1
-    dw   $2b80         ; $27  this old cave, mission 2
-    dw   $2b95         ; $28  this old cave, mission 3
-    dw   $2bb0         ; $29  honey i shrunk the gecko, mission 1
-    dw   $2bc5         ; $2a  honey i shrunk the gecko, mission 2
-    dw   $2bd7         ; $2b  honey i shrunk the gecko, mission 3
-    dw   $2be6         ; $2c  poltergex, mission 1
-    dw   $2c04         ; $2d  poltergex, mission 2
-    dw   $2c16         ; $2e  poltergex, mission 3
-    dw   $2c25         ; $2f  poltergex, slot $0F
-    dw   $2c2d         ; $30  poltergex, slot 0
-    dw   $2c35         ; $31  samurai night fever, mission 1
-    dw   $2c47         ; $32  samurai night fever, mission 2
-    dw   $2c56         ; $33  samurai night fever, mission 3
-    dw   $2c68         ; $34  samurai night fever, slot 0
-    dw   $2c70         ; $35  samurai night fever, slot 1
-    dw   $2c78         ; $36  samurai night fever, slot 2
-    dw   $2c80         ; $37  samurai night fever, slot 3
-    dw   $2ca2         ; $38  samurai night fever, slot 4
-    dw   $2cc4         ; $39  samurai night fever, slot 5
-    dw   $2ce6         ; $3a  samurai night fever, slot 6
-    dw   $2cee         ; $3b  samurai night fever, slot 7
-    dw   $2cf6         ; $3c  samurai night fever, slot 8
-    dw   $2d57         ; $3d  no weddings and a funeral, mission 1
-    dw   $2d6f         ; $3e  lava dabba doo, mission 1
-    dw   $2d7e         ; $3f  texas chainsaw manicure, mission 1
-    dw   $2d93         ; $40  texas chainsaw manicure, slot 0
-    dw   $2d9b         ; $41  mazed and confused, mission 1
-    dw   $2db0         ; $42  mazed and confused, mission 2
+    dw   .script_1E    ; $1e  mao tse tongue, slot 9
+    dw   .script_1F    ; $1f  pangaea 90210, mission 1
+    dw   .script_20    ; $20  pangaea 90210, mission 2
+    dw   .script_21    ; $21  fine tooning, mission 1
+    dw   .script_22    ; $22  fine tooning, mission 2
+    dw   .script_23    ; $23  fine tooning, slot 6
+    dw   .script_24    ; $24  fine tooning, slot 9
+    dw   .script_25    ; $25  fine tooning, slot $0E
+    dw   .script_26    ; $26  this old cave, mission 1
+    dw   .script_27    ; $27  this old cave, mission 2
+    dw   .script_28    ; $28  this old cave, mission 3
+    dw   .script_29    ; $29  honey i shrunk the gecko, mission 1
+    dw   .script_2A    ; $2a  honey i shrunk the gecko, mission 2
+    dw   .script_2B    ; $2b  honey i shrunk the gecko, mission 3
+    dw   .script_2C    ; $2c  poltergex, mission 1
+    dw   .script_2D    ; $2d  poltergex, mission 2
+    dw   .script_2E    ; $2e  poltergex, mission 3
+    dw   .script_2F    ; $2f  poltergex, slot $0F
+    dw   .script_30    ; $30  poltergex, slot 0
+    dw   .script_31    ; $31  samurai night fever, mission 1
+    dw   .script_32    ; $32  samurai night fever, mission 2
+    dw   .script_33    ; $33  samurai night fever, mission 3
+    dw   .script_34    ; $34  samurai night fever, slot 0
+    dw   .script_35    ; $35  samurai night fever, slot 1
+    dw   .script_36    ; $36  samurai night fever, slot 2
+    dw   .script_37    ; $37  samurai night fever, slot 3
+    dw   .script_38    ; $38  samurai night fever, slot 4
+    dw   .script_39    ; $39  samurai night fever, slot 5
+    dw   .script_3A    ; $3a  samurai night fever, slot 6
+    dw   .script_3B    ; $3b  samurai night fever, slot 7
+    dw   .script_3C    ; $3c  samurai night fever, slot 8
+    dw   .script_3D    ; $3d  no weddings and a funeral, mission 1
+    dw   .script_3E    ; $3e  lava dabba doo, mission 1
+    dw   .script_3F    ; $3f  texas chainsaw manicure, mission 1
+    dw   .script_40    ; $40  texas chainsaw manicure, slot 0
+    dw   .script_41    ; $41  mazed and confused, mission 1
+    dw   .script_42    ; $42  mazed and confused, mission 2
 .script_00:
 ;   startX $04E0  startY $01D0  no movement  anim $26F0
     db   $e0, $04, $d0, $01, $00, $00                  ;; 00:26e8
@@ -554,86 +566,198 @@ call_00_2329_MissionPreview_LoadAndRun:
     db   $02, $08, $03, $00, $ce, $01, $11, $00        ;; 00:2a64 ????????
     db   $11, $00, $0a, $03, $00, $ce, $01, $22        ;; 00:2a6c ????????
     db   $00, $23, $00, $3e, $ef, $ea, $94, $d7        ;; 00:2a74 ????????
-    db   $c9, $e0, $0c, $b0, $06, $00, $00, $85        ;; 00:2a7c ????????
+    db   $c9                                           ;; 00:2a7c
+.script_1E:
+;   startX $0CE0  startY $06B0  no movement  anim $2A85
+    db   $e0, $0c, $b0, $06, $00, $00, $85             ;; 00:2a7d
     db   $2a, $00, $00, $02, $3c, $fe, $00, $02        ;; 00:2a84 ????????
     db   $02, $08, $03, $00, $ce, $01, $11, $00        ;; 00:2a8c ????????
     db   $11, $00, $0a, $03, $00, $ce, $01, $22        ;; 00:2a94 ????????
-    db   $00, $23, $00, $d0, $03, $10, $08, $a7        ;; 00:2a9c ????????
-    db   $2a, $00, $00, $00, $80, $00, $10, $d0        ;; 00:2aa4 ????????
-    db   $02, $40, $a0, $00, $ff, $f0, $0c, $70        ;; 00:2aac ????????
-    db   $05, $b9, $2a, $00, $00, $00, $80, $00        ;; 00:2ab4 ????????
-    db   $60, $60, $00, $20, $c0, $00, $60, $40        ;; 00:2abc ????????
-    db   $00, $20, $a0, $00, $60, $40, $00, $20        ;; 00:2ac4 ????????
-    db   $70, $01, $ff, $80, $08, $10, $0f, $d7        ;; 00:2acc ????????
-    db   $2a, $00, $00, $00, $80, $00, $20, $e0        ;; 00:2ad4 ????????
-    db   $00, $40, $e0, $00, $ff, $80, $0b, $f0        ;; 00:2adc ????????
-    db   $0c, $e9, $2a, $00, $00, $00, $80, $00        ;; 00:2ae4 ????????
-    db   $10, $00, $02, $40, $80, $00, $ff, $40        ;; 00:2aec ????????
+    db   $00, $23, $00                                 ;; 00:2a9c
+.script_1F:
+;   startX $03D0  startY $0810  movement $2AA7  no anim
+    db   $d0, $03, $10, $08, $a7                       ;; 00:2a9f
+;   move: pause $0080, RIGHT $02D0, UP $00A0, end
+    db   $2a, $00, $00, $00, $80, $00, $10, $d0        ;; 00:2aa4
+    db   $02, $40, $a0, $00, $ff                       ;; 00:2aac
+.script_20:
+;   startX $0CF0  startY $0570  movement $2AB9  no anim
+    db   $f0, $0c, $70                                 ;; 00:2ab1
+    db   $05, $b9, $2a, $00, $00                       ;; 00:2ab4
+;   move: pause $0080, UP+LEFT $0060, LEFT $00C0, UP+LEFT $0040,
+;         LEFT $00A0, UP+LEFT $0040, LEFT $0170, end
+    db   $00, $80, $00                                 ;; 00:2ab9
+    db   $60, $60, $00, $20, $c0, $00, $60, $40        ;; 00:2abc
+    db   $00, $20, $a0, $00, $60, $40, $00, $20        ;; 00:2ac4
+    db   $70, $01, $ff                                 ;; 00:2acc
+.script_21:
+;   startX $0880  startY $0F10  movement $2AD7  no anim
+    db   $80, $08, $10, $0f, $d7                       ;; 00:2acf
+;   move: pause $0080, LEFT $00E0, UP $00E0, end
+    db   $2a, $00, $00, $00, $80, $00, $20, $e0        ;; 00:2ad4
+    db   $00, $40, $e0, $00, $ff                       ;; 00:2adc
+.script_22:
+;   startX $0B80  startY $0CF0  movement $2AE9  no anim
+    db   $80, $0b, $f0                                 ;; 00:2ae1
+    db   $0c, $e9, $2a, $00, $00                       ;; 00:2ae4
+;   move: pause $0080, RIGHT $0200, UP $0080, end
+    db   $00, $80, $00                                 ;; 00:2ae9
+    db   $10, $00, $02, $40, $80, $00, $ff             ;; 00:2aec
+.script_23:
+;   startX $0640  startY $0970  no movement  anim $2AFB
+    db   $40                                           ;; 00:2af3
     db   $06, $70, $09, $00, $00, $fb, $2a, $1c        ;; 00:2af4 ????????
     db   $2b, $05, $0a, $ff, $00, $02, $01, $08        ;; 00:2afc ????????
     db   $99, $01, $9a, $01, $08, $86, $01, $87        ;; 00:2b04 ????????
     db   $01, $08, $88, $01, $89, $01, $08, $8a        ;; 00:2b0c ????????
     db   $01, $8b, $01, $0a, $8c, $01, $8d, $01        ;; 00:2b14 ????????
-    db   $3e, $ef, $ea, $94, $d7, $c9, $00, $08        ;; 00:2b1c ????????
+;   $3E $EF $EA $94 $D7 $C9 = "ld A,$EF / ld [$D794],A / ret" - the animation script
+;   runner calls into its own data, so a scene can poke an override slot when it finishes
+    db   $3e, $ef, $ea, $94, $d7, $c9                  ;; 00:2b1c
+.script_24:
+;   startX $0800  startY $0CB0  no movement  anim $2B2A
+    db   $00, $08                                      ;; 00:2b22
     db   $b0, $0c, $00, $00, $2a, $2b, $4b, $2b        ;; 00:2b24 ????????
     db   $05, $0a, $ff, $00, $02, $01, $08, $99        ;; 00:2b2c ????????
     db   $01, $9a, $01, $08, $86, $01, $87, $01        ;; 00:2b34 ????????
     db   $08, $88, $01, $89, $01, $08, $8a, $01        ;; 00:2b3c ????????
     db   $8b, $01, $0a, $8c, $01, $8d, $01, $3e        ;; 00:2b44 ????????
-    db   $ef, $ea, $99, $d7, $c9, $20, $0b, $30        ;; 00:2b4c ????????
+    db   $ef, $ea, $99, $d7, $c9                       ;; 00:2b4c ; ...here writing $D799
+.script_25:
+;   startX $0B20  startY $0D30  no movement  anim $2B59
+    db   $20, $0b, $30                                 ;; 00:2b51
     db   $0d, $00, $00, $59, $2b, $00, $00, $02        ;; 00:2b54 ????????
     db   $3c, $ff, $00, $02, $01, $08, $94, $01        ;; 00:2b5c ????????
-    db   $95, $01, $0a, $d9, $01, $da, $01, $40        ;; 00:2b64 ????????
-    db   $06, $30, $0d, $73, $2b, $00, $00, $00        ;; 00:2b6c ????????
-    db   $80, $00, $10, $e0, $00, $40, $00, $01        ;; 00:2b74 ????????
-    db   $10, $60, $00, $ff, $c0, $0b, $b0, $0d        ;; 00:2b7c ????????
+    db   $95, $01, $0a, $d9, $01, $da, $01             ;; 00:2b64
+.script_26:
+;   startX $0640  startY $0D30  movement $2B73  no anim
+    db   $40                                           ;; 00:2b6b
+    db   $06, $30, $0d, $73, $2b, $00, $00             ;; 00:2b6c
+;   move: pause $0080, RIGHT $00E0, UP $0100, RIGHT $0060, end
+    db   $00                                           ;; 00:2b73
+    db   $80, $00, $10, $e0, $00, $40, $00, $01        ;; 00:2b74
+    db   $10, $60, $00, $ff                            ;; 00:2b7c
+.script_27:
+;   startX $0BC0  startY $0DB0  movement $2B88  no anim
+    db   $c0, $0b, $b0, $0d                            ;; 00:2b80
     db   $88, $2b, $00, $00, $00, $80, $00, $20        ;; 00:2b84 ????????
     db   $80, $01, $80, $60, $00, $20, $e0, $00        ;; 00:2b8c ????????
-    db   $ff, $10, $08, $30, $0e, $9d, $2b, $00        ;; 00:2b94 ????????
+    db   $ff                                           ;; 00:2b94
+.script_28:
+;   startX $0810  startY $0E30  movement $2B9D  no anim
+;   move: pause $0080, RIGHT $0080, UP $0120, RIGHT $00E0, UP $0040, RIGHT $00B0, end
+    db   $10, $08, $30, $0e, $9d, $2b, $00             ;; 00:2b95
     db   $00, $00, $80, $00, $10, $80, $00, $40        ;; 00:2b9c ????????
     db   $20, $01, $10, $e0, $00, $40, $40, $00        ;; 00:2ba4 ????????
-    db   $10, $b0, $00, $ff, $b0, $0e, $10, $0a        ;; 00:2bac ????????
+    db   $10, $b0, $00, $ff                            ;; 00:2bac
+.script_29:
+;   startX $0EB0  startY $0A10  movement $2BB8  no anim
+;   move: pause $0080, RIGHT $0080, UP $0240, LEFT $0190, end
+    db   $b0, $0e, $10, $0a                            ;; 00:2bb0
     db   $b8, $2b, $00, $00, $00, $80, $00, $10        ;; 00:2bb4 ????????
     db   $80, $00, $40, $40, $02, $20, $90, $01        ;; 00:2bbc ????????
-    db   $ff, $80, $02, $90, $0d, $cd, $2b, $00        ;; 00:2bc4 ????????
+    db   $ff                                           ;; 00:2bc4
+.script_2A:
+;   startX $0280  startY $0D90  movement $2BCD  no anim
+;   move: pause $0080, UP $0340, LEFT $01A0, end
+    db   $80, $02, $90, $0d, $cd, $2b, $00             ;; 00:2bc5
     db   $00, $00, $80, $00, $40, $40, $03, $20        ;; 00:2bcc ????????
-    db   $a0, $01, $ff, $30, $0f, $b0, $00, $df        ;; 00:2bd4 ????????
+    db   $a0, $01, $ff                                 ;; 00:2bd4
+.script_2B:
+;   startX $0F30  startY $00B0  movement $2BDF  no anim
+;   move: pause $0080, LEFT $0230, end
+    db   $30, $0f, $b0, $00, $df                       ;; 00:2bd7
     db   $2b, $00, $00, $00, $80, $00, $20, $30        ;; 00:2bdc ????????
-    db   $02, $ff, $00, $07, $b0, $06, $ee, $2b        ;; 00:2be4 ????????
+    db   $02, $ff                                      ;; 00:2be4
+.script_2C:
+;   startX $0700  startY $06B0  movement $2BEE  no anim
+;   move: pause $0080, RIGHT $00E0, UP+RIGHT $0060, RIGHT $0080,
+;         UP+LEFT $0100, UP+RIGHT $00C0, UP+LEFT $0120, end - a zigzag climb
+    db   $00, $07, $b0, $06, $ee, $2b                  ;; 00:2be6
     db   $00, $00, $00, $80, $00, $10, $e0, $00        ;; 00:2bec ????????
     db   $50, $60, $00, $10, $80, $00, $60, $00        ;; 00:2bf4 ????????
     db   $01, $50, $c0, $00, $60, $20, $01, $ff        ;; 00:2bfc ????????
-    db   $80, $09, $b0, $0c, $0c, $2c, $00, $00        ;; 00:2c04 ????????
+.script_2D:
+;   startX $0980  startY $0CB0  movement $2C0C  no anim
+;   move: pause $0080, UP $0200, RIGHT $0240, end
+    db   $80, $09, $b0, $0c, $0c, $2c, $00, $00        ;; 00:2c04
     db   $00, $80, $00, $40, $00, $02, $10, $40        ;; 00:2c0c ????????
-    db   $02, $ff, $f0, $02, $f0, $0a, $1e, $2c        ;; 00:2c14 ????????
+    db   $02, $ff                                      ;; 00:2c14
+.script_2E:
+;   startX $02F0  startY $0AF0  movement $2C1E  no anim
+;   move: pause $0080, RIGHT $0280, end
+    db   $f0, $02, $f0, $0a, $1e, $2c                  ;; 00:2c16
     db   $00, $00, $00, $80, $00, $10, $80, $02        ;; 00:2c1c ????????
-    db   $ff, $40, $07, $c0, $0a, $00, $00, $00        ;; 00:2c24 ????????
-    db   $00, $80, $05, $00, $0b, $00, $00, $00        ;; 00:2c2c ????????
-    db   $00, $e0, $05, $d0, $03, $3d, $2c, $00        ;; 00:2c34 ????????
+    db   $ff                                           ;; 00:2c24
+.script_2F:
+;   startX $0740  startY $0AC0  no movement, no anim - reposition and hold
+    db   $40, $07, $c0, $0a, $00, $00, $00             ;; 00:2c25
+    db   $00                                           ;; 00:2c2c
+.script_30:
+;   startX $0580  startY $0B00  no movement, no anim - reposition and hold
+    db   $80, $05, $00, $0b, $00, $00, $00             ;; 00:2c2d
+    db   $00                                           ;; 00:2c34
+.script_31:
+;   startX $05E0  startY $03D0  movement $2C3D  no anim
+    db   $e0, $05, $d0, $03, $3d, $2c, $00             ;; 00:2c35
     db   $00, $00, $80, $00, $10, $a0, $01, $40        ;; 00:2c3c ????????
-    db   $a0, $00, $ff, $70, $0e, $b0, $05, $4f        ;; 00:2c44 ????????
+    db   $a0, $00, $ff                                 ;; 00:2c44
+.script_32:
+;   startX $0E70  startY $05B0  movement $2C4F  no anim
+;   move: pause $0080, RIGHT $0110, end
+    db   $70, $0e, $b0, $05, $4f                       ;; 00:2c47
     db   $2c, $00, $00, $00, $80, $00, $10, $10        ;; 00:2c4c ????????
-    db   $01, $ff, $70, $05, $70, $09, $5e, $2c        ;; 00:2c54 ????????
+    db   $01, $ff                                      ;; 00:2c54
+.script_33:
+;   startX $0570  startY $0970  movement $2C5E  no anim
+;   move: pause $0080, UP $01C0, RIGHT $0070, end
+    db   $70, $05, $70, $09, $5e, $2c                  ;; 00:2c56
     db   $00, $00, $00, $80, $00, $40, $c0, $01        ;; 00:2c5c ????????
-    db   $10, $70, $00, $ff, $80, $0b, $c0, $01        ;; 00:2c64 ????????
-    db   $00, $00, $00, $00, $e0, $08, $00, $04        ;; 00:2c6c ????????
-    db   $00, $00, $00, $00, $20, $09, $40, $03        ;; 00:2c74 ????????
-    db   $00, $00, $00, $00, $80, $02, $90, $01        ;; 00:2c7c ????????
+    db   $10, $70, $00, $ff                            ;; 00:2c64
+.script_34:
+;   startX $0B80  startY $01C0  no movement, no anim - reposition and hold
+    db   $80, $0b, $c0, $01                            ;; 00:2c68
+    db   $00, $00, $00, $00                            ;; 00:2c6c
+.script_35:
+;   startX $08E0  startY $0400  no movement, no anim - reposition and hold
+    db   $e0, $08, $00, $04                            ;; 00:2c70
+    db   $00, $00, $00, $00                            ;; 00:2c74
+.script_36:
+;   startX $0920  startY $0340  no movement, no anim - reposition and hold
+    db   $20, $09, $40, $03                            ;; 00:2c78
+    db   $00, $00, $00, $00                            ;; 00:2c7c
+.script_37:
+;   startX $0280  startY $0190  no movement  anim $2C88
+    db   $80, $02, $90, $01                            ;; 00:2c80
     db   $00, $00, $88, $2c, $00, $00, $02, $3c        ;; 00:2c84 ????????
     db   $ff, $ff, $02, $02, $08, $f4, $01, $f5        ;; 00:2c8c ????????
     db   $01, $f6, $01, $f7, $01, $0a, $e0, $01        ;; 00:2c94 ????????
-    db   $e1, $01, $e2, $01, $e3, $01, $40, $0d        ;; 00:2c9c ????????
+    db   $e1, $01, $e2, $01, $e3, $01                  ;; 00:2c9c
+.script_38:
+;   startX $0D40  startY $00B0  no movement  anim $2CAA
+    db   $40, $0d                                      ;; 00:2ca2
     db   $b0, $00, $00, $00, $aa, $2c, $00, $00        ;; 00:2ca4 ????????
     db   $02, $3c, $ff, $ff, $02, $02, $08, $f4        ;; 00:2cac ????????
     db   $01, $f5, $01, $f6, $01, $f7, $01, $0a        ;; 00:2cb4 ????????
     db   $e0, $01, $e1, $01, $e2, $01, $e3, $01        ;; 00:2cbc ????????
-    db   $00, $03, $90, $01, $00, $00, $cc, $2c        ;; 00:2cc4 ????????
+.script_39:
+;   startX $0300  startY $0190  no movement  anim $2CCC
+    db   $00, $03, $90, $01, $00, $00, $cc, $2c        ;; 00:2cc4
     db   $00, $00, $02, $3c, $ff, $ff, $02, $02        ;; 00:2ccc ????????
     db   $08, $f4, $01, $f5, $01, $f6, $01, $f7        ;; 00:2cd4 ????????
     db   $01, $0a, $e0, $01, $e1, $01, $e2, $01        ;; 00:2cdc ????????
-    db   $e3, $01, $e0, $0e, $d0, $05, $00, $00        ;; 00:2ce4 ????????
-    db   $fe, $2c, $20, $01, $d0, $08, $00, $00        ;; 00:2cec ????????
-    db   $fe, $2c, $40, $0a, $f0, $05, $00, $00        ;; 00:2cf4 ????????
+    db   $e3, $01                                      ;; 00:2ce4
+.script_3A:
+;   startX $0EE0  startY $05D0  no movement  anim $2CFE
+    db   $e0, $0e, $d0, $05, $00, $00                  ;; 00:2ce6
+    db   $fe, $2c                                      ;; 00:2cec
+.script_3B:
+;   startX $0120  startY $08D0  no movement  anim $2CFE - same block as $3A
+    db   $20, $01, $d0, $08, $00, $00                  ;; 00:2cee
+    db   $fe, $2c                                      ;; 00:2cf4
+.script_3C:
+;   startX $0A40  startY $05F0  no movement  anim $2CFE - same block as $3A and $3B
+    db   $40, $0a, $f0, $05, $00, $00                  ;; 00:2cf6
     db   $fe, $2c, $00, $00, $09, $0a, $00, $ff        ;; 00:2cfc ????????
     db   $01, $04, $08, $a5, $01, $a9, $01, $00        ;; 00:2d04 ????????
     db   $00, $00, $00, $08, $a6, $01, $a4, $01        ;; 00:2d0c ????????
@@ -645,22 +769,45 @@ call_00_2329_MissionPreview_LoadAndRun:
     db   $08, $ad, $01, $a7, $01, $a4, $01, $ab        ;; 00:2d3c ????????
     db   $01, $08, $ad, $01, $a8, $01, $a4, $01        ;; 00:2d44 ????????
     db   $ac, $01, $0a, $ad, $01, $ad, $01, $a5        ;; 00:2d4c ????????
-    db   $01, $a9, $01, $60, $08, $10, $0c, $5f        ;; 00:2d54 ????????
+    db   $01, $a9, $01                                 ;; 00:2d54
+.script_3D:
+;   startX $0860  startY $0C10  movement $2D5F  no anim
+;   move: pause $0080, RIGHT $0040, DOWN+RIGHT $0040, RIGHT $0280, UP+RIGHT $0060, end
+    db   $60, $08, $10, $0c, $5f                       ;; 00:2d57
     db   $2d, $00, $00, $00, $80, $00, $10, $40        ;; 00:2d5c ????????
     db   $00, $90, $40, $00, $10, $80, $02, $50        ;; 00:2d64 ????????
-    db   $60, $00, $ff, $50, $0b, $f0, $06, $77        ;; 00:2d6c ????????
+    db   $60, $00, $ff                                 ;; 00:2d6c
+.script_3E:
+;   startX $0B50  startY $06F0  movement $2D77  no anim
+;   move: pause $0080, RIGHT $0150, end
+    db   $50, $0b, $f0, $06, $77                       ;; 00:2d6f
     db   $2d, $00, $00, $00, $80, $00, $10, $50        ;; 00:2d74 ????????
-    db   $01, $ff, $c0, $03, $90, $03, $86, $2d        ;; 00:2d7c ????????
+    db   $01, $ff                                      ;; 00:2d7c
+.script_3F:
+;   startX $03C0  startY $0390  movement $2D86  no anim
+;   move: pause $0080, UP $0080, RIGHT $0160, UP $0060, end
+    db   $c0, $03, $90, $03, $86, $2d                  ;; 00:2d7e
     db   $00, $00, $00, $80, $00, $40, $80, $00        ;; 00:2d84 ????????
-    db   $10, $60, $01, $40, $60, $00, $ff, $00        ;; 00:2d8c ????????
-    db   $0a, $00, $01, $00, $00, $00, $00, $c0        ;; 00:2d94 ????????
+    db   $10, $60, $01, $40, $60, $00, $ff             ;; 00:2d8c
+.script_40:
+;   startX $0A00  startY $0100  no movement, no anim - reposition and hold
+    db   $00                                           ;; 00:2d93
+    db   $0a, $00, $01, $00, $00, $00, $00             ;; 00:2d94
+.script_41:
+;   startX $03C0  startY $05B0  movement $2DA3  no anim
+;   move: pause $0080, UP $0060, RIGHT $00E0, UP $0240, end
+    db   $c0                                           ;; 00:2d9b
     db   $03, $b0, $05, $a3, $2d, $00, $00, $00        ;; 00:2d9c ????????
     db   $80, $00, $40, $60, $00, $10, $e0, $00        ;; 00:2da4 ????????
-    db   $40, $40, $02, $ff, $b0, $08, $d0, $06        ;; 00:2dac ????????
+    db   $40, $40, $02, $ff                            ;; 00:2dac
+.script_42:
+;   startX $08B0  startY $06D0  movement $2DB8  no anim
+;   move: pause $0080, LEFT $02F0, end - the $FF below is the last byte of the blob
+    db   $b0, $08, $d0, $06                            ;; 00:2db0
     db   $b8, $2d, $00, $00, $00, $80, $00, $20        ;; 00:2db4 ????????
     db   $f0, $02, $ff                                 ;; 00:2dbc ???
 
-call_00_2dbf_MissionPreview_UpdateMovement:
+call_00_2dbf_Cutscene_UpdateMovement:
 ; Moves Gex one step along the scripted path, once per frame.
 ;
 ; The speed is kept as 1/16ths of a pixel: wD79D_Cutscene_MoveSpeed is added into the low
