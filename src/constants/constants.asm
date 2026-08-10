@@ -478,6 +478,34 @@ DEF CUTSCENE_MOVE_SPEED_MAX                 EQU $10 ; 16/16ths = exactly one pix
 DEF CUTSCENE_HOLD_FRAMES                    EQU $B4 ; 180 frames (3s) of dwell before returning
 
 ; ------------------------------------------------------------------
+; Menu script commands (bank01_menus.asm, call_01_44e6_MenuScript_RunCommand)
+;
+; A menu script is a byte stream: one command id, then one or more 7-byte
+; parameter blocks, and MENUSCRIPT_END to finish. The id selects an 8-byte
+; descriptor of shared settings; each parameter block then draws one rectangle.
+; MENUCMD_LAST_BLOCK on a block's flags byte is what ends the run, so a single id
+; can stamp out many rectangles - this is how a whole screen is described in data.
+; ------------------------------------------------------------------
+DEF MENUSCRIPT_END                          EQU $FF ; terminates a menu script
+
+DEF MENUCMD_CLEAR_BUFFER                    EQU $01 ; bit 0 - blank the wC000 staging
+                                                    ;         buffer before drawing
+DEF MENUCMD_DRAW_TEXT                       EQU $02 ; bit 1 - run call_01_4a8f_Text_Render
+DEF MENUCMD_TRANSPOSED                      EQU $04 ; bit 2 - number and upload tiles down
+                                                    ;         columns instead of across rows
+DEF MENUCMD_NO_TILE_UPLOAD                  EQU $20 ; bit 5 - skip the VRAM tile-data copy
+DEF MENUCMD_NO_TILEMAP_FILL                 EQU $40 ; bit 6 - skip the tilemap/attribute fill
+DEF MENUCMD_LAST_BLOCK                      EQU $80 ; bit 7 - last parameter block
+
+; When the high byte of the source pointer is >= this, the parameter block is not
+; a string at all: (hi - MENUCMD_SUB_BASE) indexes .data_01_4633_MenuCmd_SubHandlers
+; and the low byte is that handler's argument
+DEF MENUCMD_SUB_BASE                        EQU $E0
+
+DEF MENUCMD_ATTR_TV_COPY                    EQU $FF ; in CgbAttributes: use
+                                                    ; MediaDimension_CopyTVAttributes
+
+; ------------------------------------------------------------------
 ; Menu text renderer (bank01_menus.asm, call_01_4a8f_Text_Render)
 ;
 ; A string is a run of character codes in which bit 7 marks the LAST byte of a

@@ -720,22 +720,41 @@ call_01_44d7_MenuScript_RunToEnd:
     ld   H, [HL]                                       ;; 01:44db $66
     ld   L, A                                          ;; 01:44dc $6f
     ld   A, [HL]                                       ;; 01:44dd $7e
-    cp   A, $ff                                        ;; 01:44de $fe $ff
+    cp   A, MENUSCRIPT_END                             ;; 01:44de $fe $ff
     ret  Z                                             ;; 01:44e0 $c8
     call call_01_44e6_MenuScript_RunCommand                                  ;; 01:44e1 $cd $e6 $44
     jr   call_01_44d7_MenuScript_RunToEnd                                  ;; 01:44e4 $18 $f1
 
 call_01_44e6_MenuScript_RunCommand:
-; Executes one menu script command. The first byte is a command id, which
-; indexes an 8-byte descriptor in data_01_5324 (copied to wD692..wD697 - the
-; tile dimensions, destination and so on for this kind of command). The next 7
-; bytes of the script are the command's own parameters, copied to wD698..wD69E.
+; Executes one menu script command - the workhorse the whole menu system is built
+; on. Almost every screen in the game is data fed through here rather than code.
 ;
-; Two of those parameters do more than draw. wD69D registers a selectable row:
-; its low nibble is the row index and its high nibble the MENU_OPTION_* code,
-; which is filed into wD6C5_Menu_OptionActions - this is how a menu's script,
-; rather than any code, decides what the options are and what they do. Bit 0 of
-; wD69E marks a command needing extra per-entry setup
+; The first byte is a command id, which indexes an 8-byte descriptor in
+; data_01_5324; six of those bytes are copied to wD692..wD697 and hold the settings
+; shared by every use of that command (block size, destination, tile ids,
+; attributes). The script then supplies one or more 7-byte parameter blocks, each
+; copied over wD698..wD69E, and each drawing one rectangle. The loop at
+; .jr_01_4507 keeps consuming blocks until one has MENUCMD_LAST_BLOCK set, so a
+; single id can stamp out a whole screen's worth of rectangles.
+;
+; Per block, in order:
+;
+;   1. wD69D_MenuCmd_OptionSlot registers a selectable row - low nibble is the row
+;      index, high nibble the MENU_OPTION_* code - into wD6C5_Menu_OptionActions.
+;      This is how a menu's script, not any code, decides what its options do
+;   2. MENUCMD_CLEAR_BUFFER blanks the wC000 staging buffer
+;   3. if the source pointer's HIGH byte is >= MENUCMD_SUB_BASE it is not a pointer
+;      at all: (hi - $E0) indexes .data_01_4633_MenuCmd_SubHandlers and the low
+;      byte is the argument. That is the escape hatch for the handful of screens
+;      that need real code - palettes, totals, the password grid
+;   4. MENUCMD_DRAW_TEXT runs the text renderer into the staging buffer
+;   5. unless MENUCMD_NO_TILEMAP_FILL, fill the tilemap rectangle at
+;      _SCRN0 + DestTileY*32 + DestTileX with consecutive tile ids starting at
+;      wD696, and on CGB fill the matching VBK 1 rectangle with wD697
+;   6. unless MENUCMD_NO_TILE_UPLOAD, copy the staged tile graphics to VRAM
+;
+; MENUCMD_TRANSPOSED flips steps 5 and 6 to walk down columns instead of across
+; rows, for artwork whose tiles were stored column major.
     ld   HL, wD6B3_MenuScript_PtrLo                                     ;; 01:44e6 $21 $b3 $d6
     ld   E, [HL]                                       ;; 01:44e9 $5e
     inc  HL                                            ;; 01:44ea $23
@@ -751,7 +770,7 @@ call_01_44e6_MenuScript_RunCommand:
     add  HL, HL                                        ;; 01:44f7 $29
     add  HL, HL                                        ;; 01:44f8 $29
     add  HL, HL                                        ;; 01:44f9 $29
-    ld   DE, data_01_5324                              ;; 01:44fa $11 $24 $53
+    ld   DE, data_01_5324_MenuCmd_Descriptors          ;; 01:44fa $11 $24 $53
     add  HL, DE                                        ;; 01:44fd $19
     ld   DE, wD692_Text_BlockWidthTiles                                     ;; 01:44fe $11 $92 $d6
     ld   BC, $06                                       ;; 01:4501 $01 $06 $00
@@ -768,35 +787,35 @@ call_01_44e6_MenuScript_RunCommand:
     ld   [wD6B3_MenuScript_PtrLo], A                                    ;; 01:4517 $ea $b3 $d6
     ld   A, H                                          ;; 01:451a $7c
     ld   [wD6B4_MenuScript_PtrHi], A                                    ;; 01:451b $ea $b4 $d6
-    ld   A, [wD69D]                                    ;; 01:451e $fa $9d $d6
+    ld   A, [wD69D_MenuCmd_OptionSlot]                                    ;; 01:451e $fa $9d $d6
     and  A, $0f                                        ;; 01:4521 $e6 $0f
     ld   L, A                                          ;; 01:4523 $6f
     ld   H, $00                                        ;; 01:4524 $26 $00
     ld   DE, wD6C5_Menu_OptionActions                                     ;; 01:4526 $11 $c5 $d6
     add  HL, DE                                        ;; 01:4529 $19
-    ld   A, [wD69D]                                    ;; 01:452a $fa $9d $d6
+    ld   A, [wD69D_MenuCmd_OptionSlot]                                    ;; 01:452a $fa $9d $d6
     and  A, $f0                                        ;; 01:452d $e6 $f0
     ld   [HL], A                                       ;; 01:452f $77
-    ld   A, [wD69E]                                    ;; 01:4530 $fa $9e $d6
-    and  A, $01                                        ;; 01:4533 $e6 $01
+    ld   A, [wD69E_MenuCmd_Flags]                                    ;; 01:4530 $fa $9e $d6
+    and  A, MENUCMD_CLEAR_BUFFER                       ;; 01:4533 $e6 $01
     call NZ, call_01_4bb7_Text_ClearBuffer                              ;; 01:4535 $c4 $b7 $4b
     ld   A, [wD69C_Text_SrcPtrHi]                                    ;; 01:4538 $fa $9c $d6
-    sub  A, $e0                                        ;; 01:453b $d6 $e0
+    sub  A, MENUCMD_SUB_BASE                           ;; 01:453b $d6 $e0
     jr   C, .jr_01_4548                                ;; 01:453d $38 $09
-    ld   DE, .data_01_4633                             ;; 01:453f $11 $33 $46
+    ld   DE, .data_01_4633_MenuCmd_SubHandlers         ;; 01:453f $11 $33 $46
     call call_00_07b9_GetPointerFromTable                                  ;; 01:4542 $cd $b9 $07
     call call_00_10bd_JumpHL                                  ;; 01:4545 $cd $bd $10
 .jr_01_4548:
-    ld   A, [wD69E]                                    ;; 01:4548 $fa $9e $d6
-    and  A, $02                                        ;; 01:454b $e6 $02
+    ld   A, [wD69E_MenuCmd_Flags]                                    ;; 01:4548 $fa $9e $d6
+    and  A, MENUCMD_DRAW_TEXT                          ;; 01:454b $e6 $02
     call NZ, call_01_4a8f_Text_Render                              ;; 01:454d $c4 $8f $4a
-    ld   A, [wD69E]                                    ;; 01:4550 $fa $9e $d6
-    and  A, $80                                        ;; 01:4553 $e6 $80
+    ld   A, [wD69E_MenuCmd_Flags]                                    ;; 01:4550 $fa $9e $d6
+    and  A, MENUCMD_LAST_BLOCK                         ;; 01:4553 $e6 $80
     jr   Z, .jr_01_4507                                ;; 01:4555 $28 $b0
-    ld   A, [wD69E]                                    ;; 01:4557 $fa $9e $d6
-    and  A, $40                                        ;; 01:455a $e6 $40
+    ld   A, [wD69E_MenuCmd_Flags]                                    ;; 01:4557 $fa $9e $d6
+    and  A, MENUCMD_NO_TILEMAP_FILL                    ;; 01:455a $e6 $40
     jp   NZ, .jp_01_45e5                               ;; 01:455c $c2 $e5 $45
-    ld   HL, wD694                                     ;; 01:455f $21 $94 $d6
+    ld   HL, wD694_MenuCmd_DestTileX                                     ;; 01:455f $21 $94 $d6
     ld   E, [HL]                                       ;; 01:4562 $5e
     ld   D, $00                                        ;; 01:4563 $16 $00
     inc  HL                                            ;; 01:4565 $23
@@ -810,21 +829,21 @@ call_01_44e6_MenuScript_RunCommand:
     add  HL, DE                                        ;; 01:456d $19
     ld   DE, _SCRN0                                     ;; 01:456e $11 $00 $98
     add  HL, DE                                        ;; 01:4571 $19
-    ld   A, [wD69E]                                    ;; 01:4572 $fa $9e $d6
-    and  A, $04                                        ;; 01:4575 $e6 $04
+    ld   A, [wD69E_MenuCmd_Flags]                                    ;; 01:4572 $fa $9e $d6
+    and  A, MENUCMD_TRANSPOSED                         ;; 01:4575 $e6 $04
     jr   NZ, .jr_01_4586                               ;; 01:4577 $20 $0d
     ld   A, [wD692_Text_BlockWidthTiles]                                    ;; 01:4579 $fa $92 $d6
     ld   B, A                                          ;; 01:457c $47
     ld   A, [wD693_Text_BlockHeightTiles]                                    ;; 01:457d $fa $93 $d6
     ld   C, A                                          ;; 01:4580 $4f
-    ld   DE, MBC1RomBank                                     ;; 01:4581 $11 $01 $20
+    ld   DE, $2001                                     ;; 01:4581 $11 $01 $20
     jr   .jr_01_4591                                   ;; 01:4584 $18 $0b
 .jr_01_4586:
     ld   A, [wD692_Text_BlockWidthTiles]                                    ;; 01:4586 $fa $92 $d6
     ld   C, A                                          ;; 01:4589 $4f
     ld   A, [wD693_Text_BlockHeightTiles]                                    ;; 01:458a $fa $93 $d6
     ld   B, A                                          ;; 01:458d $47
-    ld   DE, $120                                      ;; 01:458e $11 $20 $01
+    ld   DE, $0120                                      ;; 01:458e $11 $20 $01
 .jr_01_4591:
     ld   A, [wD59E_OnGBCFlag]                                    ;; 01:4591 $fa $9e $d5
     and  A, A                                          ;; 01:4594 $a7
@@ -833,8 +852,8 @@ call_01_44e6_MenuScript_RunCommand:
     push BC                                            ;; 01:4598 $c5
     ld   A, $01                                        ;; 01:4599 $3e $01
     ldh  [rVBK], A                                     ;; 01:459b $e0 $4f
-    ld   A, [wD697]                                    ;; 01:459d $fa $97 $d6
-    cp   A, $ff                                        ;; 01:45a0 $fe $ff
+    ld   A, [wD697_MenuCmd_CgbAttributes]                                    ;; 01:459d $fa $97 $d6
+    cp   A, MENUCMD_ATTR_TV_COPY                       ;; 01:45a0 $fe $ff
     jr   NZ, .jr_01_45af                               ;; 01:45a2 $20 $0b
     call call_00_08b1_MediaDimension_CopyTVAttributes                                  ;; 01:45a4 $cd $b1 $08
     ld   A, $00                                        ;; 01:45a7 $3e $00
@@ -867,7 +886,7 @@ call_01_44e6_MenuScript_RunCommand:
     pop  BC                                            ;; 01:45c9 $c1
     pop  HL                                            ;; 01:45ca $e1
 .jr_01_45cb:
-    ld   A, [wD696]                                    ;; 01:45cb $fa $96 $d6
+    ld   A, [wD696_MenuCmd_FirstTileId]                                    ;; 01:45cb $fa $96 $d6
 .jr_01_45ce:
     push BC                                            ;; 01:45ce $c5
     push DE                                            ;; 01:45cf $d5
@@ -890,11 +909,11 @@ call_01_44e6_MenuScript_RunCommand:
     dec  C                                             ;; 01:45e2 $0d
     jr   NZ, .jr_01_45ce                               ;; 01:45e3 $20 $e9
 .jp_01_45e5:
-    ld   A, [wD69E]                                    ;; 01:45e5 $fa $9e $d6
-    and  A, $20                                        ;; 01:45e8 $e6 $20
+    ld   A, [wD69E_MenuCmd_Flags]                                    ;; 01:45e5 $fa $9e $d6
+    and  A, MENUCMD_NO_TILE_UPLOAD                     ;; 01:45e8 $e6 $20
     ret  NZ                                            ;; 01:45ea $c0
-    ld   A, [wD69E]                                    ;; 01:45eb $fa $9e $d6
-    and  A, $04                                        ;; 01:45ee $e6 $04
+    ld   A, [wD69E_MenuCmd_Flags]                                    ;; 01:45eb $fa $9e $d6
+    and  A, MENUCMD_TRANSPOSED                         ;; 01:45ee $e6 $04
     jr   NZ, .jr_01_45fe                               ;; 01:45f0 $20 $0c
     call call_01_4e5a_Menu_GetTileDataSize                                  ;; 01:45f2 $cd $5a $4e
     call call_01_4e49_Menu_GetVramAddrForDestTile                                  ;; 01:45f5 $cd $49 $4e
@@ -935,37 +954,63 @@ call_01_44e6_MenuScript_RunCommand:
     dec  C                                             ;; 01:462f $0d
     jr   NZ, .jr_01_460c                               ;; 01:4630 $20 $da
     ret                                                ;; 01:4632 $c9
-.data_01_4633:
-; Jump table?
-    dw   call_01_4653                                 ;; 01:4633 pP
-    dw   call_01_465f                                  ;; 01:4635 pP
-    dw   call_01_466b                                  ;; 01:4637 pP
-    dw   call_01_4728                                  ;; 01:4639 pP
-    dw   call_01_4734                                  ;; 01:463b pP
-    dw   call_01_473a                                  ;; 01:463d pP
-    dw   call_01_47a4                                  ;; 01:463f ??
-    dw   call_01_47c5                                  ;; 01:4641 pP
-    dw   call_01_47ea                                  ;; 01:4643 pP
-    dw   call_01_4879                                  ;; 01:4645 pP
-    dw   call_01_48df                                  ;; 01:4647 pP
-    dw   call_01_48fd                                      ;; 01:4649 ??
-    dw   call_01_4916                                  ;; 01:464b pP
-    dw   call_01_491d                                  ;; 01:464d pP
+.data_01_4633_MenuCmd_SubHandlers:
+; Reached when a parameter block's source-pointer high byte is >= MENUCMD_SUB_BASE;
+; the index is (hi - $E0) and the low byte of the pointer is the handler's single
+; argument, read back out of wD69B_Text_SrcPtrLo. 16 entries, $E0-$EF.
+;
+; Most handlers do one of two things: stage some graphics into the wC000 buffer, or
+; point the source pointer at a string that the following MENUCMD_DRAW_TEXT block
+; will then render. So the escape hatch is mostly a way of choosing text and images
+; at runtime while the rest of the screen stays pure data.
+;
+;   $E0  pick a sprite image from data_01_74e9 by index and stage it
+;   $E1  same, from data_01_74ed
+;   $E2  Media Dimension TV screen - load the TV palette, stage a 6x5 tile block
+;   $E3  set the text to the current TV's name
+;   $E4  set the text to the current level's name
+;   $E5  set the text to a mission description, and place the "remote collected"
+;        marker sprite next to it. Argument 3 means "use wD627_CurrentMission"
+;   $E6  load a full screen of tiles+tilemap from a 10-byte descriptor
+;   $E7  stage image 2, then set up and draw the menu cursor sprite
+;   $E8  compute a counter value and format it to text with Text_FormatByte
+;   $E9  totals screen - draw the six remote icons for the current page, lit or
+;        unlit from wD629_RemoteProgressFlags, and pick the sprite group
+;   $EA  set the text to the totals page's level name, or a heading on page 0
+;   $EB  set the text to a single password cell, as a one-character string
+;   $EC  set wD6D7_Menu_ChainedScriptId - queue another screen to load next
+;   $ED  load a fullscreen image from a 3-byte bank/pointer descriptor
+;   $EE  remote progress, related to $E9 - not fully traced
+;   $EF  not traced
+    dw   call_01_4653_MenuCmd_StageImage1                                 ;; 01:4633 pP
+    dw   call_01_465f_MenuCmd_StageImage2                                  ;; 01:4635 pP
+    dw   call_01_466b_MenuCmd_StageTVScreen                                  ;; 01:4637 pP
+    dw   call_01_4728_MenuCmd_SetTVNameText                                  ;; 01:4639 pP
+    dw   call_01_4734_MenuCmd_SetLevelText                                  ;; 01:463b pP
+    dw   call_01_473a_MenuCmd_SetMissionText                                  ;; 01:463d pP
+    dw   call_01_47a4_MenuCmd_LoadScreen                                  ;; 01:463f ??
+    dw   call_01_47c5_MenuCmd_DrawCursorSprite                                  ;; 01:4641 pP
+    dw   call_01_47ea_MenuCmd_SetCounterText                                  ;; 01:4643 pP
+    dw   call_01_4879_MenuCmd_DrawRemoteIcons                                  ;; 01:4645 pP
+    dw   call_01_48df_MenuCmd_SetTotalsPageText                                  ;; 01:4647 pP
+    dw   call_01_48fd_MenuCmd_SetPasswordCharText                                      ;; 01:4649 ??
+    dw   call_01_4916_MenuCmd_SetChainedScript                                  ;; 01:464b pP
+    dw   call_01_491d_MenuCmd_LoadFullscreenImage                                  ;; 01:464d pP
     dw   call_01_4969
     dw   call_01_49d7                            ;; 01:464f ????
-call_01_4653:
+call_01_4653_MenuCmd_StageImage1:
     ld   A, [wD69B_Text_SrcPtrLo]                                    ;; 01:4653 $fa $9b $d6
     ld   DE, data_01_74e9                              ;; 01:4656 $11 $e9 $74
     call call_00_07b9_GetPointerFromTable                                  ;; 01:4659 $cd $b9 $07
     jp   call_01_4e78_Menu_StageTileData                                    ;; 01:465c $c3 $78 $4e
 
-call_01_465f:
+call_01_465f_MenuCmd_StageImage2:
     ld   A, [wD69B_Text_SrcPtrLo]                                    ;; 01:465f $fa $9b $d6
     ld   DE, data_01_74ed                              ;; 01:4662 $11 $ed $74
     call call_00_07b9_GetPointerFromTable                                  ;; 01:4665 $cd $b9 $07
     jp   call_01_4e78_Menu_StageTileData                                    ;; 01:4668 $c3 $78 $4e
 
-call_01_466b:
+call_01_466b_MenuCmd_StageTVScreen:
     ld   HL, .data_01_46a8                             ;; 01:466b $21 $a8 $46
     ld   DE, wDA4B_DynamicPalette                                     ;; 01:466e $11 $4b $da
     ld   BC, $80                                       ;; 01:4671 $01 $80 $00
@@ -975,7 +1020,7 @@ call_01_466b:
     ld   DE, data_01_5cb9                              ;; 01:4685 $11 $b9 $5c
     call call_00_07b9_GetPointerFromTable                                  ;; 01:4688 $cd $b9 $07
     ld   A, [wD69A_Text_FontId]                                    ;; 01:468b $fa $9a $d6
-    ld   [wD696], A                                    ;; 01:468e $ea $96 $d6
+    ld   [wD696_MenuCmd_FirstTileId], A                                    ;; 01:468e $ea $96 $d6
     ld   A, $06                                        ;; 01:4691 $3e $06
     ld   [wD692_Text_BlockWidthTiles], A                                    ;; 01:4693 $ea $92 $d6
     ld   A, $05                                        ;; 01:4696 $3e $05
@@ -1004,17 +1049,17 @@ call_01_466b:
     db   $00, $00, $00, $00, $20, $03, $bf, $0b        ;; 01:4718 ........
     db   $00, $00, $1f, $00, $ff, $01, $7f, $03        ;; 01:4720 ........
 
-call_01_4728:
+call_01_4728_MenuCmd_SetTVNameText:
     call call_00_2e3a_MapData_GetTVPaletteId                                  ;; 01:4728 $cd $3a $2e
     ld   DE, data_01_5ee7                              ;; 01:472b $11 $e7 $5e
     call call_00_07b9_GetPointerFromTable                                  ;; 01:472e $cd $b9 $07
     jp   call_01_4e6f_Menu_SetScriptSrcPtr                                  ;; 01:4731 $c3 $6f $4e
 
-call_01_4734:
+call_01_4734_MenuCmd_SetLevelText:
     call call_00_2e4c_MapData_GetTextPtr                                  ;; 01:4734 $cd $4c $2e
     jp   call_01_4e6f_Menu_SetScriptSrcPtr                                  ;; 01:4737 $c3 $6f $4e
 
-call_01_473a:
+call_01_473a_MenuCmd_SetMissionText:
     ld   A, [wD69B_Text_SrcPtrLo]                                    ;; 01:473a $fa $9b $d6
     cp   A, $03                                        ;; 01:473d $fe $03
     jr   NZ, .jr_01_4746                               ;; 01:473f $20 $05
@@ -1047,13 +1092,13 @@ call_01_473a:
 .jr_01_476e:
     ld   A, C                                          ;; 01:476e $79
     ld   [wD5A8], A                                    ;; 01:476f $ea $a8 $d5
-    ld   A, [wD695]                                    ;; 01:4772 $fa $95 $d6
+    ld   A, [wD695_MenuCmd_DestTileY]                                    ;; 01:4772 $fa $95 $d6
     add  A, $02                                        ;; 01:4775 $c6 $02
     add  A, A                                          ;; 01:4777 $87
     add  A, A                                          ;; 01:4778 $87
     add  A, A                                          ;; 01:4779 $87
     ld   [wD5A6_TextBuffer], A                                    ;; 01:477a $ea $a6 $d5
-    ld   A, [wD694]                                    ;; 01:477d $fa $94 $d6
+    ld   A, [wD694_MenuCmd_DestTileX]                                    ;; 01:477d $fa $94 $d6
     inc  A                                             ;; 01:4780 $3c
     sub  A, $02                                        ;; 01:4781 $d6 $02
     add  A, A                                          ;; 01:4783 $87
@@ -1074,7 +1119,7 @@ call_01_473a:
     ld   [wD6D5_Menu_OamSlot], A                                    ;; 01:479b $ea $d5 $d6
     ld   BC, $202                                      ;; 01:479e $01 $02 $02
     jp   call_01_4e01_Menu_WriteSpriteRect                                  ;; 01:47a1 $c3 $01 $4e
-call_01_47a4:
+call_01_47a4_MenuCmd_LoadScreen:
     ld   a, [wD69B_Text_SrcPtrLo]
     ld   de, .data_01_47b9
     call call_00_07b9_GetPointerFromTable
@@ -1086,8 +1131,8 @@ call_01_47a4:
     db   $bb, $47, $09, $b6, $14, $12, $d0, $42,       ;; 01:47b4 ????????
     db   $00, $40, $d0, $02                               ;; 01:47bc ????????
 
-call_01_47c5:
-    call call_01_465f                                  ;; 01:47c5 $cd $5f $46
+call_01_47c5_MenuCmd_DrawCursorSprite:
+    call call_01_465f_MenuCmd_StageImage2                                  ;; 01:47c5 $cd $5f $46
     xor  A, A                                          ;; 01:47c8 $af
     ld   [wD6B9_MenuCursor_OamSlot], A                                    ;; 01:47c9 $ea $b9 $d6
     ld   A, [wD692_Text_BlockWidthTiles]                                    ;; 01:47cc $fa $92 $d6
@@ -1095,14 +1140,14 @@ call_01_47c5:
     ld   A, [wD693_Text_BlockHeightTiles]                                    ;; 01:47d2 $fa $93 $d6
     ld   [wD6BF_MenuCursor_HeightInPixels], A                                    ;; 01:47d5 $ea $bf $d6
     ld   A, $ff                                        ;; 01:47d8 $3e $ff
-    ld   [wD6C0], A                                    ;; 01:47da $ea $c0 $d6
+    ld   [wD6C0_MenuCursor_ScriptEnd], A                                    ;; 01:47da $ea $c0 $d6
     ld   A, [wD69B_Text_SrcPtrLo]                                    ;; 01:47dd $fa $9b $d6
     sub  A, $00                                        ;; 01:47e0 $d6 $00
     add  A, $10                                        ;; 01:47e2 $c6 $10
     ld   [wD6C1_Menu_CursorSpriteId], A                                    ;; 01:47e4 $ea $c1 $d6
     jp   call_01_4d72_Menu_DrawCursor                                  ;; 01:47e7 $c3 $72 $4d
 
-call_01_47ea:
+call_01_47ea_MenuCmd_SetCounterText:
     call call_01_47f6                                  ;; 01:47ea $cd $f6 $47
     call call_01_4ce5_Text_FormatByte                                  ;; 01:47ed $cd $e5 $4c
     ld   HL, wD5A6_TextBuffer                                     ;; 01:47f0 $21 $a6 $d5
@@ -1198,7 +1243,7 @@ call_01_47f6:
     ld   a,h
     ret  
 
-call_01_4879:
+call_01_4879_MenuCmd_DrawRemoteIcons:
     ld   A, [wD69A_Text_FontId]                                    ;; 01:4879 $fa $9a $d6
     and  A, A                                          ;; 01:487c $a7
     jr   Z, .jr_01_4888                                ;; 01:487d $28 $09
@@ -1252,7 +1297,7 @@ call_01_4879:
 .data_01_48d9:
     db   $98, $98, $98, $a4, $a4, $b0                  ;; 01:48d9 ......
 
-call_01_48df:
+call_01_48df_MenuCmd_SetTotalsPageText:
     ld   A, [wD625_TotalsMenuPage]                                    ;; 01:48df $fa $25 $d6
     and  A, A                                          ;; 01:48e2 $a7
     jr   Z, .jr_01_48f7                                ;; 01:48e3 $28 $12
@@ -1260,7 +1305,7 @@ call_01_48df:
     push AF                                            ;; 01:48e8 $f5
     ld   A, [wD625_TotalsMenuPage]                                    ;; 01:48e9 $fa $25 $d6
     ld   [wD624_CurrentLevelId], A                                    ;; 01:48ec $ea $24 $d6
-    call call_01_4734                                  ;; 01:48ef $cd $34 $47
+    call call_01_4734_MenuCmd_SetLevelText                                  ;; 01:48ef $cd $34 $47
     pop  AF                                            ;; 01:48f2 $f1
     ld   [wD624_CurrentLevelId], A                                    ;; 01:48f3 $ea $24 $d6
     ret                                                ;; 01:48f6 $c9
@@ -1268,7 +1313,7 @@ call_01_48df:
     ld   HL, data_01_5d4b                              ;; 01:48f7 $21 $4b $5d
     jp   call_01_4e6f_Menu_SetScriptSrcPtr                                  ;; 01:48fa $c3 $6f $4e
 
-call_01_48fd:
+call_01_48fd_MenuCmd_SetPasswordCharText:
     ld   hl,wD69B_Text_SrcPtrLo
     ld   l,[hl]
     ld   h,$00
@@ -1281,12 +1326,12 @@ call_01_48fd:
     ld   hl,wD60A
     jp   call_01_4e6f_Menu_SetScriptSrcPtr
 
-call_01_4916:
+call_01_4916_MenuCmd_SetChainedScript:
     ld   A, [wD69B_Text_SrcPtrLo]                                    ;; 01:4916 $fa $9b $d6
     ld   [wD6D7_Menu_ChainedScriptId], A                                    ;; 01:4919 $ea $d7 $d6
     ret                                                ;; 01:491c $c9
 
-call_01_491d:
+call_01_491d_MenuCmd_LoadFullscreenImage:
     ld   A, [wD69B_Text_SrcPtrLo]                                    ;; 01:491d $fa $9b $d6
     ld   DE, .data_01_4932                             ;; 01:4920 $11 $32 $49
     call call_00_07b9_GetPointerFromTable                                  ;; 01:4923 $cd $b9 $07
@@ -1365,7 +1410,7 @@ call_01_49d7:
     ld   de,data_01_7c0f_collectible_images
     call call_00_07b9_GetPointerFromTable
     ld   a,$92
-    ld   [wD696],a
+    ld   [wD696_MenuCmd_FirstTileId],a
     ld   a,$03
     ld   [wD692_Text_BlockWidthTiles],a
     ld   a,$02
@@ -1400,7 +1445,7 @@ call_01_49d7:
 call_01_4a8f_Text_Render:
 ; Renders a string into the wC000 staging buffer as a proportional, word-wrapped,
 ; optionally centred block of text. Entered from call_01_44e6_MenuScript_RunCommand
-; when bit 1 of wD69E is set, so a menu script asks for text by setting a flag
+; when bit 1 of wD69E_MenuCmd_Flags is set, so a menu script asks for text by setting a flag
 ; rather than by calling anything.
 ;
 ; There is no tilemap involved and no VRAM write here. Everything is drawn into
@@ -1625,7 +1670,7 @@ call_01_4ae7_Text_DrawGlyph:
 call_01_4bb7_Text_ClearBuffer:
 ; Zeroes the wC000 staging buffer for the current wD692 x wD693 tile block, so the
 ; XOR compositing in call_01_4ae7_Text_DrawGlyph starts from a blank page. Called
-; from call_01_44e6_MenuScript_RunCommand when bit 0 of wD69E is set.
+; from call_01_44e6_MenuScript_RunCommand when bit 0 of wD69E_MenuCmd_Flags is set.
 ;
 ; The inner loop is 16 unrolled `ld [HL+],A`, one whole tile per iteration, with B
 ; counting tiles rather than bytes
@@ -2149,8 +2194,8 @@ call_01_4e01_Menu_WriteSpriteRect:
     ret                                                ;; 01:4e48 $c9
 
 call_01_4e49_Menu_GetVramAddrForDestTile:
-; DE = VRAM address of the tile whose index is in wD696 (index x 16 + $8000)
-    ld   HL, wD696                                     ;; 01:4e49 $21 $96 $d6
+; DE = VRAM address of the tile whose index is in wD696_MenuCmd_FirstTileId (index x 16 + $8000)
+    ld   HL, wD696_MenuCmd_FirstTileId                                     ;; 01:4e49 $21 $96 $d6
     ld   L, [HL]                                       ;; 01:4e4c $6e
     ld   H, $00                                        ;; 01:4e4d $26 $00
     add  HL, HL                                        ;; 01:4e4f $29
@@ -2199,7 +2244,7 @@ call_01_4e78_Menu_StageTileData:
 ; buffer during gameplay but free scratch while a menu is up. The byte after
 ; the pair gates the copy; nonzero means skip it
     ld   A, [wD69A_Text_FontId]                                    ;; 01:4e78 $fa $9a $d6
-    ld   [wD696], A                                    ;; 01:4e7b $ea $96 $d6
+    ld   [wD696_MenuCmd_FirstTileId], A                                    ;; 01:4e7b $ea $96 $d6
     ld   A, [HL+]                                      ;; 01:4e7e $2a
     ld   [wD692_Text_BlockWidthTiles], A                                    ;; 01:4e7f $ea $92 $d6
     ld   A, [HL+]                                      ;; 01:4e82 $2a
@@ -2623,7 +2668,21 @@ call_01_5271_ProcessPassword: ; handles setting save data from password
 .data_01_531d:
     db   $1f, $1b, $19, $03, $01, $20, $00             ;; 01:531d ???????
 
-data_01_5324:
+data_01_5324_MenuCmd_Descriptors:
+; One 8-byte descriptor per menu command id. Only the first six bytes are copied
+; (to wD692..wD697); the last two are padding.
+;
+;   +0  db  block width in tiles      -> wD692_Text_BlockWidthTiles
+;   +1  db  block height in tiles     -> wD693_Text_BlockHeightTiles
+;   +2  db  destination tile X        -> wD694_MenuCmd_DestTileX
+;   +3  db  destination tile Y        -> wD695_MenuCmd_DestTileY
+;   +4  db  first tile id             -> wD696_MenuCmd_FirstTileId
+;   +5  db  CGB attributes, or $FF    -> wD697_MenuCmd_CgbAttributes
+;   +6  db  $00, $00                  (padding)
+;
+; So the id fixes the shape and where it lands; the script's parameter blocks then
+; say what goes in it. Row 0 is the 6x5 Media Dimension TV screen, with $FF
+; attributes selecting the TV attribute copy
     db   $06, $05, $01, $01, $06, $ff, $00, $00        ;; 01:5324 ..ww..??
     db   $0c, $03, $08, $01, $24, $01, $00, $00        ;; 01:532c w.www.??
     db   $0c, $02, $08, $04, $48, $00, $00, $00        ;; 01:5334 w.www.??

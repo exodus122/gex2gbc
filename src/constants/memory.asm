@@ -620,17 +620,24 @@ wD692_Text_BlockWidthTiles:
 wD693_Text_BlockHeightTiles:
     ds 1                                               ;; d693
 
-wD694:
+wD694_MenuCmd_DestTileX:
+; destination in the tilemap, in tiles. call_01_44e6_MenuScript_RunCommand forms
+; the address as _SCRN0 + DestTileY * 32 + DestTileX
     ds 1                                               ;; d694
 
-wD695:
+wD695_MenuCmd_DestTileY:
     ds 1                                               ;; d695
 
-wD696:
-; scratch copy of wD69A_Text_FontId, taken by call_01_4e78_Menu_StageTileData
+wD696_MenuCmd_FirstTileId:
+; tile id written into the top-left cell of the rectangle; the fill increments it
+; per cell, so a command hands out a run of consecutive ids. Also reused as a
+; scratch copy of wD69A_Text_FontId by call_01_4e78_Menu_StageTileData
     ds 1                                               ;; d696
 
-wD697:
+wD697_MenuCmd_CgbAttributes:
+; CGB attribute byte written across the rectangle in VBK 1, or $FF meaning "use
+; call_00_08b1_MediaDimension_CopyTVAttributes instead of a flat fill". Ignored
+; entirely on DMG
     ds 1                                               ;; d697
 
 wD698_Text_PenX:
@@ -654,14 +661,13 @@ wD69B_Text_SrcPtrLo:
 wD69C_Text_SrcPtrHi:
     ds 1                                               ;; d69c
 
-wD69D:
+wD69D_MenuCmd_OptionSlot:
 ; low nibble = selectable row index, high nibble = MENU_OPTION_* code; filed into
 ; wD6C5_Menu_OptionActions by call_01_44e6_MenuScript_RunCommand
     ds 1                                               ;; d69d
 
-wD69E:
-; command flags: bit 0 = clear the staging buffer first, bit 1 = run the text
-; renderer, bit 7 = end of this command, bit 6 = ... (see RunCommand)
+wD69E_MenuCmd_Flags:
+; MENUCMD_* bits controlling what this parameter block actually does
     ds 1                                               ;; d69e
 
 wD69F_Font_GlyphBase:
@@ -754,7 +760,9 @@ wD6BE_MenuCursor_WidthInColumns:
     ds 1                                               ;; d6be
 wD6BF_MenuCursor_HeightInPixels:
     ds 1                                               ;; d6bf
-wD6C0:
+wD6C0_MenuCursor_ScriptEnd:
+; only ever written, always $FF - the terminator that lets the descriptor above be
+; handed to call_01_4dc8_Menu_BuildSpriteBlock as if it were a sprite script
     ds 1                                               ;; d6c0
 wD6C1_Menu_CursorSpriteId:
 ; which cursor graphic to draw, or $FF for a screen with no cursor at all.
