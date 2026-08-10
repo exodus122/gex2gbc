@@ -4,7 +4,8 @@ data_03_5446_SpriteCountTable:
 
 data_03_5447_EntitySpriteMetaTable:
 ; Paired 2-byte entries per entity type: byte 0 is a flags/index byte (bit 7 = use alternate 
-; frame table data_03_5a8a_SpriteFrameTable_Alt, else use data_03_5566_SpriteFrameTable_Main), byte 1 is an animation frame offset/index. 
+; frame table data_03_5a8a_SpriteFrameTable_Alt, else use data_03_5566_SpriteFrameTable_Main), 
+; byte 1 is an animation frame offset/index. 
 ; One entry per entity type, used by the main sprite builder to select which frame data to use 
 ; and which sub-table to index into
     db   $00, $08, $00, $80, $66, $1a, $00, $08        ;; 03:5447 ????????
@@ -366,7 +367,7 @@ call_03_5b5b_HUD_BuildSprites:
     db   $2c, $68, $34, $6a, $44, $68, $4c, $6a        ;; 03:5c98 ........
     db   $5c, $68, $64, $6a, $74, $68, $7c, $6a        ;; 03:5ca0 ........
 
-call_03_5ca8_Entity_DrawPlayer:
+call_03_5ca8_Entity_BuildPlayerSprites:
 ; Main Gex sprite builder. Reads wD586_PlayerGfxVramPage (base sprite state index), adjusts by +2 if facing 
 ; left (bit 5 of wD20D), +4 if climbing (bit 6 of wD74B_Player_ClimbingFlags). Uses this to index .data_03_5d6f 
 ; via call_00_07b9_GetPointerFromTable to get the frame pointer. Computes player screen X/Y from world position 
@@ -1319,8 +1320,8 @@ call_03_6499_Collectible_BuildSprites:
     inc  E                                             ;; 03:653d $1c
     jr   .jr_03_652a                                   ;; 03:653e $18 $ea
 
-call_03_6540_Entity_BuildAllSprites:
-; Top-level per-frame sprite pipeline. Calls Collectible_BuildSprites, then Player_BuildHUDSprites, 
+call_03_6540_HUD_BuildAllSprites:
+; Top-level per-frame sprite pipeline. Calls Collectible_BuildSprites, then HUD_BuildSprites, 
 ; then OAM_ClearUnusedEntries. The three-step frame sprite update
     call call_03_6499_Collectible_BuildSprites                                  ;; 03:6540 $cd $99 $64
     call call_03_5b5b_HUD_BuildSprites                                  ;; 03:6543 $cd $5b $5b

@@ -128,141 +128,141 @@ data_03_72ab_AnimatedTileBlockPointerTable:
     db   $00                                           ;; 03:72e8 .
 .data_03_72e9_AnimatedTileBlock_ToonTV:
 ; 12-frame animated tile block for Toon TV. 3 parallel tile groups animating 4 frames each: 
-; group 1 writes 4 tiles to VRAM_ANIMATED_TILE_TOON_TV_GROUP_1, group 2 writes 2 tiles to VRAM_ANIMATED_TILE_TOON_TV_GROUP_2, group 3 writes 4 tiles to VRAM_ANIMATED_TILE_TOON_TV_GROUP_3. 
+; group 1 writes 4 tiles to VRAM_ANIMATED_BG_TILE_TOON_TV_GROUP_1, group 2 writes 2 tiles to VRAM_ANIMATED_BG_TILE_TOON_TV_GROUP_2, group 3 writes 4 tiles to VRAM_ANIMATED_BG_TILE_TOON_TV_GROUP_3. 
 ; Used for the water/pool/cartoon environment animations
     db   $0c
     
     db   $04, $00                                 ;; 03:72e9 ...
-    dw   VRAM_ANIMATED_TILE_TOON_TV_GROUP_1
+    dw   VRAM_ANIMATED_BG_TILE_TOON_TV_GROUP_1
     dw   .data_03_747d
     db   $00, $00
     
     db   $02, $00                  ;; 03:72ee ..??..
-    dw   VRAM_ANIMATED_TILE_TOON_TV_GROUP_2
+    dw   VRAM_ANIMATED_BG_TILE_TOON_TV_GROUP_2
     dw   .data_03_757d
     db   $00, $00
     
     db   $04, $00                  ;; 03:72f6 ..??..
-    dw   VRAM_ANIMATED_TILE_TOON_TV_GROUP_3
+    dw   VRAM_ANIMATED_BG_TILE_TOON_TV_GROUP_3
     dw   .data_03_75fd
     db   $00, $00
     
     db   $04, $00                  ;; 03:72fe ..??..
-    dw   VRAM_ANIMATED_TILE_TOON_TV_GROUP_1
+    dw   VRAM_ANIMATED_BG_TILE_TOON_TV_GROUP_1
     dw   .data_03_74bd
     db   $00, $00
     
     db   $02, $00                  ;; 03:7306 ..??..
-    dw   VRAM_ANIMATED_TILE_TOON_TV_GROUP_2
+    dw   VRAM_ANIMATED_BG_TILE_TOON_TV_GROUP_2
     dw   .data_03_759d
     db   $00, $00
     
     db   $04, $00                  ;; 03:730e ..??..
-    dw   VRAM_ANIMATED_TILE_TOON_TV_GROUP_3
+    dw   VRAM_ANIMATED_BG_TILE_TOON_TV_GROUP_3
     dw   .data_03_763d
     db   $00, $00
     
     db   $04, $00                  ;; 03:7316 ..??..
-    dw   VRAM_ANIMATED_TILE_TOON_TV_GROUP_1
+    dw   VRAM_ANIMATED_BG_TILE_TOON_TV_GROUP_1
     dw   .data_03_74fd
     db   $00, $00
     
     db   $02, $00                  ;; 03:731e ..??..
-    dw   VRAM_ANIMATED_TILE_TOON_TV_GROUP_2
+    dw   VRAM_ANIMATED_BG_TILE_TOON_TV_GROUP_2
     dw   .data_03_75bd
     db   $00, $00
     
     db   $04, $00                  ;; 03:7326 ..??..
-    dw   VRAM_ANIMATED_TILE_TOON_TV_GROUP_3
+    dw   VRAM_ANIMATED_BG_TILE_TOON_TV_GROUP_3
     dw   .data_03_767d
     db   $00, $00
     
     db   $04, $00                  ;; 03:732e ..??..
-    dw   VRAM_ANIMATED_TILE_TOON_TV_GROUP_1
+    dw   VRAM_ANIMATED_BG_TILE_TOON_TV_GROUP_1
     dw   .data_03_753d
     db   $00, $00
     
     db   $02, $00                  ;; 03:7336 ..??..
-    dw   VRAM_ANIMATED_TILE_TOON_TV_GROUP_2
+    dw   VRAM_ANIMATED_BG_TILE_TOON_TV_GROUP_2
     dw   .data_03_75dd
     db   $00, $00
     
     db   $04, $00                  ;; 03:733e ..??..
-    dw   VRAM_ANIMATED_TILE_TOON_TV_GROUP_3
+    dw   VRAM_ANIMATED_BG_TILE_TOON_TV_GROUP_3
     dw   .data_03_76bd
     db   $00, $00                            ;; 03:7346 ..??
 .data_03_734a_AnimatedTileBlock_ScreamTV:
-; 14-frame animated tile block for Scream TV. 4 tile groups: 2 tiles to VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_1, 6 tiles to VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_2, 
-; 4 tiles to VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_3, 4 tiles to VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_4. Used for the haunted/horror environment animations (candles, lightning, etc.)
+; 14-frame animated tile block for Scream TV. 4 tile groups: 2 tiles to VRAM_ANIMATED_BG_TILE_SCREAM_TV_GROUP_1, 6 tiles to VRAM_ANIMATED_BG_TILE_SCREAM_TV_GROUP_2, 
+; 4 tiles to VRAM_ANIMATED_BG_TILE_SCREAM_TV_GROUP_3, 4 tiles to VRAM_ANIMATED_BG_TILE_SCREAM_TV_GROUP_4. Used for the haunted/horror environment animations (candles, lightning, etc.)
     db   $0e
     
     db   $02, $00                                 ;; 03:734a ...
-    dw   VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_1
+    dw   VRAM_ANIMATED_BG_TILE_SCREAM_TV_GROUP_1
     dw   .data_03_787d
     db   $00, $00
     
     db   $06, $00                  ;; 03:734f ..??..
-    dw   VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_2
+    dw   VRAM_ANIMATED_BG_TILE_SCREAM_TV_GROUP_2
     dw   .data_03_76fd
     db   $00, $00
     
     db   $04, $00                  ;; 03:7357 ..??..
-    dw   VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_3
+    dw   VRAM_ANIMATED_BG_TILE_SCREAM_TV_GROUP_3
     dw   .data_03_78bd
     db   $00, $00
     
     db   $04, $00                  ;; 03:735f ..??..
-    dw   VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_4
+    dw   VRAM_ANIMATED_BG_TILE_SCREAM_TV_GROUP_4
     dw   .data_03_78fd
     db   $00, $00
     
     db   $06, $00                  ;; 03:7367 ..??..
-    dw   VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_2
+    dw   VRAM_ANIMATED_BG_TILE_SCREAM_TV_GROUP_2
     dw   .data_03_775d
     db   $00, $00
     
     db   $04, $00                  ;; 03:736f ..??..
-    dw   VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_3
+    dw   VRAM_ANIMATED_BG_TILE_SCREAM_TV_GROUP_3
     dw   .data_03_793d
     db   $00, $00
     
     db   $04, $00                  ;; 03:7377 ..??..
-    dw   VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_4
+    dw   VRAM_ANIMATED_BG_TILE_SCREAM_TV_GROUP_4
     dw   .data_03_797d
     db   $00, $00
     
     db   $02, $00                  ;; 03:737f ..??..
-    dw   VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_1
+    dw   VRAM_ANIMATED_BG_TILE_SCREAM_TV_GROUP_1
     dw   .data_03_789d
     db   $00, $00
     
     db   $06, $00                  ;; 03:7387 ..??..
-    dw   VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_2
+    dw   VRAM_ANIMATED_BG_TILE_SCREAM_TV_GROUP_2
     dw   .data_03_77bd
     db   $00, $00
     
     db   $04, $00                  ;; 03:738f ..??..
-    dw   VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_3
+    dw   VRAM_ANIMATED_BG_TILE_SCREAM_TV_GROUP_3
     dw   .data_03_79bd
     db   $00, $00
     
     db   $04, $00                  ;; 03:7397 ..??..
-    dw   VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_4
+    dw   VRAM_ANIMATED_BG_TILE_SCREAM_TV_GROUP_4
     dw   .data_03_79fd
     db   $00, $00
     
     db   $06, $00                  ;; 03:739f ..??..
-    dw   VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_2
+    dw   VRAM_ANIMATED_BG_TILE_SCREAM_TV_GROUP_2
     dw   .data_03_781d
     db   $00, $00
     
     db   $04, $00                  ;; 03:73a7 ..??..
-    dw   VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_3
+    dw   VRAM_ANIMATED_BG_TILE_SCREAM_TV_GROUP_3
     dw   .data_03_7a3d
     db   $00, $00
     
     db   $04, $00                  ;; 03:73af ..??..
-    dw   VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_4
+    dw   VRAM_ANIMATED_BG_TILE_SCREAM_TV_GROUP_4
     dw   .data_03_7a7d
     db   $00, $00
 .data_03_73bb_AnimatedTileBlock_CircuitCentral:
@@ -273,62 +273,62 @@ data_03_72ab_AnimatedTileBlockPointerTable:
     db   $0c
     
     db   $02, $81        ;; 03:73bb ..??????
-    dw   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_1     
+    dw   VRAM_ANIMATED_BG_TILE_CIRCUIT_CENTRAL_GROUP_1     
     dw   .data_03_7b7d
     db   $00, $00
     
     db   $02, $82        ;; 03:73bf ????????
-    dw   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_2
+    dw   VRAM_ANIMATED_BG_TILE_CIRCUIT_CENTRAL_GROUP_2
     dw   .data_03_7b7d
     db   $00, $00
     
     db   $02, $83        ;; 03:73c7 ????????
-    dw   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_3
+    dw   VRAM_ANIMATED_BG_TILE_CIRCUIT_CENTRAL_GROUP_3
     dw   .data_03_7b7d
     db   $00, $00
     
     db   $02, $81        ;; 03:73cf ????????
-    dw   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_1 
+    dw   VRAM_ANIMATED_BG_TILE_CIRCUIT_CENTRAL_GROUP_1 
     dw   .data_03_7b9d
     db   $00, $00
     
     db   $02, $82        ;; 03:73d7 ????????
-    dw   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_2
+    dw   VRAM_ANIMATED_BG_TILE_CIRCUIT_CENTRAL_GROUP_2
     dw   .data_03_7b9d
     db   $00, $00
     
     db   $02, $83        ;; 03:73df ????????
-    dw   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_3
+    dw   VRAM_ANIMATED_BG_TILE_CIRCUIT_CENTRAL_GROUP_3
     dw   .data_03_7b9d
     db   $00, $00
     
     db   $02, $81        ;; 03:73e7 ????????
-    dw   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_1 
+    dw   VRAM_ANIMATED_BG_TILE_CIRCUIT_CENTRAL_GROUP_1 
     dw   .data_03_7bbd
     db   $00, $00
     
     db   $02, $82        ;; 03:73ef ????????
-    dw   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_2
+    dw   VRAM_ANIMATED_BG_TILE_CIRCUIT_CENTRAL_GROUP_2
     dw   .data_03_7bbd
     db   $00, $00
     
     db   $02, $83        ;; 03:73f7 ????????
-    dw   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_3
+    dw   VRAM_ANIMATED_BG_TILE_CIRCUIT_CENTRAL_GROUP_3
     dw   .data_03_7bbd
     db   $00, $00
     
     db   $02, $81        ;; 03:73ff ????????
-    dw   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_1 
+    dw   VRAM_ANIMATED_BG_TILE_CIRCUIT_CENTRAL_GROUP_1 
     dw   .data_03_7bdd
     db   $00, $00
     
     db   $02, $82        ;; 03:7407 ????????
-    dw   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_2
+    dw   VRAM_ANIMATED_BG_TILE_CIRCUIT_CENTRAL_GROUP_2
     dw   .data_03_7bdd
     db   $00, $00
     
     db   $02, $83        ;; 03:740f ????????
-    dw   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_3
+    dw   VRAM_ANIMATED_BG_TILE_CIRCUIT_CENTRAL_GROUP_3
     dw   .data_03_7bdd
     db   $00, $00
 .data_03_741c_AnimatedTileBlock_Rezopolis:
@@ -337,149 +337,145 @@ data_03_72ab_AnimatedTileBlockPointerTable:
     db   $0c
     
     db   $02, $00        ;; 03:7417 ????????
-    dw   VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_1
+    dw   VRAM_ANIMATED_BG_TILE_REZOPOLIS_GROUP_1
     dw   .data_03_7abd
     db   $00
     
     db   $00, $01, $00        ;; 03:741f ????????
-    dw   VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_2
+    dw   VRAM_ANIMATED_BG_TILE_REZOPOLIS_GROUP_2
     dw   .data_03_7afd
     db   $00
     
     db   $00, $01, $00        ;; 03:7427 ????????
-    dw   VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_3
+    dw   VRAM_ANIMATED_BG_TILE_REZOPOLIS_GROUP_3
     dw   .data_03_7b3d
     db   $00
     
     db   $00, $02, $00        ;; 03:742f ????????
-    dw   VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_1
+    dw   VRAM_ANIMATED_BG_TILE_REZOPOLIS_GROUP_1
     dw   .data_03_7add
     db   $00
     
     db   $00, $01, $00        ;; 03:7437 ????????
-    dw   VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_2
+    dw   VRAM_ANIMATED_BG_TILE_REZOPOLIS_GROUP_2
     dw   .data_03_7b0d
     db   $00
     
     db   $00, $01, $00        ;; 03:743f ????????
-    dw   VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_3
+    dw   VRAM_ANIMATED_BG_TILE_REZOPOLIS_GROUP_3
     dw   .data_03_7b4d
     db   $00
     
     db   $00, $02, $00        ;; 03:7447 ????????
-    dw   VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_1
+    dw   VRAM_ANIMATED_BG_TILE_REZOPOLIS_GROUP_1
     dw   .data_03_7abd
     db   $00
     
     db   $00, $01, $00        ;; 03:744f ????????
-    dw   VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_2
+    dw   VRAM_ANIMATED_BG_TILE_REZOPOLIS_GROUP_2
     dw   .data_03_7b1d
     db   $00
     
     db   $00, $01, $00        ;; 03:7457 ????????
-    dw   VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_3
+    dw   VRAM_ANIMATED_BG_TILE_REZOPOLIS_GROUP_3
     dw   .data_03_7b5d
     db   $00
     
     db   $00, $02, $00        ;; 03:745f ????????
-    dw   VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_1
+    dw   VRAM_ANIMATED_BG_TILE_REZOPOLIS_GROUP_1
     dw   .data_03_7add
     db   $00
     
     db   $00, $01, $00        ;; 03:7467 ????????
-    dw   VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_2
+    dw   VRAM_ANIMATED_BG_TILE_REZOPOLIS_GROUP_2
     dw   .data_03_7b2d
     db   $00
     
     db   $00, $01, $00        ;; 03:746f ????????
-    dw   VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_3
+    dw   VRAM_ANIMATED_BG_TILE_REZOPOLIS_GROUP_3
     dw   .data_03_7b6d
     db   $00, $00                  ;; 03:7477 ??????
 .data_03_747d:
-    INCBIN ".gfx/animated_tiles/toon_tv/image_003_747d.bin"
+    INCBIN ".gfx/animated_bg_tiles/toon_tv/image_003_747d.bin"
 .data_03_74bd:
-    INCBIN ".gfx/animated_tiles/toon_tv/image_003_74bd.bin"
+    INCBIN ".gfx/animated_bg_tiles/toon_tv/image_003_74bd.bin"
 .data_03_74fd:
-    INCBIN ".gfx/animated_tiles/toon_tv/image_003_74fd.bin"
+    INCBIN ".gfx/animated_bg_tiles/toon_tv/image_003_74fd.bin"
 .data_03_753d:
-    INCBIN ".gfx/animated_tiles/toon_tv/image_003_753d.bin"
+    INCBIN ".gfx/animated_bg_tiles/toon_tv/image_003_753d.bin"
 .data_03_757d:
-    INCBIN ".gfx/animated_tiles/toon_tv/image_003_757d.bin"
+    INCBIN ".gfx/animated_bg_tiles/toon_tv/image_003_757d.bin"
 .data_03_759d:
-    INCBIN ".gfx/animated_tiles/toon_tv/image_003_759d.bin"
+    INCBIN ".gfx/animated_bg_tiles/toon_tv/image_003_759d.bin"
 .data_03_75bd:
-    INCBIN ".gfx/animated_tiles/toon_tv/image_003_75bd.bin"
+    INCBIN ".gfx/animated_bg_tiles/toon_tv/image_003_75bd.bin"
 .data_03_75dd:
-    INCBIN ".gfx/animated_tiles/toon_tv/image_003_75dd.bin"
+    INCBIN ".gfx/animated_bg_tiles/toon_tv/image_003_75dd.bin"
 .data_03_75fd:
-    INCBIN ".gfx/animated_tiles/toon_tv/image_003_75fd.bin"
+    INCBIN ".gfx/animated_bg_tiles/toon_tv/image_003_75fd.bin"
 .data_03_763d:
-    INCBIN ".gfx/animated_tiles/toon_tv/image_003_763d.bin"
+    INCBIN ".gfx/animated_bg_tiles/toon_tv/image_003_763d.bin"
 .data_03_767d:
-    INCBIN ".gfx/animated_tiles/toon_tv/image_003_767d.bin"
+    INCBIN ".gfx/animated_bg_tiles/toon_tv/image_003_767d.bin"
 .data_03_76bd:
-    INCBIN ".gfx/animated_tiles/toon_tv/image_003_76bd.bin"
+    INCBIN ".gfx/animated_bg_tiles/toon_tv/image_003_76bd.bin"
 .data_03_76fd:
-    INCBIN ".gfx/animated_tiles/scream_tv/image_003_76fd.bin"
+    INCBIN ".gfx/animated_bg_tiles/scream_tv/image_003_76fd.bin"
 .data_03_775d:
-    INCBIN ".gfx/animated_tiles/scream_tv/image_003_775d.bin"
+    INCBIN ".gfx/animated_bg_tiles/scream_tv/image_003_775d.bin"
 .data_03_77bd:
-    INCBIN ".gfx/animated_tiles/scream_tv/image_003_77bd.bin"
+    INCBIN ".gfx/animated_bg_tiles/scream_tv/image_003_77bd.bin"
 .data_03_781d:
-    INCBIN ".gfx/animated_tiles/scream_tv/image_003_781d.bin"
+    INCBIN ".gfx/animated_bg_tiles/scream_tv/image_003_781d.bin"
 .data_03_787d:
-    INCBIN ".gfx/animated_tiles/scream_tv/image_003_787d.bin"
+    INCBIN ".gfx/animated_bg_tiles/scream_tv/image_003_787d.bin"
 .data_03_789d:
-    INCBIN ".gfx/animated_tiles/scream_tv/image_003_789d.bin"
+    INCBIN ".gfx/animated_bg_tiles/scream_tv/image_003_789d.bin"
 .data_03_78bd:
-    INCBIN ".gfx/animated_tiles/scream_tv/image_003_78bd.bin"
+    INCBIN ".gfx/animated_bg_tiles/scream_tv/image_003_78bd.bin"
 .data_03_78fd:
-    INCBIN ".gfx/animated_tiles/scream_tv/image_003_78fd.bin"
+    INCBIN ".gfx/animated_bg_tiles/scream_tv/image_003_78fd.bin"
 .data_03_793d:
-    INCBIN ".gfx/animated_tiles/scream_tv/image_003_793d.bin"
+    INCBIN ".gfx/animated_bg_tiles/scream_tv/image_003_793d.bin"
 .data_03_797d:
-    INCBIN ".gfx/animated_tiles/scream_tv/image_003_797d.bin"
+    INCBIN ".gfx/animated_bg_tiles/scream_tv/image_003_797d.bin"
 .data_03_79bd:
-    INCBIN ".gfx/animated_tiles/scream_tv/image_003_79bd.bin"
+    INCBIN ".gfx/animated_bg_tiles/scream_tv/image_003_79bd.bin"
 .data_03_79fd:
-    INCBIN ".gfx/animated_tiles/scream_tv/image_003_79fd.bin"
+    INCBIN ".gfx/animated_bg_tiles/scream_tv/image_003_79fd.bin"
 .data_03_7a3d:
-    INCBIN ".gfx/animated_tiles/scream_tv/image_003_7a3d.bin"
+    INCBIN ".gfx/animated_bg_tiles/scream_tv/image_003_7a3d.bin"
 .data_03_7a7d:
-    INCBIN ".gfx/animated_tiles/scream_tv/image_003_7a7d.bin"
+    INCBIN ".gfx/animated_bg_tiles/scream_tv/image_003_7a7d.bin"
 .data_03_7abd:
-    INCBIN ".gfx/animated_tiles/rezopolis/image_003_7abd.bin"
+    INCBIN ".gfx/animated_bg_tiles/rezopolis/image_003_7abd.bin"
 .data_03_7add:
-    INCBIN ".gfx/animated_tiles/rezopolis/image_003_7add.bin"
+    INCBIN ".gfx/animated_bg_tiles/rezopolis/image_003_7add.bin"
 .data_03_7afd:
-    INCBIN ".gfx/animated_tiles/rezopolis/image_003_7afd.bin"
+    INCBIN ".gfx/animated_bg_tiles/rezopolis/image_003_7afd.bin"
 .data_03_7b0d:
-    INCBIN ".gfx/animated_tiles/rezopolis/image_003_7b0d.bin"
+    INCBIN ".gfx/animated_bg_tiles/rezopolis/image_003_7b0d.bin"
 .data_03_7b1d:
-    INCBIN ".gfx/animated_tiles/rezopolis/image_003_7b1d.bin"
+    INCBIN ".gfx/animated_bg_tiles/rezopolis/image_003_7b1d.bin"
 .data_03_7b2d:
-    INCBIN ".gfx/animated_tiles/rezopolis/image_003_7b2d.bin"
+    INCBIN ".gfx/animated_bg_tiles/rezopolis/image_003_7b2d.bin"
 .data_03_7b3d:
-    INCBIN ".gfx/animated_tiles/rezopolis/image_003_7b3d.bin"
+    INCBIN ".gfx/animated_bg_tiles/rezopolis/image_003_7b3d.bin"
 .data_03_7b4d:
-    INCBIN ".gfx/animated_tiles/rezopolis/image_003_7b4d.bin"
+    INCBIN ".gfx/animated_bg_tiles/rezopolis/image_003_7b4d.bin"
 .data_03_7b5d:
-    INCBIN ".gfx/animated_tiles/rezopolis/image_003_7b5d.bin"
+    INCBIN ".gfx/animated_bg_tiles/rezopolis/image_003_7b5d.bin"
 .data_03_7b6d:
-    INCBIN ".gfx/animated_tiles/rezopolis/image_003_7b6d.bin"
+    INCBIN ".gfx/animated_bg_tiles/rezopolis/image_003_7b6d.bin"
 .data_03_7b7d:
-    INCBIN ".gfx/animated_tiles/circuit_central/image_003_7b7d.bin"
+    INCBIN ".gfx/animated_bg_tiles/circuit_central/image_003_7b7d.bin"
 .data_03_7b9d:
-    INCBIN ".gfx/animated_tiles/circuit_central/image_003_7b9d.bin"
+    INCBIN ".gfx/animated_bg_tiles/circuit_central/image_003_7b9d.bin"
 .data_03_7bbd:
-    INCBIN ".gfx/animated_tiles/circuit_central/image_003_7bbd.bin"
+    INCBIN ".gfx/animated_bg_tiles/circuit_central/image_003_7bbd.bin"
 .data_03_7bdd:
-    INCBIN ".gfx/animated_tiles/circuit_central/image_003_7bdd.bin"
+    INCBIN ".gfx/animated_bg_tiles/circuit_central/image_003_7bdd.bin"
 
 data_03_7bfd_AnimatedTile_BlankTileData:
-; 32-byte buffer of zeros (with $FF sentinel bytes at start and end) used as a substitute 
-; tile when a conditional animated tile slot is inactive (e.g. conveyor belt is off in Circuit Central)
-    db   $ff, $00, $00, $00, $00, $00, $00, $00        ;; 03:7bfd ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 03:7c05 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 03:7c0d ????????
-    db   $00, $00, $00, $00, $00, $00, $ff, $00        ;; 03:7c15 ???????
+; used as a substitute tile when a conditional animated tile slot is inactive (e.g. conveyor belt is off in Circuit Central)
+    INCBIN ".gfx/animated_bg_tiles/circuit_central/image_003_7bfd.bin"

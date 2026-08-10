@@ -1013,7 +1013,7 @@ wD74A_Player_InWaterOrLava:
 
 wD74B_Player_ClimbingFlags:
 ; bit 6 (CLIMB_FLAG_ALT_FRAMES) selects the rotated climb sprite frame set in
-; call_03_5ca8_Entity_DrawPlayer. Cleared whenever a new action is queued
+; call_03_5ca8_Entity_BuildPlayerSprites. Cleared whenever a new action is queued
     ds 1                                               ;; d74b
 
 wD74C_Player_KarateKickTimer: ; gets canceled if done into a wall

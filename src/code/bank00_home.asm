@@ -2410,7 +2410,6 @@ call_00_1138_NoSFXIsQueued:
     ld   A, [wD789_QueuedSFX]                                    ;; 00:1138 $fa $89 $d7
     cp   A, SFX_NONE                                        ;; 00:113b $fe $ff
     ret  Z                                             ;; 00:113d $c8
-
 call_00_113e_PlaySFX:
 ; Plays sfx A. .data_00_116c_SFXChannelTable_SFXChannelTable holds a (channel mask, sound id) pair per
 ; sfx; for each set bit of the mask it calls the audio driver's play routine in

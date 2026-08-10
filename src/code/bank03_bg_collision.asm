@@ -1,5 +1,7 @@
 ; This file handles gex's collision with background walls, floors, ceilings, etc.
 
+INCBIN "data/maps/bg_collision_data.bin"
+
 call_03_4900_BgCollision_Update:
 ; Top-level entry point. Saves wD585 (collision flags) to wD584 (prev) and clears it. Checks wD201 action ID: 
 ; if bits $1F are all set (special action state), sets bit 7 of collision flags and returns early (no collision). 
