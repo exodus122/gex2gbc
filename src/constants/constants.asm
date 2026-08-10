@@ -497,6 +497,7 @@ DEF PASSWORD_KEYBOARD_TILE_BASE             EQU $3E ; first VRAM tile of the key
 DEF PASSWORD_KEY_BLANK           EQU $20
 DEF PASSWORD_KEY_EXIT            EQU $49
 DEF PASSWORD_KEY_GO              EQU $4A
+DEF PASSWORD_KEY_UNKNOWN         EQU $4B
 
 ; The password keyboard is a fixed 6 x 5 grid
 DEF PASSWORD_GRID_COLUMNS        EQU $06

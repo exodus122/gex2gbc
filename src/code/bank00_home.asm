@@ -158,7 +158,7 @@ call_00_0150_Init:
 .jr_00_0210:
     ld   A, $03                                        ;; 00:0210 $3e $03
     ld   [wD61D_DemoUnk], A                                    ;; 00:0212 $ea $1d $d6
-    FARCALL call_01_4f87_LoadEnterPasswordMenu
+    FARCALL call_01_4f87_Password_ClearEntryGrid
 .jp_00_0220_SoftReset:
     ld   A, MENU_TYPE_TITLE_SPLASH                                        ;; 00:0220 $3e $14
     FARCALL call_01_4000_MenuLoad
@@ -248,7 +248,7 @@ call_00_0150_Init:
     and  A, A                                          ;; 00:030c $a7
     jr   Z, .jr_00_0350                                ;; 00:030d $28 $41
     call call_00_0562_Collectible_InitForLevel                                  ;; 00:030f $cd $62 $05
-    FARCALL call_01_4297_LoadMissionSelectMenu
+    FARCALL call_01_4297_MenuLoad_MissionSelect
     FARCALL call_0b_4000_Collectibles_Init
     FARCALL call_02_6eb1_Entities_ClearFlagsTable
     call call_00_3c3f_Remotes_RecountAllTotals                                  ;; 00:0333 $cd $3f $3c
@@ -352,7 +352,7 @@ call_00_0150_Init:
     ld   A, [wD73D_LivesRemaining]                                    ;; 00:044e $fa $3d $d7
     and  A, A                                          ;; 00:0451 $a7
     jp   NZ, .jp_00_0370_GameOver                               ;; 00:0452 $c2 $70 $03
-    FARCALL call_01_43bd_LoadGameOverMenu
+    FARCALL call_01_43bd_MenuLoad_GameOver
     cp   A, $80                                        ;; 00:0460 $fe $80
     jp   Z, .jp_00_029d                                ;; 00:0462 $ca $9d $02
     jp   .jp_00_0254                                   ;; 00:0465 $c3 $54 $02

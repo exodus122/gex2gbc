@@ -341,30 +341,30 @@ call_01_4000_MenuLoad:
     jp   NZ, call_01_4000_MenuLoad                              ;; 01:4225 $c2 $00 $40
     ret                                                ;; 01:4228 $c9
 .jr_01_4229:
-    call call_01_4291_LoadAudioOptionsMenu                                  ;; 01:4229 $cd $91 $42
+    call call_01_4291_MenuLoad_AudioOptions                                  ;; 01:4229 $cd $91 $42
 .jr_01_422c:
     ld   A, MENU_RESULT_DISMISSED                      ;; 01:422c $3e $00
     ret                                                ;; 01:422e $c9
 .jr_01_422f:
     ; Password entry. The keyboard and the "wrong password" screen alternate
     ; until either the player types something valid or backs out entirely
-    call call_01_4f87_LoadEnterPasswordMenu                                  ;; 01:422f $cd $87 $4f
+    call call_01_4f87_Password_ClearEntryGrid                                  ;; 01:422f $cd $87 $4f
     ld   A, MENU_TYPE_ENTER_PASSWORD                                        ;; 01:4232 $3e $0f
     call call_01_4000_MenuLoad                                  ;; 01:4234 $cd $00 $40
     cp   A, MENU_RESULT_DISMISSED                      ;; 01:4237 $fe $00
     jr   Z, .jr_01_422c                                ;; 01:4239 $28 $f1
 .jr_01_423b:
-    call call_01_5271_ProcessPassword                                  ;; 01:423b $cd $71 $52
+    call call_01_5271_Password_DecodeAndApply                                  ;; 01:423b $cd $71 $52
     cp   A, MENU_RESULT_PASSWORD_GO                    ;; 01:423e $fe $30 ; accepted
     ret  Z                                             ;; 01:4240 $c8
-    call call_01_4f87_LoadEnterPasswordMenu                                  ;; 01:4241 $cd $87 $4f
+    call call_01_4f87_Password_ClearEntryGrid                                  ;; 01:4241 $cd $87 $4f
     ld   A, MENU_TYPE_ENTERED_INVALID_PASSWORD                                        ;; 01:4244 $3e $15
     call call_01_4000_MenuLoad                                  ;; 01:4246 $cd $00 $40
     cp   A, MENU_RESULT_DISMISSED                      ;; 01:4249 $fe $00
     jr   Z, .jr_01_422c                                ;; 01:424b $28 $df
     jr   .jr_01_423b                                   ;; 01:424d $18 $ec ; let them try again
 .jr_01_424f:
-    call call_01_4fa5_SetupPassword                                  ;; 01:424f $cd $a5 $4f
+    call call_01_4fa5_Password_Encode                                  ;; 01:424f $cd $a5 $4f
     ld   A, MENU_TYPE_VIEW_PASSWORD                                        ;; 01:4252 $3e $06
     jp   call_01_4000_MenuLoad                                  ;; 01:4254 $c3 $00 $40
 .jr_01_4257:
@@ -395,12 +395,12 @@ call_01_4265_Menu_IsTotalsPageVisible:
     db   $01, $00, $00, $00, $00, $01, $01, $01        ;; 01:4282 ........
     db   $01, $01, $01, $00, $00, $00, $01             ;; 01:428a ......?
 
-call_01_4291_LoadAudioOptionsMenu:
+call_01_4291_MenuLoad_AudioOptions:
     ld   A, MENU_TYPE_AUDIO_OPTIONS_UNUSED                ;; 01:4291 $3e $11
     call call_01_4000_MenuLoad                         ;; 01:4293 $cd $00 $40
     ret                                                ;; 01:4296 $c9
 
-call_01_4297_LoadMissionSelectMenu:
+call_01_4297_MenuLoad_MissionSelect:
     xor  A, A                                          ;; 01:4297 $af
     ld   [wD626], A                                    ;; 01:4298 $ea $26 $d6
 .jr_01_429b:
@@ -466,7 +466,7 @@ call_01_42bd_EnterTV:
     ld   A, [wD624_CurrentLevelId]                                    ;; 01:4308 $fa $24 $d6
     cp   A, MAP_BOSS_TV_CHANNEL_Z                                        ;; 01:430b $fe $1e
     jr   NZ, .jr_01_4314                               ;; 01:430d $20 $05
-    call call_01_43c7_LoadCreditsMenus                                  ;; 01:430f $cd $c7 $43
+    call call_01_43c7_MenuLoad_Credits                                  ;; 01:430f $cd $c7 $43
     jr   .jr_01_4319                                   ;; 01:4312 $18 $05
 .jr_01_4314:
     ld   A, MENU_TYPE_CONGRATULATIONS                                        ;; 01:4314 $3e $0e
@@ -493,7 +493,7 @@ call_01_42bd_EnterTV:
 
 call_01_4349_LoadEnteringMenu:
 ; Packs the whole save state into wD652_Password_EncodeBuffer, ready for
-; call_01_4fa5_SetupPassword to spell out.
+; call_01_4fa5_Password_Encode to spell out as letters.
 ;
 ; It walks every level id from 0 to MAP_BOSS_TV_CHANNEL_Z, and for each one takes
 ; a mask from .data_01_43b6 - which bits of that level's wD629_RemoteProgressFlags
@@ -573,13 +573,13 @@ call_01_4349_LoadEnteringMenu:
 .data_01_43b6:
     db   $1f, $1b, $19, $03, $01, $20, $00
 
-call_01_43bd_LoadGameOverMenu:    
+call_01_43bd_MenuLoad_GameOver:    
     ld a, MENU_TYPE_GAME_OVER
     call call_01_4000_MenuLoad
     ld a, MENU_TYPE_GAME_OVER_TOTALS
     jp call_01_4000_MenuLoad                                        ;; 01:43c6 ?
 
-call_01_43c7_LoadCreditsMenus:
+call_01_43c7_MenuLoad_Credits:
     ld   A, MUSIC_MEDIA_DIMENSION                                        ;; 01:43c7 $3e $07
     call call_00_120c_SetupMusic                                  ;; 01:43c9 $cd $0c $12
     ld   A, MENU_TYPE_CREDITS_GREAT_JOB                                        ;; 01:43cc $3e $12
@@ -1011,6 +1011,7 @@ call_01_44e6_MenuScript_RunCommand:
     dw   call_01_491d_MenuCmd_LoadFullscreenImage                                  ;; 01:464d pP
     dw   call_01_4969_MenuCmd_SetMissionStatusText
     dw   call_01_49d7_MenuCmd_StageCollectibleIcon                            ;; 01:464f ????
+
 call_01_4653_MenuCmd_StageImage1:
     ld   A, [wD69B_Text_SrcPtrLo]                                    ;; 01:4653 $fa $9b $d6
     ld   DE, data_01_74e9                              ;; 01:4656 $11 $e9 $74
@@ -2437,31 +2438,51 @@ call_01_4f41_Password_CharToFontTile:
     db   $10, $11, $12, $13, $14, $15, $16, $17        ;; 01:4f7c wwwwwwww
     db   $18, $19, $1a                                 ;; 01:4f84 www
 
-call_01_4f87_LoadEnterPasswordMenu:
+call_01_4f87_Password_ClearEntryGrid:
+; Wipes the keyboard back to 28 blank boxes, ready for the player to type into.
+; The counterpart of call_01_4fa5_Password_Encode, which runs the same fill but
+; then writes the player's CURRENT password into the grid to show them.
+;
+; The wipe is an overlapping-copy fill: DE is HL+1, so MemCopy reads each byte it
+; has just written and propagates the single seed byte at wD667 through all 29
+; cells. It is a fill written as a copy, not a copy - easy to misread as moving
+; the exit button into the password boxes.
+;
+; That covers the exit button plus the 28 boxes; the three fixed keys are then
+; stamped back over the blanks. wD667 is blanked and immediately rewritten, which
+; is redundant but harmless.
+;
+; Called before both password screens, so backing out of "wrong password" starts
+; from an empty grid rather than leaving the bad guess on screen
     ld   HL, wD667_PasswordExitButton                                     ;; 01:4f87 $21 $67 $d6
     ld   DE, wD668_PasswordValues                                     ;; 01:4f8a $11 $68 $d6
-    ld   BC, $1d                                       ;; 01:4f8d $01 $1d $00
-    ld   [HL], $20                                     ;; 01:4f90 $36 $20
+    ld   BC, $1d                                       ;; 01:4f8d $01 $1d $00 ; exit + 28 boxes
+    ld   [HL], PASSWORD_KEY_BLANK                      ;; 01:4f90 $36 $20 ; seed for the fill
     call call_00_07b0_MemCopy                                  ;; 01:4f92 $cd $b0 $07
-    ld   A, $49                                        ;; 01:4f95 $3e $49
+    ld   A, PASSWORD_KEY_EXIT                                        ;; 01:4f95 $3e $49
     ld   [wD667_PasswordExitButton], A                                    ;; 01:4f97 $ea $67 $d6
-    ld   A, $4a                                        ;; 01:4f9a $3e $4a
+    ld   A, PASSWORD_KEY_GO                                        ;; 01:4f9a $3e $4a
     ld   [wD684_PasswordGoButton], A                                    ;; 01:4f9c $ea $84 $d6
-    ld   A, $4b                                        ;; 01:4f9f $3e $4b
+    ld   A, PASSWORD_KEY_UNKNOWN                                        ;; 01:4f9f $3e $4b
     ld   [wD685_PasswordUnkButton], A                                    ;; 01:4fa1 $ea $85 $d6
     ret                                                ;; 01:4fa4 $c9
 
-call_01_4fa5_SetupPassword:
-; Builds the password to SHOW the player: blanks the keyboard, scatters the
-; encode buffer's bits into the 28 boxes, then turns each 0-7 value into a letter
-; by adding PASSWORD_CHAR_BASE.
+call_01_4fa5_Password_Encode:
+; Turns the packed payload in wD652_Password_EncodeBuffer into the 28 letters the
+; player is shown. Blanks the grid, scatters the payload bits into the boxes, then
+; adds PASSWORD_CHAR_BASE to turn each 0-7 value into A-H.
 ;
-; The scatter is table driven rather than a loop - .data_01_4fef_Password_BitMap
-; holds one 8-byte entry per bit, (src addr, src mask, dst addr, dst mask), and
-; the walk stops when it reads a null source address. Being an explicit table
-; means the bit order is arbitrary and does not have to match the tidy MSB-first
-; packing that call_01_5271_ProcessPassword uses coming back the other way, which
-; is presumably the point - it scrambles the mapping
+; Shares its opening fill with call_01_4f87_Password_ClearEntryGrid - same
+; overlapping MemCopy, but seeded $00 instead of PASSWORD_KEY_BLANK, because these
+; boxes are about to be overwritten with values rather than left empty.
+;
+; The scatter is table driven where the decoder is a loop:
+; .data_01_4fef_Password_BitMap holds one 8-byte entry per bit,
+; (src addr, src mask, dst addr, dst mask), and the walk ends on a null source.
+; The table does not reorder anything - sources and destinations both advance in
+; step - so this is the same MSB-first packing
+; call_01_5271_Password_DecodeAndApply undoes, just written out longhand instead
+; of rolled into a loop
     ld   HL, wD667_PasswordExitButton                                     ;; 01:4fa5 $21 $67 $d6
     ld   DE, wD668_PasswordValues                                     ;; 01:4fa8 $11 $68 $d6
     ld   BC, $1d                                       ;; 01:4fab $01 $1d $00
@@ -2603,15 +2624,19 @@ call_01_4fa5_SetupPassword:
     dw   wD652_Password_EncodeBuffer+9, $0001, wD668_PasswordValues+26, $0002        ;; 01:5267 ????????
     dw   $0000                             ;; 01:526f ??
 
-call_01_5271_ProcessPassword: ; handles setting save data from password
-; The inverse of call_01_4349_LoadEnteringMenu plus call_01_4fa5_SetupPassword.
-; Three ways to fail, in order: any blank box, then a checksum mismatch, and the
-; caller treats a rejection by swapping in the "wrong password" screen.
+call_01_5271_Password_DecodeAndApply:
+; Validates a typed password and, if it passes, writes it into the live save
+; state - hence AndApply: this does not just decode, it commits. The inverse of
+; call_01_4349_LoadEnteringMenu and call_01_4fa5_Password_Encode together.
 ;
-; Unpacking is a plain bit loop rather than the table the encoder uses - subtract
+; Rejects on either a blank box or a checksum mismatch, and returns a MENU_RESULT
+; so the caller can swap in the "wrong password" screen. Nothing is written to the
+; save state until both checks have passed.
+;
+; Unpacking is a plain bit loop where the encoder uses a table - subtract
 ; PASSWORD_CHAR_BASE to get 0-7, then shift the three bits out MSB first into
-; wD65C_Password_DecodeBuffer, walking C as a rotating bit mask and stepping HL
-; whenever it wraps. On success the payload is expanded back out into
+; wD65C_Password_DecodeBuffer, walking C as a rotating mask and stepping HL
+; whenever it wraps. On success the payload is expanded back into
 ; wD629_RemoteProgressFlags level by level, mirroring the encoder's mask walk
     ; check if any of the boxes are blank. if so, it is an invalid password
     ld   HL, wD668_PasswordValues                      ;; 01:5271 $21 $68 $d6

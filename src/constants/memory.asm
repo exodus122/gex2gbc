@@ -574,7 +574,7 @@ wD65B_Password_EncodeChecksum:
     ds 1                                               ;; d65b
 
 wD65C_Password_DecodeBuffer:
-; the decode side of the same struct, filled by call_01_5271_ProcessPassword
+; the decode side of the same struct, filled by call_01_5271_Password_DecodeAndApply
     ds 8                                               ;; d65c
 
 wD664_Password_DecodeLives:
