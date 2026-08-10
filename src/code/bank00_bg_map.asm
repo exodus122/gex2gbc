@@ -1,11 +1,16 @@
 call_00_1264_BgMap_LoadFull:
 ; Top-level map initialization. Queries all map metadata (bank numbers for map data, blockset override, 
 ; blockset+collision, tileset; tileset offset; override bit) and stores them to wD6F5–wD700_BgMap_TilesetBankOffset. 
-; Calls call_00_0f38_FadeOutAndClearVRAM (unknown init), then WriteTilesToVRAM. Resets secondary tileset index to $FF, 
+; Calls call_00_0f38_FadeOutAndClearVRAM, then call_00_1419_BgMap_LoadTileset. Resets secondary tileset index to $FF,
 ; clears wD77B_OverrideVRAMWritePending/wD77D_OverrideSequenceStepsRemaining. Then loops 22 ($16) times: 
 ; sets wD6F9_BgMap_LoadingFlags=$01 (dirty flag), calls LoadBgMapDirtyRegions 
-; and BgMap_WriteScrollColumn, advances wD6EF (Y map position) by 8 each iteration — effectively rendering 
-; the full visible map column by column. Clears dirty flag, loads HUD tiles, updates map window
+; and BgMap_WriteScrollColumn, advances wD6EF (Y map position) by 8 each iteration — so it walks
+; DOWN the map, drawing one horizontal row per pass, until the whole visible area is filled.
+; Clears dirty flag, loads HUD tiles, updates map window.
+;
+; The bank 3 routine it calls is named BgMap_WriteScrollColumn but is the one triggered by
+; vertical scrolling - the same axis-vs-strip confusion as the loaders in this file, and worth
+; untangling if bank 3 ever gets a pass
     call call_00_0ede_SelectWramBank1                                  ;; 00:1264 $cd $de $0e
     call call_00_2e77_MapData_GetMapBank                                  ;; 00:1267 $cd $77 $2e
     ld   [wD6F5_BgMap_MapBank], A                                    ;; 00:126a $ea $f5 $d6
@@ -63,7 +68,8 @@ call_00_12e4_BgMap_InitTileOverrides:
 ; threshold — if equal and bit 7 of wD64F_MissionRemoteTotal is set, marks the matching wD78B_OverrideSlotTable slot as $02. 
 ; If greater, loads the record's tile coordinates into wD782_OverrideTargetBlockX/wD783_OverrideTargetBlockY 
 ; and pointer into wD780_OverrideDataPtrLo/wD781_OverrideDataPtrHi, sets wD784_OverrideWidth/
-; wD785_OverrideHeight=$02, calls UpdateBgTileFlags. Advances by $0C per record
+; wD785_OverrideHeight=$02, calls call_00_1ec9_BgMap_RegisterOverrideRegion. Advances $0C per record.
+; (The old comment called that last one UpdateBgTileFlags, which is not a symbol in this tree)
     ld   HL, wD78B_OverrideSlotTable                                     ;; 00:12e4 $21 $8b $d7
     ld   B, $10                                        ;; 00:12e7 $06 $10
     xor  A, A                                          ;; 00:12e9 $af
@@ -138,9 +144,14 @@ call_00_12e4_BgMap_InitTileOverrides:
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:1366 ????????
     db   $01, $01, $03, $00, $00, $00, $00
 .data_00_1375_MediaDimension_BgTileOverrideList:
-; $FF-terminated list of 12-byte records for Media Dimension special tile overrides. Each record contains 
-; a threshold value, a slot index, tile source coordinates, and dimensions. Used to preload special 
-; animated/interactive background tiles when the hub area's progress counter reaches a certain value
+; $FF-terminated list of 12-byte records for Media Dimension tile overrides:
+;   +0  db  remote-total threshold
+;   +1  db  override slot index
+;   +2  db  block X          +3  db  block Y
+;   +4  8 bytes              the 2x2 block of replacement tiles
+; There is no size field - the caller hardcodes width and height to $02, which is why the
+; payload is always four 16-bit entries. Used to pre-apply the hub's opened-up geometry on
+; load, so tvs the player has already unlocked are open when the map appears
     db   $06, $00, $25, $0d, $7c, $01, $7d, $01, $8c, $01, $8d, $01
     db   $09, $01, $1b, $16, $78, $01, $79, $01, $88, $01, $89, $01
     db   $12, $02, $2f, $16, $5c, $01, $5d, $01, $6c, $01, $6d, $01
@@ -274,21 +285,27 @@ call_00_1455_BgMap_LoadDirtyRegions:
     jr   NZ, call_00_1455_BgMap_LoadDirtyRegions                              ;; 00:145a $20 $f9
     ld   A, [wD6F9_BgMap_LoadingFlags]                                    ;; 00:145c $fa $f9 $d6
     and  A, MAP_SCROLL_DOWN | MAP_SCROLL_UP      ;; 00:145f $e6 $03
-    call NZ, call_00_1472_BgMap_LoadVerticalStrip                              ;; 00:1461 $c4 $72 $14
+    call NZ, call_00_1472_BgMap_LoadRowForVerticalScroll                              ;; 00:1461 $c4 $72 $14
     ld   A, [wD6F9_BgMap_LoadingFlags]                                    ;; 00:1464 $fa $f9 $d6
     and  A, MAP_SCROLL_RIGHT | MAP_SCROLL_LEFT   ;; 00:1467 $e6 $0c
-    call NZ, call_00_157a_BgMap_LoadHorizontalStrip                              ;; 00:1469 $c4 $7a $15
+    call NZ, call_00_157a_BgMap_LoadColumnForHorizontalScroll                              ;; 00:1469 $c4 $7a $15
     ld   HL, wD6F9_BgMap_LoadingFlags                                     ;; 00:146c $21 $f9 $d6
     set  MAP_PENDING_VRAM_TRANSFER, [HL]                                       ;; 00:146f $cb $fe
     ret                                                ;; 00:1471 $c9
 
-call_00_1472_BgMap_LoadVerticalStrip:
-; Loads one horizontal row of 6 metatiles into the BG tilemap for vertical camera scrolling. 
+call_00_1472_BgMap_LoadRowForVerticalScroll:
+; Naming note: this pair used to be LoadVerticalStrip / LoadHorizontalStrip, named after
+; the SCROLL AXIS rather than the strip. That is backwards from how it reads - scrolling
+; vertically exposes a new horizontal ROW, scrolling horizontally exposes a new vertical
+; COLUMN - and the old comments had to spend their first line undoing the name. Now named
+; for what they load and when.
+;
+; Loads one horizontal row of 6 metatiles into the BG tilemap for vertical camera scrolling.
 ; Determines whether to load the top or bottom edge row based on wD6F9_BgMap_LoadingFlags bit 1. 
 ; Computes map data addresses from current X/Y scroll positions (wD6ED/wD6EF). 
 ; Reads 6 metatile IDs from the map bank (wD6F5) into wD702_BgMap_TempScratchRowMetaTileIDs–wD70C 
 ; (every other byte), reads corresponding override flags from the secondary bank (wD6F6) into 
-; wD703_BgMap_TempScratchRowMetaTileOverrideBits–wD70D. Calls call_00_18a7_BgMap_PatchVerticalStripWithOverrides 
+; wD703_BgMap_TempScratchRowMetaTileOverrideBits–wD70D. Calls call_00_18a7_BgMap_PatchRowWithOverrides 
 ; to resolve secondary tileset overrides. Switches to blockset/collision bank (wD6F7), then expands 
 ; each metatile into 8 tile IDs (2×4 tiles, GBC attribute bits set on alternating writes via set 3, H /
 ; set 5, B) and writes them to the GBC tilemap at computed VRAM addresses. Handles tilemap row wrap at 
@@ -422,7 +439,7 @@ call_00_1472_BgMap_LoadVerticalStrip:
     ld   [DE], A                                       ;; 00:1519 $12
     call call_00_10a3_RestoreBank                                  ;; 00:151a $cd $a3 $10
     ld   HL, wD702_BgMap_TempScratchRowMetaTileIDs                                     ;; 00:151d $21 $02 $d7
-    call call_00_18a7_BgMap_PatchVerticalStripWithOverrides                                  ;; 00:1520 $cd $a7 $18
+    call call_00_18a7_BgMap_PatchRowWithOverrides                                  ;; 00:1520 $cd $a7 $18
     ld   A, [wD6F7_BgMap_BlocksetAndCollisionBank]                                    ;; 00:1523 $fa $f7 $d6
     call call_00_1089_SwitchBank                       ;; 00:1526 $cd $89 $10
     pop  AF                                            ;; 00:1529 $f1
@@ -489,11 +506,11 @@ call_00_1472_BgMap_LoadVerticalStrip:
     call call_00_10a3_RestoreBank                                  ;; 00:1576 $cd $a3 $10
     ret                                                ;; 00:1579 $c9
 
-call_00_157a_BgMap_LoadHorizontalStrip:
+call_00_157a_BgMap_LoadColumnForHorizontalScroll:
 ; Loads one vertical column of 6 metatiles for horizontal camera scrolling. Mirrors the 
 ; structure of LoadVerticalBgStrip: determines left or right edge column from wD6F9_BgMap_LoadingFlags bit 3, 
 ; reads 6 metatile IDs (stepping $80 bytes = one map row apart) from the map bank and override 
-; bank into wD70E_BgMap_TempScratchColumnMetaTileIDs–wD71C. Calls call_00_18e4_BgMap_PatchHorizontalStripWithOverrides for secondary tileset resolution. Expands each metatile 
+; bank into wD70E_BgMap_TempScratchColumnMetaTileIDs–wD71C. Calls call_00_18e4_BgMap_PatchColumnWithOverrides for secondary tileset resolution. Expands each metatile 
 ; into 8 tile IDs and writes to VRAM column-wise, advancing HL by $20 (one tilemap row) per pair, 
 ; with GBC attribute toggling via set 3, H / set 5, B. Handles tilemap column wrap at 32-tile ($20) 
 ; boundaries
@@ -640,7 +657,7 @@ call_00_157a_BgMap_LoadHorizontalStrip:
     ld   [DE], A                                       ;; 00:1633 $12
     call call_00_10a3_RestoreBank                                  ;; 00:1634 $cd $a3 $10
     ld   HL, wD70E_BgMap_TempScratchColumnMetaTileIDs                                     ;; 00:1637 $21 $0e $d7
-    call call_00_18e4_BgMap_PatchHorizontalStripWithOverrides                                  ;; 00:163a $cd $e4 $18
+    call call_00_18e4_BgMap_PatchColumnWithOverrides                                  ;; 00:163a $cd $e4 $18
     ld   A, [wD6F7_BgMap_BlocksetAndCollisionBank]                                    ;; 00:163d $fa $f7 $d6
     call call_00_1089_SwitchBank                                  ;; 00:1640 $cd $89 $10
     pop  AF                                            ;; 00:1643 $f1
@@ -1151,7 +1168,7 @@ call_00_1779_BgMap_WriteOverridePaletteAttributes:
     jr   NZ, .jr_00_1836                               ;; 00:18a4 $20 $90
     ret                                                ;; 00:18a6 $c9
 
-call_00_18a7_BgMap_PatchVerticalStripWithOverrides:
+call_00_18a7_BgMap_PatchRowWithOverrides:
 ; Same as above but for vertical camera strips. Calls BgMap_MaskSecondaryOverrideBytes, then scans 
 ; $CD00 slots for entries whose X coord matches wD779. Checks Y coord within 6 rows of wD77A. On match, 
 ; patches the column buffer at HL+1 + (Y_coord - wD77A) × 2 with the override data from `$CD[E
@@ -1200,7 +1217,7 @@ call_00_18a7_BgMap_PatchVerticalStripWithOverrides:
     pop  HL                                            ;; 00:18e1 $e1
     jr   call_00_1922_BgMap_LoadSecondaryTileset                                    ;; 00:18e2 $18 $3e
 
-call_00_18e4_BgMap_PatchHorizontalStripWithOverrides:
+call_00_18e4_BgMap_PatchColumnWithOverrides:
 ; Same as above but for horizontal strip loading: scans $CDB0 for overrides matching X block coordinate wD779, 
 ; within 6 rows of wD77A, and patches the wD70E_BgMap_TempScratchColumnMetaTileIDs metatile column buffer accordingly. 
 ; Falls through to SecondaryTileset_Load
@@ -1576,7 +1593,7 @@ call_00_1ec9_BgMap_RegisterOverrideRegion:
 ;
 ; This is the step that makes a change PERMANENT: WriteOverrideTiles only paints the tilemap, whereas
 ; this records what the region should look like so the strip loaders
-; (BgMap_PatchVerticalStripWithOverrides and its horizontal twin) can reapply it when the camera
+; (BgMap_PatchRowWithOverrides and its column twin) can reapply it when the camera
 ; scrolls the area back into view. That is why sequences set OVERRIDE_STEP_REGISTER on their final
 ; step only - the intermediate animation frames are not meant to survive
     ld   HL, wD782_OverrideTargetBlockX                                     ;; 00:1ec9 $21 $82 $d7

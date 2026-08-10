@@ -111,7 +111,7 @@ call_00_0150_Init:
     ld   [wD59E_OnGBCFlag], A                                    ;; 00:01a2 $ea $9e $d5
     ld   A, $00                                        ;; 00:01a5 $3e $00
     ldh  [rVBK], A                                     ;; 00:01a7 $e0 $4f
-    call call_00_0f9d_UpdateLCDPalettes                ;; 00:01a9 $cd $9d $0f
+    call call_00_0f9d_UploadCgbPalettes                ;; 00:01a9 $cd $9d $0f
 .jr_00_01ac:
     ld   HL, call_00_0ef7_OamDmaRoutine                                      ;; 00:01ac $21 $f7 $0e
     ld   DE, hFF80_OamDmaRoutine                                     ;; 00:01af $11 $80 $ff
@@ -326,12 +326,12 @@ call_00_0150_Init:
     FARCALL call_0b_4efe_Player_SetSpawnPosition
     call call_00_1264_BgMap_LoadFull                                  ;; 00:0404 $cd $64 $12
     FARCALL call_02_6e17_Entities_InitAndSpawnAll
-    call call_00_0521_DrawEntitiesWrapper                                  ;; 00:0412 $cd $21 $05
+    call call_00_0521_Screen_PresentAndFadeIn                                  ;; 00:0412 $cd $21 $05
     jr   .jp_00_0428                                   ;; 00:0415 $18 $11
 .jp_00_0417:
     call call_00_1264_BgMap_LoadFull                                  ;; 00:0417 $cd $64 $12
     FARCALL call_02_71c8_Entities_QueueGraphicsAndPalettes
-    call call_00_0521_DrawEntitiesWrapper                                  ;; 00:0425 $cd $21 $05
+    call call_00_0521_Screen_PresentAndFadeIn                                  ;; 00:0425 $cd $21 $05
 .jp_00_0428:
     call call_00_0ab4_WaitForInterrupt                                  ;; 00:0428 $cd $b4 $0a
     ld   A, [wD59F_CurrentInputs]                                    ;; 00:042b $fa $9f $d5
@@ -438,10 +438,10 @@ call_00_0150_Init:
     jr   NZ, .jr_00_0515                               ;; 00:051c $20 $f7
     jp   .jp_00_0428                                   ;; 00:051e $c3 $28 $04
 
-call_00_0521_DrawEntitiesWrapper:
-; Despite the name this is a screen bring-up routine, not a thin wrapper: drawing
-; the entities is only its first step and it finishes by switching the LCD back on
-; and starting a fade in. Callers use it to make a freshly built screen visible.
+call_00_0521_Screen_PresentAndFadeIn:
+; Makes a freshly built screen visible. Was called DrawEntitiesWrapper, but drawing
+; the entities is only the first of five steps and the routine ends by switching the
+; LCD back on and starting a fade in - callers use it for that, not for the draw.
 ;
 ; Builds the OAM list, drains any pending graphics transfers, switches the LCD STAT
 ; interrupt over to the VRAM streaming handler, reloads the DMG background palette,
@@ -1567,16 +1567,17 @@ call_00_0b6d_CopyTileRows:
     jr   NZ, call_00_0b6d_CopyTileRows                              ;; 00:0b9e $20 $cd
     ret                                                ;; 00:0ba0 $c9
 
-call_00_0ba1_WaitForLcdIsrChange:
-; Blocks until the requested LCD STAT handler id has been installed and is LCD_ISR_NONE.
-; Note the "and $7F / cp $00" only exits once the handler id is zero, so this is really
-; "wait until the LCD STAT interrupt has been switched off"
+call_00_0ba1_WaitUntilLcdIsrNone:
+; Spins a frame at a time until the LCD STAT handler id is LCD_ISR_NONE, i.e. until
+; the STAT interrupt has been switched off. It does not wait for an arbitrary change,
+; which is what the old name WaitForLcdIsrChange implied - the `and $7F / cp $00`
+; only ever exits on zero. (The `cp $00` is redundant; `and` has already set Z.)
     ld   a,[wCCFD_LcdIsrId]
     and  a,$7F
     cp   a,$00
     ret  z
     call call_00_0ab4_WaitForInterrupt
-    jr   call_00_0ba1_WaitForLcdIsrChange
+    jr   call_00_0ba1_WaitUntilLcdIsrNone
 
 call_00_0bae_RequestLcdIsr:
 ; Requests LCD STAT handler A (one of the LCD_ISR_* ids). If that handler is already
@@ -2087,9 +2088,13 @@ call_00_0f5d_FadeToBlack:
     jr   jr_00_0f69_Fade_SetMaskAndStart                                    ;; 00:0f62 $18 $05
 
 call_00_0f64_FadeToWhite:
-; Fade mask $FFFF - all three palette registers fade
+; Fade mask $FFFF - all three palette registers fade.
+;
+; The mask was written as `ld DE, rIE`, which assembles to the same $11 $FF $FF but
+; reads as though it were touching the interrupt enable register. It is only the
+; constant $FFFF. Same trap as `ld DE, MBC1RomBank` in bank01_menus.asm
     ld   A, FADE_MODE_TO_WHITE                         ;; 00:0f64 $3e $02
-    ld   DE, rIE                                       ;; 00:0f66 $11 $ff $ff
+    ld   DE, $ffff                                     ;; 00:0f66 $11 $ff $ff ; mask, not rIE
 
 jr_00_0f69_Fade_SetMaskAndStart:
 ; Stores DE into wDAD7_FadeMaskLo/wDAD8_FadeMaskHi and starts fade mode A
@@ -2103,7 +2108,7 @@ call_00_0f72_FadeIn:
 ; Fades all three palette registers back to the level palettes in
 ; wDAD1_LevelBGP / wDAD2_LevelOBP0 / wDAD3_LevelOBP1
     ld   A, FADE_MODE_IN                               ;; 00:0f72 $3e $01
-    ld   DE, rIE                                       ;; 00:0f74 $11 $ff $ff
+    ld   DE, $ffff                                     ;; 00:0f74 $11 $ff $ff ; mask, not rIE
     ld   HL, wDAD7_FadeMaskLo                                     ;; 00:0f77 $21 $d7 $da
     ld   [HL], E                                       ;; 00:0f7a $73
     inc  HL                                            ;; 00:0f7b $23
@@ -2126,10 +2131,18 @@ call_00_0f80_VBlank_UpdatePalettes:
     ldh  [rOBP1], A                                    ;; 00:0f96 $e0 $49
     ret                                                ;; 00:0f98 $c9
 .jr_00_0f99:
-    call call_00_0f9d_UpdateLCDPalettes                ;; 00:0f99 $cd $9d $0f
+    call call_00_0f9d_UploadCgbPalettes                ;; 00:0f99 $cd $9d $0f
     ret                                                ;; 00:0f9c $c9
 
-call_00_0f9d_UpdateLCDPalettes:
+call_00_0f9d_UploadCgbPalettes:
+; Pushes both CGB palette rams to hardware: $40 bytes of background palette from
+; wD9CB_Bg_Palettes through rBCPS/rBCPD, then $40 bytes of sprite palette from
+; wDA0B_Entity_Palettes through rOCPS/rOCPD. Auto-increment is set by writing $80
+; to the index registers first.
+;
+; GBC only - it is the whole of the GBC branch of call_00_0f80_VBlank_UpdatePalettes,
+; which is why there is no DMG fade here. Was called UpdateLCDPalettes, which reads
+; as though it applied to both hardware types
     ld   A, $80                                        ;; 00:0f9d $3e $80
     ldh  [rBCPS], A                                    ;; 00:0f9f $e0 $68
     ld   HL, wD9CB_Bg_Palettes                         ;; 00:0fa1 $21 $cb $d9
@@ -2281,6 +2294,13 @@ call_00_104a_Fade_StepPaletteRegister:
     ret                                                ;; 00:1077 $c9
 
 call_00_1078_FarCall:
+; Calls HL in bank A and comes back to the caller's bank. The FARCALL macro is what
+; sets up A and HL; this is its body.
+;
+; Note it loads wD59D_ReturnBank into A immediately before jumping, so the callee is
+; entered with A holding the bank to return to rather than anything the caller chose -
+; worth knowing before assuming A is a free argument register across a FARCALL.
+; The callee's return value in A does survive, since it is pushed around RestoreBank
     push HL                                            ;; 00:1078 $e5
     call call_00_1089_SwitchBank                                  ;; 00:1079 $cd $89 $10
     pop  HL                                            ;; 00:107c $e1
@@ -2292,6 +2312,13 @@ call_00_1078_FarCall:
     ret                                                ;; 00:1088 $c9
 
 call_00_1089_SwitchBank:
+; Switches to ROM bank A and PUSHES it onto the bank stack that
+; wD59A_PtrToBankStackPosition walks, so nesting works: every SwitchBank must be
+; matched by a call_00_10a3_RestoreBank or the stack pointer drifts.
+;
+; The `swap A / rrca / and $01` derives the SRAM bank from bit 5 of the ROM bank and
+; writes it to MBC1SRamBank, so the two stay in step. That is the MBC1 upper-bits
+; trick, which is why the cart is wired for 1MB despite the header saying MBC5
     ld   HL, wD59A_PtrToBankStackPosition                                     ;; 00:1089 $21 $9a $d5
     ld   E, [HL]                                       ;; 00:108c $5e
     inc  HL                                            ;; 00:108d $23
@@ -2310,6 +2337,9 @@ call_00_1089_SwitchBank:
     ret                                                ;; 00:10a2 $c9
 
 call_00_10a3_RestoreBank:
+; POPS the bank stack and switches back to whatever was underneath, mirroring
+; call_00_1089_SwitchBank exactly - `dec DE` here against its `inc DE`. Clobbers A
+; with the restored bank number
     ld   HL, wD59A_PtrToBankStackPosition                                     ;; 00:10a3 $21 $9a $d5
     ld   E, [HL]                                       ;; 00:10a6 $5e
     inc  HL                                            ;; 00:10a7 $23
@@ -2396,6 +2426,10 @@ call_00_1107_CheckInputDown:
     ret                                                ;; 00:110c $c9
 
 call_00_110d_CheckInputStart:
+; NZ if START is held - but note the `cp` rather than `and`: this only reports a
+; press when START is the ONLY button down. Holding it with any direction reads as
+; not pressed. call_00_1118_CheckInputSelect does the same; every other
+; CheckInput* helper masks with `and` and does not care what else is held
     ld   A, [wD59F_CurrentInputs]                                    ;; 00:110d $fa $9f $d5
     cp   A, PADF_START                                        ;; 00:1110 $fe $08
     jr   Z, .jr_00_1116                                ;; 00:1112 $28 $02
@@ -2426,6 +2460,10 @@ call_00_1129_CheckInputB:
     ret                                                ;; 00:112e $c9
 
 call_00_112f_QueueSFX:
+; Queues sfx C for the next call_00_1138_PlayQueuedSFX - but only if the slot is
+; currently SFX_NONE. A sound already waiting is NOT replaced, so when two effects
+; are requested in the same frame the second is silently dropped rather than
+; overriding the first
     ld   HL, wD789_QueuedSFX                                     ;; 00:112f $21 $89 $d7
     ld   A, [HL]                                       ;; 00:1132 $7e
     cp   A, SFX_NONE                                        ;; 00:1133 $fe $ff
@@ -2433,8 +2471,10 @@ call_00_112f_QueueSFX:
     ld   [HL], C                                       ;; 00:1136 $71
     ret                                                ;; 00:1137 $c9
 
-call_00_1138_NoSFXIsQueued:
-; Returns if nothing is queued, otherwise falls through to play the queued sfx
+call_00_1138_PlayQueuedSFX:
+; Plays whatever call_00_112f_QueueSFX left pending, or returns if the slot is empty.
+; It is an action, not the predicate its old name NoSFXIsQueued suggested - on the
+; non-empty path it falls straight through into call_00_113e_PlaySFX
     ld   A, [wD789_QueuedSFX]                                    ;; 00:1138 $fa $89 $d7
     cp   A, SFX_NONE                                        ;; 00:113b $fe $ff
     ret  Z                                             ;; 00:113d $c8
@@ -2532,6 +2572,13 @@ call_00_11e0_PlayMusicBasedOnLevel:
     db   MUSIC_REZOPOLIS ; MAP_BOSS_TV_CHANNEL_Z
 
 call_00_120c_SetupMusic:
+; Starts music track A, or returns immediately if it is already the one playing
+; (wD78A_MusicId). Syncs to vblank first so the swap does not land mid-frame.
+;
+; Each .data_00_1244_MusicList record is 4 bytes - audio bank, song id, channel mask,
+; pad - and the driver's start routine is called once per set bit of the mask with an
+; incrementing channel index. Ends by playing sfx $00 through
+; call_00_113e_PlaySFX, which is what silences whatever was on the sfx channel
     push AF                                            ;; 00:120c $f5
     call call_00_0ab4_WaitForInterrupt                                  ;; 00:120d $cd $b4 $0a
     pop  AF                                            ;; 00:1210 $f1
@@ -2579,7 +2626,7 @@ call_00_120c_SetupMusic:
     db   BANK_23, $00, $0f, $00        ;; 00:125c ...?...?
 
 INCLUDE "code/bank00_bg_map.asm"
-INCLUDE "code/bank00_special_tile_scripts.asm"
+INCLUDE "code/bank00_tile_hit_scripts.asm"
 INCLUDE "code/bank00_cutscenes.asm"
 INCLUDE "code/bank00_map_init_data.asm"
 INCLUDE "code/bank00_entity_utils.asm"
@@ -2599,7 +2646,11 @@ call_00_3c3f_Remotes_RecountAllTotals:
 call_00_3c54_Remotes_CountAndStore:
 ; Counts the set bits of (wD629_RemoteProgressFlags[n] & C) over all 30 levels and stores
 ; the total at [HL]. If the total changed, REMOTE_TOTAL_CHANGED (bit 7) is also set so
-; the hub knows to play the "new tv unlocked" animation
+; the hub knows to play the "new tv unlocked" animation.
+;
+; That bit 7 is why every reader masks with $7F before comparing - see
+; call_00_3899_Entity_CheckRemoteTotalsUnlock, which strips it off all three totals
+; before testing them against a tv's requirements
     push HL                                            ;; 00:3c54 $e5
     ld   HL, wD629_RemoteProgressFlags                                     ;; 00:3c55 $21 $29 $d6
     ld   B, $1e                                        ;; 00:3c58 $06 $1e

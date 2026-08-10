@@ -331,7 +331,7 @@ call_02_6eba_Entities_UpdateAll:
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:6f5c $fa $00 $d3
     add  A, ENTITY_SLOT_SIZE                           ;; 02:6f5f $c6 $20 ; wraps to 0 after the last slot
     jr   NZ, .jr_02_6f11                               ;; 02:6f61 $20 $ae
-    call call_00_1138_NoSFXIsQueued                                  ;; 02:6f63 $cd $38 $11
+    call call_00_1138_PlayQueuedSFX                                  ;; 02:6f63 $cd $38 $11
     FARCALL call_0a_7a7c_EntitySpawn_SpawnNextFromList
     call call_02_722c_EntityGfxQueue_StartNextTransfer                                  ;; 02:6f71 $cd $2c $72
     FARCALL call_03_6540_HUD_BuildAllSprites

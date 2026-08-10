@@ -310,7 +310,7 @@ call_02_42f7_PlayerAction_TailSpin:
 ; entity collision treat him as dangerous this frame rather than vulnerable - and nudges him
 ; to at least walking speed so the whip carries him forward.
 ; Every frame it re-reads the tile behind him and, if that tile is TILE_TYPE_INTERACTIVE_MIN
-; or above (crates, switches, cages), runs the special-tile script. The comparison is done on
+; or above (crates, switches, cages), runs the tile hit script. The comparison is done on
 ; the complement of the tile type, so the test reads as "cp $40" - see the constants.
 ; When the animation ends it clears the attacking flag, re-locks B, and picks the next action
 ; from the ground state: airborne means PLAYER_ACTION_FREEFALL, on the ground it is Stand,
@@ -332,7 +332,7 @@ call_02_42f7_PlayerAction_TailSpin:
     cpl                                                ;; 02:4316 $2f
     ld   C, A                                          ;; 02:4317 $4f
     cp   A, TILE_TYPE_INTERACTIVE_MIN_CPL              ;; 02:4318 $fe $40
-    call C, call_00_1f46_SpecialTile_OnPlayerAttack                               ;; 02:431a $dc $46 $1f
+    call C, call_00_1f46_TileHit_OnPlayerAttack                               ;; 02:431a $dc $46 $1f
     ld   A, [wD20A_Player_UnkFlags2]                                    ;; 02:431d $fa $0a $d2
     and  A, SPRITE_FLAG_ANIM_ENDED                          ;; 02:4320 $e6 $04
     ret  Z                                             ;; 02:4322 $c8

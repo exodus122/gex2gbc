@@ -1277,7 +1277,7 @@ wD77A_PlayerYPositionBlock:
 ; Bg override related memory
 wD77B_OverrideVRAMWritePending:
 ; Bit 0 set = BgMap_WriteOverrideTiles has queued a VRAM write that hasn't completed yet;
-; gates BgMap_TickOverrideAnimation and SpecialTile_OnPlayerAttack
+; gates BgMap_TickOverrideAnimation and TileHit_OnPlayerAttack
     ds 1                                               ;; d77b
 wD77C_OverrideSequenceFlags:
 ; Flags for current sequence step - see the OVERRIDE_STEP_* constants:
@@ -1410,7 +1410,7 @@ wDAAB_MenuBgMapTileIds:
 ; ------------------------------------------------------------------
 ; DMG palette fading ($DACB-$DADB).
 ; Only used when wD59E_OnGBCFlag is clear - on GBC the palettes are written
-; straight out by call_00_0f9d_UpdateLCDPalettes instead.
+; straight out by call_00_0f9d_UploadCgbPalettes instead.
 ; call_00_1004_Fade_Update walks wDACE/wDACF/wDAD0 one shade at a time toward
 ; wDAD4/wDAD5/wDAD6, and call_00_0f80_VBlank_UpdatePalettes pushes them to the
 ; hardware registers.

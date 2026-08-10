@@ -1,10 +1,10 @@
-call_00_1f46_SpecialTile_OnPlayerAttack:
+call_00_1f46_TileHit_OnPlayerAttack:
 ; Entry point called each frame during TailSpin when the tile under Gex is interactive (type < $C0, inverted in C). 
 ; Guards: returns if wD77D_OverrideSequenceStepsRemaining nonzero (sequence already running), 
 ; wD77B_OverrideVRAMWritePending nonzero, or wD76B_Player_IsAttacking zero. Clears wD76B. Converts player X and Y 
 ; world positions to block coordinates (world_pos × 8, high byte) and stores preliminary values to wD782/wD783. 
-; Uses inverted tile type C × 2 as index into data_00_1ff6_SpecialTileScriptTable — returns if null. 
-; Falls into SpecialTile_RunScript
+; Uses inverted tile type C × 2 as index into data_00_1ff6_TileHitScriptTable — returns if null. 
+; Falls into TileHitScript_Run
     ld   A, [wD77D_OverrideSequenceStepsRemaining]                                    ;; 00:1f46 $fa $7d $d7
     and  A, A                                          ;; 00:1f49 $a7
     ret  NZ                                            ;; 00:1f4a $c0
@@ -37,14 +37,14 @@ call_00_1f46_SpecialTile_OnPlayerAttack:
     ld   L, C                                          ;; 00:1f73 $69
     ld   H, $00                                        ;; 00:1f74 $26 $00
     add  HL, HL                                        ;; 00:1f76 $29
-    ld   DE, data_00_1ff6_SpecialTileScriptTable                                     ;; 00:1f77 $11 $f6 $1f
+    ld   DE, data_00_1ff6_TileHitScriptTable                                     ;; 00:1f77 $11 $f6 $1f
     add  HL, DE                                        ;; 00:1f7a $19
     ld   A, [HL+]                                      ;; 00:1f7b $2a
     ld   H, [HL]                                       ;; 00:1f7c $66
     ld   L, A                                          ;; 00:1f7d $6f
     or   A, H                                          ;; 00:1f7e $b4
     ret  Z                                             ;; 00:1f7f $c8
-call_00_1f80_SpecialTile_RunScript:
+call_00_1f80_TileHitScript_Run:
 ; Also called directly by the mission preview cutscene system. Reads a callback function pointer (DE) 
 ; and a step count byte from the script. If count is zero: skips override setup, jumps straight to 
 ; calling DE (fire-and-forget). If nonzero: stores count to wD77D (sequence length), next byte 
@@ -136,7 +136,7 @@ call_00_1f80_SpecialTile_RunScript:
     or   A, H                                          ;; 00:1ff1 $b4
     call NZ, call_00_10bd_JumpHL                              ;; 00:1ff2 $c4 $bd $10
     ret                                                ;; 00:1ff5 $c9
-data_00_1ff6_SpecialTileScriptTable:
+data_00_1ff6_TileHitScriptTable:
 ; Sparse pointer table of 63 entries (indexed by inverted tile type x 2), running from $1FF6 up to
 ; the first script at $2074 - 126 bytes, which is what fixes the count. Null entries ($0000) mean the
 ; tile is non-interactive when attacked; non-null entries point to tile-specific override scripts.
@@ -146,7 +146,7 @@ data_00_1ff6_SpecialTileScriptTable:
 ; whose only difference is the x/y offset, so that hitting either half places the rectangle over the
 ; whole object. CountedBreakable at 5 and 10, and Breakable_Left/RightTile at 7 and 8, are examples.
 ;
-; Script record format (used by SpecialTile_RunScript), 8-byte header:
+; Script record format (used by TileHitScript_Run), 8-byte header:
 ;   [callback_ptr(2), step_count(1), timer_reload(1), x_offset(1), y_offset(1), width(1), height(1)]
 ; Offsets are signed and relative to the tile that was hit. Step count = 0 means fire-and-forget
 ; (callback only, no sequence).
@@ -154,46 +154,46 @@ data_00_1ff6_SpecialTileScriptTable:
 ; The step data that follows is consumed by BgMap_TickOverrideSequence one step at a time. Each step
 ; is an OVERRIDE_STEP_* flag byte, then width x height 16-bit cell entries - so 2 bytes per cell plus
 ; the leading flag, and one further byte if the step sets OVERRIDE_STEP_SFX to play a sound.
-    dw   data_00_2074_SpecialTileScript_CheckpointTV_Left
-    dw   data_00_20d3_SpecialTileScript_FlyTV2_1
-    dw   data_00_20ff_SpecialTileScript_FlyTV_Health1
-    dw   data_00_211c_SpecialTileScript_FlyTV1_1
-    dw   data_00_2139_SpecialTileScript_FlyTV_Life1
-    dw   data_00_2156_SpecialTileScript_CountedBreakable_LowerTile
-    dw   data_00_21ae_SpecialTileScript_SlotSwitch_Wide
-    dw   data_00_21c2_SpecialTileScript_Breakable_RightTile
-    dw   data_00_21e4_SpecialTileScript_Breakable_LeftTile
-    dw   data_00_2206_SpecialTileScript_SlotSwitch_Single
-    dw   data_00_216e_SpecialTileScript_CountedBreakable_UpperTile
+    dw   data_00_2074_TileHitScript_CheckpointTV_Left
+    dw   data_00_20d3_TileHitScript_FlyTV2_1
+    dw   data_00_20ff_TileHitScript_FlyTV_Health1
+    dw   data_00_211c_TileHitScript_FlyTV1_1
+    dw   data_00_2139_TileHitScript_FlyTV_Life1
+    dw   data_00_2156_TileHitScript_CountedBreakable_LowerTile
+    dw   data_00_21ae_TileHitScript_SlotSwitch_Wide
+    dw   data_00_21c2_TileHitScript_Breakable_RightTile
+    dw   data_00_21e4_TileHitScript_Breakable_LeftTile
+    dw   data_00_2206_TileHitScript_SlotSwitch_Single
+    dw   data_00_216e_TileHitScript_CountedBreakable_UpperTile
     dw   $0000, $0000, $0000, $0000
-    dw   data_00_20eb_SpecialTileScript_FlyTV2_3
-    dw   $0000, $0000, $0000, $0000
-    dw   $0000, $0000, $0000, $0000
+    dw   data_00_20eb_TileHitScript_FlyTV2_3
     dw   $0000, $0000, $0000, $0000
     dw   $0000, $0000, $0000, $0000
-    dw   data_00_2217_SpecialTileScript_PositionedSwitch
+    dw   $0000, $0000, $0000, $0000
+    dw   $0000, $0000, $0000, $0000
+    dw   data_00_2217_TileHitScript_PositionedSwitch
     dw   $0000, $0000, $0000, $0000
     dw   $0000, $0000, $0000, $0000
     dw   $0000, $0000, $0000, $0000
     dw   $0000, $0000, $0000, $0000, $0000
-    dw   data_00_2266_SpecialTileScript_KungFu_DoorSwitch
+    dw   data_00_2266_TileHitScript_KungFu_DoorSwitch
     dw   $0000, $0000, $0000, $0000, $0000
-    dw   data_00_22e7_SpecialTileScript_Cannon_FaceLeft
-    dw   data_00_22c9_SpecialTileScript_Cannon_FaceRight
-    dw   data_00_2080_SpecialTileScript_CheckpointTV_Right
-    dw   data_00_20df_SpecialTileScript_FlyTV2_2
-    dw   data_00_210b_SpecialTileScript_FlyTV_Health2
-    dw   data_00_2128_SpecialTileScript_FlyTV1_2
-    dw   data_00_2145_SpecialTileScript_FlyTV_Life2
+    dw   data_00_22e7_TileHitScript_Cannon_FaceLeft
+    dw   data_00_22c9_TileHitScript_Cannon_FaceRight
+    dw   data_00_2080_TileHitScript_CheckpointTV_Right
+    dw   data_00_20df_TileHitScript_FlyTV2_2
+    dw   data_00_210b_TileHitScript_FlyTV_Health2
+    dw   data_00_2128_TileHitScript_FlyTV1_2
+    dw   data_00_2145_TileHitScript_FlyTV_Life2
 
-data_00_2074_SpecialTileScript_CheckpointTV_Left:
+data_00_2074_TileHitScript_CheckpointTV_Left:
 ; Script for left-facing checkpoint tv. Step count=1, timer=0, offset=(0,0), 1×1. 
 ; Tile data: $2A, $02 then $FA, $01. Callback = Checkpoint_WriteSpawnId. 
 ; On hit: plays the one-step break animation then calls the checkpoint lookup
     dw   call_00_208c_Checkpoint_WriteSpawnId
     db   $01, $00, $00, $00, $01, $01
     db   $2a, $02, $fa, $01
-data_00_2080_SpecialTileScript_CheckpointTV_Right:
+data_00_2080_TileHitScript_CheckpointTV_Right:
 ; Same as above but right-facing variant. Tile data ends with $EA, $01 instead. Same callback
     dw   call_00_208c_Checkpoint_WriteSpawnId
     db   $01, $00, $00, $00, $01, $01
@@ -243,15 +243,15 @@ call_00_208c_Checkpoint_WriteSpawnId:
     db   $18, $0e, $34, $01
     db   $ff
 
-data_00_20d3_SpecialTileScript_FlyTV2_1:
+data_00_20d3_TileHitScript_FlyTV2_1:
     dw   call_00_20fa_HitFlyTV_Type2
     db   $01, $00, $00, $00, $01, $01
     db   $2a, $02, $fa, $01
-data_00_20df_SpecialTileScript_FlyTV2_2:
+data_00_20df_TileHitScript_FlyTV2_2:
     dw   call_00_20fa_HitFlyTV_Type2
     db   $01, $00, $00, $00, $01, $01
     db   $2a, $02, $ea, $01
-data_00_20eb_SpecialTileScript_FlyTV2_3:
+data_00_20eb_TileHitScript_FlyTV2_3:
     dw   call_00_20fa_HitFlyTV_Type2
     db   $02, $28, $00, $00, $01, $01
     db   $28, $02, $fa, $01, $08, $9f, $01
@@ -259,11 +259,11 @@ call_00_20fa_HitFlyTV_Type2:
     ld   a,$02
     jp   call_00_0647_Player_SetUpOrEatFlyPowerup
 
-data_00_20ff_SpecialTileScript_FlyTV_Health1:
+data_00_20ff_TileHitScript_FlyTV_Health1:
     dw   call_00_2117_HitFlyTV_RestoreHealth
     db   $01, $00, $00, $00, $01, $01
     db   $2a, $02, $fa, $01
-data_00_210b_SpecialTileScript_FlyTV_Health2:
+data_00_210b_TileHitScript_FlyTV_Health2:
     dw   call_00_2117_HitFlyTV_RestoreHealth
     db   $01, $00, $00, $00, $01, $01
     db   $2a, $02, $ea, $01
@@ -271,11 +271,11 @@ call_00_2117_HitFlyTV_RestoreHealth:
     ld   a,$03
     jp   call_00_0647_Player_SetUpOrEatFlyPowerup
 
-data_00_211c_SpecialTileScript_FlyTV1_1:
+data_00_211c_TileHitScript_FlyTV1_1:
     dw   call_00_2134_HitFlyTV_Type1
     db   $01, $00, $00, $00, $01, $01
     db   $2a, $02, $fa, $01
-data_00_2128_SpecialTileScript_FlyTV1_2:
+data_00_2128_TileHitScript_FlyTV1_2:
     dw   call_00_2134_HitFlyTV_Type1
     db   $01, $00, $00, $00, $01, $01
     db   $2a, $02, $ea, $01
@@ -283,11 +283,11 @@ call_00_2134_HitFlyTV_Type1:
     ld   a,$01
     jp   call_00_0647_Player_SetUpOrEatFlyPowerup
 
-data_00_2139_SpecialTileScript_FlyTV_Life1:
+data_00_2139_TileHitScript_FlyTV_Life1:
     dw   call_00_2151_HitFlyTV_ExtraLife
     db   $01, $00, $00, $00, $01, $01
     db   $2a, $02, $fa, $01
-data_00_2145_SpecialTileScript_FlyTV_Life2:
+data_00_2145_TileHitScript_FlyTV_Life2:
     dw   call_00_2151_HitFlyTV_ExtraLife
     db   $01, $00, $00, $00, $01, $01
     db   $2a, $02, $ea, $01
@@ -295,7 +295,7 @@ call_00_2151_HitFlyTV_ExtraLife:
     ld   a,$04
     jp   call_00_0647_Player_SetUpOrEatFlyPowerup
 
-data_00_2156_SpecialTileScript_CountedBreakable_LowerTile:
+data_00_2156_TileHitScript_CountedBreakable_LowerTile:
 ; A destructible 1x2 object that counts toward a per-level quota. 3 steps at 60
 ; frames, offset (0,-1) - the -1 marks this as the LOWER tile of the pair, since
 ; the rectangle has to start one block above the tile actually hit. The upper tile
@@ -310,7 +310,7 @@ data_00_2156_SpecialTileScript_CountedBreakable_LowerTile:
     db   $03, $3c, $00, $ff, $01, $02        ;; 00:2156 ????????
     db   $23, $22, $00, $00, $e2, $01, $08, $d9        ;; 00:215e ????????
     db   $01, $da, $01, $08, $00, $00, $e2, $01        ;; 00:2166 ????????
-data_00_216e_SpecialTileScript_CountedBreakable_UpperTile:
+data_00_216e_TileHitScript_CountedBreakable_UpperTile:
 ; Same script as the lower tile but offset (0,0). Both sit in the script table -
 ; indices 5 and 10 - so either half of the object can be hit
     dw   call_00_2186_CountedBreakable_OnHit
@@ -350,7 +350,7 @@ call_00_2186_CountedBreakable_OnHit:
     FARCALL call_00_3951_Entity_SpawnEffectAtPlayer
     ret  
 
-data_00_21ae_SpecialTileScript_SlotSwitch_Wide:
+data_00_21ae_TileHitScript_SlotSwitch_Wide:
     dw   call_00_21bc_SlotSwitch_TriggerSlot0
     db   $01, $00, $ff, $00, $02, $01, $2c, $26, $c9, $01, $ca, $01
 call_00_21bc_SlotSwitch_TriggerSlot0:
@@ -358,7 +358,7 @@ call_00_21bc_SlotSwitch_TriggerSlot0:
     ld   [hl],$02
     ret  
 
-data_00_21c2_SpecialTileScript_Breakable_RightTile:
+data_00_21c2_TileHitScript_Breakable_RightTile:
 ; Multi-stage breakable, no callback, 5 steps at 8 frames, 2x1 blocks, x offset -1
 ; so the rectangle covers the pair when the RIGHT half is hit.
 ;
@@ -371,7 +371,7 @@ data_00_21c2_SpecialTileScript_Breakable_RightTile:
     db   $d4, $01, $08, $d1, $01, $d2, $01, $08        ;; 00:21ce ????????
     db   $cf, $01, $d0, $01, $08, $cd, $01, $ce        ;; 00:21d6 ????????
     db   $01, $0c, $cb, $01, $cc, $01
-data_00_21e4_SpecialTileScript_Breakable_LeftTile:
+data_00_21e4_TileHitScript_Breakable_LeftTile:
 ; The same five frames at x offset 0, for when the left half is hit
     db   $00, $00        ;; 00:21de ????????
     db   $05, $08, $00, $00, $02, $01, $2a, $25        ;; 00:21e6 ????????
@@ -379,7 +379,7 @@ data_00_21e4_SpecialTileScript_Breakable_LeftTile:
     db   $01, $08, $cf, $01, $d0, $01, $08, $cd        ;; 00:21f6 ????????
     db   $01, $ce, $01, $0c, $cb, $01, $cc, $01        ;; 00:21fe ????????
 
-data_00_2206_SpecialTileScript_SlotSwitch_Single:
+data_00_2206_TileHitScript_SlotSwitch_Single:
     dw   call_00_2211_SlotSwitch_TriggerSlot0Alt
     db   $01, $00, $00, $00, $01, $01, $0a, $c7, $01
 call_00_2211_SlotSwitch_TriggerSlot0Alt:
@@ -387,7 +387,7 @@ call_00_2211_SlotSwitch_TriggerSlot0Alt:
     ld   [hl],$02
     ret  
 
-data_00_2217_SpecialTileScript_PositionedSwitch:
+data_00_2217_TileHitScript_PositionedSwitch:
     dw   call_00_2225_Switch_ArmSlotByPosition
     db   $01, $08, $00, $ff, $01, $02, $28, $1b, $f8, $01, $f9, $01
 call_00_2225_Switch_ArmSlotByPosition:
@@ -442,7 +442,7 @@ call_00_2225_Switch_ArmSlotByPosition:
     db   $59, $2f, $59, $47, $51, $54, $55, $5a        ;; 00:2256 ????????
     db   $55, $29, $4a, $39, $64, $10, $47, $ff        ;; 00:225e ????????
 
-data_00_2266_SpecialTileScript_KungFu_DoorSwitch:
+data_00_2266_TileHitScript_KungFu_DoorSwitch:
 ; Kung Fu Theater door switch. Step count=1, timer=0, x=$00, y=$08, 1×2. 
 ; Tiles $F8,$01/$F9,$01. Callback = DoorSwitch_UpdateState
     dw   call_00_2274_DoorSwitch_UpdateState
@@ -490,7 +490,7 @@ call_00_2274_DoorSwitch_UpdateState:
     db   $5e, $0d, $43, $1f, $4f, $1f, $05, $0f
     db   $75, $04, $51, $1e, $73, $2d, $6e, $2d, $ff
 
-data_00_22c9_SpecialTileScript_Cannon_FaceRight:
+data_00_22c9_TileHitScript_Cannon_FaceRight:
 ; Right-rotating cannon. Step count=3, timer=$06, offset=(0,0), 2×1. 
 ; Tiles: $B9/$BA → $BB/$BC → $BD/$BE ($28 timer, $2C stride).
     dw   call_00_22e1_Cannon_FaceRight
@@ -503,7 +503,7 @@ call_00_22e1_Cannon_FaceRight:
     ld   [wD615_Cannon_FacingDirection],a
     ret  
 
-data_00_22e7_SpecialTileScript_Cannon_FaceLeft:
+data_00_22e7_TileHitScript_Cannon_FaceLeft:
 ; Left-rotating cannon. Reverse tile sequence: $BB/$BC → $B9/$BA → $B7/$B8.
     dw   call_00_22ff_Cannon_FaceLeft
     db   $03, $06, $00, $00, $02, $01

@@ -109,7 +109,7 @@ call_00_2329_Cutscene_LoadAndRun:
     ld   [wD743_Player_UpdateFlag], A                                    ;; 00:236c $ea $43 $d7
     call call_00_1264_BgMap_LoadFull                                  ;; 00:236f $cd $64 $12
     FARCALL call_02_6e68_Entities_InitNPCSlots
-    call call_00_0521_DrawEntitiesWrapper                                  ;; 00:237d $cd $21 $05
+    call call_00_0521_Screen_PresentAndFadeIn                                  ;; 00:237d $cd $21 $05
     pop  HL                                            ;; 00:2380 $e1
     ld   E, [HL]                                       ;; 00:2381 $5e
     inc  HL                                            ;; 00:2382 $23
@@ -170,7 +170,7 @@ call_00_2329_Cutscene_LoadAndRun:
     ld   L, A                                          ;; 00:23eb $6f
     or   A, H                                          ;; 00:23ec $b4
     jr   Z, .jr_00_241e                                ;; 00:23ed $28 $2f
-    call call_00_1f80_SpecialTile_RunScript                                  ;; 00:23ef $cd $80 $1f
+    call call_00_1f80_TileHitScript_Run                                  ;; 00:23ef $cd $80 $1f
 .jr_00_23f2:
     ld   A, [wD775_Cutscene_Skippable]                                    ;; 00:23f2 $fa $75 $d7
     and  A, A                                          ;; 00:23f5 $a7
@@ -228,7 +228,7 @@ call_00_2329_Cutscene_LoadAndRun:
     call call_00_13a6_BgMap_UpdateWindowFromPlayerPos                                  ;; 00:245e $cd $a6 $13
     call call_00_1264_BgMap_LoadFull                                  ;; 00:2461 $cd $64 $12
     FARCALL call_02_71c8_Entities_QueueGraphicsAndPalettes
-    jp   call_00_0521_DrawEntitiesWrapper                                  ;; 00:246f $c3 $21 $05
+    jp   call_00_0521_Screen_PresentAndFadeIn                                  ;; 00:246f $c3 $21 $05
 .data_00_2472_CutsceneIndexLookupTable:
 ; 31 rows of CUTSCENE_SLOTS_PER_LEVEL bytes, indexed by (level id, slot). The value is an
 ; index into .data_00_2662_CutsceneScriptPointerTable, or CUTSCENE_NONE for nothing.
@@ -282,7 +282,7 @@ call_00_2329_Cutscene_LoadAndRun:
 ; block laid out immediately after it, so a script and its data are one contiguous run.
 ;
 ; The animation block is not cutscene-specific: it is an override sequence in exactly the format
-; SpecialTile_RunScript / BgMap_TickOverrideSequence consume for switches and breakable scenery.
+; TileHitScript_Run / BgMap_TickOverrideSequence consume for switches and breakable scenery.
 ; Header is 8 bytes:
 ;
 ;   +0  dw  callback, run at setup ($0000 = none)

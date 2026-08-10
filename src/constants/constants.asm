@@ -573,7 +573,7 @@ DEF FONT_BYTES_PER_ROW                      EQU 2   ; 2bpp: plane 0 then plane 1
 ; Tile-override sequence step flags (wD77C_OverrideSequenceFlags)
 ;
 ; One flag byte heads every step of an override sequence, whether the sequence came from a
-; special tile or from a cutscene's animation block. BgMap_TickOverrideSequence dispatches on
+; tile hit script or from a cutscene's animation block. BgMap_TickOverrideSequence dispatches on
 ; the bits in this order: SFX (which consumes an extra argument byte from the step), then
 ; REGISTER, then COLLISION, then TILES, then LOOP.
 ; ------------------------------------------------------------------
