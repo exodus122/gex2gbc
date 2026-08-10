@@ -259,9 +259,9 @@ call_00_0150_Init:
     ld   [wD614_Dragon_HitTimer], A                                    ;; 00:033f $ea $14 $d6
     ld   [wD617_TailSpinChargeCounter], A                                    ;; 00:0342 $ea $17 $d6
     ld   A, [wD627_CurrentMission]                                    ;; 00:0345 $fa $27 $d6
-    add  A, $0a                                        ;; 00:0348 $c6 $0a
-    ld   C, A                                          ;; 00:034a $4f
-    ld   B, $01                                        ;; 00:034b $06 $01
+    add  A, CUTSCENE_SLOT_MISSION_BASE                 ;; 00:0348 $c6 $0a
+    ld   C, A                                          ;; 00:034a $4f ; C = cutscene slot
+    ld   B, $01                                        ;; 00:034b $06 $01 ; B = skippable
     call call_00_2329_MissionPreview_LoadAndRun                                  ;; 00:034d $cd $29 $23
 .jr_00_0350:
     xor  A, A                                          ;; 00:0350 $af
@@ -289,7 +289,7 @@ call_00_0150_Init:
     ld   [wD753_FlyPowerup1_TimerLo], A                                    ;; 00:0383 $ea $53 $d7
     ld   [wD754_FlyPowerup1_TimerHi], A                                    ;; 00:0386 $ea $54 $d7
     ld   [wD772], A                                    ;; 00:0389 $ea $72 $d7
-    ld   [wD773], A                                    ;; 00:038c $ea $73 $d7
+    ld   [wD773_HuntersDefeatedCount], A               ;; 00:038c $ea $73 $d7
     ld   [wD774], A                                    ;; 00:038f $ea $74 $d7
     ld   [wD73C_FrameCounter2], A                                    ;; 00:0392 $ea $3c $d7
     ld   [wD6F9_BgMap_LoadingFlags], A                                    ;; 00:0395 $ea $f9 $d6

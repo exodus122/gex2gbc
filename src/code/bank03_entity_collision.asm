@@ -1,14 +1,45 @@
-; This file handles gex's collision with entities [enemies, tv switches, remotes, etc.]
+; ==================================================================
+; ENTITY COLLISION
+;
+; Gex against everything else - enemies, remotes, platforms, tv buttons.
+; Entity-against-entity collision does not exist; only the player is ever
+; tested, which is why every routine here talks about "the player" implicitly.
+;
+; Two levels of dispatch:
+;
+;   COLLISION_TYPE (entity field $16) picks a handler out of
+;   .data_03_4c9b_EntityCollisionJumpTable. This is a property of the entity
+;   *instance*, so the same entity type can behave differently per level
+;
+;   ENTITY_INTERACT_* flags (.data_03_522e_EntityInteractionFlagsTable, keyed
+;   by entity type) say which kinds of contact are possible at all
+;
+; Almost every handler opens with call_03_519b_Entity_CheckPlayerInteraction,
+; which does the box test once and reports back not just "did we touch" but
+; *how*: 0 touch, 1 attack, 2 stomp. The handler then switches on that. Reading
+; a handler is mostly a matter of reading its three cases.
+;
+; Platforms are the exception - they do not use the shared test at all, because
+; they care about which side Gex approached from and how fast. They live at the
+; bottom of the file and write wD74D_Player_EntityStoodOnLo /
+; wD74E_Player_PushedStationaryPlatformLo / wD74F_Player_PushedMovingPlatformLo,
+; which is what makes Entities_UpdateAll run them before Gex the next frame.
+;
+; Note that collision runs from inside the sprite builder, not from the update
+; loop - Entity_BuildSprites tail-calls EntityCollision_Dispatch. An entity
+; that is not drawn is therefore never tested, which is the cheap way this game
+; culls offscreen collision.
+; ==================================================================
 
 call_03_4c76_EntityCollision_Dispatch:
 ; Entry point for all entity–player collision. Returns immediately if Gex isn't drawn (wD743=0) or 
-; if the entity's UNK_0A bit 5 is clear (collision disabled). Otherwise reads the collision type 
+; if the entity's SPRITE_FLAG_ON_SCREEN is clear (offscreen entities cannot be touched). Otherwise reads the collision type
 ; from the entity's data, indexes into .data_03_4c9b_EntityCollisionJumpTable, and jumps to the appropriate handler
     ld   A, [wD743_Player_UpdateFlag]                                    ;; 03:4c76 $fa $43 $d7
     and  A, A                                          ;; 03:4c79 $a7
     ret  Z                                             ;; 03:4c7a $c8 ; return if [D743] is 0
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_0A
-    bit  UNK_0A_BIT_5, [HL]                                       ;; 03:4c83 $cb $6e
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_SPRITE_FLAGS
+    bit  SPRITE_FLAG_ON_SCREEN_BIT, [HL]                                       ;; 03:4c83 $cb $6e
     ret  Z                                             ;; 03:4c85 $c8
     xor  A, $1e                                        ;; 03:4c86 $ee $1e
     ld   L, A                                          ;; 03:4c88 $6f
@@ -51,7 +82,7 @@ call_03_4c76_EntityCollision_Dispatch:
     dw   .jr_03_4f14_CollisionHandler_Jar ; COLLISION_TYPE_JAR
     dw   .jr_03_4f20_CollisionHandler_Ninja ; COLLISION_TYPE_NINJA
     dw   .jr_03_4fc7_CollisionHandler_HangingBlade ; COLLISION_TYPE_HANGING_BLADE
-    dw   .jr_03_4fcf_CollisionHandler_Unk17 ; COLLISION_TYPE_UNK_17
+    dw   .jr_03_4fcf_CollisionHandler_LaunchPad ; COLLISION_TYPE_LAUNCH_PAD
     dw   .jr_03_4fd9_CollisionHandler_SamuraiBody ; COLLISION_TYPE_SAMURAI_BODY
     dw   .jr_03_5035_CollisionHandler_SamuraiHead ; COLLISION_TYPE_SAMURAI_HEAD
     dw   .jr_03_5049_CollisionHandler_Geyser ; COLLISION_TYPE_GEYSER
@@ -180,8 +211,8 @@ call_03_4c76_EntityCollision_Dispatch:
     ld   [wD757_LanternLitFlag],a
     ret  
 .jr_03_4d9a_CollisionHandler_Zombie:
-; Touch → damage player. On attack/stomp: checks UNK_17 bit 0 (already hit flag); 
-; if not set, sets it, loads a $3C countdown into UNK_18, and decrements a counter —
+; Touch → damage player. On attack/stomp: checks MISC_FLAGS bit 0 (already hit flag); 
+; if not set, sets it, loads a $3C countdown into MISC_TIMER, and decrements a counter —
 ; the zombie has a stagger/death delay before fully dying
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
@@ -327,9 +358,9 @@ call_03_4c76_EntityCollision_Dispatch:
     FARCALL call_02_4ccd_Player_RequestAction
     ret                                                ;; 03:4e7e $c9
 .jr_03_4e7f_CollisionHandler_Hunter:
-; Checks UNK_17 bit 0 first (already shooting, skip). Touch → damage player. 
-; Attack/stomp: decrements UNK_18 timer; if not zero, sets the "shooting" bit and returns. 
-; When timer hits zero, spawns a projectile, increments wD773 (hunter shot count), 
+; Checks MISC_FLAGS bit 0 first (already shooting, skip). Touch → damage player. 
+; Attack/stomp: decrements MISC_TIMER timer; if not zero, sets the "shooting" bit and returns. 
+; When timer hits zero, spawns a projectile, increments wD773_HuntersDefeatedCount (hunter shot count), 
 ; and if count reaches 2 sets wD799_OverrideSlotTable14=$02 (likely triggers a level flag)
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     bit  MISC_FLAGS_BIT_0,[hl]
@@ -345,7 +376,7 @@ call_03_4c76_EntityCollision_Dispatch:
     ret  
 .jr_03_4EA3:
     call call_00_3985_Entity_ParticleBurstInit
-    ld   hl,wD773
+    ld   hl,wD773_HuntersDefeatedCount
     inc  [hl]
     ld   a,[hl]
     cp   a,$02
@@ -355,7 +386,7 @@ call_03_4c76_EntityCollision_Dispatch:
     ret  
 .jr_03_4eb4_CollisionHandler_Mushroom:
 ; Overlap check; touch → no effect (returns Z). 
-; Attack/stomp → sets UNK_17 bit 0 (marks mushroom as pressed/activated)
+; Attack/stomp → sets MISC_FLAGS bit 0 (marks mushroom as pressed/activated)
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     cp   a,$00
@@ -433,7 +464,7 @@ call_03_4c76_EntityCollision_Dispatch:
 ; Two-phase handler. First checks if the ninja's sword hitbox (derived from action ID, frame counter, 
 ; and screen position adjusted for facing) overlaps the player — if so, damages directly without going 
 ; through standard overlap. Otherwise falls through to standard overlap: touch → damage; 
-; attack/stomp → checks UNK_19 parry counter; if >0 decrements and returns; if 0, 
+; attack/stomp → checks TIMER_2 parry counter; if >0 decrements and returns; if 0, 
 ; checks a hardcoded level/slot table (.data_03_4fbd) for a special unlock flag to set, then spawns defeat particle
     push de
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_ACTION_ID
@@ -537,16 +568,18 @@ call_03_4c76_EntityCollision_Dispatch:
     call .jr_03_4e20_CollisionHandler_FallingHazard
     pop  de
     jp   .jr_03_4d82_CollisionHandler_TouchDamage
-.jr_03_4fcf_CollisionHandler_Unk17:
-; Overlap check; on hit, sets wD758_JumpVelocityOverride=$7F (likely a slide/ice friction override value)
+.jr_03_4fcf_CollisionHandler_LaunchPad:
+; Does nothing except overwrite the jump velocity, with the largest value in the game -
+; compare PLAYER_JUMP_VELOCITY $2A, the geyser's $50. No damage and no state change, so
+; touching this just throws Gex upward the next time he leaves the ground
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
-    ld   a,$7F
+    ld   a,PLAYER_LAUNCH_PAD_VELOCITY
     ld   [wD758_JumpVelocityOverride],a
-    ret  
+    ret
 .jr_03_4fd9_CollisionHandler_SamuraiBody:
 ; Nearly identical to Ninja: if action is $01 (attacking) and frame is ≥2, checks sword hitbox overlap 
-; directly → damages player. Otherwise standard overlap: touch → damage; stomp/attack → sets UNK_17 bit 0
+; directly → damages player. Otherwise standard overlap: touch → damage; stomp/attack → sets MISC_FLAGS bit 0
     push de
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_ACTION_ID
     ld   a,[hl]
@@ -598,7 +631,7 @@ call_03_4c76_EntityCollision_Dispatch:
     set  MISC_FLAGS_BIT_0,[hl]
     ret  
 .jr_03_5035_CollisionHandler_SamuraiHead:
-; Touch → damage player; attack/stomp → sets MISC_FLAG bit 0 (generic "set hit flag" pattern shared by some enemies)
+; Touch → damage player; attack/stomp → sets MISC_FLAGS bit 0 (generic "was hit" flag shared by several enemies)
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     cp   a,$00
@@ -607,16 +640,17 @@ call_03_4c76_EntityCollision_Dispatch:
     set  MISC_FLAGS_BIT_0,[hl]
     ret  
 .jr_03_5049_CollisionHandler_Geyser:
-; Only active in action $01 (geyser erupting). Sets wD758_JumpVelocityOverride=$50 (likely an upward launch velocity 
-; applied to the player) — no damage, just launches
+; Only reacts while the geyser is mid-eruption. Like the launch pad it does no damage and
+; runs no overlap test at all - standing anywhere in the geyser's slot while it erupts is
+; enough to be thrown upward
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_ACTION_ID
     ld   a,[hl]
-    and  a,$1F
-    cp   a,$01
+    and  a,PLAYER_ACTION_MASK
+    cp   a,$01                                         ; erupting
     ret  nz
-    ld   a,$50
+    ld   a,PLAYER_GEYSER_VELOCITY
     ld   [wD758_JumpVelocityOverride],a
-    ret  
+    ret
 .jr_03_505d_CollisionHandler_Triceratops:
 ; Checks the horn hitbox first (X offset adjusted for facing direction), within a 12×12 window — 
 ; if player is in horn range, damages directly. Otherwise standard overlap: touch → damage; 
@@ -667,8 +701,8 @@ call_03_4c76_EntityCollision_Dispatch:
     jr   nz,.jr_03_509C
     jp   call_00_3985_Entity_ParticleBurstInit
 .jr_03_50ac_CollisionHandler_Gear:
-; Overlap check with result saved. If overlapping AND stomp (A=$01), sets UNK_17 bit 0 (gear activated). 
-; If not overlapping or not stomp, clears UNK_17 bit 0 (gear released) — models a pressure-activated gear/button
+; Overlap check with result saved. If overlapping AND stomp (A=$01), sets MISC_FLAGS bit 0 (gear activated). 
+; If not overlapping or not stomp, clears MISC_FLAGS bit 0 (gear released) — models a pressure-activated gear/button
     call call_03_519b_Entity_CheckPlayerInteraction
     push af
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
@@ -698,7 +732,7 @@ call_03_4c76_EntityCollision_Dispatch:
     jp   call_03_52be_Entity_DamagePlayerIfVulnerable
 .jr_03_50e7_CollisionHandler_Rocket:
 ; Checks wD755_FlyPowerup2_TimerLo/wD756_FlyPowerup2_TimerHi (speed registers) are non-zero (rocket is moving). Overlap check; 
-; sets UNK_17 bit 7, then triggers player action $1F (rocket ride/capture)
+; sets MISC_FLAGS bit 7, then triggers player action $1F (rocket ride/capture)
     ld   hl,wD755_FlyPowerup2_TimerLo
     ldi  a,[hl]
     or   [hl]
@@ -712,7 +746,7 @@ call_03_4c76_EntityCollision_Dispatch:
     ret  
 .jr_03_5109_CollisionHandler_Cannon:
 ; Scans all slots for an active cannon projectile (ID=$4D); if one exists, returns (already firing). 
-; Otherwise standard overlap; A=$02 (stomp only) sets UNK_17 bit 7 (fire the cannon)
+; Otherwise standard overlap; A=$02 (stomp only) sets MISC_FLAGS bit 7 (fire the cannon)
     ld   h,$D2
     ld   a,$20
 .jr_03_510D:
@@ -731,7 +765,7 @@ call_03_4c76_EntityCollision_Dispatch:
     set  MISC_FLAGS_BIT_7,[hl]
     ret  
 .jr_03_5129_CollisionHandler_PoweredWalkway:
-; Overlap check; if wD751_Player_CircuitPowerUpTimerLo/wD752_Player_CircuitPowerUpTimerHi are non-zero (walkway is powered), reads UNK_19 as an index 
+; Overlap check; if wD751_Player_CircuitPowerUpTimerLo/wD752_Player_CircuitPowerUpTimerHi are non-zero (walkway is powered), reads TIMER_2 as an index 
 ; into wD5A3_ConveyorState1 conveyor state table, writes $06 to that slot; if the previous value was 0, 
 ; plays SFX $2B (activation sound)
     call call_03_519b_Entity_CheckPlayerInteraction
@@ -798,14 +832,27 @@ call_03_4c76_EntityCollision_Dispatch:
     ret  
 
 call_03_519b_Entity_CheckPlayerInteraction:
-; The shared AABB overlap test used by nearly every handler. Loads the entity's height/width (D/E), 
-; computes Y overlap using player screen Y vs entity Y + half-height, then X overlap similarly. 
-; Returns carry clear = no overlap. If overlapping, checks wD753_FlyPowerup1_TimerLo/wD755_FlyPowerup2_TimerLo (invincibility/stun timers) 
-; and the entity's interaction flags byte from .data_03_522e_EntityInteractionFlagsTable: 
-; bit 1 = requires player NOT to be climbing/tail-whipping (returns A=$01, "touch"), 
-; bit 2 = stomping valid — if player is in jump/fall action AND Y velocity is negative, bounces player upward 
-; (sets wD760=$2A) and returns A=$02 ("stomp"); 
-; otherwise returns A=$01 ("touch")
+; The shared AABB overlap test, called by nearly every handler as its first act.
+;
+; Returns carry clear when there is no overlap. On an overlap it returns carry set and, in A,
+; *how* the player made contact - which is what lets one handler treat being walked into and
+; being jumped on as completely different events:
+;
+;   A = 0  touch    the player ran into it
+;   A = 1  attack   the player was tail whipping
+;   A = 2  stomp    the player landed on it from above
+;
+; Whether each of those is even possible per entity type comes from
+; .data_03_522e_EntityInteractionFlagsTable (ENTITY_INTERACT_*), so an enemy that cannot be
+; stomped simply never returns 2 and its handler needs no special case.
+;
+; The stomp path is the interesting one: it requires the stomp flag, the player to be in
+; PLAYER_ACTION_JUMP or PLAYER_ACTION_DOUBLE_JUMP, *and* his Y velocity to be downward. When
+; all three hold it rewrites wD760_PlayerYVelocity to PLAYER_JUMP_VELOCITY before returning,
+; so the bounce happens here rather than in any handler.
+;
+; Note the odd "ld A,$FF / add A,n" endings - that is a two-instruction way of loading the
+; result and setting carry at the same time
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_ENTITY_ID
     ld   L, [HL]                                       ;; 03:51a3 $6e
     ld   H, $00                                        ;; 03:51a4 $26 $00
@@ -891,8 +938,10 @@ call_03_519b_Entity_CheckPlayerInteraction:
     add  A, $01                                        ;; 03:522b $c6 $01
     ret                                                ;; 03:522d $c9
 .data_03_522e_EntityInteractionFlagsTable:
-; Per-entity-type flags byte table: bit 0 unused, bit 1 = ENTITY_INTERACT_TOUCH (touch damage), 
-; bit 2 = ENTITY_INTERACT_ATTACK (tail whip/attack kills), bit 3 = ENTITY_INTERACT_STOMP (jump-stomp kills)
+; One flags byte per entity type, saying which kinds of contact that entity reacts to:
+;   bit 0 ($01) ENTITY_INTERACT_TOUCH  - running into it does something
+;   bit 1 ($02) ENTITY_INTERACT_ATTACK - the tail whip kills it
+;   bit 2 ($04) ENTITY_INTERACT_STOMP  - landing on it kills it, and bounces Gex
     db   ENTITY_INTERACT_NONE ; ENTITY_GEX
     db   ENTITY_INTERACT_TOUCH | ENTITY_INTERACT_ATTACK ; ENTITY_COLLECTIBLE_SPAWN
     db   ENTITY_INTERACT_TOUCH ; ENTITY_UNK_02
@@ -1168,7 +1217,7 @@ call_03_536f_CollisionHandler_MovingPlatform:
 ; to determine if the platform is stood on (wD74D_Player_EntityStoodOnLo) 
 ; or pushing the player (Player_PushedMovingPlatformLo). 
 ;
-; Same structure as stationary platform but additionally reads the platform's X velocity (UNK_0E), 
+; Same structure as stationary platform but additionally reads ENTITY_FIELD_XVEL,
 ; right-shifts 4×, stores in B, then calls MovingPlatformCollisionHelper to get a corrected 
 ; relative X speed accounting for platform motion. Landing validity is then checked against 
 ; (relativeX − B + E + D) instead of raw speed. On landing writes to wD74D_Player_EntityStoodOnLo

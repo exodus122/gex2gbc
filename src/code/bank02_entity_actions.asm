@@ -418,8 +418,8 @@ call_02_51b7_EntityAction_CollectibleSpawn_Update:
 call_02_51ea_EntityAction_TVButton_unk0:
     call call_00_3878_Entity_CheckIfTVButtonVisibleOrInRange                                  ;; 02:51ea $cd $78 $38
     ld   E, A                                          ;; 02:51ed $5f
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_0A
-    res  UNK_0A_BIT_3, [HL]                                       ;; 02:51f6 $cb $9e
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_SPRITE_FLAGS
+    res  SPRITE_FLAG_INVISIBLE_BIT, [HL]                                       ;; 02:51f6 $cb $9e
     inc  E                                             ;; 02:51f8 $1c
     dec  E                                             ;; 02:51f9 $1d
     jr   NZ, .jr_02_5207                               ;; 02:51fa $20 $0b
@@ -427,7 +427,7 @@ call_02_51ea_EntityAction_TVButton_unk0:
     and  A, $1f                                        ;; 02:51ff $e6 $1f
     cp   A, $0c                                        ;; 02:5201 $fe $0c
     jr   NC, .jr_02_5207                               ;; 02:5203 $30 $02
-    set  UNK_0A_BIT_3, [HL]                                       ;; 02:5205 $cb $de
+    set  SPRITE_FLAG_INVISIBLE_BIT, [HL]                                       ;; 02:5205 $cb $de
 .jr_02_5207:
     call call_00_34f5_Entity_CompareMiscFlags                                  ;; 02:5207 $cd $f5 $34
     bit  0, B                                          ;; 02:520a $cb $40
@@ -484,15 +484,15 @@ call_02_5253_EntityAction_RedRemote_unk0:
 call_02_526a_EntityAction_RedRemote_unk1:
     call call_00_38c1_Entity_CheckRedRemoteProgressFlag                                  ;; 02:526a $cd $c1 $38
     ld   E, A                                          ;; 02:526d $5f
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_0A
-    res  UNK_0A_BIT_3, [HL]                                       ;; 02:5276 $cb $9e
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_SPRITE_FLAGS
+    res  SPRITE_FLAG_INVISIBLE_BIT, [HL]                                       ;; 02:5276 $cb $9e
     inc  E                                             ;; 02:5278 $1c
     dec  E                                             ;; 02:5279 $1d
     ret  NZ                                            ;; 02:527a $c0
     ld   A, [wD73B_FrameCounter]                                    ;; 02:527b $fa $3b $d7
     and  A, $01                                        ;; 02:527e $e6 $01
     ret  Z                                             ;; 02:5280 $c8
-    set  UNK_0A_BIT_3, [HL]                                       ;; 02:5281 $cb $de
+    set  SPRITE_FLAG_INVISIBLE_BIT, [HL]                                       ;; 02:5281 $cb $de
     ret                                                ;; 02:5283 $c9
 
 call_02_5284_EntityAction_SilverRemote_unk0:
@@ -2306,8 +2306,8 @@ call_02_5efa_EntityAction_CannonProjectile_unk1:
     ld   c,$02
     call call_00_3350_Entity_SetXVelocity
     call call_00_3442_Entity_MoveXByFacingSpeed
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_0A
-    bit  UNK_0A_BIT_5,[hl]
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_SPRITE_FLAGS
+    bit  SPRITE_FLAG_ON_SCREEN_BIT,[hl]
     ret  z
     ld   a,$20
 .jr_02_5F15:
@@ -2542,12 +2542,12 @@ call_02_6029_DragonHead_Sub1:
     db   $39, $fd, $39, $fe, $39, $ff, $39, $00        ;; 02:6137 ????????
 
 call_02_613f_DragonHead_Sub2:    
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_0A
-    res  UNK_0A_BIT_3,[hl]
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_SPRITE_FLAGS
+    res  SPRITE_FLAG_INVISIBLE_BIT,[hl]
     ld   a,[wD614_Dragon_HitTimer]
     and  a,$02
     ret  z
-    set  UNK_0A_BIT_3,[hl]
+    set  SPRITE_FLAG_INVISIBLE_BIT,[hl]
     ret  
 
 call_02_6152_EntityAction_DragonProjectile_unk0:

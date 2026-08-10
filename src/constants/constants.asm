@@ -467,47 +467,120 @@ DEF ENTITY_UNK_8E                            EQU $8E ; not in level ENTITY lists
 DEF ENTITY_MEDIA_DIMENSION_MOVING_PLATFORM   EQU $8F
 DEF ENTITY_LIST_TERMINATOR                   EQU $FF
 
-; Entity Instance Struct
-DEF ENTITY_FIELD_ENTITY_ID                  EQU $00
-DEF ENTITY_FIELD_ACTION_ID                  EQU $01
-DEF ENTITY_FIELD_ACTION_FUNC                EQU $02
-DEF ENTITY_FIELD_SPRITE_IDS_PTR             EQU $04
-DEF ENTITY_FIELD_SPRITE_FRAME_COUNTER       EQU $06
-DEF ENTITY_FIELD_SPRITE_COUNTER             EQU $07
-DEF ENTITY_FIELD_SPRITE_ID                  EQU $08
+; ------------------------------------------------------------------
+; Mission preview cutscenes (bank00_mission_preview.asm)
+; ------------------------------------------------------------------
+DEF CUTSCENE_SLOTS_PER_LEVEL                EQU $10 ; entries per level in the index lookup table
+DEF CUTSCENE_SLOT_MISSION_BASE              EQU $0A ; slot = this + wD627_CurrentMission
+DEF CUTSCENE_NONE                           EQU $FF ; no cutscene for this level/slot
+DEF CUTSCENE_MOVE_END                       EQU $FF ; terminator in a movement command list
+DEF CUTSCENE_MOVE_SPEED_MAX                 EQU $10 ; 16/16ths = exactly one pixel per frame
+DEF CUTSCENE_HOLD_FRAMES                    EQU $B4 ; 180 frames (3s) of dwell before returning
+
+; ==================================================================
+; ENTITY INSTANCE STRUCT
+;
+; $20 bytes, 8 instances at wD200_EntityMemory. Slot 0 is Gex, so the player
+; goes through the same animation and action machinery as every enemy.
+;
+; Roughly half the struct is animation/graphics state rather than gameplay
+; state. $04-$0C and $0A in particular are the animation player, and nothing
+; outside the sprite code should be touching them:
+;
+;   $04 SPRITE_IDS_PTR        the frame list for the current action
+;   $06 SPRITE_FRAME_COUNTER  frames left on the current frame (the tick)
+;   $07 SPRITE_COUNTER        which frame of the list we are on
+;   $08 SPRITE_ID             the frame that is actually drawn
+;   $0A SPRITE_FLAGS          how to draw it (see below)
+;   $0B/$0C                   playback speed and length
+;
+; call_02_7102_Entity_SetAction populates all of them at once from the 4-byte
+; header of the action's data block, and call_02_6fda_Entity_TickAction
+; advances them once per frame.
+; ==================================================================
+DEF ENTITY_FIELD_ENTITY_ID                  EQU $00 ; ENTITY_ID_NONE ($FF) = free slot
+DEF ENTITY_FIELD_ACTION_ID                  EQU $01 ; masked to 5 bits; indexes the entity's action table
+DEF ENTITY_FIELD_ACTION_FUNC                EQU $02 ; word - per-frame update function
+DEF ENTITY_FIELD_SPRITE_IDS_PTR             EQU $04 ; word - list of frame ids, 4 bytes into the action data block
+DEF ENTITY_FIELD_SPRITE_FRAME_COUNTER       EQU $06 ; counts down to the next frame; $FF freezes the animation entirely
+DEF ENTITY_FIELD_SPRITE_COUNTER             EQU $07 ; index into the frame list
+DEF ENTITY_FIELD_SPRITE_ID                  EQU $08 ; the frame to draw. For streaming entities this doubles as the
+                                                    ; high byte of the ROM address its tiles are fetched from
+; ------------------------------------------------------------------
+; $09 - action lifecycle. The top three bits come from byte 0 of the action
+; data block, so an action declares its own lifecycle rather than the code
+; deciding. Bits 0-4 carry the action to move to when this one ends
+; ------------------------------------------------------------------
 DEF ENTITY_FIELD_ACTION_STATE_FLAGS         EQU $09
-    DEF ACTION_STATE_HAS_PENDING_BIT     EQU 7
-    DEF ACTION_STATE_UNK40_BIT           EQU 6
-    DEF ACTION_STATE_IS_FIRST_FRAME_BIT  EQU 5
+    DEF ACTION_STATE_HAS_PENDING_BIT     EQU 7 ; bits 0-4 hold a real action id
+    DEF ACTION_STATE_ADVANCE_ON_END_BIT  EQU 6 ; clearer alias for ACTION_STATE_ADVANCE_ON_END_BIT
+    DEF ACTION_STATE_IS_FIRST_FRAME_BIT  EQU 5 ; set by SetAction, cleared at the top of the next frame
 
     DEF ACTION_STATE_HAS_PENDING         EQU $80
-    DEF ACTION_STATE_UNK40               EQU $40
+    DEF ACTION_STATE_ADVANCE_ON_END      EQU $40
     DEF ACTION_STATE_IS_FIRST_FRAME      EQU $20
     DEF ACTION_STATE_PENDING_ACTION      EQU $1F
-DEF ENTITY_FIELD_UNK_0A                     EQU $0A
-    DEF UNK_0A_BIT_7                 EQU 7 ; unused?
-    DEF UNK_0A_BIT_6                 EQU 6 ; used
-    DEF UNK_0A_BIT_5                 EQU 5 ; used ; seems like "onscreen" flag
-    DEF UNK_0A_BIT_4                 EQU 4 ; unused?
-    DEF UNK_0A_BIT_3                 EQU 3 ; used
-    DEF UNK_0A_BIT_2                 EQU 2 ; used
-    ; For the player this bit means "the current action's animation just
-    ; finished its last frame". Every action that ends by handing off to
-    ; another action (death warp, enter tv, tail spin, ...) polls it
-    DEF UNK_0A_ANIM_ENDED_BIT        EQU 2
-    DEF UNK_0A_ANIM_ENDED            EQU $04
-    DEF UNK_0A_BIT_1                 EQU 1 ; used
-    DEF UNK_0A_BIT_0                 EQU 0 ; used
-DEF ENTITY_FIELD_SPRITE_FRAME_COUNTER_MAX   EQU $0B
-DEF ENTITY_FIELD_SPRITE_COUNTER_MAX         EQU $0C
-DEF ENTITY_FIELD_FACING_FLAGS               EQU $0D
-DEF ENTITY_FIELD_XPOS                       EQU $0E
-DEF ENTITY_FIELD_YPOS                       EQU $10
+; ------------------------------------------------------------------
+; $0A - render mode and animation status. Despite the name this is almost
+; entirely a graphics field.
+;
+; Bits 0, 3, 4 and 7 pick which of five sprite-building paths
+; call_03_5ebf_Entity_BuildSprites uses, tested in that priority order:
+;
+;   bit 3 set  no sprites at all - jump straight to collision. Trigger volumes
+;              and invisible hazards use this
+;   bit 0 set  sprite records are embedded in the entity's own data block
+;   bit 7 set  layout comes from the shared frame tables, but the OAM
+;              attributes are taken from FACING_FLAGS instead of $0A. Also
+;              means the entity streams its own tile page, which is what
+;              Entity_NotifyActionChanged and Entities_DrawAll check
+;   bit 4 set  layout is chosen by ACTION_ID rather than by animation frame,
+;              via .data_03_608e_EntitySpriteLayoutPointerTable
+;   none set   the default path, indexed by SPRITE_COUNTER
+;
+; The rest are status rather than configuration. Note bits 2 and 6 are both
+; one-frame pulses - they are raised by TickAction and cleared again at the
+; start of the next frame, so they are only meaningful to code that runs
+; between the two
+; ------------------------------------------------------------------
+DEF ENTITY_FIELD_SPRITE_FLAGS               EQU $0A
+    ; --- configuration: how this entity is drawn ---
+    DEF SPRITE_FLAG_STREAMS_OWN_GFX_BIT   EQU 7 ; streams its own tiles; attributes from FACING_FLAGS
+    DEF SPRITE_FLAG_LAYOUT_BY_ACTION_BIT  EQU 4 ; layout selected by action id, not animation frame
+    DEF SPRITE_FLAG_INVISIBLE_BIT         EQU 3 ; draws nothing; collision only
+    DEF SPRITE_FLAG_LOOP_LAST_FRAME_BIT   EQU 1 ; on wrap, restart at the last frame instead of the first
+    DEF SPRITE_FLAG_EMBEDDED_DATA_BIT     EQU 0 ; sprite records embedded in the entity's data block
+
+    ; --- status: written by the engine, read by everyone else ---
+    DEF SPRITE_FLAG_ID_CHANGED_BIT        EQU 6 ; pulse: the sprite id changed, tiles need refetching
+    DEF SPRITE_FLAG_ON_SCREEN_BIT         EQU 5 ; on screen, in the strict OAM-visible sense
+    ; "the current action's animation just finished its last frame". Every
+    ; action that ends by handing off to another one polls this
+    DEF SPRITE_FLAG_ANIM_ENDED_BIT        EQU 2 ; pulse: the animation just wrapped
+
+    DEF SPRITE_FLAG_STREAMS_OWN_GFX       EQU $80
+    DEF SPRITE_FLAG_ID_CHANGED            EQU $40
+    DEF SPRITE_FLAG_ON_SCREEN             EQU $20
+    DEF SPRITE_FLAG_LAYOUT_BY_ACTION      EQU $10
+    DEF SPRITE_FLAG_INVISIBLE             EQU $08
+    DEF SPRITE_FLAG_ANIM_ENDED            EQU $04
+    DEF SPRITE_FLAG_LOOP_LAST_FRAME       EQU $02
+    DEF SPRITE_FLAG_EMBEDDED_DATA         EQU $01
+DEF ENTITY_FIELD_SPRITE_FRAME_COUNTER_MAX   EQU $0B ; reload for $06 - the animation's speed
+DEF ENTITY_FIELD_SPRITE_COUNTER_MAX         EQU $0C ; number of frames in the sequence
+DEF ENTITY_FIELD_FACING_FLAGS               EQU $0D ; OR'd into the OAM attribute byte; bit 5 = FACING_LEFT (X flip)
+DEF ENTITY_FIELD_XPOS                       EQU $0E ; word, world space
+DEF ENTITY_FIELD_YPOS                       EQU $10 ; word, world space
+; Screen position, recomputed every frame by Entity_BuildSprites as
+; world - scroll, plus the OAM bias ($08 across, $10 down). Entities are kept
+; loaded over a generous window (X -$28..$B7, Y -$10..$EF relative to the
+; scroll origin) and only flagged SPRITE_FLAG_ON_SCREEN inside the tighter box
+; that is actually visible
 DEF ENTITY_FIELD_XPOS_ON_SCREEN             EQU $12
 DEF ENTITY_FIELD_YPOS_ON_SCREEN             EQU $13
-DEF ENTITY_FIELD_WIDTH                      EQU $14
+DEF ENTITY_FIELD_WIDTH                      EQU $14 ; collision box, not sprite size
 DEF ENTITY_FIELD_HEIGHT                     EQU $15
-DEF ENTITY_FIELD_COLLISION_TYPE             EQU $16
+DEF ENTITY_FIELD_COLLISION_TYPE             EQU $16 ; COLLISION_TYPE_*; picks the handler in bank 3
 DEF ENTITY_FIELD_MISC_FLAGS                 EQU $17 ; different entities use these flags for different purposes
     DEF MISC_FLAGS_BIT_7                 EQU 7 ; for platforms: set = left platform movement, unset = right
     DEF MISC_FLAGS_BIT_6                 EQU 6 ; for platforms: set = up platform movement, unset = down
@@ -517,14 +590,38 @@ DEF ENTITY_FIELD_MISC_FLAGS                 EQU $17 ; different entities use the
     DEF MISC_FLAGS_BIT_2                 EQU 2 ; used
     DEF MISC_FLAGS_BIT_1                 EQU 1 ; for platforms: set = vertical platform movement, unset = horizontal
     DEF MISC_FLAGS_BIT_0                 EQU 0 ; used
-DEF ENTITY_FIELD_MISC_TIMER                 EQU $18
+DEF ENTITY_FIELD_MISC_TIMER                 EQU $18 ; general countdown; several entities despawn when it hits 0
 DEF ENTITY_FIELD_TIMER_2                    EQU $19
-DEF ENTITY_FIELD_OTHER_FLAGS                EQU $1A ; used by tv buttons, etc.
-DEF ENTITY_FIELD_UNK_1B                     EQU $1B
+DEF ENTITY_FIELD_OTHER_FLAGS                EQU $1A ; used by tv buttons, etc. Also read as a pair of movement
+                                                    ; bounds by the hub's clamping helpers in bank 0
+DEF ENTITY_FIELD_UNK_1B                     EQU $1B ; never referenced through the field macros
 DEF ENTITY_FIELD_XVEL                       EQU $1C
 DEF ENTITY_FIELD_XVEL_RELATED               EQU $1D
 DEF ENTITY_FIELD_YVEL                       EQU $1E
 DEF ENTITY_FIELD_UNK_1F                     EQU $1F ; unused?
+
+; ------------------------------------------------------------------
+; Entity slots. wD200_EntityMemory is 8 consecutive $20-byte instances: slot 0
+; is always Gex, the other 7 are whatever the level spawned. Because the block
+; is $100 bytes aligned at $D200, code walks it by keeping only the low byte of
+; the address in wD300_CurrentEntityAddrLo and letting it wrap to zero - that
+; is why every loop here ends with "add $20 / jr NZ" rather than a counter
+; ------------------------------------------------------------------
+DEF ENTITY_SLOT_SIZE                        EQU $20
+DEF ENTITY_SLOT_PLAYER                      EQU $00
+DEF ENTITY_SLOT_FIRST_NPC                   EQU $20
+DEF ENTITY_NPC_SLOT_COUNT                   EQU 7
+DEF ENTITY_ID_NONE                          EQU $FF ; an empty slot
+
+; Shadow OAM budget for entity sprites. The player owns the first $20 bytes
+; (8 sprites); entities fill from there and are cut off at the end of the
+; region that call_03_6484_OAM_ClearUnusedEntries blanks
+DEF OAM_ENTITY_FIRST_BYTE                   EQU $20
+DEF OAM_ENTITY_LAST_BYTE                    EQU $A0
+
+; call_02_7211_EntityGfxQueue_Enqueue collects at most this many pending
+; entity graphics loads; anything beyond is silently dropped until a slot frees
+DEF ENTITY_GFX_QUEUE_SIZE                   EQU 4
 
 ; Entity Spawn Struct
 DEF ENTITY_SPAWN_ID_OFFSET                  EQU $00
@@ -537,6 +634,21 @@ DEF ENTITY_SPAWN_BOUNDINGBOX_YMAX_OFFSET    EQU $08
 DEF ENTITY_SPAWN_PARAMETER_OFFSET           EQU $09
 DEF ENTITY_SPAWN_PARAMETER2_OFFSET          EQU $0A
 DEF ENTITY_SPAWN_PARAMETER3_OFFSET          EQU $0B
+DEF ENTITY_SPAWN_RECORD_SIZE                EQU $10 ; 4 bytes of the record are spare
+
+; Byte +0 of an entity's record in data_0a_75fd_EntityAttributeTable. One bit per
+; entity field $18..$1F, high bit first: set means "initialise this field from the
+; next spawn parameter", clear means "zero it". So the mask both selects the
+; destination fields and, by its population count, says how many of the spawn
+; record's parameter bytes this entity type consumes
+DEF SPAWN_PARAM_TO_MISC_TIMER               EQU $80 ; -> ENTITY_FIELD_MISC_TIMER   ($18)
+DEF SPAWN_PARAM_TO_TIMER_2                  EQU $40 ; -> ENTITY_FIELD_TIMER_2      ($19)
+DEF SPAWN_PARAM_TO_OTHER_FLAGS              EQU $20 ; -> ENTITY_FIELD_OTHER_FLAGS  ($1A)
+DEF SPAWN_PARAM_TO_UNK_1B                   EQU $10 ; -> ENTITY_FIELD_UNK_1B       ($1B)
+DEF SPAWN_PARAM_TO_XVEL                     EQU $08 ; -> ENTITY_FIELD_XVEL         ($1C)
+DEF SPAWN_PARAM_TO_XVEL_RELATED             EQU $04 ; -> ENTITY_FIELD_XVEL_RELATED ($1D)
+DEF SPAWN_PARAM_TO_YVEL                     EQU $02 ; -> ENTITY_FIELD_YVEL         ($1E)
+DEF SPAWN_PARAM_TO_UNK_1F                   EQU $01 ; -> ENTITY_FIELD_UNK_1F       ($1F)
 
 ; Entity child spawn id's
 DEF SPAWN_CHILD_ENTITY_GHOST_HEAD                       EQU $00
@@ -595,7 +707,7 @@ DEF COLLISION_TYPE_MULTI_PROJECTILE           EQU $13
 DEF COLLISION_TYPE_JAR                        EQU $14
 DEF COLLISION_TYPE_NINJA                      EQU $15
 DEF COLLISION_TYPE_HANGING_BLADE              EQU $16
-DEF COLLISION_TYPE_UNK_17                     EQU $17 ; unverified
+DEF COLLISION_TYPE_LAUNCH_PAD                 EQU $17 ; only effect is to set wD758_JumpVelocityOverride
 DEF COLLISION_TYPE_SAMURAI_BODY               EQU $18
 DEF COLLISION_TYPE_SAMURAI_HEAD               EQU $19
 DEF COLLISION_TYPE_GEYSER                     EQU $1A
@@ -738,6 +850,9 @@ DEF  PLAYER_GRAVITY_PER_FRAME                 EQU $02
 DEF  PLAYER_MAX_FALL_VELOCITY                 EQU $C0 ; -$40 as a signed byte
 DEF  PLAYER_SPRING_VELOCITY_LOW               EQU $4C
 DEF  PLAYER_SPRING_VELOCITY_HIGH              EQU $60
+; Launch velocities entities can force through wD758_JumpVelocityOverride
+DEF  PLAYER_GEYSER_VELOCITY                   EQU $50
+DEF  PLAYER_LAUNCH_PAD_VELOCITY               EQU $7F
 
 DEF  PLAYER_XSPEED_WALK                       EQU $01
 DEF  PLAYER_XSPEED_RUN                        EQU $02

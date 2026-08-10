@@ -1,10 +1,32 @@
-; This file handles loading entities (other than Gex).
-; It contains a list of entities to load on each level.
+; ==================================================================
+; ENTITY SPAWNING
+;
+; Every level has a flat list of entity records, one per placed object. The
+; lists are the .bin blobs below; the code walks them.
+;
+; Spawning is spread out rather than done at level start: Entities_UpdateAll
+; calls EntitySpawn_SpawnNextFromList exactly once per frame, so at most one
+; entity appears per frame and the cursor loops the list forever. An entry
+; whose room is not currently on screen is skipped and simply reconsidered the
+; next time round. That is the whole streaming system - there is no separate
+; "is this entity due to appear" pass.
+;
+; Two tables decide what a spawned entity becomes:
+;   the list entry        where it is, how big its room is, and up to three
+;                         free parameter bytes
+;   data_0a_75fd_EntityAttributeTable   everything that depends only on the
+;                         entity *type* - size, collision type, graphics
+;
+; Re-spawning is prevented by wD000_EntityFlags, indexed by the entry's
+; position in the list. Once an entity has been placed its flag is set, and it
+; will not be placed again until the flag is cleared - which is what makes a
+; defeated enemy stay defeated while you are still in the room.
+; ==================================================================
 
 call_0a_4000_EntityList_LoadForCurrentLevel:
-; Indexes into a level→entity-list pointer table using wD624_CurrentLevelId, 
-; writes the resulting pointer into wD336/wD337 (the "current entity to load" cursor), 
-; and sets wD338_EntityLoadingFlag=1 to signal that loading should begin
+; Points the spawn cursor at the start of the current level's entity list.
+; Also called mid-level by SpawnNextFromList when it hits the list terminator,
+; which is what makes the walk cyclic rather than one-shot
     ld   HL, wD624_CurrentLevelId                                     ;; 0a:4000 $21 $24 $d6
     ld   L, [HL]                                       ;; 0a:4003 $6e ; L = current level
     ld   H, $00                                        ;; 0a:4004 $26 $00
@@ -94,11 +116,32 @@ call_0a_4000_EntityList_LoadForCurrentLevel:
     INCBIN "data/maps/channel_z/entity_list_channel_z.bin"
 
 data_0a_75fc:
+; Byte 0 of ENTITY_GEX's record. The spawn code indexes from *here*, not from the label
+; below, so every record is 8 bytes starting at data_0a_75fc + id*8 - which is why the Gex
+; row below is one byte short and every later row appears shifted by one
     db   $00                                           ;; 0a:75fc ?
 data_0a_75fd_EntityAttributeTable:
-; 8-byte records for every entity type (indexed by entity ID × 8). 
-; Fields are: flags byte, width, height, collision type, animation type index, action count/max, and two zero bytes. 
-; Used during spawn to initialize the new entity slot's physical properties
+; The per-entity-type template applied to a slot when it spawns. 8 bytes per entity id:
+;
+;   +0  spawn parameter mask (see below)
+;   +1  ENTITY_FIELD_WIDTH
+;   +2  ENTITY_FIELD_HEIGHT
+;   +3  ENTITY_FIELD_COLLISION_TYPE
+;   +4  graphics set id, queued through call_02_7211_EntityGfxQueue_Enqueue ($00 = none)
+;   +5  GBC palette id
+;   +6  unused
+;   +7  unused
+;
+; Bytes +4/+5 are the same pair as data_02_743c_EntityGfxAndPaletteTable - that table is
+; consulted when entities are already live, this one when they spawn.
+;
+; The mask is the interesting field. A level's entity list carries three free parameter
+; bytes per entry (ENTITY_SPAWN_PARAMETER*_OFFSET), and the mask decides which of the eight
+; entity fields $18..$1F they land in - bit 7 for $18 through bit 0 for $1F. Any field whose
+; bit is clear is zeroed instead. That is how one spawn record format configures a moving
+; platform's velocity and a timer-driven hazard's countdown without either knowing about the
+; other. See SPAWN_PARAM_TO_* in constants.asm; $70 - route the three parameters to
+; TIMER_2 / OTHER_FLAGS / UNK_1B - is by far the most common value
     db   $00, $00, COLLISION_TYPE_NONE, $00, $00, $00, $00      ; 0a:75fd ???????  ; ENTITY_GEX
     db   $00, $2c, $10, COLLISION_TYPE_COLLECTIBLE, $00, $01, $00, $00 ; 0a:7604 ???????? ; ENTITY_COLLECTIBLE_SPAWN
     db   $00, $08, $08, COLLISION_TYPE_EXTRA_LIFE, $00, $02, $00, $00 ; 0a:760c ???????. ; ENTITY_UNK_02
@@ -245,13 +288,22 @@ data_0a_75fd_EntityAttributeTable:
     db   $70, $10, $08, COLLISION_TYPE_MOVING_PLATFORM | COLLISION_TYPE_UNK_PLATFORM_FLAG, $35, $05, $00, $00 ; 0a:7a74 ...ww?? ; ENTITY_MEDIA_DIMENSION_MOVING_PLATFORM
 
 call_0a_7a7c_EntitySpawn_SpawnNextFromList:
-; Scans $D220–D3E0 (step $20) for a free slot (ID=FF); reads the next entry from the entity list pointer, 
-; checks if the list is exhausted (restarts via call_0a_4000 if $FF terminator hit), 
-; increments the list cursor by $10, looks up the corresponding D0xx flags entry and skips if 
-; already occupied, writes X/Y position and room bounds, calls Entity_CheckIfPlayerInRoomBounds and 
-; aborts if out of range, then fully initializes the slot: writes entity ID, copies the entity-type 
-; attribute record (flags, width, height, collision type etc.) from data_0a_75fd_EntityAttributeTable using a bitmask from 
-; the entity table, loads animation type, sets action 0, optionally calls a sound/init farCall
+; Tries to place one entity, and is called once per frame. Bails out early and harmlessly in
+; several ordinary situations, so most calls do nothing:
+;
+;   no free slot            all 7 NPC slots are occupied
+;   list terminator ($FF)   rewind to the start of the list and stop for this frame
+;   flag already set        this entry has been placed before, skip it
+;   room not on screen      Entity_CheckIfOnScreen rejects it; the entry stays pending
+;
+; Note the cursor advances *before* those last two checks, so a rejected entry is not retried
+; immediately - it comes back around on the next pass through the list.
+;
+; When an entry does survive, the slot is built from both sources: position and room bounds
+; come from the list entry, while size, collision type, graphics and palette come from the
+; type's record in data_0a_75fd_EntityAttributeTable. The record's mask byte decides where
+; the entry's three free parameter bytes are stored. Finally facing is zeroed, action 0 is
+; set, the tiles are queued and on GBC the palette is loaded
     ld   H, $d2                                        ;; 0a:7a7c $26 $d2
     ld   A, $20                                        ;; 0a:7a7e $3e $20
 .jr_0a_7a80:
@@ -269,7 +321,7 @@ call_0a_7a7c_EntitySpawn_SpawnNextFromList:
     rlca                                               ;; 0a:7a90 $07
     rlca                                               ;; 0a:7a91 $07
     rlca                                               ;; 0a:7a92 $07 so now a is the slot number, where slot 1 is dd20, and slot 3 is dd60
-    ld   [wD339], A                                    ;; 0a:7a93 $ea $39 $d3
+    ld   [wD339_SpawningSlotIndex], A                                    ;; 0a:7a93 $ea $39 $d3
     ld   HL, wD336_CurrentEntityToLoadPtr                                     ;; 0a:7a96 $21 $36 $d3
     ld   E, [HL]                                       ;; 0a:7a99 $5e
     inc  HL                                            ;; 0a:7a9a $23
@@ -277,8 +329,8 @@ call_0a_7a7c_EntitySpawn_SpawnNextFromList:
     ld   A, [DE]                                       ;; 0a:7a9c $1a ; load first byte from data
     cp   A, $ff                                        ;; 0a:7a9d $fe $ff
     jp   Z, call_0a_4000_EntityList_LoadForCurrentLevel                                 ;; 0a:7a9f $ca $00 $40
-    ld   [wD33B], A                                    ;; 0a:7aa2 $ea $3b $d3 ; first byte from data
-    ld   HL, $10                                       ;; 0a:7aa5 $21 $10 $00
+    ld   [wD33B_SpawningEntityId], A                                    ;; 0a:7aa2 $ea $3b $d3 ; first byte from data
+    ld   HL, ENTITY_SPAWN_RECORD_SIZE                  ;; 0a:7aa5 $21 $10 $00
     add  HL, DE                                        ;; 0a:7aa8 $19
     ld   A, L                                          ;; 0a:7aa9 $7d
     ld   [wD336_CurrentEntityToLoadPtr], A                                    ;; 0a:7aaa $ea $36 $d3
@@ -292,7 +344,7 @@ call_0a_7a7c_EntitySpawn_SpawnNextFromList:
     and  A, A                                          ;; 0a:7ab9 $a7
     ret  NZ                                            ;; 0a:7aba $c0
     ld   A, C                                          ;; 0a:7abb $79
-    ld   [wD33A], A                                    ;; 0a:7abc $ea $3a $d3
+    ld   [wD33A_SpawningListIndex], A                                    ;; 0a:7abc $ea $3a $d3
     inc  DE                                            ;; 0a:7abf $13
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
     ld   A, [DE]                                       ;; 0a:7ac8 $1a
@@ -307,7 +359,7 @@ call_0a_7a7c_EntitySpawn_SpawnNextFromList:
     ld   A, [DE]                                       ;; 0a:7ad1 $1a
     ld   [HL], A                                       ;; 0a:7ad2 $77
     inc  DE                                            ;; 0a:7ad3 $13
-    ld   HL, wD339                                     ;; 0a:7ad4 $21 $39 $d3
+    ld   HL, wD339_SpawningSlotIndex                                     ;; 0a:7ad4 $21 $39 $d3
     ld   L, [HL]                                       ;; 0a:7ad7 $6e
     ld   H, $00                                        ;; 0a:7ad8 $26 $00
     add  HL, HL                                        ;; 0a:7ada $29
@@ -332,7 +384,7 @@ call_0a_7a7c_EntitySpawn_SpawnNextFromList:
     ret  C                                             ;; 0a:7af9 $d8
     push DE                                            ;; 0a:7afa $d5
     LOAD_OBJ_FIELD_TO_DE_ALT ENTITY_FIELD_ENTITY_ID
-    ld   A, [wD33B]                                    ;; 0a:7b03 $fa $3b $d3
+    ld   A, [wD33B_SpawningEntityId]                                    ;; 0a:7b03 $fa $3b $d3
     ld   [DE], A                                       ;; 0a:7b06 $12
     ld   L, A                                          ;; 0a:7b07 $6f
     ld   H, $00                                        ;; 0a:7b08 $26 $00
@@ -350,11 +402,15 @@ call_0a_7a7c_EntitySpawn_SpawnNextFromList:
     xor  A, A                                          ;; 0a:7b18 $af
     ld   [DE], A                                       ;; 0a:7b19 $12
     inc  E                                             ;; 0a:7b1a $1c
+    ; Distribute the spawn record's parameter bytes. B is the type's SPAWN_PARAM_TO_* mask
+    ; and HL walks the entry's parameter bytes; DE walks entity fields $18..$1F. Each field
+    ; is zeroed first, then overwritten only if its mask bit is set - so HL advances once per
+    ; set bit, not once per field
     ld   A, [BC]                                       ;; 0a:7b1b $0a
     inc  BC                                            ;; 0a:7b1c $03
     push BC                                            ;; 0a:7b1d $c5
     ld   B, A                                          ;; 0a:7b1e $47
-    ld   C, $08                                        ;; 0a:7b1f $0e $08
+    ld   C, $08                                        ;; 0a:7b1f $0e $08 ; fields $18..$1F
 .jr_0a_7b21:
     xor  A, A                                          ;; 0a:7b21 $af
     ld   [DE], A                                       ;; 0a:7b22 $12
@@ -364,7 +420,7 @@ call_0a_7a7c_EntitySpawn_SpawnNextFromList:
     ld   [DE], A                                       ;; 0a:7b28 $12
 .jr_0a_7b29:
     inc  E                                             ;; 0a:7b29 $1c
-    sla  B                                             ;; 0a:7b2a $cb $20
+    sla  B                                             ;; 0a:7b2a $cb $20 ; next mask bit
     dec  C                                             ;; 0a:7b2c $0d
     jr   NZ, .jr_0a_7b21                               ;; 0a:7b2d $20 $f2
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 0a:7b2f $fa $00 $d3
@@ -385,19 +441,19 @@ call_0a_7a7c_EntitySpawn_SpawnNextFromList:
     ld   E, A                                          ;; 0a:7b42 $5f
     ld   A, $00                                        ;; 0a:7b43 $3e $00
     ld   [DE], A                                       ;; 0a:7b45 $12 ; sets instance+0x0D facing angle to 0 by default
-    ld   HL, wD339                                     ;; 0a:7b46 $21 $39 $d3
+    ld   HL, wD339_SpawningSlotIndex                                     ;; 0a:7b46 $21 $39 $d3
     ld   L, [HL]                                       ;; 0a:7b49 $6e
     ld   H, $00                                        ;; 0a:7b4a $26 $00
     ld   DE, wD301_EntityListIndexesForCurrentEntities                                     ;; 0a:7b4c $11 $01 $d3
     add  HL, DE                                        ;; 0a:7b4f $19
-    ld   A, [wD33A]                                    ;; 0a:7b50 $fa $3a $d3
+    ld   A, [wD33A_SpawningListIndex]                                    ;; 0a:7b50 $fa $3a $d3
     ld   [HL], A                                       ;; 0a:7b53 $77
     ld   L, A                                          ;; 0a:7b54 $6f
     ld   H, $d0                                        ;; 0a:7b55 $26 $d0
     ld   [HL], $01                                     ;; 0a:7b57 $36 $01
     xor  A, A                                          ;; 0a:7b59 $af
     FARCALL call_02_7102_Entity_SetAction
-    ld   HL, wD339                                     ;; 0a:7b65 $21 $39 $d3
+    ld   HL, wD339_SpawningSlotIndex                                     ;; 0a:7b65 $21 $39 $d3
     ld   L, [HL]                                       ;; 0a:7b68 $6e
     ld   H, $00                                        ;; 0a:7b69 $26 $00
     add  HL, HL                                        ;; 0a:7b6b $29

@@ -565,7 +565,7 @@ call_00_3364_Entity_ApproachPlayerXWithBounds:
     ret  
 
 call_00_33dd_Entity_ApplyXVelocityFriction:
-; First checks bit 5 of UNK_0A — if clear, returns immediately (friction system is disabled for this entity). 
+; First checks SPRITE_FLAG_ON_SCREEN — if clear, returns immediately (offscreen entities are not simulated).
 ; Then reads a direction flag from UNK_1D bit 1 to determine whether to add or subtract friction:
 ; Bit 1 clear (.jr_02_33F2): Adds X velocity (C) into a subpixel accumulator. Includes a clamping check 
 ;   — if the accumulator would overflow past $80 (i.e. exceed half-range), it saturates and folds the 
@@ -576,13 +576,13 @@ call_00_33dd_Entity_ApplyXVelocityFriction:
 ; In both cases it's applying velocity-scaled positional drag with half-precision saturation clamping to 
 ; avoid wrap-around artifacts — essentially a friction/momentum integrator that bleeds off X velocity 
 ; into position while preventing the accumulator from flipping sign unexpectedly.
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_0A
-    bit  UNK_0A_BIT_5,[hl]
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_SPRITE_FLAGS
+    bit  SPRITE_FLAG_ON_SCREEN_BIT,[hl]
     ret  z
     ld   a,l
     xor  a,$1D
     ld   l,a
-    bit  UNK_0A_BIT_1,[hl]
+    bit  SPRITE_FLAG_LOOP_LAST_FRAME_BIT,[hl]
     jr   z,.jr_02_33F2
     jr   .jr_02_341B
 .jr_02_33F2:
@@ -1273,7 +1273,7 @@ call_00_37e7_Entity_SetSlotCounter:
     ret                                                ;; 00:37f7 $c9
 
 call_00_37f8_Entity_SetMiscFlags:
-; Writes C to UNK_17 flags field
+; Writes C to the MISC_FLAGS field
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     ld   [hl],c
     ret  
@@ -1319,14 +1319,14 @@ call_00_3839_Entity_GetSpriteCounter:
     ret  
 
 call_00_3843_Entity_CheckAnimFlag_Bit2:
-; Tests bit 2 of UNK_0A (animation/state flag)
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_0A
-    bit  UNK_0A_BIT_2, [HL]                                       ;; 00:384b $cb $56
+; Tests SPRITE_FLAG_ANIM_ENDED (the animation wrapped this frame)
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_SPRITE_FLAGS
+    bit  SPRITE_FLAG_ANIM_ENDED_BIT, [HL]                                       ;; 00:384b $cb $56
     ret                                                ;; 00:384d $c9
 
 call_00_384e_Entity_CheckAnimFlag_Bit6:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_0A
-    bit  UNK_0A_BIT_6,[hl]
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_SPRITE_FLAGS
+    bit  SPRITE_FLAG_ID_CHANGED_BIT,[hl]
     ret  
 
 call_00_3859_Entity_CheckPlayerXProximity:
@@ -1352,7 +1352,7 @@ call_00_3859_Entity_CheckPlayerXProximity:
 
 call_00_3878_Entity_CheckIfTVButtonVisibleOrInRange:
 ; In non-hub levels, uses slot index into wD798_OverrideSlotTable13 visibility table; 
-; in hub level, checks entity's UNK_19 range values against wD64F_MissionRemoteTotal–wD651_BonusMissionTotal player position bytes
+; in hub level, checks entity's TIMER_2 range values against wD64F_MissionRemoteTotal-wD651_BonusMissionTotal player position bytes
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:3878 $fa $24 $d6
     and  A, A                                          ;; 00:387b $a7
     jr   Z, call_00_3899_Entity_CheckHubProximityToPlayer                                 ;; 00:387c $28 $1b
@@ -1378,7 +1378,7 @@ call_00_3878_Entity_CheckIfTVButtonVisibleOrInRange:
 call_00_3899_Entity_CheckHubProximityToPlayer:
 ; Reads three bytes from wD64F_MissionRemoteTotal–wD651_BonusMissionTotal (player's hub-world position, likely X-block, Y-block, and room/zone index), 
 ; masks the sign bit off each (& $7F), and compares each against three consecutive bytes in the entity's 
-; UNK_19 field (proximity thresholds). If all three values are ≥ their respective thresholds, 
+; TIMER_2 field (proximity thresholds). If all three values are >= their respective thresholds,
 ; returns A=1 (player is close enough to activate); if any comparison fails, returns A=0.
 ; So it's essentially a 3-axis "is the player within this entity's activation radius?" check used exclusively 
 ; in the hub world, where entities need distance-based activation rather than room-based visibility.
@@ -1543,7 +1543,7 @@ call_00_3951_Entity_SpawnPlayerClone:
 
 call_00_3985_Entity_ParticleBurstInit:
 ; Sets projectile slot counter to 1, clears collision type, sets UNK_16=$07, 
-; clears UNK_17 and UNK_1A, loads animation type 1, clears entity table slot, 
+; clears MISC_FLAGS and OTHER_FLAGS, loads animation type 1, clears entity table slot,
 ; sets action to 0, plays sound $17
     ld   C, $01                                        ;; 00:3985 $0e $01
     call call_00_37e7_Entity_SetSlotCounter                                  ;; 00:3987 $cd $e7 $37
@@ -1638,7 +1638,7 @@ call_00_3a0a_Entity_GetBothDataPtrs:
 
 call_00_3a23_Entity_LoadAnimationData:
 ; Indexes a table of animation descriptor pointers by C, copies 8×5-byte frame records 
-; into the per-entity animation buffer, zeros the flag byte in the entity table, sets UNK_0A bit 0
+; into the per-entity animation buffer, zeros the flag byte in the entity table, sets SPRITE_FLAG_EMBEDDED_DATA
     ld   L, C                                          ;; 00:3a23 $69
     ld   H, $00                                        ;; 00:3a24 $26 $00
     add  HL, HL                                        ;; 00:3a26 $29
@@ -1686,8 +1686,8 @@ call_00_3a23_Entity_LoadAnimationData:
     inc  DE                                            ;; 00:3a58 $13
     dec  B                                             ;; 00:3a59 $05
     jr   NZ, .jr_00_3a4a                               ;; 00:3a5a $20 $ee
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_0A
-    set  UNK_0A_BIT_0, [HL]                                       ;; 00:3a64 $cb $c6
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_SPRITE_FLAGS
+    set  SPRITE_FLAG_EMBEDDED_DATA_BIT, [HL]                                       ;; 00:3a64 $cb $c6
     ret                                                ;; 00:3a66 $c9
 .data_00_3a67:
     dw   .data_00_3a75                                 ;; 00:3a67 ??

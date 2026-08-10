@@ -192,13 +192,21 @@ wD337_CurrentEntityToLoadPtr:
 wD338_EntityLoadingFlag:
     ds 1                                               ;; d338
 
-wD339:
+; Scratch used while call_0a_7a7c_EntitySpawn_SpawnNextFromList builds a slot
+wD339_SpawningSlotIndex:
+; slot number 1-7 of the free slot being filled, derived from the slot address
+; by rotating rather than dividing. Indexes the per-slot bounding box table at
+; wD309 and the list-index table at wD301
     ds 1                                               ;; d339
 
-wD33A:
+wD33A_SpawningListIndex:
+; position of this entry within the level's entity list. Doubles as the index
+; into wD000_EntityFlags, which is what stops an entity being spawned twice
     ds 1                                               ;; d33a
 
-wD33B:
+wD33B_SpawningEntityId:
+; entity type read from the list entry, used to look up the 8-byte record in
+; data_0a_75fd_EntityAttributeTable
     ds 1                                             ;; d33b
 
 wD33C:
@@ -935,9 +943,18 @@ wD738_TilesetAnim_Flags:
     ds 1                                               ;; d738
 
 ; Entity graphics related
-wD739:
+wD739_Entity_OamWriteOffset:
+; byte offset into wCC00_ShadowOAM where the next entity sprite goes. Reset to
+; OAM_ENTITY_FIRST_BYTE at the top of every frame - the player owns everything
+; below that - and advanced as each entity emits its sprites. Entities are
+; drawn in slot order, so a later entity simply gets no sprites once this
+; reaches OAM_ENTITY_LAST_BYTE, and whatever is left over is blanked by
+; call_03_6484_OAM_ClearUnusedEntries
     ds 1                                               ;; d739
-wD73A:
+wD73A_Entity_TileIdBase:
+; added to every tile number the current entity emits, so one shared sprite
+; layout can be pointed at whichever VRAM page that entity's tiles were
+; streamed into. Set from data_03_5447_EntitySpriteMetaTable before drawing
     ds 1                                               ;; d73a
 wD73B_FrameCounter:
     ds 1                                               ;; d73b
@@ -1032,7 +1049,8 @@ wD758_JumpVelocityOverride:
 ; When nonzero this replaces the jump velocity that
 ; call_02_4856_Player_GetJumpVelocity would otherwise return, letting an entity
 ; launch Gex harder than a normal jump. Entity collision in bank 3 writes it
-; ($50 for the pre-history geyser, $7F for the bouncy mushroom) and
+; (PLAYER_GEYSER_VELOCITY for the pre-history geyser,
+; PLAYER_LAUNCH_PAD_VELOCITY for COLLISION_TYPE_LAUNCH_PAD) and
 ; call_02_4939_Player_UpdateMain clears it again at the end of every frame,
 ; so it only survives for the one frame in which the entity was touched
     ds 1                                               ;; d758
@@ -1132,13 +1150,20 @@ wD771_LevelTimer_FrameCounter:
 ; counts down from $3C (60 frames = 1 second)
     ds 1                                               ;; d771
 
+; Three per-level progress counters, zeroed together on level entry. Each
+; counts one kind of event and unlocks something once it reaches a threshold
 wD772:
+; incremented by a special tile script in bank 0
     ds 1                                               ;; d772
 
-wD773:
+wD773_HuntersDefeatedCount:
+; bumped each time a toon tv hunter is beaten. On the second one the collision
+; handler writes $02 into wD799_OverrideSlotTable14, opening the way onward
     ds 1                                               ;; d773
 
 wD774:
+; bumped by an entity action when the entity's MISC_FLAGS bit 0 is set, then
+; used as a table index - a "how many of these have been triggered" counter
     ds 1                                               ;; d774
 
 wD775_MissionPreview_Skippable:
@@ -1227,10 +1252,23 @@ wD79A_OverrideSlotTable15:
     ds 1                                               ;; d79a
 
 ; Mission preview cutscene related variables and backup buffers
-wD79B_MissionPreviewCutsceneRelated:
+; ------------------------------------------------------------------
+; Mission preview cutscene state. The preview is a scripted camera move over a
+; frozen level, driven by faking d-pad input into wD75A_CurrentInputsAlt
+; ------------------------------------------------------------------
+wD79B_Cutscene_MoveFramesRemaining:
+; 16-bit countdown for the movement command currently running. Loaded from the
+; script, decremented once per frame; at zero the next command is fetched
     ds 2                                               ;; d79b
-wD79D_MissionPreviewCutsceneMovementFlags:
-    ds 2                                               ;; d79d
+wD79D_Cutscene_MoveSpeed:
+; movement speed in 1/16ths of a pixel per frame. Only ever $00 or
+; CUTSCENE_MOVE_SPEED_MAX in practice - see the dead ramp code in
+; call_00_2dbf_MissionPreview_UpdateMovement
+    ds 1                                               ;; d79d
+wD79E_Cutscene_MoveSubPixel:
+; sub-pixel accumulator. wD79D is added to the low nibble each frame and the
+; carry out of the high nibble becomes the whole-pixel step
+    ds 1                                               ;; d79e
 wD79F_BackupBuffer_EntityFlags:
     ds 256                                             ;; d79f
 wD89F_BackupBuffer_EntityMemory:

@@ -197,10 +197,10 @@ call_02_6e68_Entities_InitNPCSlots:
     ld   [wD74E_Player_PushedStationaryPlatformLo], A                                    ;; 02:6e6f $ea $4e $d7
     ld   [wD74F_Player_PushedMovingPlatformLo], A                                    ;; 02:6e72 $ea $4f $d7
     ld   HL, wD220_OtherLoadedEntities                                     ;; 02:6e75 $21 $20 $d2
-    ld   DE, $20                                       ;; 02:6e78 $11 $20 $00
-    ld   B, $07                                        ;; 02:6e7b $06 $07
+    ld   DE, ENTITY_SLOT_SIZE                          ;; 02:6e78 $11 $20 $00
+    ld   B, ENTITY_NPC_SLOT_COUNT                      ;; 02:6e7b $06 $07
 .jr_02_6e7d:
-    ld   [HL], $ff                                     ;; 02:6e7d $36 $ff
+    ld   [HL], ENTITY_ID_NONE                          ;; 02:6e7d $36 $ff
     add  HL, DE                                        ;; 02:6e7f $19
     dec  B                                             ;; 02:6e80 $05
     jr   NZ, .jr_02_6e7d                               ;; 02:6e81 $20 $fa
@@ -231,16 +231,24 @@ call_02_6eb1_Entities_ClearFlagsTable:
     ret                                                ;; 02:6eb9 $c9
 
 call_02_6eba_Entities_UpdateAll:
-; Main per-frame update loop. First handles the two "interacted" entities (wD74D, wD74F_Player_PushedMovingPlatformLo) 
-; by calling their action functions and adjusting player Y by $10 (room transition offset). Then calls 
-; call_02_4939_Player_UpdateMain. 
-; Then iterates all 7 NPC slots: skips entities not in the active or adjacent room (calls their despawn-check 
-; function instead), clears collision bits 5/6, calls call_02_6fda_Entity_TickAction (action tick), calls the sprite/draw farCall. 
-; After the loop, calls sound queue flush, EntitySpawn_SpawnNextFromList, collision resolution, and draw farCall
+; The per-frame entity pass. Ordering matters more than it looks.
+;
+; Whatever Gex is standing on or pushing runs *first*, before Gex himself, and out of slot
+; order. A moving platform therefore finishes its move for the frame before the player update
+; reads its position, and Gex is snapped to sit $10 above it - that is what stops him
+; visibly lagging a frame behind a platform he is riding.
+;
+; Then Player_UpdateMain, then every NPC slot in order: an entity outside the active room
+; gets its action function called anyway (that is the despawn check, which is why it is not
+; simply skipped), otherwise the two per-frame collision bits are cleared, its action ticks,
+; and its sprites are built.
+;
+; The tail is the deferred work the loop accumulated - queued sound, one spawn from the
+; level's entity list, the next entity graphics transfer, and the shared sprite pipeline
     xor  A, A                                          ;; 02:6eba $af
     ld   [wD75C_PlayerXDeltaExtra], A                                    ;; 02:6ebb $ea $5c $d7
-    ld   A, $20                                        ;; 02:6ebe $3e $20
-    ld   [wD739], A                                    ;; 02:6ec0 $ea $39 $d7
+    ld   A, OAM_ENTITY_FIRST_BYTE                      ;; 02:6ebe $3e $20
+    ld   [wD739_Entity_OamWriteOffset], A                                    ;; 02:6ec0 $ea $39 $d7
     ld   A, [wD743_Player_UpdateFlag]                                    ;; 02:6ec3 $fa $43 $d7
     and  A, A                                          ;; 02:6ec6 $a7
     jr   Z, .jr_02_6f0f                                ;; 02:6ec7 $28 $46
@@ -283,14 +291,14 @@ call_02_6eba_Entities_UpdateAll:
     ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:6f09 $ea $00 $d3
     call call_02_4939_Player_UpdateMain                                  ;; 02:6f0c $cd $39 $49
 .jr_02_6f0f:
-    ld   A, $20                                        ;; 02:6f0f $3e $20
+    ld   A, ENTITY_SLOT_FIRST_NPC                      ;; 02:6f0f $3e $20
 .jr_02_6f11:
     ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:6f11 $ea $00 $d3
     or   A, $00                                        ;; 02:6f14 $f6 $00
     ld   L, A                                          ;; 02:6f16 $6f
     ld   H, $d2                                        ;; 02:6f17 $26 $d2
     ld   A, [HL]                                       ;; 02:6f19 $7e
-    cp   A, $ff                                        ;; 02:6f1a $fe $ff
+    cp   A, ENTITY_ID_NONE                             ;; 02:6f1a $fe $ff
     jr   Z, .jr_02_6f5c                                ;; 02:6f1c $28 $3e
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:6f1e $fa $00 $d3
     ld   HL, wD74D_Player_EntityStoodOnLo                                     ;; 02:6f21 $21 $4d $d7
@@ -309,19 +317,19 @@ call_02_6eba_Entities_UpdateAll:
 .jr_02_6f38:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_ENTITY_ID
     ld   A, [HL]                                       ;; 02:6f40 $7e
-    cp   A, $ff                                        ;; 02:6f41 $fe $ff
+    cp   A, ENTITY_ID_NONE                             ;; 02:6f41 $fe $ff ; the despawn check may have freed it
     jr   Z, .jr_02_6f5c                                ;; 02:6f43 $28 $17
     ld   A, L                                          ;; 02:6f45 $7d
     xor  A, $09                                        ;; 02:6f46 $ee $09
     ld   L, A                                          ;; 02:6f48 $6f
-    res  5, [HL]                                       ;; 02:6f49 $cb $ae
+    res  ACTION_STATE_IS_FIRST_FRAME_BIT, [HL]         ;; 02:6f49 $cb $ae
     inc  L                                             ;; 02:6f4b $2c
-    res  6, [HL]                                       ;; 02:6f4c $cb $b6
+    res  SPRITE_FLAG_ID_CHANGED_BIT, [HL]            ;; 02:6f4c $cb $b6
     call call_02_6fda_Entity_TickAction                                  ;; 02:6f4e $cd $da $6f
     FARCALL call_03_5ebf_Entity_BuildSprites
 .jr_02_6f5c:
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:6f5c $fa $00 $d3
-    add  A, $20                                        ;; 02:6f5f $c6 $20
+    add  A, ENTITY_SLOT_SIZE                           ;; 02:6f5f $c6 $20 ; wraps to 0 after the last slot
     jr   NZ, .jr_02_6f11                               ;; 02:6f61 $20 $ae
     call call_00_1138_NoSFXIsQueued                                  ;; 02:6f63 $cd $38 $11
     FARCALL call_0a_7a7c_EntitySpawn_SpawnNextFromList
@@ -330,11 +338,13 @@ call_02_6eba_Entities_UpdateAll:
     ret                                                ;; 02:6f7f $c9
     
 call_02_6f80_Entities_DrawAll:
-; Draw-only pass (no logic update): optionally calls player sprite farCall and sets HDMA bit 0, 
-; then iterates all 7 NPC slots, checks bit 7 of UNK_0A (palette-swap flag) to set HDMA bit 1, 
-; and calls the sprite draw farCall for each active entity
-    ld   A, $20                                        ;; 02:6f80 $3e $20
-    ld   [wD739], A                                    ;; 02:6f82 $ea $39 $d7
+; Rebuilds every sprite without running any logic. Used when the world has to stay on screen
+; but must not advance - the mission preview pans over a frozen level, for example.
+; Because nothing ticks, the graphics requests that Entity_NotifyActionChanged would normally
+; raise are re-raised here instead: GFX_XFER_PLAYER_GFX unconditionally, and
+; GFX_XFER_ENTITY_GFX for any entity whose SPRITE_FLAG_STREAMS_OWN_GFX is set
+    ld   A, OAM_ENTITY_FIRST_BYTE                      ;; 02:6f80 $3e $20
+    ld   [wD739_Entity_OamWriteOffset], A                                    ;; 02:6f82 $ea $39 $d7
     ld   A, [wD743_Player_UpdateFlag]                                    ;; 02:6f85 $fa $43 $d7
     and  A, A                                          ;; 02:6f88 $a7
     jr   Z, .jr_02_6fa0                                ;; 02:6f89 $28 $15
@@ -342,45 +352,57 @@ call_02_6f80_Entities_DrawAll:
     ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:6f8d $ea $00 $d3
     FARCALL call_03_5ca8_Entity_DrawPlayer
     ld   HL, wD60F_GfxTransferFlags                                     ;; 02:6f9b $21 $0f $d6
-    set  0, [HL]                                       ;; 02:6f9e $cb $c6
+    set  GFX_XFER_PLAYER_GFX, [HL]                     ;; 02:6f9e $cb $c6
 .jr_02_6fa0:
-    ld   A, $20                                        ;; 02:6fa0 $3e $20
+    ld   A, ENTITY_SLOT_FIRST_NPC                      ;; 02:6fa0 $3e $20
 .jr_02_6fa2:
     ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:6fa2 $ea $00 $d3
     or   A, $00                                        ;; 02:6fa5 $f6 $00
     ld   L, A                                          ;; 02:6fa7 $6f
     ld   H, $d2                                        ;; 02:6fa8 $26 $d2
     ld   A, [HL]                                       ;; 02:6faa $7e
-    cp   A, $ff                                        ;; 02:6fab $fe $ff
+    cp   A, ENTITY_ID_NONE                             ;; 02:6fab $fe $ff
     jr   Z, .jr_02_6fc7                                ;; 02:6fad $28 $18
     ld   A, L                                          ;; 02:6faf $7d
     xor  A, $0a                                        ;; 02:6fb0 $ee $0a
     ld   L, A                                          ;; 02:6fb2 $6f
-    bit  7, [HL]                                       ;; 02:6fb3 $cb $7e
+    bit  SPRITE_FLAG_STREAMS_OWN_GFX_BIT, [HL]              ;; 02:6fb3 $cb $7e
     jr   Z, .jr_02_6fbc                                ;; 02:6fb5 $28 $05
     ld   HL, wD60F_GfxTransferFlags                                     ;; 02:6fb7 $21 $0f $d6
-    set  1, [HL]                                       ;; 02:6fba $cb $ce
+    set  GFX_XFER_ENTITY_GFX, [HL]                     ;; 02:6fba $cb $ce
 .jr_02_6fbc:
     FARCALL call_03_5ebf_Entity_BuildSprites
 .jr_02_6fc7:
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:6fc7 $fa $00 $d3
-    add  A, $20                                        ;; 02:6fca $c6 $20
+    add  A, ENTITY_SLOT_SIZE                           ;; 02:6fca $c6 $20
     jr   NZ, .jr_02_6fa2                               ;; 02:6fcc $20 $d4
     FARCALL call_03_6540_Entity_BuildAllSprites
     ret                                                ;; 02:6fd9 $c9
 
 call_02_6fda_Entity_TickAction:
-; Per-entity action tick called each frame. Clears bit 2 of UNK_0A (collision result flag), 
-; decrements the frame duration counter at UNK_06; if it hits zero, increments the animation frame index 
-; and checks if the sequence is complete (via bit 6 of UNK_0A → call_02_70f1_Entity_RequestQueuedAction). 
-; On frame advance: reads the next action function pointer from the action data table (using UNK_07 as index), 
-; writes it to UNK_08, sets bit 6 of UNK_0A, then falls through into call_02_7030
+; The animation player, run once per frame for every entity including Gex.
+;
+; SPRITE_FRAME_COUNTER counts down; $FF means "hold this frame forever" and is how an entity
+; freezes its animation without a separate flag. When it reaches zero it reloads from
+; SPRITE_FRAME_COUNTER_MAX and SPRITE_COUNTER steps to the next frame.
+;
+; When SPRITE_COUNTER reaches SPRITE_COUNTER_MAX the sequence has run out, and what happens
+; next is declared by the action data rather than decided here:
+;   ACTION_STATE_ADVANCE_ON_END  hand over to the pending action and stop
+;   SPRITE_FLAG_LOOP_LAST_FRAME       restart at the final frame, so the tail oscillates
+;   otherwise                    restart at frame 0
+; Either way SPRITE_FLAG_ANIM_ENDED is pulsed so the action function can notice the wrap on this
+; one frame - that is the flag every hand-off in bank02_player_actions.asm polls.
+;
+; Finally the new frame's sprite id is fetched through SPRITE_IDS_PTR into SPRITE_ID,
+; SPRITE_FLAG_ID_CHANGED is raised, and it falls through into
+; Entity_NotifyActionChanged to get the tiles fetched
     ld   H, $d2                                        ;; 02:6fda $26 $d2
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:6fdc $fa $00 $d3
     ld   C, A                                          ;; 02:6fdf $4f
     or   A, $0a                                        ;; 02:6fe0 $f6 $0a
     ld   L, A                                          ;; 02:6fe2 $6f
-    res  2, [HL]                                       ;; 02:6fe3 $cb $96
+    res  SPRITE_FLAG_ANIM_ENDED_BIT, [HL]                   ;; 02:6fe3 $cb $96
     ld   A, C                                          ;; 02:6fe5 $79
     or   A, $06                                        ;; 02:6fe6 $f6 $06
     ld   L, A                                          ;; 02:6fe8 $6f
@@ -402,14 +424,14 @@ call_02_6fda_Entity_TickAction:
     jr   NZ, .jr_02_7013                               ;; 02:6ffa $20 $17
     inc  L                                             ;; 02:6ffc $2c
     inc  L                                             ;; 02:6ffd $2c
-    bit  6, [HL]                                       ;; 02:6ffe $cb $76
+    bit  ACTION_STATE_ADVANCE_ON_END_BIT, [HL]         ;; 02:6ffe $cb $76
     jp   NZ, call_02_70f1_Entity_RequestQueuedAction                                ;; 02:7000 $c2 $f1 $70
     inc  L                                             ;; 02:7003 $2c
     ld   B, [HL]                                       ;; 02:7004 $46
     dec  L                                             ;; 02:7005 $2d
     dec  L                                             ;; 02:7006 $2d
     dec  L                                             ;; 02:7007 $2d
-    bit  1, B                                          ;; 02:7008 $cb $48
+    bit  SPRITE_FLAG_LOOP_LAST_FRAME_BIT, B                 ;; 02:7008 $cb $48
     jr   Z, .jr_02_700e                                ;; 02:700a $28 $02
     ld   A, [DE]                                       ;; 02:700c $1a
     dec  A                                             ;; 02:700d $3d
@@ -417,12 +439,12 @@ call_02_6fda_Entity_TickAction:
     ld   [HL+], A                                      ;; 02:700e $22
     inc  L                                             ;; 02:700f $2c
     inc  L                                             ;; 02:7010 $2c
-    set  2, [HL]                                       ;; 02:7011 $cb $d6
+    set  SPRITE_FLAG_ANIM_ENDED_BIT, [HL]                   ;; 02:7011 $cb $d6
 .jr_02_7013:
     ld   A, C                                          ;; 02:7013 $79
     or   A, $0a                                        ;; 02:7014 $f6 $0a
     ld   L, A                                          ;; 02:7016 $6f
-    set  6, [HL]                                       ;; 02:7017 $cb $f6
+    set  SPRITE_FLAG_ID_CHANGED_BIT, [HL]            ;; 02:7017 $cb $f6
     ld   A, C                                          ;; 02:7019 $79
     or   A, $07                                        ;; 02:701a $f6 $07
     ld   L, A                                          ;; 02:701c $6f
@@ -443,20 +465,28 @@ call_02_6fda_Entity_TickAction:
     ld   [HL], B                                       ;; 02:702f $70
 
 call_02_7030_Entity_NotifyActionChanged:
-; Called after an action change. If the current entity is the player (address 0), sets HDMA bit 0 and returns. 
-; Otherwise checks bit 7 of UNK_0A; if set, reads entity ID, looks it up in .data_02_7061 to get a sound ID, 
-; writes it to wD589_EntityGfxSrcBank/wD588_EntityGfxSrcAddrHi, and sets HDMA bit 1 to trigger a sound update
+; Requests the graphics for whatever the entity just changed into. Nothing here is sound
+; related - wD588/wD589 name a ROM address, and the flag raised is a VRAM transfer request.
+;
+; For the player (slot 0) that is all it takes: raise GFX_XFER_PLAYER_GFX and the vblank
+; handler streams the new frame into $8000/$8100.
+;
+; For anything else it only acts when SPRITE_FLAG_STREAMS_OWN_GFX is set, meaning this entity streams its
+; tiles rather than sharing a preloaded page. The new sprite id becomes the high byte of the
+; ROM source address, and the entity id selects the ROM bank out of
+; .data_02_7061_EntityGfxBankTable - banks $18-$1C are where entity tiles live. Raising
+; GFX_XFER_ENTITY_GFX then gets the page copied into $8200/$8300
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:7030 $fa $00 $d3
     and  A, A                                          ;; 02:7033 $a7
     jr   NZ, .jr_02_703c                               ;; 02:7034 $20 $06
     ld   HL, wD60F_GfxTransferFlags                                     ;; 02:7036 $21 $0f $d6
-    set  0, [HL]                                       ;; 02:7039 $cb $c6
+    set  GFX_XFER_PLAYER_GFX, [HL]                     ;; 02:7039 $cb $c6
     ret                                                ;; 02:703b $c9
 .jr_02_703c:
     or   A, $0a                                        ;; 02:703c $f6 $0a
     ld   L, A                                          ;; 02:703e $6f
     ld   H, $d2                                        ;; 02:703f $26 $d2
-    bit  7, [HL]                                       ;; 02:7041 $cb $7e
+    bit  SPRITE_FLAG_STREAMS_OWN_GFX_BIT, [HL]              ;; 02:7041 $cb $7e
     ret  Z                                             ;; 02:7043 $c8
     ld   A, L                                          ;; 02:7044 $7d
     xor  A, $02                                        ;; 02:7045 $ee $02
@@ -468,14 +498,16 @@ call_02_7030_Entity_NotifyActionChanged:
     ld   L, A                                          ;; 02:704f $6f
     ld   L, [HL]                                       ;; 02:7050 $6e
     ld   H, $00                                        ;; 02:7051 $26 $00
-    ld   DE, .data_02_7061                             ;; 02:7053 $11 $61 $70
+    ld   DE, .data_02_7061_EntityGfxBankTable          ;; 02:7053 $11 $61 $70
     add  HL, DE                                        ;; 02:7056 $19
     ld   A, [HL]                                       ;; 02:7057 $7e
     ld   [wD589_EntityGfxSrcBank], A                                    ;; 02:7058 $ea $89 $d5
     ld   HL, wD60F_GfxTransferFlags                                     ;; 02:705b $21 $0f $d6
-    set  1, [HL]                                       ;; 02:705e $cb $ce
+    set  GFX_XFER_ENTITY_GFX, [HL]                     ;; 02:705e $cb $ce
     ret                                                ;; 02:7060 $c9
-.data_02_7061:
+.data_02_7061_EntityGfxBankTable:
+; ROM bank holding each entity type's sprite tiles, indexed by entity id.
+; $00 means the entity does not stream its own graphics
     db   $00, $00, $00, $00, $18, $18, $18, $00        ;; 02:7061 ????.???
     db   $19, $00, $00, $00, $1a, $1a, $00, $00        ;; 02:7069 ????.???
     db   $1a, $00, $1b, $00, $00, $00, $19, $00        ;; 02:7071 ????????
@@ -510,7 +542,7 @@ call_02_7102_Entity_SetAction:
 ; Sets a new action on the current entity. Masks action index to 5 bits, writes to ACTION_ID field, 
 ; then double-indexes data_02_4000_EntityDataTables (by entity ID, then by action index × 4) to get 
 ; the action function pointer and data pointer. Writes function pointer to ACTION_FUNC, reads 4 bytes 
-; from the data block: byte 0 → ACTION_STATE | $20, byte 1 → UNK_0A | $40, byte 2 → SPRITE_FRAME_COUNTER_MAX 
+; from the data block: byte 0 → ACTION_STATE | $20, byte 1 → SPRITE_FLAGS | $40, byte 2 → SPRITE_FRAME_COUNTER_MAX
 ; and SPRITE_FRAME_COUNTER, byte 3 → SPRITE_COUNTER_MAX; sets SPRITE_IDS_PTR to 4 bytes into the data block; 
 ; zeroes SPRITE_COUNTER; writes byte 4 to SPRITE_ID; then falls into Entity_NotifyActionChanged
     and  A, $1f                                        ;; 02:7102 $e6 $1f
@@ -545,10 +577,10 @@ call_02_7102_Entity_SetAction:
     ld   A, [HL+]                                      ;; 02:7139 $2a
     or   A, ACTION_STATE_IS_FIRST_FRAME                     ;; 02:713a $f6 $20
     ld   [BC], A                                       ;; 02:713c $02 ; ENTITY_FIELD_ACTION_STATE_FLAGS = first byte in data table | 0x20
-    inc  C                                             ;; 02:713d $0c ; BC = ENTITY_FIELD_UNK_0A
+    inc  C                                             ;; 02:713d $0c ; BC = ENTITY_FIELD_SPRITE_FLAGS
     ld   A, [HL+]                                      ;; 02:713e $2a
-    or   A, $40                                        ;; 02:713f $f6 $40
-    ld   [BC], A                                       ;; 02:7141 $02 ; ENTITY_FIELD_UNK_0A = second byte in data table | 0x40
+    or   A, 1 << SPRITE_FLAG_ID_CHANGED_BIT          ;; 02:713f $f6 $40
+    ld   [BC], A                                       ;; 02:7141 $02 ; force a graphics refresh on the new action's first frame
     inc  C                                             ;; 02:7142 $0c ; BC = ENTITY_FIELD_SPRITE_FRAME_COUNTER_MAX
     ld   A, [HL+]                                      ;; 02:7143 $2a
     ld   [BC], A                                       ;; 02:7144 $02 ; ENTITY_FIELD_SPRITE_FRAME_COUNTER_MAX = third byte in data table
@@ -668,13 +700,13 @@ call_02_71c8_Entities_QueueGraphicsAndPalettes:
 ; particle palette
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:71c8 $fa $00 $d3
     push AF                                            ;; 02:71cb $f5
-    ld   A, $20                                        ;; 02:71cc $3e $20
+    ld   A, ENTITY_SLOT_FIRST_NPC                      ;; 02:71cc $3e $20
 .jr_02_71ce:
     ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:71ce $ea $00 $d3
     ld   L, A                                          ;; 02:71d1 $6f
     ld   H, $d2                                        ;; 02:71d2 $26 $d2
     ld   A, [HL]                                       ;; 02:71d4 $7e
-    cp   A, $ff                                        ;; 02:71d5 $fe $ff
+    cp   A, ENTITY_ID_NONE                             ;; 02:71d5 $fe $ff
     jr   Z, .jr_02_71fa                                ;; 02:71d7 $28 $21
     ld   L, A                                          ;; 02:71d9 $6f
     ld   H, $00                                        ;; 02:71da $26 $00
@@ -693,7 +725,7 @@ call_02_71c8_Entities_QueueGraphicsAndPalettes:
     FARCALL call_0b_5f57_Entity_LoadGBCPalette
 .jr_02_71fa:
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:71fa $fa $00 $d3
-    add  A, $20                                        ;; 02:71fd $c6 $20
+    add  A, ENTITY_SLOT_SIZE                           ;; 02:71fd $c6 $20
     jr   NZ, .jr_02_71ce                               ;; 02:71ff $20 $cd
     FARCALL call_0b_5f1b_FlyPowerup_LoadParticlePalette
     pop  AF                                            ;; 02:720c $f1
@@ -708,7 +740,7 @@ call_02_7211_EntityGfxQueue_Enqueue:
     ld   HL, wD71E_EntityGfxQueueCount                                     ;; 02:7211 $21 $1e $d7
     ld   E, [HL]                                       ;; 02:7214 $5e
     ld   HL, wD71A_EntityGfxQueue                                     ;; 02:7215 $21 $1a $d7
-    ld   D, $04                                        ;; 02:7218 $16 $04
+    ld   D, ENTITY_GFX_QUEUE_SIZE                      ;; 02:7218 $16 $04
 .jr_02_721a:
     dec  E                                             ;; 02:721a $1d
     bit  7, E                                          ;; 02:721b $cb $7b
@@ -733,7 +765,7 @@ call_02_722c_EntityGfxQueue_StartNextTransfer:
 ; wD71F_GfxCopy_SrcBank..wD725_GfxCopy_SizeHi and raises GFX_XFER_QUEUED_ENTITY_GFX
 ; so call_00_0a21_FlushEntityGfxQueue performs the copy
     ld   HL, wD60F_GfxTransferFlags                                     ;; 02:722c $21 $0f $d6
-    bit  3, [HL]                                       ;; 02:722f $cb $5e
+    bit  GFX_XFER_QUEUED_ENTITY_GFX, [HL]              ;; 02:722f $cb $5e
     ret  NZ                                            ;; 02:7231 $c0
     ld   HL, wD71E_EntityGfxQueueCount                                     ;; 02:7232 $21 $1e $d7
     ld   A, [HL]                                       ;; 02:7235 $7e
@@ -766,7 +798,7 @@ call_02_722c_EntityGfxQueue_StartNextTransfer:
     ld   A, [HL+]                                      ;; 02:7262 $2a
     ld   [wD725_GfxCopy_SizeHi], A                                    ;; 02:7263 $ea $25 $d7
     ld   HL, wD60F_GfxTransferFlags                                     ;; 02:7266 $21 $0f $d6
-    set  3, [HL]                                       ;; 02:7269 $cb $de
+    set  GFX_XFER_QUEUED_ENTITY_GFX, [HL]              ;; 02:7269 $cb $de
     ret                                                ;; 02:726b $c9
 .data_02_726c_EntityGfxDescriptors:
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 02:726c ????????
@@ -834,8 +866,10 @@ call_02_722c_EntityGfxQueue_StartNextTransfer:
     db   $00, $01, $00                                 ;; 02:7439 ???
 
 data_02_743c_EntityGfxAndPaletteTable:
-; Parallel array to the entity type list; each 2-byte entry is (sound-id, sound-bank) 
-; used when spawning or re-initializing an entity to trigger the appropriate sound effect
+; Two bytes per entity id: the graphics-set id to stream in, and the GBC palette to load.
+; A graphics-set id of $00 means the entity has no tiles of its own to fetch.
+; (this was previously described as a sound table - it is not; the ids index
+; .data_02_726c_EntityGfxDescriptors and the bank 0B palette loader)
     db   $00, $00, $00, $01, $00, $02, $00, $06        ;; 02:743c ??????.w
     db   $00, $07, $00, $07, $00, $07, $00, $00        ;; 02:7444 .w??????
     db   $00, $00, $01, $05, $01, $04, $24, $05        ;; 02:744c ????ww??
