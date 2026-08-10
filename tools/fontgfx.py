@@ -4,7 +4,7 @@ Convert the bank 01 menu fonts between .bin and .png, in both directions.
 
 These fonts cannot go through rgbgfx. They are not 8x8 tile data: the font descriptor
 table at data_01_65fe_FontDescriptors (bank01_menus.asm) gives each font a height in PIXELS - 6, 7, 11
-and 16 - and call_01_4cab addresses a glyph as
+and 16 - and call_01_4cab_Text_SelectGlyph addresses a glyph as
 
     stride    = width_cols * height_px * 2
     glyph_ptr = base + index * stride
@@ -16,7 +16,7 @@ describe these files. Hence this script.
 
 Within a glyph the layout is COLUMN MAJOR - all height_px rows of column 0, then all
 height_px rows of column 1 - and each row is two bytes of ordinary GB 2bpp
-(plane 0, plane 1), the pair call_01_4ae7 loads into E and C.
+(plane 0, plane 1), the pair call_01_4ae7_Text_DrawGlyph loads into E and C.
 
 The PNG side is a single row of glyphs, no padding, 4-colour indexed. Decode and
 encode are exact inverses; `verify` asserts that on the real files.

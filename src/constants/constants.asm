@@ -478,6 +478,24 @@ DEF CUTSCENE_MOVE_SPEED_MAX                 EQU $10 ; 16/16ths = exactly one pix
 DEF CUTSCENE_HOLD_FRAMES                    EQU $B4 ; 180 frames (3s) of dwell before returning
 
 ; ------------------------------------------------------------------
+; Menu text renderer (bank01_menus.asm, call_01_4a8f_Text_Render)
+;
+; A string is a run of character codes in which bit 7 marks the LAST byte of a
+; line, so there is no separate line terminator - the final character of each line
+; simply has $80 or'd in. A zero byte after that ends the string. The word wrapper
+; works by scanning back to a space and setting bit 7 on it in place.
+; ------------------------------------------------------------------
+DEF TEXT_LINE_END_BIT                       EQU 7   ; set on a line's last character
+DEF TEXT_STRING_END                         EQU $00 ; byte after a line end, ends the string
+DEF TEXT_SPACE                              EQU $20 ; also PASSWORD_KEY_BLANK; the wrap point
+DEF TEXT_CHAR_SPACING                       EQU 1   ; pixels added after every glyph advance
+DEF TEXT_AUTO_ALIGN                         EQU $FE ; in PenX: centre the line horizontally
+                                                    ; in PenY: distribute lines down the block
+DEF FONT_GLYPH_COUNT                        EQU $2A ; $00 space, $01-$1A A-Z, $1B-$24 0-9,
+                                                    ; $25-$29 punctuation
+DEF FONT_BYTES_PER_ROW                      EQU 2   ; 2bpp: plane 0 then plane 1
+
+; ------------------------------------------------------------------
 ; Tile-override sequence step flags (wD77C_OverrideSequenceFlags)
 ;
 ; One flag byte heads every step of an override sequence, whether the sequence came from a

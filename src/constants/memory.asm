@@ -602,10 +602,22 @@ wD691_Menu_CursorStepY:
     ds 1                                               ;; d691
 ; end of the copied menu record
 
-wD692:
+; ------------------------------------------------------------------
+; Menu command descriptor + text renderer state.
+;
+; wD692..wD697 are copied from an 8-byte descriptor in data_01_5324, selected by
+; the command id; wD698..wD69E are the seven parameter bytes that follow the id in
+; the menu script. call_01_44e6_MenuScript_RunCommand does both copies, so the same
+; six bytes mean slightly different things per command - the names below are how
+; the text path (call_01_4a8f_Text_Render and friends) uses them, which is the only
+; consumer that reads them all.
+; ------------------------------------------------------------------
+wD692_Text_BlockWidthTiles:
+; width of the destination tile block. Also the row stride in the wC000 staging
+; buffer: +$10 steps one tile right, +wD692*$10 steps one tile down
     ds 1                                               ;; d692
 
-wD693:
+wD693_Text_BlockHeightTiles:
     ds 1                                               ;; d693
 
 wD694:
@@ -615,42 +627,58 @@ wD695:
     ds 1                                               ;; d695
 
 wD696:
+; scratch copy of wD69A_Text_FontId, taken by call_01_4e78_Menu_StageTileData
     ds 1                                               ;; d696
 
 wD697:
     ds 1                                               ;; d697
 
-wD698:
+wD698_Text_PenX:
+; pen X within the block, in PIXELS. $FE as the incoming parameter means "centre
+; this line", which call_01_4a8f_Text_Render resolves by measuring the string
     ds 1                                               ;; d698
 
-wD699:
+wD699_Text_PenY:
+; pen Y within the block, in PIXELS. $FE means "distribute the lines evenly down
+; the block", resolved in call_01_4bd3_Text_WrapAndAlign
     ds 1                                               ;; d699
 
-wD69A:
+wD69A_Text_FontId:
+; which of the four descriptors in data_01_65fe_FontDescriptors to use
     ds 1                                               ;; d69a
 
-wD69B:
+wD69B_Text_SrcPtrLo:
+; the string being rendered. call_01_4e6f_Menu_SetScriptSrcPtr writes this pair
     ds 1                                               ;; d69b
 
-wD69C:
+wD69C_Text_SrcPtrHi:
     ds 1                                               ;; d69c
 
 wD69D:
+; low nibble = selectable row index, high nibble = MENU_OPTION_* code; filed into
+; wD6C5_Menu_OptionActions by call_01_44e6_MenuScript_RunCommand
     ds 1                                               ;; d69d
 
 wD69E:
+; command flags: bit 0 = clear the staging buffer first, bit 1 = run the text
+; renderer, bit 7 = end of this command, bit 6 = ... (see RunCommand)
     ds 1                                               ;; d69e
 
-wD69F:
+wD69F_Font_GlyphBase:
+; the five fields below are the font descriptor, copied by call_01_4a8f_Text_Render
     ds 2                                               ;; d69f
 
-wD6A1:
+wD6A1_Font_WidthTable:
+; one advance width in pixels per glyph, indexed the same as the bitmaps
     ds 2                                               ;; d6a1
 
-wD6A3:
+wD6A3_Font_GlyphWidthCols:
+; glyph width in 8px columns
     ds 1                                               ;; d6a3
 
-wD6A4:
+wD6A4_Font_GlyphHeightPx:
+; glyph height in PIXELS - 6, 7, 11 or 16, never 8, which is why the font bitmaps
+; have no tile structure and cannot go through rgbgfx
     ds 1                                              ;; d6a4
 
 ; ------------------------------------------------------------------
@@ -695,13 +723,17 @@ wD6B3_MenuScript_PtrLo:
     ds 1                                               ;; d6b3
 wD6B4_MenuScript_PtrHi:
     ds 1                                               ;; d6b4
-wD6B5:
+wD6B5_Text_DestPtrLo:
+; write cursor into the wC000 staging buffer, pointing at the current glyph
+; column's top row. call_01_4ae7_Text_DrawGlyph saves and restores it per column
     ds 1                                               ;; d6b5
-wD6B6:
+wD6B6_Text_DestPtrHi:
     ds 1                                               ;; d6b6
-wD6B7:
+wD6B7_Text_GlyphPtrLo:
+; read cursor into the font bitmap, advanced two bytes per pixel row as the glyph
+; is drawn. Set up by call_01_4cab_Text_SelectGlyph
     ds 1                                               ;; d6b7
-wD6B8:
+wD6B8_Text_GlyphPtrHi:
     ds 1                                               ;; d6b8
 ; ------------------------------------------------------------------
 ; Sprite descriptor for the menu cursor, laid out so that
@@ -728,11 +760,17 @@ wD6C1_Menu_CursorSpriteId:
 ; which cursor graphic to draw, or $FF for a screen with no cursor at all.
 ; $12 is special-cased into the password keyboard's blinking highlight
     ds 1                                               ;; d6c1
-wD6C2:
+wD6C2_Text_ShiftCount:
+; 8 - (wD698_Text_PenX & 7). call_01_4ae7_Text_DrawGlyph shifts each glyph row
+; left by this much in a 16-bit window, which is a right shift by (penX & 7) with
+; the bits that fall off the end landing in the next tile along
     ds 1                                               ;; d6c2
-wD6C3:
+wD6C3_Text_GlyphAdvance:
+; advance width of the glyph just drawn, read from wD6A1_Font_WidthTable. The pen
+; moves by this plus one, so every font has a 1px inter-character gap built in
     ds 1                                               ;; d6c3
-wD6C4:
+wD6C4_MenuScript_CommandId:
+; the command id byte most recently consumed by call_01_44e6_MenuScript_RunCommand
     ds 1                                               ;; d6c4
 wD6C5_Menu_OptionActions:
 ; one MENU_OPTION_* code per selectable row, filled in by the menu script as it
@@ -761,9 +799,14 @@ wD6D9_Menu_HideSpritesGroup:
 wD6DA_Menu_TotalsSpriteGroup:
 ; sprite group erased when the totals menu turns the page
     ds 1                                               ;; d6da
-wD6DB:
+wD6DB_Text_RequestedX:
+; the pen X the script asked for, stashed before rendering so that every wrapped
+; line starts from it again. Keeps the $FE centring sentinel, which is what
+; call_01_4a8f_Text_Render tests per line
     ds 1                                               ;; d6db
-wD6DC: ; menu related
+wD6DC_Text_LineAdvance:
+; how far down to move for the next line: glyph height + 1 normally, or the evenly
+; distributed spacing worked out by call_01_4bd3_Text_WrapAndAlign when PenY is $FE
     ds 1                                               ;; d6dc
 wD6DD_Menu_ReturnToType:
 ; when START opens the pause menu over another screen (MENU_FLAG_START_OPENS_PAUSE),
