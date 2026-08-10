@@ -366,7 +366,10 @@ wD60A_OneCharString:
 ; through the normal text path without needing a string in ROM for every letter
     ds 1                                               ;; d60a
 
-wD60B:
+wD60B_OneCharStringEnd:
+; the $80 line terminator call_01_48fd_MenuCmd_SetPasswordCharText writes after the
+; character in wD60A, making the pair a complete one-character string. The two bytes
+; after it are unused padding
     ds 3                                               ;; d60b
 
 wD60E_HUDDirtyFlags:
@@ -419,11 +422,16 @@ wD617_TailSpinChargeCounter:
 wD618_CheckpointSpawnId:
     ds 1                                               ;; d618
 
-wD619_TitleScreenCounter:
-; frame count used for starting demo
+wD619_MenuTimeoutLo:
+; low byte of the menu timeout, decremented once per frame by
+; call_01_4000_MenuLoad. Reloaded with MENU_TIMEOUT_LO / MENU_TIMEOUT_HI every time
+; the screen is redrawn, so the clock only really runs while the player is idle.
+; Not title screen specific - every menu counts down, it is just that most of them
+; also set MENU_FLAG_WAIT_FOR_INPUT and so never look at the result
     ds 1                                               ;; d619
-wD61A_TitleScreenCounter:
-; frame count used for starting demo
+wD61A_MenuTimeoutHi:
+; high byte of the same counter; the pair expiring is what returns
+; MENU_RESULT_TIMED_OUT, which on the title screen is what starts the attract demo
     ds 1                                               ;; d61a
 wD61B_DemoInputsPointer:
 ; pointer to current demo mode inputs
@@ -466,7 +474,13 @@ wD624_CurrentLevelId:
 wD625_TotalsMenuPage:
 ; which page you are on in the totals menu
     ds 1                                               ;; d625
-wD626: ; unknown but related to the level you enter. 1 for smellraiser, 3 for out of toon, 2 for kung fu?, 3 for franken, 1 for thursday
+wD626_MissionSelect_OptionCount:
+; how many missions the level you are entering actually offers. Counted by
+; call_01_4297_MenuLoad_MissionSelect, which asks call_00_2e5f_MapData_GetMissionText
+; for each of the MISSION_SLOTS_PER_LEVEL slots and skips any whose first byte has
+; bit 7 set (an empty string). The count then picks the menu type directly:
+; MENU_TYPE_MISSION_SELECT_1_OPTION + count - 1, which is why the three mission
+; select screens exist as separate menu types at all
     ds 1                                               ;; d626
 wD627_CurrentMission:
 ; which mission you selected when entered a level
@@ -562,7 +576,7 @@ wD651_BonusMissionTotal:
 ; password carries 28 boxes x 3 bits = 84, so there are four spare bits
 ; ------------------------------------------------------------------
 wD652_Password_EncodeBuffer:
-; packed progress, built by call_01_4349_LoadEnteringMenu by walking every level
+; packed progress, built by call_01_4349_Password_BuildPayload by walking every level
 ; and folding wD629_RemoteProgressFlags through a per-level mask
     ds 8                                               ;; d652
 
@@ -593,9 +607,12 @@ wD668_PasswordValues: ; password on call screen and in game
 ; bug: the first time you enter a value after going into the "enter password" screen,
 ; it updates the value, but not visually
     ds 28                                              ;; d668
-wD684_PasswordGoButton: ; Password go button (value 4a)
+wD684_PasswordGoButton: ; PASSWORD_KEY_GO - cell $1D, submits what has been typed
     ds 1                                               ;; d684
 wD685_PasswordUnkButton:
+; PASSWORD_KEY_UNKNOWN - cell $1E. Drawn only by
+; data_01_58ca_MenuScript_ViewPassword, which has nothing to submit, so this is the
+; key that sits where GO would be on the read-only password screen
     ds 1                                               ;; d685
 
 wD686: ; unused except set to 0?
@@ -609,13 +626,13 @@ wD689_FlyAnimationTimer:
     ds 1                                               ;; d689
 
 ; ------------------------------------------------------------------
-; The active menu's 8-byte record, copied here from data_01_5574_MenuTypeData
+; The active menu's 8-byte record, copied here from data_01_5574_MenuTypeRecords
 ; by call_01_4000_MenuLoad. Every screen in the game runs the same loop; this
 ; block is the only thing that makes them behave differently
 ; ------------------------------------------------------------------
-wD68A_MenuTypeDataPointer:
-; pointer to the menu's script - the list of draw commands that builds the
-; screen, walked by call_01_446f_LoadMenuGraphics
+wD68A_Menu_ScriptPtr:
+; field +0 of the record: a pointer to the menu's script - the list of draw commands
+; that builds the screen, walked by call_01_446f_LoadMenuGraphics
     ds 2                                               ;; d68a
 wD68C_Menu_Flags:
 ; see MENU_FLAG_* in constants.asm
@@ -641,7 +658,7 @@ wD691_Menu_CursorStepY:
 ; ------------------------------------------------------------------
 ; Menu command descriptor + text renderer state.
 ;
-; wD692..wD697 are copied from an 8-byte descriptor in data_01_5324, selected by
+; wD692..wD697 are copied from an 8-byte descriptor in data_01_5324_MenuCmd_Descriptors, selected by
 ; the command id; wD698..wD69E are the seven parameter bytes that follow the id in
 ; the menu script. call_01_44e6_MenuScript_RunCommand does both copies, so the same
 ; six bytes mean slightly different things per command - the names below are how
@@ -654,6 +671,8 @@ wD692_Text_BlockWidthTiles:
     ds 1                                               ;; d692
 
 wD693_Text_BlockHeightTiles:
+; height of the destination tile block. Together with wD692 this gives both the
+; tilemap rectangle to fill and, times $10, the number of bytes of tile graphics
     ds 1                                               ;; d693
 
 wD694_MenuCmd_DestTileX:
@@ -687,7 +706,12 @@ wD699_Text_PenY:
     ds 1                                               ;; d699
 
 wD69A_Text_FontId:
-; which of the four descriptors in data_01_65fe_FontDescriptors to use
+; which of the four descriptors in data_01_65fe_FontDescriptors to use - but only
+; for parameter blocks that actually draw text. The byte is overloaded: the staging
+; sub-handlers (call_01_4e78_Menu_StageTileData, call_01_466b_MenuCmd_StageTVScreen)
+; read it as the destination tile id instead, and
+; call_01_4879_MenuCmd_DrawRemoteIcons reads it as a sprite-hide delay in frames.
+; Nothing distinguishes the three uses except which handler the block reaches
     ds 1                                               ;; d69a
 
 wD69B_Text_SrcPtrLo:
@@ -726,7 +750,7 @@ wD6A4_Font_GlyphHeightPx:
 ; ------------------------------------------------------------------
 ; Parameter block for call_00_07c3_Screen_LoadTilesAndTilemap.
 ; The 10 bytes wD6A5..wD6AE are copied in one go from a ROM descriptor
-; (see .data_01_47b9 and friends) before the call.
+; (see .data_01_47b9_ScreenTable and friends) before the call.
 ; ------------------------------------------------------------------
 wD6A5_ScreenDraw_TileDataBank:
     ds 1
@@ -783,6 +807,8 @@ wD6B8_Text_GlyphPtrHi:
 ; block straight to call_01_4dc8_Menu_BuildSpriteBlock as a script
 ; ------------------------------------------------------------------
 wD6B9_MenuCursor_OamSlot:
+; entries $10-$12 of data_01_5aa9_SpriteScriptTable point here rather than into ROM,
+; so "erase the cursor group" and "draw the cursor" go through the same code path
     ds 1                                               ;; d6b9
 wD6BA_MenuCursor_Y:
     ds 1                                               ;; d6ba
@@ -793,8 +819,12 @@ wD6BC_MenuCursor_TileId:
 wD6BD_MenuCursor_Attributes:
     ds 1                                               ;; d6bd
 wD6BE_MenuCursor_WidthInColumns:
+; taken from the staged image's own width, in 8px columns
     ds 1                                               ;; d6be
-wD6BF_MenuCursor_HeightInPixels:
+wD6BF_MenuCursor_HeightInTileRows:
+; height in 8px tile rows - call_01_4e01_Menu_WriteSpriteRect halves it to get a
+; count of 8x16 sprites. Same units as a sprite script's height field, and taken
+; straight from the staged image's own height
     ds 1                                               ;; d6bf
 wD6C0_MenuCursor_ScriptEnd:
 ; only ever written, always $FF - the terminator that lets the descriptor above be
@@ -829,8 +859,9 @@ wD6D6_Menu_BlinkCounter:
 ; password cursor's blink
     ds 1                                               ;; d6d6
 wD6D7_Menu_ChainedScriptId:
-; $FF normally. A menu script can set it to hand control to another script from
-; data_01_568c, which is how one menu type builds itself out of several
+; MENU_CHAINED_NONE normally. A menu script can set it to hand control to another
+; script from data_01_568c_ChainedScriptTable, which is how one menu type builds
+; itself out of several
     ds 1                                               ;; d6d7
 wD6D8_Menu_HideSpritesDelay:
 ; frames until the sprite group named by wD6D9 is erased. Pressing any button
@@ -838,10 +869,14 @@ wD6D8_Menu_HideSpritesDelay:
 ; as the player responds. Zero disables it
     ds 1                                               ;; d6d8
 wD6D9_Menu_HideSpritesGroup:
-; index into data_01_5aa9 of the sprite group wD6D8 will erase
+; MENU_SPRITE_GROUP_* index into data_01_5aa9_SpriteScriptTable naming the group
+; wD6D8 will erase
     ds 1                                               ;; d6d9
 wD6DA_Menu_TotalsSpriteGroup:
-; sprite group erased when the totals menu turns the page
+; the MENU_SPRITE_GROUP_* actually drawn on the totals page, remembered so that
+; paging left or right can erase exactly the icons it put there. Recomputed by
+; call_01_4879_MenuCmd_DrawRemoteIcons every time the page is drawn, because the
+; layout depends on the new page's remote progress id
     ds 1                                               ;; d6da
 wD6DB_Text_RequestedX:
 ; the pen X the script asked for, stashed before rendering so that every wrapped
@@ -858,12 +893,21 @@ wD6DD_Menu_ReturnToType:
 ; reloads it instead of returning to the caller. Zeroed on a fresh MenuLoad
     ds 1                                               ;; d6dd
 wD6DE_MenuType:
-; 0 = pause in media dimension, 1 = exit game, 2 = pause in world, 3 = exit to map
-; 5 = view totals, 6 = current password, B = mission select, F = enter password
+; the MENU_TYPE_* currently on screen. Doubles as the index into
+; data_01_5574_MenuTypeRecords, data_01_5654_MenuTypeLcdcAndPalette and the jump table
+; in call_01_43e6_Menu_OnSelectionChanged, so all three tables are the same length
     ds 1                                               ;; d6de
-wD6DF_MenuSelectedColumn: ; used for password menu, but not totals screen
+wD6DF_MenuSelectedColumn:
+; only meaningful with MENU_FLAG_GRID_CURSOR - the password keyboard's column 0-5.
+; Every other screen leaves it at 0, and left/right either page the totals or do
+; nothing. Starts at 1 on the keyboard so the cursor opens on a letter rather than
+; on the EXIT key
     ds 1                                               ;; d6df
-wD6E0_MenuSelectedRow: ; used for password menu, title screen, mission select, and leaving maps
+wD6E0_MenuSelectedRow:
+; the highlighted row. Indexes wD6C5_Menu_OptionActions to decide what B does, drives
+; the cursor position in call_01_4d72_Menu_DrawCursor and the raster wobble in
+; call_01_43e6_Menu_OnSelectionChanged, and on the mission select screen is copied to
+; wD627_CurrentMission on the way out
     ds 1                                               ;; d6e0
 wD6E1_RasterSplit_LCDCValue:
 ; LCDC value the raster-effect LCD STAT handler installs at scanline $5F,

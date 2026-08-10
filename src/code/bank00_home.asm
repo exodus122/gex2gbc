@@ -175,11 +175,13 @@ call_00_0150_Init:
     ld   [wD61E_DemoModeEnabled], A                                    ;; 00:025a $ea $1e $d6
     ld   A, MENU_TYPE_TITLE_OPTIONS                                        ;; 00:025d $3e $07
     FARCALL call_01_4000_MenuLoad
-    cp   A, $30                                        ;; 00:026a $fe $30
+    cp   A, MENU_OPTION_ENTER_PASSWORD                 ;; 00:026a $fe $30
     jr   Z, .jr_00_02b8                                ;; 00:026c $28 $4a
-    cp   A, $10                                        ;; 00:026e $fe $10
+    cp   A, MENU_OPTION_START_GAME                         ;; 00:026e $fe $10
     jr   Z, .jp_00_029d                                ;; 00:0270 $28 $2b
-    cp   A, $70                                        ;; 00:0272 $fe $70
+    ; neither option was picked, so the only way out was the timeout - fall into the
+    ; attract demo. Anything else means the title screen came back some other way
+    cp   A, MENU_RESULT_TIMED_OUT                      ;; 00:0272 $fe $70
     jr   NZ, .jp_00_0254                               ;; 00:0274 $20 $de
     ld   HL, wD61D_DemoUnk                                     ;; 00:0276 $21 $1d $d6
     ld   A, [HL]                                       ;; 00:0279 $7e
@@ -211,7 +213,7 @@ call_00_0150_Init:
     inc  HL                                            ;; 00:02a9 $23
     dec  B                                             ;; 00:02aa $05
     jr   NZ, .jr_00_02a7                               ;; 00:02ab $20 $fa
-    FARCALL call_01_4349_LoadEnteringMenu
+    FARCALL call_01_4349_Password_BuildPayload
 .jr_00_02b8:
     ld   A, [wD61E_DemoModeEnabled]                                    ;; 00:02b8 $fa $1e $d6
     and  A, A                                          ;; 00:02bb $a7
@@ -241,7 +243,7 @@ call_00_0150_Init:
     ld   A, [wD621_WarpFlags]                                    ;; 00:02f4 $fa $21 $d6
     and  A, $04                                        ;; 00:02f7 $e6 $04
     jr   Z, .jr_00_0306                                ;; 00:02f9 $28 $0b
-    FARCALL call_01_42bd_EnterTV
+    FARCALL call_01_42bd_HandleTVWarp
 .jr_00_0306:
     call call_00_11e0_PlayMusicBasedOnLevel                                  ;; 00:0306 $cd $e0 $11
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:0309 $fa $24 $d6
@@ -374,7 +376,9 @@ call_00_0150_Init:
     ld   A, $05                                        ;; 00:0484 $3e $05
 .jr_00_0486:
     FARCALL call_01_4000_MenuLoad
-    cp   A, $60                                        ;; 00:0491 $fe $60
+    ; the pause and totals menus can only end the level by returning
+    ; MENU_OPTION_CONFIRM_QUIT; every other result just resumes play
+    cp   A, MENU_OPTION_CONFIRM_QUIT                   ;; 00:0491 $fe $60
     jp   NZ, .jp_00_0417                               ;; 00:0493 $c2 $17 $04
     ld   A, [wD624_CurrentLevelId]                                    ;; 00:0496 $fa $24 $d6
     and  A, A                                          ;; 00:0499 $a7

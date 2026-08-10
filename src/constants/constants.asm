@@ -120,7 +120,7 @@ DEF MENU_TYPE_TIME_UP                     EQU $1B
 
 ; ------------------------------------------------------------------
 ; Menu behaviour flags (wD68C_Menu_Flags).
-; Byte +2 of each 8-byte record in data_01_5574_MenuTypeData. These are the
+; Byte +2 of each 8-byte record in data_01_5574_MenuTypeRecords. These are the
 ; only thing that distinguishes one menu from another as far as
 ; call_01_4000_MenuLoad is concerned - the loop is shared by every screen in
 ; the game, from the title to the pause menu to the credits
@@ -140,18 +140,35 @@ DEF MENU_FLAG_WAIT_FOR_INPUT     EQU $80 ; clear = auto-advance once the timer e
 ; row with B. The caller decides what to do with them; MenuLoad only handles
 ; the three that open another menu
 ; ------------------------------------------------------------------
-DEF MENU_OPTION_RESUME           EQU $10 ; close the menu and carry on playing
+DEF MENU_OPTION_START_GAME       EQU $10 ; "START" on the title screen, and its only use.
+                                         ; The caller's response is to set the starting lives
+                                         ; and zero all LEVEL_COUNT entries of
+                                         ; wD629_RemoteProgressFlags, so this begins a new
+                                         ; game rather than resuming anything
 DEF MENU_OPTION_ENTER_PASSWORD   EQU $30
 DEF MENU_OPTION_VIEW_PASSWORD    EQU $40
 DEF MENU_OPTION_QUIT             EQU $50 ; opens the exit-game or exit-to-map confirmation
-DEF MENU_OPTION_UNK_60           EQU $60
-DEF MENU_OPTION_UNK_80           EQU $80
+DEF MENU_OPTION_CONFIRM_QUIT     EQU $60 ; "OKAY" on either quit confirmation. The only option
+                                         ; code the gameplay loop acts on - anything else it
+                                         ; gets back means "carry on playing". From a level it
+                                         ; sends the player to the Media Dimension; from the
+                                         ; hub there is nowhere left to go, so it restarts at
+                                         ; the title
+DEF MENU_OPTION_RESUME_PLAY      EQU $80 ; "RESUME PLAY" on the totals screen. Returned to the
+                                         ; caller, which does nothing special with it - it
+                                         ; exists so that the row is selectable at all
 DEF MENU_OPTION_AUDIO_OPTIONS    EQU $90
 
 ; Extra values call_01_4000_MenuLoad can return that are not option codes
 DEF MENU_RESULT_DISMISSED        EQU $00 ; backed out with A/SELECT/START
 DEF MENU_RESULT_PASSWORD_GO      EQU $30 ; the password keyboard's GO key was pressed
 DEF MENU_RESULT_TIMED_OUT        EQU $70 ; the menu's timer expired without any input
+
+; Bits of wD621_WarpFlags - why the level is being left
+DEF WARP_FLAG_DIED               EQU $02
+DEF WARP_FLAG_ENTERED_TV         EQU $04 ; also set by collecting a gold remote
+DEF WARP_FLAG_ENTERED_DOOR       EQU $08
+DEF WARP_FLAG_TIME_UP            EQU $10 ; bonus level countdown expired
 
 ; Music
 DEF MUSIC_KUNG_FU_THEATER                 EQU $00
@@ -258,6 +275,10 @@ DEF MAP_UNUSED_1B                                 EQU $1B
 DEF MAP_UNUSED_1C                                 EQU $1C
 DEF MAP_UNUSED_1D                                 EQU $1D
 DEF MAP_BOSS_TV_CHANNEL_Z                         EQU $1E
+
+; Levels 0-$1D plus the boss. Every loop over wD629_RemoteProgressFlags, and the
+; totals menu's page counter, runs to LEVEL_COUNT
+DEF LEVEL_COUNT                                   EQU $1E
 
 ; wD6F9_BgMap_LoadingFlags
 DEF MAP_PENDING_VRAM_TRANSFER    EQU 7   ;
@@ -576,6 +597,100 @@ DEF MENUCMD_SUB_BASE                        EQU $E0
 
 DEF MENUCMD_ATTR_TV_COPY                    EQU $FF ; in CgbAttributes: use
                                                     ; MediaDimension_CopyTVAttributes
+
+; ------------------------------------------------------------------
+; Menu command sub-handlers (.data_01_4633_MenuCmd_SubHandlers)
+;
+; Written as the HIGH byte of a parameter block's source pointer; the LOW byte is
+; the handler's single argument. So `db <arg>, MENUCMD_SUB_<NAME>` in a script is
+; the escape hatch from pure data into code
+; ------------------------------------------------------------------
+DEF MENUCMD_SUB_STAGE_IMAGE1                EQU $E0 ; arg = index into data_01_74e9_ImageTable1
+DEF MENUCMD_SUB_STAGE_IMAGE2                EQU $E1 ; arg = index into data_01_74ed_ImageTable2
+DEF MENUCMD_SUB_STAGE_TV_SCREEN             EQU $E2 ; the Media Dimension TV picture
+DEF MENUCMD_SUB_TV_NAME_TEXT                EQU $E3 ; text = the current TV's name
+DEF MENUCMD_SUB_LEVEL_NAME_TEXT             EQU $E4 ; text = the current level's name
+DEF MENUCMD_SUB_MISSION_TEXT                EQU $E5 ; arg = mission 0-2, or 3 for
+                                                    ; wD627_CurrentMission (no marker sprite)
+DEF MENUCMD_SUB_LOAD_SCREEN                 EQU $E6 ; a full tileset + tilemap descriptor
+DEF MENUCMD_SUB_DRAW_CURSOR                 EQU $E7 ; arg = cursor sprite image
+DEF MENUCMD_SUB_COUNTER_TEXT                EQU $E8 ; arg = MENU_COUNTER_*
+DEF MENUCMD_SUB_REMOTE_ICONS                EQU $E9 ; arg = MENU_SPRITE_GROUP_* base
+DEF MENUCMD_SUB_TOTALS_PAGE_TEXT            EQU $EA ; text = the totals page's level name
+DEF MENUCMD_SUB_PASSWORD_CHAR_TEXT          EQU $EB ; arg = password cell index
+DEF MENUCMD_SUB_CHAIN_SCRIPT                EQU $EC ; arg = MENU_CHAINED_*
+DEF MENUCMD_SUB_FULLSCREEN_IMAGE            EQU $ED ; arg = MENU_IMAGE_*
+DEF MENUCMD_SUB_MISSION_STATUS_TEXT         EQU $EE ; "n OF m RED REMOTES FOUND"
+DEF MENUCMD_SUB_COLLECTIBLE_ICON            EQU $EF ; this level's collectible, 3x2 tiles
+
+; Fonts, indexed by wD69A_Text_FontId into data_01_65fe_FontDescriptors. Note that
+; wD69A only means "font" for blocks that actually draw text - the staging
+; sub-handlers reuse the same byte as a destination tile id, and
+; MENUCMD_SUB_REMOTE_ICONS reuses it as a sprite-hide delay
+DEF MENU_FONT_SMALL                         EQU $00 ; 8x6 glyphs
+DEF MENU_FONT_MEDIUM                        EQU $01 ; 8x7 glyphs
+DEF MENU_FONT_LARGE                         EQU $02 ; 16x11 glyphs
+DEF MENU_FONT_PASSWORD                      EQU $03 ; 16x16, restricted charset
+
+; Arguments to MENUCMD_SUB_COUNTER_TEXT - which number the block prints. Handled by
+; call_01_47f6_MenuCmd_GetCounterValue, then formatted by call_01_4ce5_Text_FormatByte
+DEF MENU_COUNTER_LIVES                      EQU $00
+DEF MENU_COUNTER_HEALTH                     EQU $01
+DEF MENU_COUNTER_MISSION_REMOTES            EQU $02 ; popcount of REMOTE_MISSION_MASK
+                                                    ; across all 30 levels
+DEF MENU_COUNTER_HIDDEN_REMOTES             EQU $03 ; popcount of REMOTE_HIDDEN_MASK
+DEF MENU_COUNTER_BONUS_REMOTES              EQU $04 ; popcount of REMOTE_BONUS_MASK
+DEF MENU_COUNTER_COLLECTIBLES_1             EQU $05 ; the three collectible milestones,
+DEF MENU_COUNTER_COLLECTIBLES_2             EQU $06 ; each showing 30 / 40 / 50 once
+DEF MENU_COUNTER_COLLECTIBLES_3             EQU $07 ; wD648 has passed it
+DEF MENU_COUNTER_PLAYER_X                   EQU $08 ; leftover debug readouts - no menu
+DEF MENU_COUNTER_PLAYER_Y                   EQU $09 ; script uses either
+
+; Arguments to MENUCMD_SUB_CHAIN_SCRIPT - index into data_01_568c_ChainedScriptTable
+DEF MENU_CHAINED_PASSWORD_CELLS             EQU $00
+DEF MENU_CHAINED_MISSION_SELECT             EQU $01
+DEF MENU_CHAINED_TOTALS                     EQU $02
+DEF MENU_CHAINED_NONE                       EQU $FF ; wD6D7_Menu_ChainedScriptId idle value
+
+; Arguments to MENUCMD_SUB_FULLSCREEN_IMAGE - index into .data_01_4932_FullscreenImages
+DEF MENU_IMAGE_TITLE_0                      EQU $00
+DEF MENU_IMAGE_TITLE_1                      EQU $01
+DEF MENU_IMAGE_AUDIO_MENU                   EQU $02
+DEF MENU_IMAGE_GREAT_JOB                    EQU $03
+DEF MENU_IMAGE_CRAVE                        EQU $04
+DEF MENU_IMAGE_SPLASH                       EQU $05
+DEF MENU_IMAGE_DAVID                        EQU $06
+DEF MENU_IMAGE_CREDITS_1                    EQU $07
+DEF MENU_IMAGE_CREDITS_2                    EQU $08
+DEF MENU_IMAGE_CREDITS_3                    EQU $09
+DEF MENU_IMAGE_CREDITS_4                    EQU $0A
+
+; Sprite groups - index into data_01_5aa9_SpriteScriptTable, used both as the
+; argument to MENUCMD_SUB_REMOTE_ICONS and by call_01_4d3b_Menu_EraseSpriteGroup.
+; The first two are bases: the level's remote progress id (0-6) is added on, so the
+; icon layout matches how many remotes that level has without any code deciding
+DEF MENU_SPRITE_GROUP_TOTALS                EQU $00 ; + progress id
+DEF MENU_SPRITE_GROUP_CONGRATS              EQU $07 ; + progress id
+DEF MENU_SPRITE_GROUP_ENTER_PASSWORD        EQU $0D
+DEF MENU_SPRITE_GROUP_VIEW_PASSWORD         EQU $0E
+DEF MENU_SPRITE_GROUP_INVALID_PASSWORD      EQU $0F
+
+; A menu's timer is a 16-bit countdown in wD619/wD61A, reloaded every time
+; call_01_4000_MenuLoad redraws. $05FF frames is a little over 20 seconds - how long
+; the title screen waits before dropping into the attract-mode demo
+DEF MENU_TIMEOUT_LO                         EQU $FF
+DEF MENU_TIMEOUT_HI                         EQU $05
+DEF MENU_SPLASH_FRAMES                      EQU $B4 ; 180 frames, MENU_TYPE_TITLE_SPLASH
+
+DEF MENU_OPTION_SLOT_NONE                   EQU $0F ; in wD69D_MenuCmd_OptionSlot: row $F,
+                                                    ; which no cursor can reach
+
+DEF MENU_REMOTE_ICON_COUNT                  EQU 6   ; icons a totals page can show, one per
+                                                    ; bit of wD629_RemoteProgressFlags
+DEF MISSION_SLOTS_PER_LEVEL                 EQU 3   ; selectable missions a level can offer
+DEF MENUCMD_MISSION_CURRENT                 EQU $03 ; argument to MENUCMD_SUB_MISSION_TEXT
+                                                    ; meaning "wD627_CurrentMission", which
+                                                    ; also suppresses the marker sprite
 
 ; ------------------------------------------------------------------
 ; Menu text renderer (bank01_menus.asm, call_01_4a8f_Text_Render)

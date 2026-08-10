@@ -20,6 +20,7 @@ data_01_5d12:
     db   "NO WAY!", END_TEXT
 data_01_5d1a:
     db   "OKAY", END_TEXT
+data_01_5d1f_Text_TimeUp:
     db   "TIME UP!", END_TEXT
 data_01_5d28:
     db   "GAME OVER", END_TEXT
@@ -32,11 +33,15 @@ data_01_5d4b:
     db   "GAME STATS", END_TEXT
 data_01_5d56:
     db   "ENTERING...", END_TEXT
-data_01_5d62:
+data_01_5d62_Text_LivesX:
     db   "X", END_TEXT
+data_01_5d64_Text_Congratulations:
     db   "CONGRATULATIONS!", END_TEXT
+data_01_5d75_Text_Reward:
     db   "REWARD", END_TEXT
+data_01_5d7c_Text_Hidden:
     db   "HIDDEN", END_TEXT
+data_01_5d83_Text_PressBToContinue:
     db   "PRESS B TO CONTINUE", END_TEXT
 data_01_5d97:
     db   "0 OF 3 RED REMOTES FOUND", END_TEXT
@@ -60,10 +65,12 @@ data_01_5e78:
     db   "0 OF 1 GOLD REMOTES FOUND", END_TEXT
 data_01_5e92:
     db   "1 OF 1 GOLD REMOTES FOUND", END_TEXT
+data_01_5eac_Text_ChooseAHint:
     db   "CHOOSE A HINT THEN PRESS B TO CONTINUE", END_TEXT
+data_01_5ed3_Text_PressBToContinueShort:
     db   "PRESS B TO CONTINUE", END_TEXT
 
-data_01_5ee7:
+data_01_5ee7_TVNameTable:
     dw   data_01_5efd
     dw   data_01_5f08
     dw   data_01_5f18

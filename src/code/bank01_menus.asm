@@ -6,9 +6,9 @@
 ; and all of them run through the single loop in call_01_4000_MenuLoad. There
 ; is no per-screen code; a menu is entirely described by data.
 ;
-; Two tables define one:
+; Three tables define one:
 ;
-;   data_01_5574_MenuTypeData  8 bytes per menu type - a pointer to its script
+;   data_01_5574_MenuTypeRecords  8 bytes per menu type - a pointer to its script
 ;                              plus the behaviour flags and cursor geometry.
 ;                              Copied into wD68A..wD691 on load
 ;   the script itself          a list of draw commands walked by
@@ -17,6 +17,16 @@
 ;                              register which rows are selectable and what
 ;                              picking them means, by filling in
 ;                              wD6C5_Menu_OptionActions
+;   data_01_5654_MenuTypeLcdcAndPalette
+;                              2 bytes per menu type - the LCDC value and
+;                              palette set installed once the script has run
+;
+; The scripts themselves start at data_01_5692_MenuScript_PausedInMediaDimension
+; and are all named MenuScript_*, so the whole set of screens can be read off the
+; label list. A script can also chain another one
+; (data_01_568c_ChainedScriptTable), which is how the password keyboard's frame and
+; its 29 cells, or the three mission select screens and their shared furniture, are
+; kept as separate pieces of data.
 ;
 ; MenuLoad blocks: it does not return until the player leaves the screen, and
 ; the value in A tells the caller why. That is either a MENU_OPTION_* code
@@ -46,9 +56,9 @@ call_01_4000_MenuLoad:
     add  HL, HL                                        ;; 01:400b $29
     add  HL, HL                                        ;; 01:400c $29
     add  HL, HL                                        ;; 01:400d $29
-    ld   DE, data_01_5574_MenuTypeData                              ;; 01:400e $11 $74 $55
+    ld   DE, data_01_5574_MenuTypeRecords                              ;; 01:400e $11 $74 $55
     add  HL, DE                                        ;; 01:4011 $19
-    ld   DE, wD68A_MenuTypeDataPointer                                     ;; 01:4012 $11 $8a $d6
+    ld   DE, wD68A_Menu_ScriptPtr                                     ;; 01:4012 $11 $8a $d6
     ld   BC, $08                                       ;; 01:4015 $01 $08 $00
     call call_00_07b0_MemCopy                                  ;; 01:4018 $cd $b0 $07
     xor  A, A                                          ;; 01:401b $af
@@ -64,22 +74,25 @@ call_01_4000_MenuLoad:
     ld   A, $01                                        ;; 01:402c $3e $01
 .jr_01_402e:
     ld   [wD6DF_MenuSelectedColumn], A                 ;; 01:402e $ea $df $d6
-    ld   HL, wD68A_MenuTypeDataPointer                                     ;; 01:4031 $21 $8a $d6
+    ld   HL, wD68A_Menu_ScriptPtr                                     ;; 01:4031 $21 $8a $d6
     ld   A, [HL+]                                      ;; 01:4034 $2a
     ld   H, [HL]                                       ;; 01:4035 $66
     ld   L, A                                          ;; 01:4036 $6f
     call call_01_446f_LoadMenuGraphics                 ;; 01:4037 $cd $6f $44
-.jp_01_403a:
-    ld   A, $ff                                        ;; 01:403a $3e $ff
-    ld   [wD619_TitleScreenCounter], A                                    ;; 01:403c $ea $19 $d6
+.jp_01_403a: ; reload the timers and go round again - every branch that changes
+             ; what is on screen comes back here rather than to the update loop
+    ld   A, MENU_TIMEOUT_LO                            ;; 01:403a $3e $ff
+    ld   [wD619_MenuTimeoutLo], A                                    ;; 01:403c $ea $19 $d6
     ld   [wD6D6_Menu_BlinkCounter], A                                    ;; 01:403f $ea $d6 $d6
-    ld   A, $05                                        ;; 01:4042 $3e $05
-    ld   [wD61A_TitleScreenCounter], A                                    ;; 01:4044 $ea $1a $d6
+    ld   A, MENU_TIMEOUT_HI                            ;; 01:4042 $3e $05
+    ld   [wD61A_MenuTimeoutHi], A                                    ;; 01:4044 $ea $1a $d6
     call call_01_4e94_Menu_WaitForNoInput                                  ;; 01:4047 $cd $94 $4e
+    ; the splash screen is the one menu with no update loop at all: it just holds
+    ; for MENU_SPLASH_FRAMES and returns, ignoring the player entirely
     ld   A, [wD6DE_MenuType]                                    ;; 01:404a $fa $de $d6
-    cp   A, $14                                        ;; 01:404d $fe $14
+    cp   A, MENU_TYPE_TITLE_SPLASH                     ;; 01:404d $fe $14
     jr   NZ, .jr_01_405c_MenuUpdate                               ;; 01:404f $20 $0b
-    ld   B, $b4                                        ;; 01:4051 $06 $b4
+    ld   B, MENU_SPLASH_FRAMES                         ;; 01:4051 $06 $b4
 .jr_01_4053:
     push BC                                            ;; 01:4053 $c5
     call call_00_0ab4_WaitForInterrupt                                  ;; 01:4054 $cd $b4 $0a
@@ -108,11 +121,11 @@ call_01_4000_MenuLoad:
     ld   A, [wD61E_DemoModeEnabled]                                    ;; 01:4076 $fa $1e $d6
     and  A, A                                          ;; 01:4079 $a7
     jr   Z, .jr_01_408f                                ;; 01:407a $28 $13
-    ld   A, [wD619_TitleScreenCounter]                                    ;; 01:407c $fa $19 $d6
+    ld   A, [wD619_MenuTimeoutLo]                                    ;; 01:407c $fa $19 $d6
     and  A, A                                          ;; 01:407f $a7
     jr   Z, .jr_01_408c                                ;; 01:4080 $28 $0a
 .jr_01_4082:
-    ld   HL, wD619_TitleScreenCounter                                     ;; 01:4082 $21 $19 $d6
+    ld   HL, wD619_MenuTimeoutLo                                     ;; 01:4082 $21 $19 $d6
     dec  [HL]                                          ;; 01:4085 $35
     jr   NZ, .jr_01_408f                               ;; 01:4086 $20 $07
     inc  HL                                            ;; 01:4088 $23
@@ -138,7 +151,7 @@ call_01_4000_MenuLoad:
     set  4, E                                          ;; 01:40ad $cb $e3
 .jr_01_40af:
     ld   D, $00                                        ;; 01:40af $16 $00
-    ld   HL, data_01_5c99                              ;; 01:40b1 $21 $99 $5c
+    ld   HL, data_01_5c99_PasswordKeyGrid                              ;; 01:40b1 $21 $99 $5c
     add  HL, DE                                        ;; 01:40b4 $19
     ld   C, [HL]                                       ;; 01:40b5 $4e
     call call_01_4f1b_Password_GetCellUnderCursor                                  ;; 01:40b6 $cd $1b $4f
@@ -235,7 +248,7 @@ call_01_4000_MenuLoad:
 .jr_01_415f:
     ld   A, $00                                        ;; 01:415f $3e $00
     call call_00_113e_PlaySFX                                  ;; 01:4161 $cd $3e $11
-    call call_01_43e6_Menu_UpdateRasterSplit                                  ;; 01:4164 $cd $e6 $43
+    call call_01_43e6_Menu_OnSelectionChanged                                  ;; 01:4164 $cd $e6 $43
     jp   .jp_01_403a                                   ;; 01:4167 $c3 $3a $40
 .jr_01_416a:
     ; the totals screens use left/right to page through the 30 levels, skipping
@@ -249,7 +262,7 @@ call_01_4000_MenuLoad:
     ld   HL, wD625_TotalsMenuPage                                     ;; 01:4176 $21 $25 $d6
     inc  [HL]                                          ;; 01:4179 $34
     ld   A, [HL]                                       ;; 01:417a $7e
-    sub  A, $1e                                        ;; 01:417b $d6 $1e
+    sub  A, LEVEL_COUNT                                ;; 01:417b $d6 $1e
     jr   NZ, .jr_01_4180                               ;; 01:417d $20 $01
     ld   [HL], A                                       ;; 01:417f $77
 .jr_01_4180:
@@ -263,14 +276,14 @@ call_01_4000_MenuLoad:
     dec  [HL]                                          ;; 01:418f $35
     bit  7, [HL]                                       ;; 01:4190 $cb $7e
     jr   Z, .jr_01_4196                                ;; 01:4192 $28 $02
-    ld   [HL], $1d                                     ;; 01:4194 $36 $1d
+    ld   [HL], LEVEL_COUNT - 1                          ;; 01:4194 $36 $1d
 .jr_01_4196:
     call call_01_4265_Menu_IsTotalsPageVisible                                  ;; 01:4196 $cd $65 $42
     jr   Z, .jr_01_4187                                ;; 01:4199 $28 $ec
 .jr_01_419b:
     ld   A, [wD6DA_Menu_TotalsSpriteGroup]                                    ;; 01:419b $fa $da $d6
     call call_01_4d3b_Menu_EraseSpriteGroup                                  ;; 01:419e $cd $3b $4d
-    ld   HL, data_01_57a0                              ;; 01:41a1 $21 $a0 $57
+    ld   HL, data_01_57a0_MenuScript_TotalsPageRefresh                              ;; 01:41a1 $21 $a0 $57
     call call_01_44cf_MenuScript_RunFrom                                  ;; 01:41a4 $cd $cf $44
     ld   HL, data_00_0db6_GfxStreamScript_MenuSprites                                      ;; 01:41a7 $21 $b6 $0d
     call call_01_4d0a_Menu_StartGfxStream                                  ;; 01:41aa $cd $0a $4d
@@ -318,7 +331,9 @@ call_01_4000_MenuLoad:
     ld   DE, wD6C5_Menu_OptionActions                                     ;; 01:4200 $11 $c5 $d6
     add  HL, DE                                        ;; 01:4203 $19
     ld   A, [HL]                                       ;; 01:4204 $7e
-    cp   A, MENU_OPTION_RESUME                         ;; 01:4205 $fe $10
+    ; codes that open another menu are handled below; the rest go back to whoever
+    ; called MenuLoad, which is where they get their meaning
+    cp   A, MENU_OPTION_START_GAME                     ;; 01:4205 $fe $10
     ret  Z                                             ;; 01:4207 $c8
     cp   A, MENU_OPTION_AUDIO_OPTIONS                  ;; 01:4208 $fe $90
     jr   Z, .jr_01_4229                                ;; 01:420a $28 $1d
@@ -328,9 +343,9 @@ call_01_4000_MenuLoad:
     jr   Z, .jr_01_424f                                ;; 01:4212 $28 $3b
     cp   A, MENU_OPTION_QUIT                           ;; 01:4214 $fe $50
     jr   Z, .jr_01_4257                                ;; 01:4216 $28 $3f
-    cp   A, MENU_OPTION_UNK_60                         ;; 01:4218 $fe $60
+    cp   A, MENU_OPTION_CONFIRM_QUIT                         ;; 01:4218 $fe $60
     ret  Z                                             ;; 01:421a $c8
-    cp   A, MENU_OPTION_UNK_80                         ;; 01:421b $fe $80
+    cp   A, MENU_OPTION_RESUME_PLAY                         ;; 01:421b $fe $80
     ret  Z                                             ;; 01:421d $c8
 .jp_01_421e:
     ; leaving the menu. If another screen is waiting underneath, reload it
@@ -384,48 +399,79 @@ call_01_4265_Menu_IsTotalsPageVisible:
     ld   HL, wD625_TotalsMenuPage                                     ;; 01:4265 $21 $25 $d6
     ld   L, [HL]                                       ;; 01:4268 $6e
     ld   H, $00                                        ;; 01:4269 $26 $00
-    ld   DE, .data_01_4272                             ;; 01:426b $11 $72 $42
+    ld   DE, .data_01_4272_TotalsPageVisible                             ;; 01:426b $11 $72 $42
     add  HL, DE                                        ;; 01:426e $19
     ld   A, [HL]                                       ;; 01:426f $7e
     and  A, A                                          ;; 01:4270 $a7
     ret                                                ;; 01:4271 $c9
-.data_01_4272:
+.data_01_4272_TotalsPageVisible:
     db   $01, $01, $01, $01, $01, $01, $00, $01        ;; 01:4272 ........
     db   $01, $01, $01, $01, $00, $01, $01, $00        ;; 01:427a ........
     db   $01, $00, $00, $00, $00, $01, $01, $01        ;; 01:4282 ........
     db   $01, $01, $01, $00, $00, $00, $01             ;; 01:428a ......?
 
 call_01_4291_MenuLoad_AudioOptions:
+; Opens MENU_TYPE_AUDIO_OPTIONS_UNUSED. Reachable only through
+; MENU_OPTION_AUDIO_OPTIONS, which no shipped menu script ever assigns to a row, so
+; this and the screen it opens are dead code kept from an earlier build
     ld   A, MENU_TYPE_AUDIO_OPTIONS_UNUSED                ;; 01:4291 $3e $11
     call call_01_4000_MenuLoad                         ;; 01:4293 $cd $00 $40
     ret                                                ;; 01:4296 $c9
 
 call_01_4297_MenuLoad_MissionSelect:
+; Shows the mission select screen for the level being entered and leaves the chosen
+; row in wD627_CurrentMission.
+;
+; The three MENU_TYPE_MISSION_SELECT_* screens differ only in how many rows they
+; have, so instead of branching this counts how many of the level's
+; MISSION_SLOTS_PER_LEVEL mission strings are non-empty - bit 7 set on the first
+; byte means empty - and adds that count to the menu type of the one-row screen
     xor  A, A                                          ;; 01:4297 $af
-    ld   [wD626], A                                    ;; 01:4298 $ea $26 $d6
+    ld   [wD626_MissionSelect_OptionCount], A                                    ;; 01:4298 $ea $26 $d6
 .jr_01_429b:
     push AF                                            ;; 01:429b $f5
     call call_00_2e5f_MapData_GetMissionText                                  ;; 01:429c $cd $5f $2e
     bit  7, [HL]                                       ;; 01:429f $cb $7e
     jr   NZ, .jr_01_42a7                               ;; 01:42a1 $20 $04
-    ld   HL, wD626                                     ;; 01:42a3 $21 $26 $d6
+    ld   HL, wD626_MissionSelect_OptionCount                                     ;; 01:42a3 $21 $26 $d6
     inc  [HL]                                          ;; 01:42a6 $34
 .jr_01_42a7:
     pop  AF                                            ;; 01:42a7 $f1
     inc  A                                             ;; 01:42a8 $3c
-    cp   A, $03                                        ;; 01:42a9 $fe $03
+    cp   A, MISSION_SLOTS_PER_LEVEL                    ;; 01:42a9 $fe $03
     jr   NZ, .jr_01_429b                               ;; 01:42ab $20 $ee
-    ld   A, $08                                        ;; 01:42ad $3e $08
-    ld   HL, wD626                                     ;; 01:42af $21 $26 $d6
+    ; the three mission-select menu types differ only in how many rows they have,
+    ; so the count picks the type arithmetically
+    ld   A, MENU_TYPE_MISSION_SELECT_1_OPTION - 1      ;; 01:42ad $3e $08
+    ld   HL, wD626_MissionSelect_OptionCount           ;; 01:42af $21 $26 $d6
     add  A, [HL]                                       ;; 01:42b2 $86
     call call_01_4000_MenuLoad                                  ;; 01:42b3 $cd $00 $40
     ld   A, [wD6E0_MenuSelectedRow]                                    ;; 01:42b6 $fa $e0 $d6
     ld   [wD627_CurrentMission], A                                    ;; 01:42b9 $ea $27 $d6
     ret                                                ;; 01:42bc $c9
 
-call_01_42bd_EnterTV:
+call_01_42bd_HandleTVWarp:
+; Runs everything that happens when WARP_FLAG_ENTERED_TV is set - which covers both
+; halves of a TV transition, entering a level from the hub and finishing one at its
+; exit TV. In the second case: award the remote, show whatever screen that earns,
+; then put the player back in the hub.
+;
+; Three ways through:
+;   - in the hub (level 0) there is nothing to award; just set the respawn point
+;   - in a bonus level, either the timer ran out (show MENU_TYPE_TIME_UP) or the
+;     quota was met, in which case the bonus bit was already granted elsewhere
+;   - in a normal level, OR the remote bit for the exit TV the player used into
+;     wD629_RemoteProgressFlags, then show the congratulations screen - or the
+;     credits, if this was Channel Z
+;
+; All three converge on building a fresh password and showing the totals, and every
+; path leaves the player in the Media Dimension with PLAYER_ACTION_EXIT_TV.
+;
+; Which bit gets awarded comes from .data_01_4337_ExitTVRemoteBits, indexed by
+; (remote progress id * 3) + wD647_ExitTVButtonIndex - the same three-exits-per-level
+; layout every normal level uses
     ld   A, [wD621_WarpFlags]                                    ;; 01:42bd $fa $21 $d6
-    and  A, $fb                                        ;; 01:42c0 $e6 $fb
+    and  A, $ff ^ WARP_FLAG_ENTERED_TV                 ;; 01:42c0 $e6 $fb
     ld   [wD621_WarpFlags], A                                    ;; 01:42c2 $ea $21 $d6
     ld   A, [wD624_CurrentLevelId]                                    ;; 01:42c5 $fa $24 $d6
     and  A, A                                          ;; 01:42c8 $a7
@@ -434,10 +480,10 @@ call_01_42bd_EnterTV:
     and  A, A                                          ;; 01:42ce $a7
     jr   Z, .jr_01_42e7                                ;; 01:42cf $28 $16
     ld   A, [wD621_WarpFlags]                                    ;; 01:42d1 $fa $21 $d6
-    and  A, $10                                        ;; 01:42d4 $e6 $10
+    and  A, WARP_FLAG_TIME_UP                          ;; 01:42d4 $e6 $10
     jr   Z, .jr_01_4319                                ;; 01:42d6 $28 $41
     ld   A, [wD621_WarpFlags]                                    ;; 01:42d8 $fa $21 $d6
-    and  A, $ef                                        ;; 01:42db $e6 $ef
+    and  A, $ff ^ WARP_FLAG_TIME_UP                    ;; 01:42db $e6 $ef
     ld   [wD621_WarpFlags], A                                    ;; 01:42dd $ea $21 $d6
     ld   A, MENU_TYPE_TIME_UP                                        ;; 01:42e0 $3e $1b
     call call_01_4000_MenuLoad                                  ;; 01:42e2 $cd $00 $40
@@ -451,7 +497,7 @@ call_01_42bd_EnterTV:
     ld   A, [wD647_ExitTVButtonIndex]                                    ;; 01:42ee $fa $47 $d6
     add  A, E                                          ;; 01:42f1 $83
     ld   E, A                                          ;; 01:42f2 $5f
-    ld   HL, .data_01_4337                             ;; 01:42f3 $21 $37 $43
+    ld   HL, .data_01_4337_ExitTVRemoteBits                             ;; 01:42f3 $21 $37 $43
     add  HL, DE                                        ;; 01:42f6 $19
     ld   C, [HL]                                       ;; 01:42f7 $4e
     ld   HL, wD624_CurrentLevelId                                     ;; 01:42f8 $21 $24 $d6
@@ -472,7 +518,7 @@ call_01_42bd_EnterTV:
     ld   A, MENU_TYPE_CONGRATULATIONS                                        ;; 01:4314 $3e $0e
     call call_01_4000_MenuLoad                                  ;; 01:4316 $cd $00 $40
 .jr_01_4319:
-    call call_01_4349_LoadEnteringMenu                                  ;; 01:4319 $cd $49 $43
+    call call_01_4349_Password_BuildPayload                                  ;; 01:4319 $cd $49 $43
     ld   A, MENU_TYPE_VIEW_TOTALS                                        ;; 01:431c $3e $05
     call call_01_4000_MenuLoad                                  ;; 01:431e $cd $00 $40
     xor  A, A                                          ;; 01:4321 $af
@@ -486,17 +532,20 @@ call_01_42bd_EnterTV:
     ld   A, PLAYER_ACTION_SPAWN                                        ;; 01:4331 $3e $00
     ld   [wD744_Player_SpawnAction], A                                    ;; 01:4333 $ea $44 $d7
     ret                                                ;; 01:4336 $c9
-.data_01_4337:
+.data_01_4337_ExitTVRemoteBits:
     db   $01, $02, $04, $01, $02, $00, $01, $00        ;; 01:4337 ????????
     db   $00, $01, $02, $00, $01, $00, $00, $20        ;; 01:433f ????????
     db   $00, $00                                      ;; 01:4347 ??
 
-call_01_4349_LoadEnteringMenu:
+call_01_4349_Password_BuildPayload:
 ; Packs the whole save state into wD652_Password_EncodeBuffer, ready for
-; call_01_4fa5_Password_Encode to spell out as letters.
+; call_01_4fa5_Password_Encode to spell out as letters. Nothing to do with loading a
+; menu, despite where it is called from - bank00 runs it when a new game starts and
+; call_01_42bd_HandleTVWarp runs it on the way out of every level, so the password
+; the totals screen shows is always current.
 ;
 ; It walks every level id from 0 to MAP_BOSS_TV_CHANNEL_Z, and for each one takes
-; a mask from .data_01_43b6 - which bits of that level's wD629_RemoteProgressFlags
+; a mask from .data_01_43b6_LevelPayloadMasks - which bits of that level's wD629_RemoteProgressFlags
 ; are worth saving - then shifts mask and flags together, emitting one payload bit
 ; per set mask bit. So levels with fewer objectives cost fewer bits, which is how
 ; 30 levels fit in 64.
@@ -505,7 +554,7 @@ call_01_4349_LoadEnteringMenu:
 ; 9 bytes before it. Note wD624_CurrentLevelId is borrowed as the loop counter and
 ; restored afterwards
     ld   HL, wD652_Password_EncodeBuffer                                     ;; 01:4349 $21 $52 $d6
-    ld   B, $0a                                        ;; 01:434c $06 $0a
+    ld   B, PASSWORD_PAYLOAD_BYTES                     ;; 01:434c $06 $0a
     xor  A, A                                          ;; 01:434e $af
 .jr_01_434f:
     ld   [HL+], A                                      ;; 01:434f $22
@@ -522,7 +571,7 @@ call_01_4349_LoadEnteringMenu:
     call call_00_2e43_MapData_GetRemoteProgressId                                  ;; 01:4361 $cd $43 $2e
     ld   E, A                                          ;; 01:4364 $5f
     ld   D, $00                                        ;; 01:4365 $16 $00
-    ld   HL, .data_01_43b6                             ;; 01:4367 $21 $b6 $43
+    ld   HL, .data_01_43b6_LevelPayloadMasks                             ;; 01:4367 $21 $b6 $43
     add  HL, DE                                        ;; 01:436a $19
     ld   A, [HL]                                       ;; 01:436b $7e
     ld   HL, wD624_CurrentLevelId                                     ;; 01:436c $21 $24 $d6
@@ -554,14 +603,14 @@ call_01_4349_LoadEnteringMenu:
     ld   A, [wD624_CurrentLevelId]                                    ;; 01:4392 $fa $24 $d6
     inc  A                                             ;; 01:4395 $3c
     ld   [wD624_CurrentLevelId], A                                    ;; 01:4396 $ea $24 $d6
-    cp   A, MAP_BOSS_TV_CHANNEL_Z                                        ;; 01:4399 $fe $1e
+    cp   A, LEVEL_COUNT                                ;; 01:4399 $fe $1e
     jr   NZ, .jr_01_4360                               ;; 01:439b $20 $c3
     pop  AF                                            ;; 01:439d $f1
     ld   [wD624_CurrentLevelId], A                                    ;; 01:439e $ea $24 $d6
     ld   A, [wD73D_LivesRemaining]                                    ;; 01:43a1 $fa $3d $d7
     ld   [wD65A_Password_EncodeLives], A                                    ;; 01:43a4 $ea $5a $d6
     ld   HL, wD652_Password_EncodeBuffer                                     ;; 01:43a7 $21 $52 $d6
-    ld   B, $09                                        ;; 01:43aa $06 $09
+    ld   B, PASSWORD_CHECKSUM_BYTES                    ;; 01:43aa $06 $09
     xor  A, A                                          ;; 01:43ac $af
 .jr_01_43ad:
     add  A, [HL]                                       ;; 01:43ad $86
@@ -570,16 +619,21 @@ call_01_4349_LoadEnteringMenu:
     jr   NZ, .jr_01_43ad                               ;; 01:43b0 $20 $fb
     ld   [wD65B_Password_EncodeChecksum], A                                    ;; 01:43b2 $ea $5b $d6
     ret                                                ;; 01:43b5 $c9
-.data_01_43b6:
+.data_01_43b6_LevelPayloadMasks:
     db   $1f, $1b, $19, $03, $01, $20, $00
 
-call_01_43bd_MenuLoad_GameOver:    
+call_01_43bd_MenuLoad_GameOver:
+; The GAME OVER sequence: the words on their own (which times out by itself, since
+; MENU_TYPE_GAME_OVER has no flags at all), then the totals screen
     ld a, MENU_TYPE_GAME_OVER
     call call_01_4000_MenuLoad
     ld a, MENU_TYPE_GAME_OVER_TOTALS
     jp call_01_4000_MenuLoad                                        ;; 01:43c6 ?
 
 call_01_43c7_MenuLoad_Credits:
+; The ending: start the Media Dimension theme, then walk the five credit screens in
+; order. Each one blocks until the player presses B, since they all carry
+; MENU_FLAG_NO_CANCEL and there is nothing else to press
     ld   A, MUSIC_MEDIA_DIMENSION                                        ;; 01:43c7 $3e $07
     call call_00_120c_SetupMusic                                  ;; 01:43c9 $cd $0c $12
     ld   A, MENU_TYPE_CREDITS_GREAT_JOB                                        ;; 01:43cc $3e $12
@@ -594,18 +648,33 @@ call_01_43c7_MenuLoad_Credits:
     call call_01_4000_MenuLoad                                  ;; 01:43e2 $cd $00 $40
     ret                                                ;; 01:43e5 $c9
 
-call_01_43e6_Menu_UpdateRasterSplit:
+call_01_43e6_Menu_OnSelectionChanged:
+; Called whenever the highlighted row changes. Jumps through
+; .data_01_43f5_SelectionChangedHandlers, one entry per menu type, so what "the
+; selection moved" means is per screen:
+;
+;   .jp_01_442d  set the wobble window (wD6EB/wD6EC) to the 8 scanlines of the
+;                selected row, counting down from line $4E - this is what makes the
+;                highlighted option ripple on the pause menus
+;   .jp_01_4446  the same, from line $16, for the two totals screens
+;   .jp_01_444c  no wobble; stream in a fresh set of tiles for the selected row
+;   .jp_01_445d  the same for the audio options screen
+;   .jp_01_446e  do nothing - most screens
+;
+; The two streaming entries reach into tables in bank00 whose names
+; (data_00_0dd9_GfxStreamScriptTable_Rezopolis / _ChannelZ) look like level names but
+; are really the title-options and audio-options highlight graphics
     ld   HL, wD6DE_MenuType                                     ;; 01:43e6 $21 $de $d6
     ld   L, [HL]                                       ;; 01:43e9 $6e
     ld   H, $00                                        ;; 01:43ea $26 $00
     add  HL, HL                                        ;; 01:43ec $29
-    ld   DE, .data_01_43f5                             ;; 01:43ed $11 $f5 $43
+    ld   DE, .data_01_43f5_SelectionChangedHandlers                             ;; 01:43ed $11 $f5 $43
     add  HL, DE                                        ;; 01:43f0 $19
     ld   A, [HL+]                                      ;; 01:43f1 $2a
     ld   H, [HL]                                       ;; 01:43f2 $66
     ld   L, A                                          ;; 01:43f3 $6f
     jp   HL                                            ;; 01:43f4 $e9
-.data_01_43f5:
+.data_01_43f5_SelectionChangedHandlers:
     dw   .jp_01_442d                                 ;; 01:43f5 pP
     dw   .jp_01_442d                                 ;; 01:43f7 pP
     dw   .jp_01_442d                                 ;; 01:43f9 pP
@@ -674,7 +743,13 @@ call_01_43e6_Menu_UpdateRasterSplit:
     ret                                                ;; 01:446e $c9
 
 call_01_446f_LoadMenuGraphics:
-; Load tiles, palettes, and bg map for the menu
+; Builds a whole screen from the script at HL: fade out, wipe VRAM, run the script,
+; follow any chained script it queued, then set the raster split up from
+; data_01_5654_MenuTypeLcdcAndPalette and fade back in.
+;
+; The chain loop is what lets one screen be assembled from several scripts - the
+; password keyboard's frame and its 29 cells are separate scripts, and the mission
+; select screens share their furniture with each other the same way
     push HL                                            ;; 01:446f $e5
     ld   A, $ff                                        ;; 01:4470 $3e $ff
     ld   [wD6C1_Menu_CursorSpriteId], A                                    ;; 01:4472 $ea $c1 $d6
@@ -688,13 +763,13 @@ call_01_446f_LoadMenuGraphics:
     ld   [wD6B3_MenuScript_PtrLo], A                                    ;; 01:4481 $ea $b3 $d6
     ld   A, H                                          ;; 01:4484 $7c
     ld   [wD6B4_MenuScript_PtrHi], A                                    ;; 01:4485 $ea $b4 $d6
-    ld   A, $ff                                        ;; 01:4488 $3e $ff
+    ld   A, MENU_CHAINED_NONE                          ;; 01:4488 $3e $ff
     ld   [wD6D7_Menu_ChainedScriptId], A                                    ;; 01:448a $ea $d7 $d6
     call call_01_44d7_MenuScript_RunToEnd                                  ;; 01:448d $cd $d7 $44
     ld   A, [wD6D7_Menu_ChainedScriptId]                                    ;; 01:4490 $fa $d7 $d6
-    cp   A, $ff                                        ;; 01:4493 $fe $ff
+    cp   A, MENU_CHAINED_NONE                          ;; 01:4493 $fe $ff
     jr   Z, .jr_01_449f                                ;; 01:4495 $28 $08
-    ld   DE, data_01_568c                              ;; 01:4497 $11 $8c $56
+    ld   DE, data_01_568c_ChainedScriptTable                              ;; 01:4497 $11 $8c $56
     call call_00_07b9_GetPointerFromTable                                  ;; 01:449a $cd $b9 $07
     jr   .jr_01_4480                                   ;; 01:449d $18 $e1
 .jr_01_449f:
@@ -702,7 +777,7 @@ call_01_446f_LoadMenuGraphics:
     ld   L, [HL]                                       ;; 01:44a2 $6e
     ld   H, $00                                        ;; 01:44a3 $26 $00
     add  HL, HL                                        ;; 01:44a5 $29
-    ld   DE, data_01_5654                              ;; 01:44a6 $11 $54 $56
+    ld   DE, data_01_5654_MenuTypeLcdcAndPalette                              ;; 01:44a6 $11 $54 $56
     add  HL, DE                                        ;; 01:44a9 $19
     ld   A, [HL+]                                      ;; 01:44aa $2a
     ld   [wD6E1_RasterSplit_LCDCValue], A                                    ;; 01:44ab $ea $e1 $d6
@@ -710,7 +785,7 @@ call_01_446f_LoadMenuGraphics:
     FARCALL call_0b_5537_BgPalette_LoadMonoOrGetSpriteParams
     ld   A, $ff                                        ;; 01:44ba $3e $ff
     ld   [wD6EB_RasterWobble_StartLine], A                                    ;; 01:44bc $ea $eb $d6
-    call call_01_43e6_Menu_UpdateRasterSplit                                  ;; 01:44bf $cd $e6 $43
+    call call_01_43e6_Menu_OnSelectionChanged                                  ;; 01:44bf $cd $e6 $43
     ld   A, $06                                        ;; 01:44c2 $3e $06
     call call_00_0bae_RequestLcdIsr                                  ;; 01:44c4 $cd $ae $0b
     ld   A, $d7                                        ;; 01:44c7 $3e $d7
@@ -742,7 +817,7 @@ call_01_44e6_MenuScript_RunCommand:
 ; on. Almost every screen in the game is data fed through here rather than code.
 ;
 ; The first byte is a command id, which indexes an 8-byte descriptor in
-; data_01_5324; six of those bytes are copied to wD692..wD697 and hold the settings
+; data_01_5324_MenuCmd_Descriptors; six of those bytes are copied to wD692..wD697 and hold the settings
 ; shared by every use of that command (block size, destination, tile ids,
 ; attributes). The script then supplies one or more 7-byte parameter blocks, each
 ; copied over wD698..wD69E, and each drawing one rectangle. The loop at
@@ -976,8 +1051,8 @@ call_01_44e6_MenuScript_RunCommand:
 ; will then render. So the escape hatch is mostly a way of choosing text and images
 ; at runtime while the rest of the screen stays pure data.
 ;
-;   $E0  pick a sprite image from data_01_74e9 by index and stage it
-;   $E1  same, from data_01_74ed
+;   $E0  pick a sprite image from data_01_74e9_ImageTable1 by index and stage it
+;   $E1  same, from data_01_74ed_ImageTable2
 ;   $E2  Media Dimension TV screen - load the TV palette, stage a 6x5 tile block
 ;   $E3  set the text to the current TV's name
 ;   $E4  set the text to the current level's name
@@ -1013,25 +1088,34 @@ call_01_44e6_MenuScript_RunCommand:
     dw   call_01_49d7_MenuCmd_StageCollectibleIcon                            ;; 01:464f ????
 
 call_01_4653_MenuCmd_StageImage1:
+; MENUCMD_SUB_STAGE_IMAGE1. Argument indexes data_01_74e9_ImageTable1; the image's
+; own three-byte header carries its size, so the script does not have to
     ld   A, [wD69B_Text_SrcPtrLo]                                    ;; 01:4653 $fa $9b $d6
-    ld   DE, data_01_74e9                              ;; 01:4656 $11 $e9 $74
+    ld   DE, data_01_74e9_ImageTable1                              ;; 01:4656 $11 $e9 $74
     call call_00_07b9_GetPointerFromTable                                  ;; 01:4659 $cd $b9 $07
     jp   call_01_4e78_Menu_StageTileData                                    ;; 01:465c $c3 $78 $4e
 
 call_01_465f_MenuCmd_StageImage2:
+; MENUCMD_SUB_STAGE_IMAGE2. As above but from data_01_74ed_ImageTable2, the larger
+; table - cursors, remote icons, the stats icons
     ld   A, [wD69B_Text_SrcPtrLo]                                    ;; 01:465f $fa $9b $d6
-    ld   DE, data_01_74ed                              ;; 01:4662 $11 $ed $74
+    ld   DE, data_01_74ed_ImageTable2                              ;; 01:4662 $11 $ed $74
     call call_00_07b9_GetPointerFromTable                                  ;; 01:4665 $cd $b9 $07
     jp   call_01_4e78_Menu_StageTileData                                    ;; 01:4668 $c3 $78 $4e
 
 call_01_466b_MenuCmd_StageTVScreen:
-    ld   HL, .data_01_46a8                             ;; 01:466b $21 $a8 $46
+; MENUCMD_SUB_STAGE_TV_SCREEN. Draws the little picture inside the TV on the mission
+; select screen: load the mission-select palette, hand the TV's own palette to bank
+; $0B, then stage a fixed 6x5 tile block fetched from bank $13 through
+; data_01_5cb9_TVScreenImageTable. Which picture is chosen by the map's
+; MAPDATA_TV_PALETTE_ID, so the palette and the artwork can never disagree
+    ld   HL, .data_01_46a8_MissionSelectPalette                             ;; 01:466b $21 $a8 $46
     ld   DE, wDA4B_DynamicPalette                                     ;; 01:466e $11 $4b $da
     ld   BC, $80                                       ;; 01:4671 $01 $80 $00
     call call_00_07b0_MemCopy                                  ;; 01:4674 $cd $b0 $07
     FARCALL call_0b_5d4b_MediaDimension_LoadTVPalette
     call call_00_2e3a_MapData_GetTVPaletteId                                  ;; 01:4682 $cd $3a $2e
-    ld   DE, data_01_5cb9                              ;; 01:4685 $11 $b9 $5c
+    ld   DE, data_01_5cb9_TVScreenImageTable                              ;; 01:4685 $11 $b9 $5c
     call call_00_07b9_GetPointerFromTable                                  ;; 01:4688 $cd $b9 $07
     ld   A, [wD69A_Text_FontId]                                    ;; 01:468b $fa $9a $d6
     ld   [wD696_MenuCmd_FirstTileId], A                                    ;; 01:468e $ea $96 $d6
@@ -1045,22 +1129,36 @@ call_01_466b_MenuCmd_StageTVScreen:
     ld   DE, wC000_BgMapTileIds                                     ;; 01:46a0 $11 $00 $c0
     ld   A, $13                                        ;; 01:46a3 $3e $13
     jp   call_00_07a1_FarMemCopy                                    ;; 01:46a5 $c3 $a1 $07
-.data_01_46a8:
+.data_01_46a8_MissionSelectPalette:
     INCBIN "gfx/menus/palettes/data_01_46a8_mission_select_menu_palette.bin"
 
 call_01_4728_MenuCmd_SetTVNameText:
+; MENUCMD_SUB_TV_NAME_TEXT. Points the source pointer at the current TV's name
+; ("SCREAM TV", "TOON TV", ...) from data_01_5ee7_TVNameTable, indexed the same way as the TV
+; picture above
     call call_00_2e3a_MapData_GetTVPaletteId                                  ;; 01:4728 $cd $3a $2e
-    ld   DE, data_01_5ee7                              ;; 01:472b $11 $e7 $5e
+    ld   DE, data_01_5ee7_TVNameTable                              ;; 01:472b $11 $e7 $5e
     call call_00_07b9_GetPointerFromTable                                  ;; 01:472e $cd $b9 $07
     jp   call_01_4e6f_Menu_SetScriptSrcPtr                                  ;; 01:4731 $c3 $6f $4e
 
 call_01_4734_MenuCmd_SetLevelText:
+; MENUCMD_SUB_LEVEL_NAME_TEXT. Entry 0 of the map's text block is its name
     call call_00_2e4c_MapData_GetLevelNameText                                  ;; 01:4734 $cd $4c $2e
     jp   call_01_4e6f_Menu_SetScriptSrcPtr                                  ;; 01:4737 $c3 $6f $4e
 
 call_01_473a_MenuCmd_SetMissionText:
+; MENUCMD_SUB_MISSION_TEXT. Argument is a mission slot 0-2, or MENUCMD_MISSION_CURRENT
+; meaning "whichever mission is being played" (wD627_CurrentMission).
+;
+; For a real slot it also places the little marker sprite to the left of the line,
+; whose tile says whether that mission's remote is already collected ($EC/$F4 on
+; CGB) and whose colour differs on DMG. MENUCMD_MISSION_CURRENT sets bit 7 to skip
+; the marker, which is why the pause menu shows the mission text without one.
+;
+; The sprite's position is derived from the block's own destination tile, so the
+; marker follows the text wherever a script puts it
     ld   A, [wD69B_Text_SrcPtrLo]                                    ;; 01:473a $fa $9b $d6
-    cp   A, $03                                        ;; 01:473d $fe $03
+    cp   A, MENUCMD_MISSION_CURRENT                    ;; 01:473d $fe $03
     jr   NZ, .jr_01_4746                               ;; 01:473f $20 $05
     ld   A, [wD627_CurrentMission]                                    ;; 01:4741 $fa $27 $d6
     or   A, $80                                        ;; 01:4744 $f6 $80
@@ -1119,26 +1217,35 @@ call_01_473a_MenuCmd_SetMissionText:
     ld   BC, $202                                      ;; 01:479e $01 $02 $02
     jp   call_01_4e01_Menu_WriteSpriteRect                                  ;; 01:47a1 $c3 $01 $4e
 call_01_47a4_MenuCmd_LoadScreen:
+; MENUCMD_SUB_LOAD_SCREEN. Copies a 10-byte screen descriptor into wD6A5..wD6AE and
+; hands it to the shared loader, which brings in a whole tileset and tilemap at once.
+; Only one descriptor exists (.data_01_47bb_PasswordScreen, the password keyboard), so the argument
+; is always 0
     ld   a, [wD69B_Text_SrcPtrLo]
-    ld   de, .data_01_47b9
+    ld   de, .data_01_47b9_ScreenTable
     call call_00_07b9_GetPointerFromTable
     ld   de, wD6A5_ScreenDraw_TileDataBank
     ld   bc, $000a
     call call_00_07b0_MemCopy
     jp   call_00_07c3_Screen_LoadTilesAndTilemap
-.data_01_47b9:
-    dw   .data_01_47bb
-.data_01_47bb:
+.data_01_47b9_ScreenTable:
+    dw   .data_01_47bb_PasswordScreen
+.data_01_47bb_PasswordScreen:
     db   $09, $b6, $14, $12, $d0, $42, $00, $40, $d0, $02
 
 call_01_47c5_MenuCmd_DrawCursorSprite:
+; MENUCMD_SUB_DRAW_CURSOR. Stages the cursor's graphics like any other image, then
+; builds the little sprite script at wD6B9..wD6C0 out of the block's own width and
+; height and records the image index as wD6C1_Menu_CursorSpriteId. From here on
+; call_01_4d72_Menu_DrawCursor redraws it every frame, so a script only ever declares
+; the cursor once
     call call_01_465f_MenuCmd_StageImage2                                  ;; 01:47c5 $cd $5f $46
     xor  A, A                                          ;; 01:47c8 $af
     ld   [wD6B9_MenuCursor_OamSlot], A                                    ;; 01:47c9 $ea $b9 $d6
     ld   A, [wD692_Text_BlockWidthTiles]                                    ;; 01:47cc $fa $92 $d6
     ld   [wD6BE_MenuCursor_WidthInColumns], A                                    ;; 01:47cf $ea $be $d6
     ld   A, [wD693_Text_BlockHeightTiles]                                    ;; 01:47d2 $fa $93 $d6
-    ld   [wD6BF_MenuCursor_HeightInPixels], A                                    ;; 01:47d5 $ea $bf $d6
+    ld   [wD6BF_MenuCursor_HeightInTileRows], A                                    ;; 01:47d5 $ea $bf $d6
     ld   A, $ff                                        ;; 01:47d8 $3e $ff
     ld   [wD6C0_MenuCursor_ScriptEnd], A                                    ;; 01:47da $ea $c0 $d6
     ld   A, [wD69B_Text_SrcPtrLo]                                    ;; 01:47dd $fa $9b $d6
@@ -1148,17 +1255,33 @@ call_01_47c5_MenuCmd_DrawCursorSprite:
     jp   call_01_4d72_Menu_DrawCursor                                  ;; 01:47e7 $c3 $72 $4d
 
 call_01_47ea_MenuCmd_SetCounterText:
-    call call_01_47f6                                  ;; 01:47ea $cd $f6 $47
+; MENUCMD_SUB_COUNTER_TEXT. Fetches one of the MENU_COUNTER_* values, formats it as
+; decimal into wD5A6_TextBuffer and points the source pointer there, so the following
+; MENUCMD_DRAW_TEXT draws a number that was computed this frame
+    call call_01_47f6_MenuCmd_GetCounterValue                                  ;; 01:47ea $cd $f6 $47
     call call_01_4ce5_Text_FormatByte                                  ;; 01:47ed $cd $e5 $4c
     ld   HL, wD5A6_TextBuffer                                     ;; 01:47f0 $21 $a6 $d5
     jp   call_01_4e6f_Menu_SetScriptSrcPtr                                  ;; 01:47f3 $c3 $6f $4e
 
-call_01_47f6:
+call_01_47f6_MenuCmd_GetCounterValue:
+; A = the number a MENU_COUNTER_* id refers to. Dispatches through .data_01_4800_CounterHandlers.
+;
+; The three remote counters share .jr_01_4852, which walks all LEVEL_COUNT entries of
+; wD629_RemoteProgressFlags and counts set bits under the mask in C - so "how many
+; red remotes have I found" is a popcount over the whole save state rather than a
+; running total anyone has to maintain.
+;
+; The collectible counters stage themselves off wD648_CollectibleMilestoneIndex:
+; a milestone already passed shows its full value ($1E, $28), the one in progress
+; shows wD649_CollectibleAmount, and the ones beyond it show zero.
+;
+; The last two entries read the player's position and are never referenced by any
+; menu script - leftover debug readouts
     ld   A, [wD69B_Text_SrcPtrLo]                                    ;; 01:47f6 $fa $9b $d6
-    ld   DE, .data_01_4800                             ;; 01:47f9 $11 $00 $48
+    ld   DE, .data_01_4800_CounterHandlers                             ;; 01:47f9 $11 $00 $48
     call call_00_07b9_GetPointerFromTable                                  ;; 01:47fc $cd $b9 $07
     jp   HL                                            ;; 01:47ff $e9
-.data_01_4800:
+.data_01_4800_CounterHandlers:
     dw   .jr_01_4814                                 ;; 01:4800 pP
     dw   .jr_01_4818                                 ;; 01:4802 pP
     dw   .jr_01_481c                                 ;; 01:4804 pP
@@ -1176,13 +1299,13 @@ call_01_47f6:
     ld   A, [wD741_Player_Health]                                    ;; 01:4818 $fa $41 $d7
     ret                                                ;; 01:481b $c9
 .jr_01_481c:
-    ld   C, $07                                        ;; 01:481c $0e $07
+    ld   C, REMOTE_MISSION_MASK                        ;; 01:481c $0e $07
     jr   .jr_01_4852                                   ;; 01:481e $18 $32
 .jr_01_4820:
-    ld   C, $18                                        ;; 01:4820 $0e $18
+    ld   C, REMOTE_HIDDEN_MASK                         ;; 01:4820 $0e $18
     jr   .jr_01_4852                                   ;; 01:4822 $18 $2e
 .jr_01_4824:
-    ld   C, $20                                        ;; 01:4824 $0e $20
+    ld   C, REMOTE_BONUS_MASK                          ;; 01:4824 $0e $20
     jr   .jr_01_4852                                   ;; 01:4826 $18 $2a
 .jr_01_4828:
     ld   a,[wD648_CollectibleMilestoneIndex]
@@ -1211,7 +1334,7 @@ call_01_47f6:
     ret  
 .jr_01_4852:
     ld   HL, wD629_RemoteProgressFlags                                     ;; 01:4852 $21 $29 $d6
-    ld   B, $1e                                        ;; 01:4855 $06 $1e
+    ld   B, LEVEL_COUNT                                ;; 01:4855 $06 $1e
     ld   E, $00                                        ;; 01:4857 $1e $00
 .jr_01_4859:
     ld   A, [HL+]                                      ;; 01:4859 $2a
@@ -1244,6 +1367,20 @@ call_01_47f6:
     ret  
 
 call_01_4879_MenuCmd_DrawRemoteIcons:
+; MENUCMD_SUB_REMOTE_ICONS. Draws the row of remote icons for the page being shown.
+;
+; Each of the MENU_REMOTE_ICON_COUNT icons has a lit tile in .data_01_48d9_RemoteIconTiles and an
+; unlit one $24 tiles later; the bits of wD629_RemoteProgressFlags are shifted out
+; one at a time to choose between them, and the results go into
+; wD5AA_Sprite_TileIdTable rather than into the sprite script - so one fixed layout
+; covers every combination of collected remotes.
+;
+; The layout itself is picked by adding the level's remote progress id to the group
+; base in the argument (MENU_SPRITE_GROUP_TOTALS or _CONGRATS), which is how a level
+; with two objectives draws two icons and one with five draws five.
+;
+; wD69A is not a font id here: when non-zero it is the frame delay after which
+; call_01_4d25_Menu_TickHideSprites erases this group again
     ld   A, [wD69A_Text_FontId]                                    ;; 01:4879 $fa $9a $d6
     and  A, A                                          ;; 01:487c $a7
     jr   Z, .jr_01_4888                                ;; 01:487d $28 $09
@@ -1252,9 +1389,9 @@ call_01_4879_MenuCmd_DrawRemoteIcons:
     ld   [wD6D9_Menu_HideSpritesGroup], A                                    ;; 01:4885 $ea $d9 $d6
 .jr_01_4888:
     ld   A, [wD69B_Text_SrcPtrLo]                                    ;; 01:4888 $fa $9b $d6
-    cp   A, $00                                        ;; 01:488b $fe $00
+    cp   A, MENU_SPRITE_GROUP_TOTALS                   ;; 01:488b $fe $00
     jr   Z, .jr_01_4899                                ;; 01:488d $28 $0a
-    cp   A, $07                                        ;; 01:488f $fe $07
+    cp   A, MENU_SPRITE_GROUP_CONGRATS                 ;; 01:488f $fe $07
     jr   NZ, .jr_01_48d0                               ;; 01:4891 $20 $3d
     ld   A, [wD624_CurrentLevelId]                                    ;; 01:4893 $fa $24 $d6
     ld   [wD625_TotalsMenuPage], A                                    ;; 01:4896 $ea $25 $d6
@@ -1269,8 +1406,8 @@ call_01_4879_MenuCmd_DrawRemoteIcons:
     add  HL, DE                                        ;; 01:48a9 $19
     ld   C, [HL]                                       ;; 01:48aa $4e
     ld   HL, wD5AA_Sprite_TileIdTable                                     ;; 01:48ab $21 $aa $d5
-    ld   DE, .data_01_48d9                             ;; 01:48ae $11 $d9 $48
-    ld   B, $06                                        ;; 01:48b1 $06 $06
+    ld   DE, .data_01_48d9_RemoteIconTiles                             ;; 01:48ae $11 $d9 $48
+    ld   B, MENU_REMOTE_ICON_COUNT                     ;; 01:48b1 $06 $06
 .jr_01_48b3:
     ld   A, [DE]                                       ;; 01:48b3 $1a
     srl  C                                             ;; 01:48b4 $cb $39
@@ -1291,13 +1428,17 @@ call_01_4879_MenuCmd_DrawRemoteIcons:
     ld   A, C                                          ;; 01:48cc $79
     ld   [wD6DA_Menu_TotalsSpriteGroup], A                                    ;; 01:48cd $ea $da $d6
 .jr_01_48d0:
-    ld   DE, data_01_5aa9                              ;; 01:48d0 $11 $a9 $5a
+    ld   DE, data_01_5aa9_SpriteScriptTable                              ;; 01:48d0 $11 $a9 $5a
     call call_00_07b9_GetPointerFromTable                                  ;; 01:48d3 $cd $b9 $07
     jp   call_01_4dc8_Menu_BuildSpriteBlock                                    ;; 01:48d6 $c3 $c8 $4d
-.data_01_48d9:
+.data_01_48d9_RemoteIconTiles:
     db   $98, $98, $98, $a4, $a4, $b0                  ;; 01:48d9 ......
 
 call_01_48df_MenuCmd_SetTotalsPageText:
+; MENUCMD_SUB_TOTALS_PAGE_TEXT. The totals screen's heading: the level name for the
+; page you are on, or "GAME STATS" for page 0, which is the whole-game summary rather
+; than a level. wD624_CurrentLevelId is borrowed as the lookup key and restored,
+; because the level name accessor only knows how to read the current level
     ld   A, [wD625_TotalsMenuPage]                                    ;; 01:48df $fa $25 $d6
     and  A, A                                          ;; 01:48e2 $a7
     jr   Z, .jr_01_48f7                                ;; 01:48e3 $28 $12
@@ -1314,6 +1455,10 @@ call_01_48df_MenuCmd_SetTotalsPageText:
     jp   call_01_4e6f_Menu_SetScriptSrcPtr                                  ;; 01:48fa $c3 $6f $4e
 
 call_01_48fd_MenuCmd_SetPasswordCharText:
+; MENUCMD_SUB_PASSWORD_CHAR_TEXT. Argument is a cell index into the flat array at
+; wD667_PasswordExitButton. Copies that one character into wD60A_OneCharString and
+; terminates it, so a single letter can go through the ordinary text renderer without
+; a string in ROM for every possible letter in every possible box
     ld   hl,wD69B_Text_SrcPtrLo
     ld   l,[hl]
     ld   h,$00
@@ -1322,24 +1467,31 @@ call_01_48fd_MenuCmd_SetPasswordCharText:
     ld   a,[hl]
     ld   [wD60A_OneCharString],a
     ld   a,$80
-    ld   [wD60B],a
+    ld   [wD60B_OneCharStringEnd],a
     ld   hl,wD60A_OneCharString
     jp   call_01_4e6f_Menu_SetScriptSrcPtr
 
 call_01_4916_MenuCmd_SetChainedScript:
+; MENUCMD_SUB_CHAIN_SCRIPT. Queues another script to run once this one ends; see
+; data_01_568c_ChainedScriptTable. Only the last one set wins, since there is a single
+; slot in wD6D7_Menu_ChainedScriptId
     ld   A, [wD69B_Text_SrcPtrLo]                                    ;; 01:4916 $fa $9b $d6
     ld   [wD6D7_Menu_ChainedScriptId], A                                    ;; 01:4919 $ea $d7 $d6
     ret                                                ;; 01:491c $c9
 
 call_01_491d_MenuCmd_LoadFullscreenImage:
+; MENUCMD_SUB_FULLSCREEN_IMAGE. Argument is a MENU_IMAGE_* id; .data_01_4932_FullscreenImages turns it
+; into a bank and pointer, which the shared loader unpacks over the whole screen.
+; These are the title cards and the credit pages - the screens with no layout of their
+; own, just a picture
     ld   A, [wD69B_Text_SrcPtrLo]                                    ;; 01:491d $fa $9b $d6
-    ld   DE, .data_01_4932                             ;; 01:4920 $11 $32 $49
+    ld   DE, .data_01_4932_FullscreenImages                             ;; 01:4920 $11 $32 $49
     call call_00_07b9_GetPointerFromTable                                  ;; 01:4923 $cd $b9 $07
     ld   DE, wD6B0_FullscreenImage_Bank                                     ;; 01:4926 $11 $b0 $d6
     ld   BC, $03                                       ;; 01:4929 $01 $03 $00
     call call_00_07b0_MemCopy                                  ;; 01:492c $cd $b0 $07
     jp   call_00_084d_Screen_LoadFullscreenImage                                    ;; 01:492f $c3 $4d $08
-.data_01_4932:
+.data_01_4932_FullscreenImages:
     dw   .data_01_4948, .data_01_494b, .data_01_494e, .data_01_4951        ;; 01:4932 ....????
     dw   .data_01_4954, .data_01_4957, .data_01_495a, .data_01_495d        ;; 01:493a ......??
     dw   .data_01_4960, .data_01_4963, .data_01_4966
@@ -1433,15 +1585,15 @@ call_01_49d7_MenuCmd_StageCollectibleIcon:
 ; Stages the current level's collectible icon - the fruit/bug/whatever that level
 ; uses - as a 3x2 tile block starting at tile id $92.
 ;
-; The graphics come from data_01_7c0f_collectible_images indexed by level id, and
+; The graphics come from data_01_7c0f_CollectibleIconTable indexed by level id, and
 ; the 24 bytes immediately after them in ROM are the icon's tilemap ids, copied on
 ; to wDAAB_MenuBgMapTileIds. The 128-byte blob loaded first is the CGB palette set
-    ld   hl,.data_01_4a0f
+    ld   hl,.data_01_4a0f_PauseMenuPalette
     ld   de,wDA4B_DynamicPalette
     ld   bc,$0080
     call call_00_07b0_MemCopy
     ld   a,[wD624_CurrentLevelId]
-    ld   de,data_01_7c0f_collectible_images
+    ld   de,data_01_7c0f_CollectibleIconTable
     call call_00_07b9_GetPointerFromTable
     ld   a,$92
     ld   [wD696_MenuCmd_FirstTileId],a
@@ -1457,7 +1609,7 @@ call_01_49d7_MenuCmd_StageCollectibleIcon:
     ld   de,wDAAB_MenuBgMapTileIds
     ld   bc,$0018
     jp   call_00_07b0_MemCopy
-.data_01_4a0f:
+.data_01_4a0f_PauseMenuPalette:
     INCBIN "gfx/menus/palettes/data_01_4a0f_pause_menu_palette.bin"
 
 call_01_4a8f_Text_Render:
@@ -1865,7 +2017,7 @@ call_01_4c81_Text_MeasureLine:
 .jr_01_4c8d:
     ld   A, [HL+]                                      ;; 01:4c8d $2a
     push HL                                            ;; 01:4c8e $e5
-    call call_01_4f41_Password_CharToFontTile                                  ;; 01:4c8f $cd $41 $4f
+    call call_01_4f41_Text_CharToGlyphIndex                                  ;; 01:4c8f $cd $41 $4f
     ld   HL, wD6A1_Font_WidthTable                                     ;; 01:4c92 $21 $a1 $d6
     ld   E, [HL]                                       ;; 01:4c95 $5e
     inc  HL                                            ;; 01:4c96 $23
@@ -1896,7 +2048,7 @@ call_01_4cab_Text_SelectGlyph:
 ; Both the multiply and the index scaling are repeated addition. There is no
 ; special case for index 0, which is what establishes that the font blobs have no
 ; header - glyph 0 sits at the very first byte
-    call call_01_4f41_Password_CharToFontTile                                  ;; 01:4cab $cd $41 $4f
+    call call_01_4f41_Text_CharToGlyphIndex                                  ;; 01:4cab $cd $41 $4f
     push AF                                            ;; 01:4cae $f5
     ld   HL, wD6A1_Font_WidthTable                                     ;; 01:4caf $21 $a1 $d6
     ld   E, [HL]                                       ;; 01:4cb2 $5e
@@ -1944,7 +2096,7 @@ call_01_4ce5_Text_FormatByte:
 ; Each digit is produced by starting the cell at $2F and `inc [HL]` once per
 ; successful subtraction of 100 then 10, so the digit is built in place and the
 ; character codes for '0'-'9' must be contiguous from $30 - which they are, since
-; call_01_4f41_Password_CharToFontTile maps $30-$39 to glyphs $1B-$24
+; call_01_4f41_Text_CharToGlyphIndex maps $30-$39 to glyphs $1B-$24
     ld   HL, wD5A6_TextBuffer                                     ;; 01:4ce5 $21 $a6 $d5
     cp   A, $0a                                        ;; 01:4ce8 $fe $0a
     jr   C, .jr_01_4d04                                ;; 01:4cea $38 $18
@@ -2014,10 +2166,10 @@ call_01_4d25_Menu_TickHideSprites:
 
 call_01_4d3b_Menu_EraseSpriteGroup:
 ; Blanks a named group of sprites in shadow OAM. A is an index into
-; data_01_5aa9, which points at a script in the same format
+; data_01_5aa9_SpriteScriptTable, which points at a script in the same format
 ; call_01_4dc8_Menu_BuildSpriteBlock consumes - so erasing reuses the layout
 ; that drew it, walking the same rectangles and writing zeroes instead
-    ld   DE, data_01_5aa9                              ;; 01:4d3b $11 $a9 $5a
+    ld   DE, data_01_5aa9_SpriteScriptTable                              ;; 01:4d3b $11 $a9 $5a
     call call_00_07b9_GetPointerFromTable                                  ;; 01:4d3e $cd $b9 $07
     ld   A, [HL+]                                      ;; 01:4d41 $2a
     cp   A, $ff                                        ;; 01:4d42 $fe $ff
@@ -2305,7 +2457,7 @@ call_01_4eb1_Menu_IsMissionRemoteCollected:
 ; REMOTE_BONUS_MASK bit instead of the per-mission bits
     ld   E, A                                          ;; 01:4eb1 $5f
     ld   D, $00                                        ;; 01:4eb2 $16 $00
-    ld   HL, .data_01_4ecc                             ;; 01:4eb4 $21 $cc $4e
+    ld   HL, .data_01_4ecc_MissionRemoteMasks                             ;; 01:4eb4 $21 $cc $4e
     add  HL, DE                                        ;; 01:4eb7 $19
     ld   B, [HL]                                       ;; 01:4eb8 $46
     ld   A, [wD623_CollectibleMode]                                    ;; 01:4eb9 $fa $23 $d6
@@ -2320,12 +2472,12 @@ call_01_4eb1_Menu_IsMissionRemoteCollected:
     ld   A, B                                          ;; 01:4ec9 $78
     and  A, [HL]                                       ;; 01:4eca $a6
     ret                                                ;; 01:4ecb $c9
-.data_01_4ecc:
+.data_01_4ecc_MissionRemoteMasks:
     db   $01, $02, $04                                 ;; 01:4ecc ...
 
 call_01_4ecf_Password_RefreshCellGfx:
 ; Redraws the one keyboard cell the player just typed into. Queues a one-chunk
-; graphics stream copying four tiles from the font at data_01_71e9 to the VRAM
+; graphics stream copying four tiles from the font at data_01_71e9_PasswordFont to the VRAM
 ; tiles that cell occupies. Only the edited cell is touched, so typing does not
 ; disturb the rest of the screen
     ld   A, [wD6E2_GfxStream_ChunksRemaining]                                    ;; 01:4ecf $fa $e2 $d6
@@ -2338,7 +2490,7 @@ call_01_4ecf_Password_RefreshCellGfx:
     ld   A, $01                                        ;; 01:4edf $3e $01
     ld   [wD6E4_GfxStream_SrcBank], A                                    ;; 01:4ee1 $ea $e4 $d6
     call call_01_4f1b_Password_GetCellUnderCursor                                  ;; 01:4ee4 $cd $1b $4f
-    call call_01_4f41_Password_CharToFontTile                                  ;; 01:4ee7 $cd $41 $4f
+    call call_01_4f41_Text_CharToGlyphIndex                                  ;; 01:4ee7 $cd $41 $4f
     ld   L, A                                          ;; 01:4eea $6f
     ld   H, $00                                        ;; 01:4eeb $26 $00
     add  HL, HL                                        ;; 01:4eed $29
@@ -2347,7 +2499,7 @@ call_01_4ecf_Password_RefreshCellGfx:
     add  HL, HL                                        ;; 01:4ef0 $29
     add  HL, HL                                        ;; 01:4ef1 $29
     add  HL, HL                                        ;; 01:4ef2 $29
-    ld   DE, data_01_71e9                              ;; 01:4ef3 $11 $e9 $71
+    ld   DE, data_01_71e9_PasswordFont                              ;; 01:4ef3 $11 $e9 $71
     add  HL, DE                                        ;; 01:4ef6 $19
     ld   A, L                                          ;; 01:4ef7 $7d
     ld   [wD6E5_GfxStream_SrcPtrLo], A                                    ;; 01:4ef8 $ea $e5 $d6
@@ -2404,17 +2556,22 @@ call_01_4f30_Password_GetCellTileIndex:
     add  A, PASSWORD_KEYBOARD_TILE_BASE                ;; 01:4f3e $c6 $3e
     ret                                                ;; 01:4f40 $c9
 
-call_01_4f41_Password_CharToFontTile:
-; Maps a password character code to its index in the font. The table is indexed
-; from PASSWORD_KEY_BLANK, and entries of $00 are codes with no glyph
+call_01_4f41_Text_CharToGlyphIndex:
+; Maps a character code to its glyph index within the current font. Used by the whole
+; text path (call_01_4c81_Text_MeasureLine, call_01_4cab_Text_SelectGlyph) and not
+; just by the password screens - the table is indexed from PASSWORD_KEY_BLANK because
+; that is also TEXT_SPACE, the lowest code any string can contain.
+;
+; The result is a glyph index, not a VRAM tile id: $00 space, $01-$1A A-Z, $1B-$24
+; 0-9, $25-$29 punctuation. Entries of $00 are codes with no glyph of their own
     sub  A, PASSWORD_KEY_BLANK                         ;; 01:4f41 $d6 $20
     ld   E, A                                          ;; 01:4f43 $5f
     ld   D, $00                                        ;; 01:4f44 $16 $00
-    ld   HL, .data_01_4f4c                             ;; 01:4f46 $21 $4c $4f
+    ld   HL, .data_01_4f4c_CharToGlyph                             ;; 01:4f46 $21 $4c $4f
     add  HL, DE                                        ;; 01:4f49 $19
     ld   A, [HL]                                       ;; 01:4f4a $7e
     ret                                                ;; 01:4f4b $c9
-.data_01_4f4c:
+.data_01_4f4c_CharToGlyph:
     db   $00, $27, $00, $00, $00, $00, $00, $29        ;; 01:4f4c ww??????
     db   $00, $00, $00, $00, $26, $28, $25, $00        ;; 01:4f54 ??????w?
     db   $1b, $1c, $1d, $1e, $1f, $20, $21, $22        ;; 01:4f5c www?ww??
@@ -2442,7 +2599,7 @@ call_01_4f87_Password_ClearEntryGrid:
 ; from an empty grid rather than leaving the bad guess on screen
     ld   HL, wD667_PasswordExitButton                                     ;; 01:4f87 $21 $67 $d6
     ld   DE, wD668_PasswordValues                                     ;; 01:4f8a $11 $68 $d6
-    ld   BC, $1d                                       ;; 01:4f8d $01 $1d $00 ; exit + 28 boxes
+    ld   BC, PASSWORD_BOX_COUNT + 1                    ;; 01:4f8d $01 $1d $00 ; exit + 28 boxes
     ld   [HL], PASSWORD_KEY_BLANK                      ;; 01:4f90 $36 $20 ; seed for the fill
     call call_00_07b0_MemCopy                                  ;; 01:4f92 $cd $b0 $07
     ld   A, PASSWORD_KEY_EXIT                                        ;; 01:4f95 $3e $49
@@ -2471,14 +2628,14 @@ call_01_4fa5_Password_Encode:
 ; of rolled into a loop
     ld   HL, wD667_PasswordExitButton                                     ;; 01:4fa5 $21 $67 $d6
     ld   DE, wD668_PasswordValues                                     ;; 01:4fa8 $11 $68 $d6
-    ld   BC, $1d                                       ;; 01:4fab $01 $1d $00
-    ld   [HL], $00                                     ;; 01:4fae $36 $00
+    ld   BC, PASSWORD_BOX_COUNT + 1                    ;; 01:4fab $01 $1d $00
+    ld   [HL], $00                                     ;; 01:4fae $36 $00 ; seed for the fill
     call call_00_07b0_MemCopy                                  ;; 01:4fb0 $cd $b0 $07
-    ld   A, $49                                        ;; 01:4fb3 $3e $49
+    ld   A, PASSWORD_KEY_EXIT                          ;; 01:4fb3 $3e $49
     ld   [wD667_PasswordExitButton], A                                    ;; 01:4fb5 $ea $67 $d6
-    ld   A, $4a                                        ;; 01:4fb8 $3e $4a
+    ld   A, PASSWORD_KEY_GO                            ;; 01:4fb8 $3e $4a
     ld   [wD684_PasswordGoButton], A                                    ;; 01:4fba $ea $84 $d6
-    ld   A, $4b                                        ;; 01:4fbd $3e $4b
+    ld   A, PASSWORD_KEY_UNKNOWN                       ;; 01:4fbd $3e $4b
     ld   [wD685_PasswordUnkButton], A                                    ;; 01:4fbf $ea $85 $d6
     ld   HL, .data_01_4fef_Password_BitMap                             ;; 01:4fc2 $21 $ef $4f
 .jr_01_4fc5:
@@ -2613,7 +2770,7 @@ call_01_4fa5_Password_Encode:
 call_01_5271_Password_DecodeAndApply:
 ; Validates a typed password and, if it passes, writes it into the live save
 ; state - hence AndApply: this does not just decode, it commits. The inverse of
-; call_01_4349_LoadEnteringMenu and call_01_4fa5_Password_Encode together.
+; call_01_4349_Password_BuildPayload and call_01_4fa5_Password_Encode together.
 ;
 ; Rejects on either a blank box or a checksum mismatch, and returns a MENU_RESULT
 ; so the caller can swap in the "wrong password" screen. Nothing is written to the
@@ -2633,8 +2790,8 @@ call_01_5271_Password_DecodeAndApply:
     jp   Z, .jp_01_531a                                ;; 01:5279 $ca $1a $53
     dec  B                                             ;; 01:527c $05
     jr   NZ, .jr_01_5276                               ;; 01:527d $20 $f7 
-    ld   HL, wD65C_Password_DecodeBuffer                                     ;; 01:527f $21 $5c $d6 ; set these 11 bytes to 0
-    ld   B, $0b                                        ;; 01:5282 $06 $0b ; b = 11
+    ld   HL, wD65C_Password_DecodeBuffer                                     ;; 01:527f $21 $5c $d6 ; blank the payload plus its two trailing bytes
+    ld   B, PASSWORD_PAYLOAD_BYTES + 1                 ;; 01:5282 $06 $0b
     xor  A, A                                          ;; 01:5284 $af ; a = 0
 .jr_01_5285:
     ld   [HL+], A                                      ;; 01:5285 $22
@@ -2642,7 +2799,7 @@ call_01_5271_Password_DecodeAndApply:
     jr   NZ, .jr_01_5285                               ;; 01:5287 $20 $fc
     ld   HL, wD65C_Password_DecodeBuffer                                     ;; 01:5289 $21 $5c $d6 ; decode the password into wD65C_Password_DecodeBuffer array of 11 bytes
     ld   DE, wD668_PasswordValues                      ;; 01:528c $11 $68 $d6
-    ld   A, $1c                                        ;; 01:528f $3e $1c ; 28
+    ld   A, PASSWORD_BOX_COUNT                         ;; 01:528f $3e $1c
     ld   C, $80                                        ;; 01:5291 $0e $80 ; 128
 .jr_01_5293:
     push AF                                            ;; 01:5293 $f5
@@ -2671,7 +2828,7 @@ call_01_5271_Password_DecodeAndApply:
     dec  A                                             ;; 01:52af $3d
     jr   NZ, .jr_01_5293                               ;; 01:52b0 $20 $e1
     ld   HL, wD65C_Password_DecodeBuffer                                     ;; 01:52b2 $21 $5c $d6 ; add up all the values into a
-    ld   B, $09                                        ;; 01:52b5 $06 $09
+    ld   B, PASSWORD_CHECKSUM_BYTES                    ;; 01:52b5 $06 $09
     xor  A, A                                          ;; 01:52b7 $af
 .jr_01_52b8:
     add  A, [HL]                                       ;; 01:52b8 $86
@@ -2688,13 +2845,13 @@ call_01_5271_Password_DecodeAndApply:
     xor  A, A                                          ;; 01:52cd $af
     ld   [wD624_CurrentLevelId], A                                    ;; 01:52ce $ea $24 $d6
     ld   HL, wD65C_Password_DecodeBuffer                                     ;; 01:52d1 $21 $5c $d6 ; set remote bitfields
-    ld   C, $80                                        ;; 01:52d4 $0e $80
+    ld   C, $80                                        ;; 01:52d4 $0e $80 ; rotating source-bit mask
 .jr_01_52d6:
     push HL                                            ;; 01:52d6 $e5
     call call_00_2e43_MapData_GetRemoteProgressId                                  ;; 01:52d7 $cd $43 $2e
     ld   E, A                                          ;; 01:52da $5f
     ld   D, $00                                        ;; 01:52db $16 $00
-    ld   HL, .data_01_531d                             ;; 01:52dd $21 $1d $53
+    ld   HL, .data_01_531d_LevelPayloadMasks                             ;; 01:52dd $21 $1d $53
     add  HL, DE                                        ;; 01:52e0 $19
     ld   D, [HL]                                       ;; 01:52e1 $56
     pop  HL                                            ;; 01:52e2 $e1
@@ -2727,16 +2884,16 @@ call_01_5271_Password_DecodeAndApply:
     ld   A, [wD624_CurrentLevelId]                                    ;; 01:5308 $fa $24 $d6
     inc  A                                             ;; 01:530b $3c
     ld   [wD624_CurrentLevelId], A                                    ;; 01:530c $ea $24 $d6
-    cp   A, MAP_BOSS_TV_CHANNEL_Z                                        ;; 01:530f $fe $1e
+    cp   A, LEVEL_COUNT                                ;; 01:530f $fe $1e
     jr   NZ, .jr_01_52d6                               ;; 01:5311 $20 $c3
     pop  AF                                            ;; 01:5313 $f1
     ld   [wD624_CurrentLevelId], A ; set current level to 0                                   ;; 01:5314 $ea $24 $d6
-    ld   A, $30                                        ;; 01:5317 $3e $30
+    ld   A, MENU_RESULT_PASSWORD_GO                    ;; 01:5317 $3e $30
     ret                                                ;; 01:5319 $c9
 .jp_01_531a:
-    ld   A, $00                                        ;; 01:531a $3e $00
+    ld   A, MENU_RESULT_DISMISSED                      ;; 01:531a $3e $00
     ret                                                ;; 01:531c $c9
-.data_01_531d:
+.data_01_531d_LevelPayloadMasks:
     db   $1f, $1b, $19, $03, $01, $20, $00             ;; 01:531d ???????
 
 data_01_5324_MenuCmd_Descriptors:
@@ -2753,7 +2910,12 @@ data_01_5324_MenuCmd_Descriptors:
 ;
 ; So the id fixes the shape and where it lands; the script's parameter blocks then
 ; say what goes in it. Row 0 is the 6x5 Media Dimension TV screen, with $FF
-; attributes selecting the TV attribute copy
+; attributes selecting the TV attribute copy.
+;
+; Ids $00-$2B are the one-off shapes the ordinary screens use. Ids $2C-$49 are the
+; password keyboard: 29 identical 2x2 boxes whose destinations march across a 6x5
+; grid, which is why data_01_592d_MenuScript_PasswordCells is 29 near-identical
+; commands rather than a loop - the geometry lives here instead
     db   $06, $05, $01, $01, $06, $ff, $00, $00        ;; 01:5324 ..ww..??
     db   $0c, $03, $08, $01, $24, $01, $00, $00        ;; 01:532c w.www.??
     db   $0c, $02, $08, $04, $48, $00, $00, $00        ;; 01:5334 w.www.??
@@ -2830,7 +2992,7 @@ data_01_5324_MenuCmd_Descriptors:
     db   $0e, $ae, $05, $00, $00, $02, $02, $10        ;; 01:5567 ????????
     db   $0e, $b2, $05, $00, $00                       ;; 01:556f ?????
 
-data_01_5574_MenuTypeData:
+data_01_5574_MenuTypeRecords:
 ; One 8-byte record per MENU_TYPE_*, copied into wD68A..wD691 by
 ; call_01_4000_MenuLoad. This table plus the script each entry points at is the
 ; entire definition of a menu; there is no per-screen code anywhere.
@@ -2848,483 +3010,1106 @@ data_01_5574_MenuTypeData:
 ; with no flags at all (title options, game over, black screen, time up) are
 ; the screens that leave on a timer, which is how the title drops into the
 ; attract-mode demo if you stand there long enough.
-    dw   data_01_5692                                  ; $00 PAUSED_IN_MEDIA_DIMENSION
+    dw   data_01_5692_MenuScript_PausedInMediaDimension                                  ; $00 PAUSED_IN_MEDIA_DIMENSION
     db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_START_DISMISSES, $02, $00, $00, $00, $00
-    dw   data_01_56ab                                  ; $01 EXIT_GAME
+    dw   data_01_56ab_MenuScript_ExitGame                                  ; $01 EXIT_GAME
     db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_START_DISMISSES, $02, $00, $00, $00, $00
-    dw   data_01_56c4                                  ; $02 PAUSED_IN_LEVEL
+    dw   data_01_56c4_MenuScript_PausedInLevel                                  ; $02 PAUSED_IN_LEVEL
     db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_START_DISMISSES, $02, $00, $00, $00, $00
-    dw   data_01_56e5                                  ; $03 EXIT_TO_MAP
+    dw   data_01_56e5_MenuScript_ExitToMap                                  ; $03 EXIT_TO_MAP
     db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_START_DISMISSES, $02, $00, $00, $00, $00
-    dw   data_01_5706                                  ; $04 GAME_OVER_TOTALS
+    dw   data_01_5706_MenuScript_GameOverTotals                                  ; $04 GAME_OVER_TOTALS
     db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_SELECT_DISMISSES | MENU_FLAG_TOTALS_PAGING, $03, $00, $00, $00, $00
-    dw   data_01_571f                                  ; $05 VIEW_TOTALS
+    dw   data_01_571f_MenuScript_ViewTotals                                  ; $05 VIEW_TOTALS
     db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_START_OPENS_PAUSE | MENU_FLAG_SELECT_DISMISSES | MENU_FLAG_TOTALS_PAGING, $02, $00, $00, $00, $00
-    dw   data_01_58ca                                  ; $06 VIEW_PASSWORD - grid, but nothing to type
+    dw   data_01_58ca_MenuScript_ViewPassword                                  ; $06 VIEW_PASSWORD - grid, but nothing to type
     db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_GRID_CURSOR, $00, $08, $10, $18, $18
-    dw   data_01_57b1                                  ; $07 TITLE_OPTIONS - times out into the demo
+    dw   data_01_57b1_MenuScript_TitleOptions                                  ; $07 TITLE_OPTIONS - times out into the demo
     db   $00, $02, $00, $4c, $00, $0c
-    dw   data_01_57ca                                  ; $08 ENTERING_LEVEL_NAME
+    dw   data_01_57ca_MenuScript_EnteringLevelName                                  ; $08 ENTERING_LEVEL_NAME
     db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_NO_CANCEL | MENU_FLAG_DEMO_COUNTDOWN, $00, $00, $00, $00, $00
-    dw   data_01_57db                                  ; $09 MISSION_SELECT_1_OPTION
+    dw   data_01_57db_MenuScript_MissionSelect1                                  ; $09 MISSION_SELECT_1_OPTION
     db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_NO_CANCEL, $01, $00, $50, $00, $18
-    dw   data_01_57f4                                  ; $0A MISSION_SELECT_2_OPTIONS
+    dw   data_01_57f4_MenuScript_MissionSelect2                                  ; $0A MISSION_SELECT_2_OPTIONS
     db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_NO_CANCEL, $02, $00, $40, $00, $20
-    dw   data_01_5815                                  ; $0B MISSION_SELECT_3_OPTIONS
+    dw   data_01_5815_MenuScript_MissionSelect3                                  ; $0B MISSION_SELECT_3_OPTIONS
     db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_NO_CANCEL, $03, $00, $38, $00, $18
-    dw   data_01_5867                                  ; $0C GAME_OVER
+    dw   data_01_5867_MenuScript_GameOver                                  ; $0C GAME_OVER
     db   $00, $00, $00, $00, $00, $00
-    dw   data_01_5870                                  ; $0D BLACK_SCREEN
+    dw   data_01_5870_MenuScript_BlackScreen                                  ; $0D BLACK_SCREEN
     db   $00, $00, $00, $00, $00, $00
-    dw   data_01_5871                                  ; $0E CONGRATULATIONS
+    dw   data_01_5871_MenuScript_Congratulations                                  ; $0E CONGRATULATIONS
     db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_NO_CANCEL, $00, $00, $00, $00, $00
-    dw   data_01_58eb                                  ; $0F ENTER_PASSWORD - 6 x 5 = $1E cells
+    dw   data_01_58eb_MenuScript_EnterPassword                                  ; $0F ENTER_PASSWORD - 6 x 5 = $1E cells
     db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_GRID_CURSOR, $1e, $08, $10, $18, $18
-    dw   data_01_5a26                                  ; $10 TITLE_SCREEN
+    dw   data_01_5a26_MenuScript_TitleScreen                                  ; $10 TITLE_SCREEN
     db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_NO_CANCEL, $00, $00, $00, $00, $00
-    dw   data_01_5a2f                                  ; $11 AUDIO_OPTIONS_UNUSED
+    dw   data_01_5a2f_MenuScript_AudioOptions                                  ; $11 AUDIO_OPTIONS_UNUSED
     db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_NO_CANCEL, $04, $00, $00, $00, $00
-    dw   data_01_5a58                                  ; $12 CREDITS_GREAT_JOB
+    dw   data_01_5a58_MenuScript_CreditsGreatJob                                  ; $12 CREDITS_GREAT_JOB
     db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_NO_CANCEL, $00, $00, $00, $00, $00
-    dw   data_01_5a61                                  ; $13 TITLE_CRAVE
+    dw   data_01_5a61_MenuScript_TitleCrave                                  ; $13 TITLE_CRAVE
     db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_NO_CANCEL, $00, $00, $00, $00, $00
-    dw   data_01_5a6a                                  ; $14 TITLE_SPLASH
+    dw   data_01_5a6a_MenuScript_TitleSplash                                  ; $14 TITLE_SPLASH
     db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_NO_CANCEL, $00, $00, $00, $00, $00
-    dw   data_01_590c                                  ; $15 ENTERED_INVALID_PASSWORD
+    dw   data_01_590c_MenuScript_InvalidPassword                                  ; $15 ENTERED_INVALID_PASSWORD
     db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_GRID_CURSOR, $1e, $08, $10, $18, $18
-    dw   data_01_5a73                                  ; $16 TITLE_DAVID
+    dw   data_01_5a73_MenuScript_TitleDavid                                  ; $16 TITLE_DAVID
     db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_NO_CANCEL, $00, $00, $00, $00, $00
-    dw   data_01_5a7c                                  ; $17 CREDITS_1
+    dw   data_01_5a7c_MenuScript_Credits1                                  ; $17 CREDITS_1
     db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_NO_CANCEL, $00, $00, $00, $00, $00
-    dw   data_01_5a85                                  ; $18 CREDITS_2
+    dw   data_01_5a85_MenuScript_Credits2                                  ; $18 CREDITS_2
     db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_NO_CANCEL, $00, $00, $00, $00, $00
-    dw   data_01_5a8e                                  ; $19 CREDITS_3
+    dw   data_01_5a8e_MenuScript_Credits3                                  ; $19 CREDITS_3
     db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_NO_CANCEL, $00, $00, $00, $00, $00
-    dw   data_01_5a97                                  ; $1A CREDITS_4
+    dw   data_01_5a97_MenuScript_Credits4                                  ; $1A CREDITS_4
     db   MENU_FLAG_WAIT_FOR_INPUT | MENU_FLAG_NO_CANCEL, $00, $00, $00, $00, $00
-    dw   data_01_5aa0                                  ; $1B TIME_UP - leaves on a timer
+    dw   data_01_5aa0_MenuScript_TimeUp                                  ; $1B TIME_UP - leaves on a timer
     db   $00, $00, $00, $00, $00, $00
 
-data_01_5654:
-    db   $d7, $06, $d7, $06, $d7, $06, $d7, $06        ;; 01:5654 ........
-    db   $d7, $06, $d7, $06, $d7, $03, $c7, $01        ;; 01:565c ??..??..
-    db   $d7, $06, $d7, $07, $d7, $07, $d7, $07        ;; 01:5664 ..????..
-    db   $d7, $06, $d7, $06, $d7, $07, $d7, $03        ;; 01:566c ????????
-    db   $c7, $02, $c7, $04, $c7, $05, $c7, $09        ;; 01:5674 ..????..
-    db   $c7, $08, $d7, $03, $c7, $0a, $c7, $0b        ;; 01:567c ..??..??
-    db   $c7, $0c, $c7, $0d, $c7, $0e, $d7, $06        ;; 01:5684 ????????
+data_01_5654_MenuTypeLcdcAndPalette:
+; Two bytes per MENU_TYPE_*, read by call_01_446f_LoadMenuGraphics once the
+; script has finished drawing:
+;
+;   +0  db  LCDC value for the top of the screen -> wD6E1_RasterSplit_LCDCValue
+;   +1  db  palette set id, passed in C to call_0b_5537_BgPalette_LoadMonoOrGetSpriteParams
+;
+; $D7 is the ordinary "BG + OBJ on, unsigned tiles" LCDC; the screens that use
+; $C7 (the totals pages, the password keyboard, the credits) switch the window
+; off for the split half of the frame
+    db   $d7, $06                                       ; $00 MENU_TYPE_PAUSED_IN_MEDIA_DIMENSION
+    db   $d7, $06                                       ; $01 MENU_TYPE_EXIT_GAME
+    db   $d7, $06                                       ; $02 MENU_TYPE_PAUSED_IN_LEVEL
+    db   $d7, $06                                       ; $03 MENU_TYPE_EXIT_TO_MAP
+    db   $d7, $06                                       ; $04 MENU_TYPE_GAME_OVER_TOTALS
+    db   $d7, $06                                       ; $05 MENU_TYPE_VIEW_TOTALS
+    db   $d7, $03                                       ; $06 MENU_TYPE_VIEW_PASSWORD
+    db   $c7, $01                                       ; $07 MENU_TYPE_TITLE_OPTIONS
+    db   $d7, $06                                       ; $08 MENU_TYPE_ENTERING_LEVEL_NAME
+    db   $d7, $07                                       ; $09 MENU_TYPE_MISSION_SELECT_1_OPTION
+    db   $d7, $07                                       ; $0a MENU_TYPE_MISSION_SELECT_2_OPTIONS
+    db   $d7, $07                                       ; $0b MENU_TYPE_MISSION_SELECT_3_OPTIONS
+    db   $d7, $06                                       ; $0c MENU_TYPE_GAME_OVER
+    db   $d7, $06                                       ; $0d MENU_TYPE_BLACK_SCREEN
+    db   $d7, $07                                       ; $0e MENU_TYPE_CONGRATULATIONS
+    db   $d7, $03                                       ; $0f MENU_TYPE_ENTER_PASSWORD
+    db   $c7, $02                                       ; $10 MENU_TYPE_TITLE_SCREEN
+    db   $c7, $04                                       ; $11 MENU_TYPE_AUDIO_OPTIONS_UNUSED
+    db   $c7, $05                                       ; $12 MENU_TYPE_CREDITS_GREAT_JOB
+    db   $c7, $09                                       ; $13 MENU_TYPE_TITLE_CRAVE
+    db   $c7, $08                                       ; $14 MENU_TYPE_TITLE_SPLASH
+    db   $d7, $03                                       ; $15 MENU_TYPE_ENTERED_INVALID_PASSWORD
+    db   $c7, $0a                                       ; $16 MENU_TYPE_TITLE_DAVID
+    db   $c7, $0b                                       ; $17 MENU_TYPE_CREDITS_1
+    db   $c7, $0c                                       ; $18 MENU_TYPE_CREDITS_2
+    db   $c7, $0d                                       ; $19 MENU_TYPE_CREDITS_3
+    db   $c7, $0e                                       ; $1a MENU_TYPE_CREDITS_4
+    db   $d7, $06                                       ; $1b MENU_TYPE_TIME_UP
 
-data_01_568c:
-    dw   data_01_592d                                      ;; 01:568c ??
-    dw   data_01_583e                                  ;; 01:568e pP
-    dw   data_01_571f                                      ;; 01:5690 ??
+data_01_568c_ChainedScriptTable:
+; Scripts a screen can queue up with MENUCMD_SUB_CHAIN_SCRIPT. The id is written
+; to wD6D7_Menu_ChainedScriptId and call_01_446f_LoadMenuGraphics loops back to
+; run the script named here, so a screen can be assembled from several scripts
+; without any of them knowing about the others
+    dw   data_01_592d_MenuScript_PasswordCells          ; 0 = MENU_CHAINED_PASSWORD_CELLS
+    dw   data_01_583e_MenuScript_MissionSelectCommon    ; 1 = MENU_CHAINED_MISSION_SELECT
+    dw   data_01_571f_MenuScript_ViewTotals             ; 2 = MENU_CHAINED_TOTALS
 
-data_01_5692:
-    db   $0a, $fe, $fe, $02
-    dw   data_01_5ce4
-    db   $0f, $83        ;; 01:5692 w..w....
-    db   $0b, $fe, $fe, $01
-    dw   data_01_5ceb
-    db   $00, $83        ;; 01:569a w..w....
-    db   $0c, $fe, $fe, $01
-    dw   data_01_5cf2
-    db   $51, $83        ;; 01:56a2 w..w....
-    db   $ff                                           ;; 01:56aa .
+data_01_5692_MenuScript_PausedInMediaDimension:
+; MENU_TYPE_PAUSED_IN_MEDIA_DIMENSION ($00) - START in the hub. "PAUSED" / "RESUME" / "QUIT"
+    db   $0a                                            ; 20x2 tiles at (0,7), tile $26, attr $01
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_LARGE
+    dw   data_01_5ce4                                   ; "PAUSED"
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
 
-data_01_56ab:
-    db   $0a, $fe, $fe, $02
-    dw   data_01_5cfc
-    db   $0f, $83        ;; 01:56ab w..w....
-    db   $0b, $fe, $fe, $01
-    dw   data_01_5d12
-    db   $00, $83        ;; 01:56b3 w..w....
-    db   $0c, $fe, $fe, $01
-    dw   data_01_5d1a
-    db   $61, $83        ;; 01:56bb w..w....
-    db   $ff                                           ;; 01:56c3 .
+    db   $0b                                            ; 8x1 tiles at (6,10), tile $4e, attr $01
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_MEDIUM
+    dw   data_01_5ceb                                   ; "RESUME"
+    db   $00, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
 
-data_01_56c4:
-    db   $09, $fe, $fe, $00, $03, $e5, $0f, $83        ;; 01:56c4 w..w....
-    db   $0a, $fe, $fe, $02
-    dw   data_01_5ce4
-    db   $0f, $83        ;; 01:56cc w..w....
-    db   $0b, $fe, $fe, $01
-    dw   data_01_5ceb
-    db   $00, $83        ;; 01:56d4 w..w....
-    db   $0c, $fe, $fe, $01
-    dw   data_01_5cf7
-    db   $51, $83        ;; 01:56dc w..w....
-    db   $ff                                           ;; 01:56e4 .
+    db   $0c                                            ; 8x1 tiles at (6,11), tile $56, attr $01
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_MEDIUM
+    dw   data_01_5cf2                                   ; "QUIT"
+    db   MENU_OPTION_QUIT | 1, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
 
-data_01_56e5:
-    db   $09, $fe, $fe, $00, $03, $e5, $0f, $83        ;; 01:56e5 w..w....
-    db   $0a, $fe, $fe, $02
-    dw   data_01_5d06
-    db   $0f, $83        ;; 01:56ed w..w....
-    db   $0b, $fe, $fe, $01
-    dw   data_01_5d12
-    db   $00, $83        ;; 01:56f5 w..w....
-    db   $0c, $fe, $fe, $01
-    dw   data_01_5d1a
-    db   $61, $83        ;; 01:56fd w..w....
-    db   $ff
+    db   MENUSCRIPT_END
 
-data_01_5706:
-    db   $12, $fe, $fe, $02
-    dw   data_01_5d28
-    db   $0f        ;; 01:5705 .???????
-    db   $83, $15, $fe, $fe, $01
-    dw   data_01_5cf2
-    db   $02        ;; 01:570d ????????
-    db   $83, $00, $00, $00, $00, $02, $ec, $0f        ;; 01:5715 ????????
-    db   $e0, $ff                                      ;; 01:571d ??
+data_01_56ab_MenuScript_ExitGame:
+; MENU_TYPE_EXIT_GAME ($01) - the confirmation MENU_OPTION_QUIT opens from the hub
+    db   $0a                                            ; 20x2 tiles at (0,7), tile $26, attr $01
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_LARGE
+    dw   data_01_5cfc                                   ; "QUIT GAME"
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
 
-data_01_571f:
-    db   $00, $00, $00, $00, $00, $e9, $0f, $e0        ;; 01:571f w.......
-    db   $13, $fe, $fe, $01
-    dw   data_01_5d32
-    db   $80, $83        ;; 01:5727 w..w....
-    db   $14, $fe, $fe, $01
-    dw   data_01_5d3e
-    db   $41, $83        ;; 01:572f w..w....
-    db   $16, $fe, $fe, $00, $00, $ea, $0f, $83        ;; 01:5737 w..w....
-    db   $19, $fe, $fe, $00
-    dw   data_01_5d62
-    db   $0f, $c3        ;; 01:573f w..w....
-    db   $1a, $fe, $fe, $00, $00, $e8, $0f, $c7        ;; 01:5747 w..ww...
-    db   $1b, $fe, $fe, $00, $01, $e8, $0f, $c7        ;; 01:574f w..ww...
-    db   $1c, $fe, $fe, $00, $02, $e8, $0f, $c7        ;; 01:5757 w..ww...
-    db   $1d, $fe, $fe, $00, $03, $e8, $0f, $c7        ;; 01:575f w..ww...
-    db   $1e, $fe, $fe, $00, $04, $e8, $0f, $c7        ;; 01:5767 w..ww...
-    db   $17, $00, $00, $66, $00, $e0, $0f, $80        ;; 01:576f w..ww...
-    db   $18, $00, $00, $6a, $01, $e0, $0f, $80        ;; 01:5777 w..ww...
-    db   $00, $00, $00, $84, $03, $e1, $0f, $c4        ;; 01:577f w..ww...
-    db   $00, $00, $00, $88, $04, $e1, $0f, $c4        ;; 01:5787 w..ww...
-    db   $00, $00, $00, $8c, $05, $e1, $0f, $c4        ;; 01:578f w..ww...
-    db   $00, $00, $00, $98, $06, $e1, $0f, $c4        ;; 01:5797 w..ww...
-    db   $ff                                           ;; 01:579f .
+    db   $0b                                            ; 8x1 tiles at (6,10), tile $4e, attr $01
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_MEDIUM
+    dw   data_01_5d12                                   ; "NO WAY!"
+    db   $00, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
 
-data_01_57a0:
-    db   $00, $00, $00, $00, $00, $e9, $0f, $e0        ;; 01:57a0 w...w...
-    db   $16, $fe, $fe, $00, $00, $ea, $0f, $e3        ;; 01:57a8 w..w....
-    db   $ff                                           ;; 01:57b0 .
+    db   $0c                                            ; 8x1 tiles at (6,11), tile $56, attr $01
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_MEDIUM
+    dw   data_01_5d1a                                   ; "OKAY"
+    db   MENU_OPTION_CONFIRM_QUIT | 1, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
 
-data_01_57b1:
-    db   $00, $00, $00, $00, $01, $ed, $0f, $e0        ;; 01:57b1 w...w...
-    db   $0d, $fe, $fe, $00
-    dw   data_01_5ccf
-    db   $10, $e3        ;; 01:57b9 w..w....
-    db   $0d, $fe, $fe, $00
-    dw   data_01_5cdb
-    db   $31, $e3        ;; 01:57c1 w..w....
-    db   $ff                                           ;; 01:57c9 .
+    db   MENUSCRIPT_END
 
-data_01_57ca:
-    db   $10, $fe, $fe, $02
-    dw   data_01_5d56
-    db   $0f, $83        ;; 01:57ca w..w....
-    db   $11, $fe, $fe, $01, $00, $e4, $0f, $83        ;; 01:57d2 w..w....
-    db   $ff
+data_01_56c4_MenuScript_PausedInLevel:
+; MENU_TYPE_PAUSED_IN_LEVEL ($02) - START inside a level. Same as $00 plus the mission line
+    db   $09                                            ; 16x2 tiles at (2,5), tile $06
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_SMALL
+    db   MENUCMD_MISSION_CURRENT, MENUCMD_SUB_MISSION_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
 
-data_01_57db:
-    db   $04, $00, $fe, $00, $00, $e5, $00        ;; 01:57da .???????
-    db   $83, $08, $fe, $fe, $00, $d3, $5e, $0f        ;; 01:57e2 ????????
-    db   $83, $00, $00, $00, $00, $01, $ec, $0f        ;; 01:57ea ????????
-    db   $e0, $ff
+    db   $0a                                            ; 20x2 tiles at (0,7), tile $26, attr $01
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_LARGE
+    dw   data_01_5ce4                                   ; "PAUSED"
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
 
-data_01_57f4:
-    db   $06, $00, $fe, $00, $00, $e5        ;; 01:57f2 ????????
-    db   $00, $83, $07, $00, $fe, $00, $01, $e5        ;; 01:57fa ????????
-    db   $01, $83, $08, $fe, $fe, $00, $ac, $5e        ;; 01:5802 ????????
-    db   $0f, $83, $00, $00, $00, $00, $01, $ec        ;; 01:580a ????????
-    db   $0f, $e0, $ff                                 ;; 01:5812 ???
+    db   $0b                                            ; 8x1 tiles at (6,10), tile $4e, attr $01
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_MEDIUM
+    dw   data_01_5ceb                                   ; "RESUME"
+    db   $00, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
 
-data_01_5815:
-    db   $03, $00, $fe, $00, $00, $e5, $00, $83        ;; 01:5815 w..ww...
-    db   $04, $00, $fe, $00, $01, $e5, $01, $83        ;; 01:581d w..ww...
-    db   $05, $00, $fe, $00, $02, $e5, $02, $83        ;; 01:5825 w..ww...
-    db   $08, $fe, $fe, $00, $ac, $5e, $0f, $83        ;; 01:582d w..w....
-    db   $00, $00, $00, $00, $01, $ec, $0f, $e0        ;; 01:5835 w...w...
-    db   $ff                                           ;; 01:583d .
+    db   $0c                                            ; 8x1 tiles at (6,11), tile $56, attr $01
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_MEDIUM
+    dw   data_01_5cf7                                   ; "EXIT"
+    db   MENU_OPTION_QUIT | 1, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
 
-data_01_583e:
-    db   $01, $fe, $fe, $02, $00, $e3, $0f, $83        ;; 01:583e w..w....
-    db   $02, $fe, $fe, $00, $00, $e4, $0f, $83        ;; 01:5846 w..w....
-    db   $00, $00, $00, $06, $00, $e2, $0f, $80        ;; 01:584e w..w....
-    db   $00, $00, $00, $e8, $05, $e1, $0f, $c4        ;; 01:5856 w..ww...
-    db   $00, $00, $00, $02, $01, $e7, $0f, $c4        ;; 01:585e w..ww...
-    db   $ff
-    
-data_01_5867:
-    db   $16, $fe, $fe, $02, $28, $5d, $0f        ;; 01:5866 .???????
-    db   $83, $ff
+    db   MENUSCRIPT_END
 
-data_01_5870:
-    db   $ff
+data_01_56e5_MenuScript_ExitToMap:
+; MENU_TYPE_EXIT_TO_MAP ($03) - the confirmation MENU_OPTION_QUIT opens inside a level
+    db   $09                                            ; 16x2 tiles at (2,5), tile $06
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_SMALL
+    db   MENUCMD_MISSION_CURRENT, MENUCMD_SUB_MISSION_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
 
-data_01_5871:
-    db   $1f, $fe, $fe, $01, $64        ;; 01:586e ????????
-    db   $5d, $0f, $83, $20, $fe, $fe, $00, $00        ;; 01:5876 ????????
-    db   $ee, $0f, $83, $21, $fe, $fe, $00, $75        ;; 01:587e ????????
-    db   $5d, $0f, $83, $22, $fe, $fe, $00, $7c        ;; 01:5886 ????????
-    db   $5d, $0f, $83, $23, $fe, $fe, $00, $83        ;; 01:588e ????????
-    db   $5d, $0f, $83, $24, $fe, $fe, $00, $05        ;; 01:5896 ????????
-    db   $e8, $0f, $83, $25, $fe, $fe, $00, $06        ;; 01:589e ????????
-    db   $e8, $0f, $83, $26, $fe, $fe, $00, $07        ;; 01:58a6 ????????
-    db   $e8, $0f, $83, $00, $00, $00, $00, $07        ;; 01:58ae ????????
-    db   $e9, $0f, $e0, $00, $00, $00, $98, $06        ;; 01:58b6 ????????
-    db   $e1, $0f, $c4, $27, $00, $00, $00, $00        ;; 01:58be ????????
-    db   $ef, $0f, $c0, $ff
-    
-data_01_58ca:
-    db   $00, $00, $00, $ff        ;; 01:58c6 ????????
-    
-data_01_58ce:
-    db   $0e, $e9, $0f, $e0, $00, $00, $00, $00        ;; 01:58ce ????????
-    db   $00, $e6, $0f, $e0, $49, $00, $00, $03        ;; 01:58d6 ????????
-    db   $1e, $eb, $0f, $87, $00, $00, $00, $00        ;; 01:58de ????????
-    db   $00, $ec, $0f, $e0, $ff
-    
-data_01_58eb:
-    db   $00, $00, $00        ;; 01:58e6 ????????
-    db   $ff
-    
-data_01_58ef:
-    db   $0d, $e9, $0f, $e0, $00, $00, $00        ;; 01:58ee ????????
-    db   $00, $00, $e6, $0f, $e0, $49, $00, $00        ;; 01:58f6 ????????
-    db   $03, $1d, $eb, $0f, $87, $00, $00, $00        ;; 01:58fe ????????
-    db   $00, $00, $ec, $0f, $e0, $ff
+    db   $0a                                            ; 20x2 tiles at (0,7), tile $26, attr $01
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_LARGE
+    dw   data_01_5d06                                   ; "EXIT TO MAP"
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
 
-data_01_590c:
-    db   $00, $00        ;; 01:5906 ????????
-    db   $00, $ff
-    
-data_01_5910:
-    db   $0f, $e9, $0f, $e0, $00, $00        ;; 01:590e ????????
-    db   $00, $00, $00, $e6, $0f, $e0, $49, $00        ;; 01:5916 ????????
-    db   $00, $03, $1d, $eb, $0f, $87, $00, $00        ;; 01:591e ????????
-    db   $00, $00, $00, $ec, $0f, $e0, $ff
-    
-data_01_592d:
-    db   $00        ;; 01:5926 ????????
-    db   $00, $00, $02, $02, $e7, $0f, $c4, $00        ;; 01:592e ????????
-    db   $00, $00, $06, $07, $e1, $0f, $c0, $2c        ;; 01:5936 ????????
-    db   $00, $00, $03, $00, $eb, $0f, $87, $2d        ;; 01:593e ????????
-    db   $00, $00, $03, $01, $eb, $0f, $87, $2e        ;; 01:5946 ????????
-    db   $00, $00, $03, $02, $eb, $0f, $87, $2f        ;; 01:594e ????????
-    db   $00, $00, $03, $03, $eb, $0f, $87, $30        ;; 01:5956 ????????
-    db   $00, $00, $03, $04, $eb, $0f, $87, $31        ;; 01:595e ????????
-    db   $00, $00, $03, $05, $eb, $0f, $87, $32        ;; 01:5966 ????????
-    db   $00, $00, $03, $06, $eb, $0f, $87, $33        ;; 01:596e ????????
-    db   $00, $00, $03, $07, $eb, $0f, $87, $34        ;; 01:5976 ????????
-    db   $00, $00, $03, $08, $eb, $0f, $87, $35        ;; 01:597e ????????
-    db   $00, $00, $03, $09, $eb, $0f, $87, $36        ;; 01:5986 ????????
-    db   $00, $00, $03, $0a, $eb, $0f, $87, $37        ;; 01:598e ????????
-    db   $00, $00, $03, $0b, $eb, $0f, $87, $38        ;; 01:5996 ????????
-    db   $00, $00, $03, $0c, $eb, $0f, $87, $39        ;; 01:599e ????????
-    db   $00, $00, $03, $0d, $eb, $0f, $87, $3a        ;; 01:59a6 ????????
-    db   $00, $00, $03, $0e, $eb, $0f, $87, $3b        ;; 01:59ae ????????
-    db   $00, $00, $03, $0f, $eb, $0f, $87, $3c        ;; 01:59b6 ????????
-    db   $00, $00, $03, $10, $eb, $0f, $87, $3d        ;; 01:59be ????????
-    db   $00, $00, $03, $11, $eb, $0f, $87, $3e        ;; 01:59c6 ????????
-    db   $00, $00, $03, $12, $eb, $0f, $87, $3f        ;; 01:59ce ????????
-    db   $00, $00, $03, $13, $eb, $0f, $87, $40        ;; 01:59d6 ????????
-    db   $00, $00, $03, $14, $eb, $0f, $87, $41        ;; 01:59de ????????
-    db   $00, $00, $03, $15, $eb, $0f, $87, $42        ;; 01:59e6 ????????
-    db   $00, $00, $03, $16, $eb, $0f, $87, $43        ;; 01:59ee ????????
-    db   $00, $00, $03, $17, $eb, $0f, $87, $44        ;; 01:59f6 ????????
-    db   $00, $00, $03, $18, $eb, $0f, $87, $45        ;; 01:59fe ????????
-    db   $00, $00, $03, $19, $eb, $0f, $87, $46        ;; 01:5a06 ????????
-    db   $00, $00, $03, $1a, $eb, $0f, $87, $47        ;; 01:5a0e ????????
-    db   $00, $00, $03, $1b, $eb, $0f, $87, $48        ;; 01:5a16 ????????
-    db   $00, $00, $03, $1c, $eb, $0f, $87, $ff        ;; 01:5a1e ????????
+    db   $0b                                            ; 8x1 tiles at (6,10), tile $4e, attr $01
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_MEDIUM
+    dw   data_01_5d12                                   ; "NO WAY!"
+    db   $00, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
 
-data_01_5a26:
-    db   $00, $00, $00, $00, $00, $ed, $0f, $e0        ;; 01:5a26 w...w...
-    db   $ff
-    
-data_01_5a2f:
-    db   $00, $00, $00, $00, $02, $ed, $0f        ;; 01:5a2e .???????
-    db   $e0, $0d, $fe, $fe, $00
-    dw   data_01_5ccf        ;; 01:5a36 ????????
-    db   $00, $e3, $0d, $fe, $fe, $00
-    dw   data_01_5cd5         ;; 01:5a3e ????????
-    db   $01, $e3, $0d, $fe, $fe, $00
-    dw   data_01_5cd5        ;; 01:5a46 ????????
-    db   $02, $e3, $0d, $fe, $fe, $00
-    dw   data_01_5cd5       ;; 01:5a4e ????????
-    db   $03, $e3, $ff
-    
-data_01_5a58:
-    db   $00, $00, $00, $00, $03, $ed        ;; 01:5a56 ????????
-    db   $0f, $e0, $ff                                 ;; 01:5a5e ???
+    db   $0c                                            ; 8x1 tiles at (6,11), tile $56, attr $01
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_MEDIUM
+    dw   data_01_5d1a                                   ; "OKAY"
+    db   MENU_OPTION_CONFIRM_QUIT | 1, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
 
-data_01_5a61:
-    db   $00, $00, $00, $00, $04, $ed, $0f, $e0        ;; 01:5a61 w...w...
-    db   $ff                                           ;; 01:5a69 .
+    db   MENUSCRIPT_END
 
-data_01_5a6a:
-    db   $00, $00, $00, $00, $05, $ed, $0f, $e0        ;; 01:5a6a w...w...
-    db   $ff                                           ;; 01:5a72 .
+data_01_5706_MenuScript_GameOverTotals:
+; MENU_TYPE_GAME_OVER_TOTALS ($04) - the totals shown after GAME OVER. Chains the totals script
+    db   $12                                            ; 14x2 tiles at (3,0), tile $06
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_LARGE
+    dw   data_01_5d28                                   ; "GAME OVER"
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
 
-data_01_5a73:
-    db   $00, $00, $00, $00, $06, $ed, $0f, $e0        ;; 01:5a73 w...w...
-    db   $ff
-    
-data_01_5a7c:
-    db   $00, $00, $00, $00, $07, $ed, $0f        ;; 01:5a7b .???????
-    db   $e0, $ff
-    
-data_01_5a85:
-    db   $00, $00, $00, $00, $08, $ed        ;; 01:5a83 ????????
-    db   $0f, $e0, $ff
-    
-data_01_5a8e:
-    db   $00, $00, $00, $00, $09        ;; 01:5a8b ????????
-    db   $ed, $0f, $e0, $ff
-    
-data_01_5a97:
-    db   $00, $00, $00, $00        ;; 01:5a93 ????????
-    db   $0a, $ed, $0f, $e0, $ff
-    
-data_01_5aa0:
-    db   $16, $fe, $fe        ;; 01:5a9b ????????
-    db   $02, $1f, $5d, $0f, $83, $ff                  ;; 01:5aa3 ??????
+    db   $15                                            ; 12x1 tiles at (4,5), tile $3a
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_MEDIUM
+    dw   data_01_5cf2                                   ; "QUIT"
+    db   $02, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
 
+    db   $00                                            ; shape unused - this block only runs its sub-handler
+    db   $00, $00, $00                                  
+    db   MENU_CHAINED_TOTALS, MENUCMD_SUB_CHAIN_SCRIPT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_NO_TILE_UPLOAD
 
-data_01_5aa9:
-    dw   data_01_5acf
-    dw   data_01_5aef
-    dw   data_01_5b09
-    dw   data_01_5b1d
-    dw   data_01_5b2b
-    dw   data_01_5b33
-    dw   data_01_5c13
-    dw   data_01_5b3b
-    dw   data_01_5b6d
-    dw   data_01_5b99
-    dw   data_01_5bbf
-    dw   data_01_5bdf
-    dw   data_01_5bf9
-    dw   data_01_5c6f
-    dw   data_01_5c7d
-    dw   data_01_5c8b
-    dw   wD6B9_MenuCursor_OamSlot
-    dw   wD6B9_MenuCursor_OamSlot
-    dw   wD6B9_MenuCursor_OamSlot
+    db   MENUSCRIPT_END
 
-data_01_5acf:
-    db   $02, $48        ;; 01:5ac9 ??????w.
-    db   $24, $01, $03, $03, $04, $48, $44, $03        ;; 01:5ad1 ........
-    db   $03, $03, $04, $48, $64, $05, $03, $03        ;; 01:5ad9 ........
-    db   $04, $68, $34, $07, $04, $03, $04, $68        ;; 01:5ae1 ........
-    db   $54, $09, $04, $03, $04, $ff
+data_01_571f_MenuScript_ViewTotals:
+; MENU_TYPE_VIEW_TOTALS ($05) - the per-level stats page, also the chained script id 2
+    db   $00                                            ; shape unused - this block only runs its sub-handler
+    db   $00, $00, $00                                  
+    db   MENU_SPRITE_GROUP_TOTALS, MENUCMD_SUB_REMOTE_ICONS
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_NO_TILE_UPLOAD
 
-data_01_5aef:
-    db   $02, $48        ;; 01:5ae9 ......w.
-    db   $34, $01, $03, $03, $04, $48, $54, $03        ;; 01:5af1 ........
-    db   $03, $03, $04, $68, $34, $07, $04, $03        ;; 01:5af9 ........
-    db   $04, $68, $54, $09, $04, $03, $04, $ff        ;; 01:5b01 ........
+    db   $13                                            ; 12x1 tiles at (4,3), tile $22
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_MEDIUM
+    dw   data_01_5d32                                   ; "RESUME PLAY"
+    db   MENU_OPTION_RESUME_PLAY, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
 
-data_01_5b09:
-    db   $02, $48, $44, $01, $03, $03, $04, $68        ;; 01:5b09 w.......
-    db   $34, $07, $04, $03, $04, $68, $54, $09        ;; 01:5b11 ........
-    db   $04, $03, $04, $ff
+    db   $14                                            ; 12x1 tiles at (4,4), tile $2e
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_MEDIUM
+    dw   data_01_5d3e                                   ; "SEE PASSWORD"
+    db   MENU_OPTION_VIEW_PASSWORD | 1, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
 
-data_01_5b1d:
-    db   $02, $58, $34, $01        ;; 01:5b19 ....w...
-    db   $03, $03, $04, $58, $54, $03, $03, $03        ;; 01:5b21 ........
-    db   $04, $ff
+    db   $16                                            ; 16x2 tiles at (2,7), tile $46
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_SMALL
+    db   $00, MENUCMD_SUB_TOTALS_PAGE_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
 
-data_01_5b2b:
-    db   $02, $58, $44, $01, $03, $03        ;; 01:5b29 ..w.....
-    db   $04, $ff
+    db   $19                                            ; 1x2 tiles at (7,9), tile $6e
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_SMALL
+    dw   data_01_5d62_Text_LivesX                                   ; "X"
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
 
-data_01_5b33:
-    db   $02, $58, $44, $0b, $05, $03        ;; 01:5b31 ..w.....
-    db   $04, $ff
+    db   $1a                                            ; 3x2 tiles at (8,9), tile $70
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_SMALL
+    db   MENU_COUNTER_LIVES, MENUCMD_SUB_COUNTER_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
 
-data_01_5b3b:
-    db   $02, $10, $14, $01, $01, $03        ;; 01:5b39 ..??????
-    db   $04, $10, $44, $03, $01, $03, $04, $10        ;; 01:5b41 ????????
-    db   $74, $05, $01, $03, $04, $58, $29, $07        ;; 01:5b49 ????????
-    db   $02, $03, $04, $58, $61, $09, $02, $03        ;; 01:5b51 ????????
-    db   $04, $3b, $1c, $92, $04, $01, $02, $3b        ;; 01:5b59 ????????
-    db   $4c, $94, $05, $01, $02, $3b, $7c, $96        ;; 01:5b61 ????????
-    db   $06, $01, $02, $ff
+    db   $1b                                            ; 1x2 tiles at (15,9), tile $76
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_SMALL
+    db   MENU_COUNTER_HEALTH, MENUCMD_SUB_COUNTER_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
 
-data_01_5b6d:
-    db   $02, $10, $2c, $01        ;; 01:5b69 ????????
-    db   $01, $03, $04, $10, $5c, $03, $01, $03        ;; 01:5b71 ????????
-    db   $04, $58, $29, $07, $02, $03, $04, $58        ;; 01:5b79 ????????
-    db   $61, $09, $02, $03, $04, $3b, $1c, $92        ;; 01:5b81 ????????
-    db   $04, $01, $02, $3b, $4c, $94, $05, $01        ;; 01:5b89 ????????
-    db   $02, $3b, $7c, $96, $06, $01, $02, $ff        ;; 01:5b91 ????????
+    db   $1c                                            ; 2x2 tiles at (11,11), tile $78
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_SMALL
+    db   MENU_COUNTER_MISSION_REMOTES, MENUCMD_SUB_COUNTER_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
 
-data_01_5b99:
-    db   $02, $10, $44, $01, $01, $03, $04, $58        ;; 01:5b99 ????????
-    db   $29, $07, $02, $03, $04, $58, $61, $09        ;; 01:5ba1 ????????
-    db   $02, $03, $04, $3b, $1c, $92, $04, $01        ;; 01:5ba9 ????????
-    db   $02, $3b, $4c, $94, $05, $01, $02, $3b        ;; 01:5bb1 ????????
-    db   $7c, $96, $06, $01, $02, $ff
+    db   $1d                                            ; 2x2 tiles at (11,13), tile $7c
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_SMALL
+    db   MENU_COUNTER_HIDDEN_REMOTES, MENUCMD_SUB_COUNTER_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
 
-data_01_5bbf:
-    db   $02, $10        ;; 01:5bb9 ????????
-    db   $2c, $01, $01, $03, $04, $10, $5c, $03        ;; 01:5bc1 ????????
-    db   $01, $03, $04, $3b, $1c, $92, $04, $01        ;; 01:5bc9 ????????
-    db   $02, $3b, $4c, $94, $05, $01, $02, $3b        ;; 01:5bd1 ????????
-    db   $7c, $96, $06, $01, $02, $ff
+    db   $1e                                            ; 2x2 tiles at (11,15), tile $80
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_SMALL
+    db   MENU_COUNTER_BONUS_REMOTES, MENUCMD_SUB_COUNTER_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
 
-data_01_5bdf:
-    db    $02, $10        ;; 01:5bd9 ????????
-    db   $44, $01, $01, $03, $04, $3b, $1c, $92        ;; 01:5be1 ????????
-    db   $04, $01, $02, $3b, $4c, $94, $05, $01        ;; 01:5be9 ????????
-    db   $02, $3b, $7c, $96, $06, $01, $02, $ff        ;; 01:5bf1 ????????
+    db   $17                                            ; 2x2 tiles at (2,12), tile $66
+    db   $00, $00, $66                                  ; destination tile id, not a font
+    db   $00, MENUCMD_SUB_STAGE_IMAGE1
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK
 
-data_01_5bf9:
-    db   $02, $10, $44, $0b, $03, $03, $04, $3b        ;; 01:5bf9 ????????
-    db   $1c, $92, $04, $01, $02, $3b, $4c, $94        ;; 01:5c01 ????????
-    db   $05, $01, $02, $3b, $7c, $96, $06, $01        ;; 01:5c09 ????????
-    db   $02, $ff
+    db   $18                                            ; 2x2 tiles at (16,12), tile $6a
+    db   $00, $00, $6a                                  ; destination tile id, not a font
+    db   $01, MENUCMD_SUB_STAGE_IMAGE1
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK
 
-data_01_5c13:
-    db   $02, $48, $20, $84, $06, $02        ;; 01:5c11 ??w.....
-    db   $02, $48, $38, $6e, $00, $01, $02, $48        ;; 01:5c19 ........
-    db   $40, $70, $00, $03, $02, $48, $60, $88        ;; 01:5c21 ........
-    db   $06, $02, $02, $48, $70, $6e, $00, $01        ;; 01:5c29 ........
-    db   $02, $48, $78, $76, $00, $01, $02, $58        ;; 01:5c31 ........
-    db   $38, $8c, $03, $02, $02, $58, $4c, $6e        ;; 01:5c39 ........
-    db   $00, $01, $02, $58, $58, $78, $00, $02        ;; 01:5c41 ........
-    db   $02, $69, $38, $90, $04, $02, $02, $69        ;; 01:5c49 ........
-    db   $4c, $6e, $00, $01, $02, $69, $58, $7c        ;; 01:5c51 ........
-    db   $00, $02, $02, $7a, $38, $94, $05, $02        ;; 01:5c59 ........
-    db   $02, $7a, $4c, $6e, $00, $01, $02, $7a        ;; 01:5c61 ........
-    db   $58, $80, $00, $02, $02, $ff
+    db   $00                                            ; 6x5 tiles at (1,1), tile $06, TV attrs
+    db   $00, $00, $84                                  ; destination tile id, not a font
+    db   $03, MENUCMD_SUB_STAGE_IMAGE2
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_TRANSPOSED
 
-data_01_5c6f:
-    db   $02, $30        ;; 01:5c69 ......??
-    db   $3c, $06, $07, $05, $02, $40, $2c, $2c        ;; 01:5c71 ????????
-    db   $07, $09, $02, $ff
+    db   $00                                            ; 6x5 tiles at (1,1), tile $06, TV attrs
+    db   $00, $00, $88                                  ; destination tile id, not a font
+    db   $04, MENUCMD_SUB_STAGE_IMAGE2
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_TRANSPOSED
 
-data_01_5c7d:
-    db   $02, $30, $34, $10        ;; 01:5c79 ????????
-    db   $07, $07, $02, $40, $2c, $2c, $07, $09        ;; 01:5c81 ????????
-    db   $02, $ff
+    db   $00                                            ; 6x5 tiles at (1,1), tile $06, TV attrs
+    db   $00, $00, $8c                                  ; destination tile id, not a font
+    db   $05, MENUCMD_SUB_STAGE_IMAGE2
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_TRANSPOSED
 
-data_01_5c8b:
-    db   $02, $30, $34, $1e, $07, $07        ;; 01:5c89 ????????
-    db   $02, $40, $2c, $2c, $07, $09, $02, $ff        ;; 01:5c91 ????????
+    db   $00                                            ; 6x5 tiles at (1,1), tile $06, TV attrs
+    db   $00, $00, $98                                  ; destination tile id, not a font
+    db   $06, MENUCMD_SUB_STAGE_IMAGE2
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_TRANSPOSED
 
-data_01_5c99:
-    db   $20, $41, $42, $41, $43, $41, $42, $41        ;; 01:5c99 ????????
-    db   $44, $41, $42, $41, $43, $41, $42, $41        ;; 01:5ca1 ????????
-    db   $20, $45, $46, $45, $47, $45, $46, $45        ;; 01:5ca9 ????????
-    db   $48, $45, $46, $45, $47, $45, $46, $45        ;; 01:5cb1 ????????
+    db   MENUSCRIPT_END
 
-data_01_5cb9:
-    db   $00, $40, $00, $6d, $00, $70, $00, $6a        ;; 01:5cb9 ????????
-    db   $00, $76, $00, $40, $00, $40, $00, $67        ;; 01:5cc1 ????....
-    db   $00, $79, $00, $40, $00, $73                  ;; 01:5cc9 ????....
+data_01_57a0_MenuScript_TotalsPageRefresh:
+; Re-run by call_01_4000_MenuLoad alone when left/right pages the totals screen:
+; just the remote icons and the page heading, so paging does not redraw the frame
+    db   $00                                            ; shape unused - this block only runs its sub-handler
+    db   $00, $00, $00                                  
+    db   MENU_SPRITE_GROUP_TOTALS, MENUCMD_SUB_REMOTE_ICONS
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_NO_TILE_UPLOAD
+
+    db   $16                                            ; 16x2 tiles at (2,7), tile $46
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_SMALL
+    db   $00, MENUCMD_SUB_TOTALS_PAGE_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_NO_TILE_UPLOAD | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   MENUSCRIPT_END
+
+data_01_57b1_MenuScript_TitleOptions:
+; MENU_TYPE_TITLE_OPTIONS ($07) - "START" / "PASSWORD" over the title image
+    db   $00                                            ; shape unused - this block only runs its sub-handler
+    db   $00, $00, $00                                  
+    db   MENU_IMAGE_TITLE_1, MENUCMD_SUB_FULLSCREEN_IMAGE
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_NO_TILE_UPLOAD
+
+    db   $0d                                            ; 8x1 tiles at (2,10), tile $06
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_SMALL
+    dw   data_01_5ccf                                   ; "START"
+    db   MENU_OPTION_START_GAME, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_NO_TILE_UPLOAD | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $0d                                            ; 8x1 tiles at (2,10), tile $06
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_SMALL
+    dw   data_01_5cdb                                   ; "PASSWORD"
+    db   MENU_OPTION_ENTER_PASSWORD | 1, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_NO_TILE_UPLOAD | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   MENUSCRIPT_END
+
+data_01_57ca_MenuScript_EnteringLevelName:
+; MENU_TYPE_ENTERING_LEVEL_NAME ($08) - the "ENTERING..." card shown on the way into a level
+    db   $10                                            ; 20x2 tiles at (0,8), tile $06, attr $01
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_LARGE
+    dw   data_01_5d56                                   ; "ENTERING..."
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $11                                            ; 20x2 tiles at (0,10), tile $2e, attr $01
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_MEDIUM
+    db   $00, MENUCMD_SUB_LEVEL_NAME_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   MENUSCRIPT_END
+
+data_01_57db_MenuScript_MissionSelect1:
+; MENU_TYPE_MISSION_SELECT_1_OPTION ($09) - mission select for a level with one mission
+    db   $04                                            ; 16x2 tiles at (4,10), tile $80
+    db   $00, TEXT_AUTO_ALIGN, MENU_FONT_SMALL          
+    db   $00, MENUCMD_SUB_MISSION_TEXT
+    db   $00, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $08                                            ; 20x2 tiles at (0,16), tile $c0, attr $02
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_SMALL
+    dw   data_01_5ed3_Text_PressBToContinueShort        ; "PRESS B TO CONTINUE"
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $00                                            ; shape unused - this block only runs its sub-handler
+    db   $00, $00, $00                                  
+    db   MENU_CHAINED_MISSION_SELECT, MENUCMD_SUB_CHAIN_SCRIPT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_NO_TILE_UPLOAD
+
+    db   MENUSCRIPT_END
+
+data_01_57f4_MenuScript_MissionSelect2:
+; MENU_TYPE_MISSION_SELECT_2_OPTIONS ($0A)
+    db   $06                                            ; 16x2 tiles at (4,8), tile $60
+    db   $00, TEXT_AUTO_ALIGN, MENU_FONT_SMALL          
+    db   $00, MENUCMD_SUB_MISSION_TEXT
+    db   $00, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $07                                            ; 16x2 tiles at (4,12), tile $80
+    db   $00, TEXT_AUTO_ALIGN, MENU_FONT_SMALL          
+    db   $01, MENUCMD_SUB_MISSION_TEXT
+    db   $01, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $08                                            ; 20x2 tiles at (0,16), tile $c0, attr $02
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_SMALL
+    dw   data_01_5eac_Text_ChooseAHint                  ; "CHOOSE A HINT THEN PRESS B TO CONTINUE"
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $00                                            ; shape unused - this block only runs its sub-handler
+    db   $00, $00, $00                                  
+    db   MENU_CHAINED_MISSION_SELECT, MENUCMD_SUB_CHAIN_SCRIPT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_NO_TILE_UPLOAD
+
+    db   MENUSCRIPT_END
+
+data_01_5815_MenuScript_MissionSelect3:
+; MENU_TYPE_MISSION_SELECT_3_OPTIONS ($0B)
+    db   $03                                            ; 16x2 tiles at (4,7), tile $60
+    db   $00, TEXT_AUTO_ALIGN, MENU_FONT_SMALL          
+    db   $00, MENUCMD_SUB_MISSION_TEXT
+    db   $00, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $04                                            ; 16x2 tiles at (4,10), tile $80
+    db   $00, TEXT_AUTO_ALIGN, MENU_FONT_SMALL          
+    db   $01, MENUCMD_SUB_MISSION_TEXT
+    db   $01, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $05                                            ; 16x2 tiles at (4,13), tile $a0
+    db   $00, TEXT_AUTO_ALIGN, MENU_FONT_SMALL          
+    db   $02, MENUCMD_SUB_MISSION_TEXT
+    db   $02, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $08                                            ; 20x2 tiles at (0,16), tile $c0, attr $02
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_SMALL
+    dw   data_01_5eac_Text_ChooseAHint                  ; "CHOOSE A HINT THEN PRESS B TO CONTINUE"
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $00                                            ; shape unused - this block only runs its sub-handler
+    db   $00, $00, $00                                  
+    db   MENU_CHAINED_MISSION_SELECT, MENUCMD_SUB_CHAIN_SCRIPT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_NO_TILE_UPLOAD
+
+    db   MENUSCRIPT_END
+
+data_01_583e_MenuScript_MissionSelectCommon:
+; Chained script id 1 - the furniture every mission select screen shares:
+; TV name, level name, the TV screen picture and the selection cursor
+    db   $01                                            ; 12x3 tiles at (8,1), tile $24, attr $01
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_LARGE
+    db   $00, MENUCMD_SUB_TV_NAME_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $02                                            ; 12x2 tiles at (8,4), tile $48
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_SMALL
+    db   $00, MENUCMD_SUB_LEVEL_NAME_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $00                                            ; 6x5 tiles at (1,1), tile $06, TV attrs
+    db   $00, $00, $06                                  ; destination tile id, not a font
+    db   $00, MENUCMD_SUB_STAGE_TV_SCREEN
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK
+
+    db   $00                                            ; 6x5 tiles at (1,1), tile $06, TV attrs
+    db   $00, $00, $e8                                  ; destination tile id, not a font
+    db   $05, MENUCMD_SUB_STAGE_IMAGE2
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_TRANSPOSED
+
+    db   $00                                            ; 6x5 tiles at (1,1), tile $06, TV attrs
+    db   $00, $00, $02                                  
+    db   $01, MENUCMD_SUB_DRAW_CURSOR
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_TRANSPOSED
+
+    db   MENUSCRIPT_END
+
+data_01_5867_MenuScript_GameOver:
+; MENU_TYPE_GAME_OVER ($0C) - one line, no options; the menu leaves on its timer
+    db   $16                                            ; 16x2 tiles at (2,7), tile $46
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_LARGE
+    dw   data_01_5d28                                   ; "GAME OVER"
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   MENUSCRIPT_END
+
+data_01_5870_MenuScript_BlackScreen:
+; MENU_TYPE_BLACK_SCREEN ($0D) - draws nothing at all
+    db   MENUSCRIPT_END
+
+data_01_5871_MenuScript_Congratulations:
+; MENU_TYPE_CONGRATULATIONS ($0E) - the level-complete screen: reward text, the
+; mission status line, the three collectible counters and the remote icons
+    db   $1f                                            ; 16x2 tiles at (2,0), tile $06
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_MEDIUM
+    dw   data_01_5d64_Text_Congratulations              ; "CONGRATULATIONS!"
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $20                                            ; 18x1 tiles at (1,6), tile $26
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_SMALL
+    db   $00, MENUCMD_SUB_MISSION_STATUS_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $21                                            ; 5x1 tiles at (4,15), tile $38
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_SMALL
+    dw   data_01_5d75_Text_Reward                       ; "REWARD"
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $22                                            ; 5x1 tiles at (11,15), tile $3d
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_SMALL
+    dw   data_01_5d7c_Text_Hidden                       ; "HIDDEN"
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $23                                            ; 14x1 tiles at (3,17), tile $42
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_SMALL
+    dw   data_01_5d83_Text_PressBToContinue             ; "PRESS B TO CONTINUE"
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $24                                            ; 2x2 tiles at (3,9), tile $50
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_SMALL
+    db   MENU_COUNTER_COLLECTIBLES_1, MENUCMD_SUB_COUNTER_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $25                                            ; 2x2 tiles at (9,9), tile $54
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_SMALL
+    db   MENU_COUNTER_COLLECTIBLES_2, MENUCMD_SUB_COUNTER_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $26                                            ; 2x2 tiles at (15,9), tile $58
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_SMALL
+    db   MENU_COUNTER_COLLECTIBLES_3, MENUCMD_SUB_COUNTER_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $00                                            ; shape unused - this block only runs its sub-handler
+    db   $00, $00, $00                                  
+    db   MENU_SPRITE_GROUP_CONGRATS, MENUCMD_SUB_REMOTE_ICONS
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_NO_TILE_UPLOAD
+
+    db   $00                                            ; 6x5 tiles at (1,1), tile $06, TV attrs
+    db   $00, $00, $98                                  ; destination tile id, not a font
+    db   $06, MENUCMD_SUB_STAGE_IMAGE2
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_TRANSPOSED
+
+    db   $27                                            ; 3x2 tiles at (9,7), tile $90
+    db   $00, $00, $00                                  
+    db   $00, MENUCMD_SUB_COLLECTIBLE_ICON
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL
+
+    db   MENUSCRIPT_END
+
+data_01_58ca_MenuScript_ViewPassword:
+; MENU_TYPE_VIEW_PASSWORD ($06) - shows the password the game generated for you.
+; Draws the frame and the $4B key, then chains the 29-cell keyboard script
+    db   $00                                            ; shape unused - this block only runs its sub-handler
+    db   $00, $00, $ff                                  ; frames before the group is hidden again
+    db   MENU_SPRITE_GROUP_VIEW_PASSWORD, MENUCMD_SUB_REMOTE_ICONS
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_NO_TILE_UPLOAD
+
+    db   $00                                            ; shape unused - this block only runs its sub-handler
+    db   $00, $00, $00                                  
+    db   $00, MENUCMD_SUB_LOAD_SCREEN
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_NO_TILE_UPLOAD
+
+    db   $49                                            ; 2x2 tiles at (16,14), tile $b2, attr $05
+    db   $00, $00, MENU_FONT_PASSWORD                   
+    db   $1e, MENUCMD_SUB_PASSWORD_CHAR_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $00                                            ; shape unused - this block only runs its sub-handler
+    db   $00, $00, $00                                  
+    db   MENU_CHAINED_PASSWORD_CELLS, MENUCMD_SUB_CHAIN_SCRIPT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_NO_TILE_UPLOAD
+
+    db   MENUSCRIPT_END
+
+data_01_58eb_MenuScript_EnterPassword:
+; MENU_TYPE_ENTER_PASSWORD ($0F) - the keyboard you type a password into
+    db   $00                                            ; shape unused - this block only runs its sub-handler
+    db   $00, $00, $ff                                  ; frames before the group is hidden again
+    db   MENU_SPRITE_GROUP_ENTER_PASSWORD, MENUCMD_SUB_REMOTE_ICONS
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_NO_TILE_UPLOAD
+
+    db   $00                                            ; shape unused - this block only runs its sub-handler
+    db   $00, $00, $00                                  
+    db   $00, MENUCMD_SUB_LOAD_SCREEN
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_NO_TILE_UPLOAD
+
+    db   $49                                            ; 2x2 tiles at (16,14), tile $b2, attr $05
+    db   $00, $00, MENU_FONT_PASSWORD                   
+    db   $1d, MENUCMD_SUB_PASSWORD_CHAR_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $00                                            ; shape unused - this block only runs its sub-handler
+    db   $00, $00, $00                                  
+    db   MENU_CHAINED_PASSWORD_CELLS, MENUCMD_SUB_CHAIN_SCRIPT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_NO_TILE_UPLOAD
+
+    db   MENUSCRIPT_END
+
+data_01_590c_MenuScript_InvalidPassword:
+; MENU_TYPE_ENTERED_INVALID_PASSWORD ($15) - same keyboard, different banner
+    db   $00                                            ; shape unused - this block only runs its sub-handler
+    db   $00, $00, $ff                                  ; frames before the group is hidden again
+    db   MENU_SPRITE_GROUP_INVALID_PASSWORD, MENUCMD_SUB_REMOTE_ICONS
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_NO_TILE_UPLOAD
+
+    db   $00                                            ; shape unused - this block only runs its sub-handler
+    db   $00, $00, $00                                  
+    db   $00, MENUCMD_SUB_LOAD_SCREEN
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_NO_TILE_UPLOAD
+
+    db   $49                                            ; 2x2 tiles at (16,14), tile $b2, attr $05
+    db   $00, $00, MENU_FONT_PASSWORD                   
+    db   $1d, MENUCMD_SUB_PASSWORD_CHAR_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $00                                            ; shape unused - this block only runs its sub-handler
+    db   $00, $00, $00                                  
+    db   MENU_CHAINED_PASSWORD_CELLS, MENUCMD_SUB_CHAIN_SCRIPT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_NO_TILE_UPLOAD
+
+    db   MENUSCRIPT_END
+
+data_01_592d_MenuScript_PasswordCells:
+; Chained script id 0 - draws all 29 password cells. Command ids $2C-$48 are the
+; 2x2 tile boxes laid out in a 6x5 grid by data_01_5324_MenuCmd_Descriptors, and
+; each one renders its own character through MENUCMD_SUB_PASSWORD_CHAR_TEXT
+    db   $00                                            ; 6x5 tiles at (1,1), tile $06, TV attrs
+    db   $00, $00, $02                                  
+    db   $02, MENUCMD_SUB_DRAW_CURSOR
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_TRANSPOSED
+
+    db   $00                                            ; 6x5 tiles at (1,1), tile $06, TV attrs
+    db   $00, $00, $06                                  ; destination tile id, not a font
+    db   $07, MENUCMD_SUB_STAGE_IMAGE2
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL
+
+    db   $2c                                            ; 2x2 tiles at (1,2), tile $3e, attr $05
+    db   $00, $00, MENU_FONT_PASSWORD                   
+    db   $00, MENUCMD_SUB_PASSWORD_CHAR_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $2d                                            ; 2x2 tiles at (4,2), tile $42, attr $05
+    db   $00, $00, MENU_FONT_PASSWORD                   
+    db   $01, MENUCMD_SUB_PASSWORD_CHAR_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $2e                                            ; 2x2 tiles at (7,2), tile $46, attr $05
+    db   $00, $00, MENU_FONT_PASSWORD                   
+    db   $02, MENUCMD_SUB_PASSWORD_CHAR_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $2f                                            ; 2x2 tiles at (10,2), tile $4a, attr $05
+    db   $00, $00, MENU_FONT_PASSWORD                   
+    db   $03, MENUCMD_SUB_PASSWORD_CHAR_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $30                                            ; 2x2 tiles at (13,2), tile $4e, attr $05
+    db   $00, $00, MENU_FONT_PASSWORD                   
+    db   $04, MENUCMD_SUB_PASSWORD_CHAR_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $31                                            ; 2x2 tiles at (16,2), tile $52, attr $05
+    db   $00, $00, MENU_FONT_PASSWORD                   
+    db   $05, MENUCMD_SUB_PASSWORD_CHAR_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $32                                            ; 2x2 tiles at (1,5), tile $56, attr $05
+    db   $00, $00, MENU_FONT_PASSWORD                   
+    db   $06, MENUCMD_SUB_PASSWORD_CHAR_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $33                                            ; 2x2 tiles at (4,5), tile $5a, attr $05
+    db   $00, $00, MENU_FONT_PASSWORD                   
+    db   $07, MENUCMD_SUB_PASSWORD_CHAR_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $34                                            ; 2x2 tiles at (7,5), tile $5e, attr $05
+    db   $00, $00, MENU_FONT_PASSWORD                   
+    db   $08, MENUCMD_SUB_PASSWORD_CHAR_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $35                                            ; 2x2 tiles at (10,5), tile $62, attr $05
+    db   $00, $00, MENU_FONT_PASSWORD                   
+    db   $09, MENUCMD_SUB_PASSWORD_CHAR_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $36                                            ; 2x2 tiles at (13,5), tile $66, attr $05
+    db   $00, $00, MENU_FONT_PASSWORD                   
+    db   $0a, MENUCMD_SUB_PASSWORD_CHAR_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $37                                            ; 2x2 tiles at (16,5), tile $6a, attr $05
+    db   $00, $00, MENU_FONT_PASSWORD                   
+    db   $0b, MENUCMD_SUB_PASSWORD_CHAR_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $38                                            ; 2x2 tiles at (1,8), tile $6e, attr $05
+    db   $00, $00, MENU_FONT_PASSWORD                   
+    db   $0c, MENUCMD_SUB_PASSWORD_CHAR_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $39                                            ; 2x2 tiles at (4,8), tile $72, attr $05
+    db   $00, $00, MENU_FONT_PASSWORD                   
+    db   $0d, MENUCMD_SUB_PASSWORD_CHAR_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $3a                                            ; 2x2 tiles at (7,8), tile $76, attr $05
+    db   $00, $00, MENU_FONT_PASSWORD                   
+    db   $0e, MENUCMD_SUB_PASSWORD_CHAR_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $3b                                            ; 2x2 tiles at (10,8), tile $7a, attr $05
+    db   $00, $00, MENU_FONT_PASSWORD                   
+    db   $0f, MENUCMD_SUB_PASSWORD_CHAR_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $3c                                            ; 2x2 tiles at (13,8), tile $7e, attr $05
+    db   $00, $00, MENU_FONT_PASSWORD                   
+    db   $10, MENUCMD_SUB_PASSWORD_CHAR_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $3d                                            ; 2x2 tiles at (16,8), tile $82, attr $05
+    db   $00, $00, MENU_FONT_PASSWORD                   
+    db   $11, MENUCMD_SUB_PASSWORD_CHAR_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $3e                                            ; 2x2 tiles at (1,11), tile $86, attr $05
+    db   $00, $00, MENU_FONT_PASSWORD                   
+    db   $12, MENUCMD_SUB_PASSWORD_CHAR_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $3f                                            ; 2x2 tiles at (4,11), tile $8a, attr $05
+    db   $00, $00, MENU_FONT_PASSWORD                   
+    db   $13, MENUCMD_SUB_PASSWORD_CHAR_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $40                                            ; 2x2 tiles at (7,11), tile $8e, attr $05
+    db   $00, $00, MENU_FONT_PASSWORD                   
+    db   $14, MENUCMD_SUB_PASSWORD_CHAR_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $41                                            ; 2x2 tiles at (10,11), tile $92, attr $05
+    db   $00, $00, MENU_FONT_PASSWORD                   
+    db   $15, MENUCMD_SUB_PASSWORD_CHAR_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $42                                            ; 2x2 tiles at (13,11), tile $96, attr $05
+    db   $00, $00, MENU_FONT_PASSWORD                   
+    db   $16, MENUCMD_SUB_PASSWORD_CHAR_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $43                                            ; 2x2 tiles at (16,11), tile $9a, attr $05
+    db   $00, $00, MENU_FONT_PASSWORD                   
+    db   $17, MENUCMD_SUB_PASSWORD_CHAR_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $44                                            ; 2x2 tiles at (1,14), tile $9e, attr $05
+    db   $00, $00, MENU_FONT_PASSWORD                   
+    db   $18, MENUCMD_SUB_PASSWORD_CHAR_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $45                                            ; 2x2 tiles at (4,14), tile $a2, attr $05
+    db   $00, $00, MENU_FONT_PASSWORD                   
+    db   $19, MENUCMD_SUB_PASSWORD_CHAR_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $46                                            ; 2x2 tiles at (7,14), tile $a6, attr $05
+    db   $00, $00, MENU_FONT_PASSWORD                   
+    db   $1a, MENUCMD_SUB_PASSWORD_CHAR_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $47                                            ; 2x2 tiles at (10,14), tile $aa, attr $05
+    db   $00, $00, MENU_FONT_PASSWORD                   
+    db   $1b, MENUCMD_SUB_PASSWORD_CHAR_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $48                                            ; 2x2 tiles at (13,14), tile $ae, attr $05
+    db   $00, $00, MENU_FONT_PASSWORD                   
+    db   $1c, MENUCMD_SUB_PASSWORD_CHAR_TEXT
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_TRANSPOSED | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   MENUSCRIPT_END
+
+data_01_5a26_MenuScript_TitleScreen:
+; MENU_TYPE_TITLE_SCREEN ($10)
+    db   $00                                            ; shape unused - this block only runs its sub-handler
+    db   $00, $00, $00                                  
+    db   MENU_IMAGE_TITLE_0, MENUCMD_SUB_FULLSCREEN_IMAGE
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_NO_TILE_UPLOAD
+
+    db   MENUSCRIPT_END
+
+data_01_5a2f_MenuScript_AudioOptions:
+; MENU_TYPE_AUDIO_OPTIONS_UNUSED ($11) - four "SOUND" rows, never reachable in game
+    db   $00                                            ; shape unused - this block only runs its sub-handler
+    db   $00, $00, $00                                  
+    db   MENU_IMAGE_AUDIO_MENU, MENUCMD_SUB_FULLSCREEN_IMAGE
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_NO_TILE_UPLOAD
+
+    db   $0d                                            ; 8x1 tiles at (2,10), tile $06
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_SMALL
+    dw   data_01_5ccf                                   ; "START"
+    db   $00, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_NO_TILE_UPLOAD | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $0d                                            ; 8x1 tiles at (2,10), tile $06
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_SMALL
+    dw   data_01_5cd5                                   ; "SOUND"
+    db   $01, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_NO_TILE_UPLOAD | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $0d                                            ; 8x1 tiles at (2,10), tile $06
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_SMALL
+    dw   data_01_5cd5                                   ; "SOUND"
+    db   $02, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_NO_TILE_UPLOAD | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   $0d                                            ; 8x1 tiles at (2,10), tile $06
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_SMALL
+    dw   data_01_5cd5                                   ; "SOUND"
+    db   $03, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_NO_TILE_UPLOAD | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   MENUSCRIPT_END
+
+data_01_5a58_MenuScript_CreditsGreatJob:
+; MENU_TYPE_CREDITS_GREAT_JOB ($12)
+    db   $00                                            ; shape unused - this block only runs its sub-handler
+    db   $00, $00, $00                                  
+    db   MENU_IMAGE_GREAT_JOB, MENUCMD_SUB_FULLSCREEN_IMAGE
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_NO_TILE_UPLOAD
+
+    db   MENUSCRIPT_END
+
+data_01_5a61_MenuScript_TitleCrave:
+; MENU_TYPE_TITLE_CRAVE ($13)
+    db   $00                                            ; shape unused - this block only runs its sub-handler
+    db   $00, $00, $00                                  
+    db   MENU_IMAGE_CRAVE, MENUCMD_SUB_FULLSCREEN_IMAGE
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_NO_TILE_UPLOAD
+
+    db   MENUSCRIPT_END
+
+data_01_5a6a_MenuScript_TitleSplash:
+; MENU_TYPE_TITLE_SPLASH ($14)
+    db   $00                                            ; shape unused - this block only runs its sub-handler
+    db   $00, $00, $00                                  
+    db   MENU_IMAGE_SPLASH, MENUCMD_SUB_FULLSCREEN_IMAGE
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_NO_TILE_UPLOAD
+
+    db   MENUSCRIPT_END
+
+data_01_5a73_MenuScript_TitleDavid:
+; MENU_TYPE_TITLE_DAVID ($16)
+    db   $00                                            ; shape unused - this block only runs its sub-handler
+    db   $00, $00, $00                                  
+    db   MENU_IMAGE_DAVID, MENUCMD_SUB_FULLSCREEN_IMAGE
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_NO_TILE_UPLOAD
+
+    db   MENUSCRIPT_END
+
+data_01_5a7c_MenuScript_Credits1:
+; MENU_TYPE_CREDITS_1 ($17)
+    db   $00                                            ; shape unused - this block only runs its sub-handler
+    db   $00, $00, $00                                  
+    db   MENU_IMAGE_CREDITS_1, MENUCMD_SUB_FULLSCREEN_IMAGE
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_NO_TILE_UPLOAD
+
+    db   MENUSCRIPT_END
+
+data_01_5a85_MenuScript_Credits2:
+; MENU_TYPE_CREDITS_2 ($18)
+    db   $00                                            ; shape unused - this block only runs its sub-handler
+    db   $00, $00, $00                                  
+    db   MENU_IMAGE_CREDITS_2, MENUCMD_SUB_FULLSCREEN_IMAGE
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_NO_TILE_UPLOAD
+
+    db   MENUSCRIPT_END
+
+data_01_5a8e_MenuScript_Credits3:
+; MENU_TYPE_CREDITS_3 ($19)
+    db   $00                                            ; shape unused - this block only runs its sub-handler
+    db   $00, $00, $00                                  
+    db   MENU_IMAGE_CREDITS_3, MENUCMD_SUB_FULLSCREEN_IMAGE
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_NO_TILE_UPLOAD
+
+    db   MENUSCRIPT_END
+
+data_01_5a97_MenuScript_Credits4:
+; MENU_TYPE_CREDITS_4 ($1A)
+    db   $00                                            ; shape unused - this block only runs its sub-handler
+    db   $00, $00, $00                                  
+    db   MENU_IMAGE_CREDITS_4, MENUCMD_SUB_FULLSCREEN_IMAGE
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_NO_TILEMAP_FILL | MENUCMD_NO_TILE_UPLOAD
+
+    db   MENUSCRIPT_END
+
+data_01_5aa0_MenuScript_TimeUp:
+; MENU_TYPE_TIME_UP ($1B) - "TIME UP!", leaves on its timer
+    db   $16                                            ; 16x2 tiles at (2,7), tile $46
+    db   TEXT_AUTO_ALIGN, TEXT_AUTO_ALIGN, MENU_FONT_LARGE
+    dw   data_01_5d1f_Text_TimeUp                       ; "TIME UP!"
+    db   MENU_OPTION_SLOT_NONE, MENUCMD_LAST_BLOCK | MENUCMD_DRAW_TEXT | MENUCMD_CLEAR_BUFFER
+
+    db   MENUSCRIPT_END
+
+data_01_5aa9_SpriteScriptTable:
+; Sprite groups, indexed by the argument of MENUCMD_SUB_REMOTE_ICONS and by
+; call_01_4d3b_Menu_EraseSpriteGroup. Entries 0-6 and 7-13 are two parallel sets
+; selected by adding the level's remote progress id to a base of 0 or 7, so the
+; layout automatically matches how many remotes that level actually has
+; (see .data_01_43b6_LevelPayloadMasks for the per-progress-id masks)
+    dw   data_01_5acf_SpriteScript_Totals_5Remotes      ; $00 MENU_SPRITE_GROUP_TOTALS + progress id 0
+    dw   data_01_5aef_SpriteScript_Totals_4Remotes      ; $01   +1
+    dw   data_01_5b09_SpriteScript_Totals_3Remotes      ; $02   +2
+    dw   data_01_5b1d_SpriteScript_Totals_2Remotes      ; $03   +3
+    dw   data_01_5b2b_SpriteScript_Totals_1Remote       ; $04   +4
+    dw   data_01_5b33_SpriteScript_Totals_GoldOnly      ; $05   +5
+    dw   data_01_5c13_SpriteScript_Totals_StatsPage     ; $06   +6 (the stats page)
+    dw   data_01_5b3b_SpriteScript_Congrats_5Remotes    ; $07 MENU_SPRITE_GROUP_CONGRATS + progress id 0
+    dw   data_01_5b6d_SpriteScript_Congrats_4Remotes    ; $08   +1
+    dw   data_01_5b99_SpriteScript_Congrats_3Remotes    ; $09   +2
+    dw   data_01_5bbf_SpriteScript_Congrats_2Remotes    ; $0a   +3
+    dw   data_01_5bdf_SpriteScript_Congrats_1Remote     ; $0b   +4
+    dw   data_01_5bf9_SpriteScript_Congrats_GoldOnly    ; $0c   +5
+    dw   data_01_5c6f_SpriteScript_EnterPasswordHeader  ; $0d MENU_SPRITE_GROUP_ENTER_PASSWORD
+    dw   data_01_5c7d_SpriteScript_ViewPasswordHeader   ; $0e MENU_SPRITE_GROUP_VIEW_PASSWORD
+    dw   data_01_5c8b_SpriteScript_InvalidPasswordHeader; $0f MENU_SPRITE_GROUP_INVALID_PASSWORD
+    dw   wD6B9_MenuCursor_OamSlot                       ; $10 $10-$12: the live cursor block in WRAM, not a ROM script
+    dw   wD6B9_MenuCursor_OamSlot                       ; $11 $10-$12: the live cursor block in WRAM, not a ROM script
+    dw   wD6B9_MenuCursor_OamSlot                       ; $12 $10-$12: the live cursor block in WRAM, not a ROM script
+
+; Sprite scripts. Each entry is  Y, X, tile, attributes, width in 8px columns,
+; height in 8px rows. An odd tile byte is an index into wD5AA_Sprite_TileIdTable
+; ((byte >> 1)) rather than a literal tile, which is how the remote icons switch
+; between lit and unlit without a second copy of the layout
+
+data_01_5acf_SpriteScript_Totals_5Remotes:
+; Five mission/hidden remote icons - progress id 0 (mask $1F)
+    db   $02                                            ; first OAM slot
+    ;     Y,   X,  tile, attr, w, h
+    db   $48, $24, $01, $03, 3, 4                       ; wD5AA_Sprite_TileIdTable index 0
+    db   $48, $44, $03, $03, 3, 4                       ; wD5AA_Sprite_TileIdTable index 1
+    db   $48, $64, $05, $03, 3, 4                       ; wD5AA_Sprite_TileIdTable index 2
+    db   $68, $34, $07, $04, 3, 4                       ; wD5AA_Sprite_TileIdTable index 3
+    db   $68, $54, $09, $04, 3, 4                       ; wD5AA_Sprite_TileIdTable index 4
+    db   SPRITE_SCRIPT_END
+
+data_01_5aef_SpriteScript_Totals_4Remotes:
+; Four - progress id 1 (mask $1B)
+    db   $02                                            ; first OAM slot
+    ;     Y,   X,  tile, attr, w, h
+    db   $48, $34, $01, $03, 3, 4                       ; wD5AA_Sprite_TileIdTable index 0
+    db   $48, $54, $03, $03, 3, 4                       ; wD5AA_Sprite_TileIdTable index 1
+    db   $68, $34, $07, $04, 3, 4                       ; wD5AA_Sprite_TileIdTable index 3
+    db   $68, $54, $09, $04, 3, 4                       ; wD5AA_Sprite_TileIdTable index 4
+    db   SPRITE_SCRIPT_END
+
+data_01_5b09_SpriteScript_Totals_3Remotes:
+; Three - progress id 2 (mask $19)
+    db   $02                                            ; first OAM slot
+    ;     Y,   X,  tile, attr, w, h
+    db   $48, $44, $01, $03, 3, 4                       ; wD5AA_Sprite_TileIdTable index 0
+    db   $68, $34, $07, $04, 3, 4                       ; wD5AA_Sprite_TileIdTable index 3
+    db   $68, $54, $09, $04, 3, 4                       ; wD5AA_Sprite_TileIdTable index 4
+    db   SPRITE_SCRIPT_END
+
+data_01_5b1d_SpriteScript_Totals_2Remotes:
+; Two - progress id 3 (mask $03)
+    db   $02                                            ; first OAM slot
+    ;     Y,   X,  tile, attr, w, h
+    db   $58, $34, $01, $03, 3, 4                       ; wD5AA_Sprite_TileIdTable index 0
+    db   $58, $54, $03, $03, 3, 4                       ; wD5AA_Sprite_TileIdTable index 1
+    db   SPRITE_SCRIPT_END
+
+data_01_5b2b_SpriteScript_Totals_1Remote:
+; One - progress id 4 (mask $01)
+    db   $02                                            ; first OAM slot
+    ;     Y,   X,  tile, attr, w, h
+    db   $58, $44, $01, $03, 3, 4                       ; wD5AA_Sprite_TileIdTable index 0
+    db   SPRITE_SCRIPT_END
+
+data_01_5b33_SpriteScript_Totals_GoldOnly:
+; Just the gold remote - progress id 5 (mask $20)
+    db   $02                                            ; first OAM slot
+    ;     Y,   X,  tile, attr, w, h
+    db   $58, $44, $0b, $05, 3, 4                       ; wD5AA_Sprite_TileIdTable index 5
+    db   SPRITE_SCRIPT_END
+
+data_01_5b3b_SpriteScript_Congrats_5Remotes:
+; Congratulations screen, five remotes plus the three collectible counters
+    db   $02                                            ; first OAM slot
+    ;     Y,   X,  tile, attr, w, h
+    db   $10, $14, $01, $01, 3, 4                       ; wD5AA_Sprite_TileIdTable index 0
+    db   $10, $44, $03, $01, 3, 4                       ; wD5AA_Sprite_TileIdTable index 1
+    db   $10, $74, $05, $01, 3, 4                       ; wD5AA_Sprite_TileIdTable index 2
+    db   $58, $29, $07, $02, 3, 4                       ; wD5AA_Sprite_TileIdTable index 3
+    db   $58, $61, $09, $02, 3, 4                       ; wD5AA_Sprite_TileIdTable index 4
+    db   $3b, $1c, $92, $04, 1, 2                       
+    db   $3b, $4c, $94, $05, 1, 2                       
+    db   $3b, $7c, $96, $06, 1, 2                       
+    db   SPRITE_SCRIPT_END
+
+data_01_5b6d_SpriteScript_Congrats_4Remotes:
+; Four remotes plus the collectible counters
+    db   $02                                            ; first OAM slot
+    ;     Y,   X,  tile, attr, w, h
+    db   $10, $2c, $01, $01, 3, 4                       ; wD5AA_Sprite_TileIdTable index 0
+    db   $10, $5c, $03, $01, 3, 4                       ; wD5AA_Sprite_TileIdTable index 1
+    db   $58, $29, $07, $02, 3, 4                       ; wD5AA_Sprite_TileIdTable index 3
+    db   $58, $61, $09, $02, 3, 4                       ; wD5AA_Sprite_TileIdTable index 4
+    db   $3b, $1c, $92, $04, 1, 2                       
+    db   $3b, $4c, $94, $05, 1, 2                       
+    db   $3b, $7c, $96, $06, 1, 2                       
+    db   SPRITE_SCRIPT_END
+
+data_01_5b99_SpriteScript_Congrats_3Remotes:
+; Three remotes plus the collectible counters
+    db   $02                                            ; first OAM slot
+    ;     Y,   X,  tile, attr, w, h
+    db   $10, $44, $01, $01, 3, 4                       ; wD5AA_Sprite_TileIdTable index 0
+    db   $58, $29, $07, $02, 3, 4                       ; wD5AA_Sprite_TileIdTable index 3
+    db   $58, $61, $09, $02, 3, 4                       ; wD5AA_Sprite_TileIdTable index 4
+    db   $3b, $1c, $92, $04, 1, 2                       
+    db   $3b, $4c, $94, $05, 1, 2                       
+    db   $3b, $7c, $96, $06, 1, 2                       
+    db   SPRITE_SCRIPT_END
+
+data_01_5bbf_SpriteScript_Congrats_2Remotes:
+; Two remotes plus the collectible counters
+    db   $02                                            ; first OAM slot
+    ;     Y,   X,  tile, attr, w, h
+    db   $10, $2c, $01, $01, 3, 4                       ; wD5AA_Sprite_TileIdTable index 0
+    db   $10, $5c, $03, $01, 3, 4                       ; wD5AA_Sprite_TileIdTable index 1
+    db   $3b, $1c, $92, $04, 1, 2                       
+    db   $3b, $4c, $94, $05, 1, 2                       
+    db   $3b, $7c, $96, $06, 1, 2                       
+    db   SPRITE_SCRIPT_END
+
+data_01_5bdf_SpriteScript_Congrats_1Remote:
+; One remote plus the collectible counters
+    db   $02                                            ; first OAM slot
+    ;     Y,   X,  tile, attr, w, h
+    db   $10, $44, $01, $01, 3, 4                       ; wD5AA_Sprite_TileIdTable index 0
+    db   $3b, $1c, $92, $04, 1, 2                       
+    db   $3b, $4c, $94, $05, 1, 2                       
+    db   $3b, $7c, $96, $06, 1, 2                       
+    db   SPRITE_SCRIPT_END
+
+data_01_5bf9_SpriteScript_Congrats_GoldOnly:
+; Gold remote plus the collectible counters
+    db   $02                                            ; first OAM slot
+    ;     Y,   X,  tile, attr, w, h
+    db   $10, $44, $0b, $03, 3, 4                       ; wD5AA_Sprite_TileIdTable index 5
+    db   $3b, $1c, $92, $04, 1, 2                       
+    db   $3b, $4c, $94, $05, 1, 2                       
+    db   $3b, $7c, $96, $06, 1, 2                       
+    db   SPRITE_SCRIPT_END
+
+data_01_5c13_SpriteScript_Totals_StatsPage:
+; Page 0 of the totals - the whole-game tally, all literal tiles
+    db   $02                                            ; first OAM slot
+    ;     Y,   X,  tile, attr, w, h
+    db   $48, $20, $84, $06, 2, 2                       
+    db   $48, $38, $6e, $00, 1, 2                       
+    db   $48, $40, $70, $00, 3, 2                       
+    db   $48, $60, $88, $06, 2, 2                       
+    db   $48, $70, $6e, $00, 1, 2                       
+    db   $48, $78, $76, $00, 1, 2                       
+    db   $58, $38, $8c, $03, 2, 2                       
+    db   $58, $4c, $6e, $00, 1, 2                       
+    db   $58, $58, $78, $00, 2, 2                       
+    db   $69, $38, $90, $04, 2, 2                       
+    db   $69, $4c, $6e, $00, 1, 2                       
+    db   $69, $58, $7c, $00, 2, 2                       
+    db   $7a, $38, $94, $05, 2, 2                       
+    db   $7a, $4c, $6e, $00, 1, 2                       
+    db   $7a, $58, $80, $00, 2, 2                       
+    db   SPRITE_SCRIPT_END
+
+data_01_5c6f_SpriteScript_EnterPasswordHeader:
+; Header sprites over the ENTER PASSWORD keyboard
+    db   $02                                            ; first OAM slot
+    ;     Y,   X,  tile, attr, w, h
+    db   $30, $3c, $06, $07, 5, 2                       
+    db   $40, $2c, $2c, $07, 9, 2                       
+    db   SPRITE_SCRIPT_END
+
+data_01_5c7d_SpriteScript_ViewPasswordHeader:
+; Header sprites over the VIEW PASSWORD screen
+    db   $02                                            ; first OAM slot
+    ;     Y,   X,  tile, attr, w, h
+    db   $30, $34, $10, $07, 7, 2                       
+    db   $40, $2c, $2c, $07, 9, 2                       
+    db   SPRITE_SCRIPT_END
+
+data_01_5c8b_SpriteScript_InvalidPasswordHeader:
+; Header sprites over the "wrong password" screen
+    db   $02                                            ; first OAM slot
+    ;     Y,   X,  tile, attr, w, h
+    db   $30, $34, $1e, $07, 7, 2                       
+    db   $40, $2c, $2c, $07, 9, 2                       
+    db   SPRITE_SCRIPT_END
+
+data_01_5c99_PasswordKeyGrid:
+; What each button combination types on the password keyboard. Indexed by the
+; d-pad/START/SELECT nibble of wD59F_CurrentInputs, with bit 4 set when B was
+; pressed rather than A - so the two face buttons give two banks of 16.
+; PASSWORD_KEY_BLANK entries are combinations that type nothing.
+;
+; Only one d-pad direction is really used per letter - RIGHT/LEFT/UP/DOWN with A
+; give A B C D, and the same four with B give E F G H, which is exactly the 0-7
+; alphabet PASSWORD_CHAR_BASE encodes. The duplicated entries are what happens
+; when two directions are held at once
+    ; A pressed
+    db   $20, $41, $42, $41, $43, $41, $42, $41
+    db   $44, $41, $42, $41, $43, $41, $42, $41
+    ; B pressed
+    db   $20, $45, $46, $45, $47, $45, $46, $45
+    db   $48, $45, $46, $45, $47, $45, $46, $45
+
+data_01_5cb9_TVScreenImageTable:
+; The Media Dimension TV pictures, one per TV palette id (MAPDATA_TV_PALETTE_ID).
+; These are raw addresses in ROM bank $13, staged as a 6x5 tile block by
+; call_01_466b_MenuCmd_StageTVScreen
+    dw   $4000                                          ; GAME STATS
+    dw   $6d00                                          ; CIRCUIT CENTRAL
+    dw   $7000                                          ; KUNG-FU THEATRE
+    dw   $6a00                                          ; PREHIST CHANNEL
+    dw   $7600                                          ; REZOPOLIS
+    dw   $4000                                          ; ROCKET CHANNEL
+    dw   $4000                                          ; SCREAM TV
+    dw   $6700                                          ; TOON TV
+    dw   $7900                                          ; BONUS BONANZA
+    dw   $4000                                          ; SECRET STATION
+    dw   $7300                                          ; BOSS TV
 
 INCLUDE "code/bank01_text.asm"
 
@@ -3350,107 +4135,127 @@ data_01_65fe_FontDescriptors:
 ; of column 0, then all height_px rows of column 1 - with each row being two bytes of ordinary
 ; GB 2bpp (plane 0, plane 1), the pair that call_01_4ae7_Text_DrawGlyph loads into E and C.
 ;
-; Glyph indices come from call_01_4f41_Password_CharToFontTile and run $00-$29: $00 space,
+; Glyph indices come from call_01_4f41_Text_CharToGlyphIndex and run $00-$29: $00 space,
 ; $01-$1A A-Z, $1B-$24 0-9, $25-$29 punctuation. That is 42 glyphs, and the width tables all
 ; have 42 entries, but only the first font actually has 42 bitmaps - see the note there.
-    dw   .data_01_66a7_font, .data_01_661e
+    dw   .data_01_66a7_SmallFont, .data_01_661e_SmallFontWidths
     db   $01, $06, $00, $00
-    dw   .data_01_689f_font, .data_01_6648
+    dw   .data_01_689f_MediumFont, .data_01_6648_MediumFontWidths
     db   $01, $07, $00, $00
-    dw   .data_01_6add_font, .data_01_6672
+    dw   .data_01_6add_LargeFont, .data_01_6672_LargeFontWidths
     db   $02, $0b, $00, $00
-    dw   data_01_71e9, .data_01_669c
+    dw   data_01_71e9_PasswordFont, .data_01_669c_PasswordFontWidths
     db   $02, $10, $00, $00
-.data_01_661e:
+.data_01_661e_SmallFontWidths:
     db   $03, $03, $03, $03
     db   $03, $03, $03, $03, $03, $03, $03, $03        ;; 01:6622 ..www.w.
     db   $03, $05, $03, $03, $03, $03, $03, $03        ;; 01:662a wwwww?ww
     db   $03, $03, $03, $05, $03, $03, $03, $03        ;; 01:6632 w..ww..w
     db   $03, $03, $03, $03, $03, $03, $03, $03        ;; 01:663a ..?ww???
     db   $03, $01, $02, $01, $03, $02
-.data_01_6648:
+.data_01_6648_MediumFontWidths:
     db   $04, $06
     db   $05, $06, $06, $05, $06, $05, $06, $02        ;; 01:664a ??.w??..
     db   $06, $06, $05, $06, $06, $06, $06, $06        ;; 01:6652 ?...ww.w
     db   $06, $05, $05, $06, $07, $06, $07, $06        ;; 01:665a www.?...
     db   $07, $06, $05, $05, $05, $05, $06, $05        ;; 01:6662 ????????
     db   $05, $05, $05, $02, $02, $03, $04, $02        ;; 01:666a ?????.??
-.data_01_6672:
+.data_01_6672_LargeFontWidths:
     db   $05, $0a, $0a, $0a, $0b, $09, $08, $09        ;; 01:6672 ..?..w?.
     db   $09, $04, $0b, $0a, $09, $0b, $0a, $0a        ;; 01:667a ?.???...
     db   $09, $0b, $0a, $09, $09, $0a, $0b, $0b        ;; 01:6682 ww.ww..?
     db   $0b, $0b, $0b, $0a, $07, $09, $08, $09        ;; 01:668a .???????
     db   $09, $09, $09, $09, $09, $04, $04, $05        ;; 01:6692 ?????.??
     db   $06, $04
-.data_01_669c:
+.data_01_669c_PasswordFontWidths:
     db   $10, $10, $10, $10, $10, $10
     db   $10, $10, $10, $10, $10                       ;; 01:66a2 ?????
-.data_01_66a7_font:
+.data_01_66a7_SmallFont:
 ; 8x6 glyphs, stride 12. $1F8 bytes = 42 glyphs, matching the 42-entry width table exactly
     INCBIN ".gfx/fonts/image_001_66a7_font.bin"
-.data_01_689f_font:
+.data_01_689f_MediumFont:
 ; 8x7 glyphs, stride 14. $23E bytes = 41 glyphs, one short of the 42-entry width table - index
 ; $29 (apostrophe) would read into data_01_6add_font. The width table still carries a $02 for
 ; it, so the entry is reachable in principle; presumably no string in this font uses one
     INCBIN ".gfx/fonts/image_001_689f_font.bin"
-.data_01_6add_font:
+.data_01_6add_LargeFont:
 ; 16x11 glyphs, stride 44. $70C bytes = 41 glyphs, same one-short situation as $689F
     INCBIN ".gfx/fonts/image_001_6add_font.bin"
 
-data_01_71e9:
+data_01_71e9_PasswordFont:
 ; 16x16 glyphs, stride 64. $300 bytes = 12 glyphs, and its width table (data_01_669c) has only
 ; 11 entries, all $10 - a restricted set, not the full $00-$29 charset
     INCBIN ".gfx/misc_sprites/password/image_001_71e9.bin"
 
-data_01_74e9:
-    dw   data_01_74fd, data_01_7540                            ;; 01:74e9 ....
-data_01_74ed:
-    dw   data_01_7540, data_01_7540, data_01_7540, data_01_7b89       ;; 01:74ed ??..??..
-    dw   data_01_7bcc, data_01_7583, data_01_7706, data_00_3c72        ;; 01:74f5 ......??
-data_01_74fd:
+; The two image tables the staging sub-handlers index. Every entry points at a blob
+; whose first three bytes are its own header - width in tiles, height in tiles, and a
+; flag that when non-zero means "reserve the space but do not copy" - which is why the
+; scripts never have to state an image's size.
+;
+; The two tables overlap on purpose: data_01_74e9_ImageTable1 is just the two entries
+; before data_01_74ed_ImageTable2, so MENUCMD_SUB_STAGE_IMAGE1 can reach the title
+; cursor while MENUCMD_SUB_STAGE_IMAGE2 starts at the menu cursor
+data_01_74e9_ImageTable1:
+    dw   data_01_74fd_Image_TitleCursor, data_01_7540_Image_MenuCursor                            ;; 01:74e9 ....
+data_01_74ed_ImageTable2:
+    dw   data_01_7540_Image_MenuCursor, data_01_7540_Image_MenuCursor, data_01_7540_Image_MenuCursor, data_01_7b89_Image_PasswordCursor       ;; 01:74ed ??..??..
+    dw   data_01_7bcc_Image_MissionMarker, data_01_7583_Image_RemoteIcons, data_01_7706_Image_StatsIcons, data_00_3c72        ;; 01:74f5 ......??
+data_01_74fd_Image_TitleCursor:
+; 2x2 tiles - the arrow beside START / PASSWORD
     db   $02, $02, $00                                 ;; 01:74fd ...
     INCBIN ".gfx/menu_sprites/image_001_7500.bin"
-data_01_7540:
+data_01_7540_Image_MenuCursor:
+; 2x2 tiles - the general purpose selection arrow
     db   $02, $02, $00                                 ;; 01:7540 ...
     INCBIN ".gfx/menu_sprites/image_001_7543.bin"
-data_01_7583:
+data_01_7583_Image_RemoteIcons:
+; 12x2 tiles - the lit and unlit remote icons, in that order
     db   $0c, $02, $00                                 ;; 01:7583 ...
     INCBIN ".gfx/menu_sprites/image_001_7586.bin"
-data_01_7706:
+data_01_7706_Image_StatsIcons:
+; 18x4 tiles - the icon strip along the totals screen
     db   $12, $04, $00                                 ;; 01:7706 ...
     INCBIN ".gfx/menu_sprites/image_001_7709.bin"
-data_01_7b89:
+data_01_7b89_Image_PasswordCursor:
+; 2x2 tiles - the blinking box on the password keyboard
     db   $02, $02, $00                                 ;; 01:7b89 ...
     INCBIN ".gfx/menu_sprites/image_001_7b8c.bin"
-data_01_7bcc:
+data_01_7bcc_Image_MissionMarker:
+; 2x2 tiles - the "remote collected" marker beside a mission line
     db   $02, $02, $00                                 ;; 01:7bcc ...
     INCBIN ".gfx/menu_sprites/image_001_7bcf.bin"
 
-data_01_7c0f_collectible_images:
-    dw   .data_01_7c4d, .data_01_7c4d, .data_01_7cc5, .data_01_7cc5        ;; 01:7c0f ????????
-    dw   .data_01_7d3d, .data_01_7db5, .data_01_7c4d, .data_01_7e2d        ;; 01:7c17 ????????
-    dw   .data_01_7c4d, .data_01_7e2d, .data_01_7d3d, .data_01_7cc5        ;; 01:7c1f ????????
-    dw   .data_01_7c4d, .data_01_7db5, .data_01_7ea5, .data_01_7c4d        ;; 01:7c27 ????????
-    dw   .data_01_7cc5, .data_01_7c4d, .data_01_7c4d, .data_01_7c4d        ;; 01:7c2f ????????
-    dw   .data_01_7c4d, .data_01_7db5, .data_01_7ea5, .data_01_7d3d        ;; 01:7c37 ????????
-    dw   .data_01_7e2d, .data_01_7cc5, .data_01_7ea5, .data_01_7c4d        ;; 01:7c3f ????????
-    dw   .data_01_7c4d, .data_01_7c4d, .data_01_7c4d
-.data_01_7c4d:
+data_01_7c0f_CollectibleIconTable:
+; One entry per level id, pointing at that level's collectible artwork - the fruit,
+; bug or whatever the TV channel uses. Each blob is 3x2 tiles of graphics, then 24
+; bytes of tilemap ids, then a 128-byte CGB palette set, all of which
+; call_01_49d7_MenuCmd_StageCollectibleIcon copies in one pass.
+;
+; Levels on the same channel share a blob, so the table is 31 pointers to six images
+    dw   .data_01_7c4d_ToonTV, .data_01_7c4d_ToonTV, .data_01_7cc5_ScreamTV, .data_01_7cc5_ScreamTV        ;; 01:7c0f ????????
+    dw   .data_01_7d3d_CircuitCentral, .data_01_7db5_KungFuTheater, .data_01_7c4d_ToonTV, .data_01_7e2d_PrehistoryChannel        ;; 01:7c17 ????????
+    dw   .data_01_7c4d_ToonTV, .data_01_7e2d_PrehistoryChannel, .data_01_7d3d_CircuitCentral, .data_01_7cc5_ScreamTV        ;; 01:7c1f ????????
+    dw   .data_01_7c4d_ToonTV, .data_01_7db5_KungFuTheater, .data_01_7ea5_Rezopolis, .data_01_7c4d_ToonTV        ;; 01:7c27 ????????
+    dw   .data_01_7cc5_ScreamTV, .data_01_7c4d_ToonTV, .data_01_7c4d_ToonTV, .data_01_7c4d_ToonTV        ;; 01:7c2f ????????
+    dw   .data_01_7c4d_ToonTV, .data_01_7db5_KungFuTheater, .data_01_7ea5_Rezopolis, .data_01_7d3d_CircuitCentral        ;; 01:7c37 ????????
+    dw   .data_01_7e2d_PrehistoryChannel, .data_01_7cc5_ScreamTV, .data_01_7ea5_Rezopolis, .data_01_7c4d_ToonTV        ;; 01:7c3f ????????
+    dw   .data_01_7c4d_ToonTV, .data_01_7c4d_ToonTV, .data_01_7c4d_ToonTV
+.data_01_7c4d_ToonTV:
     INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_toon_tv.bin"
     INCBIN "gfx/misc_sprites/collectibles/palettes/palette_toon_tv_collectibles.bin"
-.data_01_7cc5:
+.data_01_7cc5_ScreamTV:
     INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_scream_tv.bin"
     INCBIN "gfx/misc_sprites/collectibles/palettes/palette_scream_tv_collectibles.bin"
-.data_01_7d3d:
+.data_01_7d3d_CircuitCentral:
     INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_circuit_central.bin"
     INCBIN "gfx/misc_sprites/collectibles/palettes/palette_circuit_central_collectibles.bin"
-.data_01_7db5:
+.data_01_7db5_KungFuTheater:
     INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_kung_fu_theater.bin"
     INCBIN "gfx/misc_sprites/collectibles/palettes/palette_kung_fu_theater_collectibles.bin"
-.data_01_7e2d:
+.data_01_7e2d_PrehistoryChannel:
     INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_prehistory_channel.bin"
     INCBIN "gfx/misc_sprites/collectibles/palettes/palette_prehistory_channel_collectibles.bin"
-.data_01_7ea5:
+.data_01_7ea5_Rezopolis:
     INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_rezopolis.bin"
     INCBIN "gfx/misc_sprites/collectibles/palettes/palette_rezopolis_collectibles.bin"
 
