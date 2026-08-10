@@ -4,13 +4,9 @@ call_00_1264_BgMap_LoadFull:
 ; Calls call_00_0f38_FadeOutAndClearVRAM, then call_00_1419_BgMap_LoadTileset. Resets secondary tileset index to $FF,
 ; clears wD77B_OverrideVRAMWritePending/wD77D_OverrideSequenceStepsRemaining. Then loops 22 ($16) times: 
 ; sets wD6F9_BgMap_LoadingFlags=$01 (dirty flag), calls LoadBgMapDirtyRegions 
-; and BgMap_WriteScrollColumn, advances wD6EF (Y map position) by 8 each iteration — so it walks
-; DOWN the map, drawing one horizontal row per pass, until the whole visible area is filled.
-; Clears dirty flag, loads HUD tiles, updates map window.
-;
-; The bank 3 routine it calls is named BgMap_WriteScrollColumn but is the one triggered by
-; vertical scrolling - the same axis-vs-strip confusion as the loaders in this file, and worth
-; untangling if bank 3 ever gets a pass
+; and BgMap_WriteRowForVerticalScroll, advances wD6EF (Y map position) by 8 each iteration — so
+; it walks DOWN the map, drawing one horizontal row per pass, until the whole visible area is
+; filled. Clears dirty flag, loads HUD tiles, updates map window
     call call_00_0ede_SelectWramBank1                                  ;; 00:1264 $cd $de $0e
     call call_00_2e77_MapData_GetMapBank                                  ;; 00:1267 $cd $77 $2e
     ld   [wD6F5_BgMap_MapBank], A                                    ;; 00:126a $ea $f5 $d6
@@ -40,7 +36,7 @@ call_00_1264_BgMap_LoadFull:
     ld   A, MAP_SCROLL_DOWN                                        ;; 00:12a3 $3e $01
     ld   [wD6F9_BgMap_LoadingFlags], A                                    ;; 00:12a5 $ea $f9 $d6
     call call_00_1455_BgMap_LoadDirtyRegions                                  ;; 00:12a8 $cd $55 $14
-    FARCALL call_03_6f5e_BgMap_WriteScrollColumn 
+    FARCALL call_03_6f5e_BgMap_WriteRowForVerticalScroll 
     ld   HL, wD6EF_BgMap_ScrollY                                     ;; 00:12b6 $21 $ef $d6
     ld   A, [HL]                                       ;; 00:12b9 $7e
     add  A, $08                                        ;; 00:12ba $c6 $08
@@ -357,9 +353,9 @@ call_00_1472_BgMap_LoadRowForVerticalScroll:
     or   A, L                                          ;; 00:14b0 $b5
     ld   L, A                                          ;; 00:14b1 $6f
     push HL                                            ;; 00:14b2 $e5
-    ld   [wD6FA_BgMap_ColumnScrollPosition], A                                    ;; 00:14b3 $ea $fa $d6
+    ld   [wD6FA_BgMap_RowWritePosLo], A                                    ;; 00:14b3 $ea $fa $d6
     ld   A, H                                          ;; 00:14b6 $7c
-    ld   [wD6FB_BgMap_ColumnUnk], A                                    ;; 00:14b7 $ea $fb $d6
+    ld   [wD6FB_BgMap_RowWritePosHi], A                                    ;; 00:14b7 $ea $fb $d6
     ld   A, C                                          ;; 00:14ba $79
     rrca                                               ;; 00:14bb $0f
     and  A, $0c                                        ;; 00:14bc $e6 $0c
@@ -561,9 +557,9 @@ call_00_157a_BgMap_LoadColumnForHorizontalScroll:
     or   A, L                                          ;; 00:15b8 $b5
     ld   L, A                                          ;; 00:15b9 $6f
     push HL                                            ;; 00:15ba $e5
-    ld   [wD6FC_BgMap_RowScrollPosition], A                                    ;; 00:15bb $ea $fc $d6
+    ld   [wD6FC_BgMap_ColumnWritePos], A                                    ;; 00:15bb $ea $fc $d6
     ld   A, H                                          ;; 00:15be $7c
-    ld   [wD6FD_BgMap_RowUnk], A                                    ;; 00:15bf $ea $fd $d6
+    ld   [wD6FD_BgMap_ColumnWritePosHi], A                                    ;; 00:15bf $ea $fd $d6
     ld   A, E                                          ;; 00:15c2 $7b
     rrca                                               ;; 00:15c3 $0f
     rrca                                               ;; 00:15c4 $0f

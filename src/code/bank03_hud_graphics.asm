@@ -2,7 +2,11 @@ call_03_66ae_HUD_LoadTiles:
 ; Top-level HUD tile loader. Copies .image_03_66e1 ($140 bytes) to VRAM $8600 (main HUD graphics), 
 ; calls call_03_6d13_HUD_LoadLivesDigits (lives digits) and call_03_6941_HUD_LoadCollectibleSprites (collectible icon). Then conditionally loads 
 ; either the "DEMO MODE" banner tiles to $8680 if demo mode is active, or if wD623_CollectibleMode is set (timer mode), 
-; loads the colon tile via VRAM_Copy32Bytes and jumps to call_03_6ceb_HUD_LoadTimerDigits (timer digits)
+; loads the timer's colon glyph (two tiles, $20 bytes, via VRAM_Copy32Bytes) and jumps to
+; call_03_6ceb_HUD_LoadTimerDigits.
+;
+; Note demo mode and timer mode share the same VRAM slot, VRAM_HUD_DEMO_MODE_OR_TIMER - the
+; banner and the clock can never be on screen together
     ld   HL, .image_03_66e1                             ;; 03:66ae $21 $e1 $66
     ld   DE, VRAM_HUD_TILES                                     ;; 03:66b1 $11 $00 $86
     ld   BC, $140                                      ;; 03:66b4 $01 $40 $01
@@ -33,8 +37,13 @@ call_03_6941_HUD_LoadCollectibleSprites:
 ; Loads the collectible sprite tiles for the current level. Calls call_03_6be5_HUD_LoadCollectiblePalette first (to set up the palette). 
 ; Uses wD624 (level ID) to index .data_image_collectibles_03_6967 — a 31-entry pointer table mapping each 
 ; level to one of 6 world-specific collectible tile sets (Toon TV, Scream TV, Circuit Central, Kung Fu Theater,
-;  Prehistory Channel, Rezopolis). Then uses wD648_CollectibleMilestoneIndex (collectible type index, swap-shifted) as a sub-index 
-; within that set to select the specific tile frame, and copies 1 tile ($10 bytes) to VRAM $87E0 via VRAM_Copy32Bytes
+;  Prehistory Channel, Rezopolis). Then uses wD648_CollectibleMilestoneIndex (collectible type index, swap-shifted) as a sub-index
+; within that set to select the specific tile frame, and copies TWO tiles ($20 bytes) to VRAM $87E0
+; via VRAM_Copy32Bytes - the collectible icon is an 8x16 sprite, so it is two tiles, not the one
+; tile / $10 bytes the old comment claimed.
+;
+; Also clears HUD_DIRTY_COLLECTIBLES (bit 3 of wD60E_HUDDirtyFlags) on entry, which the old
+; comment did not mention - this is the routine that services that dirty flag
     ld   HL, wD60E_HUDDirtyFlags                                     ;; 03:6941 $21 $0e $d6
     res  3, [HL]                                       ;; 03:6944 $cb $9e
     call call_03_6be5_HUD_LoadCollectiblePalette                                  ;; 03:6946 $cd $e5 $6b

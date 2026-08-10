@@ -928,13 +928,21 @@ wD6F7_BgMap_BlocksetAndCollisionBank:
 wD6F9_BgMap_LoadingFlags:
 ; see constants.asm for values
     ds 1                                               ;; d6f9
-wD6FA_BgMap_ColumnScrollPosition:
+; Where the next pending tilemap strip goes. These were named for the scroll AXIS,
+; which is the opposite of the strip they locate - scrolling vertically writes a
+; horizontal row, scrolling horizontally writes a vertical column. Renamed to match
+; call_03_6f5e_BgMap_WriteRowForVerticalScroll and its column twin.
+wD6FA_BgMap_RowWritePosLo:
+; 16-bit. The row writer masks the low byte with $E0 to snap to the start of a
+; tilemap row, and ORs the high byte with $98 / $C0 to reach VRAM and the shadow map
     ds 1                                               ;; d6fa
-wD6FB_BgMap_ColumnUnk:
+wD6FB_BgMap_RowWritePosHi:
     ds 1                                               ;; d6fb
-wD6FC_BgMap_RowScrollPosition:
+wD6FC_BgMap_ColumnWritePos:
+; the column writer masks this with $1F to get a column index, then steps by $20 per
+; entry. Only the one byte is read; wD6FD is written alongside but never used here
     ds 1                                               ;; d6fc
-wD6FD_BgMap_RowUnk:
+wD6FD_BgMap_ColumnWritePosHi:
     ds 1                                               ;; d6fd
 wD6FE_BgMap_BlocksetOverrideBitMask:
     ds 1                                               ;; d6fe

@@ -252,8 +252,17 @@ call_03_5b5b_HUD_BuildSprites:
 ; Selects one of 5 different 3-byte data layouts depending on game state: level 0 uses .data_03_5beb, 
 ; other levels use .data_03_5bd3, demo mode uses a specific layout, and if a special condition 
 ; (wD623_CollectibleMode set, wD770_LevelTimer_SecondsBCD/wD771_LevelTimer_FrameCounter in range) uses .data_03_5c1b (a "low health" or special display variant). 
-; Writes 8 OAM entries as (palette, tile, bank) triplets to wCC80_ShadowOAM_HudSprites. If wD687_FlyAnimationState bit 7 is set, falls into 
-; .jp_03_5c33_HUD_BuildSprites_HealthBased (health-based tile select path)
+; Writes 8 four-byte OAM entries to wCC80_ShadowOAM_HudSprites. Each table record is three
+; bytes - X, TILE, ATTRIBUTES - and the Y byte comes from C, shared by all eight. The old
+; comment called the record (palette, tile, bank), which is wrong on all three counts.
+;
+; That shared Y is wD688_FlyAnimationPosition, so the whole HUD row slides vertically with
+; the fly popup: call_00_05c7_FlyPowerup_Update walking that byte between $88 and $A0 is
+; what animates the status bar on and off screen. In levels other than the hub C is forced
+; to $88 instead, which parks the row at its resting height.
+;
+; If wD687_FlyAnimationState bit 7 is set, jumps to .jp_03_5c33_HUD_BuildSprites_HealthBased
+; (health-based tile select path)
     ld   A, [wD688_FlyAnimationPosition]                                    ;; 03:5b5b $fa $88 $d6
     ld   C, A                                          ;; 03:5b5e $4f
     ld   DE, .data_03_5beb                             ;; 03:5b5f $11 $eb $5b
@@ -1320,9 +1329,14 @@ call_03_6499_Collectible_BuildSprites:
     inc  E                                             ;; 03:653d $1c
     jr   .jr_03_652a                                   ;; 03:653e $18 $ea
 
-call_03_6540_HUD_BuildAllSprites:
-; Top-level per-frame sprite pipeline. Calls Collectible_BuildSprites, then HUD_BuildSprites, 
-; then OAM_ClearUnusedEntries. The three-step frame sprite update
+call_03_6540_Oam_FinishFrame:
+; Closes out the frame's OAM pass, after the entity builders have already filled the
+; NPC region: collectible sprites, then the HUD row, then blank every slot the frame
+; did not use.
+;
+; Was called HUD_BuildAllSprites, which is too narrow twice over - only the middle
+; step is HUD, and it does not build all sprites, it finishes a list the entity code
+; started
     call call_03_6499_Collectible_BuildSprites                                  ;; 03:6540 $cd $99 $64
     call call_03_5b5b_HUD_BuildSprites                                  ;; 03:6543 $cd $5b $5b
     jp   call_03_6484_OAM_ClearUnusedEntries                                    ;; 03:6546 $c3 $84 $64

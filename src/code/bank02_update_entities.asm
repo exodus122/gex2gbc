@@ -334,7 +334,7 @@ call_02_6eba_Entities_UpdateAll:
     call call_00_1138_PlayQueuedSFX                                  ;; 02:6f63 $cd $38 $11
     FARCALL call_0a_7a7c_EntitySpawn_SpawnNextFromList
     call call_02_722c_EntityGfxQueue_StartNextTransfer                                  ;; 02:6f71 $cd $2c $72
-    FARCALL call_03_6540_HUD_BuildAllSprites
+    FARCALL call_03_6540_Oam_FinishFrame
     ret                                                ;; 02:6f7f $c9
     
 call_02_6f80_Entities_DrawAll:
@@ -376,7 +376,7 @@ call_02_6f80_Entities_DrawAll:
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:6fc7 $fa $00 $d3
     add  A, ENTITY_SLOT_SIZE                           ;; 02:6fca $c6 $20
     jr   NZ, .jr_02_6fa2                               ;; 02:6fcc $20 $d4
-    FARCALL call_03_6540_HUD_BuildAllSprites
+    FARCALL call_03_6540_Oam_FinishFrame
     ret                                                ;; 02:6fd9 $c9
 
 call_02_6fda_Entity_TickAction:
