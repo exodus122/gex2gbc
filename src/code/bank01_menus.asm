@@ -1130,7 +1130,7 @@ call_01_466b_MenuCmd_StageTVScreen:
     ld   A, $13                                        ;; 01:46a3 $3e $13
     jp   call_00_07a1_FarMemCopy                                    ;; 01:46a5 $c3 $a1 $07
 .data_01_46a8_MissionSelectPalette:
-    INCBIN "gfx/menus/palettes/data_01_46a8_mission_select_menu_palette.bin"
+    INCBIN "gfx/menus/palettes/palette_mission_select_menu.bin"
 
 call_01_4728_MenuCmd_SetTVNameText:
 ; MENUCMD_SUB_TV_NAME_TEXT. Points the source pointer at the current TV's name
@@ -1610,7 +1610,7 @@ call_01_49d7_MenuCmd_StageCollectibleIcon:
     ld   bc,$0018
     jp   call_00_07b0_MemCopy
 .data_01_4a0f_PauseMenuPalette:
-    INCBIN "gfx/menus/palettes/data_01_4a0f_pause_menu_palette.bin"
+    INCBIN "gfx/menus/palettes/palette_pause_menu.bin"
 
 call_01_4a8f_Text_Render:
 ; Renders a string into the wC000 staging buffer as a proportional, word-wrapped,
@@ -4172,20 +4172,23 @@ data_01_65fe_FontDescriptors:
     db   $10, $10, $10, $10, $10                       ;; 01:66a2 ?????
 .data_01_66a7_SmallFont:
 ; 8x6 glyphs, stride 12. $1F8 bytes = 42 glyphs, matching the 42-entry width table exactly
-    INCBIN ".gfx/fonts/image_001_66a7_font.bin"
+    INCBIN ".gfx/fonts/font_small.bin"
 .data_01_689f_MediumFont:
 ; 8x7 glyphs, stride 14. $23E bytes = 41 glyphs, one short of the 42-entry width table - index
 ; $29 (apostrophe) would read into data_01_6add_font. The width table still carries a $02 for
 ; it, so the entry is reachable in principle; presumably no string in this font uses one
-    INCBIN ".gfx/fonts/image_001_689f_font.bin"
+    INCBIN ".gfx/fonts/font_medium.bin"
 .data_01_6add_LargeFont:
 ; 16x11 glyphs, stride 44. $70C bytes = 41 glyphs, same one-short situation as $689F
-    INCBIN ".gfx/fonts/image_001_6add_font.bin"
+    INCBIN ".gfx/fonts/font_large.bin"
 
 data_01_71e9_PasswordFont:
-; 16x16 glyphs, stride 64. $300 bytes = 12 glyphs, and its width table (data_01_669c) has only
-; 11 entries, all $10 - a restricted set, not the full $00-$29 charset
-    INCBIN ".gfx/misc_sprites/password/image_001_71e9.bin"
+; 16x16 glyphs, stride 64. $300 bytes = 12 glyphs, and its width table
+; (.data_01_669c_PasswordFontWidths) has only 11 entries, all $10 - a restricted
+; set, not the full $00-$29 charset. The glyphs are the keyboard's key faces: a
+; dot, the four d-pad arrows twice over (grey for A, black for B), then EXIT, GO
+; and a divider bar
+    INCBIN ".gfx/misc_sprites/password/image_password_keys.bin"
 
 ; The two image tables the staging sub-handlers index. Every entry points at a blob
 ; whose first three bytes are its own header - width in tiles, height in tiles, and a
@@ -4196,34 +4199,40 @@ data_01_71e9_PasswordFont:
 ; before data_01_74ed_ImageTable2, so MENUCMD_SUB_STAGE_IMAGE1 can reach the title
 ; cursor while MENUCMD_SUB_STAGE_IMAGE2 starts at the menu cursor
 data_01_74e9_ImageTable1:
-    dw   data_01_74fd_Image_TitleCursor, data_01_7540_Image_MenuCursor                            ;; 01:74e9 ....
+    dw   data_01_74fd_Image_ArrowLeft, data_01_7540_Image_ArrowRight                            ;; 01:74e9 ....
 data_01_74ed_ImageTable2:
-    dw   data_01_7540_Image_MenuCursor, data_01_7540_Image_MenuCursor, data_01_7540_Image_MenuCursor, data_01_7b89_Image_PasswordCursor       ;; 01:74ed ??..??..
-    dw   data_01_7bcc_Image_MissionMarker, data_01_7583_Image_RemoteIcons, data_01_7706_Image_StatsIcons, data_00_3c72        ;; 01:74f5 ......??
-data_01_74fd_Image_TitleCursor:
-; 2x2 tiles - the arrow beside START / PASSWORD
+    dw   data_01_7540_Image_ArrowRight, data_01_7540_Image_ArrowRight, data_01_7540_Image_ArrowRight, data_01_7b89_Image_GexHead       ;; 01:74ed ??..??..
+    dw   data_01_7bcc_Image_Hand, data_01_7583_Image_MissionRemoteMarkers, data_01_7706_Image_RemoteIcons, data_00_3c72        ;; 01:74f5 ......??
+data_01_74fd_Image_ArrowLeft:
+; 2x2 tiles - the left page-turn arrow on the totals screen
     db   $02, $02, $00                                 ;; 01:74fd ...
-    INCBIN ".gfx/menu_sprites/image_001_7500.bin"
-data_01_7540_Image_MenuCursor:
-; 2x2 tiles - the general purpose selection arrow
+    INCBIN ".gfx/menu_sprites/image_arrow_left.bin"
+data_01_7540_Image_ArrowRight:
+; 2x2 tiles - the right page-turn arrow, and also the selection cursor every list
+; menu draws (entries 0-2 of data_01_74ed_ImageTable2 all point here)
     db   $02, $02, $00                                 ;; 01:7540 ...
-    INCBIN ".gfx/menu_sprites/image_001_7543.bin"
-data_01_7583_Image_RemoteIcons:
-; 12x2 tiles - the lit and unlit remote icons, in that order
+    INCBIN ".gfx/menu_sprites/image_arrow_right.bin"
+data_01_7583_Image_MissionRemoteMarkers:
+; 12x2 tiles - six 2x2 markers, three collected and three not. Staged at tile $E8,
+; which is where the $E8/$EC/$F0/$F4 tile ids in
+; call_01_473a_MenuCmd_SetMissionText come from
     db   $0c, $02, $00                                 ;; 01:7583 ...
-    INCBIN ".gfx/menu_sprites/image_001_7586.bin"
-data_01_7706_Image_StatsIcons:
-; 18x4 tiles - the icon strip along the totals screen
+    INCBIN ".gfx/menu_sprites/image_mission_remote_markers.bin"
+data_01_7706_Image_RemoteIcons:
+; 18x4 tiles - six 3x4 remote icons: red, silver and gold, then the same three
+; unlit $24 tiles later. Staged at tile $98, which is where the ids in
+; .data_01_48d9_RemoteIconTiles come from
     db   $12, $04, $00                                 ;; 01:7706 ...
-    INCBIN ".gfx/menu_sprites/image_001_7709.bin"
-data_01_7b89_Image_PasswordCursor:
-; 2x2 tiles - the blinking box on the password keyboard
+    INCBIN ".gfx/menu_sprites/image_remote_icons.bin"
+data_01_7b89_Image_GexHead:
+; 2x2 tiles - Gex's face. Totals screen decoration, staged as background tiles at
+; $84; never drawn as a sprite
     db   $02, $02, $00                                 ;; 01:7b89 ...
-    INCBIN ".gfx/menu_sprites/image_001_7b8c.bin"
-data_01_7bcc_Image_MissionMarker:
-; 2x2 tiles - the "remote collected" marker beside a mission line
+    INCBIN ".gfx/menu_sprites/image_gex_head.bin"
+data_01_7bcc_Image_Hand:
+; 2x2 tiles - a gecko hand print, the totals screen decoration beside the gead head
     db   $02, $02, $00                                 ;; 01:7bcc ...
-    INCBIN ".gfx/menu_sprites/image_001_7bcf.bin"
+    INCBIN ".gfx/menu_sprites/image_hand.bin"
 
 data_01_7c0f_CollectibleIconTable:
 ; One entry per level id, pointing at that level's collectible artwork - the fruit,

@@ -37,9 +37,9 @@ import zlib
 
 # basename -> (width in 8px columns, height in pixels)
 FONTS = {
-    "image_001_66a7_font": (1, 6),
-    "image_001_689f_font": (1, 7),
-    "image_001_6add_font": (2, 11),
+    "font_small": (1, 6),
+    "font_medium": (1, 7),
+    "font_large": (2, 11),
 }
 
 FONT_DIR = os.path.join("src", "gfx", "fonts")
