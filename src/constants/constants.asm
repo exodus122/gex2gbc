@@ -468,7 +468,7 @@ DEF ENTITY_MEDIA_DIMENSION_MOVING_PLATFORM   EQU $8F
 DEF ENTITY_LIST_TERMINATOR                   EQU $FF
 
 ; ------------------------------------------------------------------
-; Mission preview cutscenes (bank00_mission_preview.asm)
+; In-level cutscenes (bank00_cutscenes.asm)
 ; ------------------------------------------------------------------
 DEF CUTSCENE_SLOTS_PER_LEVEL                EQU $10 ; entries per level in the index lookup table
 DEF CUTSCENE_SLOT_MISSION_BASE              EQU $0A ; slot = this + wD627_CurrentMission
@@ -476,6 +476,23 @@ DEF CUTSCENE_NONE                           EQU $FF ; no cutscene for this level
 DEF CUTSCENE_MOVE_END                       EQU $FF ; terminator in a movement command list
 DEF CUTSCENE_MOVE_SPEED_MAX                 EQU $10 ; 16/16ths = exactly one pixel per frame
 DEF CUTSCENE_HOLD_FRAMES                    EQU $B4 ; 180 frames (3s) of dwell before returning
+
+; ------------------------------------------------------------------
+; Tile-override sequence step flags (wD77C_OverrideSequenceFlags)
+;
+; One flag byte heads every step of an override sequence, whether the sequence came from a
+; special tile or from a cutscene's animation block. BgMap_TickOverrideSequence dispatches on
+; the bits in this order: SFX (which consumes an extra argument byte from the step), then
+; REGISTER, then COLLISION, then TILES, then LOOP.
+; ------------------------------------------------------------------
+DEF OVERRIDE_STEP_LOOP                      EQU $01 ; bit 0 - run the next step in the same frame
+DEF OVERRIDE_STEP_REGISTER                  EQU $02 ; bit 1 - BgMap_RegisterOverrideRegion: commit
+                                                    ;         the rectangle to the wCD00/wCE00
+                                                    ;         slot tables so it survives a reload
+DEF OVERRIDE_STEP_COLLISION                 EQU $04 ; bit 2 - BgMap_FindAndWriteCollisionBlock
+DEF OVERRIDE_STEP_TILES                     EQU $08 ; bit 3 - BgMap_WriteOverrideTiles: draw this
+                                                    ;         step's blocks into the tilemap
+DEF OVERRIDE_STEP_SFX                       EQU $20 ; bit 5 - PlaySFX; step carries one extra byte
 
 ; ==================================================================
 ; ENTITY INSTANCE STRUCT

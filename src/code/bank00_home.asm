@@ -2552,7 +2552,7 @@ call_00_120c_SetupMusic:
 
 INCLUDE "code/bank00_bg_map.asm"
 INCLUDE "code/bank00_special_tile_scripts.asm"
-INCLUDE "code/bank00_mission_preview.asm"
+INCLUDE "code/bank00_cutscenes.asm"
 INCLUDE "code/bank00_map_init_data.asm"
 INCLUDE "code/bank00_entity_utils.asm"
 

@@ -9,8 +9,12 @@
 ; That split is visible in the data. A mission preview has a movement list and no animation;
 ; a "here is the tv" scene is usually the opposite - a fixed camera position with an
 ; animation block, or nothing at all beyond repositioning and holding for
-; CUTSCENE_HOLD_FRAMES. It is also why some scenes end by poking a tile-override slot
-; through the embedded code stubs: the scene has permanently revealed something.
+; CUTSCENE_HOLD_FRAMES. The animation block is a background tile-override sequence, in the
+; same format the special-tile runner uses; its layout is documented on
+; .data_00_2662_CutsceneScriptPointerTable. That is also where the small `ld A,$xx /
+; ld [$D7xx],A / ret` stubs scattered through the data come from - they are the sequence's
+; callback field, run at setup, and they poke an override slot because the scene has
+; permanently revealed something.
 ;
 ; The trick behind it is that there is no camera. Gex himself is teleported to the start of
 ; the shot and then *walked* along a scripted path, with the normal map window logic following
@@ -273,12 +277,39 @@ call_00_2329_Cutscene_LoadAndRun:
     db   $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff ; 1d
     db   $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff ; 1e channel z
 .data_00_2662_CutsceneScriptPointerTable:
-; Pointer table for cutscene scripts, followed by inline script data blocks. Each script block 
-; contains optional movement phase data (direction bytes, duration words) and an optional 
-; animation/dialogue phase pointer. The inline binary data at data_00_26e8–data_00_2dbc represents 
-; all level preview cutscene scripts
-; 67 entries. The three that already have labels use them; the rest are still raw addresses
-; into the script blob below, pending that blob being split up.
+; 67 entries, followed by the script blob itself at $26E8-$2DBE. Every script is the 8-byte
+; header described on call_00_2329_Cutscene_LoadAndRun, with its movement list and/or animation
+; block laid out immediately after it, so a script and its data are one contiguous run.
+;
+; The animation block is not cutscene-specific: it is an override sequence in exactly the format
+; SpecialTile_RunScript / BgMap_TickOverrideSequence consume for switches and breakable scenery.
+; Header is 8 bytes:
+;
+;   +0  dw  callback, run at setup ($0000 = none)
+;   +2  db  step count ($00 = no tile work, just run the callback)
+;   +3  db  frames per step
+;   +4  db  X offset in blocks from Gex, signed
+;   +5  db  Y offset in blocks from Gex, signed
+;   +6  db  width in blocks
+;   +7  db  height in blocks
+;
+; then one step per count: an OVERRIDE_STEP_* flag byte followed by width * height 16-bit block
+; entries - the new contents of the rectangle for that step. So a 2x2 rectangle costs 9 bytes
+; per step, and a step carrying OVERRIDE_STEP_SFX costs one more for its argument - .script_0D
+; is the only one here that does, opening with $28 (TILES|SFX) and an SFX id of $26. Every other
+; step in the blob is a plain $08, with $0A (TILES|REGISTER) on the last one of each block.
+; That last step is what makes the reveal permanent - the tiles are redrawn
+; every step, but only the last one registers the rectangle in the override slot tables, so the
+; change survives the BgMap_LoadFull on the way out of the scene.
+;
+; Note the rectangle is placed relative to *Gex*, not in map coordinates, which is why a scene
+; with an animation always teleports him to a fixed spot first: the tile edit lands wherever he
+; is standing.
+;
+; This also explains the embedded `ld A,$xx / ld [$D7xx],A / ret` stubs. They are not code the
+; runner falls into - they are the callback field, and they sit at exactly the address one past
+; the end of the step data (see .script_1D, whose steps end on $2A77, its callback address).
+;
 ; The trailing comment on each line is who refers to it, read back out of
 ; .data_00_2472_CutsceneIndexLookupTable - "mission 1/2/3" are slots $0A-$0C
     dw   .script_00    ; $00  media dimension, slot 0
@@ -350,6 +381,7 @@ call_00_2329_Cutscene_LoadAndRun:
     dw   .script_42    ; $42  mazed and confused, mission 2
 .script_00:
 ;   startX $04E0  startY $01D0  no movement  anim $26F0
+;   anim: no callback, 3 steps, 10 frames each, 2x2 blocks at (-2,-1) from Gex
     db   $e0, $04, $d0, $01, $00, $00                  ;; 00:26e8
     db   $f0, $26, $00, $00, $03, $0a, $fe, $ff        ;; 00:26ee ????????
     db   $02, $02, $08, $ee, $01, $ef, $01, $fe        ;; 00:26f6 ????????
@@ -358,6 +390,7 @@ call_00_2329_Cutscene_LoadAndRun:
     db   $01, $8c, $01, $8d, $01                       ;; 00:270e
 .script_01:
 ;   startX $03A0  startY $02F0  no movement  anim $271B
+;   anim: no callback, 3 steps, 10 frames each, 2x2 blocks at (-2,-1) from Gex
     db   $a0, $03, $f0                                 ;; 00:2713
     db   $02, $00, $00, $1b, $27, $00, $00, $03        ;; 00:2716 ????????
     db   $0a, $fe, $ff, $02, $02, $08, $ea, $01        ;; 00:271e ????????
@@ -366,6 +399,7 @@ call_00_2329_Cutscene_LoadAndRun:
     db   $78, $01, $79, $01, $88, $01, $89, $01        ;; 00:2736 ????????
 .script_02:
 ;   startX $0620  startY $02F0  no movement  anim $2746
+;   anim: no callback, 3 steps, 10 frames each, 2x2 blocks at (-2,-1) from Gex
     db   $20, $06, $f0, $02, $00, $00, $46, $27        ;; 00:273e
     db   $00, $00, $03, $0a, $fe, $ff, $02, $02        ;; 00:2746 ????????
     db   $08, $e6, $01, $e7, $01, $f6, $01, $f7        ;; 00:274e ????????
@@ -374,6 +408,7 @@ call_00_2329_Cutscene_LoadAndRun:
     db   $01, $6d, $01                                 ;; 00:2766
 .script_03:
 ;   startX $08A0  startY $02F0  no movement  anim $2771
+;   anim: no callback, 3 steps, 10 frames each, 2x2 blocks at (-2,-1) from Gex
     db   $a0, $08, $f0, $02, $00                       ;; 00:2769
     db   $00, $71, $27, $00, $00, $03, $0a, $fe        ;; 00:276e ????????
     db   $ff, $02, $02, $08, $be, $01, $bf, $01        ;; 00:2776 ????????
@@ -431,6 +466,9 @@ call_00_2329_Cutscene_LoadAndRun:
     db   $00                                           ;; 00:2814
 .script_0D:
 ;   startX $00BC  startY $0340  no movement  anim $281D
+;   anim: no callback, 2 steps, 60 frames each, 2x1 blocks at (0,0) from Gex.
+;   The only block in the file with OVERRIDE_STEP_SFX - step 1's flags are $28 and it carries
+;   an SFX id of $26 before its block entries
     db   $bc, $00, $40, $03, $00, $00, $1d             ;; 00:2815
     db   $28, $00, $00, $02, $3c, $00, $00, $02        ;; 00:281c ????????
     db   $01, $28, $26, $f4, $01, $f5, $01, $0a        ;; 00:2824 ????????
@@ -491,6 +529,7 @@ call_00_2329_Cutscene_LoadAndRun:
     db   $b0, $07, $00, $00, $00, $00                  ;; 00:28ac
 .script_17:
 ;   startX $09C0  startY $00B0  no movement  anim $28BA
+;   anim: no callback, 2 steps, 60 frames each, 2x2 blocks at (-1,-1) from Gex
     db   $c0, $09                                      ;; 00:28b2
     db   $b0, $00, $00, $00, $ba, $28, $00, $00        ;; 00:28b4 ????????
     db   $02, $3c, $ff, $ff, $02, $02, $08, $f4        ;; 00:28bc ????????
@@ -498,6 +537,7 @@ call_00_2329_Cutscene_LoadAndRun:
     db   $e0, $01, $e1, $01, $e2, $01, $e3, $01        ;; 00:28cc ????????
 .script_18:
 ;   startX $0980  startY $0690  no movement  anim $28DC
+;   anim: no callback, 2 steps, 60 frames each, 2x2 blocks at (-1,-1) from Gex
     db   $80, $09, $90, $06, $00, $00, $dc, $28        ;; 00:28d4
     db   $00, $00, $02, $3c, $ff, $ff, $02, $02        ;; 00:28dc ????????
     db   $08, $f4, $01, $f5, $01, $f6, $01, $f7        ;; 00:28e4 ????????
@@ -505,6 +545,7 @@ call_00_2329_Cutscene_LoadAndRun:
     db   $e3, $01                                      ;; 00:28f4
 .script_19:
 ;   startX $0100  startY $0550  no movement  anim $28FE
+;   anim: no callback, 2 steps, 60 frames each, 2x2 blocks at (-1,-1) from Gex
     db   $00, $01, $50, $05, $00, $00                  ;; 00:28f6
     db   $fe, $28, $00, $00, $02, $3c, $ff, $ff        ;; 00:28fc ????????
     db   $02, $02, $08, $f4, $01, $f5, $01, $f6        ;; 00:2904 ????????
@@ -512,6 +553,8 @@ call_00_2329_Cutscene_LoadAndRun:
     db   $e2, $01, $e3, $01                            ;; 00:2914
 .script_1A:
 ;   startX $07A0  startY $00F0  no movement  anim $2920
+;   anim: no callback, 13 steps, 10 frames each, 2x2 blocks at (0,0) from Gex - the longest
+;   block in the file at 117 bytes of step data
     db   $a0, $07, $f0, $00                            ;; 00:2918
     db   $00, $00, $20, $29, $00, $00, $0d, $0a        ;; 00:291c ????????
     db   $00, $00, $02, $02, $08, $ad, $01, $ad        ;; 00:2924 ????????
@@ -532,6 +575,7 @@ call_00_2329_Cutscene_LoadAndRun:
     db   $01                                           ;; 00:299c
 .script_1B:
 ;   startX $0D20  startY $0690  no movement  anim $29A5
+;   anim: no callback, 7 steps, 10 frames each, 1x2 blocks at (0,0) from Gex
     db   $20, $0d, $90, $06, $00, $00, $a5             ;; 00:299d
     db   $29, $00, $00, $07, $0a, $00, $00, $01        ;; 00:29a4 ????????
     db   $02, $08, $a5, $01, $a4, $01, $08, $a6        ;; 00:29ac ????????
@@ -541,6 +585,8 @@ call_00_2329_Cutscene_LoadAndRun:
     db   $ad, $01, $a7, $01                            ;; 00:29cc
 .script_1C:
 ;   startX $09E0  startY $0210  no movement  anim $29D8
+;   anim: no callback, 13 steps, 10 frames each, 2x2 blocks at (0,0) from Gex - byte for byte
+;   the same sequence as .script_1A, just duplicated rather than shared
     db   $e0, $09, $10, $02                            ;; 00:29d0
     db   $00, $00, $d8, $29, $00, $00, $0d, $0a        ;; 00:29d4 ????????
     db   $00, $00, $02, $02, $08, $ad, $01, $ad        ;; 00:29dc ????????
@@ -561,6 +607,8 @@ call_00_2329_Cutscene_LoadAndRun:
     db   $01                                           ;; 00:2a54
 .script_1D:
 ;   startX $0B00  startY $06B0  no movement  anim $2A5D
+;   anim: callback $2A77, 2 steps, 60 frames each, 2x2 blocks at (-1,0) from Gex. The step data
+;   ends exactly on $2A77, so the `ld A,$EF / ld [$D794],A / ret` below is the callback body
     db   $00, $0b, $b0, $06, $00, $00, $5d             ;; 00:2a55
     db   $2a, $77, $2a, $02, $3c, $ff, $00, $02        ;; 00:2a5c ????????
     db   $02, $08, $03, $00, $ce, $01, $11, $00        ;; 00:2a64 ????????
@@ -569,6 +617,8 @@ call_00_2329_Cutscene_LoadAndRun:
     db   $c9                                           ;; 00:2a7c
 .script_1E:
 ;   startX $0CE0  startY $06B0  no movement  anim $2A85
+;   anim: no callback, 2 steps, 60 frames each, 2x2 blocks at (-2,0) from Gex - the same two
+;   steps as .script_1D one block over, but with no callback to poke an override slot
     db   $e0, $0c, $b0, $06, $00, $00, $85             ;; 00:2a7d
     db   $2a, $00, $00, $02, $3c, $fe, $00, $02        ;; 00:2a84 ????????
     db   $02, $08, $03, $00, $ce, $01, $11, $00        ;; 00:2a8c ????????
@@ -605,6 +655,8 @@ call_00_2329_Cutscene_LoadAndRun:
     db   $10, $00, $02, $40, $80, $00, $ff             ;; 00:2aec
 .script_23:
 ;   startX $0640  startY $0970  no movement  anim $2AFB
+;   anim: callback $2B1C, 5 steps, 10 frames each, 2x1 blocks at (-1,0) from Gex. 25 bytes of
+;   step data from $2B03 lands exactly on the callback at $2B1C
     db   $40                                           ;; 00:2af3
     db   $06, $70, $09, $00, $00, $fb, $2a, $1c        ;; 00:2af4 ????????
     db   $2b, $05, $0a, $ff, $00, $02, $01, $08        ;; 00:2afc ????????
@@ -616,6 +668,8 @@ call_00_2329_Cutscene_LoadAndRun:
     db   $3e, $ef, $ea, $94, $d7, $c9                  ;; 00:2b1c
 .script_24:
 ;   startX $0800  startY $0CB0  no movement  anim $2B2A
+;   anim: callback $2B4B, 5 steps, 10 frames each, 2x1 blocks at (-1,0) from Gex - the same
+;   sequence as .script_23, with the callback writing $D799 instead of $D794
     db   $00, $08                                      ;; 00:2b22
     db   $b0, $0c, $00, $00, $2a, $2b, $4b, $2b        ;; 00:2b24 ????????
     db   $05, $0a, $ff, $00, $02, $01, $08, $99        ;; 00:2b2c ????????
@@ -625,6 +679,7 @@ call_00_2329_Cutscene_LoadAndRun:
     db   $ef, $ea, $99, $d7, $c9                       ;; 00:2b4c ; ...here writing $D799
 .script_25:
 ;   startX $0B20  startY $0D30  no movement  anim $2B59
+;   anim: no callback, 2 steps, 60 frames each, 2x1 blocks at (-1,0) from Gex
     db   $20, $0b, $30                                 ;; 00:2b51
     db   $0d, $00, $00, $59, $2b, $00, $00, $02        ;; 00:2b54 ????????
     db   $3c, $ff, $00, $02, $01, $08, $94, $01        ;; 00:2b5c ????????
@@ -728,6 +783,7 @@ call_00_2329_Cutscene_LoadAndRun:
     db   $00, $00, $00, $00                            ;; 00:2c7c
 .script_37:
 ;   startX $0280  startY $0190  no movement  anim $2C88
+;   anim: no callback, 2 steps, 60 frames each, 2x2 blocks at (-1,-1) from Gex
     db   $80, $02, $90, $01                            ;; 00:2c80
     db   $00, $00, $88, $2c, $00, $00, $02, $3c        ;; 00:2c84 ????????
     db   $ff, $ff, $02, $02, $08, $f4, $01, $f5        ;; 00:2c8c ????????
@@ -735,6 +791,7 @@ call_00_2329_Cutscene_LoadAndRun:
     db   $e1, $01, $e2, $01, $e3, $01                  ;; 00:2c9c
 .script_38:
 ;   startX $0D40  startY $00B0  no movement  anim $2CAA
+;   anim: no callback, 2 steps, 60 frames each, 2x2 blocks at (-1,-1) from Gex
     db   $40, $0d                                      ;; 00:2ca2
     db   $b0, $00, $00, $00, $aa, $2c, $00, $00        ;; 00:2ca4 ????????
     db   $02, $3c, $ff, $ff, $02, $02, $08, $f4        ;; 00:2cac ????????
@@ -742,6 +799,7 @@ call_00_2329_Cutscene_LoadAndRun:
     db   $e0, $01, $e1, $01, $e2, $01, $e3, $01        ;; 00:2cbc ????????
 .script_39:
 ;   startX $0300  startY $0190  no movement  anim $2CCC
+;   anim: no callback, 2 steps, 60 frames each, 2x2 blocks at (-1,-1) from Gex
     db   $00, $03, $90, $01, $00, $00, $cc, $2c        ;; 00:2cc4
     db   $00, $00, $02, $3c, $ff, $ff, $02, $02        ;; 00:2ccc ????????
     db   $08, $f4, $01, $f5, $01, $f6, $01, $f7        ;; 00:2cd4 ????????
@@ -749,6 +807,9 @@ call_00_2329_Cutscene_LoadAndRun:
     db   $e3, $01                                      ;; 00:2ce4
 .script_3A:
 ;   startX $0EE0  startY $05D0  no movement  anim $2CFE
+;   anim: no callback, 9 steps, 10 frames each, 1x4 blocks at (0,-1) from Gex - a tall thin
+;   column, and the reason three scripts can share it: it is positioned relative to Gex, so the
+;   same 81 bytes of step data play at three different spots in the level
     db   $e0, $0e, $d0, $05, $00, $00                  ;; 00:2ce6
     db   $fe, $2c                                      ;; 00:2cec
 .script_3B:

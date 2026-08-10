@@ -1186,12 +1186,13 @@ wD77B_OverrideVRAMWritePending:
 ; gates BgMap_TickOverrideAnimation and SpecialTile_OnPlayerAttack
     ds 1                                               ;; d77b
 wD77C_OverrideSequenceFlags:
-; Flags for current sequence step:
-; bit 0 = loop immediately,
-; bit 1 = call UpdateCollisionFlags,
-; bit 2 = call FindAndWriteOverrideBlock,
-; bit 3 = call WriteOverrideTiles,
-; bit 5 = call call_00_113e_PlaySFX before proceeding
+; Flags for current sequence step - see the OVERRIDE_STEP_* constants:
+; bit 0 = loop immediately (OVERRIDE_STEP_LOOP),
+; bit 1 = call call_00_1ec9_BgMap_RegisterOverrideRegion (OVERRIDE_STEP_REGISTER),
+; bit 2 = call call_00_1f05_BgMap_FindAndWriteCollisionBlock (OVERRIDE_STEP_COLLISION),
+; bit 3 = call call_00_169f_BgMap_WriteOverrideTiles (OVERRIDE_STEP_TILES),
+; bit 5 = call call_00_113e_PlaySFX before proceeding; the step carries one extra argument
+;         byte after the flags for this (OVERRIDE_STEP_SFX)
     ds 1                                               ;; d77c
 wD77D_OverrideSequenceStepsRemaining:
 ; Countdown of remaining steps in the active tile animation sequence; zero = sequence idle
