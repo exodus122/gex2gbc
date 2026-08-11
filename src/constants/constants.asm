@@ -776,14 +776,35 @@ DEF FONT_BYTES_PER_ROW                      EQU 2   ; 2bpp: plane 0 then plane 1
 ;
 ;   BLOCKMAP  MAPDATA_BLOCKMAP_BANK, banks $28-$33. A grid of block ids, one byte
 ;             per block, the level's actual layout.
-;   BLOCKSET  MAPDATA_BLOCKSET_COLLISION_BANK. What each id means: 8 bytes giving
-;             the block's 4x2 tile ids. Read from page $40, or $50 when the alt
-;             blockset flag is set. The collision table shares the bank.
+;   BLOCKSET  MAPDATA_BLOCKSET_COLLISION_BANK. What each id means - see the layout
+;             below. Both the graphics and the collision live in this one bank.
 ;   TILEMAP   the result, written into VRAM a strip at a time as the camera moves.
 ;
 ; So "blockmap" is the arrangement and "blockset" is the vocabulary - the file names
 ; in main.asm follow that split. "map" on its own is avoided here because it already
 ; means a level id (MAP_*) and the per-level record (MapData).
+;
+; A BLOCK IS 4x4 TILES - 32x32 pixels, which is why SPAWN_UNITS_PER_BLOCK is $20 on
+; both axes and why a 128x128 block level is 4096 pixels square. A strip is 6 blocks,
+; 192 pixels, one block more than the screen needs.
+;
+; The blockset bank is $4000 bytes, four regions of 16 pages, every one of them a
+; 256-entry array indexed by BLOCK ID. Sixteen pages per region because a block has
+; sixteen tiles: page $x0 is the block's top-left tile, $x1 the one to its right, and
+; so on across then down.
+;
+;   $4000-$4FFF  tile ids                $6000-$6FFF  tile types (collision)
+;   $5000-$5FFF  alt blockset tile ids   $7000-$7FFF  alt blockset tile types
+;
+; The strip loaders read graphics and collision in the same pass, which is what those
+; bit-twiddles on B are doing: `set 4, B` picks the alt half ($40 -> $50) and
+; `set 5, B` swaps graphics for collision ($40 -> $60). `inc B` steps one tile right,
+; `add A, $04` steps one tile row down.
+;
+; The collision half is what makes a tile solid, deadly, climbable or smashable - see
+; TILE_TYPE_* and data_00_1ff6_TileHitScriptTable. Worth being clear that a block id
+; and a tile type are unrelated numbering schemes that only happen to share 0-255;
+; where the shipped blocksets make them match, that is authoring convention.
 ;
 ; ------------------------------------------------------------------
 ; TWO SEPARATE SYSTEMS ACT ON THE BACKGROUND MAP
@@ -1345,9 +1366,18 @@ DEF  TILE_TYPE_SPRING_LOW                     EQU $CE
 DEF  TILE_TYPE_SPRING_HIGH                    EQU $CF
 DEF  TILE_TYPE_TRAMPOLINE_LOW                 EQU $F0 ; only springs while the circuit power-up is active
 DEF  TILE_TYPE_TRAMPOLINE_HIGH                EQU $F1
+; The two trampoline values are the only place two systems claim the same tile type.
+; $F0 is also entry 15 of data_00_1ff6_TileHitScriptTable, the respawning fly tv, and
+; both readers are live: Player_GetJumpVelocity when Gex stands on it, TailSpin when he
+; whips it. In practice they do not meet - the Circuit Central blockset points blocks
+; $10-$17 at $F0 for the trampolines while the Toon TV blockset points block $9F at it
+; for the tv, and the trampoline branch is gated on the circuit power-up timer, which is
+; zero outside Circuit Central. Whipping a trampoline there has not been tested
+
 ; Tile types $C0 and up are the "attackable" scenery (crates, switches, cages).
 ; PlayerAction_TailSpin tests them in complement form: it does cpl then cp $40,
-; which is true exactly when the original tile type is >= $C0
+; which is true exactly when the original tile type is >= $C0. The complement is then
+; the index into data_00_1ff6_TileHitScriptTable, so entry n there is tile type $FF - n
 DEF  TILE_TYPE_INTERACTIVE_MIN                EQU $C0
 DEF  TILE_TYPE_INTERACTIVE_MIN_CPL            EQU $40 ; 256 - TILE_TYPE_INTERACTIVE_MIN
 

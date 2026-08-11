@@ -137,14 +137,50 @@ call_00_1f80_TileHitScript_Run:
     call NZ, call_00_10bd_JumpHL                              ;; 00:1ff2 $c4 $bd $10
     ret                                                ;; 00:1ff5 $c9
 data_00_1ff6_TileHitScriptTable:
-; Sparse pointer table of 63 entries (indexed by inverted tile type x 2), running from $1FF6 up to
-; the first script at $2074 - 126 bytes, which is what fixes the count. Null entries ($0000) mean the
-; tile is non-interactive when attacked; non-null entries point to that tile type's hit script.
-; The labels below say which is which, so no index list is repeated here.
+; Sparse pointer table of 63 entries, running from $1FF6 up to the first script at $2074 - 126
+; bytes, which is what fixes the count. Null entries ($0000) mean nothing happens when that tile
+; type is attacked, which is most of them.
 ;
-; Note that scripts come in pairs for multi-block objects: the two halves get separate table entries
-; whose only difference is the x/y offset, so that hitting either half places the rectangle over the
-; whole object. CountedBreakable at 5 and 10, and Breakable_Left/RightTile at 7 and 8, are examples.
+; ------------------------------------------------------------------
+; WHAT INDEXES THIS TABLE - it is the COLLISION TILE TYPE, never the block id
+; ------------------------------------------------------------------
+; PlayerAction_TailSpin reads wD764_TileTypeBehindGexsUpperBody, complements it, and only calls in
+; when the result is under TILE_TYPE_INTERACTIVE_MIN_CPL - so the interactive range is tile type
+; $C0 and up. TileHit_OnPlayerAttack then uses that complement x 2 as the offset into this table,
+; which is why the entries run downward from $FF and why entry n is tile type $FF - n.
+;
+; The tile type is a property of the BLOCKSET, not of the blockmap. A blockset bank is four
+; regions of 16 pages, all indexed by block id:
+;
+;   $4000-$4FFF  tile ids            $6000-$6FFF  tile types  <- this table's index
+;   $5000-$5FFF  alt blockset tiles  $7000-$7FFF  alt blockset tile types
+;
+; The strip loaders walk both at once - `set 5, B` flips $40 to $60, which is the same block id
+; read as graphics and then as collision. Sixteen pages because a block is 4x4 tiles, so each
+; block carries sixteen tile types and an object can occupy part of a block.
+;
+; So a block id and a tile type are unrelated numbering schemes that happen to share 0-255.
+; Reading the shipped blocksets:
+;
+;   $FB-$FF are block id == tile type in every blockset - the checkpoint tv and the four fly tvs.
+;   That is an authoring convention for the last five block ids, not something the engine needs.
+;
+;   Nothing else matches. Scream TV reaches tile type $F5 from block $E7 and $F9 from block $CC;
+;   Kung Fu reaches the cannons ($C6/$C7) from blocks $B7/$BD; Circuit Central points fourteen
+;   different block ids at just two tile types.
+;
+;   Every interactive tile type in those blocksets lives in the ALT half ($7000-$7FFF). The
+;   normal half carries none at all, which is why smashable objects always look like alt
+;   blockset blocks.
+;
+; Note also that tile types are not private to this system. $F0 below is also
+; TILE_TYPE_TRAMPOLINE_LOW, read by Player_GetJumpVelocity when Gex stands on it
+; ------------------------------------------------------------------
+;
+; Scripts come in pairs for multi-block objects: the two halves get separate table entries whose
+; only difference is the x/y offset, so that hitting either half places the rectangle over the
+; whole object. The five tvs pair $FF-$FB with $C5-$C1, CountedBreakable pairs $FA with $F5, and
+; Breakable_Left/RightTile pairs $F7 with $F8.
 ;
 ; Every script below is written with the shared block patch macros from macros.asm -
 ; blockpatch_header, blockpatch_step, blockpatch_sfx, blockpatch_cells - which are the same ones
