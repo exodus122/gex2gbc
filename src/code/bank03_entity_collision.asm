@@ -109,7 +109,7 @@ call_03_4c76_EntityCollision_Dispatch:
     ld   C, [HL]                                       ;; 03:4cf2 $4e
     inc  L                                             ;; 03:4cf3 $2c
     ld   B, [HL]                                       ;; 03:4cf4 $46
-    call call_00_39f5_Entity_GetSecondaryDataPtr                                  ;; 03:4cf5 $cd $f5 $39
+    call call_00_39f5_Entity_GetParticlesPtr                                  ;; 03:4cf5 $cd $f5 $39
     ld   L, E                                          ;; 03:4cf8 $6b
     ld   H, D                                          ;; 03:4cf9 $62
     ld   A, $08                                        ;; 03:4cfa $3e $08
@@ -407,7 +407,7 @@ call_03_4c76_EntityCollision_Dispatch:
     ld   a,[hl]
     add  a,$08
     ld   b,a
-    call call_00_39f5_Entity_GetSecondaryDataPtr
+    call call_00_39f5_Entity_GetParticlesPtr
     ld   l,e
     ld   h,d
     ld   a,$08

@@ -209,53 +209,67 @@ wD33B_SpawningEntityId:
 ; data_0a_75fd_EntityAttributeTable
     ds 1                                             ;; d33b
 
-wD33C:
-    ds 33
+; ------------------------------------------------------------------
+; Entity particle effects - two blocks per entity slot, reached through
+; data_00_39c0_EntityEffectBuffers. The sprite lists run $D33C-$D443 and the particle
+; buffers $D444-$D583, contiguously, one after the other.
+;
+; SPRITE LIST: a count byte then up to ENTITY_PARTICLE_COUNT OAM records
+; (Y, X, tile, attributes). Written by the per-effect builders in bank03_oam_build.asm
+; and drawn by the SPRITE_FLAG_EMBEDDED_DATA path
+; ------------------------------------------------------------------
+wD33C_Entity_SpriteList0:
+    ds ENTITY_SPRITE_LIST_SIZE
 
-wD35D:
-    ds 33
+wD35D_Entity_SpriteList1:
+    ds ENTITY_SPRITE_LIST_SIZE
 
-wD37E:
-    ds 33
+wD37E_Entity_SpriteList2:
+    ds ENTITY_SPRITE_LIST_SIZE
 
-wD39F:
-    ds 33
+wD39F_Entity_SpriteList3:
+    ds ENTITY_SPRITE_LIST_SIZE
 
-wD3C0:
-    ds 33
+wD3C0_Entity_SpriteList4:
+    ds ENTITY_SPRITE_LIST_SIZE
 
-wD3E1:
-    ds 33
+wD3E1_Entity_SpriteList5:
+    ds ENTITY_SPRITE_LIST_SIZE
 
-wD402:
-    ds 33
+wD402_Entity_SpriteList6:
+    ds ENTITY_SPRITE_LIST_SIZE
 
-wD423:
-    ds 33
+wD423_Entity_SpriteList7:
+    ds ENTITY_SPRITE_LIST_SIZE
 
-wD444:
-    ds 40
+; PARTICLES: ENTITY_PARTICLE_COUNT records of ENTITY_PARTICLE_RECORD_SIZE - position
+; and velocity per particle. Started by call_00_3a23_Entity_StartParticleEffect, ticked
+; by call_00_3b8d_Entity_TickParticles, read by both the sprite builders and the
+; per-particle hitbox checks in bank03_entity_collision.asm. Field offsets are the
+; PARTICLE_FIELD_* constants
+wD444_Entity_Particles0:
+    ds ENTITY_PARTICLES_SIZE
 
-wD46C:
-    ds 40
+wD46C_Entity_Particles1:
+    ds ENTITY_PARTICLES_SIZE
 
-wD494:
-    ds 40
+wD494_Entity_Particles2:
+    ds ENTITY_PARTICLES_SIZE
 
-wD4BC:
-    ds 40
+wD4BC_Entity_Particles3:
+    ds ENTITY_PARTICLES_SIZE
 
-wD4E4:
-    ds 40
+wD4E4_Entity_Particles4:
+    ds ENTITY_PARTICLES_SIZE
 
-wD50C:
-    ds 40
+wD50C_Entity_Particles5:
+    ds ENTITY_PARTICLES_SIZE
 
-wD534:
-    ds 40
+wD534_Entity_Particles6:
+    ds ENTITY_PARTICLES_SIZE
 
-wD55C:
-    ds 40
+wD55C_Entity_Particles7:
+    ds ENTITY_PARTICLES_SIZE
 
 wD584_CollisionFlagsPrev:
 ; copy of the value that wD585_CollisionFlags had at the start of the frame

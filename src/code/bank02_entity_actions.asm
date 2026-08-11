@@ -391,7 +391,7 @@ data_02_51b3:                        ;; ENTITY_MEDIA_DIMENSION_MOVING_PLATFORM
     dw   call_02_6df1_EntityAction_MediaDimensionMovingPlatform_Update, data_02_7cc8
 
 call_02_51b7_EntityAction_CollectibleSpawn_Update:
-    call call_00_3b8d_Entity_TickAnimationFrames                                  ;; 02:51b7 $cd $8d $3b
+    call call_00_3b8d_Entity_TickParticles                                  ;; 02:51b7 $cd $8d $3b
     push AF                                            ;; 02:51ba $f5
     FARCALL call_03_6584_Entity_BuildSprites_CollectibleSpawn
     jr   NZ, .jr_02_51cc                               ;; 02:51c6 $20 $04
@@ -523,7 +523,7 @@ call_02_52aa_EntityAction_Unk02_Update:
     ret  
 
 call_02_52ab_EntityAction_ParticleBurst_Update:
-    call call_00_3b8d_Entity_TickAnimationFrames                                  ;; 02:52ab $cd $8d $3b
+    call call_00_3b8d_Entity_TickParticles                                  ;; 02:52ab $cd $8d $3b
     jr   Z, .jr_02_52bc                                ;; 02:52ae $28 $0c
     FARCALL call_03_65f9_Entity_BuildSprites_ParticleBurst
     ret  NZ                                            ;; 02:52bb $c0
@@ -546,7 +546,7 @@ call_02_52ab_EntityAction_ParticleBurst_Update:
     ld   A, $01                                        ;; 02:52db $3e $01
     ld   [HL], A                                       ;; 02:52dd $77
     ld   C, $02                                        ;; 02:52de $0e $02
-    call call_00_3a23_Entity_LoadAnimationData                                  ;; 02:52e0 $cd $23 $3a
+    call call_00_3a23_Entity_StartParticleEffect                                  ;; 02:52e0 $cd $23 $3a
     xor  A, A                                          ;; 02:52e3 $af
     jp   call_02_7102_Entity_SetAction                                  ;; 02:52e4 $c3 $02 $71
 
@@ -800,12 +800,12 @@ call_02_545b_EntityAction_FloatingSkull_unk2:
 
 call_02_5464_EntityAction_FloatingSkullProjectile_unk0:
     ld   c,$06
-    call call_00_3a23_Entity_LoadAnimationData
+    call call_00_3a23_Entity_StartParticleEffect
     ld   a,$01
     jp   call_02_7102_Entity_SetAction
 
 call_02_546e_EntityAction_FloatingSkullProjectile_unk1:
-    call call_00_3b8d_Entity_TickAnimationFrames
+    call call_00_3b8d_Entity_TickParticles
     jp   z,call_00_3931_Entity_DeactivateSelf
     FARCALL call_03_6549_Entity_BuildSprites_FloatingSkullProjectile
     ret  
@@ -2067,10 +2067,10 @@ call_02_5d48_EntityAction_FallingBoulder_unk2:
     ld   a,$03
     call call_02_7102_Entity_SetAction
     ld   c,$04
-    jp   call_00_3a23_Entity_LoadAnimationData
+    jp   call_00_3a23_Entity_StartParticleEffect
 
 call_02_5d5b_EntityAction_FallingBoulder_unk3:
-    call call_00_3b8d_Entity_TickAnimationFrames
+    call call_00_3b8d_Entity_TickParticles
     ld   a,$00
     jp   z,call_02_7102_Entity_SetAction
     FARCALL call_03_65b8_Entity_BuildSprites_FallingBoulder
@@ -2135,12 +2135,12 @@ call_02_5dd3_EntityAction_FirePlant_unk2:
 
 call_02_5ddc_EntityAction_FirePlantProjectiles_unk0:
     ld   c,$06
-    call call_00_3a23_Entity_LoadAnimationData
+    call call_00_3a23_Entity_StartParticleEffect
     ld   a,$01
     jp   call_02_7102_Entity_SetAction
 
 call_02_5de6_EntityAction_FirePlantProjectiles_unk1:
-    call call_00_3b8d_Entity_TickAnimationFrames
+    call call_00_3b8d_Entity_TickParticles
     jp   z,call_00_3931_Entity_DeactivateSelf
     FARCALL call_03_663a_Entity_BuildSprites_FirePlantProjectiles
     ret  
@@ -2841,10 +2841,10 @@ call_02_635d_EntityAction_Jar_unk0:
     ld   a,$01
     call call_02_7102_Entity_SetAction
     ld   c,$05
-    jp   call_00_3a23_Entity_LoadAnimationData
+    jp   call_00_3a23_Entity_StartParticleEffect
 
 call_02_6375_EntityAction_Jar_unk1:
-    call call_00_3b8d_Entity_TickAnimationFrames
+    call call_00_3b8d_Entity_TickParticles
     jp   z,call_00_3985_Entity_ParticleBurstInit
     FARCALL call_03_6675_Entity_BuildSprites_Jar
     ret  

@@ -931,6 +931,39 @@ DEF ENTITY_FIELD_SPRITE_FLAGS               EQU $0A
     DEF SPRITE_FLAG_ANIM_ENDED            EQU $04
     DEF SPRITE_FLAG_LOOP_LAST_FRAME       EQU $02
     DEF SPRITE_FLAG_EMBEDDED_DATA         EQU $01
+
+; ------------------------------------------------------------------
+; Entity particle effects (bank00_entity_utils.asm)
+;
+; Each entity slot owns a particle buffer (the simulation) and a sprite list buffer
+; (the OAM records built from it). See the header above
+; data_00_39c0_EntityEffectBuffers
+; ------------------------------------------------------------------
+DEF ENTITY_PARTICLE_COUNT                   EQU 8
+DEF ENTITY_PARTICLE_RECORD_SIZE             EQU 5
+DEF ENTITY_PARTICLES_SIZE                   EQU ENTITY_PARTICLE_COUNT * ENTITY_PARTICLE_RECORD_SIZE
+DEF ENTITY_SPRITE_RECORD_SIZE               EQU 4   ; Y, X, tile, attributes
+DEF ENTITY_SPRITE_LIST_SIZE                 EQU 1 + ENTITY_PARTICLE_COUNT * ENTITY_SPRITE_RECORD_SIZE
+
+DEF PARTICLE_FIELD_FLAGS                    EQU 0
+DEF PARTICLE_FIELD_YVELOCITY                EQU 1
+DEF PARTICLE_FIELD_YOFFSET                  EQU 2
+DEF PARTICLE_FIELD_XSPEED                   EQU 3
+DEF PARTICLE_FIELD_XOFFSET                  EQU 4
+
+DEF PARTICLE_ALIVE_BIT                      EQU 0 ; tested by Entity_TickParticles
+DEF PARTICLE_VISIBLE_BIT                    EQU 7 ; tested instead by some builders
+DEF PARTICLE_YVELOCITY_MIN                  EQU $C0 ; terminal velocity
+
+; Arguments to call_00_3a23_Entity_StartParticleEffect - index into
+; .data_00_3a67_ParticlePatterns
+DEF PARTICLE_PATTERN_NONE                   EQU 0 ; all zeros, spawns nothing
+DEF PARTICLE_PATTERN_BURST                  EQU 1 ; 8 shards, 4 left and 4 right
+DEF PARTICLE_PATTERN_BURST_SMALL            EQU 2 ; only 3 of the 8 records are used
+DEF PARTICLE_PATTERN_UNUSED_3               EQU 3
+DEF PARTICLE_PATTERN_FALLING_BOULDER        EQU 4
+DEF PARTICLE_PATTERN_JAR_BURST              EQU 5
+DEF PARTICLE_PATTERN_MULTI_PROJECTILE       EQU 6
 DEF ENTITY_FIELD_SPRITE_FRAME_COUNTER_MAX   EQU $0B ; reload for $06 - the animation's speed
 DEF ENTITY_FIELD_SPRITE_COUNTER_MAX         EQU $0C ; number of frames in the sequence
 DEF ENTITY_FIELD_FACING_FLAGS               EQU $0D ; OR'd into the OAM attribute byte; bit 5 = FACING_LEFT (X flip)

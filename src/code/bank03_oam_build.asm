@@ -426,7 +426,7 @@ call_03_5ebf_Entity_BuildSprites:
     bit  SPRITE_FLAG_INVISIBLE_BIT, A                      ;; 03:5f59 $cb $5f
     jp   NZ, call_03_4c76_EntityCollision_Dispatch                                ;; 03:5f5b $c2 $76 $4c
     bit  SPRITE_FLAG_EMBEDDED_DATA_BIT, A                ;; 03:5f5e $cb $47
-    jp   NZ, .jp_03_6451_Entity_BuildSprites_PrimaryData                               ;; 03:5f60 $c2 $51 $64
+    jp   NZ, .jp_03_6451_Entity_BuildSprites_SpriteList                               ;; 03:5f60 $c2 $51 $64
     bit  SPRITE_FLAG_STREAMS_OWN_GFX_BIT, A                 ;; 03:5f63 $cb $7f
     jr   NZ, .jr_03_5fcb_Entity_BuildSprites_FacingBased                               ;; 03:5f65 $20 $64
     bit  SPRITE_FLAG_LAYOUT_BY_ACTION_BIT, A                ;; 03:5f67 $cb $67
@@ -898,12 +898,19 @@ call_03_5ebf_Entity_BuildSprites:
     db   $00, $00, $f8, $08, $00, $00, $00, $0c
     db   $00, $10, $f8, $0a, $00, $10, $00, $0e
     db   $00
-.jp_03_6451_Entity_BuildSprites_PrimaryData:
-; Sprite path for entities with SPRITE_FLAG_EMBEDDED_DATA set. Reads sprite records directly from the
-; entity's primary data pointer (Entity_GetPrimaryDataPtr). First byte is tile count; 
-; if zero, skips to collision dispatch. Each 4-byte record: (Y offset, X offset, tile, attr). 
-; Writes into OAM buffer. Used for entities with fully custom/embedded sprite data rather than a shared table
-    call call_00_39e0_Entity_GetPrimaryDataPtr                                  ;; 03:6451 $cd $e0 $39
+.jp_03_6451_Entity_BuildSprites_SpriteList:
+; The generic draw for SPRITE_FLAG_EMBEDDED_DATA entities: copy the sprite list that a
+; per-effect builder already filled in straight into shadow OAM.
+;
+; call_00_39e0_Entity_GetSpriteListPtr gives the buffer. The first byte is the sprite
+; count, and a count of zero means the effect has nothing on screen this frame - it
+; falls through to collision dispatch rather than drawing. Each following record is
+; ENTITY_SPRITE_RECORD_SIZE bytes: Y offset, X offset, tile, attributes, with B and C
+; added to the offsets to place them relative to the entity.
+;
+; So the particle builders never touch OAM themselves; they only produce the list, and
+; this is the one place it is drawn
+    call call_00_39e0_Entity_GetSpriteListPtr                                  ;; 03:6451 $cd $e0 $39
     ld   L, E                                          ;; 03:6454 $6b
     ld   H, D                                          ;; 03:6455 $62
     ld   A, [wD739_Entity_OamWriteOffset]                                    ;; 03:6456 $fa $39 $d7
@@ -1094,7 +1101,7 @@ call_03_6540_Oam_FinishFrame:
 call_03_6549_Entity_BuildSprites_FloatingSkullProjectile:
 ; Active flag = bit 0. Tile = (wD73B_FrameCounter >> 2) & 2 + $2C (alternates between $2C/$2E 
 ; based on a global timer bit — a two-frame animation). Attribute = $04
-    call call_00_3a0a_Entity_GetBothDataPtrs
+    call call_00_3a0a_Entity_GetSpriteListAndParticles
     push de
     inc  de
     ld   c,$00
@@ -1145,7 +1152,7 @@ call_03_6549_Entity_BuildSprites_FloatingSkullProjectile:
 call_03_6584_Entity_BuildSprites_CollectibleSpawn:
 ; Active flag = bit 7. Tile = fixed $7E (blank/flash tile), attribute = $01. 
 ; Used for invincibility flash or generic item-collected sparkle effects
-    call call_00_3a0a_Entity_GetBothDataPtrs                                  ;; 03:6584 $cd $0a $3a
+    call call_00_3a0a_Entity_GetSpriteListAndParticles                                  ;; 03:6584 $cd $0a $3a
     push DE                                            ;; 03:6587 $d5
     inc  DE                                            ;; 03:6588 $13
     ld   C, $00                                        ;; 03:6589 $0e $00
@@ -1192,7 +1199,7 @@ call_03_6584_Entity_BuildSprites_CollectibleSpawn:
 call_03_65b8_Entity_BuildSprites_FallingBoulder:
 ; Active flag = bit 0. Tile base = (SPRITE_ID_high_nibble clamped to 5) * 2 + $44. 
 ; Attribute = $07. Selects one of 6 tile pairs based on sprite ID nibble
-    call call_00_3a0a_Entity_GetBothDataPtrs
+    call call_00_3a0a_Entity_GetSpriteListAndParticles
     push de
     inc  de
     ld   c,$00
@@ -1248,7 +1255,7 @@ call_03_65b8_Entity_BuildSprites_FallingBoulder:
 call_03_65f9_Entity_BuildSprites_ParticleBurst:
 ; Active flag = bit 0. Tile base = (SPRITE_ID_high_nibble clamped to 2) * 2 + $60. 
 ; Attribute = $01. Selects one of 3 tile pairs
-    call call_00_3a0a_Entity_GetBothDataPtrs                                  ;; 03:65f9 $cd $0a $3a
+    call call_00_3a0a_Entity_GetSpriteListAndParticles                                  ;; 03:65f9 $cd $0a $3a
     push DE                                            ;; 03:65fc $d5
     inc  DE                                            ;; 03:65fd $13
     ld   C, $00                                        ;; 03:65fe $0e $00
@@ -1303,7 +1310,7 @@ call_03_65f9_Entity_BuildSprites_ParticleBurst:
 
 call_03_663a_Entity_BuildSprites_FirePlantProjectiles:
 ; Identical to above but tile base = $58 instead of $2C. 
-    call call_00_3a0a_Entity_GetBothDataPtrs
+    call call_00_3a0a_Entity_GetSpriteListAndParticles
     push de
     inc  de
     ld   c,$00
@@ -1353,7 +1360,7 @@ call_03_663a_Entity_BuildSprites_FirePlantProjectiles:
 
 call_03_6675_Entity_BuildSprites_Jar:
 ; Like above but tile selection uses (bit 7 of SPRITE_ID >> 6) & 2 + $5C. 
-    call call_00_3a0a_Entity_GetBothDataPtrs
+    call call_00_3a0a_Entity_GetSpriteListAndParticles
     push de
     inc  de
     ld   c,$00

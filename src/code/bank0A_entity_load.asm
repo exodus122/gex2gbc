@@ -463,7 +463,7 @@ call_0a_7a7c_EntitySpawn_SpawnNextFromList:
     ld   H, $00                                        ;; 0a:7b69 $26 $00
     add  HL, HL                                        ;; 0a:7b6b $29
     add  HL, HL                                        ;; 0a:7b6c $29
-    ld   DE, data_00_39c0                                     ;; 0a:7b6d $11 $c0 $39
+    ld   DE, data_00_39c0_EntityEffectBuffers                                     ;; 0a:7b6d $11 $c0 $39
     add  HL, DE                                        ;; 0a:7b70 $19
     ld   A, [HL+]                                      ;; 0a:7b71 $2a
     ld   H, [HL]                                       ;; 0a:7b72 $66

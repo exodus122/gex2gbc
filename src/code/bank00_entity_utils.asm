@@ -1692,7 +1692,7 @@ call_00_3985_Entity_ParticleBurstInit:
     ld   L, A                                          ;; 00:39a3 $6f
     ld   [HL], $00                                     ;; 00:39a4 $36 $00
     ld   C, $01                                        ;; 00:39a6 $0e $01
-    call call_00_3a23_Entity_LoadAnimationData                                  ;; 00:39a8 $cd $23 $3a
+    call call_00_3a23_Entity_StartParticleEffect                                  ;; 00:39a8 $cd $23 $3a
     call call_00_393c_Entity_SetFlagsEntryNone                                  ;; 00:39ab $cd $3c $39
     xor  A, A                                          ;; 00:39ae $af
     FARCALL call_02_7102_Entity_SetAction
@@ -1700,16 +1700,53 @@ call_00_3985_Entity_ParticleBurstInit:
     call call_00_112f_QueueSFX                                  ;; 00:39bc $cd $2f $11
     ret                                                ;; 00:39bf $c9
 
-data_00_39c0:
-    dw   wD33C
-data_00_39c2:
-    dw   wD444, wD35D, wD46C
-    dw   wD37E, wD494, wD39F, wD4BC
-    dw   wD3C0, wD4E4, wD3E1, wD50C
-    dw   wD402, wD534, wD423, wD55C
+; ==================================================================
+; ENTITY PARTICLE EFFECTS
+;
+; Some entities are not one sprite but a little swarm - a smashed jar's shards, the
+; sparkle when a collectible is taken, a boulder breaking up. Those all run on one
+; shared mechanism, and these buffers are its state.
+;
+; Every entity SLOT (0-7) owns two fixed WRAM blocks:
+;
+;   PARTICLES    ENTITY_PARTICLES_SIZE bytes = ENTITY_PARTICLE_COUNT records of
+;                ENTITY_PARTICLE_RECORD_SIZE. The simulation: each record is one
+;                particle's position and velocity. Started from a ROM pattern by
+;                call_00_3a23_Entity_StartParticleEffect, advanced once a frame by
+;                call_00_3b8d_Entity_TickParticles, and read by the per-effect sprite
+;                builders in bank 3 - and by the entity collision code, which gives
+;                each particle its own hitbox so individual shards can hit the player.
+;
+;   SPRITE LIST  ENTITY_SPRITE_LIST_SIZE bytes = a count followed by up to
+;                ENTITY_PARTICLE_COUNT OAM records of ENTITY_SPRITE_RECORD_SIZE
+;                (Y, X, tile, attributes). The OUTPUT: a sprite builder walks the
+;                particles and writes this, then the generic embedded-data path at
+;                .jp_03_6451_Entity_BuildSprites_SpriteList copies it into shadow OAM.
+;                SPRITE_FLAG_EMBEDDED_DATA on the entity is what selects that path.
+;
+; So the two blocks are the two halves of one pipeline - simulation in, sprites out -
+; which is all the old "primary data" and "secondary data" names were distinguishing.
+; ==================================================================
 
-call_00_39e0_Entity_GetPrimaryDataPtr:
-; Returns DE = pointer to this entity's primary data block (from data_00_39c0 table, indexed by slot)
+; The two blocks for all 8 slots, interleaved as (sprite list, particles) pairs so one
+; index reaches both. data_00_39c2_EntityParticleBuffers is not a separate table: it is
+; this one plus 2, which is how the particle-only accessor skips the sprite list word
+data_00_39c0_EntityEffectBuffers:
+    dw   wD33C_Entity_SpriteList0
+data_00_39c2_EntityParticleBuffers:
+    dw   wD444_Entity_Particles0, wD35D_Entity_SpriteList1, wD46C_Entity_Particles1
+    dw   wD37E_Entity_SpriteList2, wD494_Entity_Particles2, wD39F_Entity_SpriteList3, wD4BC_Entity_Particles3
+    dw   wD3C0_Entity_SpriteList4, wD4E4_Entity_Particles4, wD3E1_Entity_SpriteList5, wD50C_Entity_Particles5
+    dw   wD402_Entity_SpriteList6, wD534_Entity_Particles6, wD423_Entity_SpriteList7, wD55C_Entity_Particles7
+
+call_00_39e0_Entity_GetSpriteListPtr:
+; DE = this entity's sprite list buffer - the count byte, followed by up to
+; ENTITY_PARTICLE_COUNT OAM records that the embedded-data sprite path will draw.
+;
+; The slot number is recovered from wD300_CurrentEntityAddrLo rather than stored: the
+; three `rlca` rotate the entity struct's address bits down so that (addr >> 5) & 7
+; falls out, which works because the 8 entity structs are $20 bytes apart. The same
+; five instructions open all four routines here
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:39e0 $fa $00 $d3
     rlca                                               ;; 00:39e3 $07
     rlca                                               ;; 00:39e4 $07
@@ -1719,15 +1756,17 @@ call_00_39e0_Entity_GetPrimaryDataPtr:
     ld   H, $00                                        ;; 00:39e9 $26 $00
     add  HL, HL                                        ;; 00:39eb $29
     add  HL, HL                                        ;; 00:39ec $29
-    ld   DE, data_00_39c0                                     ;; 00:39ed $11 $c0 $39
+    ld   DE, data_00_39c0_EntityEffectBuffers                                     ;; 00:39ed $11 $c0 $39
     add  HL, DE                                        ;; 00:39f0 $19
     ld   E, [HL]                                       ;; 00:39f1 $5e
     inc  HL                                            ;; 00:39f2 $23
     ld   D, [HL]                                       ;; 00:39f3 $56
     ret                                                ;; 00:39f4 $c9
 
-call_00_39f5_Entity_GetSecondaryDataPtr:
-; Returns DE = pointer to this entity's secondary data block (from data_00_39c2 table)
+call_00_39f5_Entity_GetParticlesPtr:
+; DE = this entity's particle buffer - ENTITY_PARTICLE_COUNT records of
+; ENTITY_PARTICLE_RECORD_SIZE. Identical to the routine above apart from starting the
+; table lookup two bytes further in, which lands on the particle word of the pair
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:39f5 $fa $00 $d3
     rlca                                               ;; 00:39f8 $07
     rlca                                               ;; 00:39f9 $07
@@ -1737,15 +1776,21 @@ call_00_39f5_Entity_GetSecondaryDataPtr:
     ld   H, $00                                        ;; 00:39fe $26 $00
     add  HL, HL                                        ;; 00:3a00 $29
     add  HL, HL                                        ;; 00:3a01 $29
-    ld   DE, data_00_39c2                                     ;; 00:3a02 $11 $c2 $39
+    ld   DE, data_00_39c2_EntityParticleBuffers                                     ;; 00:3a02 $11 $c2 $39
     add  HL, DE                                        ;; 00:3a05 $19
     ld   E, [HL]                                       ;; 00:3a06 $5e
     inc  HL                                            ;; 00:3a07 $23
     ld   D, [HL]                                       ;; 00:3a08 $56
     ret                                                ;; 00:3a09 $c9
 
-call_00_3a0a_Entity_GetBothDataPtrs:
-; Returns DE = primary ptr and HL = secondary ptr for this entity's slot
+call_00_3a0a_Entity_GetSpriteListAndParticles:
+; DE = sprite list, HL = particles. Both in one lookup, because the two words sit
+; next to each other in the table.
+;
+; This is the entry point every per-effect sprite builder uses, and the register
+; assignment matches how they all work: read a particle from HL, write an OAM record
+; to DE. They typically `push DE` first so they can come back at the end and store the
+; sprite count into the first byte
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3a0a $fa $00 $d3
     rlca                                               ;; 00:3a0d $07
     rlca                                               ;; 00:3a0e $07
@@ -1755,7 +1800,7 @@ call_00_3a0a_Entity_GetBothDataPtrs:
     ld   H, $00                                        ;; 00:3a13 $26 $00
     add  HL, HL                                        ;; 00:3a15 $29
     add  HL, HL                                        ;; 00:3a16 $29
-    ld   DE, data_00_39c0                                     ;; 00:3a17 $11 $c0 $39
+    ld   DE, data_00_39c0_EntityEffectBuffers                                     ;; 00:3a17 $11 $c0 $39
     add  HL, DE                                        ;; 00:3a1a $19
     ld   E, [HL]                                       ;; 00:3a1b $5e
     inc  HL                                            ;; 00:3a1c $23
@@ -1766,13 +1811,24 @@ call_00_3a0a_Entity_GetBothDataPtrs:
     ld   L, A                                          ;; 00:3a21 $6f
     ret                                                ;; 00:3a22 $c9
 
-call_00_3a23_Entity_LoadAnimationData:
-; Indexes a table of animation descriptor pointers by C, copies 8×5-byte frame records 
-; into the per-entity animation buffer, zeros the flag byte in the entity table, sets SPRITE_FLAG_EMBEDDED_DATA
+call_00_3a23_Entity_StartParticleEffect:
+; Arms this entity's particle swarm. C selects a PARTICLE_PATTERN_* from
+; .data_00_3a67_ParticlePatterns, and the whole pattern - every particle's starting
+; position and velocity - is copied into the entity's particle buffer.
+;
+; Three things happen, and the order matters:
+;   1. the sprite list's count byte is zeroed, so nothing is drawn until
+;      call_00_3b8d_Entity_TickParticles has run and a builder has filled it in
+;   2. the ROM pattern is copied over the particle buffer wholesale
+;   3. SPRITE_FLAG_EMBEDDED_DATA is set, switching this entity to the sprite path that
+;      reads the list rather than a shared animation table
+;
+; After this the entity's action handler just calls Entity_TickParticles each frame and
+; ends the effect when it returns zero
     ld   L, C                                          ;; 00:3a23 $69
     ld   H, $00                                        ;; 00:3a24 $26 $00
     add  HL, HL                                        ;; 00:3a26 $29
-    ld   DE, .data_00_3a67                                     ;; 00:3a27 $11 $67 $3a
+    ld   DE, .data_00_3a67_ParticlePatterns                                     ;; 00:3a27 $11 $67 $3a
     add  HL, DE                                        ;; 00:3a2a $19
     ld   E, [HL]                                       ;; 00:3a2b $5e
     inc  HL                                            ;; 00:3a2c $23
@@ -1786,7 +1842,7 @@ call_00_3a23_Entity_LoadAnimationData:
     ld   H, $00                                        ;; 00:3a37 $26 $00
     add  HL, HL                                        ;; 00:3a39 $29
     add  HL, HL                                        ;; 00:3a3a $29
-    ld   BC, data_00_39c0                                     ;; 00:3a3b $01 $c0 $39
+    ld   BC, data_00_39c0_EntityEffectBuffers                                     ;; 00:3a3b $01 $c0 $39
     add  HL, BC                                        ;; 00:3a3e $09
     ld   C, [HL]                                       ;; 00:3a3f $4e
     inc  HL                                            ;; 00:3a40 $23
@@ -1797,8 +1853,8 @@ call_00_3a23_Entity_LoadAnimationData:
     ld   A, [HL+]                                      ;; 00:3a45 $2a
     ld   H, [HL]                                       ;; 00:3a46 $66
     ld   L, A                                          ;; 00:3a47 $6f
-    ld   B, $08                                        ;; 00:3a48 $06 $08
-.jr_00_3a4a:
+    ld   B, ENTITY_PARTICLE_COUNT                      ;; 00:3a48 $06 $08
+.jr_00_3a4a: ; one ENTITY_PARTICLE_RECORD_SIZE record per iteration, unrolled
     ld   A, [DE]                                       ;; 00:3a4a $1a
     ld   [HL+], A                                      ;; 00:3a4b $22
     inc  DE                                            ;; 00:3a4c $13
@@ -1819,61 +1875,83 @@ call_00_3a23_Entity_LoadAnimationData:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_SPRITE_FLAGS
     set  SPRITE_FLAG_EMBEDDED_DATA_BIT, [HL]                                       ;; 00:3a64 $cb $c6
     ret                                                ;; 00:3a66 $c9
-.data_00_3a67:
-    dw   .data_00_3a75                                 ;; 00:3a67 ??
-    dw   .data_00_3a9d_ParticleBurstPattern                                 ;; 00:3a69 pP
-    dw   .data_00_3ac5_ParticleBurstPattern2                                 ;; 00:3a6b pP
-    dw   .data_00_3aed
-    dw   .data_00_3b15_FallingBoulderPattern
-    dw   .data_00_3b3d_JarBurstPattern
-    dw   .data_00_3b65_MultiProjectilePattern
-.data_00_3a75:
+.data_00_3a67_ParticlePatterns:
+    dw   .data_00_3a75_Pattern_Empty                                 ;; 00:3a67 ??
+    dw   .data_00_3a9d_Pattern_Burst                                 ;; 00:3a69 pP
+    dw   .data_00_3ac5_Pattern_BurstSmall                                 ;; 00:3a6b pP
+    dw   .data_00_3aed_Pattern_Unused
+    dw   .data_00_3b15_Pattern_FallingBoulder
+    dw   .data_00_3b3d_Pattern_JarBurst
+    dw   .data_00_3b65_Pattern_MultiProjectile
+.data_00_3a75_Pattern_Empty:
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:3a75 ????????
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:3a7d ????????
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:3a85 ????????
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:3a8d ????????
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:3a95 ????????
-.data_00_3a9d_ParticleBurstPattern:
+.data_00_3a9d_Pattern_Burst:
     db   $81, $40, $00, $04, $01, $81, $30, $00        ;; 00:3a9d ........
     db   $03, $01, $81, $20, $00, $02, $01, $81        ;; 00:3aa5 ........
     db   $18, $00, $01, $01, $81, $40, $00, $04        ;; 00:3aad ........
     db   $ff, $81, $30, $00, $03, $ff, $81, $20        ;; 00:3ab5 ........
     db   $00, $02, $ff, $81, $18, $00, $01, $ff        ;; 00:3abd ........
-.data_00_3ac5_ParticleBurstPattern2:
+.data_00_3ac5_Pattern_BurstSmall:
     db   $81, $24, $00, $00, $00, $81, $20, $00        ;; 00:3ac5 ........
     db   $06, $01, $81, $20, $00, $06, $ff, $00        ;; 00:3acd ........
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:3ad5 ........
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:3add ........
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:3ae5 ........
-.data_00_3aed:
+.data_00_3aed_Pattern_Unused:
     db   $81, $24, $00, $00, $00, $81, $20, $00        ;; 00:3aed ????????
     db   $06, $01, $81, $20, $00, $06, $ff, $81        ;; 00:3af5 ????????
     db   $1c, $00, $0e, $01, $81, $1c, $00, $0e        ;; 00:3afd ????????
     db   $ff, $00, $00, $00, $00, $00, $00, $00        ;; 00:3b05 ????????
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:3b0d ????????
-.data_00_3b15_FallingBoulderPattern:
+.data_00_3b15_Pattern_FallingBoulder:
     db   $01, $30, $10, $0c, $fb, $01, $20, $10        ;; 00:3b15 ????????
     db   $04, $ff, $01, $38, $10, $04, $05, $01        ;; 00:3b1d ????????
     db   $2e, $00, $0e, $fb, $01, $2c, $00, $06        ;; 00:3b25 ????????
     db   $01, $01, $26, $00, $0d, $05, $00, $00        ;; 00:3b2d ????????
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:3b35 ????????
-.data_00_3b3d_JarBurstPattern:
+.data_00_3b3d_Pattern_JarBurst:
     db   $01, $28, $10, $09, $f3, $01, $1a, $10        ;; 00:3b3d ????????
     db   $01, $fc, $01, $2e, $10, $02, $06, $01        ;; 00:3b45 ????????
     db   $26, $00, $0b, $f6, $01, $24, $00, $03        ;; 00:3b4d ????????
     db   $05, $01, $21, $00, $0a, $03, $00, $00        ;; 00:3b55 ????????
     db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 00:3b5d ????????
-.data_00_3b65_MultiProjectilePattern:
+.data_00_3b65_Pattern_MultiProjectile:
     db   $81, $40, $0c, $0c, $01, $81, $30, $0c        ;; 00:3b65 ????????
     db   $09, $01, $81, $20, $0c, $06, $01, $81        ;; 00:3b6d ????????
     db   $18, $0c, $03, $01, $81, $40, $0c, $0c        ;; 00:3b75 ????????
     db   $ff, $81, $30, $0c, $09, $ff, $81, $20        ;; 00:3b7d ????????
     db   $0c, $06, $ff, $81, $18, $0c, $03, $ff        ;; 00:3b85 ????????
 
-call_00_3b8d_Entity_TickAnimationFrames:
-; Iterates 8 animation frame descriptors; ticks down duration counter, 
-; advances subpixel frame accumulator, increments frame index on overflow; 
-; returns 1 if any frame still active
+call_00_3b8d_Entity_TickParticles:
+; Advances every live particle in this entity's buffer by one frame, and returns
+; nonzero while any of them is still going - which is how the effect's action handler
+; knows when to clear the slot.
+;
+; Each particle is a tiny ballistic simulation, and the record layout follows from
+; what this loop does to it:
+;
+;   +0  PARTICLE_FIELD_FLAGS      bit 0 alive. Sprite builders and collision test
+;                                 different bits of this byte per effect - some read
+;                                 bit 7 instead, so treat it as per-effect flags
+;   +1  PARTICLE_FIELD_YVELOCITY  signed, decremented once a frame - this is gravity.
+;                                 Floored at PARTICLE_YVELOCITY_MIN so a long-lived
+;                                 particle cannot accelerate forever
+;   +2  PARTICLE_FIELD_YOFFSET    height above the entity. Grows by YVELOCITY >> 4
+;                                 each frame and is CLAMPED AT ZERO - hitting zero is
+;                                 what ends the particle, so a particle dies when it
+;                                 falls back to the height it launched from
+;   +3  PARTICLE_FIELD_XSPEED     horizontal speed as a fraction: the low nibble is
+;                                 added to the whole byte each frame, and the carry out
+;                                 is what steps the offset
+;   +4  PARTICLE_FIELD_XOFFSET    signed horizontal offset, stepped by +1 or -1 per
+;                                 carry with the direction taken from its own sign bit
+;
+; Vertical is whole pixels with a velocity, horizontal is a sub-pixel accumulator with
+; no velocity - the asymmetry is why a burst arcs but never changes direction
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3b8d $fa $00 $d3
     rlca                                               ;; 00:3b90 $07
     rlca                                               ;; 00:3b91 $07
@@ -1883,7 +1961,7 @@ call_00_3b8d_Entity_TickAnimationFrames:
     ld   H, $00                                        ;; 00:3b96 $26 $00
     add  HL, HL                                        ;; 00:3b98 $29
     add  HL, HL                                        ;; 00:3b99 $29
-    ld   DE, data_00_39c2                                     ;; 00:3b9a $11 $c2 $39
+    ld   DE, data_00_39c2_EntityParticleBuffers                                     ;; 00:3b9a $11 $c2 $39
     add  HL, DE                                        ;; 00:3b9d $19
     ld   A, [HL+]                                      ;; 00:3b9e $2a
     ld   H, [HL]                                       ;; 00:3b9f $66
