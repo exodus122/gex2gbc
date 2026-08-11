@@ -8,10 +8,10 @@ TV_PALETTE_ID = 0
 REMOTE_PROGRESS_ID = 1
 TEXT_PTR = 2
 MAP_BANK = 3
-EXTENDED_MAP_BANK = 4
+ALT_BLOCKSET_FLAGS_BANK = 4
 BLOCKSET_AND_COLLISION_BANK = 5
 LEVEL_DATA_UNK6 = 6 # seems unused
-EXTENDED_MAP_BIT = 7
+ALT_BLOCKSET_BIT = 7
 TILESET_BANK = 8
 TILESET_BANK_OFFSET = 9
 
@@ -276,32 +276,37 @@ for level_counter in range(0, len(level_names)):
                     out = open('./secondary_tile_bins/'+level_name+'/'+filename2+'/tile_'+f"{count:0{2}x}"+'.bin', "wb")
                     out.write(data)
                     out.close()
-                    
-                    palette_ids = open(secondary_tileset_palette_ids_folder+"/"+filename2+"_palette_ids.bin", "rb").read()
-                    palette_index = palette_ids[count]
-                    #print(palette_index)
-                    temp_palette_data = palette_data[0x8*palette_index:0x8*palette_index+0x8]
-                    
-                    # special case for television palettes in media dimension
-                    if level_channel_name == "media_dimension":
-                        television = -1
-                        q = 0
-                        for q in range (0, len(media_dimension_tv_order2)):
-                            if media_dimension_tv_order2[q] in secondary_tileset_file:
-                                television = q
-                                break
-                            q = q + 1
+
+                    try:
+                        palette_ids = open(secondary_tileset_palette_ids_folder+"/"+filename2+"_palette_ids.bin", "rb").read()
+                        palette_index = palette_ids[count]
+                        #print(palette_index)
+                        temp_palette_data = palette_data[0x8*palette_index:0x8*palette_index+0x8]
                         
-                        if television != -1:
-                            palette_file2 = "../../src/gfx/secondary_tilesets/"+level_channel_name+"/palettes/"+media_dimension_tv_order[q]+"_television_palette.bin"
-                            if media_dimension_tv_order[q] == "circuit_central":
-                                temp_palette_data = open(palette_file2, "rb").read()[8:]
-                            else:
-                                temp_palette_data = open(palette_file2, "rb").read()[:8]
-                        
-                    f = open("./temp.bin", "wb")
-                    f.write(temp_palette_data)
-                    f.close()
+                        # special case for television palettes in media dimension
+                        if level_channel_name == "media_dimension":
+                            television = -1
+                            q = 0
+                            for q in range (0, len(media_dimension_tv_order2)):
+                                if media_dimension_tv_order2[q] in secondary_tileset_file:
+                                    television = q
+                                    break
+                                q = q + 1
+                            
+                            if television != -1:
+                                palette_file2 = "../../src/gfx/secondary_tilesets/"+level_channel_name+"/palettes/"+media_dimension_tv_order[q]+"_television_palette.bin"
+                                if media_dimension_tv_order[q] == "circuit_central":
+                                    temp_palette_data = open(palette_file2, "rb").read()[8:]
+                                else:
+                                    temp_palette_data = open(palette_file2, "rb").read()[:8]
+                            
+                        f = open("./temp.bin", "wb")
+                        f.write(temp_palette_data)
+                        f.close()
+                    except FileNotFoundError:
+                        #print(f"File not found: {secondary_tileset_palette_ids_folder}/{filename2}_palette_ids.bin")
+                        f = open("./temp.bin", "wb")
+                        f.close()
                     
                     os.system('rgbgfx --reverse 1 -p '+"./temp.bin"+' --columns -o ./secondary_tile_bins/'+level_name+'/'+filename2+'/tile_'+f"{count:0{2}x}"+'.bin ./secondary_tile_bins/'+level_name+'/'+filename2+'/tile_'+f"{count:0{2}x}"+'.png')
                     
@@ -324,7 +329,7 @@ for level_counter in range(0, len(level_names)):
     # create the level's blockset from the tileset
     blockset_file = "../banks/bank_0"+f"{level_data[BLOCKSET_AND_COLLISION_BANK]:x}"+".bin"
     blockset_data = open(blockset_file, "rb").read()
-    secondary_tileset_data_file = "../../src/data/maps/"+level_channel_name+"/secondary_tileset_data_"+level_channel_name+".bin"
+    secondary_tileset_for_block_file = "../../src/data/maps/"+level_channel_name+"/secondary_tileset_for_block_"+level_channel_name+".bin"
     
     os.system('mkdir -p blockset_images')
     
@@ -381,10 +386,10 @@ for level_counter in range(0, len(level_names)):
         #second blockset for each level
         
         blockset_img2 = PIL.Image.new("RGB", (512, 512))
-        secondary_tileset_data = open(secondary_tileset_data_file, "rb").read()
+        secondary_tileset_for_block = open(secondary_tileset_for_block_file, "rb").read()
         draw2 = PIL.ImageDraw.Draw(blockset_img2)
         
-        #print("secondary_tileset_data[0] is: "+str(secondary_tileset_data[0]))
+        #print("secondary_tileset_for_block[0] is: "+str(secondary_tileset_for_block[0]))
         
         block_counter = 0
         count = 0x1000
@@ -396,8 +401,8 @@ for level_counter in range(0, len(level_names)):
                 draw3 = PIL.ImageDraw.Draw(block_img)
                 
                 secondary_tile_override = False
-                if block_counter >= secondary_tileset_data[0]: # and blockset_data[val] 
-                    secondary_tileset_to_open = secondary_tileset_data[block_counter-secondary_tileset_data[0]+1]
+                if block_counter >= secondary_tileset_for_block[0]: # and blockset_data[val] 
+                    secondary_tileset_to_open = secondary_tileset_for_block[block_counter-secondary_tileset_for_block[0]+1]
                     if secondary_tileset_to_open > 0:
                         secondary_tile_override = True
                     #block_img.paste(secondary_tiles[(secondary_tileset_to_open*16)+blockset_data[val]]], (inner_x*8, inner_y*8))
@@ -438,10 +443,10 @@ for level_counter in range(0, len(level_names)):
         map_file = "../banks/bank_0"+f"{level_data[MAP_BANK]:x}"+".bin"
         map_data = open(map_file, 'rb').read()
 
-        extended_map_file = "../banks/bank_0"+f"{level_data[EXTENDED_MAP_BANK]:x}"+".bin"
-        extended_map_data = open(extended_map_file, 'rb').read()
+        alt_blockset_flags_file = "../banks/bank_0"+f"{level_data[ALT_BLOCKSET_FLAGS_BANK]:x}"+".bin"
+        alt_blockset_flags_data = open(alt_blockset_flags_file, 'rb').read()
 
-        extended_map_bit = level_data[EXTENDED_MAP_BIT]
+        alt_blockset_bit = level_data[ALT_BLOCKSET_BIT]
 
         os.system('mkdir -p map_images')
         
@@ -478,7 +483,7 @@ for level_counter in range(0, len(level_names)):
             for x in range(0, 128):
                 draw.rectangle(((x*32,y*32), ((x+1)*32,(y+1)*32)), map_data[count],3)
                 
-                if extended_map_data[y*128+x] & extended_map_bit != 0:
+                if alt_blockset_flags_data[y*128+x] & alt_blockset_bit != 0:
                     img.paste(blockset2[map_data[count]], (x*32, y*32))
                 else:
                     img.paste(blockset[map_data[count]], (x*32, y*32))
