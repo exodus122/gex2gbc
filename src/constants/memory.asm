@@ -961,7 +961,10 @@ wD6F1_BgMap_PrevColumn:
     ds 2                                               ;; d6f1
 wD6F3_BgMap_PrevRow:
     ds 2                                               ;; d6f3
-wD6F5_BgMap_MapBank:
+wD6F5_BgMap_BlockmapBank:
+; ROM bank of the level's blockmap - the grid of block ids that is the layout itself.
+; Paged in to read the six block ids of each strip, then swapped for the blockset
+; bank to expand them
     ds 1                                               ;; d6f5
 wD6F6_BgMap_AltBlocksetBank:
 ; ROM bank of the alt-blockset flag plane ($34 or $35). Paged in on its own for the
@@ -969,6 +972,9 @@ wD6F6_BgMap_AltBlocksetBank:
 ; back - see the two loaders in bank00_bg_map.asm
     ds 1                                               ;; d6f6
 wD6F7_BgMap_BlocksetAndCollisionBank:
+; ROM bank of the block definitions - 8 bytes per block, the 4x2 tile ids it expands
+; to - taken from page $40 or page $50 depending on the alt blockset flag. The
+; collision table lives in the same bank, which is why one field names both
     ds 1                                               ;; d6f7
 ; unused byte
     ds 1

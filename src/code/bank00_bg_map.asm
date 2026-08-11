@@ -8,8 +8,8 @@ call_00_1264_BgMap_LoadFull:
 ; it walks DOWN the map, drawing one horizontal row per pass, until the whole visible area is
 ; filled. Clears dirty flag, loads HUD tiles, updates map window
     call call_00_0ede_SelectWramBank1                                  ;; 00:1264 $cd $de $0e
-    call call_00_2e77_MapData_GetMapBank                                  ;; 00:1267 $cd $77 $2e
-    ld   [wD6F5_BgMap_MapBank], A                                    ;; 00:126a $ea $f5 $d6
+    call call_00_2e77_MapData_GetBlockmapBank                                  ;; 00:1267 $cd $77 $2e
+    ld   [wD6F5_BgMap_BlockmapBank], A                                    ;; 00:126a $ea $f5 $d6
     call call_00_2e80_MapData_GetAltBlocksetBank                                  ;; 00:126d $cd $80 $2e
     ld   [wD6F6_BgMap_AltBlocksetBank], A                                    ;; 00:1270 $ea $f6 $d6
     call call_00_2e89_MapData_GetBlocksetAndCollisionBank                                  ;; 00:1273 $cd $89 $2e
@@ -405,7 +405,7 @@ call_00_1472_BgMap_LoadRowForVerticalScroll:
     ld   H, A                                          ;; 00:14d4 $67
     push HL                                            ;; 00:14d5 $e5
     push HL                                            ;; 00:14d6 $e5
-    ld   A, [wD6F5_BgMap_MapBank]                     ;; 00:14d7 $fa $f5 $d6
+    ld   A, [wD6F5_BgMap_BlockmapBank]                     ;; 00:14d7 $fa $f5 $d6
     call call_00_1089_SwitchBank                       ;; 00:14da $cd $89 $10 switch to map file bank
     pop  HL                                            ;; 00:14dd $e1
     ld   DE, wD702_BgMap_TempScratchRowMetaTileIDs                                     ;; 00:14de $11 $02 $d7
@@ -611,7 +611,7 @@ call_00_157a_BgMap_LoadColumnForHorizontalScroll:
     ld   H, A                                          ;; 00:15de $67
     push HL                                            ;; 00:15df $e5
     push HL                                            ;; 00:15e0 $e5
-    ld   A, [wD6F5_BgMap_MapBank]                                    ;; 00:15e1 $fa $f5 $d6
+    ld   A, [wD6F5_BgMap_BlockmapBank]                                    ;; 00:15e1 $fa $f5 $d6
     call call_00_1089_SwitchBank                                  ;; 00:15e4 $cd $89 $10
     pop  HL                                            ;; 00:15e7 $e1
     ld   DE, wD70E_BgMap_TempScratchColumnMetaTileIDs                                     ;; 00:15e8 $11 $0e $d7
@@ -1292,7 +1292,7 @@ call_00_18e4_BgMap_ApplyBlockPatchesToColumn:
 
 call_00_1922_BgMap_LoadSecondaryTileset:
 ; Checks wD60F bit 2 (HDMA active) — returns if set. Advances HL by $0B to reach the tile area 
-; index within the strip. Looks up the current level ID in .data_00_1a2e_LevelSecondaryTilesetIndexTable 
+; index within the strip. Looks up the current level ID in .data_00_1a2e_LevelSecondaryTilesetLookups 
 ; to get a per-world data pointer. Reads the first byte (base index C). Scans 6 entries backward 
 ; through the strip (from wD719 downward), checking each non-zero alt blockset byte against the world's
 ; secondary tileset index table — if a non-null entry is found, checks if its tileset index differs 
@@ -1311,7 +1311,7 @@ call_00_1922_BgMap_LoadSecondaryTileset:
     ld   L, [HL]                                       ;; 00:1930 $6e
     ld   H, $00                                        ;; 00:1931 $26 $00
     add  HL, HL                                        ;; 00:1933 $29
-    ld   BC, .data_00_1a2e_LevelSecondaryTilesetIndexTable             ;; 00:1934 $01 $2e $1a
+    ld   BC, .data_00_1a2e_LevelSecondaryTilesetLookups             ;; 00:1934 $01 $2e $1a
     add  HL, BC                                        ;; 00:1937 $09
     ld   A, [HL+]                                      ;; 00:1938 $2a
     ld   H, [HL]                                       ;; 00:1939 $66
@@ -1456,57 +1456,70 @@ call_00_1922_BgMap_LoadSecondaryTileset:
     farpointer2 media_dimension_secondary_tilesets       ; MAP_UNUSED_1C
     farpointer2 media_dimension_secondary_tilesets       ; MAP_UNUSED_1D
     farpointer2 channel_z_secondary_tilesets             ; MAP_BOSS_TV_CHANNEL_Z
-.data_00_1a2e_LevelSecondaryTilesetIndexTable:
-; 31 pointer entries (one per level) to per-world secondary tileset index arrays. Levels sharing a world 
-; theme share the same pointer. Worlds: Media Dimension, Toon TV, Scream TV, Circuit Central, Kung Fu Theater, 
-; Prehistory Channel, Rezopolis, Channel Z
-    dw   .secondary_tileset_data_media_dimension       ; MAP_MEDIA_DIMENSION
-    dw   .secondary_tileset_data_toon_tv               ; MAP_TOON_TV_OUT_OF_TOON
-    dw   .secondary_tileset_data_scream_tv             ; MAP_SCREAM_TV_SMELLRAISER
-    dw   .secondary_tileset_data_scream_tv             ; MAP_SCREAM_TV_FRANKENSTEINFELD
-    dw   .secondary_tileset_data_circuit_central       ; MAP_CIRCUIT_CENTRAL_WWWDOTCOMCOM
-    dw   .secondary_tileset_data_kung_fu_theater       ; MAP_KUNG_FU_THEATER_MAO_TSE_TONGUE
-    dw   .secondary_tileset_data_media_dimension       ; MAP_UNUSED_06
-    dw   .secondary_tileset_data_prehistory_channel    ; MAP_PRE_HISTORY_CHANNEL_PANGAEA_90210
-    dw   .secondary_tileset_data_toon_tv               ; MAP_TOON_TV_FINE_TOONING
-    dw   .secondary_tileset_data_prehistory_channel    ; MAP_PRE_HISTORY_CHANNEL_THIS_OLD_CAVE
-    dw   .secondary_tileset_data_circuit_central       ; MAP_CIRCUIT_CENTRAL_HONEY_I_SHRUNK_THE_GECKO
-    dw   .secondary_tileset_data_scream_tv             ; MAP_SCREAM_TV_POLTERGEX
-    dw   .secondary_tileset_data_media_dimension       ; MAP_UNUSED_0C
-    dw   .secondary_tileset_data_kung_fu_theater       ; MAP_KUNG_FU_THEATER_SAMURAI_NIGHT_FEVER
-    dw   .secondary_tileset_data_rezopolis             ; MAP_REZOPOLIS_NO_WEDDINGS_AND_A_FUNERAL
-    dw   .secondary_tileset_data_media_dimension       ; MAP_UNUSED_0F
-    dw   .secondary_tileset_data_scream_tv             ; MAP_SCREAM_TV_THURSDAY_THE_12TH
-    dw   .secondary_tileset_data_media_dimension       ; MAP_UNUSED_11
-    dw   .secondary_tileset_data_media_dimension       ; MAP_UNUSED_12
-    dw   .secondary_tileset_data_media_dimension       ; MAP_UNUSED_13
-    dw   .secondary_tileset_data_media_dimension       ; MAP_UNUSED_14
-    dw   .secondary_tileset_data_kung_fu_theater       ; MAP_KUNG_FU_THEATER_LIZARD_IN_A_CHINA_SHOP
-    dw   .secondary_tileset_data_rezopolis             ; MAP_REZOPOLIS_BUGGED_OUT
-    dw   .secondary_tileset_data_circuit_central       ; MAP_CIRCUIT_CENTRAL_CHIPS_AND_DIPS
-    dw   .secondary_tileset_data_prehistory_channel    ; MAP_PRE_HISTORY_CHANNEL_LAVA_DABBA_DOO
-    dw   .secondary_tileset_data_scream_tv             ; MAP_SCREAM_TV_TEXAS_CHAINSAW_MANICURE
-    dw   .secondary_tileset_data_rezopolis             ; MAP_REZOPOLIS_MAZED_AND_CONFUSED
-    dw   .secondary_tileset_data_media_dimension       ; MAP_UNUSED_1B
-    dw   .secondary_tileset_data_media_dimension       ; MAP_UNUSED_1C
-    dw   .secondary_tileset_data_media_dimension       ; MAP_UNUSED_1D
-    dw   .secondary_tileset_data_channel_z             ; MAP_BOSS_TV_CHANNEL_Z
-.secondary_tileset_data_media_dimension:
-    INCBIN "data/maps/media_dimension/secondary_tileset_data_media_dimension.bin"
-.secondary_tileset_data_toon_tv:
-    INCBIN "data/maps/toon_tv/secondary_tileset_data_toon_tv.bin"
-.secondary_tileset_data_scream_tv:
-    INCBIN "data/maps/scream_tv/secondary_tileset_data_scream_tv.bin"
-.secondary_tileset_data_circuit_central:
-    INCBIN "data/maps/circuit_central/secondary_tileset_data_circuit_central.bin"
-.secondary_tileset_data_kung_fu_theater:
-    INCBIN "data/maps/kung_fu_theater/secondary_tileset_data_kung_fu_theater.bin"
-.secondary_tileset_data_prehistory_channel:
-    INCBIN "data/maps/prehistory_channel/secondary_tileset_data_prehistory_channel.bin"
-.secondary_tileset_data_rezopolis:
-    INCBIN "data/maps/rezopolis/secondary_tileset_data_rezopolis.bin"
-.secondary_tileset_data_channel_z:
-    INCBIN "data/maps/channel_z/secondary_tileset_data_channel_z.bin"
+.data_00_1a2e_LevelSecondaryTilesetLookups:
+; One pointer per level to that world's block -> secondary tileset lookup below.
+; Levels sharing a world theme share a pointer, so there are 31 entries but only
+; eight tables: Media Dimension, Toon TV, Scream TV, Circuit Central, Kung Fu
+; Theater, Prehistory Channel, Rezopolis, Channel Z.
+;
+; Each table is:
+;   byte 0    base block id
+;   byte 1+   indexed by (block id - base), giving a secondary tileset index,
+;             or $00 for a block that needs no secondary tileset
+;
+; It holds no graphics of its own. call_00_1922_BgMap_LoadSecondaryTileset walks the
+; six blocks of the strip just loaded, and for each one whose alt blockset flag is
+; set, looks its id up here; a nonzero answer that differs from
+; wD72D_SecondaryTilesetIndex is what triggers the HDMA stream of a new secondary
+; tileset. The tileset graphics themselves are reached through the separate
+; farpointer2 table above
+    dw   .secondary_tileset_for_block_media_dimension       ; MAP_MEDIA_DIMENSION
+    dw   .secondary_tileset_for_block_toon_tv               ; MAP_TOON_TV_OUT_OF_TOON
+    dw   .secondary_tileset_for_block_scream_tv             ; MAP_SCREAM_TV_SMELLRAISER
+    dw   .secondary_tileset_for_block_scream_tv             ; MAP_SCREAM_TV_FRANKENSTEINFELD
+    dw   .secondary_tileset_for_block_circuit_central       ; MAP_CIRCUIT_CENTRAL_WWWDOTCOMCOM
+    dw   .secondary_tileset_for_block_kung_fu_theater       ; MAP_KUNG_FU_THEATER_MAO_TSE_TONGUE
+    dw   .secondary_tileset_for_block_media_dimension       ; MAP_UNUSED_06
+    dw   .secondary_tileset_for_block_prehistory_channel    ; MAP_PRE_HISTORY_CHANNEL_PANGAEA_90210
+    dw   .secondary_tileset_for_block_toon_tv               ; MAP_TOON_TV_FINE_TOONING
+    dw   .secondary_tileset_for_block_prehistory_channel    ; MAP_PRE_HISTORY_CHANNEL_THIS_OLD_CAVE
+    dw   .secondary_tileset_for_block_circuit_central       ; MAP_CIRCUIT_CENTRAL_HONEY_I_SHRUNK_THE_GECKO
+    dw   .secondary_tileset_for_block_scream_tv             ; MAP_SCREAM_TV_POLTERGEX
+    dw   .secondary_tileset_for_block_media_dimension       ; MAP_UNUSED_0C
+    dw   .secondary_tileset_for_block_kung_fu_theater       ; MAP_KUNG_FU_THEATER_SAMURAI_NIGHT_FEVER
+    dw   .secondary_tileset_for_block_rezopolis             ; MAP_REZOPOLIS_NO_WEDDINGS_AND_A_FUNERAL
+    dw   .secondary_tileset_for_block_media_dimension       ; MAP_UNUSED_0F
+    dw   .secondary_tileset_for_block_scream_tv             ; MAP_SCREAM_TV_THURSDAY_THE_12TH
+    dw   .secondary_tileset_for_block_media_dimension       ; MAP_UNUSED_11
+    dw   .secondary_tileset_for_block_media_dimension       ; MAP_UNUSED_12
+    dw   .secondary_tileset_for_block_media_dimension       ; MAP_UNUSED_13
+    dw   .secondary_tileset_for_block_media_dimension       ; MAP_UNUSED_14
+    dw   .secondary_tileset_for_block_kung_fu_theater       ; MAP_KUNG_FU_THEATER_LIZARD_IN_A_CHINA_SHOP
+    dw   .secondary_tileset_for_block_rezopolis             ; MAP_REZOPOLIS_BUGGED_OUT
+    dw   .secondary_tileset_for_block_circuit_central       ; MAP_CIRCUIT_CENTRAL_CHIPS_AND_DIPS
+    dw   .secondary_tileset_for_block_prehistory_channel    ; MAP_PRE_HISTORY_CHANNEL_LAVA_DABBA_DOO
+    dw   .secondary_tileset_for_block_scream_tv             ; MAP_SCREAM_TV_TEXAS_CHAINSAW_MANICURE
+    dw   .secondary_tileset_for_block_rezopolis             ; MAP_REZOPOLIS_MAZED_AND_CONFUSED
+    dw   .secondary_tileset_for_block_media_dimension       ; MAP_UNUSED_1B
+    dw   .secondary_tileset_for_block_media_dimension       ; MAP_UNUSED_1C
+    dw   .secondary_tileset_for_block_media_dimension       ; MAP_UNUSED_1D
+    dw   .secondary_tileset_for_block_channel_z             ; MAP_BOSS_TV_CHANNEL_Z
+.secondary_tileset_for_block_media_dimension:
+    INCBIN "data/maps/media_dimension/secondary_tileset_for_block_media_dimension.bin"
+.secondary_tileset_for_block_toon_tv:
+    INCBIN "data/maps/toon_tv/secondary_tileset_for_block_toon_tv.bin"
+.secondary_tileset_for_block_scream_tv:
+    INCBIN "data/maps/scream_tv/secondary_tileset_for_block_scream_tv.bin"
+.secondary_tileset_for_block_circuit_central:
+    INCBIN "data/maps/circuit_central/secondary_tileset_for_block_circuit_central.bin"
+.secondary_tileset_for_block_kung_fu_theater:
+    INCBIN "data/maps/kung_fu_theater/secondary_tileset_for_block_kung_fu_theater.bin"
+.secondary_tileset_for_block_prehistory_channel:
+    INCBIN "data/maps/prehistory_channel/secondary_tileset_for_block_prehistory_channel.bin"
+.secondary_tileset_for_block_rezopolis:
+    INCBIN "data/maps/rezopolis/secondary_tileset_for_block_rezopolis.bin"
+.secondary_tileset_for_block_channel_z:
+    INCBIN "data/maps/channel_z/secondary_tileset_for_block_channel_z.bin"
 
 call_00_1e3c_BgMap_MaskAltBlocksetFlags:
 ; Reads wD6FE_BgMap_AltBlocksetMask into C. Masks 6 consecutive bytes at HL+1 through HL+6 each with 

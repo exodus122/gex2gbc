@@ -539,10 +539,12 @@ DEF MAPDATA_REMOTE_PROGRESS_ID              EQU $01 ; row for the mission status
 DEF MAPDATA_TEXT_BLOCK_PTR                  EQU $02 ; word -> list of text pointers:
                                                     ; entry 0 is the level name, entries
                                                     ; 1..n are the mission descriptions
-DEF MAPDATA_MAP_BANK                        EQU $04
+DEF MAPDATA_BLOCKMAP_BANK                   EQU $04 ; grid of block ids, one byte per
+                                                    ; block - see BLOCKMAP below
 DEF MAPDATA_ALT_BLOCKSET_BANK               EQU $05 ; bank $34 or $35 - the flag plane
                                                     ; described under ALT BLOCKSET below
-DEF MAPDATA_BLOCKSET_COLLISION_BANK         EQU $06
+DEF MAPDATA_BLOCKSET_COLLISION_BANK         EQU $06 ; block definitions and the collision
+                                                    ; table, in that order
                                                     ; $07 unused, always $00
 DEF MAPDATA_ALT_BLOCKSET_MASK               EQU $08 ; this map's bit within the flag
                                                     ; plane; $00 opts out entirely
@@ -711,6 +713,20 @@ DEF FONT_GLYPH_COUNT                        EQU $2A ; $00 space, $01-$1A A-Z, $1
                                                     ; $25-$29 punctuation
 DEF FONT_BYTES_PER_ROW                      EQU 2   ; 2bpp: plane 0 then plane 1
 
+; ------------------------------------------------------------------
+; THREE LAYERS BUILD THE BACKGROUND
+;
+;   BLOCKMAP  MAPDATA_BLOCKMAP_BANK, banks $28-$33. A grid of block ids, one byte
+;             per block, the level's actual layout.
+;   BLOCKSET  MAPDATA_BLOCKSET_COLLISION_BANK. What each id means: 8 bytes giving
+;             the block's 4x2 tile ids. Read from page $40, or $50 when the alt
+;             blockset flag is set. The collision table shares the bank.
+;   TILEMAP   the result, written into VRAM a strip at a time as the camera moves.
+;
+; So "blockmap" is the arrangement and "blockset" is the vocabulary - the file names
+; in main.asm follow that split. "map" on its own is avoided here because it already
+; means a level id (MAP_*) and the per-level record (MapData).
+;
 ; ------------------------------------------------------------------
 ; TWO SEPARATE SYSTEMS ACT ON THE BACKGROUND MAP
 ;
