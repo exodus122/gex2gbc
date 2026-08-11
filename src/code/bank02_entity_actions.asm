@@ -1601,7 +1601,7 @@ call_02_5a28_EntityAction_Mushroom_Update:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     bit  MISC_FLAGS_BIT_0, [HL]                                       ;; 02:5a30 $cb $46
     ret  Z                                             ;; 02:5a32 $c8
-    ld   HL, wD774                                     ;; 02:5a33 $21 $74 $d7
+    ld   HL, wD774_MushroomsDestroyedCount                                     ;; 02:5a33 $21 $74 $d7
     inc  [HL]                                          ;; 02:5a36 $34
     ld   A, [HL]                                       ;; 02:5a37 $7e
     cp   A, $05                                        ;; 02:5a38 $fe $05
@@ -1630,7 +1630,7 @@ call_02_5a28_EntityAction_Mushroom_Update:
     ld   [HL], $40                                     ;; 02:5a65 $36 $40
     xor  A, $16                                        ;; 02:5a67 $ee $16
     ld   L, A                                          ;; 02:5a69 $6f
-    ld   A, [wD774]                                    ;; 02:5a6a $fa $74 $d7
+    ld   A, [wD774_MushroomsDestroyedCount]                                    ;; 02:5a6a $fa $74 $d7
     dec  A                                             ;; 02:5a6d $3d
     add  A, A                                          ;; 02:5a6e $87
     add  A, $40                                        ;; 02:5a6f $c6 $40

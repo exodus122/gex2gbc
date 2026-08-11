@@ -292,7 +292,7 @@ call_00_0150_Init:
     ld   [wD754_FlyPowerup1_TimerHi], A                                    ;; 00:0386 $ea $54 $d7
     ld   [wD772_BreakablesDestroyedCount], A                 ;; 00:0389 $ea $72 $d7
     ld   [wD773_HuntersDefeatedCount], A               ;; 00:038c $ea $73 $d7
-    ld   [wD774], A                                    ;; 00:038f $ea $74 $d7
+    ld   [wD774_MushroomsDestroyedCount], A                                    ;; 00:038f $ea $74 $d7
     ld   [wD73C_FrameCounter2], A                                    ;; 00:0392 $ea $3c $d7
     ld   [wD6F9_BgMap_LoadingFlags], A                                    ;; 00:0395 $ea $f9 $d6
     ld   [wD60E_HUDDirtyFlags], A                                    ;; 00:0398 $ea $0e $d6

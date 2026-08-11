@@ -3587,7 +3587,7 @@
 00:d771 wD771_LevelTimer_FrameCounter
 00:d772 wD772_BreakablesDestroyedCount
 00:d773 wD773_HuntersDefeatedCount
-00:d774 wD774
+00:d774 wD774_MushroomsDestroyedCount
 00:d775 wD775_Cutscene_Skippable
 00:d778 wD778_BlockPatch_SlotWriteHead
 00:d779 wD779_RelatedToXPosition
