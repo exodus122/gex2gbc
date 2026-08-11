@@ -3533,8 +3533,8 @@
 00:d738 wD738_TilesetAnim_Flags
 00:d739 wD739_Entity_OamWriteOffset
 00:d73a wD73A_Entity_TileIdBase
-00:d73b wD73B_FrameCounter
-00:d73c wD73C_FrameCounter2
+00:d73b wD73B_VBlankFrameCounter
+00:d73c wD73C_GameplayFrameCounter
 00:d73d wD73D_LivesRemaining
 00:d73e wD73E_LivesRemaining_Hundreds
 00:d73f wD73F_LivesRemaining_Tens

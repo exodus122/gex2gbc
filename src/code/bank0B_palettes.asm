@@ -306,7 +306,7 @@ call_0b_5df8_MediaDimension_LoadActiveTVPalette:
 
 call_0b_5ec3_UpdatePlayerObjPalette:
 ; Updates Gex's OBJ palette based on current power-up state. Returns if DMG. 
-; Reads wD73B_FrameCounter low 5 bits; if ≥ 8 (not ?), checks powerup timers 
+; Reads wD73B_VBlankFrameCounter low 5 bits; if ≥ 8 (not ?), checks powerup timers 
 ; wD751_Player_CircuitPowerUpTimerLo/wD752_Player_CircuitPowerUpTimerHi →
 ; uses .data_0b_5efb (gold flash palette), then wD755_FlyPowerup2_TimerLo/wD756 → uses .data_0b_5f03 
 ; (blue/white palette), then wD753_FlyPowerup1_TimerLo/wD754_FlyPowerup1_TimerHi → same blue/white palette. 
@@ -314,7 +314,7 @@ call_0b_5ec3_UpdatePlayerObjPalette:
     ld   A, [wD59E_OnGBCFlag]                                    ;; 0b:5ec3 $fa $9e $d5
     and  A, A                                          ;; 0b:5ec6 $a7
     ret  Z                                             ;; 0b:5ec7 $c8
-    ld   A, [wD73B_FrameCounter]                                    ;; 0b:5ec8 $fa $3b $d7
+    ld   A, [wD73B_VBlankFrameCounter]                                    ;; 0b:5ec8 $fa $3b $d7
     and  A, $1f                                        ;; 0b:5ecb $e6 $1f
     cp   A, $08                                        ;; 0b:5ecd $fe $08
     jr   C, .jr_0b_5eef                                ;; 0b:5ecf $38 $1e

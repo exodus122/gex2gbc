@@ -908,7 +908,7 @@ call_02_44af_PlayerAction_Climb:
 ; applies position delta. Uses wD747 (counter >> 1) to index .data_02_472e (sprite IDs $C8–$D0) 
 ; for dismount animation. Increments counter; at $11, reads 4 bytes from .data_02_4757 
 ; (new climb state, facing, wD74B_Player_ClimbingFlags, sprite ID) and applies them to complete the transition
-    ld   a,[wD73C_FrameCounter2]
+    ld   a,[wD73C_GameplayFrameCounter]
     and  a,$1F
     ret  nz
     ld   a,[wD749_Player_ClimbingDirection]

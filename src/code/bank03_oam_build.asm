@@ -133,7 +133,7 @@ call_03_5ca8_Entity_BuildPlayerSprites:
 ; via call_00_07b9_GetPointerFromTable to get the frame pointer. Computes player screen X/Y from world position 
 ; minus map scroll origin (wD6ED/wD6EF) plus offsets ($08/$10), stores into wD212/wD213. 
 ; Checks action ID for $11 (special state), invincibility flags (wD755_FlyPowerup2_TimerLo/wD753_FlyPowerup1_TimerLo/wD751_Player_CircuitPowerUpTimerLo), 
-; and wD73B_FrameCounter bit 3 — if any special condition is active, substitutes .data_03_5e7f 
+; and wD73B_VBlankFrameCounter bit 3 — if any special condition is active, substitutes .data_03_5e7f 
 ; (invincible/stunned sprite). Writes up to 8 OAM entries into wCC00_ShadowOAM, each as (Y+B, X+C, tile+wD73A_Entity_TileIdBase, attr
     ld   A, [wD586_PlayerGfxVramPage]                                    ;; 03:5ca8 $fa $86 $d5
     ld   HL, wD20D_Player_FacingFlags                                     ;; 03:5cab $21 $0d $d2
@@ -180,7 +180,7 @@ call_03_5ca8_Entity_BuildPlayerSprites:
     or   A, [HL]                                       ;; 03:5d00 $b6
     pop  HL                                            ;; 03:5d01 $e1
     jr   Z, .jr_03_5d11                                ;; 03:5d02 $28 $0d
-    ld   A, [wD73B_FrameCounter]                                    ;; 03:5d04 $fa $3b $d7
+    ld   A, [wD73B_VBlankFrameCounter]                                    ;; 03:5d04 $fa $3b $d7
     and  A, $08                                        ;; 03:5d07 $e6 $08
     jr   Z, .jr_03_5d11                                ;; 03:5d09 $28 $06
 .jr_03_5d0b:
@@ -1100,7 +1100,7 @@ call_03_6540_Oam_FinishFrame:
     jp   call_03_6484_OAM_ClearUnusedEntries                                    ;; 03:6546 $c3 $84 $64
 
 call_03_6549_Entity_BuildSprites_FloatingSkullProjectile:
-; Active flag = bit 0. Tile = (wD73B_FrameCounter >> 2) & 2 + $2C (alternates between $2C/$2E 
+; Active flag = bit 0. Tile = (wD73B_VBlankFrameCounter >> 2) & 2 + $2C (alternates between $2C/$2E 
 ; based on a global timer bit — a two-frame animation). Attribute = $04
     call call_00_3a0a_Entity_GetSpriteListAndParticles
     push de
@@ -1123,7 +1123,7 @@ call_03_6549_Entity_BuildSprites_FloatingSkullProjectile:
     sub  a,$04
     ld   [de],a
     inc  de
-    ld   a,[wD73B_FrameCounter]
+    ld   a,[wD73B_VBlankFrameCounter]
     rrca 
     rrca 
     and  a,$02
@@ -1332,7 +1332,7 @@ call_03_663a_Entity_BuildSprites_FirePlantProjectiles:
     sub  a,$04
     ld   [de],a
     inc  de
-    ld   a,[wD73B_FrameCounter]
+    ld   a,[wD73B_VBlankFrameCounter]
     rrca 
     rrca 
     and  a,$02

@@ -293,7 +293,7 @@ call_00_0150_Init:
     ld   [wD772_BreakablesDestroyedCount], A                 ;; 00:0389 $ea $72 $d7
     ld   [wD773_HuntersDefeatedCount], A               ;; 00:038c $ea $73 $d7
     ld   [wD774_MushroomsDestroyedCount], A                                    ;; 00:038f $ea $74 $d7
-    ld   [wD73C_FrameCounter2], A                                    ;; 00:0392 $ea $3c $d7
+    ld   [wD73C_GameplayFrameCounter], A                                    ;; 00:0392 $ea $3c $d7 ; restart the level's gameplay clock; wD73B is never reset
     ld   [wD6F9_BgMap_LoadingFlags], A                                    ;; 00:0395 $ea $f9 $d6
     ld   [wD60E_HUDDirtyFlags], A                                    ;; 00:0398 $ea $0e $d6
     ld   [wD60F_GfxTransferFlags], A                                    ;; 00:039b $ea $0f $d6
@@ -411,7 +411,7 @@ call_00_0150_Init:
     ld   A, [HL+]                                      ;; 00:04d0 $2a
     or   A, [HL]                                       ;; 00:04d1 $b6
     jr   Z, .jr_00_04e0                                ;; 00:04d2 $28 $0c
-    ld   A, [wD73B_FrameCounter]                                    ;; 00:04d4 $fa $3b $d7
+    ld   A, [wD73B_VBlankFrameCounter]                                    ;; 00:04d4 $fa $3b $d7
     and  A, $7f                                        ;; 00:04d7 $e6 $7f
     jr   NZ, .jr_00_04e0                               ;; 00:04d9 $20 $05
     ld   C, SFX_MENU_UNK_1                                        ;; 00:04db $0e $14
@@ -424,9 +424,13 @@ call_00_0150_Init:
     call call_00_05c7_FlyPowerup_Update                                  ;; 00:04f4 $cd $c7 $05
     call call_00_08fc_StageNextGfxTransfer                                  ;; 00:04f7 $cd $fc $08
     FARCALL call_0b_5ec3_UpdatePlayerObjPalette
-    ld   HL, wD73C_FrameCounter2                                     ;; 00:0505 $21 $3c $d7
+    ; End of one pass of the in-game update loop. wD73C_GameplayFrameCounter is
+    ; bumped here rather than in the VBlank handler, so it only advances on frames
+    ; that actually ran the loop - not while a menu or cutscene has play suspended
+    ld   HL, wD73C_GameplayFrameCounter                                     ;; 00:0505 $21 $3c $d7
     inc  [HL]                                          ;; 00:0508 $34
-    ld   A, [wD73B_FrameCounter]                                    ;; 00:0509 $fa $3b $d7
+    ; Once every 256 frames on the global clock, age the three conveyor timers
+    ld   A, [wD73B_VBlankFrameCounter]                                    ;; 00:0509 $fa $3b $d7
     and  A, A                                          ;; 00:050c $a7
     jp   NZ, .jp_00_0428                               ;; 00:050d $c2 $28 $04
     ld   HL, wD5A3_ConveyorState1                                     ;; 00:0510 $21 $a3 $d5
@@ -1393,7 +1397,9 @@ call_00_0a54_VBlank_Handler:
     and  A, $01                                        ;; 00:0a92 $e6 $01
     ld   [MBC1SRamBank], A                                    ;; 00:0a94 $ea $01 $40
     call call_22_410c                                  ;; 00:0a97 $cd $0c $41
-    ld   HL, wD73B_FrameCounter                                     ;; 00:0a9a $21 $3b $d7
+    ; The only write to wD73B_VBlankFrameCounter in the ROM. Because it is here and
+    ; not in a game loop, it advances even while play is suspended
+    ld   HL, wD73B_VBlankFrameCounter                                     ;; 00:0a9a $21 $3b $d7
     inc  [HL]                                          ;; 00:0a9d $34
     ld   A, [wD59C_CurrentROMBank]                                    ;; 00:0a9e $fa $9c $d5
     ld   [MBC1RomBank], A                                    ;; 00:0aa1 $ea $01 $20
@@ -1816,7 +1822,7 @@ call_00_0c11_VBlank_ArmVramStreamIsr:
     ret                                                ;; 00:0d08 $c9
 data_00_0d09_RasterWobbleTable:
 ; rSCX offsets for the horizontal wobble effect, read as
-; [scanline - wD6EB_RasterWobble_StartLine] + [(wD73B_FrameCounter >> 3) & 7].
+; [scanline - wD6EB_RasterWobble_StartLine] + [(wD73B_VBlankFrameCounter >> 3) & 7].
 ; The repeating 0/-1/0/+1 pattern gives the 4-frame shimmer used by the tv warp
     db   $00, $ff, $00, $01, $00, $ff, $00, $01        ;; 00:0d09 ????????
     db   $00, $ff, $00, $01, $00, $ff, $00, $01        ;; 00:0d11 ????????

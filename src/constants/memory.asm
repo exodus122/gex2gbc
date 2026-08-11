@@ -1163,9 +1163,36 @@ wD73A_Entity_TileIdBase:
 ; layout can be pointed at whichever VRAM page that entity's tiles were
 ; streamed into. Set from data_03_5447_EntitySpriteMetaTable before drawing
     ds 1                                               ;; d73a
-wD73B_FrameCounter:
+wD73B_VBlankFrameCounter:
+; Free-running 8-bit frame clock. call_00_0a54_VBlank_Handler does "inc [HL]" on it
+; once per VBlank and nothing in the ROM ever writes it, so it counts frames since
+; power-on and wraps every 256. It keeps ticking through menus, cutscenes, loading
+; screens and the pause screen, because it lives in the interrupt handler rather
+; than in any game loop.
+;
+; Used as the game's shared phase source rather than as a measurement of time:
+;   AND a power-of-two mask, test for zero -> "do this every N frames"
+;   AND $01 / bit 3 -> damage-flash and blink, by toggling SPRITE_FLAG_INVISIBLE
+;   (counter >> 2) & 2 -> pick between two HUD tiles
+;   CP a per-entity byte -> each entity acts on the one frame the global clock
+;   matches its own stored value, which staggers identical enemies instead of
+;   firing them all on the same frame
     ds 1                                               ;; d73b
-wD73C_FrameCounter2:
+wD73C_GameplayFrameCounter:
+; Counts frames of ACTIVE gameplay in the current level. Incremented once per pass
+; of the in-game update loop at 00:0505, and zeroed by the level start/respawn
+; block at 00:0392.
+;
+; That makes it the counterpart to wD73B_VBlankFrameCounter, not a duplicate of it.
+; The update loop is entered once per frame (it opens with
+; call_00_0ab4_WaitForInterrupt), but it does not run at all while a menu is open,
+; during a cutscene, or while a screen is being rebuilt - and wD73B keeps counting
+; through all of those. So this one stops when play stops and restarts from zero
+; with the level.
+;
+; Read in three places, always masked: a randomised 1-4 frame delay before a cactus
+; attacks, a randomised $40-$7F frame respawn delay for falling lava, and a
+; "every 32 frames" gate on the climb-to-pipe transition
     ds 1                                               ;; d73c
 
 ; Player related memory

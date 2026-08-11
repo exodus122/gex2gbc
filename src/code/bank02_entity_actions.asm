@@ -423,7 +423,7 @@ call_02_51ea_EntityAction_TVButton_unk0:
     inc  E                                             ;; 02:51f8 $1c
     dec  E                                             ;; 02:51f9 $1d
     jr   NZ, .jr_02_5207                               ;; 02:51fa $20 $0b
-    ld   A, [wD73B_FrameCounter]                                    ;; 02:51fc $fa $3b $d7
+    ld   A, [wD73B_VBlankFrameCounter]                                    ;; 02:51fc $fa $3b $d7
     and  A, $1f                                        ;; 02:51ff $e6 $1f
     cp   A, $0c                                        ;; 02:5201 $fe $0c
     jr   NC, .jr_02_5207                               ;; 02:5203 $30 $02
@@ -489,7 +489,7 @@ call_02_526a_EntityAction_RedRemote_unk1:
     inc  E                                             ;; 02:5278 $1c
     dec  E                                             ;; 02:5279 $1d
     ret  NZ                                            ;; 02:527a $c0
-    ld   A, [wD73B_FrameCounter]                                    ;; 02:527b $fa $3b $d7
+    ld   A, [wD73B_VBlankFrameCounter]                                    ;; 02:527b $fa $3b $d7
     and  A, $01                                        ;; 02:527e $e6 $01
     ret  Z                                             ;; 02:5280 $c8
     set  SPRITE_FLAG_INVISIBLE_BIT, [HL]                                       ;; 02:5281 $cb $de
@@ -512,7 +512,7 @@ call_02_5297_EntityAction_GoldRemote_unk1:
     ld   a,[wD649_CollectibleAmount]
     and  a
     jp   nz,call_00_3931_Entity_DeactivateSelf
-    ld   a,[wD73B_FrameCounter]
+    ld   a,[wD73B_VBlankFrameCounter]
     and  a,$1F
     ret  nz
     ld   c,SFX_GOLD_REMOTE
@@ -874,7 +874,7 @@ call_02_54fc_EntityAction_ZombieHead_unk2:
 
 call_02_54ff_EntityAction_FallingAxe_unk0:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
-    ld   a,[wD73B_FrameCounter]
+    ld   a,[wD73B_VBlankFrameCounter]
     and  a,$7F
     cp   [hl]
     ld   a,$01
@@ -1062,7 +1062,7 @@ call_02_5628_EntityAction_ClimbWallSunEnemy_Update:
 
 call_02_563a_EntityAction_ScreamTVVanishingPlatform_unk0:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_1B
-    ld   a,[wD73B_FrameCounter]
+    ld   a,[wD73B_VBlankFrameCounter]
     cp   [hl]
     ret  nz
     ld   a,l
@@ -1424,7 +1424,7 @@ call_02_58d3_EntityAction_Cactus_unk0:
     ld   C, $40                                        ;; 02:58d3 $0e $40
     call call_00_3859_Entity_CheckPlayerXProximity                                  ;; 02:58d5 $cd $59 $38
     ret  NC                                            ;; 02:58d8 $d0
-    ld   A, [wD73C_FrameCounter2]                                    ;; 02:58d9 $fa $3c $d7
+    ld   A, [wD73C_GameplayFrameCounter]                                    ;; 02:58d9 $fa $3c $d7
     and  A, $03                                        ;; 02:58dc $e6 $03
     inc  A                                             ;; 02:58de $3c
     ld   C, A                                          ;; 02:58df $4f
@@ -1529,7 +1529,7 @@ call_02_5993_EntityAction_Hunter_unk0:
     ld   c,$03
     call call_00_3802_Entity_SetMiscTimer
 .jr_02_599D:
-    ld   a,[wD73B_FrameCounter]
+    ld   a,[wD73B_VBlankFrameCounter]
     and  a,$7F
     jr   nz,.jr_02_59BE
     call call_00_36bd_Entity_FaceTowardsPlayer
@@ -1644,7 +1644,7 @@ call_02_5a73_EntityAction_MushroomProjectile_Update:
     ret                                                ;; 02:5a7c $c9
 
 call_02_5a7d_EntityAction_Lizard_Update:
-    ld   a,[wD73B_FrameCounter]
+    ld   a,[wD73B_VBlankFrameCounter]
     and  a,$3F
     jr   nz,.jr_02_5A84
 .jr_02_5A84:
@@ -1693,7 +1693,7 @@ call_02_5aab_EntityAction_ToonTVVanishingBlock_unk0:
     jp   z,call_00_3910_Entity_ClearSlot
 .jr_02_5AD2:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_1B
-    ld   a,[wD73B_FrameCounter]
+    ld   a,[wD73B_VBlankFrameCounter]
     cp   [hl]
     ret  nz
     ld   a,l
@@ -1810,7 +1810,7 @@ call_02_5b47_EntityAction_ToonTVMovingBlock_unk0:
     jp   call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip
 
 call_02_5b9d_EntityAction_ToonTVMovingBlock_unk1:
-    ld   a,[wD73B_FrameCounter]
+    ld   a,[wD73B_VBlankFrameCounter]
     and  a,$07
     ret  nz
     call call_00_3817_Entity_DecrementMiscTimer
@@ -1920,7 +1920,7 @@ call_02_5c5b_EntityAction_Egg_unk2:
     ret  
 
 call_02_5c69_EntityAction_Unk35_unk0:
-    ld   a,[wD73B_FrameCounter]
+    ld   a,[wD73B_VBlankFrameCounter]
     and  a
     ld   a,$01
     jp   z,call_02_7102_Entity_SetAction
@@ -1943,7 +1943,7 @@ call_02_5c7d_EntityAction_FallingLava_unk0:
     ld   [hl],d
     call call_00_3817_Entity_DecrementMiscTimer
     ret  nz
-    ld   a,[wD73C_FrameCounter2]
+    ld   a,[wD73C_GameplayFrameCounter]
     and  a,$3F
     or   a,$40
     ld   [hl],a
@@ -2041,7 +2041,7 @@ call_02_5d0c_EntityAction_FallingBoulder_unk0:
     ld   [hl],d
     xor  a,$09
     ld   l,a
-    ld   a,[wD73B_FrameCounter]
+    ld   a,[wD73B_VBlankFrameCounter]
     and  a,$3F
     cp   [hl]
     ret  nz
@@ -2146,7 +2146,7 @@ call_02_5de6_EntityAction_FirePlantProjectiles_unk1:
     ret  
 
 call_02_5df8_EntityAction_Geyser_unk0:
-    ld   a,[wD73B_FrameCounter]
+    ld   a,[wD73B_VBlankFrameCounter]
     and  a
     ld   a,$01
     jp   z,call_02_7102_Entity_SetAction
@@ -2863,7 +2863,7 @@ call_02_6388_EntityAction_KungFuVanishingPlatform_unk0:
     ld   [hl],a
 .jr_02_6394:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_1B
-    ld   a,[wD73B_FrameCounter]
+    ld   a,[wD73B_VBlankFrameCounter]
     cp   [hl]
     ret  nz
     ld   a,l
@@ -3496,7 +3496,7 @@ call_02_6775_EntityAction_LittleRobotGear_Update:
 
 call_02_6786_EntityAction_ElectricBall_unk0:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_1B
-    ld   a,[wD73B_FrameCounter]
+    ld   a,[wD73B_VBlankFrameCounter]
     cp   [hl]
     ret  nz
     dec  l
@@ -3825,7 +3825,7 @@ call_02_6a3c_EntityAction_WalkwayActivator_Update:
 
 call_02_6a8b_EntityAction_ArcedGunProjectile_unk0:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
-    ld   a,[wD73B_FrameCounter]
+    ld   a,[wD73B_VBlankFrameCounter]
     and  a,$3F
     cp   [hl]
     ret  nz
@@ -3854,7 +3854,7 @@ call_02_6aac_EntityAction_ArcedGunProjectile_unk1:
 
 call_02_6ad3_EntityAction_ArcedGunProjectile2_unk0:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
-    ld   a,[wD73B_FrameCounter]
+    ld   a,[wD73B_VBlankFrameCounter]
     and  a,$3F
     cp   [hl]
     ret  nz
@@ -3917,7 +3917,7 @@ call_02_6b43_EntityAction_ArcedGunProjectile2_unk3:
 
 call_02_6b6a_EntityAction_GunProjectile_unk0:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
-    ld   a,[wD73B_FrameCounter]
+    ld   a,[wD73B_VBlankFrameCounter]
     and  a,$3F
     cp   [hl]
     ret  nz
@@ -4035,7 +4035,7 @@ call_02_6c42_EntityAction_Rez_unk3:
     ld   a,$02
     call nz,call_02_7102_Entity_SetAction
 call_02_6c4a_EntityAction_Rez_unk2:
-    ld   a,[wD73B_FrameCounter]
+    ld   a,[wD73B_VBlankFrameCounter]
     and  a,$03
     jr   nz,.jr_02_6C7C
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
