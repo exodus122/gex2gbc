@@ -890,9 +890,9 @@ DEF BLOCKPATCH_STEP_SFX_BIT                   EQU 5
 DEF ENTITY_FIELD_ENTITY_ID                  EQU $00 ; ENTITY_ID_NONE ($FF) = free slot
 DEF ENTITY_FIELD_ACTION_ID                  EQU $01 ; masked to 5 bits; indexes the entity's action table
 DEF ENTITY_FIELD_ACTION_FUNC                EQU $02 ; word - per-frame update function
-DEF ENTITY_FIELD_SPRITE_IDS_PTR             EQU $04 ; word - list of frame ids, 4 bytes into the action data block
-DEF ENTITY_FIELD_SPRITE_FRAME_COUNTER       EQU $06 ; counts down to the next frame; $FF freezes the animation entirely
-DEF ENTITY_FIELD_SPRITE_COUNTER             EQU $07 ; index into the frame list
+DEF ENTITY_FIELD_ANIM_FRAME_LIST_PTR        EQU $04 ; word - list of frame ids, 4 bytes into the action data block
+DEF ENTITY_FIELD_ANIM_FRAME_TIMER           EQU $06 ; counts down to the next frame; $FF freezes the animation entirely
+DEF ENTITY_FIELD_ANIM_FRAME_INDEX           EQU $07 ; index into the frame list
 DEF ENTITY_FIELD_SPRITE_ID                  EQU $08 ; the frame to draw. For streaming entities this doubles as the
                                                     ; high byte of the ROM address its tiles are fetched from
 ; ------------------------------------------------------------------
@@ -901,17 +901,16 @@ DEF ENTITY_FIELD_SPRITE_ID                  EQU $08 ; the frame to draw. For str
 ; deciding. Bits 0-4 carry the action to move to when this one ends
 ; ------------------------------------------------------------------
 DEF ENTITY_FIELD_ACTION_STATE_FLAGS         EQU $09
-    DEF ACTION_STATE_HAS_PENDING_BIT     EQU 7 ; bits 0-4 hold a real action id
-    DEF ACTION_STATE_ADVANCE_ON_END_BIT  EQU 6 ; clearer alias for ACTION_STATE_ADVANCE_ON_END_BIT
-    DEF ACTION_STATE_IS_FIRST_FRAME_BIT  EQU 5 ; set by SetAction, cleared at the top of the next frame
+    DEF ACTION_STATE_HAS_PENDING_BIT      EQU 7 ; bits 0-4 hold a real action id
+    DEF ACTION_STATE_ADVANCE_ON_END_BIT   EQU 6
+    DEF ACTION_STATE_IS_FIRST_FRAME_BIT   EQU 5 ; set by SetAction, cleared at the top of the next frame
 
-    DEF ACTION_STATE_HAS_PENDING         EQU $80
-    DEF ACTION_STATE_ADVANCE_ON_END      EQU $40
-    DEF ACTION_STATE_IS_FIRST_FRAME      EQU $20
-    DEF ACTION_STATE_PENDING_ACTION      EQU $1F
+    DEF ACTION_STATE_HAS_PENDING          EQU $80
+    DEF ACTION_STATE_ADVANCE_ON_END       EQU $40
+    DEF ACTION_STATE_IS_FIRST_FRAME       EQU $20
+    DEF ACTION_STATE_PENDING_ACTION_MASK  EQU $1F
 ; ------------------------------------------------------------------
-; $0A - render mode and animation status. Despite the name this is almost
-; entirely a graphics field.
+; $0A - render mode and animation status
 ;
 ; Bits 0, 3, 4 and 7 pick which of five sprite-building paths
 ; call_03_5ebf_Entity_BuildSprites uses, tested in that priority order:
@@ -938,7 +937,7 @@ DEF ENTITY_FIELD_SPRITE_FLAGS               EQU $0A
     DEF SPRITE_FLAG_LAYOUT_BY_ACTION_BIT  EQU 4 ; layout selected by action id, not animation frame
     DEF SPRITE_FLAG_INVISIBLE_BIT         EQU 3 ; draws nothing; collision only
     DEF SPRITE_FLAG_LOOP_LAST_FRAME_BIT   EQU 1 ; on wrap, restart at the last frame instead of the first
-    DEF SPRITE_FLAG_EMBEDDED_DATA_BIT     EQU 0 ; sprite records embedded in the entity's data block
+    DEF SPRITE_FLAG_EMBEDDED_SPRITE_DATA_BIT     EQU 0 ; sprite records embedded in the entity's data block
 
     ; --- status: written by the engine, read by everyone else ---
     DEF SPRITE_FLAG_ID_CHANGED_BIT        EQU 6 ; pulse: the sprite id changed, tiles need refetching
@@ -954,54 +953,21 @@ DEF ENTITY_FIELD_SPRITE_FLAGS               EQU $0A
     DEF SPRITE_FLAG_INVISIBLE             EQU $08
     DEF SPRITE_FLAG_ANIM_ENDED            EQU $04
     DEF SPRITE_FLAG_LOOP_LAST_FRAME       EQU $02
-    DEF SPRITE_FLAG_EMBEDDED_DATA         EQU $01
-
-; ------------------------------------------------------------------
-; Entity particle effects (bank00_entity_utils.asm)
-;
-; Each entity slot owns a particle buffer (the simulation) and a sprite list buffer
-; (the OAM records built from it). See the header above
-; data_00_39c0_EntityEffectBuffers
-; ------------------------------------------------------------------
-DEF ENTITY_PARTICLE_COUNT                   EQU 8
-DEF ENTITY_PARTICLE_RECORD_SIZE             EQU 5
-DEF ENTITY_PARTICLES_SIZE                   EQU ENTITY_PARTICLE_COUNT * ENTITY_PARTICLE_RECORD_SIZE
-DEF ENTITY_SPRITE_RECORD_SIZE               EQU 4   ; Y, X, tile, attributes
-DEF ENTITY_SPRITE_LIST_SIZE                 EQU 1 + ENTITY_PARTICLE_COUNT * ENTITY_SPRITE_RECORD_SIZE
-
-DEF PARTICLE_FIELD_FLAGS                    EQU 0
-DEF PARTICLE_FIELD_YVELOCITY                EQU 1
-DEF PARTICLE_FIELD_YOFFSET                  EQU 2
-DEF PARTICLE_FIELD_XSPEED                   EQU 3
-DEF PARTICLE_FIELD_XOFFSET                  EQU 4
-
-DEF PARTICLE_ALIVE_BIT                      EQU 0 ; tested by Entity_TickParticles
-DEF PARTICLE_VISIBLE_BIT                    EQU 7 ; tested instead by some builders
-DEF PARTICLE_YVELOCITY_MIN                  EQU $C0 ; terminal velocity
-
-; Arguments to call_00_3a23_Entity_StartParticleEffect - index into
-; .data_00_3a67_ParticlePatterns
-DEF PARTICLE_PATTERN_NONE                   EQU 0 ; all zeros, spawns nothing
-DEF PARTICLE_PATTERN_BURST                  EQU 1 ; 8 shards, 4 left and 4 right
-DEF PARTICLE_PATTERN_BURST_SMALL            EQU 2 ; only 3 of the 8 records are used
-DEF PARTICLE_PATTERN_UNUSED_3               EQU 3
-DEF PARTICLE_PATTERN_FALLING_BOULDER        EQU 4
-DEF PARTICLE_PATTERN_JAR_BURST              EQU 5
-DEF PARTICLE_PATTERN_MULTI_PROJECTILE       EQU 6
-DEF ENTITY_FIELD_SPRITE_FRAME_COUNTER_MAX   EQU $0B ; reload for $06 - the animation's speed
-DEF ENTITY_FIELD_SPRITE_COUNTER_MAX         EQU $0C ; number of frames in the sequence
+    DEF SPRITE_FLAG_EMBEDDED_SPRITE_DATA  EQU $01
+DEF ENTITY_FIELD_ANIM_SPEED                 EQU $0B ; reload for $06 - the animation's speed
+DEF ENTITY_FIELD_ANIM_FRAME_COUNT           EQU $0C ; total number of frames in the sequence
 DEF ENTITY_FIELD_FACING_FLAGS               EQU $0D ; OR'd into the OAM attribute byte; bit 5 = FACING_LEFT (X flip)
-DEF ENTITY_FIELD_XPOS                       EQU $0E ; word, world space
-DEF ENTITY_FIELD_YPOS                       EQU $10 ; word, world space
+DEF ENTITY_FIELD_WORLD_X                    EQU $0E ; word, world space
+DEF ENTITY_FIELD_WORLD_Y                    EQU $10 ; word, world space
 ; Screen position, recomputed every frame by Entity_BuildSprites as
 ; world - scroll, plus the OAM bias ($08 across, $10 down). Entities are kept
 ; loaded over a generous window (X -$28..$B7, Y -$10..$EF relative to the
 ; scroll origin) and only flagged SPRITE_FLAG_ON_SCREEN inside the tighter box
 ; that is actually visible
-DEF ENTITY_FIELD_XPOS_ON_SCREEN             EQU $12
-DEF ENTITY_FIELD_YPOS_ON_SCREEN             EQU $13
-DEF ENTITY_FIELD_WIDTH                      EQU $14 ; collision box, not sprite size
-DEF ENTITY_FIELD_HEIGHT                     EQU $15
+DEF ENTITY_FIELD_SCREEN_X                   EQU $12
+DEF ENTITY_FIELD_SCREEN_Y                   EQU $13
+DEF ENTITY_FIELD_COLLISION_WIDTH            EQU $14 ; collision box, not sprite size
+DEF ENTITY_FIELD_COLLISION_HEIGHT           EQU $15
 DEF ENTITY_FIELD_COLLISION_TYPE             EQU $16 ; COLLISION_TYPE_*; picks the handler in bank 3
 DEF ENTITY_FIELD_MISC_FLAGS                 EQU $17 ; different entities use these flags for different purposes
     DEF MISC_FLAGS_BIT_7                 EQU 7 ; for platforms: set = left platform movement, unset = right
@@ -1012,8 +978,8 @@ DEF ENTITY_FIELD_MISC_FLAGS                 EQU $17 ; different entities use the
     DEF MISC_FLAGS_BIT_2                 EQU 2 ; used
     DEF MISC_FLAGS_BIT_1                 EQU 1 ; for platforms: set = vertical platform movement, unset = horizontal
     DEF MISC_FLAGS_BIT_0                 EQU 0 ; used
-DEF ENTITY_FIELD_MISC_TIMER                 EQU $18 ; general countdown; several entities despawn when it hits 0
-DEF ENTITY_FIELD_TIMER_2                    EQU $19
+DEF ENTITY_FIELD_MISC_TIMER_1               EQU $18 ; general countdown; several entities despawn when it hits 0
+DEF ENTITY_FIELD_MISC_TIMER_2               EQU $19
 ; General-purpose per-entity byte. Not a flags field - it is one of the six spawn
 ; parameter slots (see SPAWN_PARAM_TO_MISC_PARAM), so the entity list supplies a
 ; value at spawn and each entity type reads it however it likes. Observed uses:
@@ -1027,10 +993,10 @@ DEF ENTITY_FIELD_TIMER_2                    EQU $19
 ;     call_00_3137_Entity_ClampYToStoredFloor
 ; The last one is why $1B has no meaning of its own in that case
 DEF ENTITY_FIELD_MISC_PARAM                 EQU $1A
-DEF ENTITY_FIELD_UNK_1B                     EQU $1B ; never referenced through the field macros
-DEF ENTITY_FIELD_XVEL                       EQU $1C
-DEF ENTITY_FIELD_XVEL_RELATED               EQU $1D
-DEF ENTITY_FIELD_YVEL                       EQU $1E
+DEF ENTITY_FIELD_MISC_PARAM_HI              EQU $1B ; never referenced through the field macros
+DEF ENTITY_FIELD_X_VELOCITY                 EQU $1C
+DEF ENTITY_FIELD_X_VELOCITY_RELATED         EQU $1D
+DEF ENTITY_FIELD_Y_VELOCITY                 EQU $1E
 DEF ENTITY_FIELD_UNK_1F                     EQU $1F ; unused?
 
 ; ------------------------------------------------------------------
@@ -1088,13 +1054,13 @@ DEF ENTITY_SPAWN_RECORD_SIZE                EQU $10 ; 4 bytes of the record are 
 ; next spawn parameter", clear means "zero it". So the mask both selects the
 ; destination fields and, by its population count, says how many of the spawn
 ; record's parameter bytes this entity type consumes
-DEF SPAWN_PARAM_TO_MISC_TIMER               EQU $80 ; -> ENTITY_FIELD_MISC_TIMER   ($18)
-DEF SPAWN_PARAM_TO_TIMER_2                  EQU $40 ; -> ENTITY_FIELD_TIMER_2      ($19)
+DEF SPAWN_PARAM_TO_MISC_TIMER               EQU $80 ; -> ENTITY_FIELD_MISC_TIMER_1   ($18)
+DEF SPAWN_PARAM_TO_TIMER_2                  EQU $40 ; -> ENTITY_FIELD_MISC_TIMER_2      ($19)
 DEF SPAWN_PARAM_TO_MISC_PARAM               EQU $20 ; -> ENTITY_FIELD_MISC_PARAM   ($1A)
-DEF SPAWN_PARAM_TO_UNK_1B                   EQU $10 ; -> ENTITY_FIELD_UNK_1B       ($1B)
-DEF SPAWN_PARAM_TO_XVEL                     EQU $08 ; -> ENTITY_FIELD_XVEL         ($1C)
-DEF SPAWN_PARAM_TO_XVEL_RELATED             EQU $04 ; -> ENTITY_FIELD_XVEL_RELATED ($1D)
-DEF SPAWN_PARAM_TO_YVEL                     EQU $02 ; -> ENTITY_FIELD_YVEL         ($1E)
+DEF SPAWN_PARAM_TO_UNK_1B                   EQU $10 ; -> ENTITY_FIELD_MISC_PARAM_HI       ($1B)
+DEF SPAWN_PARAM_TO_XVEL                     EQU $08 ; -> ENTITY_FIELD_X_VELOCITY         ($1C)
+DEF SPAWN_PARAM_TO_XVEL_RELATED             EQU $04 ; -> ENTITY_FIELD_X_VELOCITY_RELATED ($1D)
+DEF SPAWN_PARAM_TO_YVEL                     EQU $02 ; -> ENTITY_FIELD_Y_VELOCITY         ($1E)
 DEF SPAWN_PARAM_TO_UNK_1F                   EQU $01 ; -> ENTITY_FIELD_UNK_1F       ($1F)
 
 ; Entity child spawn id's
@@ -1116,6 +1082,39 @@ DEF SPAWN_CHILD_ENTITY_ANT                              EQU $0E
 DEF SPAWN_CHILD_ENTITY_FINAL_BATTLE_BUTTON_PROJECTILE_1 EQU $0F
 DEF SPAWN_CHILD_ENTITY_FINAL_BATTLE_BUTTON_PROJECTILE_2 EQU $10
 DEF SPAWN_CHILD_ENTITY_REZ_PORTAL                       EQU $11
+
+; ------------------------------------------------------------------
+; Entity particle effects (bank00_entity_utils.asm)
+;
+; Each entity slot owns a particle buffer (the simulation) and a sprite list buffer
+; (the OAM records built from it). See the header above
+; data_00_39c0_EntityEffectBuffers
+; ------------------------------------------------------------------
+DEF ENTITY_PARTICLE_COUNT                   EQU 8
+DEF ENTITY_PARTICLE_RECORD_SIZE             EQU 5
+DEF ENTITY_PARTICLES_SIZE                   EQU ENTITY_PARTICLE_COUNT * ENTITY_PARTICLE_RECORD_SIZE
+DEF ENTITY_SPRITE_RECORD_SIZE               EQU 4   ; Y, X, tile, attributes
+DEF ENTITY_SPRITE_LIST_SIZE                 EQU 1 + ENTITY_PARTICLE_COUNT * ENTITY_SPRITE_RECORD_SIZE
+
+DEF PARTICLE_FIELD_FLAGS                    EQU 0
+DEF PARTICLE_FIELD_YVELOCITY                EQU 1
+DEF PARTICLE_FIELD_YOFFSET                  EQU 2
+DEF PARTICLE_FIELD_XSPEED                   EQU 3
+DEF PARTICLE_FIELD_XOFFSET                  EQU 4
+
+DEF PARTICLE_ALIVE_BIT                      EQU 0 ; tested by Entity_TickParticles
+DEF PARTICLE_VISIBLE_BIT                    EQU 7 ; tested instead by some builders
+DEF PARTICLE_YVELOCITY_MIN                  EQU $C0 ; terminal velocity
+
+; Arguments to call_00_3a23_Entity_StartParticleEffect - index into
+; .data_00_3a67_ParticlePatterns
+DEF PARTICLE_PATTERN_NONE                   EQU 0 ; all zeros, spawns nothing
+DEF PARTICLE_PATTERN_BURST                  EQU 1 ; 8 shards, 4 left and 4 right
+DEF PARTICLE_PATTERN_BURST_SMALL            EQU 2 ; only 3 of the 8 records are used
+DEF PARTICLE_PATTERN_UNUSED_3               EQU 3
+DEF PARTICLE_PATTERN_FALLING_BOULDER        EQU 4
+DEF PARTICLE_PATTERN_JAR_BURST              EQU 5
+DEF PARTICLE_PATTERN_MULTI_PROJECTILE       EQU 6
 
 ; Player vs Entity interaction events
 DEF PLAYER_TOUCHED_ENTITY   EQU $00

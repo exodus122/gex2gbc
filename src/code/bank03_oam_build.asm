@@ -426,7 +426,7 @@ call_03_5ebf_Entity_BuildSprites:
     ld   A, [DE]                                       ;; 03:5f58 $1a
     bit  SPRITE_FLAG_INVISIBLE_BIT, A                      ;; 03:5f59 $cb $5f
     jp   NZ, call_03_4c76_EntityCollision_Dispatch                                ;; 03:5f5b $c2 $76 $4c
-    bit  SPRITE_FLAG_EMBEDDED_DATA_BIT, A                ;; 03:5f5e $cb $47
+    bit  SPRITE_FLAG_EMBEDDED_SPRITE_DATA_BIT, A                ;; 03:5f5e $cb $47
     jp   NZ, .jp_03_6451_Entity_BuildSprites_SpriteList                               ;; 03:5f60 $c2 $51 $64
     bit  SPRITE_FLAG_STREAMS_OWN_GFX_BIT, A                 ;; 03:5f63 $cb $7f
     jr   NZ, .jr_03_5fcb_Entity_BuildSprites_FacingBased                               ;; 03:5f65 $20 $64
@@ -900,7 +900,7 @@ call_03_5ebf_Entity_BuildSprites:
     db   $00, $10, $f8, $0a, $00, $10, $00, $0e
     db   $00
 .jp_03_6451_Entity_BuildSprites_SpriteList:
-; The generic draw for SPRITE_FLAG_EMBEDDED_DATA entities: copy the sprite list that a
+; The generic draw for SPRITE_FLAG_EMBEDDED_SPRITE_DATA entities: copy the sprite list that a
 ; per-effect builder already filled in straight into shadow OAM.
 ;
 ; call_00_39e0_Entity_GetSpriteListPtr gives the buffer. The first byte is the sprite

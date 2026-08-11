@@ -1,7 +1,7 @@
 call_00_30af_Entity_ApplyGravityAndMoveY_Clamped:
 ; Applies gravity (subtracts 2 from Y velocity, clamps to $C0 minimum), negates velocity, 
 ; right-shifts 4x to get pixel delta, then jumps to move Y position
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YVEL
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_Y_VELOCITY
     ld   A, [HL]                                       ;; 00:30b7 $7e
     sub  A, $02                                        ;; 00:30b8 $d6 $02
     bit  7, A                                          ;; 00:30ba $cb $7f
@@ -35,7 +35,7 @@ call_00_30da_Entity_ApplyGravityMoveY_WithFloorCollision:
 ; The code after the `ret` below is a separate routine that used to run on from
 ; here unlabelled - now split out as call_00_3125_Entity_SetYFloorToCurrentPos,
 ; which is the setter for the clamp in call_00_3137 just past it
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YVEL
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_Y_VELOCITY
     ld   a,[hl]
     sub  a,$02
     bit  7,a
@@ -64,7 +64,7 @@ call_00_30da_Entity_ApplyGravityMoveY_WithFloorCollision:
     adc  b
     ld   [hl],a
     call call_00_349c_Entity_GetMinYBound
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_Y
     ld   a,e
     sub  [hl]
     inc  hl
@@ -94,7 +94,7 @@ call_00_3125_Entity_SetYFloorToCurrentPos:
 ; The `xor $0A` reaches MISC_PARAM from YPOS ($10 xor $0A = $1A). In this use the
 ; $1A/$1B pair is a coordinate rather than a parameter byte, which is one of the
 ; several unrelated things ENTITY_FIELD_MISC_PARAM holds depending on entity type
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_Y
     ld   e,[hl]
     inc  l
     ld   d,[hl]
@@ -139,7 +139,7 @@ call_00_3154_Entity_MoveYDownWithFloorBound:
 ; entity has fallen past it, snaps Y to the bound and zeroes Y velocity.
 ;
     call call_00_34ba_Entity_GetMaxYBound                                  ;; 00:3154 $cd $ba $34
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_Y
     ld   A, [HL+]                                      ;; 00:315f $2a
     sub  A, E                                          ;; 00:3160 $93
     ld   A, [HL]                                       ;; 00:3161 $7e
@@ -163,7 +163,7 @@ call_00_316e_Entity_MoveYDownWithOffsetFloorBound:
     add  HL, DE                                        ;; 00:3173 $19
     ld   E, L                                          ;; 00:3174 $5d
     ld   D, H                                          ;; 00:3175 $54
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_Y
     ld   A, [HL+]                                      ;; 00:317e $2a
     sub  A, E                                          ;; 00:317f $93
     ld   A, [HL]                                       ;; 00:3180 $7e
@@ -205,7 +205,7 @@ call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip:
     bit  MISC_FLAGS_BIT_7, [HL]                                       ;; 00:31a0 $cb $7e
     jr   NZ, .jr_00_31de                               ;; 00:31a2 $20 $3a
     call call_00_347e_Entity_GetMaxXBound                                  ;; 00:31a4 $cd $7e $34
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_X
     ld   A, [HL+]                                      ;; 00:31af $2a
     sub  A, E                                          ;; 00:31b0 $93
     ld   A, [HL]                                       ;; 00:31b1 $7e
@@ -248,7 +248,7 @@ call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip:
     ret                                                ;; 00:31dd $c9
 .jr_00_31de:
     call call_00_3460_Entity_GetMinXBound                                  ;; 00:31de $cd $60 $34
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_X
     ld   A, [HL+]                                      ;; 00:31e9 $2a
     sub  A, E                                          ;; 00:31ea $93
     ld   A, [HL]                                       ;; 00:31eb $7e
@@ -274,7 +274,7 @@ call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip:
     bit  MISC_FLAGS_BIT_6, [HL]                                       ;; 00:3202 $cb $76
     jr   NZ, .jr_00_322a                               ;; 00:3204 $20 $24
     call call_00_34ba_Entity_GetMaxYBound                                  ;; 00:3206 $cd $ba $34
-   LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
+   LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_Y
     ld   A, [HL+]                                      ;; 00:3211 $2a
     sub  A, E                                          ;; 00:3212 $93
     ld   A, [HL]                                       ;; 00:3213 $7e
@@ -298,7 +298,7 @@ call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip:
     jr   .jp_00_31c4                                   ;; 00:3228 $18 $9a
 .jr_00_322a:
     call call_00_349c_Entity_GetMinYBound                                  ;; 00:322a $cd $9c $34
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_Y
     ld   A, [HL+]                                      ;; 00:3235 $2a
     sub  A, E                                          ;; 00:3236 $93
     ld   A, [HL]                                       ;; 00:3237 $7e
@@ -430,7 +430,7 @@ call_00_329a_Entity_UpdateFacingMomentumMoveX_WithWallFlip:
 
 call_00_32e1_Entity_NudgeXVelocityTowardC:
 ; Increments or decrements X velocity by 1 step toward target value in C (simple approach)
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XVEL
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_X_VELOCITY
     ld   A, [HL]                                       ;; 00:32e9 $7e
     cp   A, C                                          ;; 00:32ea $b9
     ret  Z                                             ;; 00:32eb $c8
@@ -444,7 +444,7 @@ call_00_32e1_Entity_NudgeXVelocityTowardC:
 call_00_32f2_Entity_NudgeXVelocityTowardC_Signed:
 ; Same nudge logic as above but sign-aware — handles negative C correctly by checking sign 
 ; bits before deciding direction
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XVEL
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_X_VELOCITY
     bit  7,c
     jr   nz,.jr_02_3309
     bit  7,[hl]
@@ -470,7 +470,7 @@ call_00_32f2_Entity_NudgeXVelocityTowardC_Signed:
 
 call_00_3316_Entity_NudgeYVelocityTowardC_Signed:
 ; Identical signed nudge logic as above, applied to Y velocity
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YVEL
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_Y_VELOCITY
     bit  7,c
     jr   nz,.jr_02_332D
     bit  7,[hl]
@@ -496,27 +496,27 @@ call_00_3316_Entity_NudgeYVelocityTowardC_Signed:
 
 call_00_333a_Entity_CheckIfXVelocityIsZero:
 ; Loads X velocity into A and ANDs with itself; sets Z if zero
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XVEL
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_X_VELOCITY
     ld   a,[hl]
     and  a
     ret  
 
 call_00_3345_Entity_CheckIfYVelocityIsZero:
 ; Loads Y velocity into A and ANDs with itself; sets Z flag if zero
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YVEL
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_Y_VELOCITY
     ld   a,[hl]
     and  a
     ret  
 
 call_00_3350_Entity_SetXVelocity: 
 ; Sets X velocity field to C 
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XVEL
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_X_VELOCITY
     ld   [hl],c
     ret  
 
 call_00_335a_Entity_SetYVelocity:
 ; Sets Y velocity field to C
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YVEL
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_Y_VELOCITY
     ld   [HL], C                                       ;; 00:3362 $71
     ret                                                ;; 00:3363 $c9
 
@@ -537,7 +537,7 @@ call_00_3364_Entity_ApproachPlayerXWithBounds:
     inc  hl
     ld   c,[hl]
     inc  c
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_X
     ldi  a,[hl]
     ld   h,[hl]
     ld   l,a
@@ -628,7 +628,7 @@ call_00_33dd_Entity_ApplyXVelocityFriction:
     jr   z,.jr_02_33F2
     jr   .jr_02_341B
 .jr_02_33F2:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XVEL
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_X_VELOCITY
     ld   c,[hl]
     dec  l
     bit  7,[hl]
@@ -658,7 +658,7 @@ call_00_33dd_Entity_ApplyXVelocityFriction:
     ld   [hl],a
     ret  
 .jr_02_341B:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XVEL
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_X_VELOCITY
     ld   c,[hl]
     dec  l
     bit  7,[hl]
@@ -897,7 +897,7 @@ call_00_3531_Entity_CheckIfXWithinBoundingBox:
     inc  hl
     ld   c,[hl]
     inc  c
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_X
     ldi  a,[hl]
     ld   h,[hl]
     ld   l,a
@@ -914,7 +914,7 @@ call_00_3531_Entity_CheckIfXWithinBoundingBox:
 call_00_3559_Entity_ApplyVelocityXY_SubpixelBoth:
 ; Integrates subpixel accumulator for both X and Y velocity (4-bit fractional), 
 ; then moves entity and calls Y movement
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XVEL
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_X_VELOCITY
     ld   A, [HL+]                                      ;; 00:3561 $2a
     ld   C, A                                          ;; 00:3562 $4f
     ld   A, [HL]                                       ;; 00:3563 $7e
@@ -953,7 +953,7 @@ call_00_3559_Entity_ApplyVelocityXY_SubpixelBoth:
 call_00_3597_Entity_ApplyVelocityXY_Subpixel_NoPlayerPush:
 ; Same subpixel integration for X and Y, but calls plain Entity_MoveX/Entity_MoveY 
 ; with no player-push side effect
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XVEL
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_X_VELOCITY
     ldi  a,[hl]
     ld   c,a
     ld   a,[hl]
@@ -1002,7 +1002,7 @@ call_00_35d5_Entity_MoveXAndPushPlayer:
 ; are on. That is a collision resolution, not a carry.
 ;
 ; Anything else returns without touching the player
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_X
     ld   A, [HL]                                       ;; 00:35dd $7e
     add  A, C                                          ;; 00:35de $81
     ld   [HL+], A                                      ;; 00:35df $22
@@ -1023,7 +1023,7 @@ call_00_35d5_Entity_MoveXAndPushPlayer:
     ld   HL, wD74F_Player_PushedMovingPlatformLo                                     ;; 00:35f3 $21 $4f $d7
     cp   A, [HL]                                       ;; 00:35f6 $be
     ret  NZ                                            ;; 00:35f7 $c0
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS_ON_SCREEN
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_SCREEN_X
     ld   A, [wD212_Player_ScreenXPosition]                                    ;; 00:3600 $fa $12 $d2
     cp   A, [HL]                                       ;; 00:3603 $be
     jr   C, .jr_00_3616                                ;; 00:3604 $38 $10
@@ -1118,7 +1118,7 @@ call_00_3675_Entity_RestoreWorldState:
 
 call_00_36bd_Entity_FaceTowardsPlayer:
 ; Computes sign of (player X − entity X); sets facing direction to $20 (left) or $00 (right)
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_X
     ld   A, [wD20E_Player_XPositionLo]                                    ;; 00:36c5 $fa $0e $d2
     sub  A, [HL]                                       ;; 00:36c8 $96
     inc  HL                                            ;; 00:36c9 $23
@@ -1136,7 +1136,7 @@ call_00_36bd_Entity_FaceTowardsPlayer:
     
 call_00_36da_Entity_FaceAwayFromPlayer:
 ; Inverse of above — faces away from player
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_X
     ld   a,[wD20E_Player_XPositionLo]
     sub  [hl]
     inc  hl
@@ -1304,7 +1304,7 @@ call_00_3760_Entity_PatrolY_FacingBased:
 
 call_00_37c9_Entity_MoveX:
 ; Adds BC (signed delta) to entity's X position
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_X
     ld   a,[hl]
     add  a, c
     ldi  [hl],a
@@ -1315,7 +1315,7 @@ call_00_37c9_Entity_MoveX:
 
 call_00_37d8_Entity_MoveY:
 ; Adds BC (signed delta) to entity's Y position
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_Y
     ld   A, [HL]                                       ;; 00:37e0 $7e
     add  A, C                                          ;; 00:37e1 $81
     ld   [HL+], A                                      ;; 00:37e2 $22
@@ -1359,20 +1359,20 @@ call_00_37f8_Entity_SetMiscFlags:
 
 call_00_3802_Entity_SetMiscTimer:
 ; Writes C to misc timer field
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_1
     ld   [HL], C                                       ;; 00:380a $71
     ret                                                ;; 00:380b $c9
     
 call_00_380c_Entity_CheckMiscTimerZero:
 ; Loads misc timer and ANDs; Z set if zero
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_1
     ld   a,[hl]
     and  a
     ret  
 
 call_00_3817_Entity_DecrementMiscTimer:
 ; Decrements misc timer if non-zero; returns new value in A
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_1
     ld   A, [HL]                                       ;; 00:381f $7e
     and  A, A                                          ;; 00:3820 $a7
     ret  Z                                             ;; 00:3821 $c8
@@ -1388,13 +1388,13 @@ call_00_3825_Entity_SetCollisionType:
 
 call_00_382f_Entity_SetWidth:
 ; Writes C to width field
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WIDTH
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_COLLISION_WIDTH
     ld   [hl],c
     ret  
 
 call_00_3839_Entity_GetSpriteCounter:
-; A = ENTITY_FIELD_SPRITE_COUNTER, the index into the current frame list
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_SPRITE_COUNTER
+; A = ENTITY_FIELD_ANIM_FRAME_INDEX, the index into the current frame list
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_ANIM_FRAME_INDEX
     ld   a,[hl]
     ret  
 
@@ -1423,7 +1423,7 @@ call_00_384e_Entity_CheckSpriteIdChanged:
 call_00_3859_Entity_CheckPlayerXProximity:
 ; Computes (player X − entity X), adds C offset, doubles C, subtracts; 
 ; returns carry/sign indicating whether player is within C-pixel horizontal range
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_X
     ld   A, [wD20E_Player_XPositionLo]                                    ;; 00:3861 $fa $0e $d2
     sub  A, [HL]                                       ;; 00:3864 $96
     ld   E, A                                          ;; 00:3865 $5f
@@ -1489,7 +1489,7 @@ call_00_3899_Entity_CheckRemoteTotalsUnlock:
 ;
 ; Nothing here reads a position - the three variables are collection totals. It is
 ; a progress requirement, which is why it gates the hub TVs
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_2
     ld   A, [wD64F_MissionRemoteTotal]                                    ;; 00:38a1 $fa $4f $d6
     and  A, $7f                                        ;; 00:38a4 $e6 $7f
     cp   A, [HL]                                       ;; 00:38a6 $be

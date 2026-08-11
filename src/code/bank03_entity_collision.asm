@@ -105,7 +105,7 @@ call_03_4c76_EntityCollision_Dispatch:
 ; bit and calls call_00_06ec_Player_ObtainedCollectible (collect item/score)
     call call_03_519b_Entity_CheckPlayerInteraction                                  ;; 03:4ce6 $cd $9b $51
     ret  NC                                            ;; 03:4ce9 $d0
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS_ON_SCREEN
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_SCREEN_X
     ld   C, [HL]                                       ;; 03:4cf2 $4e
     inc  L                                             ;; 03:4cf3 $2c
     ld   B, [HL]                                       ;; 03:4cf4 $46
@@ -306,7 +306,7 @@ call_03_4c76_EntityCollision_Dispatch:
 ; using the entity's action data pointer + height + $10 offset; checks against wD211/wD210 (world Y). 
 ; If all checks pass and player is vulnerable, damages and sets wD750_Player_DamageCooldownTimer=$77 then triggers 
 ; player action $19 (crushed animation)
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YVEL
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_Y_VELOCITY
     bit  7, [HL]                                       ;; 03:4e28 $cb $7e
     ret  Z                                             ;; 03:4e2a $c8
     xor  A, $10                                        ;; 03:4e2b $ee $10
@@ -401,7 +401,7 @@ call_03_4c76_EntityCollision_Dispatch:
 ; Like the collectible handler, iterates 8 sub-hitboxes from the secondary data pointer. 
 ; For each active record, checks a 12×8-pixel window at screen position; 
 ; on hit, damages player directly (no death check bypass)
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS_ON_SCREEN
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_SCREEN_X
     ldi  a,[hl]
     add  a,$04
     ld   c,a
@@ -519,7 +519,7 @@ call_03_4c76_EntityCollision_Dispatch:
     ret  nc
     cp   a,$00
     jp   z,call_03_52be_Entity_DamagePlayerIfVulnerable
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_2
     ld   a,[hl]
     and  a
     jr   z,.jr_03_4F87
@@ -657,7 +657,7 @@ call_03_4c76_EntityCollision_Dispatch:
 ; if player is in horn range, damages directly. Otherwise standard overlap: touch → damage; 
 ; attack/stomp → scans all slots for TRICERATOPS_HORN entity (ID=$49) and kills it, then spawns defeat particle
     push de
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS_ON_SCREEN
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_SCREEN_X
     ld   e,[hl]
     inc  l
     ld   c,[hl]
@@ -775,7 +775,7 @@ call_03_4c76_EntityCollision_Dispatch:
     ldi  a,[hl]
     or   [hl]
     ret  z
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_2
     ld   l,[hl]
     dec  l
     ld   h,$00
@@ -789,11 +789,11 @@ call_03_4c76_EntityCollision_Dispatch:
     call call_00_112f_QueueSFX
     ret  
 .jr_03_514e_CollisionHandler_PowerUp:
-; Overlap check; on hit, copies ENTITY_FIELD_TIMER_2 and the following byte into 
+; Overlap check; on hit, copies ENTITY_FIELD_MISC_TIMER_2 and the following byte into 
 ; wD751_Player_CircuitPowerUpTimerLo/wD752_Player_CircuitPowerUpTimerHi (power-up type/value registers)
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_2
     ldi  a,[hl]
     ld   [wD751_Player_CircuitPowerUpTimerLo],a
     ld   a,[hl]
@@ -860,7 +860,7 @@ call_03_519b_Entity_CheckPlayerInteraction:
     ld   BC, .data_03_522e_EntityInteractionFlagsTable                             ;; 03:51a6 $01 $2e $52
     add  HL, BC                                        ;; 03:51a9 $09
     ld   B, [HL]                                       ;; 03:51aa $46
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS_ON_SCREEN
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_SCREEN_Y
     ld   A, E                                          ;; 03:51b3 $7b
     add  A, $08                                        ;; 03:51b4 $c6 $08
     ld   E, A                                          ;; 03:51b6 $5f
@@ -1102,7 +1102,7 @@ call_03_52c5_CollisionHandler_StationaryPlatform:
 ; if valid landing, writes entity address to wD74D (player's current platform) and 
 ; manages wD74E_Player_PushedStationaryPlatformLo (secondary platform slot). 
 ; For side/bottom hits: clears platform tracking vars
-    LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_YPOS_ON_SCREEN
+    LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_SCREEN_Y
     ld   A, [wD213_Player_ScreenYPosition]                                    ;; 03:52cd $fa $13 $d2
     add  A, $0f                                        ;; 03:52d0 $c6 $0f
     cp   A, [HL]                                       ;; 03:52d2 $be
@@ -1141,7 +1141,7 @@ call_03_52c5_CollisionHandler_StationaryPlatform:
 call_03_5304_CollisionHandler_OneWayPlatform:
 ; Simplified platform — only handles the "approaching from above" path (player Y+$0F < platform Y), 
 ; then falls through into Platform_LandingCheck. Effectively a one-way/pass-through platform
-    LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_YPOS_ON_SCREEN
+    LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_SCREEN_Y
     ld   a,[wD213_Player_ScreenYPosition]
     add  a,$0F
     cp   [hl]
@@ -1218,13 +1218,13 @@ call_03_536f_CollisionHandler_MovingPlatform:
 ; to determine if the platform is stood on (wD74D_Player_EntityStoodOnLo) 
 ; or pushing the player (Player_PushedMovingPlatformLo). 
 ;
-; Same structure as stationary platform but additionally reads ENTITY_FIELD_XVEL,
+; Same structure as stationary platform but additionally reads ENTITY_FIELD_X_VELOCITY,
 ; right-shifts 4×, stores in B, then calls MovingPlatformCollisionHelper to get a corrected 
 ; relative X speed accounting for platform motion. Landing validity is then checked against 
 ; (relativeX − B + E + D) instead of raw speed. On landing writes to wD74D_Player_EntityStoodOnLo
 ; /Player_PushedMovingPlatformLo (moving platform uses Player_PushedMovingPlatformLo instead of 
 ; wD74E_Player_PushedStationaryPlatformLo); on miss clears both
-    LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_YPOS_ON_SCREEN
+    LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_SCREEN_Y
     ld   A, [wD213_Player_ScreenYPosition]             ;; 03:5377 $fa $13 $d2
     add  A, $0f                                        ;; 03:537a $c6 $0f
     cp   A, [HL]                                       ;; 03:537c $be
@@ -1236,7 +1236,7 @@ call_03_536f_CollisionHandler_MovingPlatform:
     dec  A                                             ;; 03:5384 $3d ; A = PlayerScreenY + PlatformHeight - 1
     cp   A, C                                          ;; 03:5385 $b9
     jr   C, .jr_03_5405_PlayerIsNotOnOrBeingPushedByThisPlatform      ;; 03:5386 $38 $7d
-    dec  L                                             ;; 03:5388 $2d ; HL = ENTITY_FIELD_XPOS_ON_SCREEN (PlatformScreenX)
+    dec  L                                             ;; 03:5388 $2d ; HL = ENTITY_FIELD_SCREEN_X (PlatformScreenX)
     ld   A, [wD212_Player_ScreenXPosition]             ;; 03:5389 $fa $12 $d2 ; A = PlayerScreenX
     sub  A, [HL]                                       ;; 03:538c $96 ; A = PlayerScreenX - PlatformScreenX
     add  A, E                                          ;; 03:538d $83 ; A = PlayerScreenX + PlatformWidth
@@ -1271,14 +1271,14 @@ call_03_536f_CollisionHandler_MovingPlatform:
     jr   .jr_03_5405_PlayerIsNotOnOrBeingPushedByThisPlatform   ;; 03:53b8 $18 $4b
 .jr_03_53ba_PlayerIsAbovePlatformOnScreen:
     ld   C, A                                          ;; 03:53ba $4f ; C = PlayerScreenY + 0xF
-    dec  L                                             ;; 03:53bb $2d ; HL = ENTITY_FIELD_XPOS_ON_SCREEN
+    dec  L                                             ;; 03:53bb $2d ; HL = ENTITY_FIELD_SCREEN_X
     ld   A, [wD212_Player_ScreenXPosition]             ;; 03:53bc $fa $12 $d2 ; A = PlayerScreenX
     sub  A, [HL]                                       ;; 03:53bf $96 ; A = PlayerScreenX - PlatformScreenX
     add  A, E                                          ;; 03:53c0 $83 ; DE is platform height and width (0810 usually)
     sla  E                                             ;; 03:53c1 $cb $23 ; E = 2*width
     cp   A, E                                          ;; 03:53c3 $bb
     jr   NC, .jr_03_5405_PlayerIsNotOnOrBeingPushedByThisPlatform     ;; 03:53c4 $30 $3f ; jump if player is not in x range of platform
-    inc  L                                             ;; 03:53c6 $2c ; HL = ENTITY_FIELD_YPOS_ON_SCREEN
+    inc  L                                             ;; 03:53c6 $2c ; HL = ENTITY_FIELD_SCREEN_Y
     inc  C                                             ;; 03:53c7 $0c ; C = PlayerScreenY + 0x10
     ld   A, [HL]                                       ;; 03:53c8 $7e ; A = PlatformScreenY
     sub  A, C                                          ;; 03:53c9 $91 ; A = PlatformScreenY - (PlayerScreenY + 0x10)
@@ -1346,7 +1346,7 @@ call_03_5427_MovingPlatform_GetRelativeXSpeed:
     ld   A, L                                          ;; 03:5427 $7d
     xor  A, $0e                                        ;; 03:5428 $ee $0e
     ld   L, A                                          ;; 03:542a $6f
-    ld   B, [HL]                                       ;; 03:542b $46 ; B = ENTITY_FIELD_XVEL (10)
+    ld   B, [HL]                                       ;; 03:542b $46 ; B = ENTITY_FIELD_X_VELOCITY (10)
     sra  B                                             ;; 03:542c $cb $28
     sra  B                                             ;; 03:542e $cb $28
     sra  B                                             ;; 03:5430 $cb $28

@@ -535,7 +535,7 @@ call_02_70f1_Entity_RequestQueuedAction:
     ld   A, [HL]                                       ;; 02:70f9 $7e
     bit  ACTION_STATE_HAS_PENDING_BIT, A                                          ;; 02:70fa $cb $7f
     ret  Z                                             ;; 02:70fc $c8
-    and  A, ACTION_STATE_PENDING_ACTION                                        ;; 02:70fd $e6 $1f
+    and  A, ACTION_STATE_PENDING_ACTION_MASK                                        ;; 02:70fd $e6 $1f
     jp   call_02_4ccd_Player_RequestAction                                  ;; 02:70ff $c3 $cd $4c
 
 call_02_7102_Entity_SetAction:
@@ -569,7 +569,7 @@ call_02_7102_Entity_SetAction:
     inc  E                                             ;; 02:712a $1c
     ld   A, [HL+]                                      ;; 02:712b $2a
     ld   [DE], A                                       ;; 02:712c $12 ; sets current action pointer in entity instance
-    inc  E                                             ;; 02:712d $1c ; DE = ENTITY_FIELD_SPRITE_IDS_PTR
+    inc  E                                             ;; 02:712d $1c ; DE = ENTITY_FIELD_ANIM_FRAME_LIST_PTR
     ld   A, [HL+]                                      ;; 02:712e $2a
     ld   H, [HL]                                       ;; 02:712f $66
     ld   L, A                                          ;; 02:7130 $6f ; HL = action data ptr
@@ -581,24 +581,24 @@ call_02_7102_Entity_SetAction:
     ld   A, [HL+]                                      ;; 02:713e $2a
     or   A, 1 << SPRITE_FLAG_ID_CHANGED_BIT          ;; 02:713f $f6 $40
     ld   [BC], A                                       ;; 02:7141 $02 ; force a graphics refresh on the new action's first frame
-    inc  C                                             ;; 02:7142 $0c ; BC = ENTITY_FIELD_SPRITE_FRAME_COUNTER_MAX
+    inc  C                                             ;; 02:7142 $0c ; BC = ENTITY_FIELD_ANIM_SPEED
     ld   A, [HL+]                                      ;; 02:7143 $2a
-    ld   [BC], A                                       ;; 02:7144 $02 ; ENTITY_FIELD_SPRITE_FRAME_COUNTER_MAX = third byte in data table
-    inc  C                                             ;; 02:7145 $0c ; BC = ENTITY_FIELD_SPRITE_COUNTER_MAX
+    ld   [BC], A                                       ;; 02:7144 $02 ; ENTITY_FIELD_ANIM_SPEED = third byte in data table
+    inc  C                                             ;; 02:7145 $0c ; BC = ENTITY_FIELD_ANIM_FRAME_COUNT
     push AF                                            ;; 02:7146 $f5
     ld   A, [HL+]                                      ;; 02:7147 $2a
-    ld   [BC], A                                       ;; 02:7148 $02 ; ENTITY_FIELD_SPRITE_COUNTER_MAX = fourth byte in data table
+    ld   [BC], A                                       ;; 02:7148 $02 ; ENTITY_FIELD_ANIM_FRAME_COUNT = fourth byte in data table
     ld   A, L                                          ;; 02:7149 $7d
-    ld   [DE], A                                       ;; 02:714a $12 ; ENTITY_FIELD_SPRITE_IDS_PTR = ptr to 4 bytes after start of data table
-    inc  E                                             ;; 02:714b $1c ; DE = ENTITY_FIELD_SPRITE_IDS_PTR+1
+    ld   [DE], A                                       ;; 02:714a $12 ; ENTITY_FIELD_ANIM_FRAME_LIST_PTR = ptr to 4 bytes after start of data table
+    inc  E                                             ;; 02:714b $1c ; DE = ENTITY_FIELD_ANIM_FRAME_LIST_PTR+1
     ld   A, H                                          ;; 02:714c $7c
-    ld   [DE], A                                       ;; 02:714d $12 ; ENTITY_FIELD_SPRITE_IDS_PTR+1 = ptr to 5 bytes after start of data table
-    inc  E                                             ;; 02:714e $1c ; DE = ENTITY_FIELD_SPRITE_FRAME_COUNTER
+    ld   [DE], A                                       ;; 02:714d $12 ; ENTITY_FIELD_ANIM_FRAME_LIST_PTR+1 = ptr to 5 bytes after start of data table
+    inc  E                                             ;; 02:714e $1c ; DE = ENTITY_FIELD_ANIM_FRAME_TIMER
     pop  AF                                            ;; 02:714f $f1
     ld   [DE], A                                       ;; 02:7150 $12 ; ENTITY_FIELD_UNK_06 = third byte in data table
-    inc  E                                             ;; 02:7151 $1c ; DE = ENTITY_FIELD_SPRITE_COUNTER
+    inc  E                                             ;; 02:7151 $1c ; DE = ENTITY_FIELD_ANIM_FRAME_INDEX
     xor  A, A                                          ;; 02:7152 $af
-    ld   [DE], A                                       ;; 02:7153 $12 ; ENTITY_FIELD_SPRITE_COUNTER = 0
+    ld   [DE], A                                       ;; 02:7153 $12 ; ENTITY_FIELD_ANIM_FRAME_INDEX = 0
     inc  E                                             ;; 02:7154 $1c ; DE = ENTITY_FIELD_SPRITE_ID
     ld   A, [HL]                                       ;; 02:7155 $7e
     ld   [DE], A                                       ;; 02:7156 $12 ; ENTITY_FIELD_SPRITE_ID = fifth byte in data table

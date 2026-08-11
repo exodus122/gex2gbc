@@ -400,7 +400,7 @@ call_02_51b7_EntityAction_CollectibleSpawn_Update:
 .jr_02_51cc:
     pop  AF                                            ;; 02:51cc $f1
     ret  NZ                                            ;; 02:51cd $c0
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_1
     dec  [HL]                                          ;; 02:51d6 $35
     jp   Z, call_00_3931_Entity_DeactivateSelf                                 ;; 02:51d7 $ca $31 $39
     ld   C, [HL]                                       ;; 02:51da $4e
@@ -530,7 +530,7 @@ call_02_52ab_EntityAction_ParticleBurst_Update:
 .jr_02_52bc:
     ld   C, $01                                        ;; 02:52bc $0e $01
     call call_00_37e7_Entity_SetOamAttrBase                                  ;; 02:52be $cd $e7 $37
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_1
     ld   [HL], $ff                                     ;; 02:52c9 $36 $ff
     ld   A, L                                          ;; 02:52cb $7d
     xor  A, $18                                        ;; 02:52cc $ee $18
@@ -652,7 +652,7 @@ call_02_5348_EntityAction_ScreamTVMovingPlatform_Update:
     jp   call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip                                    ;; 02:5370 $c3 $8d $31
 
 call_02_5373_EntityAction_ScreamTVPushBlock_Update:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_X
     ldi  a,[hl]
     sub  a,$A0
     ld   a,[hl]
@@ -719,7 +719,7 @@ call_02_53e2_EntityAction_GhostHead_Update:
     call call_00_3350_Entity_SetXVelocity
     call call_00_3442_Entity_MoveXByFacingSpeed
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_1
     ld   e,[hl]
     inc  l
     ld   d,[hl]
@@ -835,7 +835,7 @@ call_02_5480_EntityAction_Zombie_unk0:
     jp   call_02_7102_Entity_SetAction
 
 call_02_54b4_EntityAction_Zombie_unk2:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_1
     dec  [hl]
     ret  nz
     dec  l
@@ -873,7 +873,7 @@ call_02_54fc_EntityAction_ZombieHead_unk2:
     jp   call_00_36bd_Entity_FaceTowardsPlayer
 
 call_02_54ff_EntityAction_FallingAxe_unk0:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_2
     ld   a,[wD73B_VBlankFrameCounter]
     and  a,$7F
     cp   [hl]
@@ -884,7 +884,7 @@ call_02_54ff_EntityAction_FallingAxe_unk0:
 call_02_5513_EntityAction_FallingAxe_unk1:
     ld   bc,$0002
     call call_00_37d8_Entity_MoveY
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_1
     inc  [hl]
     inc  [hl]
     ld   a,[hl]
@@ -924,7 +924,7 @@ call_02_5551_EntityAction_Lantern_unk1:
     jp   call_02_7102_Entity_SetAction
 
 call_02_555e_Lantern_Sub:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_1
     inc  [hl]
     ld   a,[hl]
     and  a,$01
@@ -938,7 +938,7 @@ call_02_555e_Lantern_Sub:
     jp   call_00_37d8_Entity_MoveY
 
 call_02_557c_EntityAction_Bat_Update:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XVEL
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_X_VELOCITY
     ld   [hl],$01
     jp   call_00_3364_Entity_ApproachPlayerXWithBounds
 
@@ -1061,7 +1061,7 @@ call_02_5628_EntityAction_ClimbWallSunEnemy_Update:
     jp   call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip
 
 call_02_563a_EntityAction_ScreamTVVanishingPlatform_unk0:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_1B
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_PARAM_HI
     ld   a,[wD73B_VBlankFrameCounter]
     cp   [hl]
     ret  nz
@@ -1073,7 +1073,7 @@ call_02_563a_EntityAction_ScreamTVVanishingPlatform_unk0:
     jp   call_02_7102_Entity_SetAction
 
 call_02_5652_EntityAction_ScreamTVVanishingPlatform_unk1:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_1
     dec  [hl]
     ld   c,[hl]
     ld   a,l
@@ -1155,7 +1155,7 @@ call_02_56af_EntityAction_MonaLisaElevator_Update:
     jp   call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip
 
 call_02_56dc_EntityAction_HardHeadAreaHazard_unk0:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_Y
     ld   A, [wD6EF_BgMap_ScrollY]                                    ;; 02:56e4 $fa $ef $d6
     sub  A, $18                                        ;; 02:56e7 $d6 $18
     ld   [HL+], A                                      ;; 02:56e9 $22
@@ -1206,7 +1206,7 @@ call_02_56dc_EntityAction_HardHeadAreaHazard_unk0:
     ld   A, D                                          ;; 02:572b $7a
     cp   A, H                                          ;; 02:572c $bc
     ret  C                                             ;; 02:572d $d8
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_X
     ld   [HL], C                                       ;; 02:5736 $71
     inc  L                                             ;; 02:5737 $2c
     ld   [HL], B                                       ;; 02:5738 $70
@@ -1376,7 +1376,7 @@ call_02_585e_EntityAction_Bumblebee_unk1:
 
 call_02_5871_EntityAction_BowlingBall_Update:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_1
     push hl
     bit  7,[hl]
     call nz,call_00_36f7_Entity_MoveXByFacingMomentum_BoundsChecked
@@ -1394,7 +1394,7 @@ call_02_5871_EntityAction_BowlingBall_Update:
     ret  c
     ld   c,SFX_FALLING_HAZARD
     call call_00_112f_QueueSFX
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_1
     dec  [hl]
     ld   a,[hl]
     and  a,$7F
@@ -1484,7 +1484,7 @@ call_02_592d_EntityAction_Flower_Update:
 .jr_02_5944:
     push AF                                            ;; 02:5944 $f5
     call call_02_7102_Entity_SetAction                                  ;; 02:5945 $cd $02 $71
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_1
     inc  [HL]                                          ;; 02:5950 $34
     dec  [HL]                                          ;; 02:5951 $35
     jr   Z, .jr_02_5955                                ;; 02:5952 $28 $01
@@ -1692,7 +1692,7 @@ call_02_5aab_EntityAction_ToonTVVanishingBlock_unk0:
     and  a
     jp   z,call_00_3910_Entity_ClearSlot
 .jr_02_5AD2:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_1B
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_PARAM_HI
     ld   a,[wD73B_VBlankFrameCounter]
     cp   [hl]
     ret  nz
@@ -1704,7 +1704,7 @@ call_02_5aab_EntityAction_ToonTVVanishingBlock_unk0:
     jp   call_02_7102_Entity_SetAction
 
 call_02_5aea_EntityAction_ToonTVVanishingBlock_unk1:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_1
     dec  [hl]
     ld   c,[hl]
     ld   a,l
@@ -1937,7 +1937,7 @@ call_02_5c7c_EntityAction_Unk36_Update:
 
 call_02_5c7d_EntityAction_FallingLava_unk0:
     call call_00_349c_Entity_GetMinYBound
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_Y
     ld   [hl],e
     inc  l
     ld   [hl],d
@@ -2035,7 +2035,7 @@ call_02_5d0c_EntityAction_FallingBoulder_unk0:
     add  hl,de
     ld   e,l
     ld   d,h
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_Y
     ld   [hl],e
     inc  l
     ld   [hl],d
@@ -2104,7 +2104,7 @@ call_02_5d92_EntityAction_FirePlant_unk0:
     ret  z
     call call_00_3817_Entity_DecrementMiscTimer
     ret  nz
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_2
     dec  [hl]
     ld   a,[hl]
     dec  l
@@ -2438,7 +2438,7 @@ call_02_5f67_EntityAction_DragonHead_Update:
     db   $01, $40
     
 call_02_6029_DragonHead_Sub1:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_2
     inc  [hl]
     ld   a,[hl]
     sub  a,$52
@@ -2509,7 +2509,7 @@ call_02_6029_DragonHead_Sub1:
     add  hl,bc
     ld   c,l
     ld   b,h
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_X
     ld   [hl],e
     inc  l
     ld   [hl],d
@@ -2862,7 +2862,7 @@ call_02_6388_EntityAction_KungFuVanishingPlatform_unk0:
     dec  l
     ld   [hl],a
 .jr_02_6394:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_1B
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_PARAM_HI
     ld   a,[wD73B_VBlankFrameCounter]
     cp   [hl]
     ret  nz
@@ -2874,7 +2874,7 @@ call_02_6388_EntityAction_KungFuVanishingPlatform_unk0:
     jp   call_02_7102_Entity_SetAction
 
 call_02_63ac_EntityAction_KungFuVanishingPlatform_unk1:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_1
     dec  [hl]
     ld   c,[hl]
     ld   a,l
@@ -2998,7 +2998,7 @@ call_02_644a_EntityAction_RezopolisSpecialMovingPlatform_Update:
     call call_00_34f5_Entity_CompareMiscFlags
     bit  0,b
     jr   nz,.jr_02_648A
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_1
     ld   a,[hl]
     cp   a,$10
     jr   z,.jr_02_647F
@@ -3013,7 +3013,7 @@ call_02_644a_EntityAction_RezopolisSpecialMovingPlatform_Update:
     call call_00_3559_Entity_ApplyVelocityXY_SubpixelBoth
     jp   call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip
 .jr_02_648A:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_1
     ld   a,[hl]
     and  a
     ret  z
@@ -3159,7 +3159,7 @@ call_02_655d_EntityAction_TailspinPlatform_Update:
     and  a,PLAYER_ACTION_MASK
     cp   a,PLAYER_ACTION_TAIL_SPIN
     jr   nz,.jr_02_65A2
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_Y
     ldi  a,[hl]
     ld   h,[hl]
     ld   l,a
@@ -3178,7 +3178,7 @@ call_02_655d_EntityAction_TailspinPlatform_Update:
     ld   a,[hl]
     cp   c
     ret  nc
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_2
     ld   a,[hl]
     add  a,$01
     ldi  [hl],a
@@ -3300,7 +3300,7 @@ call_02_6635_EntityAction_Unk6F_Update:
     ret  
     
 call_02_6636_EntityAction_Pincer_Update:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_2
     ld   c,$00
     bit  0,[hl]
     jr   z,.jr_02_6646
@@ -3318,7 +3318,7 @@ call_02_664c_EntityAction_Flamethrower_unk1:
     ret  
     
 call_02_664d_EntityAction_UFO_unk0:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_2
     bit  0,[hl]
     jr   nz,.jr_02_6662
     ld   c,$08
@@ -3379,7 +3379,7 @@ call_02_666c_EntityAction_AntSpawner_Update:
     ret  
 
 call_02_66bb_EntityAction_Ant_Update:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_X
     ldi  a,[hl]
     ld   h,[hl]
     ld   l,a
@@ -3446,7 +3446,7 @@ call_02_6724_EntityAction_LittleRobot_unk0:
     call call_00_36f7_Entity_MoveXByFacingMomentum_BoundsChecked
     ld   a,$01
     call nz,call_02_7102_Entity_SetAction
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_X
     ld   e,[hl]
     inc  l
     ld   d,[hl]
@@ -3495,7 +3495,7 @@ call_02_6775_EntityAction_LittleRobotGear_Update:
     jp   call_00_3910_Entity_ClearSlot
 
 call_02_6786_EntityAction_ElectricBall_unk0:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_1B
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_PARAM_HI
     ld   a,[wD73B_VBlankFrameCounter]
     cp   [hl]
     ret  nz
@@ -3526,7 +3526,7 @@ call_02_679e_EntityAction_ElectricBall_unk1:
     call call_00_37d8_Entity_MoveY
     pop  bc
     call call_00_37c9_Entity_MoveX
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_1
     dec  [hl]
     call z,call_02_680e_ElectricBall_Sub
     ret  
@@ -3590,7 +3590,7 @@ call_02_68c0_EntityAction_CircuitCentralMovingPlatform_Update:
     call call_00_34ea_Entity_IsFirstFrameOfAction
     call nz,.jr_02_68D6
     call call_00_3559_Entity_ApplyVelocityXY_SubpixelBoth
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_1B
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_PARAM_HI
     dec  [hl]
     call z,.jr_02_68D6
     ret  
@@ -3613,7 +3613,7 @@ call_02_68c0_EntityAction_CircuitCentralMovingPlatform_Update:
     add  hl,hl
     add  hl,bc
     add  hl,de
-    LOAD_OBJ_FIELD_TO_DE ENTITY_FIELD_UNK_1B
+    LOAD_OBJ_FIELD_TO_DE ENTITY_FIELD_MISC_PARAM_HI
     ldi  a,[hl]
     cp   a,$ff
     jr   z,.jr_02_6909
@@ -3780,7 +3780,7 @@ call_02_6a3b_EntityAction_PoweredWalkway_Update:
     ret  
 
 call_02_6a3c_EntityAction_WalkwayActivator_Update:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_2
     ld   l,[hl]
     dec  l
     ld   h,$00
@@ -3792,7 +3792,7 @@ call_02_6a3c_EntityAction_WalkwayActivator_Update:
     jr   z,.jr_02_6A54
     ld   c,$10
 .jr_02_6A54:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WIDTH
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_COLLISION_WIDTH
     ld   [hl],c
     ld   hl,wD20E_Player_XPositionLo
     ldi  a,[hl]
@@ -3816,7 +3816,7 @@ call_02_6a3c_EntityAction_WalkwayActivator_Update:
     ld   a,c
     cp   [hl]
     ret  c
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_X
     ld   a,[wD20E_Player_XPositionLo]
     ldi  [hl],a
     ld   a,[wD20F_Player_XPositionHi]
@@ -3824,7 +3824,7 @@ call_02_6a3c_EntityAction_WalkwayActivator_Update:
     ret  
 
 call_02_6a8b_EntityAction_ArcedGunProjectile_unk0:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_2
     ld   a,[wD73B_VBlankFrameCounter]
     and  a,$3F
     cp   [hl]
@@ -3853,7 +3853,7 @@ call_02_6aac_EntityAction_ArcedGunProjectile_unk1:
     jp   call_02_6bf8_GunProjectile_Sub2
 
 call_02_6ad3_EntityAction_ArcedGunProjectile2_unk0:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_2
     ld   a,[wD73B_VBlankFrameCounter]
     and  a,$3F
     cp   [hl]
@@ -3916,7 +3916,7 @@ call_02_6b43_EntityAction_ArcedGunProjectile2_unk3:
     jp   call_02_6bf8_GunProjectile_Sub2
 
 call_02_6b6a_EntityAction_GunProjectile_unk0:
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_2
     ld   a,[wD73B_VBlankFrameCounter]
     and  a,$3F
     cp   [hl]
@@ -3977,7 +3977,7 @@ call_02_6bcd_GunProjectile_Sub3:
     call call_00_112f_QueueSFX
     ld   c,COLLISION_TYPE_GUN_PROJECTILE
     call call_00_3825_Entity_SetCollisionType
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XVEL
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_X_VELOCITY
     xor  a
     ldi  [hl],a
     ldi  [hl],a
@@ -4010,7 +4010,7 @@ call_02_6c18_EntityAction_Rez_unk0:
     jr   z,.jr_02_6C38
     ld   a,$0A
     ld   [wD616_FinalBattleButtonFlags],a
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_X
     ldi  a,[hl]
     ld   h,[hl]
     ld   l,a
@@ -4038,7 +4038,7 @@ call_02_6c4a_EntityAction_Rez_unk2:
     ld   a,[wD73B_VBlankFrameCounter]
     and  a,$03
     jr   nz,.jr_02_6C7C
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_Y
     ld   e,[hl]
     inc  l
     ld   d,[hl]
@@ -4070,7 +4070,7 @@ call_02_6c82_EntityAction_Rez_unk4:
     ret  z
     ld   a,$03
     call call_02_7102_Entity_SetAction
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_UNK_1B
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_PARAM_HI
     ld   a,[hl]
     cp   a,$19
     ret  c
@@ -4180,7 +4180,7 @@ call_02_6d23_EntityAction_ChannelZUnusedPlatform2_Update:
 call_02_6d24_EntityAction_GunProjectileExplosion_Update:
     call call_00_3843_Entity_CheckAnimationEnded
     jp   nz,call_00_3910_Entity_ClearSlot
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_SPRITE_COUNTER
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_ANIM_FRAME_INDEX
     ld   l,[hl]
     ld   h,$00
     add  hl,hl
@@ -4204,7 +4204,7 @@ call_02_6d24_EntityAction_GunProjectileExplosion_Update:
 
 call_02_6d5d_EntityAction_FinalBattleButtonProjectile_unk0:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_YPOS
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_Y
     ldi  a,[hl]
     ld   h,[hl]
     ld   l,a
@@ -4230,7 +4230,7 @@ call_02_6d80_EntityAction_FinalBattleButton_unk0:
     ld   a,[wD616_FinalBattleButtonFlags]
     and  a,$7F
     ret  z
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_TIMER_2
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_2
     ld   a,[hl]
     cp   a,$01
     ld   c,SPAWN_CHILD_ENTITY_FINAL_BATTLE_BUTTON_PROJECTILE_1

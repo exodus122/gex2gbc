@@ -177,7 +177,7 @@ call_02_422c_PlayerAction_Walk:
 .jr_02_4238:
     ld   C, PLAYER_ACTION_WALK                         ;; 02:4238 $0e $04
     call call_02_4204_Player_CheckWallPush                                  ;; 02:423a $cd $04 $42
-    ld   A, [wD20A_Player_UnkFlags2]                                    ;; 02:423d $fa $0a $d2
+    ld   A, [wD20A_Player_SpriteFlags]                                    ;; 02:423d $fa $0a $d2
     and  A, SPRITE_FLAG_ANIM_ENDED                          ;; 02:4240 $e6 $04
     ld   A, PLAYER_ACTION_RUN                                        ;; 02:4242 $3e $05
     call NZ, call_02_4ccd_Player_RequestAction                              ;; 02:4244 $c4 $cd $4c
@@ -332,7 +332,7 @@ call_02_42f7_PlayerAction_TailSpin:
     ld   C, A                                          ;; 02:4317 $4f
     cp   A, TILE_TYPE_INTERACTIVE_MIN_CPL              ;; 02:4318 $fe $40
     call C, call_00_1f46_TileHit_OnPlayerAttack                               ;; 02:431a $dc $46 $1f
-    ld   A, [wD20A_Player_UnkFlags2]                                    ;; 02:431d $fa $0a $d2
+    ld   A, [wD20A_Player_SpriteFlags]                                    ;; 02:431d $fa $0a $d2
     and  A, SPRITE_FLAG_ANIM_ENDED                          ;; 02:4320 $e6 $04
     ret  Z                                             ;; 02:4322 $c8
     xor  A, A                                          ;; 02:4323 $af
@@ -405,7 +405,7 @@ call_02_437b_PlayerAction_DeathSetUpWarp:
 .jr_02_438e:
     ld   A, PLAYER_DAMAGE_COOLDOWN_LENGTH              ;; 02:438e $3e $77
     ld   [wD750_Player_DamageCooldownTimer], A                                    ;; 02:4390 $ea $50 $d7
-    ld   A, [wD20A_Player_UnkFlags2]                                    ;; 02:4393 $fa $0a $d2
+    ld   A, [wD20A_Player_SpriteFlags]                                    ;; 02:4393 $fa $0a $d2
     and  A, SPRITE_FLAG_ANIM_ENDED                          ;; 02:4396 $e6 $04
     ret  Z                                             ;; 02:4398 $c8
     ld   A, PLAYER_ACTION_SPAWN                                        ;; 02:4399 $3e $00
@@ -426,7 +426,7 @@ call_02_43a7_PlayerAction_EnterTV:
 .jr_02_43b3:
     xor  A, A                                          ;; 02:43b3 $af
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:43b4 $ea $5e $d7
-    ld   HL, wD20A_Player_UnkFlags2                                     ;; 02:43b7 $21 $0a $d2
+    ld   HL, wD20A_Player_SpriteFlags                                     ;; 02:43b7 $21 $0a $d2
     bit  SPRITE_FLAG_ANIM_ENDED_BIT, [HL]                   ;; 02:43ba $cb $56
     ret  Z                                             ;; 02:43bc $c8
     ld   A, [wD621_WarpFlags]                                    ;; 02:43bd $fa $21 $d6
@@ -446,7 +446,7 @@ call_02_43c6_PlayerAction_EnterTVAlt:
 .jr_02_43D2:
     xor  a
     ld   [wD75E_PlayerXSpeed],a
-    ld   a,[wD20A_Player_UnkFlags2]
+    ld   a,[wD20A_Player_SpriteFlags]
     and  a,SPRITE_FLAG_ANIM_ENDED
     ret  z
     ld   a,[wD621_WarpFlags]

@@ -154,7 +154,7 @@ wD208_Player_SpriteID:
     ds 1                                               ;; d208
 wD209_Player_ActionState:
     ds 1                                               ;; d209
-wD20A_Player_UnkFlags2:
+wD20A_Player_SpriteFlags:
     ds 3                                               ;; d20a
 wD20D_Player_FacingFlags:
     ds 1                                               ;; d20d
@@ -256,7 +256,7 @@ wD33B_SpawningEntityId:
 ;
 ; SPRITE LIST: a count byte then up to ENTITY_PARTICLE_COUNT OAM records
 ; (Y, X, tile, attributes). Written by the per-effect builders in bank03_oam_build.asm
-; and drawn by the SPRITE_FLAG_EMBEDDED_DATA path
+; and drawn by the SPRITE_FLAG_EMBEDDED_SPRITE_DATA path
 ; ------------------------------------------------------------------
 wD33C_Entity_SpriteList0:
     ds ENTITY_SPRITE_LIST_SIZE

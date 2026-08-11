@@ -77,7 +77,7 @@ call_02_4856_Player_GetJumpVelocity:
 call_02_4894_Player_CheckWarpReady:
 ; Reads bit 2 of wD20A (animation-end flag) and returns it in A. Zero flag set if not ready, 
 ; nonzero if warp should fire. Used as a gate in door/TV warp actions
-    ld   a,[wD20A_Player_UnkFlags2]
+    ld   a,[wD20A_Player_SpriteFlags]
     and  a,SPRITE_FLAG_ANIM_ENDED
     ret
 
@@ -348,8 +348,8 @@ call_02_4939_Player_UpdateMain:
     ld   [wD76A_Player_BlockX], A                                    ;; 02:4a00 $ea $6a $d7
     ld   HL, wD209_Player_ActionState                                     ;; 02:4a03 $21 $09 $d2
     res  ACTION_STATE_IS_FIRST_FRAME_BIT, [HL]                                       ;; 02:4a06 $cb $ae
-    ld   HL, wD20A_Player_UnkFlags2                                     ;; 02:4a08 $21 $0a $d2
-    res  6, [HL]                                       ;; 02:4a0b $cb $b6
+    ld   HL, wD20A_Player_SpriteFlags                                     ;; 02:4a08 $21 $0a $d2
+    res  SPRITE_FLAG_ID_CHANGED_BIT, [HL]                                       ;; 02:4a0b $cb $b6
     call call_02_6fda_Entity_TickAction                                  ;; 02:4a0d $cd $da $6f
     call call_02_715a_MapWindow_Update                                  ;; 02:4a10 $cd $5a $71
     call call_02_4c28_Player_CheckLavaAndWaterTiles                                  ;; 02:4a13 $cd $28 $4c

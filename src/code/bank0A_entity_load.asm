@@ -127,8 +127,8 @@ data_0a_75fd_EntityAttributeTable:
 ; The per-entity-type template applied to a slot when it spawns. 8 bytes per entity id:
 ;
 ;   +0  spawn parameter mask (see below)
-;   +1  ENTITY_FIELD_WIDTH
-;   +2  ENTITY_FIELD_HEIGHT
+;   +1  ENTITY_FIELD_COLLISION_WIDTH
+;   +2  ENTITY_FIELD_COLLISION_HEIGHT
 ;   +3  ENTITY_FIELD_COLLISION_TYPE
 ;   +4  graphics set id, queued through call_02_7211_EntityGfxQueue_Enqueue ($00 = none)
 ;   +5  GBC palette id
@@ -354,7 +354,7 @@ call_0a_7a7c_EntitySpawn_SpawnNextFromList:
     ld   A, C                                          ;; 0a:7abb $79
     ld   [wD33A_SpawningListIndex], A                                    ;; 0a:7abc $ea $3a $d3
     inc  DE                                            ;; 0a:7abf $13
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_XPOS
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_X
     ld   A, [DE]                                       ;; 0a:7ac8 $1a
     ld   [HL+], A                                      ;; 0a:7ac9 $22 ; this is where the x and y coords of the entity are read and written
     inc  DE                                            ;; 0a:7aca $13

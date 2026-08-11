@@ -124,7 +124,7 @@ call_00_3985_Entity_ParticleBurstInit:
 ;                (Y, X, tile, attributes). The OUTPUT: a sprite builder walks the
 ;                particles and writes this, then the generic embedded-data path at
 ;                .jp_03_6451_Entity_BuildSprites_SpriteList copies it into shadow OAM.
-;                SPRITE_FLAG_EMBEDDED_DATA on the entity is what selects that path.
+;                SPRITE_FLAG_EMBEDDED_SPRITE_DATA on the entity is what selects that path.
 ;
 ; So the two blocks are the two halves of one pipeline - simulation in, sprites out -
 ; which is all the old "primary data" and "secondary data" names were distinguishing.
@@ -222,7 +222,7 @@ call_00_3a23_Entity_StartParticleEffect:
 ;   1. the sprite list's count byte is zeroed, so nothing is drawn until
 ;      call_00_3b8d_Entity_TickParticles has run and a builder has filled it in
 ;   2. the ROM pattern is copied over the particle buffer wholesale
-;   3. SPRITE_FLAG_EMBEDDED_DATA is set, switching this entity to the sprite path that
+;   3. SPRITE_FLAG_EMBEDDED_SPRITE_DATA is set, switching this entity to the sprite path that
 ;      reads the list rather than a shared animation table
 ;
 ; After this the entity's action handler just calls Entity_TickParticles each frame and
@@ -275,7 +275,7 @@ call_00_3a23_Entity_StartParticleEffect:
     dec  B                                             ;; 00:3a59 $05
     jr   NZ, .jr_00_3a4a                               ;; 00:3a5a $20 $ee
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_SPRITE_FLAGS
-    set  SPRITE_FLAG_EMBEDDED_DATA_BIT, [HL]                                       ;; 00:3a64 $cb $c6
+    set  SPRITE_FLAG_EMBEDDED_SPRITE_DATA_BIT, [HL]                                       ;; 00:3a64 $cb $c6
     ret                                                ;; 00:3a66 $c9
 .data_00_3a67_ParticlePatterns:
     dw   .data_00_3a75_Pattern_Empty                                 ;; 00:3a67 ??
