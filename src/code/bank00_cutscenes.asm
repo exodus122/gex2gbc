@@ -277,38 +277,31 @@ call_00_2329_Cutscene_LoadAndRun:
     db   $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff ; 1d
     db   $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff ; 1e channel z
 .data_00_2662_CutsceneScriptPointerTable:
-; 67 entries, followed by the script blob itself at $26E8-$2DBE. Every script is the 8-byte
-; header described on call_00_2329_Cutscene_LoadAndRun, with its movement list and/or animation
-; block laid out immediately after it, so a script and its data are one contiguous run.
+; 67 entries, followed by the scripts themselves at $26E8-$2DBE. A script's movement list and
+; animation block sit immediately after its header, so each script and its data are one
+; contiguous run and the whole region is written in address order below.
 ;
-; The animation block is not cutscene-specific: it is a block patch sequence in exactly the format
-; TileHitScript_Run / BlockPatch_TickSequence consume for switches and breakable scenery.
-; Header is 8 bytes:
+; Everything down there is built from the macros in macros.asm - cutscene_script,
+; cutscene_move, blockpatch_anim, blockpatch_step, blockpatch_cells - which emit exactly the
+; bytes the runner expects. The layout each one produces is documented on the macro itself.
 ;
-;   +0  dw  callback, run at setup ($0000 = none)
-;   +2  db  step count ($00 = no tile work, just run the callback)
-;   +3  db  frames per step
-;   +4  db  X offset in blocks from Gex, signed
-;   +5  db  Y offset in blocks from Gex, signed
-;   +6  db  width in blocks
-;   +7  db  height in blocks
+; Three things worth knowing that the macros do not say:
 ;
-; then one step per count: an BLOCKPATCH_STEP_* flag byte followed by width * height 16-bit block
-; entries - the new contents of the rectangle for that step. So a 2x2 rectangle costs 9 bytes
-; per step, and a step carrying BLOCKPATCH_STEP_SFX costs one more for its argument - .script_0D
-; is the only one here that does, opening with $28 (TILES|SFX) and an SFX id of $26. Every other
-; step in the blob is a plain $08, with $0A (TILES|REGISTER) on the last one of each block.
-; That last step is what makes the reveal permanent - the tiles are redrawn
-; every step, but only the last one registers the rectangle in the block patch slot tables, so the
-; change survives the BgMap_LoadFull on the way out of the scene.
+;   The animation block is not cutscene-specific. It is a block patch sequence in exactly the
+;   format TileHitScript_Run / BlockPatch_TickSequence consume for switches and breakable
+;   scenery, so the same reveal machinery drives both.
 ;
-; Note the rectangle is placed relative to *Gex*, not in map coordinates, which is why a scene
-; with an animation always teleports him to a fixed spot first: the tile edit lands wherever he
-; is standing.
+;   The last step of every block here sets BLOCKPATCH_STEP_REGISTER, and that is what makes a
+;   reveal permanent. Tiles are redrawn on every step, but only a registering step records the
+;   rectangle in the block patch slot tables - which is what lets the change survive the
+;   BgMap_LoadFull on the way out of the scene. Only .script_0D uses BLOCKPATCH_STEP_SFX.
 ;
-; This also explains the embedded `ld A,$xx / ld [$D7xx],A / ret` stubs. They are not code the
-; runner falls into - they are the callback field, and they sit at exactly the address one past
-; the end of the step data (see .script_1D, whose steps end on $2A77, its callback address).
+;   The rectangle is positioned relative to *Gex*, not in map coordinates. That is why a scene
+;   with an animation always teleports him to a fixed spot first: the tile edit lands wherever
+;   he happens to be standing.
+;
+; The callbacks are real code sitting inside the data, at the address one past the end of the
+; step data they belong to - see .script_1D_callback. Only three scripts have one.
 ;
 ; The trailing comment on each line is who refers to it, read back out of
 ; .data_00_2472_CutsceneIndexLookupTable - "mission 1/2/3" are slots $0A-$0C
@@ -379,494 +372,975 @@ call_00_2329_Cutscene_LoadAndRun:
     dw   .script_40    ; $40  texas chainsaw manicure, slot 0
     dw   .script_41    ; $41  mazed and confused, mission 1
     dw   .script_42    ; $42  mazed and confused, mission 2
+; ------------------------------------------------------------------
+; $00   media dimension, slot 0
+; ------------------------------------------------------------------
 .script_00:
-;   startX $04E0  startY $01D0  no movement  anim $26F0
-;   anim: no callback, 3 steps, 10 frames each, 2x2 blocks at (-2,-1) from Gex
-    db   $e0, $04, $d0, $01, $00, $00                  ;; 00:26e8
-    db   $f0, $26, $00, $00, $03, $0a, $fe, $ff        ;; 00:26ee ????????
-    db   $02, $02, $08, $ee, $01, $ef, $01, $fe        ;; 00:26f6 ????????
-    db   $01, $ff, $01, $08, $7e, $01, $7f, $01        ;; 00:26fe ????????
-    db   $8e, $01, $8f, $01, $0a, $7c, $01, $7d        ;; 00:2706 ????????
-    db   $01, $8c, $01, $8d, $01                       ;; 00:270e
+    cutscene_script $04e0, $01d0, 0, .script_00_anim
+
+.script_00_anim:
+    blockpatch_anim 0, 3, 10, -2, -1, 2, 2
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/3
+    blockpatch_cells $ee,1, $ef,1
+    blockpatch_cells $fe,1, $ff,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 2/3
+    blockpatch_cells $7e,1, $7f,1
+    blockpatch_cells $8e,1, $8f,1
+    blockpatch_step BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_TILES           ; step 3/3
+    blockpatch_cells $7c,1, $7d,1
+    blockpatch_cells $8c,1, $8d,1
+
+; ------------------------------------------------------------------
+; $01   media dimension, slot 1
+; ------------------------------------------------------------------
 .script_01:
-;   startX $03A0  startY $02F0  no movement  anim $271B
-;   anim: no callback, 3 steps, 10 frames each, 2x2 blocks at (-2,-1) from Gex
-    db   $a0, $03, $f0                                 ;; 00:2713
-    db   $02, $00, $00, $1b, $27, $00, $00, $03        ;; 00:2716 ????????
-    db   $0a, $fe, $ff, $02, $02, $08, $ea, $01        ;; 00:271e ????????
-    db   $eb, $01, $fa, $01, $fb, $01, $08, $7a        ;; 00:2726 ????????
-    db   $01, $7b, $01, $8a, $01, $8b, $01, $0a        ;; 00:272e ????????
-    db   $78, $01, $79, $01, $88, $01, $89, $01        ;; 00:2736 ????????
+    cutscene_script $03a0, $02f0, 0, .script_01_anim
+
+.script_01_anim:
+    blockpatch_anim 0, 3, 10, -2, -1, 2, 2
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/3
+    blockpatch_cells $ea,1, $eb,1
+    blockpatch_cells $fa,1, $fb,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 2/3
+    blockpatch_cells $7a,1, $7b,1
+    blockpatch_cells $8a,1, $8b,1
+    blockpatch_step BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_TILES           ; step 3/3
+    blockpatch_cells $78,1, $79,1
+    blockpatch_cells $88,1, $89,1
+
+; ------------------------------------------------------------------
+; $02   media dimension, slot 2
+; ------------------------------------------------------------------
 .script_02:
-;   startX $0620  startY $02F0  no movement  anim $2746
-;   anim: no callback, 3 steps, 10 frames each, 2x2 blocks at (-2,-1) from Gex
-    db   $20, $06, $f0, $02, $00, $00, $46, $27        ;; 00:273e
-    db   $00, $00, $03, $0a, $fe, $ff, $02, $02        ;; 00:2746 ????????
-    db   $08, $e6, $01, $e7, $01, $f6, $01, $f7        ;; 00:274e ????????
-    db   $01, $08, $5e, $01, $5f, $01, $6e, $01        ;; 00:2756 ????????
-    db   $6f, $01, $0a, $5c, $01, $5d, $01, $6c        ;; 00:275e ????????
-    db   $01, $6d, $01                                 ;; 00:2766
+    cutscene_script $0620, $02f0, 0, .script_02_anim
+
+.script_02_anim:
+    blockpatch_anim 0, 3, 10, -2, -1, 2, 2
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/3
+    blockpatch_cells $e6,1, $e7,1
+    blockpatch_cells $f6,1, $f7,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 2/3
+    blockpatch_cells $5e,1, $5f,1
+    blockpatch_cells $6e,1, $6f,1
+    blockpatch_step BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_TILES           ; step 3/3
+    blockpatch_cells $5c,1, $5d,1
+    blockpatch_cells $6c,1, $6d,1
+
+; ------------------------------------------------------------------
+; $03   media dimension, slot 3
+; ------------------------------------------------------------------
 .script_03:
-;   startX $08A0  startY $02F0  no movement  anim $2771
-;   anim: no callback, 3 steps, 10 frames each, 2x2 blocks at (-2,-1) from Gex
-    db   $a0, $08, $f0, $02, $00                       ;; 00:2769
-    db   $00, $71, $27, $00, $00, $03, $0a, $fe        ;; 00:276e ????????
-    db   $ff, $02, $02, $08, $be, $01, $bf, $01        ;; 00:2776 ????????
-    db   $ce, $01, $cf, $01, $08, $5a, $01, $5b        ;; 00:277e ????????
-    db   $01, $6a, $01, $6b, $01, $0a, $58, $01        ;; 00:2786 ????????
-    db   $59, $01, $68, $01, $69, $01                  ;; 00:278e ??????
+    cutscene_script $08a0, $02f0, 0, .script_03_anim
+
+.script_03_anim:
+    blockpatch_anim 0, 3, 10, -2, -1, 2, 2
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/3
+    blockpatch_cells $be,1, $bf,1
+    blockpatch_cells $ce,1, $cf,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 2/3
+    blockpatch_cells $5a,1, $5b,1
+    blockpatch_cells $6a,1, $6b,1
+    blockpatch_step BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_TILES           ; step 3/3
+    blockpatch_cells $58,1, $59,1
+    blockpatch_cells $68,1, $69,1
+
+; ------------------------------------------------------------------
+; $04   out of toon, mission 1
+; ------------------------------------------------------------------
 .script_04:
-;   startX $0DD0  startY $06F0  movement $279C  no anim
-    db   $d0, $0d, $f0, $06, $9c, $27, $00, $00        ;; 00:2794
-;   move: dir $00 for $0080, dir UP for $0100, dir RIGHT for $0190, end
-    db   $00, $80, $00, $40, $00, $01, $10, $90        ;; 00:279c
-    db   $01, $ff                                      ;; 00:27a4
+    cutscene_script $0dd0, $06f0, .script_04_move, 0
+
+.script_04_move:
+    cutscene_move 0,                     $0080   ; stand still
+    cutscene_move PADF_UP,               $0100
+    cutscene_move PADF_RIGHT,            $0190
+    cutscene_move_end
+
+; ------------------------------------------------------------------
+; $05   out of toon, mission 2
+; ------------------------------------------------------------------
 .script_05:
-;   startX $0320  startY $0510  movement $27AE  no anim
-    db   $20, $03, $10, $05, $ae, $27                  ;; 00:27a6
-    db   $00, $00                                      ;; 00:27ac
-;   move: dir $00 for $0080, dir RIGHT for $0180, end
-    db   $00, $80, $00, $10, $80, $01                  ;; 00:27ae
-    db   $ff                                           ;; 00:27b4
+    cutscene_script $0320, $0510, .script_05_move, 0
+
+.script_05_move:
+    cutscene_move 0,                     $0080   ; stand still
+    cutscene_move PADF_RIGHT,            $0180
+    cutscene_move_end
+
+; ------------------------------------------------------------------
+; $06   out of toon, mission 3
+; ------------------------------------------------------------------
 .script_06:
-;   startX $0A20  startY $00D0  movement $27BD  no anim
-    db   $20, $0a, $d0, $00, $bd, $27, $00             ;; 00:27b5
-    db   $00                                           ;; 00:27bc
-;   move: dir $00 for $0080, dir RIGHT for $0160, end
-    db   $00, $80, $00, $10, $60, $01, $ff             ;; 00:27bd
+    cutscene_script $0a20, $00d0, .script_06_move, 0
+
+.script_06_move:
+    cutscene_move 0,                     $0080   ; stand still
+    cutscene_move PADF_RIGHT,            $0160
+    cutscene_move_end
+
+; ------------------------------------------------------------------
+; $07   out of toon, slot $0E
+; ------------------------------------------------------------------
 .script_07:
-;   startX $04A0  startY $0500  no movement, no anim - reposition and hold
-    db   $a0, $04, $00, $05, $00, $00, $00, $00        ;; 00:27c4
+    cutscene_script $04a0, $0500, 0, 0
+    ; no movement and no animation - reposition, hold, return
+
+; ------------------------------------------------------------------
+; $08   out of toon, slot $0F
+; ------------------------------------------------------------------
 .script_08:
-;   startX $0C20  startY $0180  no movement, no anim - reposition and hold
-    db   $20, $0c, $80, $01, $00, $00, $00, $00        ;; 00:27cc
+    cutscene_script $0c20, $0180, 0, 0
+    ; no movement and no animation - reposition, hold, return
+
+; ------------------------------------------------------------------
+; $09   smellraiser, mission 1
+; ------------------------------------------------------------------
 .script_09:
-;   startX $0520  startY $0430  movement $27DC  no anim
-    db   $20, $05, $30, $04, $dc, $27, $00, $00        ;; 00:27d4
-;   move: pause $0080, UP $0080, end
-    db   $00, $80, $00, $40, $80, $00, $ff             ;; 00:27dc
+    cutscene_script $0520, $0430, .script_09_move, 0
+
+.script_09_move:
+    cutscene_move 0,                     $0080   ; stand still
+    cutscene_move PADF_UP,               $0080
+    cutscene_move_end
+
+; ------------------------------------------------------------------
+; $0a   smellraiser, mission 2
+; ------------------------------------------------------------------
 .script_0A:
-;   startX $0070  startY $0150  movement $27EB  no anim
-    db   $70                                           ;; 00:27e3
-    db   $00, $50, $01, $eb, $27, $00, $00             ;; 00:27e4
-;   move: pause $0080, RIGHT $00A0, UP+RIGHT $0040, RIGHT $00E0, UP $0060, LEFT $00C0, end
-    db   $00                                           ;; 00:27eb
-    db   $80, $00, $10, $a0, $00, $50, $40, $00        ;; 00:27ec
-    db   $10, $e0, $00, $40, $60, $00, $20, $c0        ;; 00:27f4
-    db   $00, $ff                                      ;; 00:27fc
+    cutscene_script $0070, $0150, .script_0A_move, 0
+
+.script_0A_move:
+    cutscene_move 0,                     $0080   ; stand still
+    cutscene_move PADF_RIGHT,            $00a0
+    cutscene_move PADF_UP | PADF_RIGHT,  $0040
+    cutscene_move PADF_RIGHT,            $00e0
+    cutscene_move PADF_UP,               $0060
+    cutscene_move PADF_LEFT,             $00c0
+    cutscene_move_end
+
+; ------------------------------------------------------------------
+; $0b   smellraiser, mission 3
+; ------------------------------------------------------------------
 .script_0B:
-;   startX $00B0  startY $0450  movement $2806  no anim
-    db   $b0, $00, $50, $04, $06, $28                  ;; 00:27fe
-;   move: pause $0080, RIGHT $0270, end
-    db   $00, $00, $00, $80, $00, $10, $70, $02        ;; 00:2804
-    db   $ff                                           ;; 00:280c
+    cutscene_script $00b0, $0450, .script_0B_move, 0
+
+.script_0B_move:
+    cutscene_move 0,                     $0080   ; stand still
+    cutscene_move PADF_RIGHT,            $0270
+    cutscene_move_end
+
+; ------------------------------------------------------------------
+; $0c   smellraiser, slot $0E
+; ------------------------------------------------------------------
 .script_0C:
-;   startX $0EC0  startY $0140  no movement, no anim - reposition and hold
-    db   $c0, $0e, $40, $01, $00, $00, $00             ;; 00:280d
-    db   $00                                           ;; 00:2814
+    cutscene_script $0ec0, $0140, 0, 0
+    ; no movement and no animation - reposition, hold, return
+
+; ------------------------------------------------------------------
+; $0d   smellraiser, slot 0
+; ------------------------------------------------------------------
 .script_0D:
-;   startX $00BC  startY $0340  no movement  anim $281D
-;   anim: no callback, 2 steps, 60 frames each, 2x1 blocks at (0,0) from Gex.
-;   The only block in the file with BLOCKPATCH_STEP_SFX - step 1's flags are $28 and it carries
-;   an SFX id of $26 before its block entries
-    db   $bc, $00, $40, $03, $00, $00, $1d             ;; 00:2815
-    db   $28, $00, $00, $02, $3c, $00, $00, $02        ;; 00:281c ????????
-    db   $01, $28, $26, $f4, $01, $f5, $01, $0a        ;; 00:2824 ????????
-    db   $f2, $01, $f3, $01                            ;; 00:282c
+    cutscene_script $00bc, $0340, 0, .script_0D_anim
+
+.script_0D_anim:
+    blockpatch_anim 0, 2, 60, 0, 0, 2, 1
+    blockpatch_step BLOCKPATCH_STEP_TILES | BLOCKPATCH_STEP_SFX                ; step 1/2
+    blockpatch_sfx  SFX_26
+    blockpatch_cells $f4,1, $f5,1
+    blockpatch_step BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_TILES           ; step 2/2
+    blockpatch_cells $f2,1, $f3,1
+
+; ------------------------------------------------------------------
+; $0e   frankensteinfeld, mission 1
+; ------------------------------------------------------------------
 .script_0E:
-;   startX $0390  startY $0AF0  movement $2838  no anim
-    db   $90, $03, $f0, $0a                            ;; 00:2830
-    db   $38, $28, $00, $00                            ;; 00:2834
-;   move: pause $0080, LEFT $0270, end
-    db   $00, $80, $00, $20                            ;; 00:2838
-    db   $70, $02, $ff                                 ;; 00:283c
+    cutscene_script $0390, $0af0, .script_0E_move, 0
+
+.script_0E_move:
+    cutscene_move 0,                     $0080   ; stand still
+    cutscene_move PADF_LEFT,             $0270
+    cutscene_move_end
+
+; ------------------------------------------------------------------
+; $0f   frankensteinfeld, mission 2
+; ------------------------------------------------------------------
 .script_0F:
-;   startX $0AD0  startY $05B0  movement $2847  no anim
-    db   $d0, $0a, $b0, $05, $47                       ;; 00:283f
-    db   $28, $00, $00                                 ;; 00:2844
-;   move: pause $0080, DOWN+RIGHT $0090, end
-    db   $00, $80, $00, $90, $90                       ;; 00:2847
-    db   $00, $ff                                      ;; 00:284c
+    cutscene_script $0ad0, $05b0, .script_0F_move, 0
+
+.script_0F_move:
+    cutscene_move 0,                     $0080   ; stand still
+    cutscene_move PADF_DOWN | PADF_RIGHT, $0090
+    cutscene_move_end
+
+; ------------------------------------------------------------------
+; $10   frankensteinfeld, mission 3
+; ------------------------------------------------------------------
 .script_10:
-;   startX $0AB0  startY $0A50  movement $2856  no anim
-    db   $b0, $0a, $50, $0a, $56, $28                  ;; 00:284e
-    db   $00, $00                                      ;; 00:2854
-;   move: pause $0080, UP $0080, RIGHT $00A0, UP $0040, end
-    db   $00, $80, $00, $40, $80, $00                  ;; 00:2856
-    db   $10, $a0, $00, $40, $40, $00, $ff             ;; 00:285c
+    cutscene_script $0ab0, $0a50, .script_10_move, 0
+
+.script_10_move:
+    cutscene_move 0,                     $0080   ; stand still
+    cutscene_move PADF_UP,               $0080
+    cutscene_move PADF_RIGHT,            $00a0
+    cutscene_move PADF_UP,               $0040
+    cutscene_move_end
+
+; ------------------------------------------------------------------
+; $11   www.dotcom.com, mission 1
+; ------------------------------------------------------------------
 .script_11:
-;   startX $02C0  startY $0850  movement $286B  no anim
-    db   $c0                                           ;; 00:2863
-    db   $02, $50, $08, $6b, $28, $00, $00             ;; 00:2864
-;   move: pause $0080, UP $0460, end
-    db   $00                                           ;; 00:286b
-    db   $80, $00, $40, $60, $04, $ff                  ;; 00:286c
+    cutscene_script $02c0, $0850, .script_11_move, 0
+
+.script_11_move:
+    cutscene_move 0,                     $0080   ; stand still
+    cutscene_move PADF_UP,               $0460
+    cutscene_move_end
+
+; ------------------------------------------------------------------
+; $12   www.dotcom.com, mission 2
+; ------------------------------------------------------------------
 .script_12:
-;   startX $0C70  startY $0770  movement $287A  no anim
-    db   $70, $0c                                      ;; 00:2872
-    db   $70, $07, $7a, $28, $00, $00                  ;; 00:2874
-;   move: pause $0080, RIGHT $02D0, end
-    db   $00, $80                                      ;; 00:287a
-    db   $00, $10, $d0, $02, $ff                       ;; 00:287c
+    cutscene_script $0c70, $0770, .script_12_move, 0
+
+.script_12_move:
+    cutscene_move 0,                     $0080   ; stand still
+    cutscene_move PADF_RIGHT,            $02d0
+    cutscene_move_end
+
+; ------------------------------------------------------------------
+; $13   mao tse tongue, mission 1
+; ------------------------------------------------------------------
 .script_13:
-;   startX $0230  startY $04F0  movement $2889  no anim
-    db   $30, $02, $f0                                 ;; 00:2881
-    db   $04, $89, $28, $00, $00, $00, $2c, $01        ;; 00:2884 ????????
-    db   $ff                                           ;; 00:288c
+    cutscene_script $0230, $04f0, .script_13_move, 0
+
+.script_13_move:
+    cutscene_move 0,                     $012c   ; stand still
+    cutscene_move_end
+
+; ------------------------------------------------------------------
+; $14   mao tse tongue, mission 2
+; ------------------------------------------------------------------
 .script_14:
-;   startX $0B30  startY $08B0  movement $2895  no anim
-    db   $30, $0b, $b0, $08, $95, $28, $00             ;; 00:288d
-;   move: pause $0080, UP $00A0, RIGHT $0190, UP+RIGHT $0040, end
-    db   $00, $00, $80, $00, $40, $a0, $00, $10        ;; 00:2894
-    db   $90, $01, $50, $40, $00, $ff                  ;; 00:289c
+    cutscene_script $0b30, $08b0, .script_14_move, 0
+
+.script_14_move:
+    cutscene_move 0,                     $0080   ; stand still
+    cutscene_move PADF_UP,               $00a0
+    cutscene_move PADF_RIGHT,            $0190
+    cutscene_move PADF_UP | PADF_RIGHT,  $0040
+    cutscene_move_end
+
+; ------------------------------------------------------------------
+; $15   mao tse tongue, slot 0
+; ------------------------------------------------------------------
 .script_15:
-;   startX $03C0  startY $06A0  no movement, no anim - reposition and hold
-    db   $c0, $03                                      ;; 00:28a2
-    db   $a0, $06, $00, $00, $00, $00                  ;; 00:28a4
+    cutscene_script $03c0, $06a0, 0, 0
+    ; no movement and no animation - reposition, hold, return
+
+; ------------------------------------------------------------------
+; $16   mao tse tongue, slot 1
+; ------------------------------------------------------------------
 .script_16:
-;   startX $0860  startY $07B0  no movement, no anim - reposition and hold
-    db   $60, $08                                      ;; 00:28aa
-    db   $b0, $07, $00, $00, $00, $00                  ;; 00:28ac
+    cutscene_script $0860, $07b0, 0, 0
+    ; no movement and no animation - reposition, hold, return
+
+; ------------------------------------------------------------------
+; $17   mao tse tongue, slot 2
+; ------------------------------------------------------------------
 .script_17:
-;   startX $09C0  startY $00B0  no movement  anim $28BA
-;   anim: no callback, 2 steps, 60 frames each, 2x2 blocks at (-1,-1) from Gex
-    db   $c0, $09                                      ;; 00:28b2
-    db   $b0, $00, $00, $00, $ba, $28, $00, $00        ;; 00:28b4 ????????
-    db   $02, $3c, $ff, $ff, $02, $02, $08, $f4        ;; 00:28bc ????????
-    db   $01, $f5, $01, $f6, $01, $f7, $01, $0a        ;; 00:28c4 ????????
-    db   $e0, $01, $e1, $01, $e2, $01, $e3, $01        ;; 00:28cc ????????
+    cutscene_script $09c0, $00b0, 0, .script_17_anim
+
+.script_17_anim:
+    blockpatch_anim 0, 2, 60, -1, -1, 2, 2
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/2
+    blockpatch_cells $f4,1, $f5,1
+    blockpatch_cells $f6,1, $f7,1
+    blockpatch_step BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_TILES           ; step 2/2
+    blockpatch_cells $e0,1, $e1,1
+    blockpatch_cells $e2,1, $e3,1
+
+; ------------------------------------------------------------------
+; $18   mao tse tongue, slot 3
+; ------------------------------------------------------------------
 .script_18:
-;   startX $0980  startY $0690  no movement  anim $28DC
-;   anim: no callback, 2 steps, 60 frames each, 2x2 blocks at (-1,-1) from Gex
-    db   $80, $09, $90, $06, $00, $00, $dc, $28        ;; 00:28d4
-    db   $00, $00, $02, $3c, $ff, $ff, $02, $02        ;; 00:28dc ????????
-    db   $08, $f4, $01, $f5, $01, $f6, $01, $f7        ;; 00:28e4 ????????
-    db   $01, $0a, $e0, $01, $e1, $01, $e2, $01        ;; 00:28ec ????????
-    db   $e3, $01                                      ;; 00:28f4
+    cutscene_script $0980, $0690, 0, .script_18_anim
+
+.script_18_anim:
+    blockpatch_anim 0, 2, 60, -1, -1, 2, 2
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/2
+    blockpatch_cells $f4,1, $f5,1
+    blockpatch_cells $f6,1, $f7,1
+    blockpatch_step BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_TILES           ; step 2/2
+    blockpatch_cells $e0,1, $e1,1
+    blockpatch_cells $e2,1, $e3,1
+
+; ------------------------------------------------------------------
+; $19   mao tse tongue, slot 4
+; ------------------------------------------------------------------
 .script_19:
-;   startX $0100  startY $0550  no movement  anim $28FE
-;   anim: no callback, 2 steps, 60 frames each, 2x2 blocks at (-1,-1) from Gex
-    db   $00, $01, $50, $05, $00, $00                  ;; 00:28f6
-    db   $fe, $28, $00, $00, $02, $3c, $ff, $ff        ;; 00:28fc ????????
-    db   $02, $02, $08, $f4, $01, $f5, $01, $f6        ;; 00:2904 ????????
-    db   $01, $f7, $01, $0a, $e0, $01, $e1, $01        ;; 00:290c ????????
-    db   $e2, $01, $e3, $01                            ;; 00:2914
+    cutscene_script $0100, $0550, 0, .script_19_anim
+
+.script_19_anim:
+    blockpatch_anim 0, 2, 60, -1, -1, 2, 2
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/2
+    blockpatch_cells $f4,1, $f5,1
+    blockpatch_cells $f6,1, $f7,1
+    blockpatch_step BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_TILES           ; step 2/2
+    blockpatch_cells $e0,1, $e1,1
+    blockpatch_cells $e2,1, $e3,1
+
+; ------------------------------------------------------------------
+; $1a   mao tse tongue, slot 5
+; ------------------------------------------------------------------
 .script_1A:
-;   startX $07A0  startY $00F0  no movement  anim $2920
-;   anim: no callback, 13 steps, 10 frames each, 2x2 blocks at (0,0) from Gex - the longest
-;   block in the file at 117 bytes of step data
-    db   $a0, $07, $f0, $00                            ;; 00:2918
-    db   $00, $00, $20, $29, $00, $00, $0d, $0a        ;; 00:291c ????????
-    db   $00, $00, $02, $02, $08, $ad, $01, $ad        ;; 00:2924 ????????
-    db   $01, $ad, $01, $ad, $01, $08, $ad, $01        ;; 00:292c ????????
-    db   $ad, $01, $ad, $01, $a8, $01, $08, $ad        ;; 00:2934 ????????
-    db   $01, $ad, $01, $ad, $01, $a7, $01, $08        ;; 00:293c ????????
-    db   $ad, $01, $ad, $01, $ad, $01, $a6, $01        ;; 00:2944 ????????
-    db   $08, $ad, $01, $ad, $01, $ad, $01, $a5        ;; 00:294c ????????
-    db   $01, $08, $ad, $01, $a8, $01, $ad, $01        ;; 00:2954 ????????
-    db   $a4, $01, $08, $ad, $01, $a7, $01, $ad        ;; 00:295c ????????
-    db   $01, $a4, $01, $08, $ad, $01, $a6, $01        ;; 00:2964 ????????
-    db   $ad, $01, $a4, $01, $08, $ad, $01, $a5        ;; 00:296c ????????
-    db   $01, $ad, $01, $a4, $01, $08, $ad, $01        ;; 00:2974 ????????
-    db   $a5, $01, $a8, $01, $a4, $01, $08, $ad        ;; 00:297c ????????
-    db   $01, $a5, $01, $a7, $01, $a4, $01, $08        ;; 00:2984 ????????
-    db   $ad, $01, $a5, $01, $a6, $01, $a4, $01        ;; 00:298c ????????
-    db   $0a, $ad, $01, $a5, $01, $a5, $01, $a4        ;; 00:2994 ????????
-    db   $01                                           ;; 00:299c
+    cutscene_script $07a0, $00f0, 0, .script_1A_anim
+
+.script_1A_anim:
+    blockpatch_anim 0, 13, 10, 0, 0, 2, 2
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/13
+    blockpatch_cells $ad,1, $ad,1
+    blockpatch_cells $ad,1, $ad,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 2/13
+    blockpatch_cells $ad,1, $ad,1
+    blockpatch_cells $ad,1, $a8,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 3/13
+    blockpatch_cells $ad,1, $ad,1
+    blockpatch_cells $ad,1, $a7,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 4/13
+    blockpatch_cells $ad,1, $ad,1
+    blockpatch_cells $ad,1, $a6,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 5/13
+    blockpatch_cells $ad,1, $ad,1
+    blockpatch_cells $ad,1, $a5,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 6/13
+    blockpatch_cells $ad,1, $a8,1
+    blockpatch_cells $ad,1, $a4,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 7/13
+    blockpatch_cells $ad,1, $a7,1
+    blockpatch_cells $ad,1, $a4,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 8/13
+    blockpatch_cells $ad,1, $a6,1
+    blockpatch_cells $ad,1, $a4,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 9/13
+    blockpatch_cells $ad,1, $a5,1
+    blockpatch_cells $ad,1, $a4,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 10/13
+    blockpatch_cells $ad,1, $a5,1
+    blockpatch_cells $a8,1, $a4,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 11/13
+    blockpatch_cells $ad,1, $a5,1
+    blockpatch_cells $a7,1, $a4,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 12/13
+    blockpatch_cells $ad,1, $a5,1
+    blockpatch_cells $a6,1, $a4,1
+    blockpatch_step BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_TILES           ; step 13/13
+    blockpatch_cells $ad,1, $a5,1
+    blockpatch_cells $a5,1, $a4,1
+
+; ------------------------------------------------------------------
+; $1b   mao tse tongue, slot 6
+; ------------------------------------------------------------------
 .script_1B:
-;   startX $0D20  startY $0690  no movement  anim $29A5
-;   anim: no callback, 7 steps, 10 frames each, 1x2 blocks at (0,0) from Gex
-    db   $20, $0d, $90, $06, $00, $00, $a5             ;; 00:299d
-    db   $29, $00, $00, $07, $0a, $00, $00, $01        ;; 00:29a4 ????????
-    db   $02, $08, $a5, $01, $a4, $01, $08, $a6        ;; 00:29ac ????????
-    db   $01, $a4, $01, $08, $a7, $01, $a4, $01        ;; 00:29b4 ????????
-    db   $08, $a8, $01, $a4, $01, $08, $ad, $01        ;; 00:29bc ????????
-    db   $a5, $01, $08, $ad, $01, $a6, $01, $0a        ;; 00:29c4 ????????
-    db   $ad, $01, $a7, $01                            ;; 00:29cc
+    cutscene_script $0d20, $0690, 0, .script_1B_anim
+
+.script_1B_anim:
+    blockpatch_anim 0, 7, 10, 0, 0, 1, 2
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/7
+    blockpatch_cells $a5,1
+    blockpatch_cells $a4,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 2/7
+    blockpatch_cells $a6,1
+    blockpatch_cells $a4,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 3/7
+    blockpatch_cells $a7,1
+    blockpatch_cells $a4,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 4/7
+    blockpatch_cells $a8,1
+    blockpatch_cells $a4,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 5/7
+    blockpatch_cells $ad,1
+    blockpatch_cells $a5,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 6/7
+    blockpatch_cells $ad,1
+    blockpatch_cells $a6,1
+    blockpatch_step BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_TILES           ; step 7/7
+    blockpatch_cells $ad,1
+    blockpatch_cells $a7,1
+
+; ------------------------------------------------------------------
+; $1c   mao tse tongue, slot 7
+; ------------------------------------------------------------------
 .script_1C:
-;   startX $09E0  startY $0210  no movement  anim $29D8
-;   anim: no callback, 13 steps, 10 frames each, 2x2 blocks at (0,0) from Gex - byte for byte
-;   the same sequence as .script_1A, just duplicated rather than shared
-    db   $e0, $09, $10, $02                            ;; 00:29d0
-    db   $00, $00, $d8, $29, $00, $00, $0d, $0a        ;; 00:29d4 ????????
-    db   $00, $00, $02, $02, $08, $ad, $01, $ad        ;; 00:29dc ????????
-    db   $01, $ad, $01, $ad, $01, $08, $ad, $01        ;; 00:29e4 ????????
-    db   $ad, $01, $ad, $01, $a8, $01, $08, $ad        ;; 00:29ec ????????
-    db   $01, $ad, $01, $ad, $01, $a7, $01, $08        ;; 00:29f4 ????????
-    db   $ad, $01, $ad, $01, $ad, $01, $a6, $01        ;; 00:29fc ????????
-    db   $08, $ad, $01, $ad, $01, $ad, $01, $a5        ;; 00:2a04 ????????
-    db   $01, $08, $ad, $01, $a8, $01, $ad, $01        ;; 00:2a0c ????????
-    db   $a4, $01, $08, $ad, $01, $a7, $01, $ad        ;; 00:2a14 ????????
-    db   $01, $a4, $01, $08, $ad, $01, $a6, $01        ;; 00:2a1c ????????
-    db   $ad, $01, $a4, $01, $08, $ad, $01, $a5        ;; 00:2a24 ????????
-    db   $01, $ad, $01, $a4, $01, $08, $ad, $01        ;; 00:2a2c ????????
-    db   $a5, $01, $a8, $01, $a4, $01, $08, $ad        ;; 00:2a34 ????????
-    db   $01, $a5, $01, $a7, $01, $a4, $01, $08        ;; 00:2a3c ????????
-    db   $ad, $01, $a5, $01, $a6, $01, $a4, $01        ;; 00:2a44 ????????
-    db   $0a, $ad, $01, $a5, $01, $a5, $01, $a4        ;; 00:2a4c ????????
-    db   $01                                           ;; 00:2a54
+    cutscene_script $09e0, $0210, 0, .script_1C_anim
+
+.script_1C_anim:
+    blockpatch_anim 0, 13, 10, 0, 0, 2, 2
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/13
+    blockpatch_cells $ad,1, $ad,1
+    blockpatch_cells $ad,1, $ad,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 2/13
+    blockpatch_cells $ad,1, $ad,1
+    blockpatch_cells $ad,1, $a8,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 3/13
+    blockpatch_cells $ad,1, $ad,1
+    blockpatch_cells $ad,1, $a7,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 4/13
+    blockpatch_cells $ad,1, $ad,1
+    blockpatch_cells $ad,1, $a6,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 5/13
+    blockpatch_cells $ad,1, $ad,1
+    blockpatch_cells $ad,1, $a5,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 6/13
+    blockpatch_cells $ad,1, $a8,1
+    blockpatch_cells $ad,1, $a4,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 7/13
+    blockpatch_cells $ad,1, $a7,1
+    blockpatch_cells $ad,1, $a4,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 8/13
+    blockpatch_cells $ad,1, $a6,1
+    blockpatch_cells $ad,1, $a4,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 9/13
+    blockpatch_cells $ad,1, $a5,1
+    blockpatch_cells $ad,1, $a4,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 10/13
+    blockpatch_cells $ad,1, $a5,1
+    blockpatch_cells $a8,1, $a4,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 11/13
+    blockpatch_cells $ad,1, $a5,1
+    blockpatch_cells $a7,1, $a4,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 12/13
+    blockpatch_cells $ad,1, $a5,1
+    blockpatch_cells $a6,1, $a4,1
+    blockpatch_step BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_TILES           ; step 13/13
+    blockpatch_cells $ad,1, $a5,1
+    blockpatch_cells $a5,1, $a4,1
+
+; ------------------------------------------------------------------
+; $1d   mao tse tongue, slot 8
+; ------------------------------------------------------------------
 .script_1D:
-;   startX $0B00  startY $06B0  no movement  anim $2A5D
-;   anim: callback $2A77, 2 steps, 60 frames each, 2x2 blocks at (-1,0) from Gex. The step data
-;   ends exactly on $2A77, so the `ld A,$EF / ld [$D794],A / ret` below is the callback body
-    db   $00, $0b, $b0, $06, $00, $00, $5d             ;; 00:2a55
-    db   $2a, $77, $2a, $02, $3c, $ff, $00, $02        ;; 00:2a5c ????????
-    db   $02, $08, $03, $00, $ce, $01, $11, $00        ;; 00:2a64 ????????
-    db   $11, $00, $0a, $03, $00, $ce, $01, $22        ;; 00:2a6c ????????
-    db   $00, $23, $00, $3e, $ef, $ea, $94, $d7        ;; 00:2a74 ????????
-    db   $c9                                           ;; 00:2a7c
+    cutscene_script $0b00, $06b0, 0, .script_1D_anim
+
+.script_1D_anim:
+    blockpatch_anim .script_1D_callback, 2, 60, -1, 0, 2, 2
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/2
+    blockpatch_cells $03,0, $ce,1
+    blockpatch_cells $11,0, $11,0
+    blockpatch_step BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_TILES           ; step 2/2
+    blockpatch_cells $03,0, $ce,1
+    blockpatch_cells $22,0, $23,0
+
+.script_1D_callback:
+; The setup callback of the animation above. Puts block patch slot 9 into the
+; counting-up state, but at $EF rather than the $02 a switch would use - so
+; BlockPatch_TickSlots has only $11 frames left to count before it wraps and
+; re-arms the slot to $01
+    ld   A, $ef
+    ld   [wD78B_BlockPatch_SlotTable + 9], A
+    ret
+
+; ------------------------------------------------------------------
+; $1e   mao tse tongue, slot 9
+; ------------------------------------------------------------------
 .script_1E:
-;   startX $0CE0  startY $06B0  no movement  anim $2A85
-;   anim: no callback, 2 steps, 60 frames each, 2x2 blocks at (-2,0) from Gex - the same two
-;   steps as .script_1D one block over, but with no callback to poke a block patch slot
-    db   $e0, $0c, $b0, $06, $00, $00, $85             ;; 00:2a7d
-    db   $2a, $00, $00, $02, $3c, $fe, $00, $02        ;; 00:2a84 ????????
-    db   $02, $08, $03, $00, $ce, $01, $11, $00        ;; 00:2a8c ????????
-    db   $11, $00, $0a, $03, $00, $ce, $01, $22        ;; 00:2a94 ????????
-    db   $00, $23, $00                                 ;; 00:2a9c
+    cutscene_script $0ce0, $06b0, 0, .script_1E_anim
+
+.script_1E_anim:
+    blockpatch_anim 0, 2, 60, -2, 0, 2, 2
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/2
+    blockpatch_cells $03,0, $ce,1
+    blockpatch_cells $11,0, $11,0
+    blockpatch_step BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_TILES           ; step 2/2
+    blockpatch_cells $03,0, $ce,1
+    blockpatch_cells $22,0, $23,0
+
+; ------------------------------------------------------------------
+; $1f   pangaea 90210, mission 1
+; ------------------------------------------------------------------
 .script_1F:
-;   startX $03D0  startY $0810  movement $2AA7  no anim
-    db   $d0, $03, $10, $08, $a7                       ;; 00:2a9f
-;   move: pause $0080, RIGHT $02D0, UP $00A0, end
-    db   $2a, $00, $00, $00, $80, $00, $10, $d0        ;; 00:2aa4
-    db   $02, $40, $a0, $00, $ff                       ;; 00:2aac
+    cutscene_script $03d0, $0810, .script_1F_move, 0
+
+.script_1F_move:
+    cutscene_move 0,                     $0080   ; stand still
+    cutscene_move PADF_RIGHT,            $02d0
+    cutscene_move PADF_UP,               $00a0
+    cutscene_move_end
+
+; ------------------------------------------------------------------
+; $20   pangaea 90210, mission 2
+; ------------------------------------------------------------------
 .script_20:
-;   startX $0CF0  startY $0570  movement $2AB9  no anim
-    db   $f0, $0c, $70                                 ;; 00:2ab1
-    db   $05, $b9, $2a, $00, $00                       ;; 00:2ab4
-;   move: pause $0080, UP+LEFT $0060, LEFT $00C0, UP+LEFT $0040,
-;         LEFT $00A0, UP+LEFT $0040, LEFT $0170, end
-    db   $00, $80, $00                                 ;; 00:2ab9
-    db   $60, $60, $00, $20, $c0, $00, $60, $40        ;; 00:2abc
-    db   $00, $20, $a0, $00, $60, $40, $00, $20        ;; 00:2ac4
-    db   $70, $01, $ff                                 ;; 00:2acc
+    cutscene_script $0cf0, $0570, .script_20_move, 0
+
+.script_20_move:
+    cutscene_move 0,                     $0080   ; stand still
+    cutscene_move PADF_UP | PADF_LEFT,   $0060
+    cutscene_move PADF_LEFT,             $00c0
+    cutscene_move PADF_UP | PADF_LEFT,   $0040
+    cutscene_move PADF_LEFT,             $00a0
+    cutscene_move PADF_UP | PADF_LEFT,   $0040
+    cutscene_move PADF_LEFT,             $0170
+    cutscene_move_end
+
+; ------------------------------------------------------------------
+; $21   fine tooning, mission 1
+; ------------------------------------------------------------------
 .script_21:
-;   startX $0880  startY $0F10  movement $2AD7  no anim
-    db   $80, $08, $10, $0f, $d7                       ;; 00:2acf
-;   move: pause $0080, LEFT $00E0, UP $00E0, end
-    db   $2a, $00, $00, $00, $80, $00, $20, $e0        ;; 00:2ad4
-    db   $00, $40, $e0, $00, $ff                       ;; 00:2adc
+    cutscene_script $0880, $0f10, .script_21_move, 0
+
+.script_21_move:
+    cutscene_move 0,                     $0080   ; stand still
+    cutscene_move PADF_LEFT,             $00e0
+    cutscene_move PADF_UP,               $00e0
+    cutscene_move_end
+
+; ------------------------------------------------------------------
+; $22   fine tooning, mission 2
+; ------------------------------------------------------------------
 .script_22:
-;   startX $0B80  startY $0CF0  movement $2AE9  no anim
-    db   $80, $0b, $f0                                 ;; 00:2ae1
-    db   $0c, $e9, $2a, $00, $00                       ;; 00:2ae4
-;   move: pause $0080, RIGHT $0200, UP $0080, end
-    db   $00, $80, $00                                 ;; 00:2ae9
-    db   $10, $00, $02, $40, $80, $00, $ff             ;; 00:2aec
+    cutscene_script $0b80, $0cf0, .script_22_move, 0
+
+.script_22_move:
+    cutscene_move 0,                     $0080   ; stand still
+    cutscene_move PADF_RIGHT,            $0200
+    cutscene_move PADF_UP,               $0080
+    cutscene_move_end
+
+; ------------------------------------------------------------------
+; $23   fine tooning, slot 6
+; ------------------------------------------------------------------
 .script_23:
-;   startX $0640  startY $0970  no movement  anim $2AFB
-;   anim: callback $2B1C, 5 steps, 10 frames each, 2x1 blocks at (-1,0) from Gex. 25 bytes of
-;   step data from $2B03 lands exactly on the callback at $2B1C
-    db   $40                                           ;; 00:2af3
-    db   $06, $70, $09, $00, $00, $fb, $2a, $1c        ;; 00:2af4 ????????
-    db   $2b, $05, $0a, $ff, $00, $02, $01, $08        ;; 00:2afc ????????
-    db   $99, $01, $9a, $01, $08, $86, $01, $87        ;; 00:2b04 ????????
-    db   $01, $08, $88, $01, $89, $01, $08, $8a        ;; 00:2b0c ????????
-    db   $01, $8b, $01, $0a, $8c, $01, $8d, $01        ;; 00:2b14 ????????
-;   $3E $EF $EA $94 $D7 $C9 = "ld A,$EF / ld [$D794],A / ret" - the animation script
-;   runner calls into its own data, so a scene can poke a block patch slot when it finishes
-    db   $3e, $ef, $ea, $94, $d7, $c9                  ;; 00:2b1c
+    cutscene_script $0640, $0970, 0, .script_23_anim
+
+.script_23_anim:
+    blockpatch_anim .script_23_callback, 5, 10, -1, 0, 2, 1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/5
+    blockpatch_cells $99,1, $9a,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 2/5
+    blockpatch_cells $86,1, $87,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 3/5
+    blockpatch_cells $88,1, $89,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 4/5
+    blockpatch_cells $8a,1, $8b,1
+    blockpatch_step BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_TILES           ; step 5/5
+    blockpatch_cells $8c,1, $8d,1
+
+.script_23_callback:
+; The setup callback of the animation above. Puts block patch slot 9 into the
+; counting-up state, but at $EF rather than the $02 a switch would use - so
+; BlockPatch_TickSlots has only $11 frames left to count before it wraps and
+; re-arms the slot to $01
+    ld   A, $ef
+    ld   [wD78B_BlockPatch_SlotTable + 9], A
+    ret
+
+; ------------------------------------------------------------------
+; $24   fine tooning, slot 9
+; ------------------------------------------------------------------
 .script_24:
-;   startX $0800  startY $0CB0  no movement  anim $2B2A
-;   anim: callback $2B4B, 5 steps, 10 frames each, 2x1 blocks at (-1,0) from Gex - the same
-;   sequence as .script_23, with the callback writing $D799 instead of $D794
-    db   $00, $08                                      ;; 00:2b22
-    db   $b0, $0c, $00, $00, $2a, $2b, $4b, $2b        ;; 00:2b24 ????????
-    db   $05, $0a, $ff, $00, $02, $01, $08, $99        ;; 00:2b2c ????????
-    db   $01, $9a, $01, $08, $86, $01, $87, $01        ;; 00:2b34 ????????
-    db   $08, $88, $01, $89, $01, $08, $8a, $01        ;; 00:2b3c ????????
-    db   $8b, $01, $0a, $8c, $01, $8d, $01, $3e        ;; 00:2b44 ????????
-    db   $ef, $ea, $99, $d7, $c9                       ;; 00:2b4c ; ...here writing $D799
+    cutscene_script $0800, $0cb0, 0, .script_24_anim
+
+.script_24_anim:
+    blockpatch_anim .script_24_callback, 5, 10, -1, 0, 2, 1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/5
+    blockpatch_cells $99,1, $9a,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 2/5
+    blockpatch_cells $86,1, $87,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 3/5
+    blockpatch_cells $88,1, $89,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 4/5
+    blockpatch_cells $8a,1, $8b,1
+    blockpatch_step BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_TILES           ; step 5/5
+    blockpatch_cells $8c,1, $8d,1
+
+.script_24_callback:
+; The setup callback of the animation above. Puts block patch slot 14 into the
+; counting-up state, but at $EF rather than the $02 a switch would use - so
+; BlockPatch_TickSlots has only $11 frames left to count before it wraps and
+; re-arms the slot to $01
+    ld   A, $ef
+    ld   [wD78B_BlockPatch_SlotTable + 14], A
+    ret
+
+; ------------------------------------------------------------------
+; $25   fine tooning, slot $0E
+; ------------------------------------------------------------------
 .script_25:
-;   startX $0B20  startY $0D30  no movement  anim $2B59
-;   anim: no callback, 2 steps, 60 frames each, 2x1 blocks at (-1,0) from Gex
-    db   $20, $0b, $30                                 ;; 00:2b51
-    db   $0d, $00, $00, $59, $2b, $00, $00, $02        ;; 00:2b54 ????????
-    db   $3c, $ff, $00, $02, $01, $08, $94, $01        ;; 00:2b5c ????????
-    db   $95, $01, $0a, $d9, $01, $da, $01             ;; 00:2b64
+    cutscene_script $0b20, $0d30, 0, .script_25_anim
+
+.script_25_anim:
+    blockpatch_anim 0, 2, 60, -1, 0, 2, 1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/2
+    blockpatch_cells $94,1, $95,1
+    blockpatch_step BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_TILES           ; step 2/2
+    blockpatch_cells $d9,1, $da,1
+
+; ------------------------------------------------------------------
+; $26   this old cave, mission 1
+; ------------------------------------------------------------------
 .script_26:
-;   startX $0640  startY $0D30  movement $2B73  no anim
-    db   $40                                           ;; 00:2b6b
-    db   $06, $30, $0d, $73, $2b, $00, $00             ;; 00:2b6c
-;   move: pause $0080, RIGHT $00E0, UP $0100, RIGHT $0060, end
-    db   $00                                           ;; 00:2b73
-    db   $80, $00, $10, $e0, $00, $40, $00, $01        ;; 00:2b74
-    db   $10, $60, $00, $ff                            ;; 00:2b7c
+    cutscene_script $0640, $0d30, .script_26_move, 0
+
+.script_26_move:
+    cutscene_move 0,                     $0080   ; stand still
+    cutscene_move PADF_RIGHT,            $00e0
+    cutscene_move PADF_UP,               $0100
+    cutscene_move PADF_RIGHT,            $0060
+    cutscene_move_end
+
+; ------------------------------------------------------------------
+; $27   this old cave, mission 2
+; ------------------------------------------------------------------
 .script_27:
-;   startX $0BC0  startY $0DB0  movement $2B88  no anim
-    db   $c0, $0b, $b0, $0d                            ;; 00:2b80
-    db   $88, $2b, $00, $00, $00, $80, $00, $20        ;; 00:2b84 ????????
-    db   $80, $01, $80, $60, $00, $20, $e0, $00        ;; 00:2b8c ????????
-    db   $ff                                           ;; 00:2b94
+    cutscene_script $0bc0, $0db0, .script_27_move, 0
+
+.script_27_move:
+    cutscene_move 0,                     $0080   ; stand still
+    cutscene_move PADF_LEFT,             $0180
+    cutscene_move PADF_DOWN,             $0060
+    cutscene_move PADF_LEFT,             $00e0
+    cutscene_move_end
+
+; ------------------------------------------------------------------
+; $28   this old cave, mission 3
+; ------------------------------------------------------------------
 .script_28:
-;   startX $0810  startY $0E30  movement $2B9D  no anim
-;   move: pause $0080, RIGHT $0080, UP $0120, RIGHT $00E0, UP $0040, RIGHT $00B0, end
-    db   $10, $08, $30, $0e, $9d, $2b, $00             ;; 00:2b95
-    db   $00, $00, $80, $00, $10, $80, $00, $40        ;; 00:2b9c ????????
-    db   $20, $01, $10, $e0, $00, $40, $40, $00        ;; 00:2ba4 ????????
-    db   $10, $b0, $00, $ff                            ;; 00:2bac
+    cutscene_script $0810, $0e30, .script_28_move, 0
+
+.script_28_move:
+    cutscene_move 0,                     $0080   ; stand still
+    cutscene_move PADF_RIGHT,            $0080
+    cutscene_move PADF_UP,               $0120
+    cutscene_move PADF_RIGHT,            $00e0
+    cutscene_move PADF_UP,               $0040
+    cutscene_move PADF_RIGHT,            $00b0
+    cutscene_move_end
+
+; ------------------------------------------------------------------
+; $29   honey i shrunk the gecko, mission 1
+; ------------------------------------------------------------------
 .script_29:
-;   startX $0EB0  startY $0A10  movement $2BB8  no anim
-;   move: pause $0080, RIGHT $0080, UP $0240, LEFT $0190, end
-    db   $b0, $0e, $10, $0a                            ;; 00:2bb0
-    db   $b8, $2b, $00, $00, $00, $80, $00, $10        ;; 00:2bb4 ????????
-    db   $80, $00, $40, $40, $02, $20, $90, $01        ;; 00:2bbc ????????
-    db   $ff                                           ;; 00:2bc4
+    cutscene_script $0eb0, $0a10, .script_29_move, 0
+
+.script_29_move:
+    cutscene_move 0,                     $0080   ; stand still
+    cutscene_move PADF_RIGHT,            $0080
+    cutscene_move PADF_UP,               $0240
+    cutscene_move PADF_LEFT,             $0190
+    cutscene_move_end
+
+; ------------------------------------------------------------------
+; $2a   honey i shrunk the gecko, mission 2
+; ------------------------------------------------------------------
 .script_2A:
-;   startX $0280  startY $0D90  movement $2BCD  no anim
-;   move: pause $0080, UP $0340, LEFT $01A0, end
-    db   $80, $02, $90, $0d, $cd, $2b, $00             ;; 00:2bc5
-    db   $00, $00, $80, $00, $40, $40, $03, $20        ;; 00:2bcc ????????
-    db   $a0, $01, $ff                                 ;; 00:2bd4
+    cutscene_script $0280, $0d90, .script_2A_move, 0
+
+.script_2A_move:
+    cutscene_move 0,                     $0080   ; stand still
+    cutscene_move PADF_UP,               $0340
+    cutscene_move PADF_LEFT,             $01a0
+    cutscene_move_end
+
+; ------------------------------------------------------------------
+; $2b   honey i shrunk the gecko, mission 3
+; ------------------------------------------------------------------
 .script_2B:
-;   startX $0F30  startY $00B0  movement $2BDF  no anim
-;   move: pause $0080, LEFT $0230, end
-    db   $30, $0f, $b0, $00, $df                       ;; 00:2bd7
-    db   $2b, $00, $00, $00, $80, $00, $20, $30        ;; 00:2bdc ????????
-    db   $02, $ff                                      ;; 00:2be4
+    cutscene_script $0f30, $00b0, .script_2B_move, 0
+
+.script_2B_move:
+    cutscene_move 0,                     $0080   ; stand still
+    cutscene_move PADF_LEFT,             $0230
+    cutscene_move_end
+
+; ------------------------------------------------------------------
+; $2c   poltergex, mission 1
+; ------------------------------------------------------------------
 .script_2C:
-;   startX $0700  startY $06B0  movement $2BEE  no anim
-;   move: pause $0080, RIGHT $00E0, UP+RIGHT $0060, RIGHT $0080,
-;         UP+LEFT $0100, UP+RIGHT $00C0, UP+LEFT $0120, end - a zigzag climb
-    db   $00, $07, $b0, $06, $ee, $2b                  ;; 00:2be6
-    db   $00, $00, $00, $80, $00, $10, $e0, $00        ;; 00:2bec ????????
-    db   $50, $60, $00, $10, $80, $00, $60, $00        ;; 00:2bf4 ????????
-    db   $01, $50, $c0, $00, $60, $20, $01, $ff        ;; 00:2bfc ????????
+    cutscene_script $0700, $06b0, .script_2C_move, 0
+
+.script_2C_move:
+    cutscene_move 0,                     $0080   ; stand still
+    cutscene_move PADF_RIGHT,            $00e0
+    cutscene_move PADF_UP | PADF_RIGHT,  $0060
+    cutscene_move PADF_RIGHT,            $0080
+    cutscene_move PADF_UP | PADF_LEFT,   $0100
+    cutscene_move PADF_UP | PADF_RIGHT,  $00c0
+    cutscene_move PADF_UP | PADF_LEFT,   $0120
+    cutscene_move_end
+
+; ------------------------------------------------------------------
+; $2d   poltergex, mission 2
+; ------------------------------------------------------------------
 .script_2D:
-;   startX $0980  startY $0CB0  movement $2C0C  no anim
-;   move: pause $0080, UP $0200, RIGHT $0240, end
-    db   $80, $09, $b0, $0c, $0c, $2c, $00, $00        ;; 00:2c04
-    db   $00, $80, $00, $40, $00, $02, $10, $40        ;; 00:2c0c ????????
-    db   $02, $ff                                      ;; 00:2c14
+    cutscene_script $0980, $0cb0, .script_2D_move, 0
+
+.script_2D_move:
+    cutscene_move 0,                     $0080   ; stand still
+    cutscene_move PADF_UP,               $0200
+    cutscene_move PADF_RIGHT,            $0240
+    cutscene_move_end
+
+; ------------------------------------------------------------------
+; $2e   poltergex, mission 3
+; ------------------------------------------------------------------
 .script_2E:
-;   startX $02F0  startY $0AF0  movement $2C1E  no anim
-;   move: pause $0080, RIGHT $0280, end
-    db   $f0, $02, $f0, $0a, $1e, $2c                  ;; 00:2c16
-    db   $00, $00, $00, $80, $00, $10, $80, $02        ;; 00:2c1c ????????
-    db   $ff                                           ;; 00:2c24
+    cutscene_script $02f0, $0af0, .script_2E_move, 0
+
+.script_2E_move:
+    cutscene_move 0,                     $0080   ; stand still
+    cutscene_move PADF_RIGHT,            $0280
+    cutscene_move_end
+
+; ------------------------------------------------------------------
+; $2f   poltergex, slot $0F
+; ------------------------------------------------------------------
 .script_2F:
-;   startX $0740  startY $0AC0  no movement, no anim - reposition and hold
-    db   $40, $07, $c0, $0a, $00, $00, $00             ;; 00:2c25
-    db   $00                                           ;; 00:2c2c
+    cutscene_script $0740, $0ac0, 0, 0
+    ; no movement and no animation - reposition, hold, return
+
+; ------------------------------------------------------------------
+; $30   poltergex, slot 0
+; ------------------------------------------------------------------
 .script_30:
-;   startX $0580  startY $0B00  no movement, no anim - reposition and hold
-    db   $80, $05, $00, $0b, $00, $00, $00             ;; 00:2c2d
-    db   $00                                           ;; 00:2c34
+    cutscene_script $0580, $0b00, 0, 0
+    ; no movement and no animation - reposition, hold, return
+
+; ------------------------------------------------------------------
+; $31   samurai night fever, mission 1
+; ------------------------------------------------------------------
 .script_31:
-;   startX $05E0  startY $03D0  movement $2C3D  no anim
-    db   $e0, $05, $d0, $03, $3d, $2c, $00             ;; 00:2c35
-    db   $00, $00, $80, $00, $10, $a0, $01, $40        ;; 00:2c3c ????????
-    db   $a0, $00, $ff                                 ;; 00:2c44
+    cutscene_script $05e0, $03d0, .script_31_move, 0
+
+.script_31_move:
+    cutscene_move 0,                     $0080   ; stand still
+    cutscene_move PADF_RIGHT,            $01a0
+    cutscene_move PADF_UP,               $00a0
+    cutscene_move_end
+
+; ------------------------------------------------------------------
+; $32   samurai night fever, mission 2
+; ------------------------------------------------------------------
 .script_32:
-;   startX $0E70  startY $05B0  movement $2C4F  no anim
-;   move: pause $0080, RIGHT $0110, end
-    db   $70, $0e, $b0, $05, $4f                       ;; 00:2c47
-    db   $2c, $00, $00, $00, $80, $00, $10, $10        ;; 00:2c4c ????????
-    db   $01, $ff                                      ;; 00:2c54
+    cutscene_script $0e70, $05b0, .script_32_move, 0
+
+.script_32_move:
+    cutscene_move 0,                     $0080   ; stand still
+    cutscene_move PADF_RIGHT,            $0110
+    cutscene_move_end
+
+; ------------------------------------------------------------------
+; $33   samurai night fever, mission 3
+; ------------------------------------------------------------------
 .script_33:
-;   startX $0570  startY $0970  movement $2C5E  no anim
-;   move: pause $0080, UP $01C0, RIGHT $0070, end
-    db   $70, $05, $70, $09, $5e, $2c                  ;; 00:2c56
-    db   $00, $00, $00, $80, $00, $40, $c0, $01        ;; 00:2c5c ????????
-    db   $10, $70, $00, $ff                            ;; 00:2c64
+    cutscene_script $0570, $0970, .script_33_move, 0
+
+.script_33_move:
+    cutscene_move 0,                     $0080   ; stand still
+    cutscene_move PADF_UP,               $01c0
+    cutscene_move PADF_RIGHT,            $0070
+    cutscene_move_end
+
+; ------------------------------------------------------------------
+; $34   samurai night fever, slot 0
+; ------------------------------------------------------------------
 .script_34:
-;   startX $0B80  startY $01C0  no movement, no anim - reposition and hold
-    db   $80, $0b, $c0, $01                            ;; 00:2c68
-    db   $00, $00, $00, $00                            ;; 00:2c6c
+    cutscene_script $0b80, $01c0, 0, 0
+    ; no movement and no animation - reposition, hold, return
+
+; ------------------------------------------------------------------
+; $35   samurai night fever, slot 1
+; ------------------------------------------------------------------
 .script_35:
-;   startX $08E0  startY $0400  no movement, no anim - reposition and hold
-    db   $e0, $08, $00, $04                            ;; 00:2c70
-    db   $00, $00, $00, $00                            ;; 00:2c74
+    cutscene_script $08e0, $0400, 0, 0
+    ; no movement and no animation - reposition, hold, return
+
+; ------------------------------------------------------------------
+; $36   samurai night fever, slot 2
+; ------------------------------------------------------------------
 .script_36:
-;   startX $0920  startY $0340  no movement, no anim - reposition and hold
-    db   $20, $09, $40, $03                            ;; 00:2c78
-    db   $00, $00, $00, $00                            ;; 00:2c7c
+    cutscene_script $0920, $0340, 0, 0
+    ; no movement and no animation - reposition, hold, return
+
+; ------------------------------------------------------------------
+; $37   samurai night fever, slot 3
+; ------------------------------------------------------------------
 .script_37:
-;   startX $0280  startY $0190  no movement  anim $2C88
-;   anim: no callback, 2 steps, 60 frames each, 2x2 blocks at (-1,-1) from Gex
-    db   $80, $02, $90, $01                            ;; 00:2c80
-    db   $00, $00, $88, $2c, $00, $00, $02, $3c        ;; 00:2c84 ????????
-    db   $ff, $ff, $02, $02, $08, $f4, $01, $f5        ;; 00:2c8c ????????
-    db   $01, $f6, $01, $f7, $01, $0a, $e0, $01        ;; 00:2c94 ????????
-    db   $e1, $01, $e2, $01, $e3, $01                  ;; 00:2c9c
+    cutscene_script $0280, $0190, 0, .script_37_anim
+
+.script_37_anim:
+    blockpatch_anim 0, 2, 60, -1, -1, 2, 2
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/2
+    blockpatch_cells $f4,1, $f5,1
+    blockpatch_cells $f6,1, $f7,1
+    blockpatch_step BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_TILES           ; step 2/2
+    blockpatch_cells $e0,1, $e1,1
+    blockpatch_cells $e2,1, $e3,1
+
+; ------------------------------------------------------------------
+; $38   samurai night fever, slot 4
+; ------------------------------------------------------------------
 .script_38:
-;   startX $0D40  startY $00B0  no movement  anim $2CAA
-;   anim: no callback, 2 steps, 60 frames each, 2x2 blocks at (-1,-1) from Gex
-    db   $40, $0d                                      ;; 00:2ca2
-    db   $b0, $00, $00, $00, $aa, $2c, $00, $00        ;; 00:2ca4 ????????
-    db   $02, $3c, $ff, $ff, $02, $02, $08, $f4        ;; 00:2cac ????????
-    db   $01, $f5, $01, $f6, $01, $f7, $01, $0a        ;; 00:2cb4 ????????
-    db   $e0, $01, $e1, $01, $e2, $01, $e3, $01        ;; 00:2cbc ????????
+    cutscene_script $0d40, $00b0, 0, .script_38_anim
+
+.script_38_anim:
+    blockpatch_anim 0, 2, 60, -1, -1, 2, 2
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/2
+    blockpatch_cells $f4,1, $f5,1
+    blockpatch_cells $f6,1, $f7,1
+    blockpatch_step BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_TILES           ; step 2/2
+    blockpatch_cells $e0,1, $e1,1
+    blockpatch_cells $e2,1, $e3,1
+
+; ------------------------------------------------------------------
+; $39   samurai night fever, slot 5
+; ------------------------------------------------------------------
 .script_39:
-;   startX $0300  startY $0190  no movement  anim $2CCC
-;   anim: no callback, 2 steps, 60 frames each, 2x2 blocks at (-1,-1) from Gex
-    db   $00, $03, $90, $01, $00, $00, $cc, $2c        ;; 00:2cc4
-    db   $00, $00, $02, $3c, $ff, $ff, $02, $02        ;; 00:2ccc ????????
-    db   $08, $f4, $01, $f5, $01, $f6, $01, $f7        ;; 00:2cd4 ????????
-    db   $01, $0a, $e0, $01, $e1, $01, $e2, $01        ;; 00:2cdc ????????
-    db   $e3, $01                                      ;; 00:2ce4
+    cutscene_script $0300, $0190, 0, .script_39_anim
+
+.script_39_anim:
+    blockpatch_anim 0, 2, 60, -1, -1, 2, 2
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/2
+    blockpatch_cells $f4,1, $f5,1
+    blockpatch_cells $f6,1, $f7,1
+    blockpatch_step BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_TILES           ; step 2/2
+    blockpatch_cells $e0,1, $e1,1
+    blockpatch_cells $e2,1, $e3,1
+
+; ------------------------------------------------------------------
+; $3a   samurai night fever, slot 6
+; ------------------------------------------------------------------
 .script_3A:
-;   startX $0EE0  startY $05D0  no movement  anim $2CFE
-;   anim: no callback, 9 steps, 10 frames each, 1x4 blocks at (0,-1) from Gex - a tall thin
-;   column, and the reason three scripts can share it: it is positioned relative to Gex, so the
-;   same 81 bytes of step data play at three different spots in the level
-    db   $e0, $0e, $d0, $05, $00, $00                  ;; 00:2ce6
-    db   $fe, $2c                                      ;; 00:2cec
+    cutscene_script $0ee0, $05d0, 0, .anim_shared_3A_3C
+
+; ------------------------------------------------------------------
+; $3b   samurai night fever, slot 7
+; ------------------------------------------------------------------
 .script_3B:
-;   startX $0120  startY $08D0  no movement  anim $2CFE - same block as $3A
-    db   $20, $01, $d0, $08, $00, $00                  ;; 00:2cee
-    db   $fe, $2c                                      ;; 00:2cf4
+    cutscene_script $0120, $08d0, 0, .anim_shared_3A_3C
+
+; ------------------------------------------------------------------
+; $3c   samurai night fever, slot 8
+; ------------------------------------------------------------------
 .script_3C:
-;   startX $0A40  startY $05F0  no movement  anim $2CFE - same block as $3A and $3B
-    db   $40, $0a, $f0, $05, $00, $00                  ;; 00:2cf6
-    db   $fe, $2c, $00, $00, $09, $0a, $00, $ff        ;; 00:2cfc ????????
-    db   $01, $04, $08, $a5, $01, $a9, $01, $00        ;; 00:2d04 ????????
-    db   $00, $00, $00, $08, $a6, $01, $a4, $01        ;; 00:2d0c ????????
-    db   $aa, $01, $00, $00, $08, $a7, $01, $a4        ;; 00:2d14 ????????
-    db   $01, $ab, $01, $00, $00, $08, $a8, $01        ;; 00:2d1c ????????
-    db   $a4, $01, $ac, $01, $00, $00, $08, $ad        ;; 00:2d24 ????????
-    db   $01, $a5, $01, $a9, $01, $00, $00, $08        ;; 00:2d2c ????????
-    db   $ad, $01, $a6, $01, $a4, $01, $aa, $01        ;; 00:2d34 ????????
-    db   $08, $ad, $01, $a7, $01, $a4, $01, $ab        ;; 00:2d3c ????????
-    db   $01, $08, $ad, $01, $a8, $01, $a4, $01        ;; 00:2d44 ????????
-    db   $ac, $01, $0a, $ad, $01, $ad, $01, $a5        ;; 00:2d4c ????????
-    db   $01, $a9, $01                                 ;; 00:2d54
+    cutscene_script $0a40, $05f0, 0, .anim_shared_3A_3C
+
+; Shared by scripts $3a, $3b and $3c - all three show the same reveal
+.anim_shared_3A_3C:
+    blockpatch_anim 0, 9, 10, 0, -1, 1, 4
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/9
+    blockpatch_cells $a5,1
+    blockpatch_cells $a9,1
+    blockpatch_cells $00,0
+    blockpatch_cells $00,0
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 2/9
+    blockpatch_cells $a6,1
+    blockpatch_cells $a4,1
+    blockpatch_cells $aa,1
+    blockpatch_cells $00,0
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 3/9
+    blockpatch_cells $a7,1
+    blockpatch_cells $a4,1
+    blockpatch_cells $ab,1
+    blockpatch_cells $00,0
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 4/9
+    blockpatch_cells $a8,1
+    blockpatch_cells $a4,1
+    blockpatch_cells $ac,1
+    blockpatch_cells $00,0
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 5/9
+    blockpatch_cells $ad,1
+    blockpatch_cells $a5,1
+    blockpatch_cells $a9,1
+    blockpatch_cells $00,0
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 6/9
+    blockpatch_cells $ad,1
+    blockpatch_cells $a6,1
+    blockpatch_cells $a4,1
+    blockpatch_cells $aa,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 7/9
+    blockpatch_cells $ad,1
+    blockpatch_cells $a7,1
+    blockpatch_cells $a4,1
+    blockpatch_cells $ab,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 8/9
+    blockpatch_cells $ad,1
+    blockpatch_cells $a8,1
+    blockpatch_cells $a4,1
+    blockpatch_cells $ac,1
+    blockpatch_step BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_TILES           ; step 9/9
+    blockpatch_cells $ad,1
+    blockpatch_cells $ad,1
+    blockpatch_cells $a5,1
+    blockpatch_cells $a9,1
+
+; ------------------------------------------------------------------
+; $3d   no weddings and a funeral, mission 1
+; ------------------------------------------------------------------
 .script_3D:
-;   startX $0860  startY $0C10  movement $2D5F  no anim
-;   move: pause $0080, RIGHT $0040, DOWN+RIGHT $0040, RIGHT $0280, UP+RIGHT $0060, end
-    db   $60, $08, $10, $0c, $5f                       ;; 00:2d57
-    db   $2d, $00, $00, $00, $80, $00, $10, $40        ;; 00:2d5c ????????
-    db   $00, $90, $40, $00, $10, $80, $02, $50        ;; 00:2d64 ????????
-    db   $60, $00, $ff                                 ;; 00:2d6c
+    cutscene_script $0860, $0c10, .script_3D_move, 0
+
+.script_3D_move:
+    cutscene_move 0,                     $0080   ; stand still
+    cutscene_move PADF_RIGHT,            $0040
+    cutscene_move PADF_DOWN | PADF_RIGHT, $0040
+    cutscene_move PADF_RIGHT,            $0280
+    cutscene_move PADF_UP | PADF_RIGHT,  $0060
+    cutscene_move_end
+
+; ------------------------------------------------------------------
+; $3e   lava dabba doo, mission 1
+; ------------------------------------------------------------------
 .script_3E:
-;   startX $0B50  startY $06F0  movement $2D77  no anim
-;   move: pause $0080, RIGHT $0150, end
-    db   $50, $0b, $f0, $06, $77                       ;; 00:2d6f
-    db   $2d, $00, $00, $00, $80, $00, $10, $50        ;; 00:2d74 ????????
-    db   $01, $ff                                      ;; 00:2d7c
+    cutscene_script $0b50, $06f0, .script_3E_move, 0
+
+.script_3E_move:
+    cutscene_move 0,                     $0080   ; stand still
+    cutscene_move PADF_RIGHT,            $0150
+    cutscene_move_end
+
+; ------------------------------------------------------------------
+; $3f   texas chainsaw manicure, mission 1
+; ------------------------------------------------------------------
 .script_3F:
-;   startX $03C0  startY $0390  movement $2D86  no anim
-;   move: pause $0080, UP $0080, RIGHT $0160, UP $0060, end
-    db   $c0, $03, $90, $03, $86, $2d                  ;; 00:2d7e
-    db   $00, $00, $00, $80, $00, $40, $80, $00        ;; 00:2d84 ????????
-    db   $10, $60, $01, $40, $60, $00, $ff             ;; 00:2d8c
+    cutscene_script $03c0, $0390, .script_3F_move, 0
+
+.script_3F_move:
+    cutscene_move 0,                     $0080   ; stand still
+    cutscene_move PADF_UP,               $0080
+    cutscene_move PADF_RIGHT,            $0160
+    cutscene_move PADF_UP,               $0060
+    cutscene_move_end
+
+; ------------------------------------------------------------------
+; $40   texas chainsaw manicure, slot 0
+; ------------------------------------------------------------------
 .script_40:
-;   startX $0A00  startY $0100  no movement, no anim - reposition and hold
-    db   $00                                           ;; 00:2d93
-    db   $0a, $00, $01, $00, $00, $00, $00             ;; 00:2d94
+    cutscene_script $0a00, $0100, 0, 0
+    ; no movement and no animation - reposition, hold, return
+
+; ------------------------------------------------------------------
+; $41   mazed and confused, mission 1
+; ------------------------------------------------------------------
 .script_41:
-;   startX $03C0  startY $05B0  movement $2DA3  no anim
-;   move: pause $0080, UP $0060, RIGHT $00E0, UP $0240, end
-    db   $c0                                           ;; 00:2d9b
-    db   $03, $b0, $05, $a3, $2d, $00, $00, $00        ;; 00:2d9c ????????
-    db   $80, $00, $40, $60, $00, $10, $e0, $00        ;; 00:2da4 ????????
-    db   $40, $40, $02, $ff                            ;; 00:2dac
+    cutscene_script $03c0, $05b0, .script_41_move, 0
+
+.script_41_move:
+    cutscene_move 0,                     $0080   ; stand still
+    cutscene_move PADF_UP,               $0060
+    cutscene_move PADF_RIGHT,            $00e0
+    cutscene_move PADF_UP,               $0240
+    cutscene_move_end
+
+; ------------------------------------------------------------------
+; $42   mazed and confused, mission 2
+; ------------------------------------------------------------------
 .script_42:
-;   startX $08B0  startY $06D0  movement $2DB8  no anim
-;   move: pause $0080, LEFT $02F0, end - the $FF below is the last byte of the blob
-    db   $b0, $08, $d0, $06                            ;; 00:2db0
-    db   $b8, $2d, $00, $00, $00, $80, $00, $20        ;; 00:2db4 ????????
-    db   $f0, $02, $ff                                 ;; 00:2dbc ???
+    cutscene_script $08b0, $06d0, .script_42_move, 0
+
+.script_42_move:
+    cutscene_move 0,                     $0080   ; stand still
+    cutscene_move PADF_LEFT,             $02f0
+    cutscene_move_end
 
 call_00_2dbf_Cutscene_UpdateMovement:
 ; Moves Gex one step along the scripted path, once per frame.
