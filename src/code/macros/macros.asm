@@ -94,13 +94,16 @@ MACRO cutscene_move_end
 ENDM
 
 ; ==================================================================
-; Block patch sequences - the animation phase of a cutscene, and the same format
-; the tile hit scripts in bank00_tile_hit_scripts.asm use
+; Block patch sequences. Two systems share this format: the animation phase of a
+; cutscene (bank00_cutscenes.asm) and the tile hit scripts driven by
+; TileHitScript_Run (bank00_tile_hit_scripts.asm)
 ; ==================================================================
 
-; Sequence header. The rectangle is positioned relative to GEX, not to the map,
-; which is why a scene with an animation always teleports him somewhere fixed first
-MACRO blockpatch_anim  ; callback (0 = none), step count, frames per step, X, Y, width, height
+; Sequence header. The rectangle is positioned relative to whatever the sequence is
+; anchored on - Gex for a cutscene, the tile that was hit for a tile hit script -
+; never in map coordinates. A step count of 0 means the callback runs and nothing
+; else; TileHitScript_Run bails out before it reads any step data
+MACRO blockpatch_header  ; callback (0 = none), step count, frames per step, X, Y, width, height
     dw   \1
     db   \2, \3, \4, \5, \6, \7
 ENDM
@@ -125,4 +128,23 @@ MACRO blockpatch_cells ; block id, alt flag, block id, alt flag, ...
         SHIFT
         SHIFT
     ENDR
+ENDM
+
+; ==================================================================
+; Tile hit script coordinate tables - bank00_tile_hit_scripts.asm
+; ==================================================================
+
+; One checkpoint. Hitting the block at (X, Y) in that level sets the spawn id
+MACRO checkpoint_block ; level id, block X, block Y, checkpoint spawn id
+    db   \1, \2, \3, \4
+ENDM
+
+; One switch position. A switch is identified by where it sits on the map, and its
+; index in the table is the wD78B_BlockPatch_SlotTable slot it owns
+MACRO switch_block     ; block X, block Y
+    db   \1, \2
+ENDM
+
+MACRO block_coord_list_end
+    db   BLOCK_COORD_LIST_END
 ENDM

@@ -146,14 +146,20 @@ data_00_1ff6_TileHitScriptTable:
 ; whose only difference is the x/y offset, so that hitting either half places the rectangle over the
 ; whole object. CountedBreakable at 5 and 10, and Breakable_Left/RightTile at 7 and 8, are examples.
 ;
-; Script record format (used by TileHitScript_Run), 8-byte header:
-;   [callback_ptr(2), step_count(1), timer_reload(1), x_offset(1), y_offset(1), width(1), height(1)]
-; Offsets are signed and relative to the tile that was hit. Step count = 0 means fire-and-forget
-; (callback only, no sequence).
+; Every script below is written with the shared block patch macros from macros.asm -
+; blockpatch_header, blockpatch_step, blockpatch_sfx, blockpatch_cells - which are the same ones
+; the cutscene animations use, because it is the same format and the same runner underneath. The
+; layout each macro emits is documented on the macro itself.
 ;
-; The step data that follows is consumed by BlockPatch_TickSequence one step at a time. Each step
-; is an BLOCKPATCH_STEP_* flag byte, then width x height 16-bit cell entries - so 2 bytes per cell plus
-; the leading flag, and one further byte if the step sets BLOCKPATCH_STEP_SFX to play a sound.
+; Two things specific to this file:
+;
+;   The rectangle offsets are relative to THE TILE THAT WAS HIT, not to Gex. That is what lets a
+;   two-block object be hit on either half - the pair of scripts differ only in the offset, so
+;   the rectangle lands over the whole object either way.
+;
+;   A step count of 0 means fire-and-forget: TileHitScript_Run calls the callback and returns
+;   without touching the block patch state at all. .data_00_2266_TileHitScript_KungFu_DoorSwitch
+;   is the one script that does this.
     dw   data_00_2074_TileHitScript_CheckpointTV_Left
     dw   data_00_20d3_TileHitScript_FlyTV2_1
     dw   data_00_20ff_TileHitScript_FlyTV_Health1
@@ -187,17 +193,20 @@ data_00_1ff6_TileHitScriptTable:
     dw   data_00_2145_TileHitScript_FlyTV_Life2
 
 data_00_2074_TileHitScript_CheckpointTV_Left:
-; Script for left-facing checkpoint tv. Step count=1, timer=0, offset=(0,0), 1×1. 
-; Tile data: $2A, $02 then $FA, $01. Callback = Checkpoint_WriteSpawnId. 
-; On hit: plays the one-step break animation then calls the checkpoint lookup
-    dw   call_00_208c_Checkpoint_WriteSpawnId
-    db   $01, $00, $00, $00, $01, $01
-    db   $2a, $02, $fa, $01
+; The left half of a checkpoint tv. One step: smash the block to its broken state,
+; register the change so it stays broken, and play the smash sound, all on the same
+; frame. The callback is what actually banks the checkpoint
+    blockpatch_header call_00_208c_Checkpoint_WriteSpawnId, 1, 0, 0, 0, 1, 1
+    blockpatch_step BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_TILES | BLOCKPATCH_STEP_SFX ; step 1/1
+    blockpatch_sfx  SFX_TV_SMASH
+    blockpatch_cells $fa,1
 data_00_2080_TileHitScript_CheckpointTV_Right:
-; Same as above but right-facing variant. Tile data ends with $EA, $01 instead. Same callback
-    dw   call_00_208c_Checkpoint_WriteSpawnId
-    db   $01, $00, $00, $00, $01, $01
-    db   $2a, $02, $ea, $01
+; The right half. Identical except for the block it leaves behind, so hitting either
+; half smashes the tile under the hit and records the same checkpoint
+    blockpatch_header call_00_208c_Checkpoint_WriteSpawnId, 1, 0, 0, 0, 1, 1
+    blockpatch_step BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_TILES | BLOCKPATCH_STEP_SFX ; step 1/1
+    blockpatch_sfx  SFX_TV_SMASH
+    blockpatch_cells $ea,1
 call_00_208c_Checkpoint_WriteSpawnId:
 ; Searches .data_00_20b6_CheckpointBlockCoordTable for a record matching 
 ; current level ID + wD782_BlockPatch_TargetBlockX + wD783_BlockPatch_TargetBlockY. 
@@ -231,66 +240,80 @@ call_00_208c_Checkpoint_WriteSpawnId:
     jr   nz,.jr_00_209a
     ret  
 .data_00_20b6_CheckpointBlockCoordTable:
-; $FF-terminated table of 4-byte records: [level_id, block_x, block_y, checkpoint_id]. 
-; Maps specific breakable checkpoint block positions to their spawn IDs. 
-; Contains 8 entries covering various levels
-    db   $01, $26, $3a, $01
-    db   $02, $4b, $0a, $01
-    db   $05, $10, $15, $01
-    db   $0a, $4d, $34, $01
-    db   $08, $37, $56, $01
-    db   $09, $3f, $70, $01
-    db   $18, $0e, $34, $01
-    db   $ff
+; Seven checkpoints, terminated by BLOCK_COORD_LIST_END. Checkpoint_WriteSpawnId matches
+; on all three of level, block X and block Y, so the same block coordinates in a different
+; level are not a checkpoint
+    checkpoint_block MAP_TOON_TV_OUT_OF_TOON,                       $26, $3a, $01
+    checkpoint_block MAP_SCREAM_TV_SMELLRAISER,                     $4b, $0a, $01
+    checkpoint_block MAP_KUNG_FU_THEATER_MAO_TSE_TONGUE,            $10, $15, $01
+    checkpoint_block MAP_CIRCUIT_CENTRAL_HONEY_I_SHRUNK_THE_GECKO,  $4d, $34, $01
+    checkpoint_block MAP_TOON_TV_FINE_TOONING,                      $37, $56, $01
+    checkpoint_block MAP_PRE_HISTORY_CHANNEL_THIS_OLD_CAVE,         $3f, $70, $01
+    checkpoint_block MAP_PRE_HISTORY_CHANNEL_LAVA_DABBA_DOO,        $0e, $34, $01
+    block_coord_list_end
 
 data_00_20d3_TileHitScript_FlyTV2_1:
-    dw   call_00_20fa_HitFlyTV_Type2
-    db   $01, $00, $00, $00, $01, $01
-    db   $2a, $02, $fa, $01
+    blockpatch_header call_00_20fa_HitFlyTV_Type2, 1, 0, 0, 0, 1, 1
+    blockpatch_step BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_TILES | BLOCKPATCH_STEP_SFX ; step 1/1
+    blockpatch_sfx  SFX_TV_SMASH
+    blockpatch_cells $fa,1
 data_00_20df_TileHitScript_FlyTV2_2:
-    dw   call_00_20fa_HitFlyTV_Type2
-    db   $01, $00, $00, $00, $01, $01
-    db   $2a, $02, $ea, $01
+    blockpatch_header call_00_20fa_HitFlyTV_Type2, 1, 0, 0, 0, 1, 1
+    blockpatch_step BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_TILES | BLOCKPATCH_STEP_SFX ; step 1/1
+    blockpatch_sfx  SFX_TV_SMASH
+    blockpatch_cells $ea,1
 data_00_20eb_TileHitScript_FlyTV2_3:
-    dw   call_00_20fa_HitFlyTV_Type2
-    db   $02, $28, $00, $00, $01, $01
-    db   $28, $02, $fa, $01, $08, $9f, $01
+; The odd one out among the fly tvs: two steps rather than one, $28 frames apart, and
+; it never registers - so the second block it draws is not preserved and the tv comes
+; back on the next full map load
+    blockpatch_header call_00_20fa_HitFlyTV_Type2, 2, 40, 0, 0, 1, 1
+    blockpatch_step BLOCKPATCH_STEP_TILES | BLOCKPATCH_STEP_SFX                    ; step 1/2
+    blockpatch_sfx  SFX_TV_SMASH
+    blockpatch_cells $fa,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                          ; step 2/2
+    blockpatch_cells $9f,1
 call_00_20fa_HitFlyTV_Type2:
     ld   a,$02
     jp   call_00_0647_Player_SetUpOrEatFlyPowerup
 
 data_00_20ff_TileHitScript_FlyTV_Health1:
-    dw   call_00_2117_HitFlyTV_RestoreHealth
-    db   $01, $00, $00, $00, $01, $01
-    db   $2a, $02, $fa, $01
+    blockpatch_header call_00_2117_HitFlyTV_RestoreHealth, 1, 0, 0, 0, 1, 1
+    blockpatch_step BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_TILES | BLOCKPATCH_STEP_SFX ; step 1/1
+    blockpatch_sfx  SFX_TV_SMASH
+    blockpatch_cells $fa,1
 data_00_210b_TileHitScript_FlyTV_Health2:
-    dw   call_00_2117_HitFlyTV_RestoreHealth
-    db   $01, $00, $00, $00, $01, $01
-    db   $2a, $02, $ea, $01
+    blockpatch_header call_00_2117_HitFlyTV_RestoreHealth, 1, 0, 0, 0, 1, 1
+    blockpatch_step BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_TILES | BLOCKPATCH_STEP_SFX ; step 1/1
+    blockpatch_sfx  SFX_TV_SMASH
+    blockpatch_cells $ea,1
 call_00_2117_HitFlyTV_RestoreHealth:
     ld   a,$03
     jp   call_00_0647_Player_SetUpOrEatFlyPowerup
 
 data_00_211c_TileHitScript_FlyTV1_1:
-    dw   call_00_2134_HitFlyTV_Type1
-    db   $01, $00, $00, $00, $01, $01
-    db   $2a, $02, $fa, $01
+    blockpatch_header call_00_2134_HitFlyTV_Type1, 1, 0, 0, 0, 1, 1
+    blockpatch_step BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_TILES | BLOCKPATCH_STEP_SFX ; step 1/1
+    blockpatch_sfx  SFX_TV_SMASH
+    blockpatch_cells $fa,1
 data_00_2128_TileHitScript_FlyTV1_2:
-    dw   call_00_2134_HitFlyTV_Type1
-    db   $01, $00, $00, $00, $01, $01
-    db   $2a, $02, $ea, $01
+    blockpatch_header call_00_2134_HitFlyTV_Type1, 1, 0, 0, 0, 1, 1
+    blockpatch_step BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_TILES | BLOCKPATCH_STEP_SFX ; step 1/1
+    blockpatch_sfx  SFX_TV_SMASH
+    blockpatch_cells $ea,1
 call_00_2134_HitFlyTV_Type1:
     ld   a,$01
     jp   call_00_0647_Player_SetUpOrEatFlyPowerup
 
 data_00_2139_TileHitScript_FlyTV_Life1:
-    dw   call_00_2151_HitFlyTV_ExtraLife
-    db   $01, $00, $00, $00, $01, $01
-    db   $2a, $02, $fa, $01
+    blockpatch_header call_00_2151_HitFlyTV_ExtraLife, 1, 0, 0, 0, 1, 1
+    blockpatch_step BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_TILES | BLOCKPATCH_STEP_SFX ; step 1/1
+    blockpatch_sfx  SFX_TV_SMASH
+    blockpatch_cells $fa,1
 data_00_2145_TileHitScript_FlyTV_Life2:
-    dw   call_00_2151_HitFlyTV_ExtraLife
-    db   $01, $00, $00, $00, $01, $01
-    db   $2a, $02, $ea, $01
+    blockpatch_header call_00_2151_HitFlyTV_ExtraLife, 1, 0, 0, 0, 1, 1
+    blockpatch_step BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_TILES | BLOCKPATCH_STEP_SFX ; step 1/1
+    blockpatch_sfx  SFX_TV_SMASH
+    blockpatch_cells $ea,1
 call_00_2151_HitFlyTV_ExtraLife:
     ld   a,$04
     jp   call_00_0647_Player_SetUpOrEatFlyPowerup
@@ -306,17 +329,31 @@ data_00_2156_TileHitScript_CountedBreakable_LowerTile:
 ; on the FIRST step rather than the last is the opposite of the cutscene sequences,
 ; and it is why a destroyed object stays destroyed while its animation is still
 ; playing out
-    dw   call_00_2186_CountedBreakable_OnHit
-    db   $03, $3c, $00, $ff, $01, $02        ;; 00:2156 ????????
-    db   $23, $22, $00, $00, $e2, $01, $08, $d9        ;; 00:215e ????????
-    db   $01, $da, $01, $08, $00, $00, $e2, $01        ;; 00:2166 ????????
+    blockpatch_header call_00_2186_CountedBreakable_OnHit, 3, 60, 0, -1, 1, 2
+    blockpatch_step BLOCKPATCH_STEP_LOOP | BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_SFX ; step 1/3
+    blockpatch_sfx  SFX_22
+    blockpatch_cells $00,0
+    blockpatch_cells $e2,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                          ; step 2/3
+    blockpatch_cells $d9,1
+    blockpatch_cells $da,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                          ; step 3/3
+    blockpatch_cells $00,0
+    blockpatch_cells $e2,1
 data_00_216e_TileHitScript_CountedBreakable_UpperTile:
 ; Same script as the lower tile but offset (0,0). Both sit in the script table -
 ; indices 5 and 10 - so either half of the object can be hit
-    dw   call_00_2186_CountedBreakable_OnHit
-    db   $03, $3c, $00, $00, $01, $02        ;; 00:216e ????????
-    db   $23, $22, $00, $00, $e2, $01, $08, $d9        ;; 00:2176 ????????
-    db   $01, $da, $01, $08, $00, $00, $e2, $01        ;; 00:217e ????????
+    blockpatch_header call_00_2186_CountedBreakable_OnHit, 3, 60, 0, 0, 1, 2
+    blockpatch_step BLOCKPATCH_STEP_LOOP | BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_SFX ; step 1/3
+    blockpatch_sfx  SFX_22
+    blockpatch_cells $00,0
+    blockpatch_cells $e2,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                          ; step 2/3
+    blockpatch_cells $d9,1
+    blockpatch_cells $da,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                          ; step 3/3
+    blockpatch_cells $00,0
+    blockpatch_cells $e2,1
 call_00_2186_CountedBreakable_OnHit:
 ; Counts one more of these objects destroyed, and opens the way onward once the
 ; level's quota is met.
@@ -351,8 +388,10 @@ call_00_2186_CountedBreakable_OnHit:
     ret  
 
 data_00_21ae_TileHitScript_SlotSwitch_Wide:
-    dw   call_00_21bc_SlotSwitch_TriggerSlot0
-    db   $01, $00, $ff, $00, $02, $01, $2c, $26, $c9, $01, $ca, $01
+    blockpatch_header call_00_21bc_SlotSwitch_TriggerSlot0, 1, 0, -1, 0, 2, 1
+    blockpatch_step BLOCKPATCH_STEP_COLLISION | BLOCKPATCH_STEP_TILES | BLOCKPATCH_STEP_SFX ; step 1/1
+    blockpatch_sfx  SFX_26
+    blockpatch_cells $c9,1, $ca,1
 call_00_21bc_SlotSwitch_TriggerSlot0:
     ld   hl,wD78B_BlockPatch_SlotTable
     ld   [hl],$02
@@ -366,30 +405,48 @@ data_00_21c2_TileHitScript_Breakable_RightTile:
 ; BLOCKPATCH_STEP_TILES, not the $0A the cutscene animations use. Bit 2 rewrites the
 ; collision block, so the last frame of the crumble is what actually makes the
 ; block passable - the four frames before it are cosmetic
-    db   $00, $00, $05, $08        ;; 00:21be ????????
-    db   $ff, $00, $02, $01, $2a, $25, $d3, $01        ;; 00:21c6 ????????
-    db   $d4, $01, $08, $d1, $01, $d2, $01, $08        ;; 00:21ce ????????
-    db   $cf, $01, $d0, $01, $08, $cd, $01, $ce        ;; 00:21d6 ????????
-    db   $01, $0c, $cb, $01, $cc, $01
+    blockpatch_header 0, 5, 8, -1, 0, 2, 1
+    blockpatch_step BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_TILES | BLOCKPATCH_STEP_SFX ; step 1/5
+    blockpatch_sfx  SFX_25
+    blockpatch_cells $d3,1, $d4,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                          ; step 2/5
+    blockpatch_cells $d1,1, $d2,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                          ; step 3/5
+    blockpatch_cells $cf,1, $d0,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                          ; step 4/5
+    blockpatch_cells $cd,1, $ce,1
+    blockpatch_step BLOCKPATCH_STEP_COLLISION | BLOCKPATCH_STEP_TILES              ; step 5/5
+    blockpatch_cells $cb,1, $cc,1
 data_00_21e4_TileHitScript_Breakable_LeftTile:
 ; The same five frames at x offset 0, for when the left half is hit
-    db   $00, $00        ;; 00:21de ????????
-    db   $05, $08, $00, $00, $02, $01, $2a, $25        ;; 00:21e6 ????????
-    db   $d3, $01, $d4, $01, $08, $d1, $01, $d2        ;; 00:21ee ????????
-    db   $01, $08, $cf, $01, $d0, $01, $08, $cd        ;; 00:21f6 ????????
-    db   $01, $ce, $01, $0c, $cb, $01, $cc, $01        ;; 00:21fe ????????
+    blockpatch_header 0, 5, 8, 0, 0, 2, 1
+    blockpatch_step BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_TILES | BLOCKPATCH_STEP_SFX ; step 1/5
+    blockpatch_sfx  SFX_25
+    blockpatch_cells $d3,1, $d4,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                          ; step 2/5
+    blockpatch_cells $d1,1, $d2,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                          ; step 3/5
+    blockpatch_cells $cf,1, $d0,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                          ; step 4/5
+    blockpatch_cells $cd,1, $ce,1
+    blockpatch_step BLOCKPATCH_STEP_COLLISION | BLOCKPATCH_STEP_TILES              ; step 5/5
+    blockpatch_cells $cb,1, $cc,1
 
 data_00_2206_TileHitScript_SlotSwitch_Single:
-    dw   call_00_2211_SlotSwitch_TriggerSlot0Alt
-    db   $01, $00, $00, $00, $01, $01, $0a, $c7, $01
+    blockpatch_header call_00_2211_SlotSwitch_TriggerSlot0Alt, 1, 0, 0, 0, 1, 1
+    blockpatch_step BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_TILES               ; step 1/1
+    blockpatch_cells $c7,1
 call_00_2211_SlotSwitch_TriggerSlot0Alt:
     ld   hl,wD78B_BlockPatch_SlotTable
     ld   [hl],$02
     ret  
 
 data_00_2217_TileHitScript_PositionedSwitch:
-    dw   call_00_2225_Switch_ArmSlotByPosition
-    db   $01, $08, $00, $ff, $01, $02, $28, $1b, $f8, $01, $f9, $01
+    blockpatch_header call_00_2225_Switch_ArmSlotByPosition, 1, 8, 0, -1, 1, 2
+    blockpatch_step BLOCKPATCH_STEP_TILES | BLOCKPATCH_STEP_SFX                    ; step 1/1
+    blockpatch_sfx  SFX_1B
+    blockpatch_cells $f8,1
+    blockpatch_cells $f9,1
 call_00_2225_Switch_ArmSlotByPosition:
 ; Arms the block patch slot belonging to THIS switch, identified by where it sits on
 ; the map rather than by any id in the script.
@@ -436,18 +493,31 @@ call_00_2225_Switch_ArmSlotByPosition:
     inc  [hl]
     ret  
 .data_00_2253_SwitchBlockCoordTable:
-; Nine (block x, block y) pairs, $FF terminated. Index in this table = index into
-; wD78B_BlockPatch_SlotTable, so the order here defines which slot each switch owns
-    db   $25, $59, $2a
-    db   $59, $2f, $59, $47, $51, $54, $55, $5a        ;; 00:2256 ????????
-    db   $55, $29, $4a, $39, $64, $10, $47, $ff        ;; 00:225e ????????
+; Nine switch positions, terminated by BLOCK_COORD_LIST_END. A switch has no id of its
+; own - its index here IS its wD78B_BlockPatch_SlotTable slot, so adding a switch means
+; adding a line here and the order matters
+    switch_block $25, $59   ; slot 0
+    switch_block $2a, $59   ; slot 1
+    switch_block $2f, $59   ; slot 2
+    switch_block $47, $51   ; slot 3
+    switch_block $54, $55   ; slot 4
+    switch_block $5a, $55   ; slot 5
+    switch_block $29, $4a   ; slot 6
+    switch_block $39, $64   ; slot 7
+    switch_block $10, $47   ; slot 8
+    block_coord_list_end
 
 data_00_2266_TileHitScript_KungFu_DoorSwitch:
-; Kung Fu Theater door switch. Step count=1, timer=0, x=$00, y=$08, 1×2. 
-; Tiles $F8,$01/$F9,$01. Callback = DoorSwitch_UpdateState
-    dw   call_00_2274_DoorSwitch_UpdateState
-    db   $00, $08, $00, $00, $01, $01
-    db   $28, $1b, $f8, $01, $f9, $01
+; Kung Fu Theater door switch. The step count is ZERO, so TileHitScript_Run does nothing
+; but call DoorSwitch_UpdateState - the switch changes state without any tile animation.
+;
+; The step below is still in the file and is byte-for-byte the one PositionedSwitch uses,
+; but the runner returns before it reads any of it. Left in place because it is real data
+; in the ROM, not because anything consumes it
+    blockpatch_header call_00_2274_DoorSwitch_UpdateState, 0, 8, 0, 0, 1, 1
+    blockpatch_step BLOCKPATCH_STEP_TILES | BLOCKPATCH_STEP_SFX                    ; step 1/1 - never read, step count is 0
+    blockpatch_sfx  SFX_1B
+    blockpatch_cells $f8,1, $f9,1
 call_00_2274_DoorSwitch_UpdateState:
     ld   hl,wD782_BlockPatch_TargetBlockX
     ld   c,[hl]
@@ -484,19 +554,42 @@ call_00_2274_DoorSwitch_UpdateState:
     ld   [hl],$02
     ret  
 .data_00_22a7_MaoTseTongue_DoorSwitchCoordTable:
-    db   $00, $00, $4c, $3a, $4b, $05, $44, $36,
-    db   $00, $00, $32, $04, $5a, $30, $48, $0e, $ff
+; Door switch positions for Mao Tse Tongue. Index = wD78B_BlockPatch_SlotTable slot, same
+; convention as the switch table above. Slots 0 and 4 are ($00,$00), which no real tile
+; matches - they are holes in the numbering rather than switches
+    switch_block $00, $00   ; slot 0
+    switch_block $4c, $3a   ; slot 1
+    switch_block $4b, $05   ; slot 2
+    switch_block $44, $36   ; slot 3
+    switch_block $00, $00   ; slot 4
+    switch_block $32, $04   ; slot 5
+    switch_block $5a, $30   ; slot 6
+    switch_block $48, $0e   ; slot 7
+    block_coord_list_end
 .data_00_22b8_Other_DoorSwitchCoordTable:
-    db   $5e, $0d, $43, $1f, $4f, $1f, $05, $0f
-    db   $75, $04, $51, $1e, $73, $2d, $6e, $2d, $ff
+; Door switch positions for every other level that has them. Eight entries, no holes
+    switch_block $5e, $0d   ; slot 0
+    switch_block $43, $1f   ; slot 1
+    switch_block $4f, $1f   ; slot 2
+    switch_block $05, $0f   ; slot 3
+    switch_block $75, $04   ; slot 4
+    switch_block $51, $1e   ; slot 5
+    switch_block $73, $2d   ; slot 6
+    switch_block $6e, $2d   ; slot 7
+    block_coord_list_end
 
 data_00_22c9_TileHitScript_Cannon_FaceRight:
-; Right-rotating cannon. Step count=3, timer=$06, offset=(0,0), 2×1. 
-; Tiles: $B9/$BA → $BB/$BC → $BD/$BE ($28 timer, $2C stride).
-    dw   call_00_22e1_Cannon_FaceRight
-    db   $03, $06, $00, $00, $02, $01
-    db   $28, $2c, $b9, $01, $ba
-    db   $01, $08, $bb, $01, $bc, $01, $08, $bd, $01, $be, $01
+; Rotating cannon, turning right: three frames $06 apart stepping the barrel through
+; $b9/$ba, $bb/$bc, $bd/$be. No step registers, so the barrel angle is not preserved -
+; the callback stores the facing in wD615_Cannon_FacingDirection instead
+    blockpatch_header call_00_22e1_Cannon_FaceRight, 3, 6, 0, 0, 2, 1
+    blockpatch_step BLOCKPATCH_STEP_TILES | BLOCKPATCH_STEP_SFX                    ; step 1/3
+    blockpatch_sfx  SFX_CANNON_ROTATE
+    blockpatch_cells $b9,1, $ba,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                          ; step 2/3
+    blockpatch_cells $bb,1, $bc,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                          ; step 3/3
+    blockpatch_cells $bd,1, $be,1
 call_00_22e1_Cannon_FaceRight:
 ; Writes $20 to wD615_Cannon_FacingDirection. Sets rotating cannon to right state
     ld   a,$20
@@ -504,11 +597,15 @@ call_00_22e1_Cannon_FaceRight:
     ret  
 
 data_00_22e7_TileHitScript_Cannon_FaceLeft:
-; Left-rotating cannon. Reverse tile sequence: $BB/$BC → $B9/$BA → $B7/$B8.
-    dw   call_00_22ff_Cannon_FaceLeft
-    db   $03, $06, $00, $00, $02, $01
-    db   $28, $2c, $bb, $01, $bc
-    db   $01, $08, $b9, $01, $ba, $01, $08, $b7, $01, $b8, $01
+; The same three frames turning the other way, from $bb/$bc back down to $b7/$b8
+    blockpatch_header call_00_22ff_Cannon_FaceLeft, 3, 6, 0, 0, 2, 1
+    blockpatch_step BLOCKPATCH_STEP_TILES | BLOCKPATCH_STEP_SFX                    ; step 1/3
+    blockpatch_sfx  SFX_CANNON_ROTATE
+    blockpatch_cells $bb,1, $bc,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                          ; step 2/3
+    blockpatch_cells $b9,1, $ba,1
+    blockpatch_step BLOCKPATCH_STEP_TILES                                          ; step 3/3
+    blockpatch_cells $b7,1, $b8,1
 call_00_22ff_Cannon_FaceLeft:
 ; Writes $00 to wD615_Cannon_FacingDirection. Sets rotating cannon to left state
     ld   a,$00

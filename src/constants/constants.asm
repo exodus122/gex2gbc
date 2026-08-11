@@ -183,7 +183,7 @@ DEF MUSIC_MEDIA_DIMENSION                 EQU $07
 ; Sound Effects
 DEF SFX_EMPTY                              EQU $00
 DEF SFX_01                                 EQU $01 ; unused?
-DEF SFX_02                                 EQU $02 ; unused?
+DEF SFX_TV_SMASH                           EQU $02 ; used in every tv-smash tile hit script
 DEF SFX_SILVER_REMOTE                      EQU $03
 DEF SFX_GOLD_REMOTE                        EQU $04
 DEF SFX_05                                 EQU $05 ; unused?
@@ -208,7 +208,7 @@ DEF SFX_ENEMY_DEFEATED                     EQU $17
 DEF SFX_18                                 EQU $18 ; unused?
 DEF SFX_HARD_HEAD_AREA_HAZARD              EQU $19
 DEF SFX_FALLING_HAZARD                     EQU $1A
-DEF SFX_1B                                 EQU $1B ; unused?
+DEF SFX_1B                                 EQU $1B ; used: the switch tile scripts
 DEF SFX_FLOWER_HAMMER                      EQU $1C
 DEF SFX_BUMBLEBEE                          EQU $1D
 DEF SFX_ROCKET                             EQU $1E
@@ -219,15 +219,15 @@ DEF SFX_22                                 EQU $22 ; used: the counted-breakable
                                                    ; play it via BLOCKPATCH_STEP_SFX
 DEF SFX_23                                 EQU $23 ; unused?
 DEF SFX_ENEMY_BOUNCE                       EQU $24
-DEF SFX_25                                 EQU $25 ; unused?
-DEF SFX_26                                 EQU $26 ; used: .script_0D in bank00_cutscenes.asm
+DEF SFX_25                                 EQU $25 ; used: the two-block breakable tile scripts
+DEF SFX_26                                 EQU $26 ; used: .script_0D, and the wide slot switch
                                                    ; plays it via BLOCKPATCH_STEP_SFX
 DEF SFX_FALLING_PLATFORM                   EQU $27
 DEF SFX_28                                 EQU $28 ; unused?
 DEF SFX_29                                 EQU $29 ; unused?
 DEF SFX_GEX_JUMP_UNK                       EQU $2A ; unknown, but related to gex jumping
 DEF SFX_POWERED_WALKWAY                    EQU $2B
-DEF SFX_2C                                 EQU $2C ; unused?
+DEF SFX_CANNON_ROTATE                      EQU $2C ; used in the rotating cannon tile scripts
 DEF SFX_JAR                                EQU $2D
 DEF SFX_2E                                 EQU $2E ; unused?
 DEF SFX_DRAGON                             EQU $2F
@@ -826,6 +826,9 @@ DEF FONT_BYTES_PER_ROW                      EQU 2   ; 2bpp: plane 0 then plane 1
 ; the bits in this order: SFX (which consumes an extra argument byte from the step), then
 ; REGISTER, then COLLISION, then TILES, then LOOP.
 ; ------------------------------------------------------------------
+; Terminates the (block x, block y) lookup tables the tile hit script callbacks walk
+DEF BLOCK_COORD_LIST_END                      EQU $FF
+
 DEF BLOCKPATCH_STEP_LOOP                      EQU $01 ; bit 0 - run the next step in the same frame
 DEF BLOCKPATCH_STEP_REGISTER                  EQU $02 ; bit 1 - BlockPatch_Register: commit
                                                     ;         the rectangle to the wCD00/wCE00

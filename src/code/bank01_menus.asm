@@ -3914,7 +3914,7 @@ data_01_5aa9_SpriteScriptTable:
 data_01_5acf_SpriteScript_Totals_5Remotes:
 ; Five mission/hidden remote icons - progress id 0 (mask $1F)
     db   $02                                            ; first OAM slot
-    ;     Y,   X,  tile, attr, w, h
+    ;    Y,   X, tile, attr, w, h
     db   $48, $24, $01, $03, 3, 4                       ; wD5AA_Sprite_TileIdTable index 0
     db   $48, $44, $03, $03, 3, 4                       ; wD5AA_Sprite_TileIdTable index 1
     db   $48, $64, $05, $03, 3, 4                       ; wD5AA_Sprite_TileIdTable index 2
@@ -3925,7 +3925,7 @@ data_01_5acf_SpriteScript_Totals_5Remotes:
 data_01_5aef_SpriteScript_Totals_4Remotes:
 ; Four - progress id 1 (mask $1B)
     db   $02                                            ; first OAM slot
-    ;     Y,   X,  tile, attr, w, h
+    ;    Y,   X, tile, attr, w, h
     db   $48, $34, $01, $03, 3, 4                       ; wD5AA_Sprite_TileIdTable index 0
     db   $48, $54, $03, $03, 3, 4                       ; wD5AA_Sprite_TileIdTable index 1
     db   $68, $34, $07, $04, 3, 4                       ; wD5AA_Sprite_TileIdTable index 3
@@ -3935,7 +3935,7 @@ data_01_5aef_SpriteScript_Totals_4Remotes:
 data_01_5b09_SpriteScript_Totals_3Remotes:
 ; Three - progress id 2 (mask $19)
     db   $02                                            ; first OAM slot
-    ;     Y,   X,  tile, attr, w, h
+    ;    Y,   X, tile, attr, w, h
     db   $48, $44, $01, $03, 3, 4                       ; wD5AA_Sprite_TileIdTable index 0
     db   $68, $34, $07, $04, 3, 4                       ; wD5AA_Sprite_TileIdTable index 3
     db   $68, $54, $09, $04, 3, 4                       ; wD5AA_Sprite_TileIdTable index 4
@@ -3944,7 +3944,7 @@ data_01_5b09_SpriteScript_Totals_3Remotes:
 data_01_5b1d_SpriteScript_Totals_2Remotes:
 ; Two - progress id 3 (mask $03)
     db   $02                                            ; first OAM slot
-    ;     Y,   X,  tile, attr, w, h
+    ;    Y,   X, tile, attr, w, h
     db   $58, $34, $01, $03, 3, 4                       ; wD5AA_Sprite_TileIdTable index 0
     db   $58, $54, $03, $03, 3, 4                       ; wD5AA_Sprite_TileIdTable index 1
     db   SPRITE_SCRIPT_END
@@ -3952,21 +3952,21 @@ data_01_5b1d_SpriteScript_Totals_2Remotes:
 data_01_5b2b_SpriteScript_Totals_1Remote:
 ; One - progress id 4 (mask $01)
     db   $02                                            ; first OAM slot
-    ;     Y,   X,  tile, attr, w, h
+    ;    Y,   X, tile, attr, w, h
     db   $58, $44, $01, $03, 3, 4                       ; wD5AA_Sprite_TileIdTable index 0
     db   SPRITE_SCRIPT_END
 
 data_01_5b33_SpriteScript_Totals_GoldOnly:
 ; Just the gold remote - progress id 5 (mask $20)
     db   $02                                            ; first OAM slot
-    ;     Y,   X,  tile, attr, w, h
+    ;    Y,   X, tile, attr, w, h
     db   $58, $44, $0b, $05, 3, 4                       ; wD5AA_Sprite_TileIdTable index 5
     db   SPRITE_SCRIPT_END
 
 data_01_5b3b_SpriteScript_Congrats_5Remotes:
 ; Congratulations screen, five remotes plus the three collectible counters
     db   $02                                            ; first OAM slot
-    ;     Y,   X,  tile, attr, w, h
+    ;    Y,   X, tile, attr, w, h
     db   $10, $14, $01, $01, 3, 4                       ; wD5AA_Sprite_TileIdTable index 0
     db   $10, $44, $03, $01, 3, 4                       ; wD5AA_Sprite_TileIdTable index 1
     db   $10, $74, $05, $01, 3, 4                       ; wD5AA_Sprite_TileIdTable index 2
@@ -3980,7 +3980,7 @@ data_01_5b3b_SpriteScript_Congrats_5Remotes:
 data_01_5b6d_SpriteScript_Congrats_4Remotes:
 ; Four remotes plus the collectible counters
     db   $02                                            ; first OAM slot
-    ;     Y,   X,  tile, attr, w, h
+    ;    Y,   X, tile, attr, w, h
     db   $10, $2c, $01, $01, 3, 4                       ; wD5AA_Sprite_TileIdTable index 0
     db   $10, $5c, $03, $01, 3, 4                       ; wD5AA_Sprite_TileIdTable index 1
     db   $58, $29, $07, $02, 3, 4                       ; wD5AA_Sprite_TileIdTable index 3
@@ -3993,7 +3993,7 @@ data_01_5b6d_SpriteScript_Congrats_4Remotes:
 data_01_5b99_SpriteScript_Congrats_3Remotes:
 ; Three remotes plus the collectible counters
     db   $02                                            ; first OAM slot
-    ;     Y,   X,  tile, attr, w, h
+    ;    Y,   X, tile, attr, w, h
     db   $10, $44, $01, $01, 3, 4                       ; wD5AA_Sprite_TileIdTable index 0
     db   $58, $29, $07, $02, 3, 4                       ; wD5AA_Sprite_TileIdTable index 3
     db   $58, $61, $09, $02, 3, 4                       ; wD5AA_Sprite_TileIdTable index 4
@@ -4005,7 +4005,7 @@ data_01_5b99_SpriteScript_Congrats_3Remotes:
 data_01_5bbf_SpriteScript_Congrats_2Remotes:
 ; Two remotes plus the collectible counters
     db   $02                                            ; first OAM slot
-    ;     Y,   X,  tile, attr, w, h
+    ;    Y,   X, tile, attr, w, h
     db   $10, $2c, $01, $01, 3, 4                       ; wD5AA_Sprite_TileIdTable index 0
     db   $10, $5c, $03, $01, 3, 4                       ; wD5AA_Sprite_TileIdTable index 1
     db   $3b, $1c, $92, $04, 1, 2                       
@@ -4016,7 +4016,7 @@ data_01_5bbf_SpriteScript_Congrats_2Remotes:
 data_01_5bdf_SpriteScript_Congrats_1Remote:
 ; One remote plus the collectible counters
     db   $02                                            ; first OAM slot
-    ;     Y,   X,  tile, attr, w, h
+    ;    Y,   X, tile, attr, w, h
     db   $10, $44, $01, $01, 3, 4                       ; wD5AA_Sprite_TileIdTable index 0
     db   $3b, $1c, $92, $04, 1, 2                       
     db   $3b, $4c, $94, $05, 1, 2                       
@@ -4026,7 +4026,7 @@ data_01_5bdf_SpriteScript_Congrats_1Remote:
 data_01_5bf9_SpriteScript_Congrats_GoldOnly:
 ; Gold remote plus the collectible counters
     db   $02                                            ; first OAM slot
-    ;     Y,   X,  tile, attr, w, h
+    ;    Y,   X, tile, attr, w, h
     db   $10, $44, $0b, $03, 3, 4                       ; wD5AA_Sprite_TileIdTable index 5
     db   $3b, $1c, $92, $04, 1, 2                       
     db   $3b, $4c, $94, $05, 1, 2                       
@@ -4036,7 +4036,7 @@ data_01_5bf9_SpriteScript_Congrats_GoldOnly:
 data_01_5c13_SpriteScript_Totals_StatsPage:
 ; Page 0 of the totals - the whole-game tally, all literal tiles
     db   $02                                            ; first OAM slot
-    ;     Y,   X,  tile, attr, w, h
+    ;    Y,   X, tile, attr, w, h
     db   $48, $20, $84, $06, 2, 2                       
     db   $48, $38, $6e, $00, 1, 2                       
     db   $48, $40, $70, $00, 3, 2                       
@@ -4058,7 +4058,7 @@ data_01_5c6f_SpriteScript_EnterPasswordHeader:
 ; "Enter Password" - two slices of data_00_3c72_Image_PasswordHeadings, staged at
 ; tile $06, so the words are sprites rather than part of the tilemap
     db   $02                                            ; first OAM slot
-    ;     Y,   X,  tile, attr, w, h
+    ;    Y,   X, tile, attr, w, h
     db   $30, $3c, $06, $07, 5, 2                       
     db   $40, $2c, $2c, $07, 9, 2                       
     db   SPRITE_SCRIPT_END
@@ -4066,7 +4066,7 @@ data_01_5c6f_SpriteScript_EnterPasswordHeader:
 data_01_5c7d_SpriteScript_ViewPasswordHeader:
 ; "Current Password" - same strip, starting at tile $10 instead
     db   $02                                            ; first OAM slot
-    ;     Y,   X,  tile, attr, w, h
+    ;    Y,   X, tile, attr, w, h
     db   $30, $34, $10, $07, 7, 2                       
     db   $40, $2c, $2c, $07, 9, 2                       
     db   SPRITE_SCRIPT_END
@@ -4074,7 +4074,7 @@ data_01_5c7d_SpriteScript_ViewPasswordHeader:
 data_01_5c8b_SpriteScript_InvalidPasswordHeader:
 ; "Invalid Password" - same strip again, starting at tile $1E
     db   $02                                            ; first OAM slot
-    ;     Y,   X,  tile, attr, w, h
+    ;    Y,   X, tile, attr, w, h
     db   $30, $34, $1e, $07, 7, 2                       
     db   $40, $2c, $2c, $07, 9, 2                       
     db   SPRITE_SCRIPT_END

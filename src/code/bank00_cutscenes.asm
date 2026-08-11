@@ -244,7 +244,7 @@ call_00_2329_Cutscene_LoadAndRun:
 ;
 ; The all-$FF rows are levels with no scenes at all: the unused ids, the hub variants
 ; ($11-$14), and everything from Lizard in a China Shop onward except four
-;         slot: 0    1    2    3    4    5    6    7    8    9    a    b    c    d    e    f
+;  slot: 0    1    2    3    4    5    6    7    8    9    a    b    c    d    e    f
     db   $00, $01, $02, $03, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff ; 00 media dimension
     db   $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $04, $05, $06, $ff, $07, $08 ; 01 out of toon
     db   $0d, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $09, $0a, $0b, $ff, $0c, $ff ; 02 smellraiser
@@ -282,7 +282,7 @@ call_00_2329_Cutscene_LoadAndRun:
 ; contiguous run and the whole region is written in address order below.
 ;
 ; Everything down there is built from the macros in macros.asm - cutscene_script,
-; cutscene_move, blockpatch_anim, blockpatch_step, blockpatch_cells - which emit exactly the
+; cutscene_move, blockpatch_header, blockpatch_step, blockpatch_cells - which emit exactly the
 ; bytes the runner expects. The layout each one produces is documented on the macro itself.
 ;
 ; Three things worth knowing that the macros do not say:
@@ -379,7 +379,7 @@ call_00_2329_Cutscene_LoadAndRun:
     cutscene_script $04e0, $01d0, 0, .script_00_anim
 
 .script_00_anim:
-    blockpatch_anim 0, 3, 10, -2, -1, 2, 2
+    blockpatch_header 0, 3, 10, -2, -1, 2, 2
     blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/3
     blockpatch_cells $ee,1, $ef,1
     blockpatch_cells $fe,1, $ff,1
@@ -397,7 +397,7 @@ call_00_2329_Cutscene_LoadAndRun:
     cutscene_script $03a0, $02f0, 0, .script_01_anim
 
 .script_01_anim:
-    blockpatch_anim 0, 3, 10, -2, -1, 2, 2
+    blockpatch_header 0, 3, 10, -2, -1, 2, 2
     blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/3
     blockpatch_cells $ea,1, $eb,1
     blockpatch_cells $fa,1, $fb,1
@@ -415,7 +415,7 @@ call_00_2329_Cutscene_LoadAndRun:
     cutscene_script $0620, $02f0, 0, .script_02_anim
 
 .script_02_anim:
-    blockpatch_anim 0, 3, 10, -2, -1, 2, 2
+    blockpatch_header 0, 3, 10, -2, -1, 2, 2
     blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/3
     blockpatch_cells $e6,1, $e7,1
     blockpatch_cells $f6,1, $f7,1
@@ -433,7 +433,7 @@ call_00_2329_Cutscene_LoadAndRun:
     cutscene_script $08a0, $02f0, 0, .script_03_anim
 
 .script_03_anim:
-    blockpatch_anim 0, 3, 10, -2, -1, 2, 2
+    blockpatch_header 0, 3, 10, -2, -1, 2, 2
     blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/3
     blockpatch_cells $be,1, $bf,1
     blockpatch_cells $ce,1, $cf,1
@@ -543,7 +543,7 @@ call_00_2329_Cutscene_LoadAndRun:
     cutscene_script $00bc, $0340, 0, .script_0D_anim
 
 .script_0D_anim:
-    blockpatch_anim 0, 2, 60, 0, 0, 2, 1
+    blockpatch_header 0, 2, 60, 0, 0, 2, 1
     blockpatch_step BLOCKPATCH_STEP_TILES | BLOCKPATCH_STEP_SFX                ; step 1/2
     blockpatch_sfx  SFX_26
     blockpatch_cells $f4,1, $f5,1
@@ -651,7 +651,7 @@ call_00_2329_Cutscene_LoadAndRun:
     cutscene_script $09c0, $00b0, 0, .script_17_anim
 
 .script_17_anim:
-    blockpatch_anim 0, 2, 60, -1, -1, 2, 2
+    blockpatch_header 0, 2, 60, -1, -1, 2, 2
     blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/2
     blockpatch_cells $f4,1, $f5,1
     blockpatch_cells $f6,1, $f7,1
@@ -666,7 +666,7 @@ call_00_2329_Cutscene_LoadAndRun:
     cutscene_script $0980, $0690, 0, .script_18_anim
 
 .script_18_anim:
-    blockpatch_anim 0, 2, 60, -1, -1, 2, 2
+    blockpatch_header 0, 2, 60, -1, -1, 2, 2
     blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/2
     blockpatch_cells $f4,1, $f5,1
     blockpatch_cells $f6,1, $f7,1
@@ -681,7 +681,7 @@ call_00_2329_Cutscene_LoadAndRun:
     cutscene_script $0100, $0550, 0, .script_19_anim
 
 .script_19_anim:
-    blockpatch_anim 0, 2, 60, -1, -1, 2, 2
+    blockpatch_header 0, 2, 60, -1, -1, 2, 2
     blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/2
     blockpatch_cells $f4,1, $f5,1
     blockpatch_cells $f6,1, $f7,1
@@ -696,7 +696,7 @@ call_00_2329_Cutscene_LoadAndRun:
     cutscene_script $07a0, $00f0, 0, .script_1A_anim
 
 .script_1A_anim:
-    blockpatch_anim 0, 13, 10, 0, 0, 2, 2
+    blockpatch_header 0, 13, 10, 0, 0, 2, 2
     blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/13
     blockpatch_cells $ad,1, $ad,1
     blockpatch_cells $ad,1, $ad,1
@@ -744,7 +744,7 @@ call_00_2329_Cutscene_LoadAndRun:
     cutscene_script $0d20, $0690, 0, .script_1B_anim
 
 .script_1B_anim:
-    blockpatch_anim 0, 7, 10, 0, 0, 1, 2
+    blockpatch_header 0, 7, 10, 0, 0, 1, 2
     blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/7
     blockpatch_cells $a5,1
     blockpatch_cells $a4,1
@@ -774,7 +774,7 @@ call_00_2329_Cutscene_LoadAndRun:
     cutscene_script $09e0, $0210, 0, .script_1C_anim
 
 .script_1C_anim:
-    blockpatch_anim 0, 13, 10, 0, 0, 2, 2
+    blockpatch_header 0, 13, 10, 0, 0, 2, 2
     blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/13
     blockpatch_cells $ad,1, $ad,1
     blockpatch_cells $ad,1, $ad,1
@@ -822,7 +822,7 @@ call_00_2329_Cutscene_LoadAndRun:
     cutscene_script $0b00, $06b0, 0, .script_1D_anim
 
 .script_1D_anim:
-    blockpatch_anim .script_1D_callback, 2, 60, -1, 0, 2, 2
+    blockpatch_header .script_1D_callback, 2, 60, -1, 0, 2, 2
     blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/2
     blockpatch_cells $03,0, $ce,1
     blockpatch_cells $11,0, $11,0
@@ -846,7 +846,7 @@ call_00_2329_Cutscene_LoadAndRun:
     cutscene_script $0ce0, $06b0, 0, .script_1E_anim
 
 .script_1E_anim:
-    blockpatch_anim 0, 2, 60, -2, 0, 2, 2
+    blockpatch_header 0, 2, 60, -2, 0, 2, 2
     blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/2
     blockpatch_cells $03,0, $ce,1
     blockpatch_cells $11,0, $11,0
@@ -913,7 +913,7 @@ call_00_2329_Cutscene_LoadAndRun:
     cutscene_script $0640, $0970, 0, .script_23_anim
 
 .script_23_anim:
-    blockpatch_anim .script_23_callback, 5, 10, -1, 0, 2, 1
+    blockpatch_header .script_23_callback, 5, 10, -1, 0, 2, 1
     blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/5
     blockpatch_cells $99,1, $9a,1
     blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 2/5
@@ -941,7 +941,7 @@ call_00_2329_Cutscene_LoadAndRun:
     cutscene_script $0800, $0cb0, 0, .script_24_anim
 
 .script_24_anim:
-    blockpatch_anim .script_24_callback, 5, 10, -1, 0, 2, 1
+    blockpatch_header .script_24_callback, 5, 10, -1, 0, 2, 1
     blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/5
     blockpatch_cells $99,1, $9a,1
     blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 2/5
@@ -969,7 +969,7 @@ call_00_2329_Cutscene_LoadAndRun:
     cutscene_script $0b20, $0d30, 0, .script_25_anim
 
 .script_25_anim:
-    blockpatch_anim 0, 2, 60, -1, 0, 2, 1
+    blockpatch_header 0, 2, 60, -1, 0, 2, 1
     blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/2
     blockpatch_cells $94,1, $95,1
     blockpatch_step BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_TILES           ; step 2/2
@@ -1168,7 +1168,7 @@ call_00_2329_Cutscene_LoadAndRun:
     cutscene_script $0280, $0190, 0, .script_37_anim
 
 .script_37_anim:
-    blockpatch_anim 0, 2, 60, -1, -1, 2, 2
+    blockpatch_header 0, 2, 60, -1, -1, 2, 2
     blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/2
     blockpatch_cells $f4,1, $f5,1
     blockpatch_cells $f6,1, $f7,1
@@ -1183,7 +1183,7 @@ call_00_2329_Cutscene_LoadAndRun:
     cutscene_script $0d40, $00b0, 0, .script_38_anim
 
 .script_38_anim:
-    blockpatch_anim 0, 2, 60, -1, -1, 2, 2
+    blockpatch_header 0, 2, 60, -1, -1, 2, 2
     blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/2
     blockpatch_cells $f4,1, $f5,1
     blockpatch_cells $f6,1, $f7,1
@@ -1198,7 +1198,7 @@ call_00_2329_Cutscene_LoadAndRun:
     cutscene_script $0300, $0190, 0, .script_39_anim
 
 .script_39_anim:
-    blockpatch_anim 0, 2, 60, -1, -1, 2, 2
+    blockpatch_header 0, 2, 60, -1, -1, 2, 2
     blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/2
     blockpatch_cells $f4,1, $f5,1
     blockpatch_cells $f6,1, $f7,1
@@ -1226,7 +1226,7 @@ call_00_2329_Cutscene_LoadAndRun:
 
 ; Shared by scripts $3a, $3b and $3c - all three show the same reveal
 .anim_shared_3A_3C:
-    blockpatch_anim 0, 9, 10, 0, -1, 1, 4
+    blockpatch_header 0, 9, 10, 0, -1, 1, 4
     blockpatch_step BLOCKPATCH_STEP_TILES                                      ; step 1/9
     blockpatch_cells $a5,1
     blockpatch_cells $a9,1
