@@ -171,7 +171,7 @@ call_02_6e17_Entities_InitAndSpawnAll:
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:6e31 $ea $5e $d7
     ld   [wD75C_PlayerXDeltaExtra], A                                    ;; 02:6e34 $ea $5c $d7
     ld   [wD760_PlayerYVelocity], A                                    ;; 02:6e37 $ea $60 $d7
-    ld   [wD761_PlayerBonkCeilingDownwardsVelocity], A                                    ;; 02:6e3a $ea $61 $d7
+    ld   [wD761_Player_FloorSnapVelocity], A                                    ;; 02:6e3a $ea $61 $d7
     ld   [wD762_PlayerInitialYVelocity], A                                    ;; 02:6e3d $ea $62 $d7
     ld   [wD763_FallDistanceCounter], A                                    ;; 02:6e40 $ea $63 $d7
     ld   [wD759_ButtonBlockingFlags], A                                    ;; 02:6e43 $ea $59 $d7

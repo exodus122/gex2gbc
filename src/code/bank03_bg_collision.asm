@@ -242,14 +242,14 @@ call_03_4915_BgCollision_SidescrollerHandler:
 ; then scan down through data_03_4000_TileSolidityRows a pixel row at a time - within
 ; the feet tile first, then continuing into the tile below - until his pixel column
 ; comes up solid. The number of rows walked is the gap to the floor, and it goes into
-; wD761_PlayerBonkCeilingDownwardsVelocity negated and scaled, for bank 2 to close.
+; wD761_Player_FloorSnapVelocity negated and scaled, for bank 2 to close.
 ; Finding solid ground also raises BGCOLL_NO_COLLISION_BIT, which downstream means
 ; grounded. Giving up after BGCOLL_FLOOR_SEARCH_ROWS leaves him airborne.
 ;
 ; CEILING (falling): one probe above his head, at a distance that grows with the fall
 ; speed. A TILECOLL_CEILING tile there zeroes the Y velocity - the head bonk
     xor  A, A                                          ;; 03:4a05 $af
-    ld   [wD761_PlayerBonkCeilingDownwardsVelocity], A ;; 03:4a06 $ea $61 $d7
+    ld   [wD761_Player_FloorSnapVelocity], A ;; 03:4a06 $ea $61 $d7
     ld   HL, wD585_CollisionFlags                                     ;; 03:4a09 $21 $85 $d5
     bit  BGCOLL_NO_COLLISION_BIT, [HL]                 ;; 03:4a0c $cb $7e
     ret  NZ                                            ;; 03:4a0e $c0
@@ -325,7 +325,7 @@ call_03_4915_BgCollision_SidescrollerHandler:
     swap A                                             ;; 03:4a74 $cb $37
     cpl                                                ;; 03:4a76 $2f
     inc  A                                             ;; 03:4a77 $3c
-    ld   [wD761_PlayerBonkCeilingDownwardsVelocity], A                                    ;; 03:4a78 $ea $61 $d7
+    ld   [wD761_Player_FloorSnapVelocity], A                                    ;; 03:4a78 $ea $61 $d7
     ret                                                ;; 03:4a7b $c9
 .jr_03_4a7c_CeilingCheck:
     call call_03_4ab3_BgCollision_GetPredictedXDelta                                  ;; 03:4a7c $cd $b3 $4a

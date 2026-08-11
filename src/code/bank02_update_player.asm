@@ -684,7 +684,7 @@ call_02_4b78_Player_ApplyYVelocity:
     ld   A, [wD585_CollisionFlags]                                    ;; 02:4bbc $fa $85 $d5
     and  A, $80                                        ;; 02:4bbf $e6 $80
     jr   Z, .jr_02_4bd8_NotGrounded                                ;; 02:4bc1 $28 $15
-    ld   A, [wD761_PlayerBonkCeilingDownwardsVelocity]                                    ;; 02:4bc3 $fa $61 $d7
+    ld   A, [wD761_Player_FloorSnapVelocity]                                    ;; 02:4bc3 $fa $61 $d7
     and  A, A                                          ;; 02:4bc6 $a7
     jr   Z, .jr_02_4bed                                ;; 02:4bc7 $28 $24
     ld   HL, wD584_CollisionFlagsPrev                                     ;; 02:4bc9 $21 $84 $d5

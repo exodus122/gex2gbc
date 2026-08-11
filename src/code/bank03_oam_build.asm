@@ -214,10 +214,10 @@ call_03_5ca8_Entity_BuildPlayerSprites:
     and  A, A                                          ;; 03:5d30 $a7
     ret  Z                                             ;; 03:5d31 $c8
     ld   A, [wD212_Player_ScreenXPosition]                                    ;; 03:5d32 $fa $12 $d2
-    ld   [wD76C_PlayerScreenXPosition_Copy], A                                    ;; 03:5d35 $ea $6c $d7
+    ld   [wD76C_FlyPowerup_AnchorX], A                                    ;; 03:5d35 $ea $6c $d7
     ld   A, [wD213_Player_ScreenYPosition]                                    ;; 03:5d38 $fa $13 $d2
     sub  A, $20                                        ;; 03:5d3b $d6 $20
-    ld   [wD76D_PlayerScreenYPosition_CopyMinus20], A                                    ;; 03:5d3d $ea $6d $d7
+    ld   [wD76D_FlyPowerup_AnchorY], A                                    ;; 03:5d3d $ea $6d $d7
     ld   HL, wD739_Entity_OamWriteOffset                                     ;; 03:5d40 $21 $39 $d7
     ld   E, [HL]                                       ;; 03:5d43 $5e
     ld   A, E                                          ;; 03:5d44 $7b
@@ -234,12 +234,12 @@ call_03_5ca8_Entity_BuildPlayerSprites:
     ld   H, $00                                        ;; 03:5d54 $26 $00
     ld   BC, .data_03_5e9f_FlyParticleOffsetTable                             ;; 03:5d56 $01 $9f $5e
     add  HL, BC                                        ;; 03:5d59 $09
-    ld   A, [wD76D_PlayerScreenYPosition_CopyMinus20]                                    ;; 03:5d5a $fa $6d $d7
+    ld   A, [wD76D_FlyPowerup_AnchorY]                                    ;; 03:5d5a $fa $6d $d7
     add  A, [HL]                                       ;; 03:5d5d $86
     ld   [DE], A                                       ;; 03:5d5e $12
     inc  E                                             ;; 03:5d5f $1c
     inc  HL                                            ;; 03:5d60 $23
-    ld   A, [wD76C_PlayerScreenXPosition_Copy]                                    ;; 03:5d61 $fa $6c $d7
+    ld   A, [wD76C_FlyPowerup_AnchorX]                                    ;; 03:5d61 $fa $6c $d7
     add  A, [HL]                                       ;; 03:5d64 $86
     ld   [DE], A                                       ;; 03:5d65 $12
     inc  E                                             ;; 03:5d66 $1c
@@ -973,7 +973,7 @@ call_03_6499_Collectible_BuildSprites:
 ;
 ; The camera is reduced to a cell column and row (scroll >> 4, since a collectible cell is
 ; 16x16 pixels) plus the leftover sub-cell pixels, which become the fine biases in
-; wD64D/wD64E. The column then indexes the two tables that
+; wD64D_Collectible_OamOriginX/wD64E_Collectible_OamOriginY. The column then indexes the two tables that
 ; call_0b_4000_CollectibleList_LoadForCurrentLevel precomputed:
 ; wC700_Collectible_ScanCountByColumn says how many collectibles are in range - zero
 ; returns immediately - and wC600_Collectible_ScanStartByColumn says where to start. So
@@ -999,7 +999,7 @@ call_03_6499_Collectible_BuildSprites:
     ld   C, A                                          ;; 03:649f $4f
     ld   A, $0c                                        ;; 03:64a0 $3e $0c
     sub  A, C                                          ;; 03:64a2 $91
-    ld   [wD64D], A                                    ;; 03:64a3 $ea $4d $d6
+    ld   [wD64D_Collectible_OamOriginX], A                                    ;; 03:64a3 $ea $4d $d6
     ld   A, [HL+]                                      ;; 03:64a6 $2a
     swap A                                             ;; 03:64a7 $cb $37
     and  A, $0f                                        ;; 03:64a9 $e6 $0f
@@ -1022,7 +1022,7 @@ call_03_6499_Collectible_BuildSprites:
     ld   B, A                                          ;; 03:64c0 $47
     ld   A, $10                                        ;; 03:64c1 $3e $10
     sub  A, B                                          ;; 03:64c3 $90
-    ld   [wD64E], A                                    ;; 03:64c4 $ea $4e $d6
+    ld   [wD64E_Collectible_OamOriginY], A                                    ;; 03:64c4 $ea $4e $d6
     ld   A, [HL+]                                      ;; 03:64c7 $2a
     swap A                                             ;; 03:64c8 $cb $37
     and  A, $0f                                        ;; 03:64ca $e6 $0f
@@ -1043,7 +1043,7 @@ call_03_6499_Collectible_BuildSprites:
     jr   NC, .jr_03_653d                               ;; 03:64de $30 $5d
     swap A                                             ;; 03:64e0 $cb $37
     ld   B, A                                          ;; 03:64e2 $47
-    ld   A, [wD64E]                                    ;; 03:64e3 $fa $4e $d6
+    ld   A, [wD64E_Collectible_OamOriginY]                                    ;; 03:64e3 $fa $4e $d6
     add  A, B                                          ;; 03:64e6 $80
     ld   B, A                                          ;; 03:64e7 $47
     ld   [HL+], A                                      ;; 03:64e8 $22
@@ -1052,7 +1052,7 @@ call_03_6499_Collectible_BuildSprites:
     sub  A, C                                          ;; 03:64ec $91
     swap A                                             ;; 03:64ed $cb $37
     ld   C, A                                          ;; 03:64ef $4f
-    ld   A, [wD64D]                                    ;; 03:64f0 $fa $4d $d6
+    ld   A, [wD64D_Collectible_OamOriginX]                                    ;; 03:64f0 $fa $4d $d6
     add  A, C                                          ;; 03:64f3 $81
     ld   C, A                                          ;; 03:64f4 $4f
     ld   [HL+], A                                      ;; 03:64f5 $22

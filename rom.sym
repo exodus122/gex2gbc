@@ -3387,11 +3387,11 @@
 00:d647 wD647_ExitTVButtonIndex
 00:d648 wD648_CollectibleMilestoneIndex
 00:d649 wD649_CollectibleAmount
-00:d64a wD64A
-00:d64b wD64B
+00:d64a wD64A_HUD_CollectibleCountTens
+00:d64b wD64B_HUD_CollectibleCountOnes
 00:d64c wD64C_CurrentLevel_HiddenRemoteFlags
-00:d64d wD64D
-00:d64e wD64E
+00:d64d wD64D_Collectible_OamOriginX
+00:d64e wD64E_Collectible_OamOriginY
 00:d64f wD64F_MissionRemoteTotal
 00:d650 wD650_HiddenRemoteTotal
 00:d651 wD651_BonusMissionTotal
@@ -3573,7 +3573,7 @@
 00:d75e wD75E_PlayerXSpeed
 00:d75f wD75F_BgCollision_WallProbeLookahead
 00:d760 wD760_PlayerYVelocity
-00:d761 wD761_PlayerBonkCeilingDownwardsVelocity
+00:d761 wD761_Player_FloorSnapVelocity
 00:d762 wD762_PlayerInitialYVelocity
 00:d763 wD763_FallDistanceCounter
 00:d764 wD764_TileTypeBehindGexsUpperBody
@@ -3583,8 +3583,8 @@
 00:d769 wD769_ClimbSurfaceTileType
 00:d76a wD76A_Player_BlockX
 00:d76b wD76B_Player_IsAttacking
-00:d76c wD76C_PlayerScreenXPosition_Copy
-00:d76d wD76D_PlayerScreenYPosition_CopyMinus20
+00:d76c wD76C_FlyPowerup_AnchorX
+00:d76d wD76D_FlyPowerup_AnchorY
 00:d76e wD76E_FlyPowerup_OrbitPhase
 00:d76f wD76F_LevelTimer_Minutes
 00:d770 wD770_LevelTimer_SecondsBCD

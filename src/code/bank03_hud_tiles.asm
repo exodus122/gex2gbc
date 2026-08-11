@@ -272,9 +272,18 @@ call_03_6d13_HUD_LoadLivesDigits:
     call call_03_6d88_HUD_LoadDigitTile                                  ;; 03:6d5b $cd $88 $6d
 
 call_03_6d5e_HUD_LoadCollectibleCountDigits:
-; Shared tail of the lives/timer loaders. Decomposes wD649 (collectible count) into 
-; tens/ones digits stored in wD64A/wD64B. Calls call_03_6d88_HUD_LoadDigitTile for each to write to VRAM $87A8/$87C8
-    ld   HL, wD64A                                     ;; 03:6d5e $21 $4a $d6
+; Shared tail of both the lives and timer loaders: redraws the two collectible-count
+; digits, which sit in the HUD's last two digit slots and are not shared with anything.
+;
+; wD649_CollectibleAmount is split by repeated subtraction of 10 into
+; wD64A_HUD_CollectibleCountTens and wD64B_HUD_CollectibleCountOnes, then each is handed
+; to call_03_6d88_HUD_LoadDigitTile.
+;
+; Both digit bytes are preloaded with $0A first. That is one past the last real digit and
+; selects the eleventh glyph in the font, which is blank - so a count under ten simply
+; skips the tens byte and leaves the blank in place. Leading-zero suppression with no
+; branch to do it
+    ld   HL, wD64A_HUD_CollectibleCountTens                                     ;; 03:6d5e $21 $4a $d6
     ld   A, $0a                                        ;; 03:6d61 $3e $0a
     ld   [HL+], A                                      ;; 03:6d63 $22
     ld   [HL-], A                                      ;; 03:6d64 $32
@@ -290,15 +299,16 @@ call_03_6d5e_HUD_LoadCollectibleCountDigits:
     inc  HL                                            ;; 03:6d75 $23
 .jr_03_6d76:
     ld   [HL], A                                       ;; 03:6d76 $77
-    ld   A, [wD64A]                                    ;; 03:6d77 $fa $4a $d6
-    ld   DE, VRAM_LIVES_TENS                                     ;; 03:6d7a $11 $a8 $87
+    ld   A, [wD64A_HUD_CollectibleCountTens]                                    ;; 03:6d77 $fa $4a $d6
+    ld   DE, VRAM_DIGIT_COLLECTIBLE_TENS                                     ;; 03:6d7a $11 $a8 $87
     call call_03_6d88_HUD_LoadDigitTile                                  ;; 03:6d7d $cd $88 $6d
-    ld   A, [wD64B]                                    ;; 03:6d80 $fa $4b $d6
-    ld   DE, VRAM_LIVES_ONES                                     ;; 03:6d83 $11 $c8 $87
+    ld   A, [wD64B_HUD_CollectibleCountOnes]                                    ;; 03:6d80 $fa $4b $d6
+    ld   DE, VRAM_DIGIT_COLLECTIBLE_ONES                                     ;; 03:6d83 $11 $c8 $87
     jr   call_03_6d88_HUD_LoadDigitTile                                  ;; 03:6d86 $18 $00
 
 call_03_6d88_HUD_LoadDigitTile:
-; Core digit tile writer. Takes a digit value in A (0–9) and a VRAM destination in DE. 
+; Core digit tile writer. Takes a glyph index in A (0-9, or $0A for the blank) and a VRAM
+; destination in DE.
 ; Swap-shifts A to use as an index, selects either .numbers_003_6d9d or .numbers_003_6e4d 
 ; (alternate digit font, based on wD623_CollectibleMode timer-mode flag), adds to get the correct tile data pointer, 
 ; and copies 16 bytes (2 tiles = one digit glyph) to VRAM via VRAM_Copy16Bytes

@@ -610,7 +610,7 @@ call_02_44af_PlayerAction_Climb:
     ld   [wD747_Player_ClimbAnimCounter], A                                    ;; 02:44bc $ea $47 $d7
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:44bf $ea $5e $d7
     ld   [wD760_PlayerYVelocity], A                                    ;; 02:44c2 $ea $60 $d7
-    ld   [wD761_PlayerBonkCeilingDownwardsVelocity], A                                    ;; 02:44c5 $ea $61 $d7
+    ld   [wD761_Player_FloorSnapVelocity], A                                    ;; 02:44c5 $ea $61 $d7
     ld   A, [wD769_ClimbSurfaceTileType]                                    ;; 02:44c8 $fa $69 $d7
     cp   A, TILE_TYPE_CLIMBABLE_BACKGROUND             ;; 02:44cb $fe $26
     ld   A, CLIMB_STATE_BACKGROUND                     ;; 02:44cd $3e $00

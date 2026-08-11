@@ -598,10 +598,16 @@ wD649_CollectibleAmount:
 ; otherwise it counts up toward the next milestone
     ds 1                                               ;; d649
 
-wD64A:
+; wD649_CollectibleAmount split into two decimal digits for the HUD, by
+; call_03_6d5e_HUD_LoadCollectibleCountDigits. Only ever 0-9, or $0A.
+;
+; $0A is not a digit: the digit font has eleven 16-byte glyphs and the eleventh is
+; blank. Both bytes are preloaded with it, and a count under ten leaves the tens
+; byte untouched - so leading-zero suppression is just "never overwrite the blank"
+wD64A_HUD_CollectibleCountTens:
     ds 1                                               ;; d64a
 
-wD64B:
+wD64B_HUD_CollectibleCountOnes:
     ds 1                                               ;; d64b
 
 wD64C_CurrentLevel_HiddenRemoteFlags:
@@ -609,10 +615,25 @@ wD64C_CurrentLevel_HiddenRemoteFlags:
 ; and OR'd back in when the level is completed
     ds 1                                               ;; d64c
 
-wD64D:
+; ------------------------------------------------------------------
+; Where the collectible grid lands in shadow OAM this frame. Recomputed once per
+; frame at the top of call_03_6499_Collectible_BuildSprites, then added to every
+; sprite it places, so the whole grid scrolls smoothly instead of jumping a whole
+; cell at a time.
+;
+; Collectible coordinates are 16x16-pixel cells (see wC400_Collectible_GridX), and
+; the draw loop only has the cell offset from the camera - cell * 16 is therefore
+; accurate to the nearest cell. These two carry the leftover sub-cell pixels of the
+; scroll, plus the constant that turns a screen position into an OAM one
+; ------------------------------------------------------------------
+wD64D_Collectible_OamOriginX:
+; $0C - (wD6ED_BgMap_ScrollX AND $0F). Net effect: OAM X = cell * 16 - scrollX + $0C,
+; so the 8-pixel sprite sits 4 pixels in from the left edge of its 16-pixel cell
     ds 1                                               ;; d64d
 
-wD64E:
+wD64E_Collectible_OamOriginY:
+; $10 - (wD6EF_BgMap_ScrollY AND $0F). Net effect: OAM Y = cell * 16 - scrollY + $10,
+; which is exactly the top edge of the cell once OAM's 16-pixel Y bias is removed
     ds 1                                               ;; d64e
 
 ; The three totals below are recomputed by call_00_3c3f_Remotes_RecountAllTotals.
@@ -1354,11 +1375,24 @@ wD760_PlayerYVelocity:
 ; signed byte (positive = up, negative = down)
 ; can freeze this to levitate
     ds 1                                               ;; d760
-wD761_PlayerBonkCeilingDownwardsVelocity:
-; distance in pixels between Gex's feet and the floor below him, measured by
-; the background collision pass in bank 3. Zero means he is resting exactly on
-; the floor, which is what call_02_4b78_Player_ApplyYVelocity treats as the
-; landing frame; a nonzero value is the snap distance it closes on the way down
+wD761_Player_FloorSnapVelocity:
+; The exact downward velocity that would put Gex's feet on the floor this frame -
+; the gap below him, expressed in the same units as wD760_PlayerYVelocity so it can
+; be dropped straight into it.
+;
+; Written only by the floor branch of call_03_49dc_BgCollision_FloorCeilingCheck,
+; which scans down through data_03_4000_TileSolidityRows a pixel row at a time and
+; stores -(rows * 16). Zero therefore means he is already resting exactly on the
+; floor. If no floor turns up within BGCOLL_FLOOR_SEARCH_ROWS it stores the search
+; limit instead, which just reads as "keep falling".
+;
+; call_02_4b78_Player_ApplyYVelocity uses it to land without tunnelling: when Gex is
+; grounded and not moving up, it takes this snap velocity instead of gravity - but on
+; the first grounded frame only if the snap is the smaller step of the two, otherwise
+; the fall continues normally.
+;
+; Nothing to do with ceilings despite the old name; the head-bonk case is the other
+; branch of that routine and it zeroes wD760_PlayerYVelocity, not this
     ds 1                                               ;; d761
 wD762_PlayerInitialYVelocity:
 ; y velocity when first entered the air (2a = jump, 36 = double jump). also set to 1 if fall off ledge
@@ -1401,9 +1435,16 @@ wD76A_Player_BlockX:
 wD76B_Player_IsAttacking:
     ds 1                                               ;; d76b
 
-wD76C_PlayerScreenXPosition_Copy:
+; Screen position the orbiting fly sprite circles around, written and read a few
+; instructions apart inside call_03_5ca8_Entity_BuildPlayerSprites - scratch, not
+; state. The routine needs both of Gex's coordinates live while it is also indexing
+; .data_03_5e9f_FlyParticleOffsetTable, which is more than the registers hold
+wD76C_FlyPowerup_AnchorX:
+; wD212_Player_ScreenXPosition, unmodified
     ds 1                                               ;; d76c
-wD76D_PlayerScreenYPosition_CopyMinus20:
+wD76D_FlyPowerup_AnchorY:
+; wD213_Player_ScreenYPosition minus $20, putting the orbit centre two tiles above
+; Gex. The table's signed offsets then swing the fly around that point
     ds 1                                               ;; d76d
 
 wD76E_FlyPowerup_OrbitPhase:

@@ -1152,11 +1152,15 @@ DEF END_TEXT        EQU $80
 ; VRAM memory address constants
 DEF VRAM_HUD_TILES                                    EQU $8600
 DEF VRAM_HUD_DEMO_MODE_OR_TIMER                       EQU $8680
+; Five 2-tile digit slots along the HUD. The first three are shared: the timer
+; loader writes minutes/seconds into them, the lives loader writes the life count.
+; The last two always hold the collectible count and are written by
+; call_03_6d5e_HUD_LoadCollectibleCountDigits, which both of those loaders tail into
 DEF VRAM_DIGIT_HUNDREDS                               EQU $8748
 DEF VRAM_DIGIT_TENS                                   EQU $8768
 DEF VRAM_DIGIT_ONES                                   EQU $8788
-DEF VRAM_LIVES_TENS                                   EQU $87a8
-DEF VRAM_LIVES_ONES                                   EQU $87c8
+DEF VRAM_DIGIT_COLLECTIBLE_TENS                       EQU $87a8
+DEF VRAM_DIGIT_COLLECTIBLE_ONES                       EQU $87c8
 DEF VRAM_COLLECTIBLE_SPRITES                          EQU $87e0
 
 DEF VRAM_TILESET_ADDR_2                               EQU $8800
