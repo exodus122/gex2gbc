@@ -1330,7 +1330,7 @@ wD773_HuntersDefeatedCount:
 ; handler writes $02 into wD799_BlockPatch_SlotTable14, opening the way onward
     ds 1                                               ;; d773
 
-wD774:
+wD774_MushroomsDestroyedCount:
 ; bumped by an entity action when the entity's MISC_FLAGS bit 0 is set, then
 ; used as a table index - a "how many of these have been triggered" counter
     ds 1                                               ;; d774
