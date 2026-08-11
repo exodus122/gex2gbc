@@ -160,37 +160,69 @@ data_00_1ff6_TileHitScriptTable:
 ;   A step count of 0 means fire-and-forget: TileHitScript_Run calls the callback and returns
 ;   without touching the block patch state at all. .data_00_2266_TileHitScript_KungFu_DoorSwitch
 ;   is the one script that does this.
-    dw   data_00_2074_TileHitScript_CheckpointTV_Left
-    dw   data_00_20d3_TileHitScript_FlyTV2_1
-    dw   data_00_20ff_TileHitScript_FlyTV_Health1
-    dw   data_00_211c_TileHitScript_FlyTV1_1
-    dw   data_00_2139_TileHitScript_FlyTV_Life1
-    dw   data_00_2156_TileHitScript_CountedBreakable_LowerTile
-    dw   data_00_21ae_TileHitScript_SlotSwitch_Wide
-    dw   data_00_21c2_TileHitScript_Breakable_RightTile
-    dw   data_00_21e4_TileHitScript_Breakable_LeftTile
-    dw   data_00_2206_TileHitScript_SlotSwitch_Single
-    dw   data_00_216e_TileHitScript_CountedBreakable_UpperTile
-    dw   $0000, $0000, $0000, $0000
-    dw   data_00_20eb_TileHitScript_FlyTV2_3
-    dw   $0000, $0000, $0000, $0000
-    dw   $0000, $0000, $0000, $0000
-    dw   $0000, $0000, $0000, $0000
-    dw   $0000, $0000, $0000, $0000
-    dw   data_00_2217_TileHitScript_PositionedSwitch
-    dw   $0000, $0000, $0000, $0000
-    dw   $0000, $0000, $0000, $0000
-    dw   $0000, $0000, $0000, $0000
-    dw   $0000, $0000, $0000, $0000, $0000
-    dw   data_00_2266_TileHitScript_KungFu_DoorSwitch
-    dw   $0000, $0000, $0000, $0000, $0000
-    dw   data_00_22e7_TileHitScript_Cannon_FaceLeft
-    dw   data_00_22c9_TileHitScript_Cannon_FaceRight
-    dw   data_00_2080_TileHitScript_CheckpointTV_Right
-    dw   data_00_20df_TileHitScript_FlyTV2_2
-    dw   data_00_210b_TileHitScript_FlyTV_Health2
-    dw   data_00_2128_TileHitScript_FlyTV1_2
-    dw   data_00_2145_TileHitScript_FlyTV_Life2
+dw data_00_2074_TileHitScript_CheckpointTV_Left               ; Tile $FF
+dw data_00_20d3_TileHitScript_FlyTV2_1                        ; Tile $FE
+dw data_00_20ff_TileHitScript_FlyTV_Health1                   ; Tile $FD
+dw data_00_211c_TileHitScript_FlyTV1_1                        ; Tile $FC
+dw data_00_2139_TileHitScript_FlyTV_Life1                     ; Tile $FB
+dw data_00_2156_TileHitScript_CountedBreakable_LowerTile      ; Tile $FA
+dw data_00_21ae_TileHitScript_SlotSwitch_Wide                 ; Tile $F9
+dw data_00_21c2_TileHitScript_Breakable_RightTile             ; Tile $F8
+dw data_00_21e4_TileHitScript_Breakable_LeftTile              ; Tile $F7
+dw data_00_2206_TileHitScript_SlotSwitch_Single               ; Tile $F6
+dw data_00_216e_TileHitScript_CountedBreakable_UpperTile      ; Tile $F5
+dw $0000                                                      ; Tile $F4
+dw $0000                                                      ; Tile $F3
+dw $0000                                                      ; Tile $F2
+dw $0000                                                      ; Tile $F1
+dw data_00_20eb_TileHitScript_FlyTV2_3                        ; Tile $F0
+dw $0000                                                      ; Tile $EF
+dw $0000                                                      ; Tile $EE
+dw $0000                                                      ; Tile $ED
+dw $0000                                                      ; Tile $EC
+dw $0000                                                      ; Tile $EB
+dw $0000                                                      ; Tile $EA
+dw $0000                                                      ; Tile $E9
+dw $0000                                                      ; Tile $E8
+dw $0000                                                      ; Tile $E7
+dw $0000                                                      ; Tile $E6
+dw $0000                                                      ; Tile $E5
+dw $0000                                                      ; Tile $E4
+dw $0000                                                      ; Tile $E3
+dw $0000                                                      ; Tile $E2
+dw $0000                                                      ; Tile $E1
+dw $0000                                                      ; Tile $E0
+dw data_00_2217_TileHitScript_PositionedSwitch                ; Tile $DF
+dw $0000                                                      ; Tile $DE
+dw $0000                                                      ; Tile $DD
+dw $0000                                                      ; Tile $DC
+dw $0000                                                      ; Tile $DB
+dw $0000                                                      ; Tile $DA
+dw $0000                                                      ; Tile $D9
+dw $0000                                                      ; Tile $D8
+dw $0000                                                      ; Tile $D7
+dw $0000                                                      ; Tile $D6
+dw $0000                                                      ; Tile $D5
+dw $0000                                                      ; Tile $D4
+dw $0000                                                      ; Tile $D3
+dw $0000                                                      ; Tile $D2
+dw $0000                                                      ; Tile $D1
+dw $0000                                                      ; Tile $D0
+dw $0000                                                      ; Tile $CF
+dw $0000                                                      ; Tile $CE
+dw data_00_2266_TileHitScript_KungFu_DoorSwitch               ; Tile $CD
+dw $0000                                                      ; Tile $CC
+dw $0000                                                      ; Tile $CB
+dw $0000                                                      ; Tile $CA
+dw $0000                                                      ; Tile $C9
+dw $0000                                                      ; Tile $C8
+dw data_00_22e7_TileHitScript_Cannon_FaceLeft                 ; Tile $C7
+dw data_00_22c9_TileHitScript_Cannon_FaceRight                ; Tile $C6
+dw data_00_2080_TileHitScript_CheckpointTV_Right              ; Tile $C5
+dw data_00_20df_TileHitScript_FlyTV2_2                        ; Tile $C4
+dw data_00_210b_TileHitScript_FlyTV_Health2                   ; Tile $C3
+dw data_00_2128_TileHitScript_FlyTV1_2                        ; Tile $C2
+dw data_00_2145_TileHitScript_FlyTV_Life2                     ; Tile $C1
 
 data_00_2074_TileHitScript_CheckpointTV_Left:
 ; The left half of a checkpoint tv. One step: smash the block to its broken state,
