@@ -6,7 +6,7 @@
 ; step consumes what the previous one produced:
 ;
 ;   1. read the pad (or the demo stream) and filter it through
-;      wD759_ButtonBlockingFlags into wD75A_CurrentInputsAlt. Everything
+;      wD759_ButtonBlockingFlags into wD75A_Player_EffectiveInputs. Everything
 ;      downstream reads wD75A, never the raw pad
 ;   2. Player_UpdateFacing turns held directions into a facing and ramps the
 ;      walk speed
@@ -90,7 +90,7 @@ call_02_489a_Player_SetLandingAction:
     ld   HL, wD759_ButtonBlockingFlags                                     ;; 02:489a $21 $59 $d7
     set  BTN_BLOCK_B_UNTIL_RELEASE_BIT, [HL]           ;; 02:489d $cb $f6
     ld   C, PLAYER_ACTION_STAND                                        ;; 02:489f $0e $02
-    ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:48a1 $fa $5a $d7
+    ld   A, [wD75A_Player_EffectiveInputs]                                    ;; 02:48a1 $fa $5a $d7
     and  A, PADF_RIGHT | PADF_LEFT                                        ;; 02:48a4 $e6 $30
     jr   Z, .jr_02_48b3                                ;; 02:48a6 $28 $0b
     ld   C, PLAYER_ACTION_RUN                                        ;; 02:48a8 $0e $05
@@ -218,8 +218,8 @@ call_02_4939_Player_UpdateMain:
 ; Input comes from one of two places. In demo mode the pad is replayed from a run-length
 ; encoded stream at wD61B_DemoInputsPointer: each record is (frame count, input byte), and
 ; a count of $FF ends the demo and drops back to the title screen. Otherwise it is just the
-; live pad from wD59F_CurrentInputs. Either way it is filtered through
-; wD759_ButtonBlockingFlags and the result written to wD75A_CurrentInputsAlt.
+; live pad from wD59F_RawInputs. Either way it is filtered through
+; wD759_ButtonBlockingFlags and the result written to wD75A_Player_EffectiveInputs.
 ;
 ; The queued action is committed here rather than inside Player_RequestAction, which is what
 ; guarantees an action change always takes effect on a frame boundary. Committing one also
@@ -259,7 +259,7 @@ call_02_4939_Player_UpdateMain:
     ld   [wD61E_DemoModeEnabled], A                                    ;; 02:4961 $ea $1e $d6
     ret                                                ;; 02:4964 $c9
 .jr_02_4965:
-    ld   A, [wD59F_CurrentInputs]                                    ;; 02:4965 $fa $9f $d5
+    ld   A, [wD59F_RawInputs]                                    ;; 02:4965 $fa $9f $d5
 .jr_02_4968:
     ld   C, A                                          ;; 02:4968 $4f
     ld   E, A                                          ;; 02:4969 $5f
@@ -305,7 +305,7 @@ call_02_4939_Player_UpdateMain:
     jr   Z, .jr_02_49a4                                ;; 02:49a0 $28 $02
     set  PADF_B_BIT, C                                          ;; 02:49a2 $cb $c9 ; genuine new press, let it through
 .jr_02_49a4:
-    ld   HL, wD75A_CurrentInputsAlt                                     ;; 02:49a4 $21 $5a $d7
+    ld   HL, wD75A_Player_EffectiveInputs                                     ;; 02:49a4 $21 $5a $d7
     ld   [HL], C                                       ;; 02:49a7 $71
     ld   HL, wD750_Player_DamageCooldownTimer                                     ;; 02:49a8 $21 $50 $d7
     ld   A, [HL]                                       ;; 02:49ab $7e
@@ -393,7 +393,7 @@ call_02_4a45_Player_UpdateFacing:
     ld   A, [wD746_Player_ClimbingState]                                    ;; 02:4a45 $fa $46 $d7
     cp   A, CLIMB_STATE_NOT_CLIMBING                   ;; 02:4a48 $fe $ff
     ret  NZ                                            ;; 02:4a4a $c0
-    ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:4a4b $fa $5a $d7
+    ld   A, [wD75A_Player_EffectiveInputs]                                    ;; 02:4a4b $fa $5a $d7
     and  A, PADF_RIGHT | PADF_LEFT                                        ;; 02:4a4e $e6 $30
     jr   Z, .jr_02_4a62                                ;; 02:4a50 $28 $10
     ld   C, $00                                        ;; 02:4a52 $0e $00
@@ -785,7 +785,7 @@ call_02_4c4f_Player_CheckTileInteractions:
 ; 3. Everything else falls through to the generic input transition table. The current action
 ;    id indexes data_02_4d15_ActionInputTransitionTable to get a list of (input, action)
 ;    pairs, which is scanned for an entry matching the filtered input in
-;    wD75A_CurrentInputsAlt. $FE matches any nonzero input and $FF ends the list. This is
+;    wD75A_Player_EffectiveInputs. $FE matches any nonzero input and $FF ends the list. This is
 ;    what makes each action define its own controls - pressing B means "jump" while standing
 ;    and nothing at all while dying, without either action containing that logic
     ld   A, [wD201_Player_ActionId]                                    ;; 02:4c4f $fa $01 $d2
@@ -800,7 +800,7 @@ call_02_4c4f_Player_CheckTileInteractions:
     cp   A, TILE_TYPE_INSTANT_KILL                     ;; 02:4c65 $fe $23
     jp   Z, call_00_0696_Player_Die                                 ;; 02:4c67 $ca $96 $06
 .jr_02_4c6a:
-    ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:4c6a $fa $5a $d7
+    ld   A, [wD75A_Player_EffectiveInputs]                                    ;; 02:4c6a $fa $5a $d7
     and  A, PADF_UP                                        ;; 02:4c6d $e6 $40
     jr   Z, .jr_02_4ca6                                ;; 02:4c6f $28 $35
     ld   A, [wD764_TileTypeBehindGexsUpperBody]                                    ;; 02:4c71 $fa $64 $d7
@@ -840,7 +840,7 @@ call_02_4c4f_Player_CheckTileInteractions:
     ld   L, A                                          ;; 02:4cb3 $6f
     or   A, H                                          ;; 02:4cb4 $b4
     ret  Z                                             ;; 02:4cb5 $c8
-    ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:4cb6 $fa $5a $d7
+    ld   A, [wD75A_Player_EffectiveInputs]                                    ;; 02:4cb6 $fa $5a $d7
     ld   C, A                                          ;; 02:4cb9 $4f
 .jr_02_4cba:
     ld   A, [HL+]                                      ;; 02:4cba $2a
@@ -941,7 +941,7 @@ data_02_4d15_ActionInputTransitionTable:
 ; This is Gex's control scheme, as data. One pointer per action id; each list is pairs of
 ; (input byte, action id) ending in ACTION_INPUT_END, scanned by
 ; call_02_4c4f_Player_CheckTileInteractions against the filtered pad in
-; wD75A_CurrentInputsAlt.
+; wD75A_Player_EffectiveInputs.
 ;
 ; The match is on the whole input byte, not on individual bits, which is why every direction
 ; combination is spelled out separately - $12 (right + B) and $22 (left + B) are two entries

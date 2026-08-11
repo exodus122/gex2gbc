@@ -1228,7 +1228,7 @@ DEF  CLIMB_FLAG_ALT_FRAMES_BIT                EQU 6
 ; ------------------------------------------------------------------
 ; wD759_ButtonBlockingFlags. Set by actions to swallow button presses until
 ; the button is released, so that holding a button cannot re-trigger an action.
-; Filtered into wD75A_CurrentInputsAlt by call_02_4939_Player_UpdateMain
+; Filtered into wD75A_Player_EffectiveInputs by call_02_4939_Player_UpdateMain
 ; ------------------------------------------------------------------
 DEF  BTN_BLOCK_A_BIT                          EQU 0 ; suppress A until released
 DEF  BTN_BLOCK_B_UNTIL_RELEASE_BIT            EQU 6 ; suppress B until released

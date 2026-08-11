@@ -138,14 +138,14 @@ call_01_4000_MenuLoad:
     ld   A, [wD68C_Menu_Flags]                                    ;; 01:408f $fa $8c $d6
     and  A, MENU_FLAG_GRID_CURSOR                      ;; 01:4092 $e6 $02
     jp   Z, .jp_01_413a                                ;; 01:4094 $ca $3a $41
-    ld   A, [wD59F_CurrentInputs]                                    ;; 01:4097 $fa $9f $d5
+    ld   A, [wD59F_RawInputs]                                    ;; 01:4097 $fa $9f $d5
     and  A, PADF_A | PADF_B                                        ;; 01:409a $e6 $03
     jr   Z, .jr_01_40d0                                ;; 01:409c $28 $32
-    ld   A, [wD59F_CurrentInputs]                                    ;; 01:409e $fa $9f $d5
+    ld   A, [wD59F_RawInputs]                                    ;; 01:409e $fa $9f $d5
     and  A, $f0                                        ;; 01:40a1 $e6 $f0
     swap A                                             ;; 01:40a3 $cb $37
     ld   E, A                                          ;; 01:40a5 $5f
-    ld   A, [wD59F_CurrentInputs]                                    ;; 01:40a6 $fa $9f $d5
+    ld   A, [wD59F_RawInputs]                                    ;; 01:40a6 $fa $9f $d5
     and  A, PADF_A                                        ;; 01:40a9 $e6 $01
     jr   NZ, .jr_01_40af                               ;; 01:40ab $20 $02
     set  4, E                                          ;; 01:40ad $cb $e3
@@ -2154,7 +2154,7 @@ call_01_4d25_Menu_TickHideSprites:
     ld   A, [HL]                                       ;; 01:4d28 $7e
     and  A, A                                          ;; 01:4d29 $a7
     ret  Z                                             ;; 01:4d2a $c8
-    ld   A, [wD59F_CurrentInputs]                                    ;; 01:4d2b $fa $9f $d5
+    ld   A, [wD59F_RawInputs]                                    ;; 01:4d2b $fa $9f $d5
     and  A, A                                          ;; 01:4d2e $a7
     jr   Z, .jr_01_4d33                                ;; 01:4d2f $28 $02
     ld   [HL], $01                                     ;; 01:4d31 $36 $01
@@ -2442,7 +2442,7 @@ call_01_4e94_Menu_WaitForNoInput:
     dec  [HL]                                          ;; 01:4ea0 $35
     ld   A, [wD68C_Menu_Flags]                                    ;; 01:4ea1 $fa $8c $d6
     and  A, MENU_FLAG_GRID_CURSOR                      ;; 01:4ea4 $e6 $02
-    ld   A, [wD59F_CurrentInputs]                                    ;; 01:4ea6 $fa $9f $d5
+    ld   A, [wD59F_RawInputs]                                    ;; 01:4ea6 $fa $9f $d5
     jr   Z, .jr_01_4ead                                ;; 01:4ea9 $28 $02
     and  A, PADF_SELECT | PADF_START | PADF_RIGHT | PADF_LEFT | PADF_UP | PADF_DOWN    ;; 01:4eab $e6 $fc
 .jr_01_4ead:
@@ -4081,7 +4081,7 @@ data_01_5c8b_SpriteScript_InvalidPasswordHeader:
 
 data_01_5c99_PasswordKeyGrid:
 ; What each button combination types on the password keyboard. Indexed by the
-; d-pad/START/SELECT nibble of wD59F_CurrentInputs, with bit 4 set when B was
+; d-pad/START/SELECT nibble of wD59F_RawInputs, with bit 4 set when B was
 ; pressed rather than A - so the two face buttons give two banks of 16.
 ; PASSWORD_KEY_BLANK entries are combinations that type nothing.
 ;

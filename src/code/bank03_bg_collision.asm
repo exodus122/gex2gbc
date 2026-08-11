@@ -392,7 +392,7 @@ call_03_4ac4_BgCollision_ClimbingHandler:
 ; pipe states run to completion on their own. The state and facing pick a climb script
 ; out of .data_03_4b66_ClimbCollisionScriptTable, and that script is matched against
 ; the d-pad. An input the script has no entry for is not merely ignored - the d-pad
-; bits are stripped out of wD75A_CurrentInputsAlt so the movement code cannot act on
+; bits are stripped out of wD75A_Player_EffectiveInputs so the movement code cannot act on
 ; them either. That is what stops Gex sliding off the side of a ladder.
 ;
 ; A matched entry carries two probes, and they answer different questions:
@@ -427,7 +427,7 @@ call_03_4ac4_BgCollision_ClimbingHandler:
     ld   A, [HL+]                                      ;; 03:4ae4 $2a
     ld   H, [HL]                                       ;; 03:4ae5 $66
     ld   L, A                                          ;; 03:4ae6 $6f
-    ld   A, [wD75A_CurrentInputsAlt]                                    ;; 03:4ae7 $fa $5a $d7
+    ld   A, [wD75A_Player_EffectiveInputs]                                    ;; 03:4ae7 $fa $5a $d7
     and  A, [HL]                                       ;; 03:4aea $a6
     ret  Z                                             ;; 03:4aeb $c8
     inc  HL                                            ;; 03:4aec $23
@@ -444,9 +444,9 @@ call_03_4ac4_BgCollision_ClimbingHandler:
     dec  B                                             ;; 03:4af7 $05
     jr   NZ, .jr_03_4af3_MatchInput                               ;; 03:4af8 $20 $f9
 .jr_03_4afa_SuppressDpad:
-    ld   A, [wD75A_CurrentInputsAlt]                                    ;; 03:4afa $fa $5a $d7
+    ld   A, [wD75A_Player_EffectiveInputs]                                    ;; 03:4afa $fa $5a $d7
     and  A, PADF_A | PADF_B | PADF_SELECT | PADF_START                                        ;; 03:4afd $e6 $0f
-    ld   [wD75A_CurrentInputsAlt], A                                    ;; 03:4aff $ea $5a $d7
+    ld   [wD75A_Player_EffectiveInputs], A                                    ;; 03:4aff $ea $5a $d7
     ret                                                ;; 03:4b02 $c9
 .jr_03_4b03_EntryMatched:
     inc  HL                                            ;; 03:4b03 $23
@@ -459,7 +459,7 @@ call_03_4ac4_BgCollision_ClimbingHandler:
     pop  HL                                            ;; 03:4b0c $e1
     bit  TILECOLL_CLIMB_BLOCKED_BIT, B                 ;; 03:4b0d $cb $70
     jr   Z, .jr_03_4b2b_CheckNearProbe                                ;; 03:4b0f $28 $1a
-    ld   A, [wD75A_CurrentInputsAlt]                                    ;; 03:4b11 $fa $5a $d7
+    ld   A, [wD75A_Player_EffectiveInputs]                                    ;; 03:4b11 $fa $5a $d7
     cp   A, PADF_DOWN                                        ;; 03:4b14 $fe $80
     jr   NZ, .jr_03_4afa_SuppressDpad                               ;; 03:4b16 $20 $e2
     ld   A, [wD746_Player_ClimbingState]                                    ;; 03:4b18 $fa $46 $d7
@@ -483,7 +483,7 @@ call_03_4ac4_BgCollision_ClimbingHandler:
     ld   A, [wD746_Player_ClimbingState]                                    ;; 03:4b36 $fa $46 $d7
     cp   A, CLIMB_STATE_WALL                           ;; 03:4b39 $fe $02
     jr   C, .jr_03_4afa_SuppressDpad                                ;; 03:4b3b $38 $bd
-    ld   A, [wD75A_CurrentInputsAlt]                                    ;; 03:4b3d $fa $5a $d7
+    ld   A, [wD75A_Player_EffectiveInputs]                                    ;; 03:4b3d $fa $5a $d7
     and  A, PADF_UP                                        ;; 03:4b40 $e6 $40
     jr   Z, .jr_03_4afa_SuppressDpad                                ;; 03:4b42 $28 $b6
     ld   A, CLIMB_STATE_WALL_TOP                       ;; 03:4b44 $3e $08

@@ -305,7 +305,14 @@ wD59D_ReturnBank:
 wD59E_OnGBCFlag:
     ds 1                                               ;; d59e
 
-wD59F_CurrentInputs: ; inputs defined in hardware.inc
+wD59F_RawInputs:
+; The pad exactly as the hardware reports it, complemented so a set bit means held.
+; Written in one place only - the joypad read at call_00_10be - and never filtered, so
+; this is the physical truth about the buttons for the whole frame. Bits are the
+; PADF_* values in hardware.inc.
+;
+; Menus, the CheckInput* predicates and the cutscene skip checks all read this. The
+; player character does NOT: it obeys wD75A_Player_EffectiveInputs, which can disagree
     ds 1                                               ;; d59f
 
 wD5A0_LCDCValue:
@@ -1232,9 +1239,27 @@ wD759_ButtonBlockingFlags:
 ; bit 0 (01) = suppresses a button
     ds 1                                               ;; d759
 
-wD75A_CurrentInputsAlt:
-; button bits are only set for 1 frame. d-pad stays set while held
-; inputs defined in hardware.inc
+wD75A_Player_EffectiveInputs:
+; What Gex is told the player is doing, which is not always what they are doing.
+; Rebuilt once a frame by call_02_4939_Player_UpdateMain and read by every player
+; action, so this - not wD59F_RawInputs - is the input the character obeys.
+;
+; It diverges from the pad in four ways:
+;
+;   1. SOURCE. In demo mode it comes from the run-length encoded stream at
+;      wD61B_DemoInputsPointer instead of the pad, which is how attract mode drives
+;      Gex through code that has no idea a demo is playing.
+;   2. BUTTON BLOCKING. A and B are passed through wD759_ButtonBlockingFlags, which
+;      clears a blocked button until the player physically lets go. That is why the
+;      face buttons read as one-frame events here while the d-pad stays set as long
+;      as it is held - the d-pad is never blocked.
+;   3. CUTSCENES. call_00_2329_Cutscene_LoadAndRun writes canned input bytes straight
+;      into it, so a cutscene moves Gex by faking the pad rather than by moving him.
+;   4. COLLISION. call_03_4ac4_BgCollision_ClimbingHandler strips the d-pad bits back
+;      out when a climb script has no entry for that direction, which is what stops
+;      him sliding off the side of a ladder.
+;
+; Bits are the PADF_* values in hardware.inc, same as the raw pad
     ds 1                                               ;; d75a
 
 wD75B_IdleTimer:
@@ -1438,7 +1463,7 @@ wD79A_BlockPatch_SlotTable15:
 ; Mission preview cutscene related variables and backup buffers
 ; ------------------------------------------------------------------
 ; Mission preview cutscene state. The preview is a scripted camera move over a
-; frozen level, driven by faking d-pad input into wD75A_CurrentInputsAlt
+; frozen level, driven by faking d-pad input into wD75A_Player_EffectiveInputs
 ; ------------------------------------------------------------------
 wD79B_Cutscene_MoveFramesRemaining:
 ; 16-bit countdown for the movement command currently running. Loaded from the

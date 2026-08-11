@@ -3340,7 +3340,7 @@
 00:d59c wD59C_CurrentROMBank
 00:d59d wD59D_ReturnBank
 00:d59e wD59E_OnGBCFlag
-00:d59f wD59F_CurrentInputs
+00:d59f wD59F_RawInputs
 00:d5a0 wD5A0_LCDCValue
 00:d5a1 wD5A1_BgMap_ScrollXLo
 00:d5a2 wD5A2_BgMap_ScrollYLo
@@ -3564,7 +3564,7 @@
 00:d757 wD757_LanternLitFlag
 00:d758 wD758_JumpVelocityOverride
 00:d759 wD759_ButtonBlockingFlags
-00:d75a wD75A_CurrentInputsAlt
+00:d75a wD75A_Player_EffectiveInputs
 00:d75b wD75B_IdleTimer
 00:d75c wD75C_PlayerXDeltaExtra
 00:d75d wD75D_PlayerXSpeedPrev

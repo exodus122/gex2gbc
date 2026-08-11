@@ -19,7 +19,7 @@
 ; The trick behind it is that there is no camera. Gex himself is teleported to the start of
 ; the shot and then *walked* along a scripted path, with the normal map window logic following
 ; him as usual. The script does this by writing fake d-pad values straight into
-; wD75A_CurrentInputsAlt, so from the map and entity code's point of view nothing unusual is
+; wD75A_Player_EffectiveInputs, so from the map and entity code's point of view nothing unusual is
 ; happening. wD743_Player_UpdateFlag is cleared for the duration, which is what stops the real
 ; player update from fighting the script for control - and also why Gex is invisible during
 ; the preview.
@@ -126,7 +126,7 @@ call_00_2329_Cutscene_LoadAndRun:
     ld   [wD79E_Cutscene_MoveSubPixel], A                                    ;; 00:2390 $ea $9e $d7
     ld   A, [HL+]                                      ;; 00:2393 $2a
 .jr_00_2394:
-    ld   [wD75A_CurrentInputsAlt], A                                    ;; 00:2394 $ea $5a $d7
+    ld   [wD75A_Player_EffectiveInputs], A                                    ;; 00:2394 $ea $5a $d7
     ld   A, [HL+]                                      ;; 00:2397 $2a
     ld   [wD79B_Cutscene_MoveFramesRemaining], A                                    ;; 00:2398 $ea $9b $d7
     ld   A, [HL+]                                      ;; 00:239b $2a
@@ -136,7 +136,7 @@ call_00_2329_Cutscene_LoadAndRun:
     ld   A, [wD775_Cutscene_Skippable]                                    ;; 00:23a0 $fa $75 $d7
     and  A, A                                          ;; 00:23a3 $a7
     jr   Z, .jr_00_23b1                                ;; 00:23a4 $28 $0b
-    ld   A, [wD59F_CurrentInputs]                                    ;; 00:23a6 $fa $9f $d5
+    ld   A, [wD59F_RawInputs]                                    ;; 00:23a6 $fa $9f $d5
     and  A, A                                          ;; 00:23a9 $a7
     jr   Z, .jr_00_23b1                                ;; 00:23aa $28 $05
     pop  HL                                            ;; 00:23ac $e1
@@ -175,7 +175,7 @@ call_00_2329_Cutscene_LoadAndRun:
     ld   A, [wD775_Cutscene_Skippable]                                    ;; 00:23f2 $fa $75 $d7
     and  A, A                                          ;; 00:23f5 $a7
     jr   Z, .jr_00_23fe                                ;; 00:23f6 $28 $06
-    ld   A, [wD59F_CurrentInputs]                                    ;; 00:23f8 $fa $9f $d5
+    ld   A, [wD59F_RawInputs]                                    ;; 00:23f8 $fa $9f $d5
     and  A, A                                          ;; 00:23fb $a7
     jr   NZ, .jp_00_2445                               ;; 00:23fc $20 $47
 .jr_00_23fe:
@@ -199,7 +199,7 @@ call_00_2329_Cutscene_LoadAndRun:
     ld   A, [wD775_Cutscene_Skippable]                                    ;; 00:2432 $fa $75 $d7
     and  A, A                                          ;; 00:2435 $a7
     jr   Z, .jr_00_2441                                ;; 00:2436 $28 $09
-    ld   A, [wD59F_CurrentInputs]                                    ;; 00:2438 $fa $9f $d5
+    ld   A, [wD59F_RawInputs]                                    ;; 00:2438 $fa $9f $d5
     and  A, A                                          ;; 00:243b $a7
     jr   Z, .jr_00_2441                                ;; 00:243c $28 $03
     pop  AF                                            ;; 00:243e $f1
@@ -884,7 +884,7 @@ call_00_2dbf_Cutscene_UpdateMovement:
 ; `ld [HL],CUTSCENE_MOVE_SPEED_MAX`. So the speed is only ever $00 or $10 - the preview always
 ; glides at exactly one pixel per frame and the sub-pixel accumulator never does anything
 ; interesting. Presumably the ramp was meant to ease the pan in and out
-    ld   A, [wD75A_CurrentInputsAlt]                                    ;; 00:2dbf $fa $5a $d7
+    ld   A, [wD75A_Player_EffectiveInputs]                                    ;; 00:2dbf $fa $5a $d7
     and  A, A                                          ;; 00:2dc2 $a7
     jr   NZ, .jr_00_2dd1                               ;; 00:2dc3 $20 $0c
     ld   HL, wD79D_Cutscene_MoveSpeed                                     ;; 00:2dc5 $21 $9d $d7
@@ -912,7 +912,7 @@ call_00_2dbf_Cutscene_UpdateMovement:
     swap A                                             ;; 00:2de6 $cb $37
     and  A, $0f                                        ;; 00:2de8 $e6 $0f
     ld   C, A                                          ;; 00:2dea $4f
-    ld   HL, wD75A_CurrentInputsAlt                                     ;; 00:2deb $21 $5a $d7
+    ld   HL, wD75A_Player_EffectiveInputs                                     ;; 00:2deb $21 $5a $d7
     bit  PADF_RIGHT_BIT, [HL]                                       ;; 00:2dee $cb $66
     jr   Z, .jr_00_2e01                                ;; 00:2df0 $28 $0f
     ld   A, [wD20E_Player_XPositionLo]                                    ;; 00:2df2 $fa $0e $d2

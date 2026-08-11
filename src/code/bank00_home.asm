@@ -336,7 +336,7 @@ call_00_0150_Init:
     call call_00_0521_Screen_PresentAndFadeIn                                  ;; 00:0425 $cd $21 $05
 .jp_00_0428:
     call call_00_0ab4_WaitForInterrupt                                  ;; 00:0428 $cd $b4 $0a
-    ld   A, [wD59F_CurrentInputs]                                    ;; 00:042b $fa $9f $d5
+    ld   A, [wD59F_RawInputs]                                    ;; 00:042b $fa $9f $d5
     cp   A, PADF_A | PADF_B | PADF_SELECT | PADF_START                                        ;; 00:042e $fe $0f
     jp   Z, .jp_00_0220_SoftReset                                ;; 00:0430 $ca $20 $02
     ld   A, [wD621_WarpFlags]                                    ;; 00:0433 $fa $21 $d6
@@ -394,7 +394,7 @@ call_00_0150_Init:
     jr   Z, .jr_00_04bb                                ;; 00:04ad $28 $0c
     cp   A, $ff                                        ;; 00:04af $fe $ff
     jp   Z, .jp_00_0254                                ;; 00:04b1 $ca $54 $02
-    ld   A, [wD59F_CurrentInputs]                                    ;; 00:04b4 $fa $9f $d5
+    ld   A, [wD59F_RawInputs]                                    ;; 00:04b4 $fa $9f $d5
     and  A, A                                          ;; 00:04b7 $a7
     jp   NZ, .jp_00_0254                               ;; 00:04b8 $c2 $54 $02
 .jr_00_04bb:
@@ -2415,33 +2415,33 @@ call_00_10be_ReadJoypadInput:
     ld   A, $30                                        ;; 00:10e3 $3e $30
     ldh  [C], A                                        ;; 00:10e5 $e2
     ld   A, B                                          ;; 00:10e6 $78
-    ld   [wD59F_CurrentInputs], A                                    ;; 00:10e7 $ea $9f $d5
+    ld   [wD59F_RawInputs], A                                    ;; 00:10e7 $ea $9f $d5
     ret                                                ;; 00:10ea $c9
 
 call_00_10eb_WaitUntilNoInputPressed:
     call call_00_0ab4_WaitForInterrupt                                  ;; 00:10eb $cd $b4 $0a
-    ld   A, [wD59F_CurrentInputs]                                    ;; 00:10ee $fa $9f $d5
+    ld   A, [wD59F_RawInputs]                                    ;; 00:10ee $fa $9f $d5
     and  A, A                                          ;; 00:10f1 $a7
     jr   NZ, call_00_10eb_WaitUntilNoInputPressed                              ;; 00:10f2 $20 $f7
     ret                                                ;; 00:10f4 $c9
 
 call_00_10f5_CheckInputLeft:
-    ld   A, [wD59F_CurrentInputs]                                    ;; 00:10f5 $fa $9f $d5
+    ld   A, [wD59F_RawInputs]                                    ;; 00:10f5 $fa $9f $d5
     and  A, PADF_LEFT                                        ;; 00:10f8 $e6 $20
     ret                                                ;; 00:10fa $c9
 
 call_00_10fb_CheckInputRight:
-    ld   A, [wD59F_CurrentInputs]                                    ;; 00:10fb $fa $9f $d5
+    ld   A, [wD59F_RawInputs]                                    ;; 00:10fb $fa $9f $d5
     and  A, PADF_RIGHT                                        ;; 00:10fe $e6 $10
     ret                                                ;; 00:1100 $c9
 
 call_00_1101_CheckInputUp:
-    ld   A, [wD59F_CurrentInputs]                                    ;; 00:1101 $fa $9f $d5
+    ld   A, [wD59F_RawInputs]                                    ;; 00:1101 $fa $9f $d5
     and  A, PADF_UP                                        ;; 00:1104 $e6 $40
     ret                                                ;; 00:1106 $c9
 
 call_00_1107_CheckInputDown:
-    ld   A, [wD59F_CurrentInputs]                                    ;; 00:1107 $fa $9f $d5
+    ld   A, [wD59F_RawInputs]                                    ;; 00:1107 $fa $9f $d5
     and  A, PADF_DOWN                                        ;; 00:110a $e6 $80
     ret                                                ;; 00:110c $c9
 
@@ -2450,7 +2450,7 @@ call_00_110d_CheckInputStart:
 ; press when START is the ONLY button down. Holding it with any direction reads as
 ; not pressed. call_00_1118_CheckInputSelect does the same; every other
 ; CheckInput* helper masks with `and` and does not care what else is held
-    ld   A, [wD59F_CurrentInputs]                                    ;; 00:110d $fa $9f $d5
+    ld   A, [wD59F_RawInputs]                                    ;; 00:110d $fa $9f $d5
     cp   A, PADF_START                                        ;; 00:1110 $fe $08
     jr   Z, .jr_00_1116                                ;; 00:1112 $28 $02
     xor  A, A                                          ;; 00:1114 $af
@@ -2460,7 +2460,7 @@ call_00_110d_CheckInputStart:
     ret                                                ;; 00:1117 $c9
 
 call_00_1118_CheckInputSelect:
-    ld   A, [wD59F_CurrentInputs]                                    ;; 00:1118 $fa $9f $d5
+    ld   A, [wD59F_RawInputs]                                    ;; 00:1118 $fa $9f $d5
     cp   A, PADF_SELECT                                        ;; 00:111b $fe $04
     jr   Z, .jr_00_1121                                ;; 00:111d $28 $02
     xor  A, A                                          ;; 00:111f $af
@@ -2470,12 +2470,12 @@ call_00_1118_CheckInputSelect:
     ret                                                ;; 00:1122 $c9
 
 call_00_1123_CheckInputA:
-    ld   A, [wD59F_CurrentInputs]                                    ;; 00:1123 $fa $9f $d5
+    ld   A, [wD59F_RawInputs]                                    ;; 00:1123 $fa $9f $d5
     and  A, PADF_A                                        ;; 00:1126 $e6 $01
     ret                                                ;; 00:1128 $c9
 
 call_00_1129_CheckInputB:
-    ld   A, [wD59F_CurrentInputs]                                    ;; 00:1129 $fa $9f $d5
+    ld   A, [wD59F_RawInputs]                                    ;; 00:1129 $fa $9f $d5
     and  A, PADF_B                                        ;; 00:112c $e6 $02
     ret                                                ;; 00:112e $c9
 
