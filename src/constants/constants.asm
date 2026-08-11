@@ -1183,13 +1183,42 @@ DEF  CLIMB_STATE_BACKGROUND                   EQU $00
 DEF  CLIMB_STATE_BACKGROUND_TAIL_SPIN         EQU $01
 DEF  CLIMB_STATE_WALL                         EQU $02
 DEF  CLIMB_STATE_WALL_TAIL_SPIN               EQU $03
-DEF  CLIMB_STATE_WALL_ALT                     EQU $04 ; same handler as CLIMB_STATE_WALL
-DEF  CLIMB_STATE_WALL_TAIL_SPIN_ALT           EQU $05 ; same handler as CLIMB_STATE_WALL_TAIL_SPIN
+DEF  CLIMB_STATE_CEILING                      EQU $04 ; same handler as CLIMB_STATE_WALL
+DEF  CLIMB_STATE_CEILING_TAIL_SPIN            EQU $05 ; same handler as CLIMB_STATE_WALL_TAIL_SPIN
 DEF  CLIMB_STATE_BACKGROUND_BOTTOM            EQU $06 ; dismount animation at the bottom
 DEF  CLIMB_STATE_WALL_BOTTOM                  EQU $07
 DEF  CLIMB_STATE_WALL_TOP                     EQU $08
 DEF  CLIMB_STATE_PIPE_TRANSITION              EQU $09
 DEF  CLIMB_STATE_NOT_CLIMBING                 EQU $FF
+
+; ------------------------------------------------------------------
+; Background collision (bank03_bg_collision.asm)
+;
+; wC800_CurrentCollisionData is a grid of tile type ids kept in step with the visible
+; tilemap. A tile type resolves two ways: data_03_4800_TileCollisionFlags for
+; whole-tile properties, or data_03_4000_TileSolidityRows for the per-pixel-row
+; solidity mask that makes slopes work
+; ------------------------------------------------------------------
+DEF  COLLISION_MAP_COLS                       EQU 32
+DEF  COLLISION_MAP_ROWS                       EQU 32
+DEF  COLLISION_MAP_STRIDE                     EQU $20 ; bytes from one tile row to the next
+
+; Bits of a tile's data_03_4800_TileCollisionFlags byte
+DEF  TILECOLL_SOLID_BIT                       EQU 0 ; blocks movement
+DEF  TILECOLL_CEILING_BIT                     EQU 1 ; bonks the head, zeroing Y velocity
+DEF  TILECOLL_CLIMB_BLOCKED_BIT               EQU 6 ; a climber may not move into it
+DEF  TILECOLL_CLIMB_BACKING_BIT               EQU 7 ; a climber can still hold onto it
+
+; Bits of wD585_CollisionFlags produced by this pass
+DEF  BGCOLL_SLOPE_MASK                        EQU $0F ; low nibble: pixels to step up
+DEF  BGCOLL_WALL_BIT                          EQU 6   ; ran into a wall this frame
+DEF  BGCOLL_NO_COLLISION_BIT                  EQU 7   ; grounded, climbing, or otherwise
+                                                      ; not subject to the normal
+                                                      ; corrections
+
+DEF  BGCOLL_WALL_PROBE_ROWS                   EQU 4   ; tile rows sampled ahead of him
+DEF  BGCOLL_FLOOR_SEARCH_ROWS                 EQU 5   ; pixel rows scanned down for floor
+DEF  PLAYER_FEET_OFFSET                       EQU $10 ; from his origin down to his feet
 
 ; wD74B_Player_ClimbingFlags. Bit 6 shifts the sprite builder to the alternate
 ; (rotated) climb frame set - see call_03_5ca8_Entity_BuildPlayerSprites
@@ -1256,6 +1285,8 @@ DEF  TILE_TYPE_WATER                          EQU $25
 DEF  TILE_TYPE_CLIMBABLE_BACKGROUND           EQU $26 ; press up to start CLIMB_STATE_BACKGROUND
 DEF  TILE_TYPE_CLIMBABLE_WALL_FACING_LEFT     EQU $2C ; only entered while facing left
 DEF  TILE_TYPE_CLIMBABLE_WALL_FACING_RIGHT    EQU $2D ; only entered while facing right
+DEF  TILE_TYPE_PIPE_ENTRY_FIRST               EQU $30 ; $30-$33 are pipe mouths; the id
+DEF  TILE_TYPE_PIPE_ENTRY_LAST                EQU $33 ; minus $30 is the pipe direction
 DEF  TILE_TYPE_SPRING_LOW                     EQU $CE
 DEF  TILE_TYPE_SPRING_HIGH                    EQU $CF
 DEF  TILE_TYPE_TRAMPOLINE_LOW                 EQU $F0 ; only springs while the circuit power-up is active

@@ -328,7 +328,7 @@ call_02_42f7_PlayerAction_TailSpin:
     ld   A, $01                                        ;; 02:430e $3e $01
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:4310 $ea $5e $d7
 .jr_02_4313:
-    ld   A, [wD764_TileTypeBehindGexsBody]                                    ;; 02:4313 $fa $64 $d7
+    ld   A, [wD764_TileTypeBehindGexsUpperBody]                                    ;; 02:4313 $fa $64 $d7
     cpl                                                ;; 02:4316 $2f
     ld   C, A                                          ;; 02:4317 $4f
     cp   A, TILE_TYPE_INTERACTIVE_MIN_CPL              ;; 02:4318 $fe $40
@@ -636,8 +636,8 @@ call_02_44af_PlayerAction_Climb:
     dw   .jp_02_455f_PlayerClimbAction_BackgroundTailSpin  ; $01 CLIMB_STATE_BACKGROUND_TAIL_SPIN
     dw   .jp_02_45b0_PlayerClimbAction_Wall                ; $02 CLIMB_STATE_WALL
     dw   .jp_02_4626_PlayerClimbAction_WallTailSpin        ; $03 CLIMB_STATE_WALL_TAIL_SPIN
-    dw   .jp_02_45b0_PlayerClimbAction_Wall                ; $04 CLIMB_STATE_WALL_ALT - duplicate entry
-    dw   .jp_02_4626_PlayerClimbAction_WallTailSpin        ; $05 CLIMB_STATE_WALL_TAIL_SPIN_ALT - duplicate entry
+    dw   .jp_02_45b0_PlayerClimbAction_Wall                ; $04 CLIMB_STATE_CEILING - duplicate entry
+    dw   .jp_02_4626_PlayerClimbAction_WallTailSpin        ; $05 CLIMB_STATE_CEILING_TAIL_SPIN - duplicate entry
     dw   .jp_02_4667_PlayerClimbAction_BackgroundBottom    ; $06 CLIMB_STATE_BACKGROUND_BOTTOM
     dw   .jp_02_468f_PlayerClimbAction_WallBottom          ; $07 CLIMB_STATE_WALL_BOTTOM
     dw   .jp_02_46b3_PlayerClimbAction_WallTop             ; $08 CLIMB_STATE_WALL_TOP

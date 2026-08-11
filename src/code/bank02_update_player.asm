@@ -37,7 +37,7 @@ call_02_4856_Player_GetJumpVelocity:
     ld   A, [wD758_JumpVelocityOverride]                                    ;; 02:4856 $fa $58 $d7
     and  A, A                                          ;; 02:4859 $a7
     ret  NZ                                            ;; 02:485a $c0
-    ld   A, [wD765_TileTypeBehindGexsBody]                                    ;; 02:485b $fa $65 $d7
+    ld   A, [wD765_TileTypeBehindGexsLowerBody]                                    ;; 02:485b $fa $65 $d7
     cp   A, TILE_TYPE_TRAMPOLINE_LOW                   ;; 02:485e $fe $f0
     jr   Z, .jr_02_4876                                ;; 02:4860 $28 $14
     cp   A, TILE_TYPE_TRAMPOLINE_HIGH                  ;; 02:4862 $fe $f1
@@ -316,7 +316,7 @@ call_02_4939_Player_UpdateMain:
     call call_02_4a45_Player_UpdateFacing                                  ;; 02:49b0 $cd $45 $4a
     FARCALL call_03_4900_BgCollision_Update
     call call_02_4b78_Player_ApplyYVelocity                                  ;; 02:49be $cd $78 $4b
-    FARCALL call_03_4c0a_BgCollision_CacheAdjacentTiles
+    FARCALL call_03_4c0a_BgCollision_CacheNearbyTileTypes
     call call_02_4c4f_Player_CheckTileInteractions                                  ;; 02:49cc $cd $4f $4c
     ld   HL, wD745_Player_QueuedAction                                     ;; 02:49cf $21 $45 $d7
     ld   A, [HL]                                       ;; 02:49d2 $7e
@@ -751,20 +751,20 @@ call_02_4c28_Player_CheckLavaAndWaterTiles:
 ; is produced by xoring $80 over the fall-through value.
 ; Second, is he actually in lava, in which case he takes the hit: PLAYER_ACTION_HIT_BOUNCE is
 ; requested, which is the same recoil used when an enemy hits him. Water alone is harmless
-    ld   A, [wD765_TileTypeBehindGexsBody]                                    ;; 02:4c28 $fa $65 $d7
+    ld   A, [wD765_TileTypeBehindGexsLowerBody]                                    ;; 02:4c28 $fa $65 $d7
     sub  A, TILE_TYPE_WATER                            ;; 02:4c2b $d6 $25
     jr   Z, .jr_02_4c3f                                ;; 02:4c2d $28 $10
     ld   A, [wD767_FloorTileType]                                    ;; 02:4c2f $fa $67 $d7
     sub  A, TILE_TYPE_WATER                            ;; 02:4c32 $d6 $25
     jr   Z, .jr_02_4c3f                                ;; 02:4c34 $28 $09
-    ld   A, [wD765_TileTypeBehindGexsBody]                                    ;; 02:4c36 $fa $65 $d7
+    ld   A, [wD765_TileTypeBehindGexsLowerBody]                                    ;; 02:4c36 $fa $65 $d7
     sub  A, TILE_TYPE_LAVA                             ;; 02:4c39 $d6 $24
     jr   Z, .jr_02_4c3f                                ;; 02:4c3b $28 $02
     ld   A, $80                                        ;; 02:4c3d $3e $80 ; not in liquid
 .jr_02_4c3f:
     xor  A, $80                                        ;; 02:4c3f $ee $80
     ld   [wD74A_Player_InWaterOrLava], A                                    ;; 02:4c41 $ea $4a $d7
-    ld   A, [wD765_TileTypeBehindGexsBody]                                    ;; 02:4c44 $fa $65 $d7
+    ld   A, [wD765_TileTypeBehindGexsLowerBody]                                    ;; 02:4c44 $fa $65 $d7
     cp   A, TILE_TYPE_LAVA                             ;; 02:4c47 $fe $24
     ld   A, PLAYER_ACTION_HIT_BOUNCE                                        ;; 02:4c49 $3e $1c
     call Z, call_02_4ccd_Player_RequestAction                               ;; 02:4c4b $cc $cd $4c
@@ -793,21 +793,21 @@ call_02_4c4f_Player_CheckTileInteractions:
     jr   Z, .jr_02_4c6a                                ;; 02:4c54 $28 $14
     cp   A, PLAYER_ACTION_DEATH_SET_UP_WARP                                        ;; 02:4c56 $fe $11
     jr   Z, .jr_02_4c6a                                ;; 02:4c58 $28 $10
-    ld   A, [wD764_TileTypeBehindGexsBody]                                    ;; 02:4c5a $fa $64 $d7
+    ld   A, [wD764_TileTypeBehindGexsUpperBody]                                    ;; 02:4c5a $fa $64 $d7
     cp   A, TILE_TYPE_INSTANT_KILL                     ;; 02:4c5d $fe $23
     jp   Z, call_00_0696_Player_Die                                 ;; 02:4c5f $ca $96 $06
-    ld   A, [wD765_TileTypeBehindGexsBody]                                    ;; 02:4c62 $fa $65 $d7
+    ld   A, [wD765_TileTypeBehindGexsLowerBody]                                    ;; 02:4c62 $fa $65 $d7
     cp   A, TILE_TYPE_INSTANT_KILL                     ;; 02:4c65 $fe $23
     jp   Z, call_00_0696_Player_Die                                 ;; 02:4c67 $ca $96 $06
 .jr_02_4c6a:
     ld   A, [wD75A_CurrentInputsAlt]                                    ;; 02:4c6a $fa $5a $d7
     and  A, PADF_UP                                        ;; 02:4c6d $e6 $40
     jr   Z, .jr_02_4ca6                                ;; 02:4c6f $28 $35
-    ld   A, [wD764_TileTypeBehindGexsBody]                                    ;; 02:4c71 $fa $64 $d7
+    ld   A, [wD764_TileTypeBehindGexsUpperBody]                                    ;; 02:4c71 $fa $64 $d7
     cp   A, TILE_TYPE_DOOR                             ;; 02:4c74 $fe $22
     ld   A, PLAYER_ACTION_ENTER_DOOR                                        ;; 02:4c76 $3e $1a
     jr   Z, call_02_4ccd_Player_RequestAction                               ;; 02:4c78 $28 $53
-    ld   A, [wD764_TileTypeBehindGexsBody]                                    ;; 02:4c7a $fa $64 $d7
+    ld   A, [wD764_TileTypeBehindGexsUpperBody]                                    ;; 02:4c7a $fa $64 $d7
     ld   [wD769_ClimbSurfaceTileType], A                                    ;; 02:4c7d $ea $69 $d7
     cp   A, TILE_TYPE_CLIMBABLE_BACKGROUND             ;; 02:4c80 $fe $26
     jr   Z, .jr_02_4ca2                                ;; 02:4c82 $28 $1e

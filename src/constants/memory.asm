@@ -261,14 +261,13 @@ wD584_CollisionFlagsPrev:
 ; copy of the value that wD585_CollisionFlags had at the start of the frame
     ds 1                                               ;; d584
 wD585_CollisionFlags: ; aka player state flags
-; bit 7 (80) = grounded or climbing
-; bit 6 (40) = pushing wall
-; bit 5 (20) =
-; bit 4 (10) =
-; bit 3 (08) =
-; bit 2 (04) =
-; bit 1 (02) = walking up slope?
-; bit 0 (01) = walking up slope?
+; Rebuilt every frame by call_03_4900_BgCollision_Update. See the BGCOLL_* constants.
+; bit 7 (80) = BGCOLL_NO_COLLISION_BIT - grounded, climbing, standing on an entity, or
+;              riding the rocket. All four mean the normal corrections do not apply
+; bit 6 (40) = BGCOLL_WALL_BIT - ran into a wall this frame
+; bits 3-0    BGCOLL_SLOPE_MASK - how many pixels of slope he needs to step up, counted
+;              by probing along the path he is about to walk. Bank 2 applies it as an
+;              equal upward nudge, which is the whole of the slope handling
     ds 1                                               ;; d585
 
 wD586_PlayerGfxVramPage:
@@ -1254,7 +1253,11 @@ wD75E_PlayerXSpeed:
 ; how fast gex runs (1 = walk, 2 = run)
 ; can freeze to change how fast you run, but doesn't make you move by itself
     ds 1                                               ;; d75e
-wD75F_PlayerYVelocityRelated:
+wD75F_BgCollision_WallProbeLookahead:
+; how far above his head the wall probe in call_03_4915_BgCollision_SidescrollerHandler
+; starts, in pixels: (Y velocity - 2) clamped to $C0, then >> 4. Rising fast means
+; looking further up, so a wall is caught on the frame he would enter it rather than
+; after. Recomputed every frame and used nowhere outside bank 3
     ds 1                                               ;; d75f
 wD760_PlayerYVelocity:
 ; signed byte (positive = up, negative = down)
@@ -1277,13 +1280,18 @@ wD763_FallDistanceCounter:
 ; animation, a walk/run landing, and PLAYER_ACTION_COLLAPSE - see the
 ; FALL_DISTANCE_* constants
     ds 1                                               ;; d763
-wD764_TileTypeBehindGexsBody:
+; The four tile types cached each frame by
+; call_03_4c0a_BgCollision_CacheNearbyTileTypes. See TILE_TYPE_* in constants.asm
+wD764_TileTypeBehindGexsUpperBody:
+; the tile at his own row
     ds 1                                               ;; d764
-wD765_TileTypeBehindGexsBody:
+wD765_TileTypeBehindGexsLowerBody:
+; one tile row down. Was previously named identically to wD764
     ds 1                                               ;; d765
 wD766_TileTypeBehindGexsFace: ; also set to 22 in front of doors?
     ds 1                                               ;; d766
 wD767_FloorTileType:
+; two tile rows down - the floor he is standing on
     ds 1                                               ;; d767
     ds 1
 wD769_ClimbSurfaceTileType:
