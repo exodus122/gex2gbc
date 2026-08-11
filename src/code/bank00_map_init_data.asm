@@ -171,155 +171,155 @@ call_00_2eb0_MapData_GetRecordAddr:
 ; instead of a multiply - 80 bytes of ROM spent to avoid a multiply routine
     db   $00, $06
     dw   data_01_5f88
-    db   $30, $34, $38, $00, $04, $36, $00, $40
+    db   BANK(blockmap_media_dimension), BANK(alt_blockset_flags1), $38, $00, $04, $36, $00, $40
     db   $00, $00, $00, $00
     
     db   $07, $00
     dw   data_01_5fa7
-    db   $31, $34, $39, $00, $08, $36, $00, $50
+    db   BANK(blockmap_toon_tv), BANK(alt_blockset_flags1), $39, $00, $08, $36, $00, $50
     db   $00, $00, $00, $00
     
     db   $06, $00
     dw   data_01_6007
-    db   $32, $34, $3a, $00, $02, $36, $00, $60
+    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), $3a, $00, $02, $36, $00, $60
     db   $00, $00, $00, $00
     
     db   $06, $00
     dw   data_01_606a
-    db   $33, $34, $3a, $00, $01, $36, $00, $60
+    db   BANK(blockmap_scream_tv2), BANK(alt_blockset_flags1), $3a, $00, $01, $36, $00, $60
     db   $00, $00, $00, $00
     
     db   $01, $01
     dw   data_01_60ca
-    db   $25, $35, $3b, $00, $02, $36, $00, $70
+    db   BANK(blockmap_circuit_central3), BANK(alt_blockset_flags2), $3b, $00, $02, $36, $00, $70
     db   $00, $00, $00, $00
     
     db   $02, $01
     dw   data_01_611b
-    db   $2d, $34, $3c, $00, $80, $37, $00, $40
+    db   BANK(blockmap_kung_fu_theater2), BANK(alt_blockset_flags1), $3c, $00, $80, $37, $00, $40
     db   $00, $00, $00, $00
     
     db   $05, $06
     dw   data_01_615f
-    db   $32, $34, $38, $00, $00, $36, $00, $40
+    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), $38, $00, $00, $36, $00, $40
     db   $00, $00, $00, $00
     
     db   $03, $01
     dw   data_01_616b
-    db   $2e, $34, $3e, $00, $10, $37, $00, $50
+    db   BANK(blockmap_prehistory_channel1), BANK(alt_blockset_flags1), $3e, $00, $10, $37, $00, $50
     db   $00, $00, $00, $00
     
     db   $07, $01
     dw   data_01_61ac
-    db   $31, $34, $39, $00, $08, $36, $00, $50
+    db   BANK(blockmap_toon_tv), BANK(alt_blockset_flags1), $39, $00, $08, $36, $00, $50
     db   $00, $00, $00, $00
     
     db   $03, $00
     dw   data_01_61e2
-    db   $2f, $34, $3e, $00, $20, $37, $00, $50
+    db   BANK(blockmap_prehistory_channel2), BANK(alt_blockset_flags1), $3e, $00, $20, $37, $00, $50
     db   $00, $00, $00, $00
     
     db   $01, $00
     dw   data_01_623d
-    db   $2a, $35, $3b, $00, $08, $36, $00, $70
+    db   BANK(blockmap_circuit_central1), BANK(alt_blockset_flags2), $3b, $00, $08, $36, $00, $70
     db   $00, $00, $00, $00
     
     db   $06, $00
     dw   data_01_629b
-    db   $32, $34, $3a, $00, $02, $36, $00, $60
+    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), $3a, $00, $02, $36, $00, $60
     db   $00, $00, $00, $00
     
     db   $05, $06
     dw   data_01_62fa
-    db   $32, $34, $38, $00, $00, $36, $00, $40
+    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), $38, $00, $00, $36, $00, $40
     db   $00, $00, $00, $00
     
     db   $02, $00
     dw   data_01_6306
-    db   $2c, $34, $3c, $00, $40, $37, $00, $40
+    db   BANK(blockmap_kung_fu_theater1), BANK(alt_blockset_flags1), $3c, $00, $40, $37, $00, $40
     db   $00, $00, $00, $00
     
     db   $04, $02
     dw   data_01_6372
-    db   $29, $35, $3f, $00, $01, $37, $00, $60
+    db   BANK(blockmap_rezopolis), BANK(alt_blockset_flags2), $3f, $00, $01, $37, $00, $60
     db   $00, $00, $00, $00
     
     db   $08, $06
     dw   data_01_63b4
-    db   $32, $34, $38, $00, $00, $36, $00, $40
+    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), $38, $00, $00, $36, $00, $40
     db   $00, $00, $00, $00
     
     db   $08, $05
     dw   data_01_63c0
-    db   $32, $34, $3a, $00, $02, $36, $00, $60
+    db   $32, BANK(alt_blockset_flags1), $3a, $00, $02, $36, $00, $60
     db   $00, $00, $00, $00
     
     db   $08, $06
     dw   data_01_63fd
-    db   $32, $34, $38, $00, $00, $36, $00, $40
+    db   $32, BANK(alt_blockset_flags1), $38, $00, $00, $36, $00, $40
     db   $00, $00, $00, $00
     
     db   $08, $06
     dw   data_01_6409
-    db   $32, $34, $38, $00, $00, $36, $00, $40
+    db   $32, BANK(alt_blockset_flags1), $38, $00, $00, $36, $00, $40
     db   $00, $00, $00, $00
     
     db   $08, $06
     dw   data_01_6415
-    db   $32, $34, $3f, $00, $00, $36, $00, $40
+    db   $32, BANK(alt_blockset_flags1), $3f, $00, $00, $36, $00, $40
     db   $00, $00, $00, $00
     
     db   $08, $06
     dw   data_01_6421
-    db   $32, $34, $38, $00, $00, $36, $00, $40
+    db   $32, BANK(alt_blockset_flags1), $38, $00, $00, $36, $00, $40
     db   $00, $00, $00, $00
     
     db   $08, $05
     dw   data_01_642d
-    db   $2c, $34, $3c, $00, $40, $37, $00, $40
+    db   $2c, BANK(alt_blockset_flags1), $3c, $00, $40, $37, $00, $40
     db   $00, $00, $00, $00
     
     db   $08, $05
     dw   data_01_646f
-    db   $29, $35, $3f, $00, $01, $37, $00, $60
+    db   $29, BANK(alt_blockset_flags2), $3f, $00, $01, $37, $00, $60
     db   $00, $00, $00, $00
     
     db   $08, $05
     dw   data_01_64a5
-    db   $2b, $35, $3b, $00, $04, $36, $00, $70
+    db   $2b, BANK(alt_blockset_flags2), $3b, $00, $04, $36, $00, $70
     db   $00, $00, $00, $00
     
     db   $03, $04
     dw   data_01_64df
-    db   $2f, $34, $3e, $00, $20, $37, $00, $50
+    db   $2f, BANK(alt_blockset_flags1), $3e, $00, $20, $37, $00, $50
     db   $00, $00, $00, $00
     
     db   $06, $04
     dw   data_01_6512
-    db   $33, $34, $3a, $00, $01, $36, $00, $60
+    db   $33, BANK(alt_blockset_flags1), $3a, $00, $01, $36, $00, $60
     db   $00, $00, $00, $00
     
     db   $04, $03
     dw   data_01_6550
-    db   $29, $35, $3f, $00, $01, $37, $00, $60
+    db   $29, BANK(alt_blockset_flags2), $3f, $00, $01, $37, $00, $60
     db   $00, $00, $00, $00
     
     db   $0a, $06
     dw   data_01_65a7
-    db   $32, $34, $38, $00, $00, $36, $00, $40
+    db   $32, BANK(alt_blockset_flags1), $38, $00, $00, $36, $00, $40
     db   $00, $00, $00, $00
     
     db   $0a, $06
     dw   data_01_65b3
-    db   $32, $34, $38, $00, $00, $36, $00, $40
+    db   $32, BANK(alt_blockset_flags1), $38, $00, $00, $36, $00, $40
     db   $00, $00, $00, $00
     
     db   $0a, $06
     dw   data_01_65bf
-    db   $32, $34, $38, $00, $00, $36, $00, $40
+    db   $32, BANK(alt_blockset_flags1), $38, $00, $00, $36, $00, $40
     db   $00, $00, $00, $00
     
     db   $0a, $05
     dw   data_01_65cb
-    db   $28, $35, $27, $00, $10, $26, $00, $40
+    db   $28, BANK(alt_blockset_flags2), $27, $00, $10, $26, $00, $40
     db   $00, $00, $00, $00

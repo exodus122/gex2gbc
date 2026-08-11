@@ -3239,8 +3239,8 @@
 31:4000 blockmap_toon_tv
 32:4000 blockmap_scream_tv1
 33:4000 blockmap_scream_tv2
-34:4000 alt_blockset_flags_bank34
-35:4000 alt_blockset_flags_bank35
+34:4000 alt_blockset_flags1
+35:4000 alt_blockset_flags2
 36:4000 tileset_media_dimension
 36:5000 tileset_toon_tv
 36:6000 tileset_scream_tv
