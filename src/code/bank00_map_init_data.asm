@@ -163,163 +163,261 @@ call_00_2eb0_MapData_GetRecordAddr:
 ;   $07                                        unused, always $00
 ;   $08       MAPDATA_ALT_BLOCKSET_MASK        this map's bit in that plane
 ;   $09       MAPDATA_TILESET_BANK
-;   $0A-$0B   MAPDATA_TILESET_OFFSET
+;   $0A-$0B   MAPDATA_TILESET_OFFSET           address within that bank; several
+;                                              tilesets share a bank $1000 apart
 ;   $0C-$0F                                    unused, always $00
+;
+; The bank fields are written as BANK(label) and the tileset offset as the label
+; itself, so the records follow main.asm automatically if a section is ever moved.
+; Every one still assembles to the byte it used to hold
 ;
 ; Five of the sixteen bytes are dead. The record is padded to a power of two so
 ; call_00_2eb0_MapData_GetRecordAddr can index it with four `add HL,HL` shifts
 ; instead of a multiply - 80 bytes of ROM spent to avoid a multiply routine
+    ; $00 MAP_MEDIA_DIMENSION
     db   $00, $06
     dw   data_01_5f88
-    db   BANK(blockmap_media_dimension), BANK(alt_blockset_flags1), $38, $00, $04, $36, $00, $40
+    db   BANK(blockmap_media_dimension), BANK(alt_blockset_flags1), BANK(blockset_collision_media_dimension)
+    db   $00, ALT_BLOCKSET_MEDIA_DIMENSION, BANK(tileset_media_dimension)
+    dw   tileset_media_dimension
     db   $00, $00, $00, $00
-    
+
+    ; $01 MAP_TOON_TV_OUT_OF_TOON
     db   $07, $00
     dw   data_01_5fa7
-    db   BANK(blockmap_toon_tv), BANK(alt_blockset_flags1), $39, $00, $08, $36, $00, $50
+    db   BANK(blockmap_toon_tv), BANK(alt_blockset_flags1), BANK(blockset_collision_toon_tv)
+    db   $00, ALT_BLOCKSET_TOON_TV, BANK(tileset_toon_tv)
+    dw   tileset_toon_tv
     db   $00, $00, $00, $00
-    
+
+    ; $02 MAP_SCREAM_TV_SMELLRAISER
     db   $06, $00
     dw   data_01_6007
-    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), $3a, $00, $02, $36, $00, $60
+    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_collision_scream_tv)
+    db   $00, ALT_BLOCKSET_SCREAM_TV1, BANK(tileset_scream_tv)
+    dw   tileset_scream_tv
     db   $00, $00, $00, $00
-    
+
+    ; $03 MAP_SCREAM_TV_FRANKENSTEINFELD
     db   $06, $00
     dw   data_01_606a
-    db   BANK(blockmap_scream_tv2), BANK(alt_blockset_flags1), $3a, $00, $01, $36, $00, $60
+    db   BANK(blockmap_scream_tv2), BANK(alt_blockset_flags1), BANK(blockset_collision_scream_tv)
+    db   $00, ALT_BLOCKSET_SCREAM_TV2, BANK(tileset_scream_tv)
+    dw   tileset_scream_tv
     db   $00, $00, $00, $00
-    
+
+    ; $04 MAP_CIRCUIT_CENTRAL_WWWDOTCOMCOM
     db   $01, $01
     dw   data_01_60ca
-    db   BANK(blockmap_circuit_central3), BANK(alt_blockset_flags2), $3b, $00, $02, $36, $00, $70
+    db   BANK(blockmap_circuit_central3), BANK(alt_blockset_flags2), BANK(blockset_collision_circuit_central)
+    db   $00, ALT_BLOCKSET_CIRCUIT_CENTRAL3, BANK(tileset_circuit_central)
+    dw   tileset_circuit_central
     db   $00, $00, $00, $00
-    
+
+    ; $05 MAP_KUNG_FU_THEATER_MAO_TSE_TONGUE
     db   $02, $01
     dw   data_01_611b
-    db   BANK(blockmap_kung_fu_theater2), BANK(alt_blockset_flags1), $3c, $00, $80, $37, $00, $40
+    db   BANK(blockmap_kung_fu_theater2), BANK(alt_blockset_flags1), BANK(blockset_collision_kung_fu_theater)
+    db   $00, ALT_BLOCKSET_KUNG_FU_THEATER2, BANK(tileset_kung_fu_theater)
+    dw   tileset_kung_fu_theater
     db   $00, $00, $00, $00
-    
+
+    ; $06 MAP_UNUSED_06
     db   $05, $06
     dw   data_01_615f
-    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), $38, $00, $00, $36, $00, $40
+    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_collision_media_dimension)
+    db   $00, ALT_BLOCKSET_NONE, BANK(tileset_media_dimension)
+    dw   tileset_media_dimension
     db   $00, $00, $00, $00
-    
+
+    ; $07 MAP_PRE_HISTORY_CHANNEL_PANGAEA_90210
     db   $03, $01
     dw   data_01_616b
-    db   BANK(blockmap_prehistory_channel1), BANK(alt_blockset_flags1), $3e, $00, $10, $37, $00, $50
+    db   BANK(blockmap_prehistory_channel1), BANK(alt_blockset_flags1), BANK(blockset_collision_prehistory_channel)
+    db   $00, ALT_BLOCKSET_PREHISTORY_CHANNEL1, BANK(tileset_prehistory_channel)
+    dw   tileset_prehistory_channel
     db   $00, $00, $00, $00
-    
+
+    ; $08 MAP_TOON_TV_FINE_TOONING
     db   $07, $01
     dw   data_01_61ac
-    db   BANK(blockmap_toon_tv), BANK(alt_blockset_flags1), $39, $00, $08, $36, $00, $50
+    db   BANK(blockmap_toon_tv), BANK(alt_blockset_flags1), BANK(blockset_collision_toon_tv)
+    db   $00, ALT_BLOCKSET_TOON_TV, BANK(tileset_toon_tv)
+    dw   tileset_toon_tv
     db   $00, $00, $00, $00
-    
+
+    ; $09 MAP_PRE_HISTORY_CHANNEL_THIS_OLD_CAVE
     db   $03, $00
     dw   data_01_61e2
-    db   BANK(blockmap_prehistory_channel2), BANK(alt_blockset_flags1), $3e, $00, $20, $37, $00, $50
+    db   BANK(blockmap_prehistory_channel2), BANK(alt_blockset_flags1), BANK(blockset_collision_prehistory_channel)
+    db   $00, ALT_BLOCKSET_PREHISTORY_CHANNEL2, BANK(tileset_prehistory_channel)
+    dw   tileset_prehistory_channel
     db   $00, $00, $00, $00
-    
+
+    ; $0a MAP_CIRCUIT_CENTRAL_HONEY_I_SHRUNK_THE_GECKO
     db   $01, $00
     dw   data_01_623d
-    db   BANK(blockmap_circuit_central1), BANK(alt_blockset_flags2), $3b, $00, $08, $36, $00, $70
+    db   BANK(blockmap_circuit_central1), BANK(alt_blockset_flags2), BANK(blockset_collision_circuit_central)
+    db   $00, ALT_BLOCKSET_CIRCUIT_CENTRAL1, BANK(tileset_circuit_central)
+    dw   tileset_circuit_central
     db   $00, $00, $00, $00
-    
+
+    ; $0b MAP_SCREAM_TV_POLTERGEX
     db   $06, $00
     dw   data_01_629b
-    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), $3a, $00, $02, $36, $00, $60
+    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_collision_scream_tv)
+    db   $00, ALT_BLOCKSET_SCREAM_TV1, BANK(tileset_scream_tv)
+    dw   tileset_scream_tv
     db   $00, $00, $00, $00
-    
+
+    ; $0c MAP_UNUSED_0C
     db   $05, $06
     dw   data_01_62fa
-    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), $38, $00, $00, $36, $00, $40
+    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_collision_media_dimension)
+    db   $00, ALT_BLOCKSET_NONE, BANK(tileset_media_dimension)
+    dw   tileset_media_dimension
     db   $00, $00, $00, $00
-    
+
+    ; $0d MAP_KUNG_FU_THEATER_SAMURAI_NIGHT_FEVER
     db   $02, $00
     dw   data_01_6306
-    db   BANK(blockmap_kung_fu_theater1), BANK(alt_blockset_flags1), $3c, $00, $40, $37, $00, $40
+    db   BANK(blockmap_kung_fu_theater1), BANK(alt_blockset_flags1), BANK(blockset_collision_kung_fu_theater)
+    db   $00, ALT_BLOCKSET_KUNG_FU_THEATER1, BANK(tileset_kung_fu_theater)
+    dw   tileset_kung_fu_theater
     db   $00, $00, $00, $00
-    
+
+    ; $0e MAP_REZOPOLIS_NO_WEDDINGS_AND_A_FUNERAL
     db   $04, $02
     dw   data_01_6372
-    db   BANK(blockmap_rezopolis), BANK(alt_blockset_flags2), $3f, $00, $01, $37, $00, $60
+    db   BANK(blockmap_rezopolis), BANK(alt_blockset_flags2), BANK(blockset_collision_rezopolis)
+    db   $00, ALT_BLOCKSET_REZOPOLIS, BANK(tileset_rezopolis)
+    dw   tileset_rezopolis
     db   $00, $00, $00, $00
-    
+
+    ; $0f MAP_UNUSED_0F
     db   $08, $06
     dw   data_01_63b4
-    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), $38, $00, $00, $36, $00, $40
+    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_collision_media_dimension)
+    db   $00, ALT_BLOCKSET_NONE, BANK(tileset_media_dimension)
+    dw   tileset_media_dimension
     db   $00, $00, $00, $00
-    
+
+    ; $10 MAP_SCREAM_TV_THURSDAY_THE_12TH
     db   $08, $05
     dw   data_01_63c0
-    db   $32, BANK(alt_blockset_flags1), $3a, $00, $02, $36, $00, $60
+    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_collision_scream_tv)
+    db   $00, ALT_BLOCKSET_SCREAM_TV1, BANK(tileset_scream_tv)
+    dw   tileset_scream_tv
     db   $00, $00, $00, $00
-    
+
+    ; $11 MAP_UNUSED_11
     db   $08, $06
     dw   data_01_63fd
-    db   $32, BANK(alt_blockset_flags1), $38, $00, $00, $36, $00, $40
+    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_collision_media_dimension)
+    db   $00, ALT_BLOCKSET_NONE, BANK(tileset_media_dimension)
+    dw   tileset_media_dimension
     db   $00, $00, $00, $00
-    
+
+    ; $12 MAP_UNUSED_12
     db   $08, $06
     dw   data_01_6409
-    db   $32, BANK(alt_blockset_flags1), $38, $00, $00, $36, $00, $40
+    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_collision_media_dimension)
+    db   $00, ALT_BLOCKSET_NONE, BANK(tileset_media_dimension)
+    dw   tileset_media_dimension
     db   $00, $00, $00, $00
-    
+
+    ; $13 MAP_UNUSED_13
     db   $08, $06
     dw   data_01_6415
-    db   $32, BANK(alt_blockset_flags1), $3f, $00, $00, $36, $00, $40
+    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_collision_rezopolis)
+    db   $00, ALT_BLOCKSET_NONE, BANK(tileset_media_dimension)
+    dw   tileset_media_dimension
     db   $00, $00, $00, $00
-    
+
+    ; $14 MAP_UNUSED_14
     db   $08, $06
     dw   data_01_6421
-    db   $32, BANK(alt_blockset_flags1), $38, $00, $00, $36, $00, $40
+    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_collision_media_dimension)
+    db   $00, ALT_BLOCKSET_NONE, BANK(tileset_media_dimension)
+    dw   tileset_media_dimension
     db   $00, $00, $00, $00
-    
+
+    ; $15 MAP_KUNG_FU_THEATER_LIZARD_IN_A_CHINA_SHOP
     db   $08, $05
     dw   data_01_642d
-    db   $2c, BANK(alt_blockset_flags1), $3c, $00, $40, $37, $00, $40
+    db   BANK(blockmap_kung_fu_theater1), BANK(alt_blockset_flags1), BANK(blockset_collision_kung_fu_theater)
+    db   $00, ALT_BLOCKSET_KUNG_FU_THEATER1, BANK(tileset_kung_fu_theater)
+    dw   tileset_kung_fu_theater
     db   $00, $00, $00, $00
-    
+
+    ; $16 MAP_REZOPOLIS_BUGGED_OUT
     db   $08, $05
     dw   data_01_646f
-    db   $29, BANK(alt_blockset_flags2), $3f, $00, $01, $37, $00, $60
+    db   BANK(blockmap_rezopolis), BANK(alt_blockset_flags2), BANK(blockset_collision_rezopolis)
+    db   $00, ALT_BLOCKSET_REZOPOLIS, BANK(tileset_rezopolis)
+    dw   tileset_rezopolis
     db   $00, $00, $00, $00
-    
+
+    ; $17 MAP_CIRCUIT_CENTRAL_CHIPS_AND_DIPS
     db   $08, $05
     dw   data_01_64a5
-    db   $2b, BANK(alt_blockset_flags2), $3b, $00, $04, $36, $00, $70
+    db   BANK(blockmap_circuit_central2), BANK(alt_blockset_flags2), BANK(blockset_collision_circuit_central)
+    db   $00, ALT_BLOCKSET_CIRCUIT_CENTRAL2, BANK(tileset_circuit_central)
+    dw   tileset_circuit_central
     db   $00, $00, $00, $00
-    
+
+    ; $18 MAP_PRE_HISTORY_CHANNEL_LAVA_DABBA_DOO
     db   $03, $04
     dw   data_01_64df
-    db   $2f, BANK(alt_blockset_flags1), $3e, $00, $20, $37, $00, $50
+    db   BANK(blockmap_prehistory_channel2), BANK(alt_blockset_flags1), BANK(blockset_collision_prehistory_channel)
+    db   $00, ALT_BLOCKSET_PREHISTORY_CHANNEL2, BANK(tileset_prehistory_channel)
+    dw   tileset_prehistory_channel
     db   $00, $00, $00, $00
-    
+
+    ; $19 MAP_SCREAM_TV_TEXAS_CHAINSAW_MANICURE
     db   $06, $04
     dw   data_01_6512
-    db   $33, BANK(alt_blockset_flags1), $3a, $00, $01, $36, $00, $60
+    db   BANK(blockmap_scream_tv2), BANK(alt_blockset_flags1), BANK(blockset_collision_scream_tv)
+    db   $00, ALT_BLOCKSET_SCREAM_TV2, BANK(tileset_scream_tv)
+    dw   tileset_scream_tv
     db   $00, $00, $00, $00
-    
+
+    ; $1a MAP_REZOPOLIS_MAZED_AND_CONFUSED
     db   $04, $03
     dw   data_01_6550
-    db   $29, BANK(alt_blockset_flags2), $3f, $00, $01, $37, $00, $60
+    db   BANK(blockmap_rezopolis), BANK(alt_blockset_flags2), BANK(blockset_collision_rezopolis)
+    db   $00, ALT_BLOCKSET_REZOPOLIS, BANK(tileset_rezopolis)
+    dw   tileset_rezopolis
     db   $00, $00, $00, $00
-    
+
+    ; $1b MAP_UNUSED_1B
     db   $0a, $06
     dw   data_01_65a7
-    db   $32, BANK(alt_blockset_flags1), $38, $00, $00, $36, $00, $40
+    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_collision_media_dimension)
+    db   $00, ALT_BLOCKSET_NONE, BANK(tileset_media_dimension)
+    dw   tileset_media_dimension
     db   $00, $00, $00, $00
-    
+
+    ; $1c MAP_UNUSED_1C
     db   $0a, $06
     dw   data_01_65b3
-    db   $32, BANK(alt_blockset_flags1), $38, $00, $00, $36, $00, $40
+    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_collision_media_dimension)
+    db   $00, ALT_BLOCKSET_NONE, BANK(tileset_media_dimension)
+    dw   tileset_media_dimension
     db   $00, $00, $00, $00
-    
+
+    ; $1d MAP_UNUSED_1D
     db   $0a, $06
     dw   data_01_65bf
-    db   $32, BANK(alt_blockset_flags1), $38, $00, $00, $36, $00, $40
+    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_collision_media_dimension)
+    db   $00, ALT_BLOCKSET_NONE, BANK(tileset_media_dimension)
+    dw   tileset_media_dimension
     db   $00, $00, $00, $00
-    
+
+    ; $1e MAP_BOSS_TV_CHANNEL_Z
     db   $0a, $05
     dw   data_01_65cb
-    db   $28, BANK(alt_blockset_flags2), $27, $00, $10, $26, $00, $40
+    db   BANK(blockmap_channel_z), BANK(alt_blockset_flags2), BANK(blockset_collision_channel_z)
+    db   $00, ALT_BLOCKSET_CHANNEL_Z, BANK(tileset_channel_z)
+    dw   tileset_channel_z
     db   $00, $00, $00, $00

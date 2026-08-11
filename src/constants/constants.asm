@@ -556,6 +556,35 @@ DEF MAPDATA_RECORD_SIZE                     EQU $10
 DEF MAPDATA_TEXT_MISSION_BASE               EQU $02 ; mission N is at text block + this + N*2
 
 ; ------------------------------------------------------------------
+; Values for MAPDATA_ALT_BLOCKSET_MASK - which bit of the shared flag plane is
+; this map's. The bit belongs to a BLOCKMAP rather than to a level: the plane is
+; indexed by position within a blockmap, so every level built on the same blockmap
+; necessarily reads the same bit. The correspondence is one to one in both
+; directions, which is why these are named after the blockmaps in main.asm.
+;
+; The two planes are independent, so the numbers repeat between them - always use
+; the name matching the map's MAPDATA_ALT_BLOCKSET_BANK.
+; ------------------------------------------------------------------
+DEF ALT_BLOCKSET_NONE                       EQU $00 ; never takes the alt blockset
+
+; bits of alt_blockset_flags1 (bank $34)
+DEF ALT_BLOCKSET_SCREAM_TV2                 EQU $01
+DEF ALT_BLOCKSET_SCREAM_TV1                 EQU $02
+DEF ALT_BLOCKSET_MEDIA_DIMENSION            EQU $04
+DEF ALT_BLOCKSET_TOON_TV                    EQU $08
+DEF ALT_BLOCKSET_PREHISTORY_CHANNEL1        EQU $10
+DEF ALT_BLOCKSET_PREHISTORY_CHANNEL2        EQU $20
+DEF ALT_BLOCKSET_KUNG_FU_THEATER1           EQU $40
+DEF ALT_BLOCKSET_KUNG_FU_THEATER2           EQU $80
+
+; bits of alt_blockset_flags2 (bank $35). Three of the eight are unused
+DEF ALT_BLOCKSET_REZOPOLIS                  EQU $01
+DEF ALT_BLOCKSET_CIRCUIT_CENTRAL3           EQU $02
+DEF ALT_BLOCKSET_CIRCUIT_CENTRAL2           EQU $04
+DEF ALT_BLOCKSET_CIRCUIT_CENTRAL1           EQU $08
+DEF ALT_BLOCKSET_CHANNEL_Z                  EQU $10
+
+; ------------------------------------------------------------------
 ; Menu sprite scripts (bank01_menus.asm, call_01_4dc8_Menu_BuildSpriteBlock)
 ;
 ; A sprite script is a starting OAM slot followed by entries of

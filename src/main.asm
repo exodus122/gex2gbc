@@ -451,9 +451,9 @@ tileset_circuit_central:
 SECTION "bank37", ROMX[$4000], BANK[$37]
 tileset_kung_fu_theater:
     INCBIN ".gfx/tilesets/tileset_kung_fu_theater.bin"
-image_037_5000:
+tileset_prehistory_channel:
     INCBIN ".gfx/tilesets/tileset_prehistory_channel.bin"
-image_037_6000:
+tileset_rezopolis:
     INCBIN ".gfx/tilesets/tileset_rezopolis.bin"
 
 SECTION "bank38", ROMX[$4000], BANK[$38]

@@ -3246,8 +3246,8 @@
 36:6000 tileset_scream_tv
 36:7000 tileset_circuit_central
 37:4000 tileset_kung_fu_theater
-37:5000 image_037_5000
-37:6000 image_037_6000
+37:5000 tileset_prehistory_channel
+37:6000 tileset_rezopolis
 38:4000 blockset_collision_media_dimension
 39:4000 blockset_collision_toon_tv
 3a:4000 blockset_collision_scream_tv
