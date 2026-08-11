@@ -4,14 +4,40 @@ wC000_BgMapTileIds:
 ; tiles currently loaded (for current 32x32 tile bg map)
     ds 1024                                               ;; c000
 
-wC400_CollectibleCoordinates:
-; C400 to C500 stores the x position of each collectible in the current level
-; C500 to C600 stores the y position of each collectible in the current level
-; C500 to C600 also gets set to FF when you get the collectible
-    ds 512                                             ;; c400
-
-wC600_CollectibleRelated:
-    ds 512                                            ;; c600
+; ------------------------------------------------------------------
+; Collectibles, four parallel 256-byte tables built by
+; call_0b_4000_CollectibleList_LoadForCurrentLevel and consumed by
+; call_03_6499_Collectible_BuildSprites.
+;
+; Coordinates are in 16x16-pixel grid cells, not pixels: the drawing code
+; multiplies them back up with `swap`. Two cells make one block, so a
+; 128x128-block level is exactly 256x256 cells - which is why a single byte
+; addresses either axis and why these tables are 256 entries long.
+;
+; The last two tables exist purely so the per-frame draw never has to walk the
+; whole list. Both are indexed by the camera's own cell column
+; (wD6ED_BgMap_ScrollX >> 4), which lets the drawing code turn "which
+; collectibles are on screen" into two array reads
+; ------------------------------------------------------------------
+wC400_Collectible_GridX:
+; X cell of each collectible in the current level, sorted ascending, $FF ends the list
+    ds 256                                             ;; c400
+wC500_Collectible_GridY:
+; Y cell of the matching wC400_Collectible_GridX entry. Set to $FF when the player
+; picks the collectible up, which also stops it drawing: the draw loop keeps only
+; entries whose (Y - camera row) is under 10 cells, and $FF can never pass that
+    ds 256                                             ;; c500
+wC600_Collectible_ScanStartByColumn:
+; For each camera cell column, the index of the first collectible at or past that
+; column. The list is sorted by X, so this is a precomputed lower bound - the draw
+; loop starts here instead of searching
+    ds 256                                             ;; c600
+wC700_Collectible_ScanCountByColumn:
+; For each camera cell column, how many collectibles fall in the 11 cells starting
+; there. 11 cells is 176 pixels, one more than the screen is wide, so the count
+; covers everything visible plus the partial cell at each edge. Zero means the draw
+; routine returns immediately
+    ds 256                                            ;; c700
 
 wC800_CurrentCollisionData:
 ;C800 to CC00 is the collision data currently loaded (for current 32x32 tile bg map)
@@ -47,21 +73,17 @@ wCC80_ShadowOAM_HudSprites:
 ; ------------------------------------------------------------------
 wCCA0_LcdIsrCode:
     ds 4                                               ;; cca0
-
 wCCA4_LcdIsr_SrcAddrLo:
 ; low byte of the "ld HL, nnnn" operand inside the copied handler.
 ; For the VRAM streaming handler this walks backwards through
 ; wD100_TilesToLoadBuffer, 4 bytes per hblank
     ds 1                                               ;; cca4
-
 wCCA5_LcdIsr_SrcAddrHi:
 ; high byte of the same operand (always $D1 for the VRAM streaming handler)
     ds 1                                               ;; cca5
-
 wCCA6_LcdIsr_CodeCont:
 ; opcode byte of the "ld D, n" that follows; not a variable
     ds 1                                               ;; cca6
-
 wCCA7_LcdIsr_DestPageHi:
 ; operand of that "ld D, n" - the high byte of the VRAM page the handler writes to
 ; ($80/$81 player gfx, $82/$83 entity gfx, $86 media dimension tv, $90 tileset)
@@ -80,7 +102,6 @@ wCCFE_VBlankHookPtrLo:
 ; pointer to the vblank-side routine that pairs with the installed LCD STAT
 ; handler; called every frame from the vblank isr
     ds 1                                               ;; ccfe
-
 wCCFF_VBlankHookPtrHi:
     ds 1                                             ;; ccff
 
@@ -166,7 +187,6 @@ wD301_EntityListIndexesForCurrentEntities:
 ; the values stored here have 1 added to them though. so index 0 would have value 1 here
     ds 8                                               ;; d301
 
-
 wD309_EntityBoundingBoxXMax:
     ds 1                                               ;; d309
 wD30A_EntityBoundingBoxXMin:
@@ -240,25 +260,18 @@ wD33B_SpawningEntityId:
 ; ------------------------------------------------------------------
 wD33C_Entity_SpriteList0:
     ds ENTITY_SPRITE_LIST_SIZE
-
 wD35D_Entity_SpriteList1:
     ds ENTITY_SPRITE_LIST_SIZE
-
 wD37E_Entity_SpriteList2:
     ds ENTITY_SPRITE_LIST_SIZE
-
 wD39F_Entity_SpriteList3:
     ds ENTITY_SPRITE_LIST_SIZE
-
 wD3C0_Entity_SpriteList4:
     ds ENTITY_SPRITE_LIST_SIZE
-
 wD3E1_Entity_SpriteList5:
     ds ENTITY_SPRITE_LIST_SIZE
-
 wD402_Entity_SpriteList6:
     ds ENTITY_SPRITE_LIST_SIZE
-
 wD423_Entity_SpriteList7:
     ds ENTITY_SPRITE_LIST_SIZE
 
@@ -269,25 +282,18 @@ wD423_Entity_SpriteList7:
 ; PARTICLE_FIELD_* constants
 wD444_Entity_Particles0:
     ds ENTITY_PARTICLES_SIZE
-
 wD46C_Entity_Particles1:
     ds ENTITY_PARTICLES_SIZE
-
 wD494_Entity_Particles2:
     ds ENTITY_PARTICLES_SIZE
-
 wD4BC_Entity_Particles3:
     ds ENTITY_PARTICLES_SIZE
-
 wD4E4_Entity_Particles4:
     ds ENTITY_PARTICLES_SIZE
-
 wD50C_Entity_Particles5:
     ds ENTITY_PARTICLES_SIZE
-
 wD534_Entity_Particles6:
     ds ENTITY_PARTICLES_SIZE
-
 wD55C_Entity_Particles7:
     ds ENTITY_PARTICLES_SIZE
 
@@ -309,15 +315,12 @@ wD586_PlayerGfxVramPage:
 ; $8000 and $8100; this selects which page the next streamed frame goes to and
 ; the sprite builder in bank 3 uses it to pick the matching tile ids
     ds 1                                               ;; d586
-
 wD587_EntityGfxVramPage:
 ; same idea for the shared entity tile pages $8200 / $8300
     ds 1                                               ;; d587
-
 wD588_EntityGfxSrcAddrHi:
 ; high byte of the ROM address holding the entity tile page to stream in
     ds 1                                               ;; d588
-
 wD589_EntityGfxSrcBank:
 ; ROM bank holding that entity tile page
     ds 1                                               ;; d589
@@ -405,7 +408,6 @@ wD60A_OneCharString:
 ; call_01_48fd_MenuCmd_SetPasswordCharText uses it to render one password cell
 ; through the normal text path without needing a string in ROM for every letter
     ds 1                                               ;; d60a
-
 wD60B_OneCharStringEnd:
 ; the $80 line terminator call_01_48fd_MenuCmd_SetPasswordCharText writes after the
 ; character in wD60A, making the pair a complete one-character string. The two bytes
@@ -443,18 +445,14 @@ wD613_Dragon_SegmentsRemaining:
 ; kung fu theater dragon boss. Set to $0A on level start and decremented as body
 ; segments are destroyed; at 0 the head bursts
     ds 1                                               ;; d613
-
 wD614_Dragon_HitTimer:
 ; counts down after the dragon is hit; bit 1 makes the body segments flash
     ds 1                                               ;; d614
-
 wD615_Cannon_FacingDirection:
     ds 1                                               ;; d615
-
 wD616_FinalBattleButtonFlags:
 ; channel z final battle. bit 7 set = a button was just slammed down
     ds 1                                               ;; d616
-
 wD617_TailSpinChargeCounter:
 ; charge level (0-$40) built up by tail spinning on a rezopolis gear/platform
     ds 1                                               ;; d617
@@ -485,12 +483,27 @@ wD61B_DemoInputsPointer:
 wD61C_DemoInputsPointer:
 ; pointer to current demo mode inputs
     ds 1                                               ;; d61c
-wD61D_DemoUnk:
+wD61D_AttractDemoIndex:
+; Which of the four attract-mode demos to play, 0-3. Indexes both
+; data_00_076d_DemoLevelIds (the level) and data_00_0771_DemoInputScriptPointers
+; (the recorded inputs).
+;
+; In practice it is always 2 - Samurai Night Fever. The code at 00:0276 computes the
+; round-robin "(current + 1) AND 3" into A and then immediately overwrites A with
+; $02 before storing it, so the increment is dead and the other three demos are
+; unreachable. The $03 written here at boot is likewise overwritten before it is
+; ever used to pick anything
     ds 1                                               ;; d61d
 wD61E_DemoModeEnabled:
     ds 1                                               ;; d61e
-wD61F_DemoRelatedCounter:
-; counter of how many frames to input the demo inputs?
+wD61F_Demo_FramesUntilNextInput:
+; Frames left to hold the button state currently in wD620_DemoInputs. The demo
+; script is run-length encoded as (frame count, button bits) pairs;
+; call_02_4939_Player_UpdateMain decrements this every frame and, when it reaches
+; zero, pulls the next pair - reloading this from the new count and the buttons into
+; wD620_DemoInputs. A count of $FF instead ends the demo and returns to the title.
+;
+; Seeded to 1 when a demo starts, so the very first pair is fetched on frame one
     ds 1                                               ;; d61f
 wD620_DemoInputs:
 ; demo inputs that are being played currently
@@ -608,11 +621,9 @@ wD64E:
 wD64F_MissionRemoteTotal:
 ; number of mission remotes collected across every level (mask $07)
     ds 1                                               ;; d64f
-
 wD650_HiddenRemoteTotal:
 ; number of hidden + gold remotes collected across every level (mask $18)
     ds 1                                               ;; d650
-
 wD651_BonusMissionTotal:
 ; number of bonus/collectible missions completed across every level (mask $20)
     ds 1                                               ;; d651
@@ -630,10 +641,8 @@ wD652_Password_EncodeBuffer:
 ; packed progress, built by call_01_4349_Password_BuildPayload by walking every level
 ; and folding wD629_RemoteProgressFlags through a per-level mask
     ds 8                                               ;; d652
-
 wD65A_Password_EncodeLives:
     ds 1                                               ;; d65a
-
 wD65B_Password_EncodeChecksum:
 ; sum of the 9 bytes above, truncated to 8 bits
     ds 1                                               ;; d65b
@@ -641,10 +650,8 @@ wD65B_Password_EncodeChecksum:
 wD65C_Password_DecodeBuffer:
 ; the decode side of the same struct, filled by call_01_5271_Password_DecodeAndApply
     ds 8                                               ;; d65c
-
 wD664_Password_DecodeLives:
     ds 1                                               ;; d664
-
 wD665_Password_DecodeChecksum:
 ; a typed password is rejected unless the sum of the 9 preceding bytes matches
     ds 2                                               ;; d665
@@ -750,12 +757,10 @@ wD698_Text_PenX:
 ; pen X within the block, in PIXELS. $FE as the incoming parameter means "centre
 ; this line", which call_01_4a8f_Text_Render resolves by measuring the string
     ds 1                                               ;; d698
-
 wD699_Text_PenY:
 ; pen Y within the block, in PIXELS. $FE means "distribute the lines evenly down
 ; the block", resolved in call_01_4bd3_Text_WrapAndAlign
     ds 1                                               ;; d699
-
 wD69A_Text_FontId:
 ; which of the four descriptors in data_01_65fe_FontDescriptors to use - but only
 ; for parameter blocks that actually draw text. The byte is overloaded: the staging
@@ -764,11 +769,9 @@ wD69A_Text_FontId:
 ; call_01_4879_MenuCmd_DrawRemoteIcons reads it as a sprite-hide delay in frames.
 ; Nothing distinguishes the three uses except which handler the block reaches
     ds 1                                               ;; d69a
-
 wD69B_Text_SrcPtrLo:
 ; the string being rendered. call_01_4e6f_Menu_SetScriptSrcPtr writes this pair
     ds 1                                               ;; d69b
-
 wD69C_Text_SrcPtrHi:
     ds 1                                               ;; d69c
 
@@ -776,7 +779,6 @@ wD69D_MenuCmd_OptionSlot:
 ; low nibble = selectable row index, high nibble = MENU_OPTION_* code; filed into
 ; wD6C5_Menu_OptionActions by call_01_44e6_MenuScript_RunCommand
     ds 1                                               ;; d69d
-
 wD69E_MenuCmd_Flags:
 ; MENUCMD_* bits controlling what this parameter block actually does
     ds 1                                               ;; d69e
@@ -784,15 +786,12 @@ wD69E_MenuCmd_Flags:
 wD69F_Font_GlyphBase:
 ; the five fields below are the font descriptor, copied by call_01_4a8f_Text_Render
     ds 2                                               ;; d69f
-
 wD6A1_Font_WidthTable:
 ; one advance width in pixels per glyph, indexed the same as the bitmaps
     ds 2                                               ;; d6a1
-
 wD6A3_Font_GlyphWidthCols:
 ; glyph width in 8px columns
     ds 1                                               ;; d6a3
-
 wD6A4_Font_GlyphHeightPx:
 ; glyph height in PIXELS - 6, 7, 11 or 16, never 8, which is why the font bitmaps
 ; have no tile structure and cannot go through rgbgfx
@@ -1116,7 +1115,13 @@ wD72C_SecondaryTileset_PagesRemaining:
     ds 1                                               ;; d72c
 wD72D_SecondaryTilesetIndex:
     ds 1                                               ;; d72d
-wD72E_SecondaryTilesetBank2:
+wD72E_TilesetAnim_Bank:
+; ROM bank holding the secondary tileset's animation frames. Written from the same
+; table entry as wD726_SecondaryTilesetBank, so the two always hold the same value -
+; but they are read by different systems and that is why there are two.
+; wD726 belongs to the loader (call_00_08fc_StageNextGfxTransfer), while this copy
+; belongs to the animation player, which runs from the vblank handler via
+; call_00_0ac1_VBlank_UpdateVRAM and banks this in before touching any frame data
     ds 1                                               ;; d72e
 
 ; ------------------------------------------------------------------
@@ -1383,7 +1388,15 @@ wD767_FloorTileType:
 wD769_ClimbSurfaceTileType:
 ; tile type that triggered the climb; $26 = climbable background, otherwise wall
     ds 1                                               ;; d769
-wD76A_PlayerXPositionBlock:
+wD76A_Player_BlockX:
+; The player's X in block coordinates - world X >> 5, the same 128-wide grid the
+; blockmap and the spawn tables use (SPAWN_UNITS_PER_BLOCK). Recomputed at the end of
+; every call_02_4939_Player_UpdateMain.
+;
+; It exists so entity logic can compare against the block coordinates it already has
+; without redoing the shift: call_00_3364_Entity_ApproachPlayerXWithBounds converts
+; its own X the same way and tests this against the patrol bounds in
+; wD309_EntityBoundingBoxXMax, which came from the spawn record in block units
     ds 1                                               ;; d76a
 wD76B_Player_IsAttacking:
     ds 1                                               ;; d76b
@@ -1393,7 +1406,15 @@ wD76C_PlayerScreenXPosition_Copy:
 wD76D_PlayerScreenYPosition_CopyMinus20:
     ds 1                                               ;; d76d
 
-wD76E:
+wD76E_FlyPowerup_OrbitPhase:
+; Animation phase of the single fly sprite that circles above Gex while he is
+; carrying a fly (wD742_Player_CurrentFly). call_03_5ca8_Entity_BuildPlayerSprites
+; increments it once per frame, then uses (phase >> 1) AND $0F to index the 16
+; signed (Y, X) offsets in .data_03_5e9f_FlyParticleOffsetTable - so the fly steps
+; every other frame and completes its loop every 32 frames.
+;
+; Not related to wD688_FlyAnimationPosition, which is the HUD fly counter's
+; slide-in position
     ds 1                                               ;; d76e
 
 ; ------------------------------------------------------------------
@@ -1418,12 +1439,10 @@ wD772_BreakablesDestroyedCount:
 ; call_00_2186_CountedBreakable_OnHit compares it against a per-level quota - 5 in
 ; Smellraiser, 8 elsewhere - and opens a block patch slot on the exact match
     ds 1                                               ;; d772
-
 wD773_HuntersDefeatedCount:
 ; bumped each time a toon tv hunter is beaten. On the second one the collision
 ; handler writes $02 into wD799_BlockPatch_SlotTable14, opening the way onward
     ds 1                                               ;; d773
-
 wD774_MushroomsDestroyedCount:
 ; bumped by an entity action when the entity's MISC_FLAGS bit 0 is set, then
 ; used as a table index - a "how many of these have been triggered" counter
@@ -1437,10 +1456,23 @@ wD778_BlockPatch_SlotWriteHead:
 ; Index into wD78B_BlockPatch_SlotTable slot table; incremented by BgMap_UpdateCollisionFlags as slots are filled
     ds 1                                               ;; d778
 
-wD779_RelatedToXPosition:
+; ------------------------------------------------------------------
+; Camera position in block coordinates - wD6ED_BgMap_ScrollX / wD6EF_BgMap_ScrollY
+; shifted right by 5, computed as a 16-bit "<< 3, keep the high byte". Despite the
+; old names, neither has anything to do with the player; both come from the scroll
+; registers and both are refreshed at the top of each strip load.
+;
+; They exist so the strip loaders can match registered block patches without
+; converting units per candidate: the $CD00/$CE00 coordinate tables that
+; call_00_1ec9_BlockPatch_Register fills hold block coordinates too, straight from
+; wD782_BlockPatch_TargetBlockX / wD783_BlockPatch_TargetBlockY.
+; BgMap_ApplyBlockPatchesToRow and its column twin compare against these to decide
+; which patches land inside the strip being built
+; ------------------------------------------------------------------
+wD779_BgMap_ScrollBlockX:
     ds 1                                               ;; d779
 
-wD77A_PlayerYPositionBlock:
+wD77A_BgMap_ScrollBlockY:
     ds 1                                               ;; d77a
 
 ; Block patch state - runtime replacement of map blocks. Not to be confused with the

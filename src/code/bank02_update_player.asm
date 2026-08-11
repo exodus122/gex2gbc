@@ -227,14 +227,14 @@ call_02_4939_Player_UpdateMain:
 ;
 ; The tail end is per-frame bookkeeping: wD758_JumpVelocityOverride and the two one-frame
 ; entity flags are cleared here (they are set by collision earlier in the same frame and must
-; not survive into the next), wD76A_PlayerXPositionBlock is recomputed as world X >> 5, and
+; not survive into the next), wD76A_Player_BlockX is recomputed as world X >> 5, and
 ; the three power-up countdowns are ticked. Note the last of those three falls through into
 ; Player_DecrementPowerupTimer instead of calling it, so the ret at the end of that routine
 ; is what returns from the whole update
     ld   A, [wD61E_DemoModeEnabled]                                    ;; 02:4939 $fa $1e $d6
     and  A, A                                          ;; 02:493c $a7
     jr   Z, .jr_02_4965                                ;; 02:493d $28 $26
-    ld   HL, wD61F_DemoRelatedCounter                                     ;; 02:493f $21 $1f $d6
+    ld   HL, wD61F_Demo_FramesUntilNextInput                                     ;; 02:493f $21 $1f $d6
     dec  [HL]                                          ;; 02:4942 $35
     jr   NZ, .jr_02_495c                               ;; 02:4943 $20 $17
     ld   HL, wD61B_DemoInputsPointer                                     ;; 02:4945 $21 $1b $d6
@@ -244,7 +244,7 @@ call_02_4939_Player_UpdateMain:
     ld   A, [DE]                                       ;; 02:494b $1a
     cp   A, $ff                                        ;; 02:494c $fe $ff
     jr   Z, .jr_02_4961                                ;; 02:494e $28 $11
-    ld   [wD61F_DemoRelatedCounter], A                                    ;; 02:4950 $ea $1f $d6
+    ld   [wD61F_Demo_FramesUntilNextInput], A                                    ;; 02:4950 $ea $1f $d6
     inc  DE                                            ;; 02:4953 $13
     ld   A, [DE]                                       ;; 02:4954 $1a
     ld   [wD620_DemoInputs], A                         ;; 02:4955 $ea $20 $d6
@@ -345,7 +345,7 @@ call_02_4939_Player_UpdateMain:
     add  HL, HL                                        ;; 02:49fd $29
     add  HL, HL                                        ;; 02:49fe $29
     ld   A, H                                          ;; 02:49ff $7c
-    ld   [wD76A_PlayerXPositionBlock], A                                    ;; 02:4a00 $ea $6a $d7
+    ld   [wD76A_Player_BlockX], A                                    ;; 02:4a00 $ea $6a $d7
     ld   HL, wD209_Player_ActionState                                     ;; 02:4a03 $21 $09 $d2
     res  ACTION_STATE_IS_FIRST_FRAME_BIT, [HL]                                       ;; 02:4a06 $cb $ae
     ld   HL, wD20A_Player_UnkFlags2                                     ;; 02:4a08 $21 $0a $d2

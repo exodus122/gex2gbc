@@ -157,7 +157,7 @@ call_00_0150_Init:
     stop                                               ;; 00:020e $10 $00
 .jr_00_0210:
     ld   A, $03                                        ;; 00:0210 $3e $03
-    ld   [wD61D_DemoUnk], A                                    ;; 00:0212 $ea $1d $d6
+    ld   [wD61D_AttractDemoIndex], A                                    ;; 00:0212 $ea $1d $d6
     FARCALL call_01_4f87_Password_ClearEntryGrid
 .jp_00_0220_SoftReset:
     ld   A, MENU_TYPE_TITLE_SPLASH                                        ;; 00:0220 $3e $14
@@ -183,7 +183,11 @@ call_00_0150_Init:
     ; attract demo. Anything else means the title screen came back some other way
     cp   A, MENU_RESULT_TIMED_OUT                      ;; 00:0272 $fe $70
     jr   NZ, .jp_00_0254                               ;; 00:0274 $20 $de
-    ld   HL, wD61D_DemoUnk                                     ;; 00:0276 $21 $1d $d6
+    ; Round-robin to the next of the four demos... except the result is thrown away.
+    ; "inc A / and $03" computes it into A and the very next instruction overwrites A
+    ; with $02, so the stored index is always 2 and the attract mode always plays
+    ; Samurai Night Fever. The other three demo scripts are unreachable
+    ld   HL, wD61D_AttractDemoIndex                                     ;; 00:0276 $21 $1d $d6
     ld   A, [HL]                                       ;; 00:0279 $7e
     inc  A                                             ;; 00:027a $3c
     and  A, $03                                        ;; 00:027b $e6 $03
@@ -191,7 +195,7 @@ call_00_0150_Init:
     ld   [HL], A                                       ;; 00:027f $77
     ld   A, $01                                        ;; 00:0280 $3e $01
     ld   [wD61E_DemoModeEnabled], A                                    ;; 00:0282 $ea $1e $d6
-    ld   HL, wD61D_DemoUnk                                     ;; 00:0285 $21 $1d $d6
+    ld   HL, wD61D_AttractDemoIndex                                     ;; 00:0285 $21 $1d $d6
     ld   L, [HL]                                       ;; 00:0288 $6e
     ld   H, $00                                        ;; 00:0289 $26 $00
     add  HL, HL                                        ;; 00:028b $29
@@ -202,7 +206,7 @@ call_00_0150_Init:
     ld   A, [HL]                                       ;; 00:0294 $7e
     ld   [wD61C_DemoInputsPointer], A                                    ;; 00:0295 $ea $1c $d6
     ld   A, $01                                        ;; 00:0298 $3e $01
-    ld   [wD61F_DemoRelatedCounter], A                                    ;; 00:029a $ea $1f $d6
+    ld   [wD61F_Demo_FramesUntilNextInput], A                                    ;; 00:029a $ea $1f $d6
 .jp_00_029d:
     ld   A, $05 ; Set Lives Remaining to 5                                       ;; 00:029d $3e $05
     ld   [wD73D_LivesRemaining], A                     ;; 00:029f $ea $3d $d7=
@@ -218,7 +222,7 @@ call_00_0150_Init:
     ld   A, [wD61E_DemoModeEnabled]                                    ;; 00:02b8 $fa $1e $d6
     and  A, A                                          ;; 00:02bb $a7
     jr   Z, .jr_00_02c9                                ;; 00:02bc $28 $0b
-    ld   HL, wD61D_DemoUnk                                     ;; 00:02be $21 $1d $d6
+    ld   HL, wD61D_AttractDemoIndex                                     ;; 00:02be $21 $1d $d6
     ld   L, [HL]                                       ;; 00:02c1 $6e
     ld   H, $00                                        ;; 00:02c2 $26 $00
     ld   DE, data_00_076d_DemoLevelIds                                      ;; 00:02c4 $11 $6d $07
@@ -887,7 +891,7 @@ call_00_075b_Player_CanBeDamaged:
     ret                                                ;; 00:076c $c9
 
 data_00_076d_DemoLevelIds:
-; level id played by each of the 4 attract-mode demos, indexed by wD61D_DemoUnk
+; level id played by each of the 4 attract-mode demos, indexed by wD61D_AttractDemoIndex
     db   MAP_TOON_TV_FINE_TOONING
     db   MAP_CIRCUIT_CENTRAL_WWWDOTCOMCOM
     db   MAP_KUNG_FU_THEATER_SAMURAI_NIGHT_FEVER
@@ -1483,7 +1487,7 @@ call_00_0ac1_VBlank_UpdateVRAM:
     jp   NZ, call_03_6ceb_HUD_LoadTimerDigits                                ;; 00:0b1e $c2 $eb $6c
     jp   call_03_7253_AnimatedTile_Update                                    ;; 00:0b21 $c3 $53 $72
 .jp_00_0b24:
-    ld   A, [wD72E_SecondaryTilesetBank2]                                    ;; 00:0b24 $fa $2e $d7
+    ld   A, [wD72E_TilesetAnim_Bank]                                    ;; 00:0b24 $fa $2e $d7
     ld   [MBC1RomBank], A                                    ;; 00:0b27 $ea $01 $20
     swap A                                             ;; 00:0b2a $cb $37
     rrca                                               ;; 00:0b2c $0f

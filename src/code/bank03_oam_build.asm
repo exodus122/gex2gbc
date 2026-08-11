@@ -224,7 +224,7 @@ call_03_5ca8_Entity_BuildPlayerSprites:
     add  A, $04                                        ;; 03:5d45 $c6 $04
     ld   [HL], A                                       ;; 03:5d47 $77
     ld   D, $cc                                        ;; 03:5d48 $16 $cc
-    ld   HL, wD76E                                     ;; 03:5d4a $21 $6e $d7
+    ld   HL, wD76E_FlyPowerup_OrbitPhase                                     ;; 03:5d4a $21 $6e $d7
     inc  [HL]                                          ;; 03:5d4d $34
     ld   A, [HL]                                       ;; 03:5d4e $7e
     rrca                                               ;; 03:5d4f $0f
@@ -968,13 +968,31 @@ call_03_6484_OAM_ClearUnusedEntries:
     ret                                                ;; 03:6498 $c9
 
 call_03_6499_Collectible_BuildSprites:
-; Builds OAM entries for collectible sub-hitbox sparkle/coin sprites into wCC60_ShadowOAM_CollectibleSprites. 
-; Reads map scroll position (wD6ED/wD6EF), computes sub-pixel offsets into wD64D/wD64E. 
-; Reads collectible slot data from wC4xx/wC5xx (two parallel arrays of X and Y positions). 
-; For each active slot: computes screen position, writes tile 7E with attribute $01 (a sparkle tile). 
-; If Gex is drawn and the player overlaps the 18×36 collection window, marks the slot as 
-; collected (FF) and calls call_00_06ec_Player_ObtainedCollectible (collect/score). Clears remaining OAM entries after 
-; the last active collectible
+; Draws the on-screen collectibles into wCC60_ShadowOAM_CollectibleSprites, and collects
+; any the player is touching.
+;
+; The camera is reduced to a cell column and row (scroll >> 4, since a collectible cell is
+; 16x16 pixels) plus the leftover sub-cell pixels, which become the fine biases in
+; wD64D/wD64E. The column then indexes the two tables that
+; call_0b_4000_CollectibleList_LoadForCurrentLevel precomputed:
+; wC700_Collectible_ScanCountByColumn says how many collectibles are in range - zero
+; returns immediately - and wC600_Collectible_ScanStartByColumn says where to start. So
+; the list is never searched at runtime.
+;
+; Each entry in that run is then filtered on Y only: (wC500_Collectible_GridY - camera
+; row) must be under 10 cells. That single test also drops collected entries for free,
+; because collection writes $FF into the Y table. Survivors are placed at cell * 16 plus
+; the fine bias, as tile $7E with attribute $01.
+;
+; Collection happens in the same pass, but only when the player is actually being drawn
+; (wD743_Player_UpdateFlag): if Gex's screen position is inside an 18x36 pixel window
+; around the sprite, the Y entry becomes $FF and
+; call_00_06ec_Player_ObtainedCollectible runs. Drawing and collecting therefore use the
+; same coordinates, so what you see is what you can pick up.
+;
+; The OAM region is capped by "bit 7, L" - once the write pointer passes $CC80 the loop
+; stops advancing it, so a crowded screen silently drops the extras rather than
+; overrunning into the next OAM block. Unused entries after the last one are cleared
     ld   HL, wD6ED_BgMap_ScrollX                                     ;; 03:6499 $21 $ed $d6
     ld   A, [HL]                                       ;; 03:649c $7e
     and  A, $0f                                        ;; 03:649d $e6 $0f
@@ -990,7 +1008,7 @@ call_03_6499_Collectible_BuildSprites:
     swap A                                             ;; 03:64ad $cb $37
     or   A, C                                          ;; 03:64af $b1
     ld   C, A                                          ;; 03:64b0 $4f
-    ld   B, $c7                                        ;; 03:64b1 $06 $c7
+    ld   B, HIGH(wC700_Collectible_ScanCountByColumn)  ;; 03:64b1 $06 $c7
     ld   A, [BC]                                       ;; 03:64b3 $0a
     and  A, A                                          ;; 03:64b4 $a7
     ret  Z                                             ;; 03:64b5 $c8
@@ -1018,7 +1036,7 @@ call_03_6499_Collectible_BuildSprites:
 .jr_03_64d6:
     push AF                                            ;; 03:64d6 $f5
     push BC                                            ;; 03:64d7 $c5
-    ld   D, $c5                                        ;; 03:64d8 $16 $c5
+    ld   D, HIGH(wC500_Collectible_GridY)              ;; 03:64d8 $16 $c5
     ld   A, [DE]                                       ;; 03:64da $1a
     sub  A, B                                          ;; 03:64db $90
     cp   A, $0a                                        ;; 03:64dc $fe $0a
@@ -1029,7 +1047,7 @@ call_03_6499_Collectible_BuildSprites:
     add  A, B                                          ;; 03:64e6 $80
     ld   B, A                                          ;; 03:64e7 $47
     ld   [HL+], A                                      ;; 03:64e8 $22
-    ld   D, $c4                                        ;; 03:64e9 $16 $c4
+    ld   D, HIGH(wC400_Collectible_GridX)              ;; 03:64e9 $16 $c4
     ld   A, [DE]                                       ;; 03:64eb $1a
     sub  A, C                                          ;; 03:64ec $91
     swap A                                             ;; 03:64ed $cb $37
@@ -1058,7 +1076,7 @@ call_03_6499_Collectible_BuildSprites:
     jr   NC, .jr_03_6524                               ;; 03:6515 $30 $0d
     push HL                                            ;; 03:6517 $e5
     push DE                                            ;; 03:6518 $d5
-    ld   D, $c5                                        ;; 03:6519 $16 $c5
+    ld   D, HIGH(wC500_Collectible_GridY)              ;; 03:6519 $16 $c5
     dec  E                                             ;; 03:651b $1d
     ld   A, $ff                                        ;; 03:651c $3e $ff
     ld   [DE], A                                       ;; 03:651e $12

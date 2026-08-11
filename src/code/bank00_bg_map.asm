@@ -356,14 +356,14 @@ call_00_1472_BgMap_LoadRowForVerticalScroll:
     add  HL, HL                                        ;; 00:1493 $29
     add  HL, HL                                        ;; 00:1494 $29 ; HL = 8 * HL
     ld   A, H                                          ;; 00:1495 $7c
-    ld   [wD77A_PlayerYPositionBlock], A                                    ;; 00:1496 $ea $7a $d7 ; [wD77A_PlayerYPositionBlock] = the upper byte of the 8x value
+    ld   [wD77A_BgMap_ScrollBlockY], A                                    ;; 00:1496 $ea $7a $d7 ; [wD77A_BgMap_ScrollBlockY] = the upper byte of the 8x value
     ld   L, E                                          ;; 00:1499 $6b
     ld   H, D                                          ;; 00:149a $62 ; HL = [wD6ED_BgMap_ScrollX]
     add  HL, HL                                        ;; 00:149b $29
     add  HL, HL                                        ;; 00:149c $29
     add  HL, HL                                        ;; 00:149d $29 ; HL = 8 * HL
     ld   A, H                                          ;; 00:149e $7c
-    ld   [wD779_RelatedToXPosition], A                                    ;; 00:149f $ea $79 $d7 ; [wD779_RelatedToXPosition] = the upper byte of the 8x value
+    ld   [wD779_BgMap_ScrollBlockX], A                                    ;; 00:149f $ea $79 $d7 ; [wD779_BgMap_ScrollBlockX] = the upper byte of the 8x value
     ld   A, C                                          ;; 00:14a2 $79
     and  A, $f8                                        ;; 00:14a3 $e6 $f8
     ld   L, A                                          ;; 00:14a5 $6f
@@ -560,14 +560,14 @@ call_00_157a_BgMap_LoadColumnForHorizontalScroll:
     add  HL, HL                                        ;; 00:159b $29
     add  HL, HL                                        ;; 00:159c $29
     ld   A, H                                          ;; 00:159d $7c
-    ld   [wD77A_PlayerYPositionBlock], A                                    ;; 00:159e $ea $7a $d7
+    ld   [wD77A_BgMap_ScrollBlockY], A                                    ;; 00:159e $ea $7a $d7
     ld   L, E                                          ;; 00:15a1 $6b
     ld   H, D                                          ;; 00:15a2 $62
     add  HL, HL                                        ;; 00:15a3 $29
     add  HL, HL                                        ;; 00:15a4 $29
     add  HL, HL                                        ;; 00:15a5 $29
     ld   A, H                                          ;; 00:15a6 $7c
-    ld   [wD779_RelatedToXPosition], A                                    ;; 00:15a7 $ea $79 $d7
+    ld   [wD779_BgMap_ScrollBlockX], A                                    ;; 00:15a7 $ea $79 $d7
     ld   A, C                                          ;; 00:15aa $79
     and  A, $e0                                        ;; 00:15ab $e6 $e0
     ld   L, A                                          ;; 00:15ad $6f
@@ -1192,9 +1192,17 @@ call_00_1779_BlockPatch_WriteAttributes:
     ret                                                ;; 00:18a6 $c9
 
 call_00_18a7_BgMap_ApplyBlockPatchesToRow:
-; Same as above but for vertical camera strips. Calls BgMap_MaskAltBlocksetFlags, then scans
-; $CD00 slots for entries whose X coord matches wD779. Checks Y coord within 6 rows of wD77A. On match, 
-; patches the column buffer at HL+1 + (Y_coord - wD77A) × 2 with the block patch data from $CD[E]
+; Reapplies registered block patches to a horizontal ROW strip. Calls
+; BgMap_MaskAltBlocksetFlags, then walks the registered patch slots backwards from
+; wD778_BlockPatch_SlotWriteHead.
+;
+; A slot qualifies when its Y (the $CE00 table) equals wD77A_BgMap_ScrollBlockY exactly -
+; that is the row being built - and its X (the $CD00 table) is within 6 blocks of
+; wD779_BgMap_ScrollBlockX, the width of the strip. Matching slots overwrite the row
+; buffer at HL + (X - wD779_BgMap_ScrollBlockX) * 2 with the slot's two patch bytes,
+; which live in the parallel $CD80/$CE80 halves of the same tables.
+;
+; Exact on Y, ranged on X. The column twin below has it exactly the other way round
     call call_00_1e3c_BgMap_MaskAltBlocksetFlags                                  ;; 00:18a7 $cd $3c $1e
     ld   A, [wD778_BlockPatch_SlotWriteHead]                                    ;; 00:18aa $fa $78 $d7
     and  A, A                                          ;; 00:18ad $a7
@@ -1202,9 +1210,9 @@ call_00_18a7_BgMap_ApplyBlockPatchesToRow:
     dec  A                                             ;; 00:18b0 $3d
     ld   E, A                                          ;; 00:18b1 $5f
     ld   D, $ce                                        ;; 00:18b2 $16 $ce
-    ld   A, [wD779_RelatedToXPosition]                                    ;; 00:18b4 $fa $79 $d7
+    ld   A, [wD779_BgMap_ScrollBlockX]                                    ;; 00:18b4 $fa $79 $d7
     ld   C, A                                          ;; 00:18b7 $4f
-    ld   A, [wD77A_PlayerYPositionBlock]                                    ;; 00:18b8 $fa $7a $d7
+    ld   A, [wD77A_BgMap_ScrollBlockY]                                    ;; 00:18b8 $fa $7a $d7
     ld   B, A                                          ;; 00:18bb $47
     push HL                                            ;; 00:18bc $e5
 .jr_00_18bd:
@@ -1241,9 +1249,11 @@ call_00_18a7_BgMap_ApplyBlockPatchesToRow:
     jr   call_00_1922_BgMap_LoadSecondaryTileset                                    ;; 00:18e2 $18 $3e
 
 call_00_18e4_BgMap_ApplyBlockPatchesToColumn:
-; Same as above but for horizontal strip loading: scans $CDB0 for block patches matching X block coordinate wD779,
-; within 6 rows of wD77A, and patches the wD70E_BgMap_TempScratchColumnMetaTileIDs metatile column buffer accordingly. 
-; Falls through to SecondaryTileset_Load
+; The vertical COLUMN twin of the routine above. Same slot walk, mirrored test: a slot
+; qualifies when its X (the $CD00 table) equals wD779_BgMap_ScrollBlockX exactly and its Y
+; (the $CE00 table) is within 6 blocks of wD77A_BgMap_ScrollBlockY. Matches patch the
+; wD70E_BgMap_TempScratchColumnMetaTileIDs buffer at HL+1 + (Y - wD77A_BgMap_ScrollBlockY) * 2.
+; Falls through to BgMap_LoadSecondaryTileset
     call call_00_1e3c_BgMap_MaskAltBlocksetFlags                                  ;; 00:18e4 $cd $3c $1e
     ld   A, [wD778_BlockPatch_SlotWriteHead]                                    ;; 00:18e7 $fa $78 $d7
     and  A, A                                          ;; 00:18ea $a7
@@ -1251,9 +1261,9 @@ call_00_18e4_BgMap_ApplyBlockPatchesToColumn:
     dec  A                                             ;; 00:18ed $3d
     ld   E, A                                          ;; 00:18ee $5f
     ld   D, $cd                                        ;; 00:18ef $16 $cd
-    ld   A, [wD779_RelatedToXPosition]                                    ;; 00:18f1 $fa $79 $d7
+    ld   A, [wD779_BgMap_ScrollBlockX]                                    ;; 00:18f1 $fa $79 $d7
     ld   C, A                                          ;; 00:18f4 $4f
-    ld   A, [wD77A_PlayerYPositionBlock]                                    ;; 00:18f5 $fa $7a $d7
+    ld   A, [wD77A_BgMap_ScrollBlockY]                                    ;; 00:18f5 $fa $7a $d7
     ld   B, A                                          ;; 00:18f8 $47
     push HL                                            ;; 00:18f9 $e5
 .jr_00_18fa:
@@ -1362,7 +1372,7 @@ call_00_1922_BgMap_LoadSecondaryTileset:
     inc  HL                                            ;; 00:1972 $23
     ld   A, [HL]                                       ;; 00:1973 $7e
     ld   [wD726_SecondaryTilesetBank], A                                    ;; 00:1974 $ea $26 $d7
-    ld   [wD72E_SecondaryTilesetBank2], A                                    ;; 00:1977 $ea $2e $d7
+    ld   [wD72E_TilesetAnim_Bank], A                                    ;; 00:1977 $ea $2e $d7
     call call_00_1089_SwitchBank                                  ;; 00:197a $cd $89 $10
     xor  A, A                                          ;; 00:197d $af
     ld   [wD727_SecondaryTileset_SrcAddrLo], A                                    ;; 00:197e $ea $27 $d7

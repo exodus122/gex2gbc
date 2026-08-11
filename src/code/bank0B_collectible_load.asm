@@ -1,15 +1,29 @@
 call_0b_4000_CollectibleList_LoadForCurrentLevel:
-; Initializes the collectible system for the current level. First clears all 256 entries of 
-; wC400–wC6FF (sets wC4xx=$FF, wC5xx=$00, wC6xx=$00 per slot). Then uses wD624 (level ID) 
-; to index .data_0b_4062_MapCollectibleLists and load the level's collectible coordinate list into wC400/wC500 
-; (X in wC4xx, Y in wC5xx, interleaved pairs, terminated by Y=$00). Then builds a sorted index 
-; table at wC600: for each of 256 slots, scans wC400 to find the last X coordinate less than 
-; slot's E value, stores that position index. Finally builds wC700: for each slot, counts how 
-; many X coords fall within an $0B-wide window around that slot's position
+; Builds the four collectible tables for the current level. Three passes.
+;
+; 1. Clear. All 256 slots of all four tables: wC400_Collectible_GridX to $FF (the
+;    list terminator, so an empty list is the default) and the other three to zero.
+;
+; 2. Load. wD624_CurrentLevelId indexes .data_0b_4062_MapCollectibleLists for this
+;    level's list, which is interleaved (X, Y) pairs in 16x16-pixel grid cells,
+;    ending at the first pair whose X is zero. The pairs are de-interleaved into
+;    wC400_Collectible_GridX and wC500_Collectible_GridY. The lists are authored
+;    sorted by ascending X, which is what makes pass 3 valid.
+;
+; 3. Index. Two lookup tables keyed by camera cell column, so the per-frame draw
+;    never walks the list. For every column 0-255:
+;      wC600_Collectible_ScanStartByColumn - walk wC400 until an X reaches the
+;        column (or the terminator) and store that index: a lower bound
+;      wC700_Collectible_ScanCountByColumn - from that index, count entries with X
+;        below column + $0B, saturating at the terminator. $0B cells is 176 pixels,
+;        one cell more than the screen is wide
+;
+; The cost is 256 list walks at level load in exchange for two array reads per frame
+; in call_03_6499_Collectible_BuildSprites
     xor  A, A                                          ;; 0b:4000 $af
     ld   L, A                                          ;; 0b:4001 $6f
 .jr_0b_4002:
-    ld   H, $c4                                        ;; 0b:4002 $26 $c4
+    ld   H, HIGH(wC400_Collectible_GridX)              ;; 0b:4002 $26 $c4
     ld   [HL], $ff                                     ;; 0b:4004 $36 $ff
     inc  H                                             ;; 0b:4006 $24
     ld   [HL], A                                       ;; 0b:4007 $77
@@ -28,7 +42,7 @@ call_0b_4000_CollectibleList_LoadForCurrentLevel:
     ld   A, [HL+]                                      ;; 0b:401a $2a
     ld   H, [HL]                                       ;; 0b:401b $66
     ld   L, A                                          ;; 0b:401c $6f
-    ld   DE, wC400_CollectibleCoordinates                                     ;; 0b:401d $11 $00 $c4
+    ld   DE, wC400_Collectible_GridX                                     ;; 0b:401d $11 $00 $c4
 .jr_0b_4020:
     ld   A, [HL+]                                      ;; 0b:4020 $2a
     ld   [DE], A                                       ;; 0b:4021 $12
@@ -39,9 +53,9 @@ call_0b_4000_CollectibleList_LoadForCurrentLevel:
     inc  E                                             ;; 0b:4026 $1c
     and  A, A                                          ;; 0b:4027 $a7
     jr   NZ, .jr_0b_4020                               ;; 0b:4028 $20 $f6
-    ld   DE, wC600_CollectibleRelated                                     ;; 0b:402a $11 $00 $c6
+    ld   DE, wC600_Collectible_ScanStartByColumn                                     ;; 0b:402a $11 $00 $c6
 .jr_0b_402d:
-    ld   HL, wC400_CollectibleCoordinates                                     ;; 0b:402d $21 $00 $c4
+    ld   HL, wC400_Collectible_GridX                                     ;; 0b:402d $21 $00 $c4
 .jr_0b_4030:
     ld   A, [HL+]                                      ;; 0b:4030 $2a
     cp   A, $ff                                        ;; 0b:4031 $fe $ff
@@ -56,10 +70,10 @@ call_0b_4000_CollectibleList_LoadForCurrentLevel:
     jr   NZ, .jr_0b_402d                               ;; 0b:403c $20 $ef
     ld   E, $00                                        ;; 0b:403e $1e $00
 .jr_0b_4040:
-    ld   D, $c6                                        ;; 0b:4040 $16 $c6
+    ld   D, HIGH(wC600_Collectible_ScanStartByColumn)  ;; 0b:4040 $16 $c6
     ld   A, [DE]                                       ;; 0b:4042 $1a
     ld   L, A                                          ;; 0b:4043 $6f
-    ld   H, $c4                                        ;; 0b:4044 $26 $c4
+    ld   H, HIGH(wC400_Collectible_GridX)              ;; 0b:4044 $26 $c4
     ld   B, $00                                        ;; 0b:4046 $06 $00
     ld   C, $ff                                        ;; 0b:4048 $0e $ff
     ld   A, E                                          ;; 0b:404a $7b
@@ -74,7 +88,7 @@ call_0b_4000_CollectibleList_LoadForCurrentLevel:
     cp   A, C                                          ;; 0b:4056 $b9
     jr   C, .jr_0b_4050                                ;; 0b:4057 $38 $f7
 .jr_0b_4059:
-    ld   D, $c7                                        ;; 0b:4059 $16 $c7
+    ld   D, HIGH(wC700_Collectible_ScanCountByColumn)  ;; 0b:4059 $16 $c7
     ld   A, B                                          ;; 0b:405b $78
     dec  A                                             ;; 0b:405c $3d
     ld   [DE], A                                       ;; 0b:405d $12

@@ -545,7 +545,7 @@ call_00_3364_Entity_ApproachPlayerXWithBounds:
     add  hl,hl
     add  hl,hl
     ld   e,h
-    ld   hl,wD76A_PlayerXPositionBlock
+    ld   hl,wD76A_Player_BlockX
     ld   a,[hl]
     cp   c
     jr   c,.jr_02_33A5
