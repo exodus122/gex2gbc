@@ -560,8 +560,8 @@
 00:3bd7 call_00_3b8d_Entity_TickParticles.jr_00_3bd7
 00:3bd9 call_00_3b8d_Entity_TickParticles.jr_00_3bd9
 00:3bec call_00_3b8d_Entity_TickParticles.jr_00_3bec
-00:3bf4 call_00_3bf4_Entity_TriggerPaletteSwap
-00:3c20 call_00_3bf4_Entity_TriggerPaletteSwap.data_00_3c20
+00:3bf4 call_00_3bf4_Remote_TriggerPaletteSwap
+00:3c20 call_00_3bf4_Remote_TriggerPaletteSwap.data_00_3c20
 00:3c3f call_00_3c3f_Remotes_RecountAllTotals
 00:3c54 call_00_3c54_Remotes_CountAndStore
 00:3c5c call_00_3c54_Remotes_CountAndStore.jr_00_3c5c

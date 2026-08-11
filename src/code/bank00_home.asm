@@ -2692,6 +2692,42 @@ INCLUDE "code/bank00_tile_hit_scripts.asm"
 INCLUDE "code/bank00_cutscenes.asm"
 INCLUDE "code/bank00_map_init_data.asm"
 INCLUDE "code/bank00_entity_utils.asm"
+INCLUDE "code/bank00_particles.asm"
+
+call_00_3bf4_Remote_TriggerPaletteSwap:
+; Only runs in hub level (level 0); maps entity slot to a palette index via a lookup table 
+; and sets wD610_MediaDimension_TVScreenId + HDMA flag bit 4 to trigger a palette transfer
+    ld   A, [wD624_CurrentLevelId]                                    ;; 00:3bf4 $fa $24 $d6
+    and  A, A                                          ;; 00:3bf7 $a7
+    ret  NZ                                            ;; 00:3bf8 $c0
+    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3bf9 $fa $00 $d3
+    rlca                                               ;; 00:3bfc $07
+    rlca                                               ;; 00:3bfd $07
+    rlca                                               ;; 00:3bfe $07
+    and  A, $07                                        ;; 00:3bff $e6 $07
+    ld   L, A                                          ;; 00:3c01 $6f
+    ld   H, $00                                        ;; 00:3c02 $26 $00
+    ld   DE, wD301_EntityListIndexesForCurrentEntities                                     ;; 00:3c04 $11 $01 $d3
+    add  HL, DE                                        ;; 00:3c07 $19
+    ld   A, [HL]                                       ;; 00:3c08 $7e
+    dec  A                                             ;; 00:3c09 $3d
+    srl  A                                             ;; 00:3c0a $cb $3f
+    ld   L, A                                          ;; 00:3c0c $6f
+    ld   H, $00                                        ;; 00:3c0d $26 $00
+    ld   DE, .data_00_3c20                                     ;; 00:3c0f $11 $20 $3c
+    add  HL, DE                                        ;; 00:3c12 $19
+    ld   A, [HL]                                       ;; 00:3c13 $7e
+    cp   A, $ff                                        ;; 00:3c14 $fe $ff
+    ret  Z                                             ;; 00:3c16 $c8
+    ld   [wD610_MediaDimension_TVScreenId], A                                    ;; 00:3c17 $ea $10 $d6
+    ld   HL, wD60F_GfxTransferFlags                                     ;; 00:3c1a $21 $0f $d6
+    set  4, [HL]                                       ;; 00:3c1d $cb $e6
+    ret                                                ;; 00:3c1f $c9
+.data_00_3c20:
+    db   $ff, $0f, $05, $04, $02, $0c, $ff, $09        ;; 00:3c20 ?..?????
+    db   $0e, $08, $03, $00, $ff, $0b, $11, $ff        ;; 00:3c28 ????????
+    db   $07, $ff, $ff, $ff, $ff, $0d, $0a, $01        ;; 00:3c30 .???????
+    db   $13, $06, $12, $ff, $ff, $ff, $10             ;; 00:3c38 ???????
 
 call_00_3c3f_Remotes_RecountAllTotals:
 ; Recomputes the three collection totals shown on the totals screen and used to gate

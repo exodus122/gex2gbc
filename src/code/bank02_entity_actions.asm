@@ -473,7 +473,7 @@ call_02_5252_EntityAction_TVButton_unk1:
 
 call_02_5253_EntityAction_RedRemote_unk0:
     call call_00_34ea_Entity_IsFirstFrameOfAction                                  ;; 02:5253 $cd $ea $34
-    call NZ, call_00_3bf4_Entity_TriggerPaletteSwap                              ;; 02:5256 $c4 $f4 $3b
+    call NZ, call_00_3bf4_Remote_TriggerPaletteSwap                              ;; 02:5256 $c4 $f4 $3b
     ld   HL, wD60F_GfxTransferFlags                                     ;; 02:5259 $21 $0f $d6
     bit  4, [HL]                                       ;; 02:525c $cb $66
     call Z, call_00_0634_FlyPowerup_StartEntry                               ;; 02:525e $cc $34 $06
