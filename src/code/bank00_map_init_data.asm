@@ -84,10 +84,12 @@ call_00_2e77_MapData_GetMapBank:
     ld   A, [HL]                                       ;; 00:2e7e $7e
     ret                                                ;; 00:2e7f $c9
 
-call_00_2e80_MapData_GetExtendedMapBank:
-; A = ROM bank holding the secondary blockset layer for this map
+call_00_2e80_MapData_GetAltBlocksetBank:
+; A = ROM bank holding the alt-blockset flag plane for this map - a grid the same
+; shape as the tilemap, one byte per metatile. The byte is shared between up to eight
+; maps; call_00_2e93_MapData_GetAltBlocksetMask says which bit is this one's
     call call_00_2eb0_MapData_GetRecordAddr                                  ;; 00:2e80 $cd $b0 $2e
-    ld   DE, MAPDATA_EXTENDED_MAP_BANK                 ;; 00:2e83 $11 $05 $00
+    ld   DE, MAPDATA_ALT_BLOCKSET_BANK                 ;; 00:2e83 $11 $05 $00
     add  HL, DE                                        ;; 00:2e86 $19
     ld   A, [HL]                                       ;; 00:2e87 $7e
     ret                                                ;; 00:2e88 $c9
@@ -103,9 +105,9 @@ call_00_2e89_MapData_GetBlocksetAndCollisionBank:
     ret                                                ;; 00:2e92 $c9 ; unreachable - a stray second ret
 
 call_00_2e93_MapData_GetAltBlocksetMask:
-; A = the single-bit mask selecting which secondary blockset layer this map uses.
-; Stored to wD6FE_BgMap_AltBlocksetMask and ANDed over six bytes at a time
-; by call_00_1e3c_BgMap_MaskAltBlocksetFlags.
+; A = this map's bit within the flag plane named by call_00_2e80_MapData_GetAltBlocksetBank.
+; Stored to wD6FE_BgMap_AltBlocksetMask and ANDed over six bytes at a time by
+; call_00_1e3c_BgMap_MaskAltBlocksetFlags. $00 for a map that never uses the alt blockset
     call call_00_2eb0_MapData_GetRecordAddr                                  ;; 00:2e93 $cd $b0 $2e
     ld   DE, MAPDATA_ALT_BLOCKSET_MASK                 ;; 00:2e96 $11 $08 $00
     add  HL, DE                                        ;; 00:2e99 $19
@@ -154,10 +156,10 @@ call_00_2eb0_MapData_GetRecordAddr:
 ;   $02-$03   MAPDATA_TEXT_BLOCK_PTR           -> list of string pointers; entry 0
 ;                                              is the level name, 1..n the missions
 ;   $04       MAPDATA_MAP_BANK
-;   $05       MAPDATA_EXTENDED_MAP_BANK        secondary blockset layer
+;   $05       MAPDATA_ALT_BLOCKSET_BANK        flag plane, shared by up to 8 maps
 ;   $06       MAPDATA_BLOCKSET_COLLISION_BANK  blockset and collision share a bank
 ;   $07                                        unused, always $00
-;   $08       MAPDATA_ALT_BLOCKSET_MASK        which secondary layer this map uses
+;   $08       MAPDATA_ALT_BLOCKSET_MASK        this map's bit in that plane
 ;   $09       MAPDATA_TILESET_BANK
 ;   $0A-$0B   MAPDATA_TILESET_OFFSET
 ;   $0C-$0F                                    unused, always $00

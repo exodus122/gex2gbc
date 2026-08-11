@@ -540,11 +540,12 @@ DEF MAPDATA_TEXT_BLOCK_PTR                  EQU $02 ; word -> list of text point
                                                     ; entry 0 is the level name, entries
                                                     ; 1..n are the mission descriptions
 DEF MAPDATA_MAP_BANK                        EQU $04
-DEF MAPDATA_EXTENDED_MAP_BANK               EQU $05
+DEF MAPDATA_ALT_BLOCKSET_BANK               EQU $05 ; bank $34 or $35 - the flag plane
+                                                    ; described under ALT BLOCKSET below
 DEF MAPDATA_BLOCKSET_COLLISION_BANK         EQU $06
                                                     ; $07 unused, always $00
-DEF MAPDATA_ALT_BLOCKSET_MASK               EQU $08 ; single-bit mask, ANDed over the
-                                                    ; secondary blockset bytes
+DEF MAPDATA_ALT_BLOCKSET_MASK               EQU $08 ; this map's bit within the flag
+                                                    ; plane; $00 opts out entirely
 DEF MAPDATA_TILESET_BANK                    EQU $09
 DEF MAPDATA_TILESET_OFFSET                  EQU $0A ; word
                                                     ; $0C-$0F unused, always $00
@@ -720,6 +721,17 @@ DEF FONT_BYTES_PER_ROW                      EQU 2   ; 2bpp: plane 0 then plane 1
 ;     MAPDATA_ALT_BLOCKSET_MASK gates which of those flags survive for this level,
 ;     and BgMap_MaskAltBlocksetFlags does the gating. Nothing here changes at
 ;     runtime; it is just which of two blocksets a given metatile draws from.
+;
+;     The flags live in their own ROM bank named by MAPDATA_ALT_BLOCKSET_BANK - a
+;     plane the same shape as the tilemap, read in parallel with it, one byte per
+;     metatile. Only ONE bit of each byte belongs to any given map: the bank is
+;     shared, and MAPDATA_ALT_BLOCKSET_MASK says which bit is yours. So a single
+;     plane serves up to eight maps at a byte per metatile instead of eight planes
+;     at a bit each - the same storage, but no bit addressing at read time, which
+;     matters because this runs per metatile while the map scrolls.
+;
+;     Bank $34 carries all eight bits; bank $35 uses five. Maps with a mask of $00
+;     never take the alt blockset at all - every flag they read is discarded.
 ;
 ;   BLOCK PATCH - dynamic, per playthrough, a world mutation. Rectangles of
 ;     replacement blocks registered into the wCC00/wCD00/wCE00/wCF00 slot tables by

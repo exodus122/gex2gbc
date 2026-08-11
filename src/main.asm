@@ -446,13 +446,17 @@ SECTION "bank33", ROMX[$4000], BANK[$33]
 map_scream_tv2:
     INCBIN "data/maps/scream_tv/map_scream_tv2.bin"
 
+; Alt-blockset flag planes. One byte per metatile, laid out like the tilemaps in
+; banks $28-$33 and read alongside them; each bit belongs to a different map, picked
+; out by that map's MAPDATA_ALT_BLOCKSET_MASK. Bank $34 covers the maps in banks
+; $2C-$33, bank $35 the maps in $28-$2B.
 SECTION "bank34", ROMX[$4000], BANK[$34]
-extended_maps_bank34:
-    INCBIN "data/maps/extended_maps_bank34.bin"
+alt_blockset_flags_bank34:
+    INCBIN "data/maps/alt_blockset_flags_bank34.bin"
 
 SECTION "bank35", ROMX[$4000], BANK[$35]
-extended_maps_bank35:
-    INCBIN "data/maps/extended_maps_bank35.bin"
+alt_blockset_flags_bank35:
+    INCBIN "data/maps/alt_blockset_flags_bank35.bin"
 
 SECTION "bank36", ROMX[$4000], BANK[$36]
 tileset_media_dimension:

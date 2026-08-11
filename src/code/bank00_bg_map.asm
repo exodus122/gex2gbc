@@ -10,8 +10,8 @@ call_00_1264_BgMap_LoadFull:
     call call_00_0ede_SelectWramBank1                                  ;; 00:1264 $cd $de $0e
     call call_00_2e77_MapData_GetMapBank                                  ;; 00:1267 $cd $77 $2e
     ld   [wD6F5_BgMap_MapBank], A                                    ;; 00:126a $ea $f5 $d6
-    call call_00_2e80_MapData_GetExtendedMapBank                                  ;; 00:126d $cd $80 $2e
-    ld   [wD6F6_BgMap_ExtendedMapBank], A                                    ;; 00:1270 $ea $f6 $d6
+    call call_00_2e80_MapData_GetAltBlocksetBank                                  ;; 00:126d $cd $80 $2e
+    ld   [wD6F6_BgMap_AltBlocksetBank], A                                    ;; 00:1270 $ea $f6 $d6
     call call_00_2e89_MapData_GetBlocksetAndCollisionBank                                  ;; 00:1273 $cd $89 $2e
     ld   [wD6F7_BgMap_BlocksetAndCollisionBank], A                                    ;; 00:1276 $ea $f7 $d6
     call call_00_2e93_MapData_GetAltBlocksetMask                                  ;; 00:1279 $cd $93 $2e
@@ -432,7 +432,7 @@ call_00_1472_BgMap_LoadRowForVerticalScroll:
     ld   A, [HL+]                                      ;; 00:14f5 $2a
     ld   [DE], A                                       ;; 00:14f6 $12
     call call_00_10a3_RestoreBank                                  ;; 00:14f7 $cd $a3 $10
-    ld   A, [wD6F6_BgMap_ExtendedMapBank]                                    ;; 00:14fa $fa $f6 $d6
+    ld   A, [wD6F6_BgMap_AltBlocksetBank]                                    ;; 00:14fa $fa $f6 $d6
     call call_00_1089_SwitchBank                       ;; 00:14fd $cd $89 $10 switch to map data file 34/35
     pop  HL                                            ;; 00:1500 $e1 hl = 44b4
     ld   DE, wD703_BgMap_TempScratchRowAltBlocksetFlags                                     ;; 00:1501 $11 $03 $d7 de = d703
@@ -644,7 +644,7 @@ call_00_157a_BgMap_LoadColumnForHorizontalScroll:
     ld   A, [HL]                                       ;; 00:1607 $7e
     ld   [DE], A                                       ;; 00:1608 $12
     call call_00_10a3_RestoreBank                                  ;; 00:1609 $cd $a3 $10
-    ld   A, [wD6F6_BgMap_ExtendedMapBank]                                    ;; 00:160c $fa $f6 $d6
+    ld   A, [wD6F6_BgMap_AltBlocksetBank]                                    ;; 00:160c $fa $f6 $d6
     call call_00_1089_SwitchBank                                  ;; 00:160f $cd $89 $10
     pop  HL                                            ;; 00:1612 $e1
     ld   DE, wD70F_BgMap_TempScratchColumnAltBlocksetFlags                                     ;; 00:1613 $11 $0f $d7

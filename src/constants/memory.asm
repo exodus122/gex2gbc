@@ -963,7 +963,10 @@ wD6F3_BgMap_PrevRow:
     ds 2                                               ;; d6f3
 wD6F5_BgMap_MapBank:
     ds 1                                               ;; d6f5
-wD6F6_BgMap_ExtendedMapBank:
+wD6F6_BgMap_AltBlocksetBank:
+; ROM bank of the alt-blockset flag plane ($34 or $35). Paged in on its own for the
+; few bytes of each strip that need it, then the blockset bank is paged straight
+; back - see the two loaders in bank00_bg_map.asm
     ds 1                                               ;; d6f6
 wD6F7_BgMap_BlocksetAndCollisionBank:
     ds 1                                               ;; d6f7
@@ -988,6 +991,9 @@ wD6FC_BgMap_ColumnWritePos:
 wD6FD_BgMap_ColumnWritePosHi:
     ds 1                                               ;; d6fd
 wD6FE_BgMap_AltBlocksetMask:
+; this map's single bit within the shared flag plane at wD6F6_BgMap_AltBlocksetBank.
+; call_00_1e3c_BgMap_MaskAltBlocksetFlags ANDs it over every flag byte just read, so
+; the other maps' bits fall away. $00 means this map never uses the alt blockset
     ds 1                                               ;; d6fe
 wD6FF_BgMap_TilesetBank:
     ds 1                                               ;; d6ff

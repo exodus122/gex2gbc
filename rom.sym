@@ -421,7 +421,7 @@
 00:2e4c call_00_2e4c_MapData_GetLevelNameText
 00:2e5f call_00_2e5f_MapData_GetMissionText
 00:2e77 call_00_2e77_MapData_GetMapBank
-00:2e80 call_00_2e80_MapData_GetExtendedMapBank
+00:2e80 call_00_2e80_MapData_GetAltBlocksetBank
 00:2e89 call_00_2e89_MapData_GetBlocksetAndCollisionBank
 00:2e93 call_00_2e93_MapData_GetAltBlocksetMask
 00:2e9c call_00_2e9c_MapData_GetTilesetBank
@@ -3259,8 +3259,8 @@
 31:4000 map_toon_tv
 32:4000 map_scream_tv1
 33:4000 map_scream_tv2
-34:4000 extended_maps_bank34
-35:4000 extended_maps_bank35
+34:4000 alt_blockset_flags_bank34
+35:4000 alt_blockset_flags_bank35
 36:4000 tileset_media_dimension
 36:5000 tileset_toon_tv
 36:6000 tileset_scream_tv
@@ -3507,7 +3507,7 @@
 00:d6f1 wD6F1_BgMap_PrevColumn
 00:d6f3 wD6F3_BgMap_PrevRow
 00:d6f5 wD6F5_BgMap_MapBank
-00:d6f6 wD6F6_BgMap_ExtendedMapBank
+00:d6f6 wD6F6_BgMap_AltBlocksetBank
 00:d6f7 wD6F7_BgMap_BlocksetAndCollisionBank
 00:d6f9 wD6F9_BgMap_LoadingFlags
 00:d6fa wD6FA_BgMap_RowWritePosLo
