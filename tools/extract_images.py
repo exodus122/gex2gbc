@@ -291,7 +291,7 @@ def extract_bank03_new():
         os.system('rgbgfx --reverse '+str(width)+' --columns -o banks/bank_'+bank+'/image_'+bank+'_'+addr_str+'.bin banks/bank_'+bank+'/image_'+bank+'_'+addr_str+'.png')
         
         out2 = open('./banks/bank_'+bank+'/text.txt', "a")
-        out2.write('data_'+bank2+'_'+addr_str+':\n    INCBIN \".gfx/animated_bg_tiles/image_'+bank+'_'+addr_str+'.bin\"\n')
+        out2.write('data_'+bank2+'_'+addr_str+':\n    INCBIN \".gfx/animated_tiles/image_'+bank+'_'+addr_str+'.bin\"\n')
         out2.close()
 
 def extract_bank_01():

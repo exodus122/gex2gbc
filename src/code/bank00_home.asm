@@ -251,7 +251,7 @@ call_00_0150_Init:
     jr   Z, .jr_00_0350                                ;; 00:030d $28 $41
     call call_00_0562_Collectible_InitForLevel                                  ;; 00:030f $cd $62 $05
     FARCALL call_01_4297_MenuLoad_MissionSelect
-    FARCALL call_0b_4000_Collectibles_Init
+    FARCALL call_0b_4000_CollectibleList_LoadForCurrentLevel
     FARCALL call_02_6eb1_Entities_ClearFlagsTable
     call call_00_3c3f_Remotes_RecountAllTotals                                  ;; 00:0333 $cd $3f $3c
     call call_00_12e4_BlockPatch_Init                                  ;; 00:0336 $cd $e4 $12
@@ -306,7 +306,7 @@ call_00_0150_Init:
     ld   [wD5A5_ConveyorState3], A                                    ;; 00:03b0 $ea $a5 $d5
     ld   A, $04 ; Set Health to 4                                       ;; 00:03b3 $3e $04
     ld   [wD741_Player_Health], A                                    ;; 00:03b5 $ea $41 $d7
-    FARCALL call_0b_4000_Collectibles_Init
+    FARCALL call_0b_4000_CollectibleList_LoadForCurrentLevel
     FARCALL call_02_6eb1_Entities_ClearFlagsTable
     call call_00_3c3f_Remotes_RecountAllTotals                                  ;; 00:03ce $cd $3f $3c
     call call_00_12e4_BlockPatch_Init                                  ;; 00:03d1 $cd $e4 $12

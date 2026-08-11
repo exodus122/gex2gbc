@@ -1,7 +1,7 @@
-call_0b_4000_Collectibles_Init:
+call_0b_4000_CollectibleList_LoadForCurrentLevel:
 ; Initializes the collectible system for the current level. First clears all 256 entries of 
 ; wC400–wC6FF (sets wC4xx=$FF, wC5xx=$00, wC6xx=$00 per slot). Then uses wD624 (level ID) 
-; to index .data_0b_4062_LevelCollectibleListPointerTable and load the level's collectible coordinate list into wC400/wC500 
+; to index .data_0b_4062_MapCollectibleLists and load the level's collectible coordinate list into wC400/wC500 
 ; (X in wC4xx, Y in wC5xx, interleaved pairs, terminated by Y=$00). Then builds a sorted index 
 ; table at wC600: for each of 256 slots, scans wC400 to find the last X coordinate less than 
 ; slot's E value, stores that position index. Finally builds wC700: for each slot, counts how 
@@ -23,7 +23,7 @@ call_0b_4000_Collectibles_Init:
     ld   L, [HL]                                       ;; 0b:4012 $6e
     ld   H, $00                                        ;; 0b:4013 $26 $00
     add  HL, HL                                        ;; 0b:4015 $29
-    ld   DE, .data_0b_4062_LevelCollectibleListPointerTable                             ;; 0b:4016 $11 $62 $40
+    ld   DE, .data_0b_4062_MapCollectibleLists                             ;; 0b:4016 $11 $62 $40
     add  HL, DE                                        ;; 0b:4019 $19
     ld   A, [HL+]                                      ;; 0b:401a $2a
     ld   H, [HL]                                       ;; 0b:401b $66
@@ -81,77 +81,77 @@ call_0b_4000_Collectibles_Init:
     inc  E                                             ;; 0b:405e $1c
     jr   NZ, .jr_0b_4040                               ;; 0b:405f $20 $df
     ret                                                ;; 0b:4061 $c9
-.data_0b_4062_LevelCollectibleListPointerTable:
+.data_0b_4062_MapCollectibleLists:
 ; 31-entry pointer table mapping level IDs to per-level collectible coordinate lists. 
 ; Media Dimension and hub levels share a stub entry. The 19 non-hub playable levels each have unique lists
-    dw   .data_40a0_media_dimension_collectible_coords
-    dw   .data_40a4_out_of_toon_collectible_coords
-    dw   .data_41b8_smellraiser_collectible_coords
-    dw   .data_4254_frankensteinfeld_collectible_coords
-    dw   .data_430a_wwwdotcomcom_collectible_coords
-    dw   .data_4400_mao_tse_tongue_collectible_coords
-    dw   .data_40a0_media_dimension_collectible_coords
-    dw   .data_44d0_pangaea_90210_collectible_coords
-    dw   .data_45b4_fine_tooning_collectible_coords
-    dw   .data_467a_this_old_cave_collectible_coords
-    dw   .data_4778_honey_i_shrunk_the_gecko_collectible_coords
-    dw   .data_48fe_poltergex_collectible_coords
-    dw   .data_40a0_media_dimension_collectible_coords
-    dw   .data_497a_samurai_night_fever_collectible_coords
-    dw   .data_4a66_no_weddings_and_a_funeral_collectible_coords
-    dw   .data_40a0_media_dimension_collectible_coords
-    dw   .data_4b0e_thursday_the_12th_collectible_coords
-    dw   .data_40a0_media_dimension_collectible_coords
-    dw   .data_40a0_media_dimension_collectible_coords
-    dw   .data_40a0_media_dimension_collectible_coords
-    dw   .data_40a0_media_dimension_collectible_coords
-    dw   .data_4b0e_lizard_in_a_china_shop_collectible_coords
-    dw   .data_4bb4_bugged_out_collectible_coords
-    dw   .data_4bb6_chips_and_dips_collectible_coords
-    dw   .data_4c2c_lava_dabba_doo_collectible_coords
-    dw   .data_4d3a_texas_chainsaw_manicure_collectible_coords
-    dw   .data_4dee_mazed_and_confused_collectible_coords
-    dw   .data_40a0_media_dimension_collectible_coords
-    dw   .data_40a0_media_dimension_collectible_coords
-    dw   .data_40a0_media_dimension_collectible_coords
-    dw   .data_40a0_media_dimension_collectible_coords
-.data_40a0_media_dimension_collectible_coords:
+    dw   .data_40a0_media_dimension_collectible_list            ; MAP_MEDIA_DIMENSION
+    dw   .data_40a4_out_of_toon_collectible_list                ; MAP_TOON_TV_OUT_OF_TOON
+    dw   .data_41b8_smellraiser_collectible_list                ; MAP_SCREAM_TV_SMELLRAISER
+    dw   .data_4254_frankensteinfeld_collectible_list           ; MAP_SCREAM_TV_FRANKENSTEINFELD
+    dw   .data_430a_wwwdotcomcom_collectible_list               ; MAP_CIRCUIT_CENTRAL_WWWDOTCOMCOM
+    dw   .data_4400_mao_tse_tongue_collectible_list             ; MAP_KUNG_FU_THEATER_MAO_TSE_TONGUE
+    dw   .data_40a0_media_dimension_collectible_list            ; MAP_UNUSED_06
+    dw   .data_44d0_pangaea_90210_collectible_list              ; MAP_PRE_HISTORY_CHANNEL_PANGAEA_90210
+    dw   .data_45b4_fine_tooning_collectible_list               ; MAP_TOON_TV_FINE_TOONING
+    dw   .data_467a_this_old_cave_collectible_list              ; MAP_PRE_HISTORY_CHANNEL_THIS_OLD_CAVE
+    dw   .data_4778_honey_i_shrunk_the_gecko_collectible_list   ; MAP_CIRCUIT_CENTRAL_HONEY_I_SHRUNK_THE_GECKO
+    dw   .data_48fe_poltergex_collectible_list                  ; MAP_SCREAM_TV_POLTERGEX
+    dw   .data_40a0_media_dimension_collectible_list            ; MAP_UNUSED_0C
+    dw   .data_497a_samurai_night_fever_collectible_list        ; MAP_KUNG_FU_THEATER_SAMURAI_NIGHT_FEVER
+    dw   .data_4a66_no_weddings_and_a_funeral_collectible_list  ; MAP_REZOPOLIS_NO_WEDDINGS_AND_A_FUNERAL
+    dw   .data_40a0_media_dimension_collectible_list            ; MAP_UNUSED_0F
+    dw   .data_4b0e_thursday_the_12th_collectible_list          ; MAP_SCREAM_TV_THURSDAY_THE_12TH
+    dw   .data_40a0_media_dimension_collectible_list            ; MAP_UNUSED_11
+    dw   .data_40a0_media_dimension_collectible_list            ; MAP_UNUSED_12
+    dw   .data_40a0_media_dimension_collectible_list            ; MAP_UNUSED_13
+    dw   .data_40a0_media_dimension_collectible_list            ; MAP_UNUSED_14
+    dw   .data_4b0e_lizard_in_a_china_shop_collectible_list     ; MAP_KUNG_FU_THEATER_LIZARD_IN_A_CHINA_SHOP
+    dw   .data_4bb4_bugged_out_collectible_list                 ; MAP_REZOPOLIS_BUGGED_OUT
+    dw   .data_4bb6_chips_and_dips_collectible_list             ; MAP_CIRCUIT_CENTRAL_CHIPS_AND_DIPS
+    dw   .data_4c2c_lava_dabba_doo_collectible_list             ; MAP_PRE_HISTORY_CHANNEL_LAVA_DABBA_DOO
+    dw   .data_4d3a_texas_chainsaw_manicure_collectible_list    ; MAP_SCREAM_TV_TEXAS_CHAINSAW_MANICURE
+    dw   .data_4dee_mazed_and_confused_collectible_list         ; MAP_REZOPOLIS_MAZED_AND_CONFUSED
+    dw   .data_40a0_media_dimension_collectible_list            ; MAP_UNUSED_1B
+    dw   .data_40a0_media_dimension_collectible_list            ; MAP_UNUSED_1C
+    dw   .data_40a0_media_dimension_collectible_list            ; MAP_UNUSED_1D
+    dw   .data_40a0_media_dimension_collectible_list            ; MAP_BOSS_TV_CHANNEL_Z
+.data_40a0_media_dimension_collectible_list:
     INCBIN "data/maps/media_dimension/collectible_list_media_dimension.bin"
-.data_40a4_out_of_toon_collectible_coords:
+.data_40a4_out_of_toon_collectible_list:
     INCBIN "data/maps/toon_tv/collectible_list_out_of_toon.bin"
-.data_41b8_smellraiser_collectible_coords:
+.data_41b8_smellraiser_collectible_list:
     INCBIN "data/maps/scream_tv/collectible_list_smellraiser.bin"
-.data_4254_frankensteinfeld_collectible_coords:
+.data_4254_frankensteinfeld_collectible_list:
     INCBIN "data/maps/scream_tv/collectible_list_frankensteinfeld.bin"
-.data_430a_wwwdotcomcom_collectible_coords:
+.data_430a_wwwdotcomcom_collectible_list:
     INCBIN "data/maps/circuit_central/collectible_list_wwwdotcomcom.bin"
-.data_4400_mao_tse_tongue_collectible_coords:
+.data_4400_mao_tse_tongue_collectible_list:
     INCBIN "data/maps/kung_fu_theater/collectible_list_mao_tse_tongue.bin"
-.data_44d0_pangaea_90210_collectible_coords:
+.data_44d0_pangaea_90210_collectible_list:
     INCBIN "data/maps/prehistory_channel/collectible_list_pangaea_90210.bin"
-.data_45b4_fine_tooning_collectible_coords:
+.data_45b4_fine_tooning_collectible_list:
     INCBIN "data/maps/toon_tv/collectible_list_fine_tooning.bin"
-.data_467a_this_old_cave_collectible_coords:
+.data_467a_this_old_cave_collectible_list:
     INCBIN "data/maps/prehistory_channel/collectible_list_this_old_cave.bin"
-.data_4778_honey_i_shrunk_the_gecko_collectible_coords:
+.data_4778_honey_i_shrunk_the_gecko_collectible_list:
     INCBIN "data/maps/circuit_central/collectible_list_honey_i_shrunk_the_gecko.bin"
-.data_48fe_poltergex_collectible_coords:
+.data_48fe_poltergex_collectible_list:
     INCBIN "data/maps/scream_tv/collectible_list_poltergex.bin"
-.data_497a_samurai_night_fever_collectible_coords:
+.data_497a_samurai_night_fever_collectible_list:
     INCBIN "data/maps/kung_fu_theater/collectible_list_samurai_night_fever.bin"
-.data_4a66_no_weddings_and_a_funeral_collectible_coords:
+.data_4a66_no_weddings_and_a_funeral_collectible_list:
     INCBIN "data/maps/rezopolis/collectible_list_no_weddings_and_a_funeral.bin"
-.data_4b0e_thursday_the_12th_collectible_coords:
+.data_4b0e_thursday_the_12th_collectible_list:
     INCBIN "data/maps/scream_tv/collectible_list_thursday_the_12th.bin"
-.data_4b0e_lizard_in_a_china_shop_collectible_coords:
+.data_4b0e_lizard_in_a_china_shop_collectible_list:
     INCBIN "data/maps/kung_fu_theater/collectible_list_lizard_in_a_china_shop.bin"
-.data_4bb4_bugged_out_collectible_coords:
+.data_4bb4_bugged_out_collectible_list:
     INCBIN "data/maps/rezopolis/collectible_list_bugged_out.bin"
-.data_4bb6_chips_and_dips_collectible_coords:
+.data_4bb6_chips_and_dips_collectible_list:
     INCBIN "data/maps/circuit_central/collectible_list_chips_and_dips.bin"
-.data_4c2c_lava_dabba_doo_collectible_coords:
+.data_4c2c_lava_dabba_doo_collectible_list:
     INCBIN "data/maps/prehistory_channel/collectible_list_lava_dabba_doo.bin"
-.data_4d3a_texas_chainsaw_manicure_collectible_coords:
+.data_4d3a_texas_chainsaw_manicure_collectible_list:
     INCBIN "data/maps/scream_tv/collectible_list_texas_chainsaw_manicure.bin"
-.data_4dee_mazed_and_confused_collectible_coords:
+.data_4dee_mazed_and_confused_collectible_list:
     INCBIN "data/maps/rezopolis/collectible_list_mazed_and_confused.bin"

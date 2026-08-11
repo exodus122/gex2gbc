@@ -16,15 +16,15 @@
 ;
 ; A tile type id is then resolved two different ways, and the difference matters:
 ;
-;   data_03_4800_TileCollisionFlags   one byte per tile type. Whole-tile properties
-;                                     - is it solid at all, is it a ceiling, can it
-;                                     be climbed. Cheap, and what most checks use.
 ;   data_03_4000_TileSolidityRows     eight pages, one per pixel row within a tile,
 ;                                     each a byte per tile type giving a bitmask of
 ;                                     which of the 8 pixel columns are solid on that
 ;                                     row. This is what makes slopes work: a slope
 ;                                     tile is solid in a different set of columns on
 ;                                     each of its 8 rows.
+;   data_03_4800_TileCollisionFlags   one byte per tile type. Whole-tile properties
+;                                     - is it solid at all, is it a ceiling, can it
+;                                     be climbed. Cheap, and what most checks use.
 ;
 ; So the floor scan walks DOWN pixel rows through this second table until it finds a
 ; row where Gex's column is solid, and the distance it walked is how far he still has

@@ -59,7 +59,6 @@ data_02_4120:
     dw   call_02_481b_PlayerAction_GoldRemoteWarp, data_02_7673         ; $1E PLAYER_ACTION_GOLD_REMOTE_WARP
     dw   call_02_4828_PlayerAction_RidingRocket, data_02_7684           ; $1F PLAYER_ACTION_RIDING_ROCKET
 
-
 call_02_41a0_PlayerAction_Spawn:
 ; On first frame (bit 5 of wD209 set): plays spawn SFX
     ld   A, [wD209_Player_ActionState]                                    ;; 02:41a0 $fa $09 $d2
