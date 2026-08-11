@@ -24,12 +24,15 @@ wC800_CurrentCollisionData:
 ; ------------------------------------------------------------------
 wCC00_ShadowOAM:
     ds 1                                               ;; cc00
+
 wCC01_ShadowOAM_EntitySprites:
 ; sprite slots used by the player and the loaded entities
     ds 95                                              ;; cc01
+
 wCC60_ShadowOAM_CollectibleSprites:
 ; 8 sprite slots built by call_03_6499_Collectible_BuildSprites
     ds 32                                              ;; cc60
+
 wCC80_ShadowOAM_HudSprites:
 ; 8 sprite slots built by call_03_5b5b_HUD_BuildSprites (fly icon, health, etc)
     ds 32                                              ;; cc80
@@ -44,17 +47,21 @@ wCC80_ShadowOAM_HudSprites:
 ; ------------------------------------------------------------------
 wCCA0_LcdIsrCode:
     ds 4                                               ;; cca0
+
 wCCA4_LcdIsr_SrcAddrLo:
 ; low byte of the "ld HL, nnnn" operand inside the copied handler.
 ; For the VRAM streaming handler this walks backwards through
 ; wD100_TilesToLoadBuffer, 4 bytes per hblank
     ds 1                                               ;; cca4
+
 wCCA5_LcdIsr_SrcAddrHi:
 ; high byte of the same operand (always $D1 for the VRAM streaming handler)
     ds 1                                               ;; cca5
+
 wCCA6_LcdIsr_CodeCont:
 ; opcode byte of the "ld D, n" that follows; not a variable
     ds 1                                               ;; cca6
+
 wCCA7_LcdIsr_DestPageHi:
 ; operand of that "ld D, n" - the high byte of the VRAM page the handler writes to
 ; ($80/$81 player gfx, $82/$83 entity gfx, $86 media dimension tv, $90 tileset)
@@ -73,6 +80,7 @@ wCCFE_VBlankHookPtrLo:
 ; pointer to the vblank-side routine that pairs with the installed LCD STAT
 ; handler; called every frame from the vblank isr
     ds 1                                               ;; ccfe
+
 wCCFF_VBlankHookPtrHi:
     ds 1                                             ;; ccff
 
@@ -190,10 +198,12 @@ wD339_SpawningSlotIndex:
 ; by rotating rather than dividing. Indexes the per-slot bounding box table at
 ; wD309 and the list-index table at wD301
     ds 1                                               ;; d339
+
 wD33A_SpawningListIndex:
 ; position of this entry within the level's entity list. Doubles as the index
 ; into wD000_EntityFlags, which is what stops an entity being spawned twice
     ds 1                                               ;; d33a
+
 wD33B_SpawningEntityId:
 ; entity type read from the list entry, used to look up the 8-byte record in
 ; data_0a_75fd_EntityAttributeTable
@@ -336,11 +346,14 @@ wD5A6_TextBuffer: ; goes until at least D5CC
 
 wD5A7_Sprite_X:
     ds 1                                               ;; d5a7
+
 wD5A8_Sprite_TileId:
 ; stepped by 2 per sprite, since the menus run in 8x16 sprite mode
     ds 1                                               ;; d5a8
+
 wD5A9_Sprite_Attributes:
     ds 1                                               ;; d5a9
+
 wD5AA_Sprite_TileIdTable:
 ; runtime tile ids for sprite scripts. If bit 0 of a script's tile byte is set,
 ; the byte >> 1 indexes here instead of being a literal tile - which is how a
@@ -390,19 +403,29 @@ wD613_Dragon_SegmentsRemaining:
 ; kung fu theater dragon boss. Set to $0A on level start and decremented as body
 ; segments are destroyed; at 0 the head bursts
     ds 1                                               ;; d613
+
 wD614_Dragon_HitTimer:
 ; counts down after the dragon is hit; bit 1 makes the body segments flash
     ds 1                                               ;; d614
+
 wD615_Cannon_FacingDirection:
     ds 1                                               ;; d615
+
 wD616_FinalBattleButtonFlags:
 ; channel z final battle. bit 7 set = a button was just slammed down
     ds 1                                               ;; d616
+
 wD617_TailSpinChargeCounter:
 ; charge level (0-$40) built up by tail spinning on a rezopolis gear/platform
     ds 1                                               ;; d617
 
 wD618_CheckpointSpawnId:
+; which of the level's CHECKPOINTS_PER_LEVEL spawn slots the player respawns at.
+; Reset to 0 when a level is entered, and raised by
+; call_00_208c_Checkpoint_WriteSpawnId when a checkpoint TV block is smashed - the
+; block's coordinates are looked up in .data_00_20b6_CheckpointBlockCoordTable, which
+; is what turns a particular block in a particular level into a checkpoint id.
+; Read only by call_0b_4efe_Player_SetSpawnPosition
     ds 1                                               ;; d618
 
 wD619_MenuTimeoutLo:
@@ -469,8 +492,13 @@ wD627_CurrentMission:
 ; which mission you selected when entered a level
     ds 1                                               ;; d627
 wD628_MediaDimensionRespawnPoint:
-; which tv you respawn at if you die in media dimension
-; also where you go if you quit current level
+; which TV the player steps back out of when they return to the hub - an index into
+; .data_0b_5401_MediaDimensionSpawnPoints, not a level id.
+;
+; Written in bank02 when a TV is entered, as (entity list index - 1) / 2 of the TV
+; entity itself, so the hub spawn table is really indexed by TV entity rather than by
+; destination. Also what MENU_OPTION_CONFIRM_QUIT uses to decide where quitting a
+; level puts you back
     ds 1                                               ;; d628
 wD629_RemoteProgressFlags:
 ; one byte per level. Bit meanings (see REMOTE_*_MASK in constants.asm):
@@ -511,6 +539,7 @@ wD647_ExitTVButtonIndex:
 wD648_CollectibleMilestoneIndex:
 ; index into .data_00_074a_CollectibleMilestoneThresholds (30 / 40 / 50)
     ds 1                                               ;; d648
+
 wD649_CollectibleAmount:
 ; in a bonus level this counts down toward zero (the remaining quota);
 ; otherwise it counts up toward the next milestone
@@ -539,9 +568,11 @@ wD64E:
 wD64F_MissionRemoteTotal:
 ; number of mission remotes collected across every level (mask $07)
     ds 1                                               ;; d64f
+
 wD650_HiddenRemoteTotal:
 ; number of hidden + gold remotes collected across every level (mask $18)
     ds 1                                               ;; d650
+
 wD651_BonusMissionTotal:
 ; number of bonus/collectible missions completed across every level (mask $20)
     ds 1                                               ;; d651
@@ -559,19 +590,25 @@ wD652_Password_EncodeBuffer:
 ; packed progress, built by call_01_4349_Password_BuildPayload by walking every level
 ; and folding wD629_RemoteProgressFlags through a per-level mask
     ds 8                                               ;; d652
+
 wD65A_Password_EncodeLives:
     ds 1                                               ;; d65a
+
 wD65B_Password_EncodeChecksum:
 ; sum of the 9 bytes above, truncated to 8 bits
     ds 1                                               ;; d65b
+
 wD65C_Password_DecodeBuffer:
 ; the decode side of the same struct, filled by call_01_5271_Password_DecodeAndApply
     ds 8                                               ;; d65c
+
 wD664_Password_DecodeLives:
     ds 1                                               ;; d664
+
 wD665_Password_DecodeChecksum:
 ; a typed password is rejected unless the sum of the 9 preceding bytes matches
     ds 2                                               ;; d665
+
 wD667_PasswordExitButton: ; Password exit button (value 49)
     ds 1                                               ;; d667
 wD668_PasswordValues: ; password on call screen and in game
@@ -643,6 +680,7 @@ wD692_Text_BlockWidthTiles:
 ; width of the destination tile block. Also the row stride in the wC000 staging
 ; buffer: +$10 steps one tile right, +wD692*$10 steps one tile down
     ds 1                                               ;; d692
+
 wD693_Text_BlockHeightTiles:
 ; height of the destination tile block. Together with wD692 this gives both the
 ; tilemap rectangle to fill and, times $10, the number of bytes of tile graphics
@@ -652,13 +690,16 @@ wD694_MenuCmd_DestTileX:
 ; destination in the tilemap, in tiles. call_01_44e6_MenuScript_RunCommand forms
 ; the address as _SCRN0 + DestTileY * 32 + DestTileX
     ds 1                                               ;; d694
+
 wD695_MenuCmd_DestTileY:
     ds 1                                               ;; d695
+
 wD696_MenuCmd_FirstTileId:
 ; tile id written into the top-left cell of the rectangle; the fill increments it
 ; per cell, so a command hands out a run of consecutive ids. Also reused as a
 ; scratch copy of wD69A_Text_FontId by call_01_4e78_Menu_StageTileData
     ds 1                                               ;; d696
+
 wD697_MenuCmd_CgbAttributes:
 ; CGB attribute byte written across the rectangle in VBK 1, or $FF meaning "use
 ; call_00_08b1_MediaDimension_CopyTVAttributes instead of a flat fill". Ignored
@@ -669,10 +710,12 @@ wD698_Text_PenX:
 ; pen X within the block, in PIXELS. $FE as the incoming parameter means "centre
 ; this line", which call_01_4a8f_Text_Render resolves by measuring the string
     ds 1                                               ;; d698
+
 wD699_Text_PenY:
 ; pen Y within the block, in PIXELS. $FE means "distribute the lines evenly down
 ; the block", resolved in call_01_4bd3_Text_WrapAndAlign
     ds 1                                               ;; d699
+
 wD69A_Text_FontId:
 ; which of the four descriptors in data_01_65fe_FontDescriptors to use - but only
 ; for parameter blocks that actually draw text. The byte is overloaded: the staging
@@ -681,9 +724,11 @@ wD69A_Text_FontId:
 ; call_01_4879_MenuCmd_DrawRemoteIcons reads it as a sprite-hide delay in frames.
 ; Nothing distinguishes the three uses except which handler the block reaches
     ds 1                                               ;; d69a
+
 wD69B_Text_SrcPtrLo:
 ; the string being rendered. call_01_4e6f_Menu_SetScriptSrcPtr writes this pair
     ds 1                                               ;; d69b
+
 wD69C_Text_SrcPtrHi:
     ds 1                                               ;; d69c
 
@@ -691,6 +736,7 @@ wD69D_MenuCmd_OptionSlot:
 ; low nibble = selectable row index, high nibble = MENU_OPTION_* code; filed into
 ; wD6C5_Menu_OptionActions by call_01_44e6_MenuScript_RunCommand
     ds 1                                               ;; d69d
+
 wD69E_MenuCmd_Flags:
 ; MENUCMD_* bits controlling what this parameter block actually does
     ds 1                                               ;; d69e
@@ -698,12 +744,15 @@ wD69E_MenuCmd_Flags:
 wD69F_Font_GlyphBase:
 ; the five fields below are the font descriptor, copied by call_01_4a8f_Text_Render
     ds 2                                               ;; d69f
+
 wD6A1_Font_WidthTable:
 ; one advance width in pixels per glyph, indexed the same as the bitmaps
     ds 2                                               ;; d6a1
+
 wD6A3_Font_GlyphWidthCols:
 ; glyph width in 8px columns
     ds 1                                               ;; d6a3
+
 wD6A4_Font_GlyphHeightPx:
 ; glyph height in PIXELS - 6, 7, 11 or 16, never 8, which is why the font bitmaps
 ; have no tile structure and cannot go through rgbgfx
@@ -737,13 +786,13 @@ wD6AF_ScreenDraw_TileIdBase:
 ; working copy of wD6A6_ScreenDraw_FirstTileId used while writing the tilemap
     ds 1
 
+; Menu related memory starts here
 wD6B0_FullscreenImage_Bank:
 ; parameters for call_00_084d_Screen_LoadFullscreenImage (title/credit screens)
     ds 1                                               ;; d6b0
 wD6B1_FullscreenImage_Ptr:
 ; ROM pointer to $F00 bytes of tiles, then $780 more, then a 20x18 attribute map
     ds 2                                               ;; d6b1
-
 wD6B3_MenuScript_PtrLo:
 ; read/write cursor into the current menu script. call_01_44e6 pulls one
 ; command from here at a time and advances it, and LoadMenuGraphics can point
@@ -751,7 +800,6 @@ wD6B3_MenuScript_PtrLo:
     ds 1                                               ;; d6b3
 wD6B4_MenuScript_PtrHi:
     ds 1                                               ;; d6b4
-
 wD6B5_Text_DestPtrLo:
 ; write cursor into the wC000 staging buffer, pointing at the current glyph
 ; column's top row. call_01_4ae7_Text_DrawGlyph saves and restores it per column
@@ -1145,7 +1193,7 @@ wD74E_Player_PushedStationaryPlatformLo: ; stores lo address of stationary platf
 wD74F_Player_PushedMovingPlatformLo: ; stores lo address of moving platform entity pushed
     ds 1                                               ;; d74f
 
-; Player-related Timers
+; Player Timers
 wD750_Player_DamageCooldownTimer:
     ds 1                                               ;; d750
 wD751_Player_CircuitPowerUpTimerLo:
@@ -1276,12 +1324,15 @@ wD772_BreakablesDestroyedCount:
 ; call_00_2186_CountedBreakable_OnHit compares it against a per-level quota - 5 in
 ; Smellraiser, 8 elsewhere - and opens a block patch slot on the exact match
     ds 1                                               ;; d772
+
 wD773_HuntersDefeatedCount:
 ; bumped each time a toon tv hunter is beaten. On the second one the collision
 ; handler writes $02 into wD799_BlockPatch_SlotTable14, opening the way onward
     ds 1                                               ;; d773
-wD774_MushroomsDestroyedCount:
-; bumped each time a mushroom is destroyed, when the entity's MISC_FLAGS bit 0 is set
+
+wD774:
+; bumped by an entity action when the entity's MISC_FLAGS bit 0 is set, then
+; used as a table index - a "how many of these have been triggered" counter
     ds 1                                               ;; d774
 
 wD775_Cutscene_Skippable:
@@ -1423,7 +1474,7 @@ wDA13_EntityPalettes_Slot1:
 wDA1B_EntityPalettes_Slot2:
     ds 32                                              ;; da1b
 wDA3B_EntityPalettes_Slot6:
-    ds 16                                              ;; da3b
+    ds 16                                              ;; da1b
 wDA4B_DynamicPalette:
     ds 48                                              ;; da4b
 wDA7B_MediaDimensionTVPalette:
@@ -1442,43 +1493,59 @@ wDAAB_MenuBgMapTileIds:
 ; ------------------------------------------------------------------
 wDACB_DefaultBGP: ; written to $E4 at boot, never read back
     ds 1                                               ;; dacb
+
 wDACC_DefaultOBP0: ; written to $E4 at boot, never read back
     ds 1                                               ;; dacc
+
 wDACD_DefaultOBP1: ; written to $00 at boot, never read back
     ds 1                                               ;; dacd
+
 wDACE_CurrentBGP:
     ds 1                                               ;; dace
+
 wDACF_CurrentOBP0:
     ds 1                                               ;; dacf
+
 wDAD0_CurrentOBP1:
     ds 1                                               ;; dad0
+
 wDAD1_LevelBGP:
 ; the level's "real" palettes, set by call_0b_5537_BgPalette_LoadMonoOrGetSpriteParams.
 ; These are what FADE_MODE_IN fades back to
     ds 1                                               ;; dad1
+
 wDAD2_LevelOBP0:
     ds 1                                               ;; dad2
+
 wDAD3_LevelOBP1:
     ds 1                                               ;; dad3
+
 wDAD4_TargetBGP:
     ds 1                                               ;; dad4
+
 wDAD5_TargetOBP0:
     ds 1                                               ;; dad5
+
 wDAD6_TargetOBP1:
     ds 1                                               ;; dad6
+
 wDAD7_FadeMaskLo:
 ; bit 0 = fade BGP
     ds 1                                               ;; dad7
+
 wDAD8_FadeMaskHi:
 ; bit 0 = fade OBP0, bit 1 = fade OBP1.
 ; The death fade leaves OBP1 alone so Gex stays visible
     ds 1                                               ;; dad8
+
 wDAD9_FadeMode:
 ; 0 = idle, otherwise one of the FADE_MODE_* values in constants.asm
     ds 1                                               ;; dad9
+
 wDADA_FadeStepDelay:
 ; frames between fade steps (always $04)
     ds 1                                               ;; dada
+
 wDADB_FadeStepCounter:
     ds 1                                               ;; dadb
 

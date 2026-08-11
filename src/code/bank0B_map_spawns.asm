@@ -1,32 +1,63 @@
+; ==================================================================
+; PLAYER SPAWN POSITIONS
+;
+; Where the player is put down when a map is (re)loaded. Called once, from
+; bank00_home.asm, right before the blockmap is drawn and the entities are spawned.
+;
+; Everything in this bank is in BLOCK coordinates - the same grid the blockmap is
+; laid out in, 128 x 128 blocks per level (a $4000 byte blockmap indexed
+; y * 128 + x). One block is SPAWN_UNITS_PER_BLOCK units of player world position,
+; so converting a table entry to a position is block * $20 plus a small offset,
+; and recovering a block from a position is a shift the other way.
+;
+; Three tables, one per way of arriving somewhere:
+;
+;   .data_0b_4ff2_LevelDoorLists         walked into a door within the level
+;   .data_0b_5401_MediaDimensionSpawnPoints  came back out of a TV into the hub
+;   .data_0b_543f_LevelCheckpointSpawns  started the level, or died and respawned
+;
+; The three cases use different Y offsets ($10, $30, $10) and different X offsets
+; ($20, $20, $10), which is the only reason the conversion is written out three
+; times instead of once.
+; ==================================================================
+
 call_0b_4efe_Player_SetSpawnPosition:
-; Top-level player spawn handler. Three branches: 
-; (1) Door spawn — if wD621_WarpFlags bit 3 is set (entering through a door), clears the bit, computes 
-; tile coordinates from current player position (world pos − $FFF1, shifted), looks up the 
-; door in the level's .data_LevelDoorSpawnPointerTable list (terminated by $FF), reads the target X/Y 
-; tile coords from the matching door entry, converts to world coords (tile × 32 + $20 for X, 
-; tile × 32 + $10 for Y), stores to wD20E/wD210, calls UpdatePlayerMapWindow. 
-; (2) Media Dimension — if level ID = 0, uses wD628 (respawn point index) 
-; to index .data_MediaDimensionSpawnTable (tile X/Y pairs), converts to world coords 
-; (tile × 32 + $20 X, tile × 32 + $30 Y), updates map window. 
-; (3) Level spawn — uses level ID × 8 + checkpoint ID × 2 to index .data_LevelInitialSpawnTable 
-; (X/Y tile pairs), converts to world coords (tile × 32 + $10 for both X and Y), updates map window
+; Positions the player for the map about to be loaded, then scrolls the camera to
+; match. Picks one of three sources, in priority order:
+;
+;   1. WARP_FLAG_ENTERED_DOOR set - the player walked into a door. The flag is
+;      cleared, the player's current position is converted back to a block, and that
+;      block is looked up in this level's door list to find where the door leads.
+;      Note the X conversion subtracts DOOR_MATCH_X_BIAS first while Y does not, so
+;      the match is taken from a point half a block left of the player's origin;
+;      a door therefore triggers from a slightly different spot than its own block
+;      would suggest.
+;      If no record matches, the routine RETURNS WITHOUT MOVING THE PLAYER - the
+;      door silently does nothing rather than warping anywhere wrong.
+;   2. level 0 - back in the Media Dimension. wD628_MediaDimensionRespawnPoint says
+;      which TV was just exited; that indexes the hub spawn table.
+;   3. anything else - a level start or a checkpoint respawn, from
+;      .data_0b_543f_LevelCheckpointSpawns at level * 8 + checkpoint * 2.
+;
+; All three end in the same jump to call_00_13a6_BgMap_UpdateWindowFromPlayerPos,
+; which is what makes the camera follow rather than tearing on the first frame
     ld   HL, wD621_WarpFlags                                     ;; 0b:4efe $21 $21 $d6
     ld   A, [HL]                                       ;; 0b:4f01 $7e
-    and  A, $08                                        ;; 0b:4f02 $e6 $08
-    jr   Z, .jr_0b_4f70                                ;; 0b:4f04 $28 $6a
+    and  A, WARP_FLAG_ENTERED_DOOR                     ;; 0b:4f02 $e6 $08
+    jr   Z, .jr_0b_4f70_NotADoor                                ;; 0b:4f04 $28 $6a
     ld   A, [HL]                                       ;; 0b:4f06 $7e
-    and  A, $f7                                        ;; 0b:4f07 $e6 $f7
+    and  A, $ff ^ WARP_FLAG_ENTERED_DOOR               ;; 0b:4f07 $e6 $f7
     ld   [HL], A                                       ;; 0b:4f09 $77
     ld   HL, wD20E_Player_XPositionLo                                     ;; 0b:4f0a $21 $0e $d2
     ld   A, [HL+]                                      ;; 0b:4f0d $2a
     ld   H, [HL]                                       ;; 0b:4f0e $66
     ld   L, A                                          ;; 0b:4f0f $6f
-    ld   DE, hFFF1                                     ;; 0b:4f10 $11 $f1 $ff
+    ld   DE, -DOOR_MATCH_X_BIAS                        ;; 0b:4f10 $11 $f1 $ff
     add  HL, DE                                        ;; 0b:4f13 $19
     add  HL, HL                                        ;; 0b:4f14 $29
     add  HL, HL                                        ;; 0b:4f15 $29
     add  HL, HL                                        ;; 0b:4f16 $29
-    ld   C, H                                          ;; 0b:4f17 $4c
+    ld   C, H                                          ;; 0b:4f17 $4c ; C = block X: (x - bias) * 8 >> 8
     ld   HL, wD210_Player_YPositionLo                                     ;; 0b:4f18 $21 $10 $d2
     ld   A, [HL+]                                      ;; 0b:4f1b $2a
     ld   H, [HL]                                       ;; 0b:4f1c $66
@@ -34,30 +65,30 @@ call_0b_4efe_Player_SetSpawnPosition:
     add  HL, HL                                        ;; 0b:4f1e $29
     add  HL, HL                                        ;; 0b:4f1f $29
     add  HL, HL                                        ;; 0b:4f20 $29
-    ld   B, H                                          ;; 0b:4f21 $44
+    ld   B, H                                          ;; 0b:4f21 $44 ; B = block Y, no bias
     ld   HL, wD624_CurrentLevelId                                     ;; 0b:4f22 $21 $24 $d6
     ld   L, [HL]                                       ;; 0b:4f25 $6e
     ld   H, $00                                        ;; 0b:4f26 $26 $00
     add  HL, HL                                        ;; 0b:4f28 $29
-    ld   DE, .data_LevelDoorSpawnPointerTable                             ;; 0b:4f29 $11 $f2 $4f
+    ld   DE, .data_0b_4ff2_LevelDoorLists              ;; 0b:4f29 $11 $f2 $4f
     add  HL, DE                                        ;; 0b:4f2c $19
     ld   A, [HL+]                                      ;; 0b:4f2d $2a
     ld   H, [HL]                                       ;; 0b:4f2e $66
     ld   L, A                                          ;; 0b:4f2f $6f
-    ld   DE, $03                                       ;; 0b:4f30 $11 $03 $00
-.jr_0b_4f33:
+    ld   DE, DOOR_RECORD_SIZE - 1                      ;; 0b:4f30 $11 $03 $00 ; the first byte is already consumed
+.jr_0b_4f33_SearchDoors:
     ld   A, [HL+]                                      ;; 0b:4f33 $2a
-    cp   A, $ff                                        ;; 0b:4f34 $fe $ff
-    ret  Z                                             ;; 0b:4f36 $c8
+    cp   A, SPAWN_LIST_END                             ;; 0b:4f34 $fe $ff
+    ret  Z                                             ;; 0b:4f36 $c8 ; end of list: leave the player where they are
     cp   A, C                                          ;; 0b:4f37 $b9
-    jr   NZ, .jr_0b_4f3e                               ;; 0b:4f38 $20 $04
+    jr   NZ, .jr_0b_4f3e_NextDoor                               ;; 0b:4f38 $20 $04
     ld   A, [HL]                                       ;; 0b:4f3a $7e
     cp   A, B                                          ;; 0b:4f3b $b8
-    jr   Z, .jr_0b_4f41                                ;; 0b:4f3c $28 $03
-.jr_0b_4f3e:
+    jr   Z, .jr_0b_4f41_DoorFound                                ;; 0b:4f3c $28 $03
+.jr_0b_4f3e_NextDoor:
     add  HL, DE                                        ;; 0b:4f3e $19
-    jr   .jr_0b_4f33                                   ;; 0b:4f3f $18 $f2
-.jr_0b_4f41:
+    jr   .jr_0b_4f33_SearchDoors                                   ;; 0b:4f3f $18 $f2
+.jr_0b_4f41_DoorFound:
     inc  HL                                            ;; 0b:4f41 $23
     ld   C, [HL]                                       ;; 0b:4f42 $4e
     inc  HL                                            ;; 0b:4f43 $23
@@ -69,7 +100,7 @@ call_0b_4efe_Player_SetSpawnPosition:
     add  HL, HL                                        ;; 0b:4f4a $29
     add  HL, HL                                        ;; 0b:4f4b $29
     add  HL, HL                                        ;; 0b:4f4c $29
-    ld   DE, $20                                       ;; 0b:4f4d $11 $20 $00
+    ld   DE, SPAWN_DOOR_X_OFFSET                       ;; 0b:4f4d $11 $20 $00
     add  HL, DE                                        ;; 0b:4f50 $19
     ld   A, L                                          ;; 0b:4f51 $7d
     ld   [wD20E_Player_XPositionLo], A                                    ;; 0b:4f52 $ea $0e $d2
@@ -82,22 +113,22 @@ call_0b_4efe_Player_SetSpawnPosition:
     add  HL, HL                                        ;; 0b:4f5e $29
     add  HL, HL                                        ;; 0b:4f5f $29
     add  HL, HL                                        ;; 0b:4f60 $29
-    ld   DE, $10                                       ;; 0b:4f61 $11 $10 $00
+    ld   DE, SPAWN_DOOR_Y_OFFSET                       ;; 0b:4f61 $11 $10 $00
     add  HL, DE                                        ;; 0b:4f64 $19
     ld   A, L                                          ;; 0b:4f65 $7d
     ld   [wD210_Player_YPositionLo], A                                    ;; 0b:4f66 $ea $10 $d2
     ld   A, H                                          ;; 0b:4f69 $7c
     ld   [wD211_Player_YPositionHi], A                                    ;; 0b:4f6a $ea $11 $d2
     jp   call_00_13a6_BgMap_UpdateWindowFromPlayerPos                                  ;; 0b:4f6d $c3 $a6 $13
-.jr_0b_4f70:
+.jr_0b_4f70_NotADoor:
     ld   A, [wD624_CurrentLevelId]                                    ;; 0b:4f70 $fa $24 $d6
     and  A, A                                          ;; 0b:4f73 $a7
-    jr   NZ, .jr_0b_4faf                               ;; 0b:4f74 $20 $39
+    jr   NZ, .jr_0b_4faf_LevelSpawn                               ;; 0b:4f74 $20 $39
     ld   HL, wD628_MediaDimensionRespawnPoint                                     ;; 0b:4f76 $21 $28 $d6
     ld   L, [HL]                                       ;; 0b:4f79 $6e
     ld   H, $00                                        ;; 0b:4f7a $26 $00
     add  HL, HL                                        ;; 0b:4f7c $29
-    ld   DE, .data_MediaDimensionSpawnTable                             ;; 0b:4f7d $11 $01 $54
+    ld   DE, .data_0b_5401_MediaDimensionSpawnPoints   ;; 0b:4f7d $11 $01 $54
     add  HL, DE                                        ;; 0b:4f80 $19
     ld   C, [HL]                                       ;; 0b:4f81 $4e
     inc  HL                                            ;; 0b:4f82 $23
@@ -109,7 +140,7 @@ call_0b_4efe_Player_SetSpawnPosition:
     add  HL, HL                                        ;; 0b:4f89 $29
     add  HL, HL                                        ;; 0b:4f8a $29
     add  HL, HL                                        ;; 0b:4f8b $29
-    ld   DE, $20                                       ;; 0b:4f8c $11 $20 $00
+    ld   DE, SPAWN_HUB_X_OFFSET                        ;; 0b:4f8c $11 $20 $00
     add  HL, DE                                        ;; 0b:4f8f $19
     ld   A, L                                          ;; 0b:4f90 $7d
     ld   [wD20E_Player_XPositionLo], A                                    ;; 0b:4f91 $ea $0e $d2
@@ -122,14 +153,14 @@ call_0b_4efe_Player_SetSpawnPosition:
     add  HL, HL                                        ;; 0b:4f9d $29
     add  HL, HL                                        ;; 0b:4f9e $29
     add  HL, HL                                        ;; 0b:4f9f $29
-    ld   DE, $30                                       ;; 0b:4fa0 $11 $30 $00
+    ld   DE, SPAWN_HUB_Y_OFFSET                        ;; 0b:4fa0 $11 $30 $00
     add  HL, DE                                        ;; 0b:4fa3 $19
     ld   A, L                                          ;; 0b:4fa4 $7d
     ld   [wD210_Player_YPositionLo], A                                    ;; 0b:4fa5 $ea $10 $d2
     ld   A, H                                          ;; 0b:4fa8 $7c
     ld   [wD211_Player_YPositionHi], A                                    ;; 0b:4fa9 $ea $11 $d2
     jp   call_00_13a6_BgMap_UpdateWindowFromPlayerPos                                  ;; 0b:4fac $c3 $a6 $13
-.jr_0b_4faf:
+.jr_0b_4faf_LevelSpawn:
     ld   HL, wD624_CurrentLevelId                                     ;; 0b:4faf $21 $24 $d6
     ld   L, [HL]                                       ;; 0b:4fb2 $6e
     ld   H, $00                                        ;; 0b:4fb3 $26 $00
@@ -141,7 +172,7 @@ call_0b_4efe_Player_SetSpawnPosition:
     ld   E, A                                          ;; 0b:4fbc $5f
     ld   D, $00                                        ;; 0b:4fbd $16 $00
     add  HL, DE                                        ;; 0b:4fbf $19
-    ld   DE, .data_LevelInitialSpawnTable                             ;; 0b:4fc0 $11 $3f $54
+    ld   DE, .data_0b_543f_LevelCheckpointSpawns       ;; 0b:4fc0 $11 $3f $54
     add  HL, DE                                        ;; 0b:4fc3 $19
     ld   C, [HL]                                       ;; 0b:4fc4 $4e
     inc  HL                                            ;; 0b:4fc5 $23
@@ -153,7 +184,7 @@ call_0b_4efe_Player_SetSpawnPosition:
     add  HL, HL                                        ;; 0b:4fcc $29
     add  HL, HL                                        ;; 0b:4fcd $29
     add  HL, HL                                        ;; 0b:4fce $29
-    ld   DE, $10                                       ;; 0b:4fcf $11 $10 $00
+    ld   DE, SPAWN_LEVEL_X_OFFSET                      ;; 0b:4fcf $11 $10 $00
     add  HL, DE                                        ;; 0b:4fd2 $19
     ld   A, L                                          ;; 0b:4fd3 $7d
     ld   [wD20E_Player_XPositionLo], A                                    ;; 0b:4fd4 $ea $0e $d2
@@ -166,250 +197,496 @@ call_0b_4efe_Player_SetSpawnPosition:
     add  HL, HL                                        ;; 0b:4fe0 $29
     add  HL, HL                                        ;; 0b:4fe1 $29
     add  HL, HL                                        ;; 0b:4fe2 $29
-    ld   DE, $10                                       ;; 0b:4fe3 $11 $10 $00
+    ld   DE, SPAWN_LEVEL_Y_OFFSET                      ;; 0b:4fe3 $11 $10 $00
     add  HL, DE                                        ;; 0b:4fe6 $19
     ld   A, L                                          ;; 0b:4fe7 $7d
     ld   [wD210_Player_YPositionLo], A                                    ;; 0b:4fe8 $ea $10 $d2
     ld   A, H                                          ;; 0b:4feb $7c
     ld   [wD211_Player_YPositionHi], A                                    ;; 0b:4fec $ea $11 $d2
     jp   call_00_13a6_BgMap_UpdateWindowFromPlayerPos                                  ;; 0b:4fef $c3 $a6 $13
-.data_LevelDoorSpawnPointerTable:
-; 31-entry pointer table mapping level IDs to door spawn lists. Each list is a sequence of 3-byte 
-; records (X tile, Y tile, destination X tile, destination Y tile — the first two identify which 
-; door was used, the last two give the spawn position), terminated by $FF. Media Dimension and hub 
-; levels share .data_0b_5030 (the main Media Dimension door list). Circuit Central's boss level shares a stub
-    dw   .data_0b_5030
-    dw   .data_0b_5051
-    dw   .data_0b_5066
-    dw   .data_0b_5097
-    dw   .data_0b_50e0
-    dw   .data_0b_5111
-    dw   .data_0b_5030
-    dw   .data_0b_5182
-    dw   .data_0b_519b
-    dw   .data_0b_5030
-    dw   .data_0b_51ac
-    dw   .data_0b_51ed
-    dw   .data_0b_5030
-    dw   .data_0b_5266
-    dw   .data_0b_5293
-    dw   .data_0b_5030
-    dw   .data_0b_52d4
-    dw   .data_0b_5030
-    dw   .data_0b_5030
-    dw   .data_0b_5030
-    dw   .data_0b_5030
-    dw   .data_0b_5030
-    dw   .data_0b_5030
-    dw   .data_0b_5030
-    dw   .data_0b_5389
-    dw   .data_0b_53c2
-    dw   .data_0b_53f3
-    dw   .data_0b_5030
-    dw   .data_0b_5030
-    dw   .data_0b_5030
-    dw   .data_0b_53fc
-.data_0b_5030:
-    db   $25, $0e                                      ;; 0b:5030 ????????
-    db   $07, $17, $1b, $17, $07, $24, $2f, $17        ;; 0b:5032 ????????
-    db   $07, $4d, $43, $17, $27, $3a, $07, $17        ;; 0b:503a ????????
-    db   $25, $0e, $07, $24, $1b, $17, $07, $4d        ;; 0b:5042 ????????
-    db   $2f, $17, $27, $3a, $43, $17, $ff
-.data_0b_5051:
-    db   $41                                            ;; 0b:5051 ????????
-    db   $03, $03, $28, $6a, $1d, $03, $3c, $49        ;; 0b:5052 ????????
-    db   $36, $52, $3e, $03, $28, $41, $03, $03        ;; 0b:505a ????????
-    db   $3c, $6a, $1d, $ff
-.data_0b_5066:
-    db   $19, $07, $23, $09        ;; 0b:5066 ????????
-    db   $34, $06, $3f, $06, $47, $02, $02, $12        ;; 0b:506a ????????
-    db   $2d, $10, $37, $15, $3a, $0f, $02, $1b        ;; 0b:5072 ????????
-    db   $3e, $0f, $28, $21, $23, $09, $19, $07        ;; 0b:507a ????????
-    db   $3f, $06, $34, $06, $02, $12, $47, $02        ;; 0b:5082 ????????
-    db   $37, $15, $2d, $10, $02, $1b, $3a, $0f        ;; 0b:508a ????????
-    db   $28, $21, $3e, $0f, $ff
-.data_0b_5097:
-    db   $16, $33, $1d        ;; 0b:5097 ????????
-    db   $31, $23, $31, $2e, $30, $27, $31, $24        ;; 0b:509a ????????
-    db   $62, $43, $2a, $4d, $2d, $4c, $32, $02        ;; 0b:50a2 ????????
-    db   $42, $50, $2b, $0a, $3b, $1e, $41, $08        ;; 0b:50aa ????????
-    db   $57, $71, $28, $12, $3f, $76, $46, $28        ;; 0b:50b2 ????????
-    db   $3f, $1d, $31, $16, $33, $2e, $30, $23        ;; 0b:50ba ????????
-    db   $31, $24, $62, $27, $31, $4d, $2d, $43        ;; 0b:50c2 ????????
-    db   $2a, $02, $42, $4c, $32, $0a, $3b, $50        ;; 0b:50ca ????????
-    db   $2b, $08, $57, $1e, $41, $12, $3f, $71        ;; 0b:50d2 ????????
-    db   $28, $28, $3f, $76, $46, $ff
-.data_0b_50e0:
-    db   $0b, $06        ;; 0b:50da ????????
-    db   $2b, $09, $13, $07, $1d, $21, $7c, $0a        ;; 0b:50e2 ????????
-    db   $04, $42, $7c, $21, $1d, $2f, $65, $2f        ;; 0b:50ea ????????
-    db   $1c, $43, $3d, $41, $46, $42, $2b, $09        ;; 0b:50f2 ????????
-    db   $0b, $06, $1d, $21, $13, $07, $04, $42        ;; 0b:50fa ????????
-    db   $7c, $0a, $1d, $2f, $7c, $21, $1c, $43        ;; 0b:5102 ????????
-    db   $65, $2f, $46, $42, $3d, $41, $ff
-.data_0b_5111:
-    db   $09        ;; 0b:5111 ????????
-    db   $1d, $2b, $06, $40, $05, $09, $19, $16        ;; 0b:5112 ????????
-    db   $19, $48, $05, $4d, $05, $40, $12, $52        ;; 0b:511a ????????
-    db   $0e, $09, $15, $19, $15, $5f, $1f, $68        ;; 0b:5122 ????????
-    db   $10, $09, $0d, $18, $11, $07, $35, $07        ;; 0b:512a ????????
-    db   $2a, $2b, $2c, $19, $1d, $28, $35, $2c        ;; 0b:5132 ????????
-    db   $35, $35, $28, $35, $22, $39, $3a, $4b        ;; 0b:513a ????????
-    db   $34, $5e, $35, $6a, $35, $5c, $45, $2b        ;; 0b:5142 ????????
-    db   $06, $09, $1d, $09, $19, $40, $05, $48        ;; 0b:514a ????????
-    db   $05, $16, $19, $40, $12, $4d, $05, $09        ;; 0b:5152 ????????
-    db   $15, $52, $0e, $5f, $1f, $19, $15, $09        ;; 0b:515a ????????
-    db   $0d, $68, $10, $07, $35, $18, $11, $2b        ;; 0b:5162 ????????
-    db   $2c, $07, $2a, $28, $35, $19, $1d, $35        ;; 0b:516a ????????
-    db   $28, $2c, $35, $39, $3a, $35, $22, $5e        ;; 0b:5172 ????????
-    db   $35, $4b, $34, $5c, $45, $6a, $35, $ff        ;; 0b:517a ????????
-.data_0b_5182:
-    db   $57, $03, $5a, $3b, $5a, $3b, $57, $03        ;; 0b:5182 ????????
-    db   $7c, $03, $03, $37, $7b, $12, $03, $46        ;; 0b:518a ????????
-    db   $03, $37, $7c, $03, $03, $46, $7b, $12        ;; 0b:5192 ????????
-    db   $ff
-.data_0b_519b:
-    db   $17, $44, $4a, $7d, $4a, $7d, $17        ;; 0b:519b ????????
-    db   $44, $31, $4b, $3f, $65, $3f, $65, $31        ;; 0b:51a2 ????????
-    db   $4b, $ff
-.data_0b_51ac:
-    db   $04, $0e, $26, $1b, $36, $0e        ;; 0b:51ac ????????
-    db   $4f, $34, $4f, $2f, $41, $34, $43, $27        ;; 0b:51b2 ????????
-    db   $64, $21, $47, $21, $0d, $6c, $58, $11        ;; 0b:51ba ????????
-    db   $62, $13, $79, $25, $04, $41, $63, $41        ;; 0b:51c2 ????????
-    db   $69, $51, $26, $1b, $04, $0e, $4f, $34        ;; 0b:51ca ????????
-    db   $36, $0e, $41, $34, $4f, $2f, $64, $21        ;; 0b:51d2 ????????
-    db   $43, $27, $0d, $6c, $47, $21, $62, $13        ;; 0b:51da ????????
-    db   $58, $11, $04, $41, $79, $25, $69, $51        ;; 0b:51e2 ????????
-    db   $63, $41, $ff
-.data_0b_51ed:
-    db   $59, $35, $03, $4d, $09        ;; 0b:51ed ????????
-    db   $49, $3c, $4c, $11, $4d, $02, $3f, $28        ;; 0b:51f2 ????????
-    db   $3e, $4e, $47, $03, $3b, $46, $42, $46        ;; 0b:51fa ????????
-    db   $3c, $37, $35, $54, $47, $31, $58, $56        ;; 0b:5202 ????????
-    db   $4c, $37, $66, $59, $29, $0e, $53, $2a        ;; 0b:520a ????????
-    db   $54, $03, $54, $47, $4a, $16, $54, $55        ;; 0b:5212 ????????
-    db   $42, $35, $3f, $57, $3c, $35, $3c, $02        ;; 0b:521a ????????
-    db   $2d, $4c, $29, $02, $31, $4c, $35, $03        ;; 0b:5222 ????????
-    db   $4d, $59, $35, $3c, $4c, $09, $49, $02        ;; 0b:522a ????????
-    db   $3f, $11, $4d, $4e, $47, $28, $3e, $46        ;; 0b:5232 ????????
-    db   $42, $03, $3b, $37, $35, $46, $3c, $31        ;; 0b:523a ????????
-    db   $58, $54, $47, $37, $66, $56, $4c, $0e        ;; 0b:5242 ????????
-    db   $53, $59, $29, $03, $54, $2a, $54, $16        ;; 0b:524a ????????
-    db   $54, $47, $4a, $35, $3f, $55, $42, $35        ;; 0b:5252 ????????
-    db   $3c, $57, $3c, $4c, $29, $02, $2d, $4c        ;; 0b:525a ????????
-    db   $35, $02, $31, $ff
-.data_0b_5266:
-    db   $0b, $0c, $68, $22        ;; 0b:5266 ????????
-    db   $69, $05, $09, $1e, $13, $0c, $07, $31        ;; 0b:526a ????????
-    db   $17, $0c, $03, $48, $68, $22, $0b, $0c        ;; 0b:5272 ????????
-    db   $09, $1e, $69, $05, $07, $31, $13, $0c        ;; 0b:527a ????????
-    db   $03, $48, $17, $0c, $63, $11, $39, $0a        ;; 0b:5282 ????????
-    db   $1a, $46, $31, $54, $31, $54, $1a, $46        ;; 0b:528a ????????
-    db   $ff
-.data_0b_5293:
-    db   $14, $07, $1b, $07, $26, $07, $0b        ;; 0b:5293 ????????
-    db   $28, $0b, $15, $06, $2f, $0e, $2f, $05        ;; 0b:529a ????????
-    db   $5a, $29, $53, $05, $64, $1d, $64, $2c        ;; 0b:52a2 ????????
-    db   $5e, $31, $51, $42, $56, $56, $52, $42        ;; 0b:52aa ????????
-    db   $60, $1b, $07, $14, $07, $0b, $28, $26        ;; 0b:52b2 ????????
-    db   $07, $06, $2f, $0b, $15, $05, $5a, $0e        ;; 0b:52ba ????????
-    db   $2f, $05, $64, $29, $53, $2c, $5e, $1d        ;; 0b:52c2 ????????
-    db   $64, $42, $56, $31, $51, $42, $60, $56        ;; 0b:52ca ????????
-    db   $52, $ff
-.data_0b_52d4:
-    db   $6a, $2e, $6d, $66, $6f, $2e        ;; 0b:52d4 ????????
-    db   $65, $34, $74, $2e, $6f, $2e, $65, $31        ;; 0b:52da ????????
-    db   $65, $34, $6a, $31, $74, $31, $74, $31        ;; 0b:52e2 ????????
-    db   $6a, $31, $65, $34, $74, $2e, $6f, $34        ;; 0b:52ea ????????
-    db   $71, $5c, $74, $34, $65, $34, $65, $37        ;; 0b:52f2 ????????
-    db   $6a, $31, $6a, $37, $65, $34, $6f, $37        ;; 0b:52fa ????????
-    db   $74, $34, $74, $37, $65, $3a, $65, $3a        ;; 0b:5302 ????????
-    db   $6f, $37, $6a, $3a, $74, $37, $74, $3a        ;; 0b:530a ????????
-    db   $65, $5c, $65, $3e, $6a, $3a, $6a, $3e        ;; 0b:5312 ????????
-    db   $74, $3e, $6f, $3e, $65, $3a, $74, $3e        ;; 0b:531a ????????
-    db   $6f, $3e, $65, $41, $6f, $44, $6f, $41        ;; 0b:5322 ????????
-    db   $65, $3e, $65, $44, $6d, $44, $6d, $44        ;; 0b:532a ????????
-    db   $6f, $48, $6f, $44, $65, $41, $74, $44        ;; 0b:5332 ????????
-    db   $65, $44, $6f, $48, $74, $44, $74, $48        ;; 0b:533a ????????
-    db   $6f, $4b, $65, $4b, $6f, $48, $6a, $4b        ;; 0b:5342 ????????
-    db   $74, $4b, $6f, $4b, $6d, $44, $74, $4b        ;; 0b:534a ????????
-    db   $6a, $4e, $65, $4e, $74, $52, $6a, $4e        ;; 0b:5352 ????????
-    db   $65, $4e, $74, $4e, $6f, $4b, $65, $52        ;; 0b:535a ????????
-    db   $6f, $52, $6f, $52, $6f, $55, $74, $52        ;; 0b:5362 ????????
-    db   $6a, $4e, $65, $55, $74, $55, $6a, $55        ;; 0b:536a ????????
-    db   $65, $52, $6f, $55, $74, $55, $74, $55        ;; 0b:5372 ????????
-    db   $6a, $55, $6d, $66, $6a, $2e, $65, $5c        ;; 0b:537a ????????
-    db   $74, $3a, $71, $5c, $6f, $34, $ff
-.data_0b_5389:
-    db   $03        ;; 0b:5389 ????????
-    db   $0e, $02, $1f, $02, $1f, $03, $0e, $0b        ;; 0b:538a ????????
-    db   $0e, $1b, $1f, $1b, $1f, $0b, $0e, $15        ;; 0b:5392 ????????
-    db   $0f, $34, $14, $34, $14, $15, $0f, $57        ;; 0b:539a ????????
-    db   $07, $03, $2d, $03, $2d, $57, $07, $0e        ;; 0b:53a2 ????????
-    db   $1d, $16, $2a, $16, $2a, $0e, $1d, $26        ;; 0b:53aa ????????
-    db   $1f, $3b, $2e, $3b, $2e, $26, $1f, $27        ;; 0b:53b2 ????????
-    db   $2e, $04, $35, $04, $35, $27, $2e, $ff        ;; 0b:53ba ????????
-.data_0b_53c2:
-    db   $03, $03, $18, $0f, $25, $04, $2c, $0a        ;; 0b:53c2 ????????
-    db   $3e, $04, $58, $09, $44, $03, $61, $07        ;; 0b:53ca ????????
-    db   $51, $04, $02, $19, $02, $15, $1d, $1c        ;; 0b:53d2 ????????
-    db   $18, $0f, $03, $03, $2c, $0a, $25, $04        ;; 0b:53da ????????
-    db   $58, $09, $3e, $04, $61, $07, $44, $03        ;; 0b:53e2 ????????
-    db   $02, $19, $51, $04, $1d, $1c, $02, $15        ;; 0b:53ea ????????
-    db   $ff
-.data_0b_53f3:
-    db   $1d, $2d, $5a, $0a, $5a, $0a, $1d        ;; 0b:53f3 ????????
-    db   $2d, $ff
-.data_0b_53fc:
-    db   $62, $7d, $70, $7d, $ff             ;; 0b:53fc ???????
-.data_MediaDimensionSpawnTable:
-; 38 entries × 2 bytes (tile X, tile Y) for up to 19 distinct respawn points in Media Dimension, 
-; indexed by wD628. Includes hub entrances, TV portals, and inter-area connections. 
-; Zero entries are unused/null spawn points
-    db   $25, $0d
-    db   $05, $0b
-    db   $36, $0b
-    db   $11, $16        ;; 0b:5401 wwww????
-    db   $39, $16, $25, $16, $00, $00, $1e, $23        ;; 0b:5409 ????????
-    db   $32, $23, $24, $46, $1a, $46, $10, $46        ;; 0b:5411 ????????
-    db   $00, $00, $11, $31, $3e, $31, $00, $00        ;; 0b:5419 ????????
-    db   $1a, $0d, $00, $00, $00, $00, $00, $00        ;; 0b:5421 ????????
-    db   $00, $00, $26, $1e, $18, $4c, $1c, $31        ;; 0b:5429 ????????
-    db   $1a, $04, $11, $04, $23, $04, $00, $00        ;; 0b:5431 ????????
-    db   $00, $00, $00, $00, $48, $31                  ;; 0b:5439 ??????
-.data_LevelInitialSpawnTable:
-; 31 entries × 8 bytes per level (4 checkpoint spawn positions × 2 bytes each — tile X, tile Y). 
-; Most levels only use checkpoints 0 and 1; longer levels use up to checkpoint 3. 
-; Unused checkpoint slots are zero-padded
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:543f ????????
-    db   $2f, $0b, $26, $3a, $00, $00, $00, $00        ;; 0b:5447 ww??????
-    db   $03, $0a, $4b, $0a, $00, $00, $00, $00        ;; 0b:544f ww??????
-    db   $0b, $31, $00, $00, $00, $00, $00, $00        ;; 0b:5457 ????????
-    db   $1a, $15, $00, $00, $00, $00, $00, $00        ;; 0b:545f ????????
-    db   $0f, $1d, $10, $15, $00, $00, $00, $00        ;; 0b:5467 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:546f ????????
-    db   $04, $13, $00, $00, $00, $00, $00, $00        ;; 0b:5477 ????????
-    db   $04, $6a, $37, $56, $00, $00, $00, $00        ;; 0b:547f ????????
-    db   $04, $73, $3f, $70, $00, $00, $00, $00        ;; 0b:5487 ????????
-    db   $0d, $34, $4d, $34, $00, $00, $00, $00        ;; 0b:548f ????????
-    db   $15, $31, $00, $00, $00, $00, $00, $00        ;; 0b:5497 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:549f ????????
-    db   $1e, $0c, $00, $00, $00, $00, $00, $00        ;; 0b:54a7 ????????
-    db   $04, $05, $00, $00, $00, $00, $00, $00        ;; 0b:54af ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:54b7 ????????
-    db   $6d, $55, $00, $00, $00, $00, $00, $00        ;; 0b:54bf ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:54c7 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:54cf ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:54d7 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:54df ????????
-    db   $50, $66, $00, $00, $00, $00, $00, $00        ;; 0b:54e7 ????????
-    db   $1c, $75, $00, $00, $00, $00, $00, $00        ;; 0b:54ef ????????
-    db   $05, $46, $00, $00, $00, $00, $00, $00        ;; 0b:54f7 ????????
-    db   $07, $14, $0e, $34, $00, $00, $00, $00        ;; 0b:54ff ????????
-    db   $05, $0c, $00, $00, $00, $00, $00, $00        ;; 0b:5507 ????????
-    db   $7b, $1a, $00, $00, $00, $00, $00, $00        ;; 0b:550f ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:5517 ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:551f ????????
-    db   $00, $00, $00, $00, $00, $00, $00, $00        ;; 0b:5527 ????????
-    db   $06, $7c, $00, $00, $00, $00, $00, $00        ;; 0b:552f ????????
+.data_0b_4ff2_LevelDoorLists:
+; One pointer per level to that level's door list. Levels with no doors of their own
+; point at the Media Dimension list, which is harmless because a door only fires when
+; the player is standing on its exact block - and those levels have no block that
+; matches. Four real levels do this (This Old Cave, Lizard in a China Shop, Bugged Out,
+; Chips and Dips) alongside the ten unused slots
+    dw   .data_0b_5030_Doors_MediaDimension                     ; $00 MAP_MEDIA_DIMENSION
+    dw   .data_0b_5051_Doors_OutOfToon                          ; $01 MAP_TOON_TV_OUT_OF_TOON
+    dw   .data_0b_5066_Doors_Smellraiser                        ; $02 MAP_SCREAM_TV_SMELLRAISER
+    dw   .data_0b_5097_Doors_Frankensteinfeld                   ; $03 MAP_SCREAM_TV_FRANKENSTEINFELD
+    dw   .data_0b_50e0_Doors_WwwDotcomCom                       ; $04 MAP_CIRCUIT_CENTRAL_WWWDOTCOMCOM
+    dw   .data_0b_5111_Doors_MaoTseTongue                       ; $05 MAP_KUNG_FU_THEATER_MAO_TSE_TONGUE
+    dw   .data_0b_5030_Doors_MediaDimension                     ; $06 MAP_UNUSED_06
+    dw   .data_0b_5182_Doors_Pangaea90210                       ; $07 MAP_PRE_HISTORY_CHANNEL_PANGAEA_90210
+    dw   .data_0b_519b_Doors_FineTooning                        ; $08 MAP_TOON_TV_FINE_TOONING
+    dw   .data_0b_5030_Doors_MediaDimension                     ; $09 MAP_PRE_HISTORY_CHANNEL_THIS_OLD_CAVE
+    dw   .data_0b_51ac_Doors_HoneyIShrunkTheGecko               ; $0a MAP_CIRCUIT_CENTRAL_HONEY_I_SHRUNK_THE_GECKO
+    dw   .data_0b_51ed_Doors_Poltergex                          ; $0b MAP_SCREAM_TV_POLTERGEX
+    dw   .data_0b_5030_Doors_MediaDimension                     ; $0c MAP_UNUSED_0C
+    dw   .data_0b_5266_Doors_SamuraiNightFever                  ; $0d MAP_KUNG_FU_THEATER_SAMURAI_NIGHT_FEVER
+    dw   .data_0b_5293_Doors_NoWeddingsAndAFuneral              ; $0e MAP_REZOPOLIS_NO_WEDDINGS_AND_A_FUNERAL
+    dw   .data_0b_5030_Doors_MediaDimension                     ; $0f MAP_UNUSED_0F
+    dw   .data_0b_52d4_Doors_ThursdayThe12th                    ; $10 MAP_SCREAM_TV_THURSDAY_THE_12TH
+    dw   .data_0b_5030_Doors_MediaDimension                     ; $11 MAP_UNUSED_11
+    dw   .data_0b_5030_Doors_MediaDimension                     ; $12 MAP_UNUSED_12
+    dw   .data_0b_5030_Doors_MediaDimension                     ; $13 MAP_UNUSED_13
+    dw   .data_0b_5030_Doors_MediaDimension                     ; $14 MAP_UNUSED_14
+    dw   .data_0b_5030_Doors_MediaDimension                     ; $15 MAP_KUNG_FU_THEATER_LIZARD_IN_A_CHINA_SHOP
+    dw   .data_0b_5030_Doors_MediaDimension                     ; $16 MAP_REZOPOLIS_BUGGED_OUT
+    dw   .data_0b_5030_Doors_MediaDimension                     ; $17 MAP_CIRCUIT_CENTRAL_CHIPS_AND_DIPS
+    dw   .data_0b_5389_Doors_LavaDabbaDoo                       ; $18 MAP_PRE_HISTORY_CHANNEL_LAVA_DABBA_DOO
+    dw   .data_0b_53c2_Doors_TexasChainsawManicure              ; $19 MAP_SCREAM_TV_TEXAS_CHAINSAW_MANICURE
+    dw   .data_0b_53f3_Doors_MazedAndConfused                   ; $1a MAP_REZOPOLIS_MAZED_AND_CONFUSED
+    dw   .data_0b_5030_Doors_MediaDimension                     ; $1b MAP_UNUSED_1B
+    dw   .data_0b_5030_Doors_MediaDimension                     ; $1c MAP_UNUSED_1C
+    dw   .data_0b_5030_Doors_MediaDimension                     ; $1d MAP_UNUSED_1D
+    dw   .data_0b_53fc_Doors_ChannelZ                           ; $1e MAP_BOSS_TV_CHANNEL_Z
+
+; Door lists. Each is a run of DOOR_RECORD_SIZE-byte records -
+;   from block X, from block Y, to block X, to block Y
+; - ending in SPAWN_LIST_END. The search is linear and takes the first match, but no
+; list has two records with the same source block, so the order never matters.
+;
+; A record is one-directional. Most come in pairs, a record and its exact reverse,
+; which is what makes a door walkable both ways: 202 of the 240 records in this bank
+; pair up. The "#n <-> #m" comments name each record's partner; the ones marked
+; one-way have no return trip and drop the player somewhere they cannot walk back
+; from. Thursday the 12th is the extreme case - 35 of its 45 doors are one-way, which
+; is how a level whose mission is "find the items in the given time" is built as a
+; maze out of nothing but door records.
+
+.data_0b_5030_Doors_MediaDimension:
+; MediaDimension - 8 door(s)
+    ;    from        to
+    db   $25, $0e,  $07, $17                                    ; #0 <-> #4
+    db   $1b, $17,  $07, $24                                    ; #1 <-> #5
+    db   $2f, $17,  $07, $4d                                    ; #2 <-> #6
+    db   $43, $17,  $27, $3a                                    ; #3 <-> #7
+    db   $07, $17,  $25, $0e                                    ; #4 <-> #0
+    db   $07, $24,  $1b, $17                                    ; #5 <-> #1
+    db   $07, $4d,  $2f, $17                                    ; #6 <-> #2
+    db   $27, $3a,  $43, $17                                    ; #7 <-> #3
+    db   SPAWN_LIST_END
+
+.data_0b_5051_Doors_OutOfToon:
+; OutOfToon - 5 door(s), 1 one-way
+    ;    from        to
+    db   $41, $03,  $03, $28                                    ; #0 <-> #3
+    db   $6a, $1d,  $03, $3c                                    ; #1 <-> #4
+    db   $49, $36,  $52, $3e                                    ; #2 one-way
+    db   $03, $28,  $41, $03                                    ; #3 <-> #0
+    db   $03, $3c,  $6a, $1d                                    ; #4 <-> #1
+    db   SPAWN_LIST_END
+
+.data_0b_5066_Doors_Smellraiser:
+; Smellraiser - 12 door(s)
+    ;    from        to
+    db   $19, $07,  $23, $09                                    ; #0 <-> #6
+    db   $34, $06,  $3f, $06                                    ; #1 <-> #7
+    db   $47, $02,  $02, $12                                    ; #2 <-> #8
+    db   $2d, $10,  $37, $15                                    ; #3 <-> #9
+    db   $3a, $0f,  $02, $1b                                    ; #4 <-> #10
+    db   $3e, $0f,  $28, $21                                    ; #5 <-> #11
+    db   $23, $09,  $19, $07                                    ; #6 <-> #0
+    db   $3f, $06,  $34, $06                                    ; #7 <-> #1
+    db   $02, $12,  $47, $02                                    ; #8 <-> #2
+    db   $37, $15,  $2d, $10                                    ; #9 <-> #3
+    db   $02, $1b,  $3a, $0f                                    ; #10 <-> #4
+    db   $28, $21,  $3e, $0f                                    ; #11 <-> #5
+    db   SPAWN_LIST_END
+
+.data_0b_5097_Doors_Frankensteinfeld:
+; Frankensteinfeld - 18 door(s)
+    ;    from        to
+    db   $16, $33,  $1d, $31                                    ; #0 <-> #9
+    db   $23, $31,  $2e, $30                                    ; #1 <-> #10
+    db   $27, $31,  $24, $62                                    ; #2 <-> #11
+    db   $43, $2a,  $4d, $2d                                    ; #3 <-> #12
+    db   $4c, $32,  $02, $42                                    ; #4 <-> #13
+    db   $50, $2b,  $0a, $3b                                    ; #5 <-> #14
+    db   $1e, $41,  $08, $57                                    ; #6 <-> #15
+    db   $71, $28,  $12, $3f                                    ; #7 <-> #16
+    db   $76, $46,  $28, $3f                                    ; #8 <-> #17
+    db   $1d, $31,  $16, $33                                    ; #9 <-> #0
+    db   $2e, $30,  $23, $31                                    ; #10 <-> #1
+    db   $24, $62,  $27, $31                                    ; #11 <-> #2
+    db   $4d, $2d,  $43, $2a                                    ; #12 <-> #3
+    db   $02, $42,  $4c, $32                                    ; #13 <-> #4
+    db   $0a, $3b,  $50, $2b                                    ; #14 <-> #5
+    db   $08, $57,  $1e, $41                                    ; #15 <-> #6
+    db   $12, $3f,  $71, $28                                    ; #16 <-> #7
+    db   $28, $3f,  $76, $46                                    ; #17 <-> #8
+    db   SPAWN_LIST_END
+
+.data_0b_50e0_Doors_WwwDotcomCom:
+; WwwDotcomCom - 12 door(s)
+    ;    from        to
+    db   $0b, $06,  $2b, $09                                    ; #0 <-> #6
+    db   $13, $07,  $1d, $21                                    ; #1 <-> #7
+    db   $7c, $0a,  $04, $42                                    ; #2 <-> #8
+    db   $7c, $21,  $1d, $2f                                    ; #3 <-> #9
+    db   $65, $2f,  $1c, $43                                    ; #4 <-> #10
+    db   $3d, $41,  $46, $42                                    ; #5 <-> #11
+    db   $2b, $09,  $0b, $06                                    ; #6 <-> #0
+    db   $1d, $21,  $13, $07                                    ; #7 <-> #1
+    db   $04, $42,  $7c, $0a                                    ; #8 <-> #2
+    db   $1d, $2f,  $7c, $21                                    ; #9 <-> #3
+    db   $1c, $43,  $65, $2f                                    ; #10 <-> #4
+    db   $46, $42,  $3d, $41                                    ; #11 <-> #5
+    db   SPAWN_LIST_END
+
+.data_0b_5111_Doors_MaoTseTongue:
+; MaoTseTongue - 28 door(s)
+    ;    from        to
+    db   $09, $1d,  $2b, $06                                    ; #0 <-> #14
+    db   $40, $05,  $09, $19                                    ; #1 <-> #15
+    db   $16, $19,  $48, $05                                    ; #2 <-> #16
+    db   $4d, $05,  $40, $12                                    ; #3 <-> #17
+    db   $52, $0e,  $09, $15                                    ; #4 <-> #18
+    db   $19, $15,  $5f, $1f                                    ; #5 <-> #19
+    db   $68, $10,  $09, $0d                                    ; #6 <-> #20
+    db   $18, $11,  $07, $35                                    ; #7 <-> #21
+    db   $07, $2a,  $2b, $2c                                    ; #8 <-> #22
+    db   $19, $1d,  $28, $35                                    ; #9 <-> #23
+    db   $2c, $35,  $35, $28                                    ; #10 <-> #24
+    db   $35, $22,  $39, $3a                                    ; #11 <-> #25
+    db   $4b, $34,  $5e, $35                                    ; #12 <-> #26
+    db   $6a, $35,  $5c, $45                                    ; #13 <-> #27
+    db   $2b, $06,  $09, $1d                                    ; #14 <-> #0
+    db   $09, $19,  $40, $05                                    ; #15 <-> #1
+    db   $48, $05,  $16, $19                                    ; #16 <-> #2
+    db   $40, $12,  $4d, $05                                    ; #17 <-> #3
+    db   $09, $15,  $52, $0e                                    ; #18 <-> #4
+    db   $5f, $1f,  $19, $15                                    ; #19 <-> #5
+    db   $09, $0d,  $68, $10                                    ; #20 <-> #6
+    db   $07, $35,  $18, $11                                    ; #21 <-> #7
+    db   $2b, $2c,  $07, $2a                                    ; #22 <-> #8
+    db   $28, $35,  $19, $1d                                    ; #23 <-> #9
+    db   $35, $28,  $2c, $35                                    ; #24 <-> #10
+    db   $39, $3a,  $35, $22                                    ; #25 <-> #11
+    db   $5e, $35,  $4b, $34                                    ; #26 <-> #12
+    db   $5c, $45,  $6a, $35                                    ; #27 <-> #13
+    db   SPAWN_LIST_END
+
+.data_0b_5182_Doors_Pangaea90210:
+; Pangaea90210 - 6 door(s)
+    ;    from        to
+    db   $57, $03,  $5a, $3b                                    ; #0 <-> #1
+    db   $5a, $3b,  $57, $03                                    ; #1 <-> #0
+    db   $7c, $03,  $03, $37                                    ; #2 <-> #4
+    db   $7b, $12,  $03, $46                                    ; #3 <-> #5
+    db   $03, $37,  $7c, $03                                    ; #4 <-> #2
+    db   $03, $46,  $7b, $12                                    ; #5 <-> #3
+    db   SPAWN_LIST_END
+
+.data_0b_519b_Doors_FineTooning:
+; FineTooning - 4 door(s)
+    ;    from        to
+    db   $17, $44,  $4a, $7d                                    ; #0 <-> #1
+    db   $4a, $7d,  $17, $44                                    ; #1 <-> #0
+    db   $31, $4b,  $3f, $65                                    ; #2 <-> #3
+    db   $3f, $65,  $31, $4b                                    ; #3 <-> #2
+    db   SPAWN_LIST_END
+
+.data_0b_51ac_Doors_HoneyIShrunkTheGecko:
+; HoneyIShrunkTheGecko - 16 door(s)
+    ;    from        to
+    db   $04, $0e,  $26, $1b                                    ; #0 <-> #8
+    db   $36, $0e,  $4f, $34                                    ; #1 <-> #9
+    db   $4f, $2f,  $41, $34                                    ; #2 <-> #10
+    db   $43, $27,  $64, $21                                    ; #3 <-> #11
+    db   $47, $21,  $0d, $6c                                    ; #4 <-> #12
+    db   $58, $11,  $62, $13                                    ; #5 <-> #13
+    db   $79, $25,  $04, $41                                    ; #6 <-> #14
+    db   $63, $41,  $69, $51                                    ; #7 <-> #15
+    db   $26, $1b,  $04, $0e                                    ; #8 <-> #0
+    db   $4f, $34,  $36, $0e                                    ; #9 <-> #1
+    db   $41, $34,  $4f, $2f                                    ; #10 <-> #2
+    db   $64, $21,  $43, $27                                    ; #11 <-> #3
+    db   $0d, $6c,  $47, $21                                    ; #12 <-> #4
+    db   $62, $13,  $58, $11                                    ; #13 <-> #5
+    db   $04, $41,  $79, $25                                    ; #14 <-> #6
+    db   $69, $51,  $63, $41                                    ; #15 <-> #7
+    db   SPAWN_LIST_END
+
+.data_0b_51ed_Doors_Poltergex:
+; Poltergex - 30 door(s)
+    ;    from        to
+    db   $59, $35,  $03, $4d                                    ; #0 <-> #15
+    db   $09, $49,  $3c, $4c                                    ; #1 <-> #16
+    db   $11, $4d,  $02, $3f                                    ; #2 <-> #17
+    db   $28, $3e,  $4e, $47                                    ; #3 <-> #18
+    db   $03, $3b,  $46, $42                                    ; #4 <-> #19
+    db   $46, $3c,  $37, $35                                    ; #5 <-> #20
+    db   $54, $47,  $31, $58                                    ; #6 <-> #21
+    db   $56, $4c,  $37, $66                                    ; #7 <-> #22
+    db   $59, $29,  $0e, $53                                    ; #8 <-> #23
+    db   $2a, $54,  $03, $54                                    ; #9 <-> #24
+    db   $47, $4a,  $16, $54                                    ; #10 <-> #25
+    db   $55, $42,  $35, $3f                                    ; #11 <-> #26
+    db   $57, $3c,  $35, $3c                                    ; #12 <-> #27
+    db   $02, $2d,  $4c, $29                                    ; #13 <-> #28
+    db   $02, $31,  $4c, $35                                    ; #14 <-> #29
+    db   $03, $4d,  $59, $35                                    ; #15 <-> #0
+    db   $3c, $4c,  $09, $49                                    ; #16 <-> #1
+    db   $02, $3f,  $11, $4d                                    ; #17 <-> #2
+    db   $4e, $47,  $28, $3e                                    ; #18 <-> #3
+    db   $46, $42,  $03, $3b                                    ; #19 <-> #4
+    db   $37, $35,  $46, $3c                                    ; #20 <-> #5
+    db   $31, $58,  $54, $47                                    ; #21 <-> #6
+    db   $37, $66,  $56, $4c                                    ; #22 <-> #7
+    db   $0e, $53,  $59, $29                                    ; #23 <-> #8
+    db   $03, $54,  $2a, $54                                    ; #24 <-> #9
+    db   $16, $54,  $47, $4a                                    ; #25 <-> #10
+    db   $35, $3f,  $55, $42                                    ; #26 <-> #11
+    db   $35, $3c,  $57, $3c                                    ; #27 <-> #12
+    db   $4c, $29,  $02, $2d                                    ; #28 <-> #13
+    db   $4c, $35,  $02, $31                                    ; #29 <-> #14
+    db   SPAWN_LIST_END
+
+.data_0b_5266_Doors_SamuraiNightFever:
+; SamuraiNightFever - 11 door(s), 1 one-way
+    ;    from        to
+    db   $0b, $0c,  $68, $22                                    ; #0 <-> #4
+    db   $69, $05,  $09, $1e                                    ; #1 <-> #5
+    db   $13, $0c,  $07, $31                                    ; #2 <-> #6
+    db   $17, $0c,  $03, $48                                    ; #3 <-> #7
+    db   $68, $22,  $0b, $0c                                    ; #4 <-> #0
+    db   $09, $1e,  $69, $05                                    ; #5 <-> #1
+    db   $07, $31,  $13, $0c                                    ; #6 <-> #2
+    db   $03, $48,  $17, $0c                                    ; #7 <-> #3
+    db   $63, $11,  $39, $0a                                    ; #8 one-way
+    db   $1a, $46,  $31, $54                                    ; #9 <-> #10
+    db   $31, $54,  $1a, $46                                    ; #10 <-> #9
+    db   SPAWN_LIST_END
+
+.data_0b_5293_Doors_NoWeddingsAndAFuneral:
+; NoWeddingsAndAFuneral - 16 door(s)
+    ;    from        to
+    db   $14, $07,  $1b, $07                                    ; #0 <-> #8
+    db   $26, $07,  $0b, $28                                    ; #1 <-> #9
+    db   $0b, $15,  $06, $2f                                    ; #2 <-> #10
+    db   $0e, $2f,  $05, $5a                                    ; #3 <-> #11
+    db   $29, $53,  $05, $64                                    ; #4 <-> #12
+    db   $1d, $64,  $2c, $5e                                    ; #5 <-> #13
+    db   $31, $51,  $42, $56                                    ; #6 <-> #14
+    db   $56, $52,  $42, $60                                    ; #7 <-> #15
+    db   $1b, $07,  $14, $07                                    ; #8 <-> #0
+    db   $0b, $28,  $26, $07                                    ; #9 <-> #1
+    db   $06, $2f,  $0b, $15                                    ; #10 <-> #2
+    db   $05, $5a,  $0e, $2f                                    ; #11 <-> #3
+    db   $05, $64,  $29, $53                                    ; #12 <-> #4
+    db   $2c, $5e,  $1d, $64                                    ; #13 <-> #5
+    db   $42, $56,  $31, $51                                    ; #14 <-> #6
+    db   $42, $60,  $56, $52                                    ; #15 <-> #7
+    db   SPAWN_LIST_END
+
+.data_0b_52d4_Doors_ThursdayThe12th:
+; ThursdayThe12th - 45 door(s), 35 one-way
+    ;    from        to
+    db   $6a, $2e,  $6d, $66                                    ; #0 <-> #42
+    db   $6f, $2e,  $65, $34                                    ; #1 one-way
+    db   $74, $2e,  $6f, $2e                                    ; #2 one-way
+    db   $65, $31,  $65, $34                                    ; #3 one-way
+    db   $6a, $31,  $74, $31                                    ; #4 <-> #5
+    db   $74, $31,  $6a, $31                                    ; #5 <-> #4
+    db   $65, $34,  $74, $2e                                    ; #6 one-way
+    db   $6f, $34,  $71, $5c                                    ; #7 <-> #44
+    db   $74, $34,  $65, $34                                    ; #8 one-way
+    db   $65, $37,  $6a, $31                                    ; #9 one-way
+    db   $6a, $37,  $65, $34                                    ; #10 one-way
+    db   $6f, $37,  $74, $34                                    ; #11 one-way
+    db   $74, $37,  $65, $3a                                    ; #12 one-way
+    db   $65, $3a,  $6f, $37                                    ; #13 one-way
+    db   $6a, $3a,  $74, $37                                    ; #14 one-way
+    db   $74, $3a,  $65, $5c                                    ; #15 <-> #43
+    db   $65, $3e,  $6a, $3a                                    ; #16 one-way
+    db   $6a, $3e,  $74, $3e                                    ; #17 one-way
+    db   $6f, $3e,  $65, $3a                                    ; #18 one-way
+    db   $74, $3e,  $6f, $3e                                    ; #19 one-way
+    db   $65, $41,  $6f, $44                                    ; #20 <-> #24
+    db   $6f, $41,  $65, $3e                                    ; #21 one-way
+    db   $65, $44,  $6d, $44                                    ; #22 one-way
+    db   $6d, $44,  $6f, $48                                    ; #23 one-way
+    db   $6f, $44,  $65, $41                                    ; #24 <-> #20
+    db   $74, $44,  $65, $44                                    ; #25 one-way
+    db   $6f, $48,  $74, $44                                    ; #26 one-way
+    db   $74, $48,  $6f, $4b                                    ; #27 one-way
+    db   $65, $4b,  $6f, $48                                    ; #28 one-way
+    db   $6a, $4b,  $74, $4b                                    ; #29 one-way
+    db   $6f, $4b,  $6d, $44                                    ; #30 one-way
+    db   $74, $4b,  $6a, $4e                                    ; #31 one-way
+    db   $65, $4e,  $74, $52                                    ; #32 one-way
+    db   $6a, $4e,  $65, $4e                                    ; #33 one-way
+    db   $74, $4e,  $6f, $4b                                    ; #34 one-way
+    db   $65, $52,  $6f, $52                                    ; #35 one-way
+    db   $6f, $52,  $6f, $55                                    ; #36 one-way
+    db   $74, $52,  $6a, $4e                                    ; #37 one-way
+    db   $65, $55,  $74, $55                                    ; #38 one-way
+    db   $6a, $55,  $65, $52                                    ; #39 one-way
+    db   $6f, $55,  $74, $55                                    ; #40 one-way
+    db   $74, $55,  $6a, $55                                    ; #41 one-way
+    db   $6d, $66,  $6a, $2e                                    ; #42 <-> #0
+    db   $65, $5c,  $74, $3a                                    ; #43 <-> #15
+    db   $71, $5c,  $6f, $34                                    ; #44 <-> #7
+    db   SPAWN_LIST_END
+
+.data_0b_5389_Doors_LavaDabbaDoo:
+; LavaDabbaDoo - 14 door(s)
+    ;    from        to
+    db   $03, $0e,  $02, $1f                                    ; #0 <-> #1
+    db   $02, $1f,  $03, $0e                                    ; #1 <-> #0
+    db   $0b, $0e,  $1b, $1f                                    ; #2 <-> #3
+    db   $1b, $1f,  $0b, $0e                                    ; #3 <-> #2
+    db   $15, $0f,  $34, $14                                    ; #4 <-> #5
+    db   $34, $14,  $15, $0f                                    ; #5 <-> #4
+    db   $57, $07,  $03, $2d                                    ; #6 <-> #7
+    db   $03, $2d,  $57, $07                                    ; #7 <-> #6
+    db   $0e, $1d,  $16, $2a                                    ; #8 <-> #9
+    db   $16, $2a,  $0e, $1d                                    ; #9 <-> #8
+    db   $26, $1f,  $3b, $2e                                    ; #10 <-> #11
+    db   $3b, $2e,  $26, $1f                                    ; #11 <-> #10
+    db   $27, $2e,  $04, $35                                    ; #12 <-> #13
+    db   $04, $35,  $27, $2e                                    ; #13 <-> #12
+    db   SPAWN_LIST_END
+
+.data_0b_53c2_Doors_TexasChainsawManicure:
+; TexasChainsawManicure - 12 door(s)
+    ;    from        to
+    db   $03, $03,  $18, $0f                                    ; #0 <-> #6
+    db   $25, $04,  $2c, $0a                                    ; #1 <-> #7
+    db   $3e, $04,  $58, $09                                    ; #2 <-> #8
+    db   $44, $03,  $61, $07                                    ; #3 <-> #9
+    db   $51, $04,  $02, $19                                    ; #4 <-> #10
+    db   $02, $15,  $1d, $1c                                    ; #5 <-> #11
+    db   $18, $0f,  $03, $03                                    ; #6 <-> #0
+    db   $2c, $0a,  $25, $04                                    ; #7 <-> #1
+    db   $58, $09,  $3e, $04                                    ; #8 <-> #2
+    db   $61, $07,  $44, $03                                    ; #9 <-> #3
+    db   $02, $19,  $51, $04                                    ; #10 <-> #4
+    db   $1d, $1c,  $02, $15                                    ; #11 <-> #5
+    db   SPAWN_LIST_END
+
+.data_0b_53f3_Doors_MazedAndConfused:
+; MazedAndConfused - 2 door(s)
+    ;    from        to
+    db   $1d, $2d,  $5a, $0a                                    ; #0 <-> #1
+    db   $5a, $0a,  $1d, $2d                                    ; #1 <-> #0
+    db   SPAWN_LIST_END
+
+.data_0b_53fc_Doors_ChannelZ:
+; ChannelZ - 1 door(s), 1 one-way
+    ;    from        to
+    db   $62, $7d,  $70, $7d                                    ; #0 one-way
+    db   SPAWN_LIST_END
+
+.data_0b_5401_MediaDimensionSpawnPoints:
+; Where the player lands when they step back out of a TV into the hub, in blocks.
+; Indexed by wD628_MediaDimensionRespawnPoint, which bank02 computes as
+; (TV entity list index - 1) / 2 when a TV is entered - and that works out to a LEVEL ID:
+; the table has one entry per level, and its empty entries are exactly the ten
+; MAP_UNUSED_* slots. So each level effectively records where its own TV stands in the
+; hub, and the player is put back in front of whichever TV they came out of
+    db   $25, $0d                                               ; $00
+    db   $05, $0b                                               ; $01
+    db   $36, $0b                                               ; $02
+    db   $11, $16                                               ; $03
+    db   $39, $16                                               ; $04
+    db   $25, $16                                               ; $05
+    db   $00, $00                                               ; $06  (unused)
+    db   $1e, $23                                               ; $07
+    db   $32, $23                                               ; $08
+    db   $24, $46                                               ; $09
+    db   $1a, $46                                               ; $0a
+    db   $10, $46                                               ; $0b
+    db   $00, $00                                               ; $0c  (unused)
+    db   $11, $31                                               ; $0d
+    db   $3e, $31                                               ; $0e
+    db   $00, $00                                               ; $0f  (unused)
+    db   $1a, $0d                                               ; $10
+    db   $00, $00                                               ; $11  (unused)
+    db   $00, $00                                               ; $12  (unused)
+    db   $00, $00                                               ; $13  (unused)
+    db   $00, $00                                               ; $14  (unused)
+    db   $26, $1e                                               ; $15
+    db   $18, $4c                                               ; $16
+    db   $1c, $31                                               ; $17
+    db   $1a, $04                                               ; $18
+    db   $11, $04                                               ; $19
+    db   $23, $04                                               ; $1a
+    db   $00, $00                                               ; $1b  (unused)
+    db   $00, $00                                               ; $1c  (unused)
+    db   $00, $00                                               ; $1d  (unused)
+    db   $48, $31                                               ; $1e
+
+.data_0b_543f_LevelCheckpointSpawns:
+; CHECKPOINTS_PER_LEVEL block coordinates per level, indexed by
+; levelId * 8 + wD618_CheckpointSpawnId * 2. Checkpoint 0 is where the level starts; the
+; rest are set by call_00_208c_Checkpoint_WriteSpawnId when the player smashes a
+; checkpoint TV block.
+;
+; Only 20 of the 31 levels define a start at all, only 7 of those define a checkpoint 1,
+; and NO level uses checkpoint 2 or 3 - so the whole upper half of every record is dead
+; weight, and 194 of the 248 bytes here are zero
+    ; $00 MAP_MEDIA_DIMENSION
+    db   $00, $00,  $00, $00,  $00, $00,  $00, $00
+    ; $01 MAP_TOON_TV_OUT_OF_TOON
+    db   $2f, $0b,  $26, $3a,  $00, $00,  $00, $00
+    ; $02 MAP_SCREAM_TV_SMELLRAISER
+    db   $03, $0a,  $4b, $0a,  $00, $00,  $00, $00
+    ; $03 MAP_SCREAM_TV_FRANKENSTEINFELD
+    db   $0b, $31,  $00, $00,  $00, $00,  $00, $00
+    ; $04 MAP_CIRCUIT_CENTRAL_WWWDOTCOMCOM
+    db   $1a, $15,  $00, $00,  $00, $00,  $00, $00
+    ; $05 MAP_KUNG_FU_THEATER_MAO_TSE_TONGUE
+    db   $0f, $1d,  $10, $15,  $00, $00,  $00, $00
+    ; $06 MAP_UNUSED_06
+    db   $00, $00,  $00, $00,  $00, $00,  $00, $00
+    ; $07 MAP_PRE_HISTORY_CHANNEL_PANGAEA_90210
+    db   $04, $13,  $00, $00,  $00, $00,  $00, $00
+    ; $08 MAP_TOON_TV_FINE_TOONING
+    db   $04, $6a,  $37, $56,  $00, $00,  $00, $00
+    ; $09 MAP_PRE_HISTORY_CHANNEL_THIS_OLD_CAVE
+    db   $04, $73,  $3f, $70,  $00, $00,  $00, $00
+    ; $0a MAP_CIRCUIT_CENTRAL_HONEY_I_SHRUNK_THE_GECKO
+    db   $0d, $34,  $4d, $34,  $00, $00,  $00, $00
+    ; $0b MAP_SCREAM_TV_POLTERGEX
+    db   $15, $31,  $00, $00,  $00, $00,  $00, $00
+    ; $0c MAP_UNUSED_0C
+    db   $00, $00,  $00, $00,  $00, $00,  $00, $00
+    ; $0d MAP_KUNG_FU_THEATER_SAMURAI_NIGHT_FEVER
+    db   $1e, $0c,  $00, $00,  $00, $00,  $00, $00
+    ; $0e MAP_REZOPOLIS_NO_WEDDINGS_AND_A_FUNERAL
+    db   $04, $05,  $00, $00,  $00, $00,  $00, $00
+    ; $0f MAP_UNUSED_0F
+    db   $00, $00,  $00, $00,  $00, $00,  $00, $00
+    ; $10 MAP_SCREAM_TV_THURSDAY_THE_12TH
+    db   $6d, $55,  $00, $00,  $00, $00,  $00, $00
+    ; $11 MAP_UNUSED_11
+    db   $00, $00,  $00, $00,  $00, $00,  $00, $00
+    ; $12 MAP_UNUSED_12
+    db   $00, $00,  $00, $00,  $00, $00,  $00, $00
+    ; $13 MAP_UNUSED_13
+    db   $00, $00,  $00, $00,  $00, $00,  $00, $00
+    ; $14 MAP_UNUSED_14
+    db   $00, $00,  $00, $00,  $00, $00,  $00, $00
+    ; $15 MAP_KUNG_FU_THEATER_LIZARD_IN_A_CHINA_SHOP
+    db   $50, $66,  $00, $00,  $00, $00,  $00, $00
+    ; $16 MAP_REZOPOLIS_BUGGED_OUT
+    db   $1c, $75,  $00, $00,  $00, $00,  $00, $00
+    ; $17 MAP_CIRCUIT_CENTRAL_CHIPS_AND_DIPS
+    db   $05, $46,  $00, $00,  $00, $00,  $00, $00
+    ; $18 MAP_PRE_HISTORY_CHANNEL_LAVA_DABBA_DOO
+    db   $07, $14,  $0e, $34,  $00, $00,  $00, $00
+    ; $19 MAP_SCREAM_TV_TEXAS_CHAINSAW_MANICURE
+    db   $05, $0c,  $00, $00,  $00, $00,  $00, $00
+    ; $1a MAP_REZOPOLIS_MAZED_AND_CONFUSED
+    db   $7b, $1a,  $00, $00,  $00, $00,  $00, $00
+    ; $1b MAP_UNUSED_1B
+    db   $00, $00,  $00, $00,  $00, $00,  $00, $00
+    ; $1c MAP_UNUSED_1C
+    db   $00, $00,  $00, $00,  $00, $00,  $00, $00
+    ; $1d MAP_UNUSED_1D
+    db   $00, $00,  $00, $00,  $00, $00,  $00, $00
+    ; $1e MAP_BOSS_TV_CHANNEL_Z
+    db   $06, $7c,  $00, $00,  $00, $00,  $00, $00
