@@ -32,15 +32,15 @@ call_02_4856_Player_GetJumpVelocity:
 ; Two things can override it. First wD758_JumpVelocityOverride: if an entity touched Gex
 ; this frame and asked for a specific launch speed (the geyser, the bouncy mushroom) that
 ; value wins outright and is returned as-is. Otherwise the floor tile decides -
-; TILE_TYPE_SPRING_LOW/HIGH always spring, while TILE_TYPE_TRAMPOLINE_LOW/HIGH only spring
+; TILE_TYPE_SPRING_LOW/HIGH always spring, while TILE_TYPE_POWERED_SPRING_LOW/HIGH only spring
 ; while the circuit power-up timer is still running, and play a sound when they do
     ld   A, [wD758_JumpVelocityOverride]                                    ;; 02:4856 $fa $58 $d7
     and  A, A                                          ;; 02:4859 $a7
     ret  NZ                                            ;; 02:485a $c0
     ld   A, [wD765_TileTypeBehindGexsLowerBody]                                    ;; 02:485b $fa $65 $d7
-    cp   A, TILE_TYPE_TRAMPOLINE_LOW                   ;; 02:485e $fe $f0
+    cp   A, TILE_TYPE_POWERED_SPRING_LOW                   ;; 02:485e $fe $f0
     jr   Z, .jr_02_4876                                ;; 02:4860 $28 $14
-    cp   A, TILE_TYPE_TRAMPOLINE_HIGH                  ;; 02:4862 $fe $f1
+    cp   A, TILE_TYPE_POWERED_SPRING_HIGH                  ;; 02:4862 $fe $f1
     jr   Z, .jr_02_4885                                ;; 02:4864 $28 $1f
     cp   A, TILE_TYPE_SPRING_LOW                       ;; 02:4866 $fe $ce
     jr   Z, .jr_02_4870                                ;; 02:4868 $28 $06
@@ -911,7 +911,7 @@ call_02_4ccd_Player_RequestAction:
     db   $00    ; $04 PLAYER_ACTION_WALK
     db   $00    ; $05 PLAYER_ACTION_RUN
     db   $00    ; $06 PLAYER_ACTION_SKID
-    db   $00    ; $07 PLAYER_ACTION_STOP_ON_CERTAIN_FLOOR
+    db   $00    ; $07 PLAYER_ACTION_TEETER
     db   $00    ; $08 PLAYER_ACTION_CROUCH
     db   $00    ; $09 PLAYER_ACTION_JUMP
     db   $00    ; $0A PLAYER_ACTION_DOUBLE_JUMP
@@ -958,7 +958,7 @@ data_02_4d15_ActionInputTransitionTable:
     dw   .transitions_Walk             ; $04 PLAYER_ACTION_WALK
     dw   .transitions_Run              ; $05 PLAYER_ACTION_RUN
     dw   .transitions_Skid             ; $06 PLAYER_ACTION_SKID
-    dw   .transitions_StopOnFloor      ; $07 PLAYER_ACTION_STOP_ON_CERTAIN_FLOOR
+    dw   .transitions_Teeter           ; $07 PLAYER_ACTION_TEETER
     dw   .transitions_Crouch           ; $08 PLAYER_ACTION_CROUCH
     dw   .transitions_Jump             ; $09 PLAYER_ACTION_JUMP
     dw   .transitions_DoubleJump       ; $0A PLAYER_ACTION_DOUBLE_JUMP
@@ -1028,7 +1028,7 @@ data_02_4d15_ActionInputTransitionTable:
     db   ACTION_INPUT_ANY,             PLAYER_ACTION_STAND
     db   ACTION_INPUT_END
 
-.transitions_StopOnFloor:
+.transitions_Teeter:
     db   PADF_B,                       PLAYER_ACTION_JUMP
     db   PADF_SELECT,                  PLAYER_ACTION_EAT_FLY
     db   PADF_RIGHT,                   PLAYER_ACTION_WALK

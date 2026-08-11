@@ -1212,7 +1212,7 @@ DEF  PLAYER_ACTION_IDLE_ANIMATION             EQU $03
 DEF  PLAYER_ACTION_WALK                       EQU $04
 DEF  PLAYER_ACTION_RUN                        EQU $05
 DEF  PLAYER_ACTION_SKID                       EQU $06
-DEF  PLAYER_ACTION_STOP_ON_CERTAIN_FLOOR      EQU $07
+DEF  PLAYER_ACTION_TEETER                     EQU $07
 DEF  PLAYER_ACTION_CROUCH                     EQU $08
 DEF  PLAYER_ACTION_JUMP                       EQU $09
 DEF  PLAYER_ACTION_DOUBLE_JUMP                EQU $0A
@@ -1258,12 +1258,12 @@ DEF  CLIMB_STATE_BACKGROUND                   EQU $00
 DEF  CLIMB_STATE_BACKGROUND_TAIL_SPIN         EQU $01
 DEF  CLIMB_STATE_WALL                         EQU $02
 DEF  CLIMB_STATE_WALL_TAIL_SPIN               EQU $03
-DEF  CLIMB_STATE_CEILING                      EQU $04 ; same handler as CLIMB_STATE_WALL
-DEF  CLIMB_STATE_CEILING_TAIL_SPIN            EQU $05 ; same handler as CLIMB_STATE_WALL_TAIL_SPIN
+DEF  CLIMB_STATE_ALT_WALL                      EQU $04 ; same handler as CLIMB_STATE_WALL
+DEF  CLIMB_STATE_ALT_WALL_TAIL_SPIN            EQU $05 ; same handler as CLIMB_STATE_WALL_TAIL_SPIN
 DEF  CLIMB_STATE_BACKGROUND_BOTTOM            EQU $06 ; dismount animation at the bottom
 DEF  CLIMB_STATE_WALL_BOTTOM                  EQU $07
 DEF  CLIMB_STATE_WALL_TOP                     EQU $08
-DEF  CLIMB_STATE_PIPE_TRANSITION              EQU $09
+DEF  CLIMB_STATE_STOP                         EQU $09
 DEF  CLIMB_STATE_NOT_CLIMBING                 EQU $FF
 
 ; ------------------------------------------------------------------
@@ -1351,8 +1351,8 @@ DEF  CLIMB_TAIL_SPIN_LENGTH                   EQU $20 ; frames before dropping b
 ; These are the values the player code in bank 2 reacts to; the collision
 ; data itself lives at wC800_CurrentCollisionData
 ; ------------------------------------------------------------------
-DEF  TILE_TYPE_NO_WALK_LEFT                   EQU $08 ; standing here facing left forces PLAYER_ACTION_STOP_ON_CERTAIN_FLOOR
-DEF  TILE_TYPE_NO_WALK_RIGHT                  EQU $09 ; ...and this one facing right
+DEF  TILE_TYPE_TEETER_LEFT                    EQU $08 ; standing here facing left forces PLAYER_ACTION_TEETER
+DEF  TILE_TYPE_TEETER_RIGHT                   EQU $09 ; ...and this one facing right
 DEF  TILE_TYPE_DOOR                           EQU $22 ; press up to enter
 DEF  TILE_TYPE_INSTANT_KILL                   EQU $23
 DEF  TILE_TYPE_LAVA                           EQU $24
@@ -1360,19 +1360,31 @@ DEF  TILE_TYPE_WATER                          EQU $25
 DEF  TILE_TYPE_CLIMBABLE_BACKGROUND           EQU $26 ; press up to start CLIMB_STATE_BACKGROUND
 DEF  TILE_TYPE_CLIMBABLE_WALL_FACING_LEFT     EQU $2C ; only entered while facing left
 DEF  TILE_TYPE_CLIMBABLE_WALL_FACING_RIGHT    EQU $2D ; only entered while facing right
-DEF  TILE_TYPE_PIPE_ENTRY_FIRST               EQU $30 ; $30-$33 are pipe mouths; the id
-DEF  TILE_TYPE_PIPE_ENTRY_LAST                EQU $33 ; minus $30 is the pipe direction
+DEF  TILE_TYPE_CLIMB_STOP_ENTRY_FIRST         EQU $30 ; $30-$33 are climbing stoppers; the id
+DEF  TILE_TYPE_CLIMB_STOP_ENTRY_LAST          EQU $33 ; minus $30 is the climbing stopper direction
 DEF  TILE_TYPE_SPRING_LOW                     EQU $CE
 DEF  TILE_TYPE_SPRING_HIGH                    EQU $CF
-DEF  TILE_TYPE_TRAMPOLINE_LOW                 EQU $F0 ; only springs while the circuit power-up is active
-DEF  TILE_TYPE_TRAMPOLINE_HIGH                EQU $F1
-; The two trampoline values are the only place two systems claim the same tile type.
-; $F0 is also entry 15 of data_00_1ff6_TileHitScriptTable, the respawning fly tv, and
-; both readers are live: Player_GetJumpVelocity when Gex stands on it, TailSpin when he
-; whips it. In practice they do not meet - the Circuit Central blockset points blocks
-; $10-$17 at $F0 for the trampolines while the Toon TV blockset points block $9F at it
-; for the tv, and the trampoline branch is gated on the circuit power-up timer, which is
-; zero outside Circuit Central. Whipping a trampoline there has not been tested
+DEF  TILE_TYPE_POWERED_SPRING_LOW             EQU $F0 ; only springs while the circuit power-up is active
+DEF  TILE_TYPE_POWERED_SPRING_HIGH            EQU $F1
+; $F0 is the one tile type two systems both claim: as well as the powered spring it is entry
+; 15 of data_00_1ff6_TileHitScriptTable, the respawning fly tv. Both readers are live,
+; and yet they never fight, for a reason worth knowing:
+;
+;   BgCollision_CacheNearbyTileTypes samples a vertical column. The tail whip tests
+;   wD764_TileTypeBehindGexsUpperBody and the spring test uses
+;   wD765_TileTypeBehindGexsLowerBody, and those are ADJACENT ROWS - the whip always
+;   looks exactly one tile row above the tile the spring test uses. No single tile can
+;   ever be seen by both.
+;
+; The blocksets then place each meaning at the height its own reader looks at. Circuit
+; Central puts $F0 on the BOTTOM row of blocks $10-$17, so it is floor and only the
+; spring test can reach it; Toon TV puts $F0 in the MIDDLE of block $9F (rows 1-2,
+; columns 0-2), torso height, where only the whip can. Whipping a powered spring in Circuit
+; Central does nothing at all - confirmed in game, with and without the power-up.
+;
+; The power-up gate is what covers the other direction: standing on the Toon TV block
+; would put $F0 at the spring test's row, but the circuit timer is zero outside Circuit
+; Central so that branch falls through
 
 ; Tile types $C0 and up are the "attackable" scenery (crates, switches, cages).
 ; PlayerAction_TailSpin tests them in complement form: it does cpl then cp $40,

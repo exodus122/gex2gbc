@@ -33,7 +33,7 @@ data_02_4120:
     dw   call_02_422c_PlayerAction_Walk, data_02_7582                   ; $04 PLAYER_ACTION_WALK
     dw   call_02_4248_PlayerAction_Run, data_02_758f                    ; $05 PLAYER_ACTION_RUN
     dw   call_02_425a_PlayerAction_SkidDecel, data_02_759c              ; $06 PLAYER_ACTION_SKID
-    dw   call_02_426b_PlayerAction_StopOnCertainFloor, data_02_75a4     ; $07 PLAYER_ACTION_STOP_ON_CERTAIN_FLOOR
+    dw   call_02_426b_PlayerAction_Teeter, data_02_75a4                 ; $07 PLAYER_ACTION_TEETER
     dw   call_02_4270_PlayerAction_Crouch, data_02_75ad                 ; $08 PLAYER_ACTION_CROUCH
     dw   call_02_4275_PlayerAction_Jump, data_02_75b3                   ; $09 PLAYER_ACTION_JUMP
     dw   call_02_42ac_PlayerAction_DoubleJump, data_02_75bb             ; $0A PLAYER_ACTION_DOUBLE_JUMP
@@ -82,9 +82,9 @@ call_02_41b7_PlayerAction_Stand:
 ; idle timer. The clamp against $32 below is dead code - Player_GetIdleTimerLength always
 ; returns PLAYER_IDLE_TIMER_LENGTH ($7D), which is already above the floor, so the branch is
 ; always taken. It looks like the length was once derived from something variable.
-; Each frame: checks the floor tile type. A TILE_TYPE_NO_WALK_LEFT tile while facing left, or a
-; TILE_TYPE_NO_WALK_RIGHT tile while facing right, means Gex is at an edge he must not walk off,
-; so it requests PLAYER_ACTION_STOP_ON_CERTAIN_FLOOR. Otherwise the idle timer counts down and
+; Each frame: checks the floor tile type. A TILE_TYPE_TEETER_LEFT tile while facing left, or a
+; TILE_TYPE_TEETER_RIGHT tile while facing right, means Gex is at an edge he must not walk off,
+; so it requests PLAYER_ACTION_TEETER. Otherwise the idle timer counts down and
 ; PLAYER_ACTION_IDLE_ANIMATION starts when it expires
     ld   A, [wD209_Player_ActionState]                                    ;; 02:41b7 $fa $09 $d2
     and  A, ACTION_STATE_IS_FIRST_FRAME                                        ;; 02:41ba $e6 $20
@@ -104,9 +104,9 @@ call_02_41b7_PlayerAction_Stand:
     ld   [wD75B_IdleTimer], A                                    ;; 02:41d7 $ea $5b $d7
 .jr_02_41da:
     ld   A, [wD767_FloorTileType]                                    ;; 02:41da $fa $67 $d7
-    cp   A, TILE_TYPE_NO_WALK_LEFT                     ;; 02:41dd $fe $08
+    cp   A, TILE_TYPE_TEETER_LEFT                     ;; 02:41dd $fe $08
     jr   Z, .jr_02_41ee                                ;; 02:41df $28 $0d
-    cp   A, TILE_TYPE_NO_WALK_RIGHT                    ;; 02:41e1 $fe $09
+    cp   A, TILE_TYPE_TEETER_RIGHT                    ;; 02:41e1 $fe $09
     jr   NZ, .jr_02_41fa                               ;; 02:41e3 $20 $15
     ld   A, [wD20D_Player_FacingFlags]                                    ;; 02:41e5 $fa $0d $d2
     cp   A, FACING_RIGHT                               ;; 02:41e8 $fe $00
@@ -117,7 +117,7 @@ call_02_41b7_PlayerAction_Stand:
     cp   A, FACING_LEFT                                ;; 02:41f1 $fe $20
     jr   NZ, .jr_02_41fa                               ;; 02:41f3 $20 $05
 .jr_02_41f5:
-    ld   A, PLAYER_ACTION_STOP_ON_CERTAIN_FLOOR                                        ;; 02:41f5 $3e $07
+    ld   A, PLAYER_ACTION_TEETER                                        ;; 02:41f5 $3e $07
     jp   call_02_4ccd_Player_RequestAction                                  ;; 02:41f7 $c3 $cd $4c
 .jr_02_41fa:
     ld   HL, wD75B_IdleTimer                                     ;; 02:41fa $21 $5b $d7
@@ -212,8 +212,8 @@ call_02_425a_PlayerAction_SkidDecel:
     ld   [wD75E_PlayerXSpeed], A                                    ;; 02:4267 $ea $5e $d7
     ret                                                ;; 02:426a $c9
 
-call_02_426b_PlayerAction_StopOnCertainFloor:
-; Zeroes X speed and returns. Used when standing on a directional floor tile
+call_02_426b_PlayerAction_Teeter:
+; Zeroes X speed and returns
     xor a
     ld [wD75E_PlayerXSpeed], a
     ret
@@ -635,12 +635,12 @@ call_02_44af_PlayerAction_Climb:
     dw   .jp_02_455f_PlayerClimbAction_BackgroundTailSpin  ; $01 CLIMB_STATE_BACKGROUND_TAIL_SPIN
     dw   .jp_02_45b0_PlayerClimbAction_Wall                ; $02 CLIMB_STATE_WALL
     dw   .jp_02_4626_PlayerClimbAction_WallTailSpin        ; $03 CLIMB_STATE_WALL_TAIL_SPIN
-    dw   .jp_02_45b0_PlayerClimbAction_Wall                ; $04 CLIMB_STATE_CEILING - duplicate entry
-    dw   .jp_02_4626_PlayerClimbAction_WallTailSpin        ; $05 CLIMB_STATE_CEILING_TAIL_SPIN - duplicate entry
+    dw   .jp_02_45b0_PlayerClimbAction_Wall                ; $04 CLIMB_STATE_ALT_WALL - duplicate entry
+    dw   .jp_02_4626_PlayerClimbAction_WallTailSpin        ; $05 CLIMB_STATE_ALT_WALL_TAIL_SPIN - duplicate entry
     dw   .jp_02_4667_PlayerClimbAction_BackgroundBottom    ; $06 CLIMB_STATE_BACKGROUND_BOTTOM
     dw   .jp_02_468f_PlayerClimbAction_WallBottom          ; $07 CLIMB_STATE_WALL_BOTTOM
     dw   .jp_02_46b3_PlayerClimbAction_WallTop             ; $08 CLIMB_STATE_WALL_TOP
-    dw   .jp_02_46b8_PlayerClimbAction_PipeTransition      ; $09 CLIMB_STATE_PIPE_TRANSITION
+    dw   .jp_02_46b8_PlayerClimbAction_Stop                ; $09 CLIMB_STATE_STOP
     
 .jp_02_44f9_PlayerClimbAction_Background:
 ; Background climbing movement. Calls PlayerBackgroundClimb_Sub to get a direction index; 
@@ -902,9 +902,9 @@ call_02_44af_PlayerAction_Climb:
     ld   a,PLAYER_ACTION_JUMP
     jp   call_02_4ccd_Player_RequestAction
 
-.jp_02_46b8_PlayerClimbAction_PipeTransition:  
-; Handles pipe entry transition (climb state 9). Runs every $20 frames. Uses 
-; wD749 (pipe direction) × 4 + facing bit to index .data_02_4737 (X/Y delta pairs), 
+.jp_02_46b8_PlayerClimbAction_Stop:  
+; Stops player from climbing further (climb state 9). Runs every $20 frames. Uses 
+; wD749 (climbing direction) × 4 + facing bit to index .data_02_4737 (X/Y delta pairs), 
 ; applies position delta. Uses wD747 (counter >> 1) to index .data_02_472e (sprite IDs $C8–$D0) 
 ; for dismount animation. Increments counter; at $11, reads 4 bytes from .data_02_4757 
 ; (new climb state, facing, wD74B_Player_ClimbingFlags, sprite ID) and applies them to complete the transition

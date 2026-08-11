@@ -389,7 +389,7 @@ call_03_4ac4_BgCollision_ClimbingHandler:
 ; walking corrections off for the frame.
 ;
 ; Only the states below CLIMB_STATE_BACKGROUND_BOTTOM are handled; the dismount and
-; pipe states run to completion on their own. The state and facing pick a climb script
+; stop states run to completion on their own. The state and facing pick a climb script
 ; out of .data_03_4b66_ClimbCollisionScriptTable, and that script is matched against
 ; the d-pad. An input the script has no entry for is not merely ignored - the d-pad
 ; bits are stripped out of wD75A_Player_EffectiveInputs so the movement code cannot act on
@@ -404,8 +404,8 @@ call_03_4ac4_BgCollision_ClimbingHandler:
 ;   NEAR probe, one pixel away - the surface he is holding onto. Losing
 ;     TILECOLL_CLIMB_BACKING while pressing UP means he has reached the top and pulls
 ;     himself over into CLIMB_STATE_WALL_TOP. Keeping it, but on a tile in the
-;     TILE_TYPE_PIPE_ENTRY_* range, is a pipe mouth: the tile id doubles as the
-;     direction, and he transitions into CLIMB_STATE_PIPE_TRANSITION
+;     TILE_TYPE_CLIMB_STOP_ENTRY_* range, is a stopper: the tile id doubles as the
+;     direction, and he transitions into CLIMB_STATE_STOP
     ld   HL, wD585_CollisionFlags                                     ;; 03:4ac4 $21 $85 $d5
     set  7, [HL]                                       ;; 03:4ac7 $cb $fe
     ld   A, [wD746_Player_ClimbingState]                                    ;; 03:4ac9 $fa $46 $d7
@@ -479,7 +479,7 @@ call_03_4ac4_BgCollision_ClimbingHandler:
     ld   B, A                                          ;; 03:4b2e $47
     call call_03_4c5a_BgCollision_GetTileAndFlags                                  ;; 03:4b2f $cd $5a $4c
     bit  TILECOLL_CLIMB_BACKING_BIT, B                 ;; 03:4b32 $cb $78
-    jr   NZ, .jr_03_4b4a_MaybePipe                               ;; 03:4b34 $20 $14
+    jr   NZ, .jr_03_4b4a_MaybeStop                               ;; 03:4b34 $20 $14
     ld   A, [wD746_Player_ClimbingState]                                    ;; 03:4b36 $fa $46 $d7
     cp   A, CLIMB_STATE_WALL                           ;; 03:4b39 $fe $02
     jr   C, .jr_03_4afa_SuppressDpad                                ;; 03:4b3b $38 $bd
@@ -489,25 +489,25 @@ call_03_4ac4_BgCollision_ClimbingHandler:
     ld   A, CLIMB_STATE_WALL_TOP                       ;; 03:4b44 $3e $08
     ld   [wD746_Player_ClimbingState], A                                    ;; 03:4b46 $ea $46 $d7
     ret                                                ;; 03:4b49 $c9
-.jr_03_4b4a_MaybePipe:
+.jr_03_4b4a_MaybeStop:
     ld   A, [wD746_Player_ClimbingState]                                    ;; 03:4b4a $fa $46 $d7
     cp   A, CLIMB_STATE_WALL                           ;; 03:4b4d $fe $02
     ret  C                                             ;; 03:4b4f $d8
     ld   A, C                                          ;; 03:4b50 $79
-    cp   A, TILE_TYPE_PIPE_ENTRY_FIRST                 ;; 03:4b51 $fe $30
+    cp   A, TILE_TYPE_CLIMB_STOP_ENTRY_FIRST                 ;; 03:4b51 $fe $30
     ret  C                                             ;; 03:4b53 $d8
-    cp   A, TILE_TYPE_PIPE_ENTRY_LAST + 1              ;; 03:4b54 $fe $34
+    cp   A, TILE_TYPE_CLIMB_STOP_ENTRY_LAST + 1              ;; 03:4b54 $fe $34
     ret  NC                                            ;; 03:4b56 $d0
-    sub  A, TILE_TYPE_PIPE_ENTRY_FIRST                 ;; 03:4b57 $d6 $30 ; id doubles as the direction
+    sub  A, TILE_TYPE_CLIMB_STOP_ENTRY_FIRST                 ;; 03:4b57 $d6 $30 ; id doubles as the direction
     ld   [wD749_Player_ClimbingDirection], A                                    ;; 03:4b59 $ea $49 $d7
-    ld   A, CLIMB_STATE_PIPE_TRANSITION                ;; 03:4b5c $3e $09
+    ld   A, CLIMB_STATE_STOP                ;; 03:4b5c $3e $09
     ld   [wD746_Player_ClimbingState], A                                    ;; 03:4b5e $ea $46 $d7
     xor  A, A                                          ;; 03:4b61 $af
     ld   [wD747_Player_ClimbAnimCounter], A                                    ;; 03:4b62 $ea $47 $d7
     ret                                                ;; 03:4b65 $c9
 .data_03_4b66_ClimbCollisionScriptTable:
 ; Indexed by climb state * 2 + facing, so twelve words covering CLIMB_STATE_BACKGROUND
-; through CLIMB_STATE_CEILING_TAIL_SPIN. A state and its tail-spin variant always
+; through CLIMB_STATE_ALT_WALL_TAIL_SPIN. A state and its tail-spin variant always
 ; share a script - spinning does not change what he is allowed to climb into.
 ;
 ; Only the wall states distinguish facing, because the wall is on one side of him;
@@ -520,10 +520,10 @@ call_03_4ac4_BgCollision_ClimbingHandler:
     dw   .data_03_4bb8_ClimbScript_WallFacingLeft      ;                   facing left
     dw   .data_03_4baa_ClimbScript_WallFacingRight     ; CLIMB_STATE_WALL_TAIL_SPIN, right
     dw   .data_03_4bb8_ClimbScript_WallFacingLeft      ;                             left
-    dw   .data_03_4bc6_ClimbScript_Ceiling             ; CLIMB_STATE_CEILING, facing right
-    dw   .data_03_4bc6_ClimbScript_Ceiling             ;                       facing left
-    dw   .data_03_4bc6_ClimbScript_Ceiling             ; CLIMB_STATE_CEILING_TAIL_SPIN, right
-    dw   .data_03_4bc6_ClimbScript_Ceiling             ;                                 left
+    dw   .data_03_4bc6_ClimbScript_AltWall             ; CLIMB_STATE_ALT_WALL, facing right
+    dw   .data_03_4bc6_ClimbScript_AltWall             ;                       facing left
+    dw   .data_03_4bc6_ClimbScript_AltWall             ; CLIMB_STATE_ALT_WALL_TAIL_SPIN, right
+    dw   .data_03_4bc6_ClimbScript_AltWall             ;                                 left
 ; A climb script is a four-byte header - the d-pad bits it responds to, how many
 ; entries follow, and the entry stride as a word - then the entries. Each entry is an
 ; exact input pattern followed by two (X, Y) probe offsets, the far one first and the
@@ -560,7 +560,7 @@ call_03_4ac4_BgCollision_ClimbingHandler:
     ;    input       far        near
     db   $40,  $00, $ef,  $f7, $ff                      ; up
     db   $80,  $00, $10,  $f7, $01                      ; down
-.data_03_4bc6_ClimbScript_Ceiling:
+.data_03_4bc6_ClimbScript_AltWall:
 ; The ALT wall states, which move sideways instead: left and right only, both probes
 ; nine pixels up
     db   PADF_LEFT | PADF_RIGHT
@@ -684,7 +684,7 @@ call_03_4c5a_BgCollision_GetTileAndFlags:
 ;   C = the tile type id itself
 ;
 ; Callers use one or the other or both - the climb handler tests the flags for
-; TILECOLL_CLIMB_BLOCKED and then reads C to recognise a pipe mouth by its id. Unlike
+; TILECOLL_CLIMB_BLOCKED and then reads C to recognise a climbing stopper by its id. Unlike
 ; call_03_4bd4_BgCollision_IsPixelSolid this is whole-tile, with no per-pixel detail
     ld   A, [wD210_Player_YPositionLo]                                    ;; 03:4c5a $fa $10 $d2
     add  A, B                                          ;; 03:4c5d $80

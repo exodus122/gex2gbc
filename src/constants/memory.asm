@@ -64,7 +64,7 @@ wCC80_ShadowOAM_HudSprites:
     ds 32                                              ;; cc80
 
 ; ------------------------------------------------------------------
-; LCD STAT interrupt trampoline ($CCA0-$CCFC).
+; LCD STAT interrupt powered spring ($CCA0-$CCFC).
 ; isrLCDC does "jp wCCA0_LcdIsrCode", and call_00_0bb9_InstallLcdIsr copies one of
 ; the handler templates in bank 0 into this buffer. The handler is self-modifying:
 ; wCCA0_LcdIsrCode holds $D9 (reti = disabled) until something arms it by writing
@@ -1218,7 +1218,7 @@ wD73C_GameplayFrameCounter:
 ;
 ; Read in three places, always masked: a randomised 1-4 frame delay before a cactus
 ; attacks, a randomised $40-$7F frame respawn delay for falling lava, and a
-; "every 32 frames" gate on the climb-to-pipe transition
+; "every 32 frames" gate on the stop climbing action
     ds 1                                               ;; d73c
 
 ; Player related memory

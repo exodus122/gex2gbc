@@ -174,7 +174,40 @@ data_00_1ff6_TileHitScriptTable:
 ;   blockset blocks.
 ;
 ; Note also that tile types are not private to this system. $F0 below is also
-; TILE_TYPE_TRAMPOLINE_LOW, read by Player_GetJumpVelocity when Gex stands on it
+; TILE_TYPE_POWERED_SPRING_LOW, read by Player_GetJumpVelocity when Gex stands on it
+;
+; ------------------------------------------------------------------
+; WHAT A NULL ENTRY ACTUALLY MEANS
+; ------------------------------------------------------------------
+; Only that the tail whip does nothing. It says nothing about the tile otherwise - but in
+; this range there is nothing else to say, because every tile type $C0 and up has zero
+; solidity rows and a zero flags byte in the bank 3 collision tables. The whole interactive
+; range is walk-through decoration.
+;
+; Sweeping all eight shipped blocksets, 25 tile types in the interactive range are used:
+;
+;   21 have a script here - $FF-$F5, $F0, $DF, $CD, $C7-$C1. Every non-null entry in this
+;   table is reached by some blockset; none of them are dead.
+;
+;   3 are null here but handled elsewhere: $CE and $CF are the plain springs and $F1 is
+;   TILE_TYPE_POWERED_SPRING_HIGH, all read by Player_GetJumpVelocity. Note $F0 is NOT one
+;   of these - it has a script as well as a spring meaning.
+;
+;   1 is null here and handled nowhere: $E9, in the Prehistory Channel alt blockset on
+;   blocks $AD, $AE and $AF. No script, no comparison anywhere in the ROM, not solid. The
+;   three blocks draw a palm tree, which looks like a climbable tree that got cut.
+;
+; ------------------------------------------------------------------
+; THE TABLE IS ONE ENTRY SHORT OF THE RANGE THE GATE ADMITS
+; ------------------------------------------------------------------
+; TILE_TYPE_INTERACTIVE_MIN is $C0 and the gate lets $C0 through, but 63 entries only reach
+; $C1. Tile type $C0 would index 126 bytes past the base, which lands on
+; data_00_2074_TileHitScript_CheckpointTV_Left itself: its first word $208C is read as a
+; script pointer, the callback's own opcodes are then read as a header (step count $D7), and
+; the run ends by calling $8221 - an address in VRAM.
+;
+; No shipped blockset uses $C0, so this is unreachable today. It is a trap for anyone
+; authoring a new one: either keep $C0 out of blockset collision data, or add a 64th entry
 ; ------------------------------------------------------------------
 ;
 ; Scripts come in pairs for multi-block objects: the two halves get separate table entries whose

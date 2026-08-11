@@ -57,13 +57,14 @@ collision_override = True # if True, create collision maps instead of regular ma
 
 show_kill_tiles = False # displays kill tiles on map images as a pink square
 draw_entities_and_collectibles = False # draw these on the maps
-draw_tile_ids = False
+draw_tile_ids = False # not implemented yet
 draw_block_ids = False
 
 collision_tiles = []
 if collision_override:
     os.system('mkdir -p tileset_images')
-    collision_tileset_data = open("../../src/data/maps/bg_collision_data.bin", "rb").read()
+    collision_tileset_data = open("../../src/data/maps/data_03_4000_TileSolidityRows.bin", "rb").read()
+    tile_collision_flags_data = open("../../src/data/maps/data_03_4800_TileCollisionFlags.bin", "rb").read()
     
     tileset_img = PIL.Image.new("RGB", (128, 128))
     draw2 = PIL.ImageDraw.Draw(tileset_img)
@@ -75,7 +76,7 @@ if collision_override:
             draw3 = PIL.ImageDraw.Draw(tile_img)
             
             color = "black"
-            flags = collision_tileset_data[0x800 + tile_counter]
+            flags = tile_collision_flags_data[tile_counter]
             # flags & 0x80 might be kill flag
             # flags & 0x40 is floor flag
             # flags & 0x02 is ceiling flag
@@ -120,13 +121,26 @@ if collision_override:
                 draw3.rectangle(((0, 0), (7, 7)), "cyan", "cyan")
             elif tile_counter == 0x26: # climbable bg
                 draw3.rectangle(((0, 0), (7, 7)), "lime", "lime")
-            elif tile_counter == 0x27 or tile_counter == 0x2A: # some tvs and bottom of toontv flowers?
-                draw3.rectangle(((0, 0), (7, 7)), "gray", "gray")
+            #elif tile_counter == 0x27 or tile_counter == 0x2A: # some tvs and bottom of toontv flowers?
+            #    draw3.rectangle(((0, 0), (7, 7)), "yellow", "yellow")
             elif tile_counter >= 0x2C and tile_counter <= 0x2E: # climbable wall/ceiling
                 draw3.rectangle(((0, 0), (7, 7)), "lime", "lime")
             elif tile_counter >= 0x30 and tile_counter <= 0x33: # top of climable wall
                 draw3.rectangle(((0, 0), (7, 7)), "green", "green")
-            elif tile_counter > 0xC1: # checkpoint tvs, etc.
+            elif (
+                tile_counter == 0xCE
+                or tile_counter == 0xCF 
+                or tile_counter == 0xF0 
+                or tile_counter == 0xF1
+            ): # springs (some need circuit central powerup to work)
+                draw3.rectangle(((0, 0), (7, 7)), "#ae4aff", "#ae4aff")
+            elif (
+                (tile_counter >= 0xC1 and tile_counter <= 0xC7)
+                or tile_counter == 0xCD 
+                or tile_counter == 0xDF 
+                or tile_counter == 0xF0 
+                or (tile_counter >= 0xF5 and tile_counter <= 0xFF)
+            ): # scripted hit tiles (see tile_hit_scripts.asm)
                 draw3.rectangle(((0, 0), (7, 7)), "gray", "gray")
 
             #draw3.rectangle(((0, 0), (7, 7)), None, "pink")
