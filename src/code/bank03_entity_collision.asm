@@ -160,8 +160,9 @@ call_03_4c76_EntityCollision_Dispatch:
     ld   a,$04
     jp   call_00_0647_Player_SetUpOrEatFlyPowerup
 .jr_03_4d3f_CollisionHandler_SilverRemote:
-; Overlap check; sets bit 4 of wD64C_CurrentLevel_HiddenRemoteFlags (silver remote collected flag), 
-; plays SFX $03, kills entity and clears its flag slot
+; Overlap check; sets bit 4 of wD64C_CurrentLevel_HiddenRemoteFlags (silver remote collected
+; flag), plays SFX_SILVER_REMOTE, frees the entity slot, then marks the list entry
+; ENTITY_LIST_FLAG_NEVER_AGAIN so the remote does not come back if you walk away and return
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     ld   a,[wD64C_CurrentLevel_HiddenRemoteFlags]
@@ -170,11 +171,11 @@ call_03_4c76_EntityCollision_Dispatch:
     ld   c,SFX_SILVER_REMOTE
     call call_00_112f_QueueSFX
     call call_00_3931_Entity_DeactivateSelf
-    jp   call_00_393c_Entity_SetFlagsEntryNone
+    jp   call_00_393c_Entity_MarkNeverRespawn
 .jr_03_4d56_CollisionHandler_GoldRemote:
-; Guards against double-collection (checks wD621_WarpFlags bit 4). On overlap, sets bit 5 in the 
-; level's wD629 remote progress flag byte, kills entity, clears flag slot, then triggers 
-; action $1E on the player (likely a cutscene/celebration)
+; Guards against double-collection (checks wD621_WarpFlags bit 4). On overlap, sets bit 5 in the
+; level's wD629 remote progress flag byte, frees the entity slot, marks the list entry
+; ENTITY_LIST_FLAG_NEVER_AGAIN, then requests PLAYER_ACTION_GOLD_REMOTE_WARP on the player
     ld   a,[wD621_WarpFlags]
     and  a,$10
     ret  nz
@@ -189,7 +190,7 @@ call_03_4c76_EntityCollision_Dispatch:
     or   a,$20
     ld   [hl],a
     call call_00_3931_Entity_DeactivateSelf
-    call call_00_393c_Entity_SetFlagsEntryNone
+    call call_00_393c_Entity_MarkNeverRespawn
     ld   a,PLAYER_ACTION_GOLD_REMOTE_WARP
     FARCALL call_02_4ccd_Player_RequestAction
     ret  

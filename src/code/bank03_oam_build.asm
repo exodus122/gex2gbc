@@ -305,8 +305,9 @@ call_03_5ca8_Entity_BuildPlayerSprites:
 call_03_5ebf_Entity_BuildSprites:
 ; Draws one entity, and decides on the way whether it should still exist.
 ;
-; The OAM attribute byte is built first: a per-slot base from the wD32D table OR'd with the
-; entity's own FACING_FLAGS, kept in wD335 for the sprite writers further down.
+; The OAM attribute byte is built first: a per-slot base from wD32D_Entity_OamAttrBase (a CGB
+; OBJ palette number) OR'd with the entity's own FACING_FLAGS, kept in wD335_Entity_OamAttr for
+; the sprite writers further down.
 ;
 ; Then two nested tests on the entity's position relative to the scroll origin, which are
 ; easy to misread because they are 16-bit compares done as high-byte-then-low:
@@ -330,13 +331,13 @@ call_03_5ebf_Entity_BuildSprites:
     and  A, $07                                        ;; 03:5ec5 $e6 $07
     ld   L, A                                          ;; 03:5ec7 $6f
     ld   H, $00                                        ;; 03:5ec8 $26 $00
-    ld   DE, wD32D                                     ;; 03:5eca $11 $2d $d3
+    ld   DE, wD32D_Entity_OamAttrBase                                     ;; 03:5eca $11 $2d $d3
     add  HL, DE                                        ;; 03:5ecd $19
     ld   E, [HL]                                       ;; 03:5ece $5e
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
     ld   A, [HL]                                       ;; 03:5ed7 $7e
     or   A, E                                          ;; 03:5ed8 $b3
-    ld   [wD335], A                                    ;; 03:5ed9 $ea $35 $d3
+    ld   [wD335_Entity_OamAttr], A                                    ;; 03:5ed9 $ea $35 $d3
     LOAD_OBJ_FIELD_TO_DE ENTITY_FIELD_SPRITE_FLAGS
     ld   A, [DE]                                       ;; 03:5ee4 $1a
     res  SPRITE_FLAG_ON_SCREEN_BIT, A                                          ;; 03:5ee5 $cb $af
@@ -484,7 +485,7 @@ call_03_5ebf_Entity_BuildSprites:
     ld   [DE], A                                       ;; 03:5fb6 $12
     inc  HL                                            ;; 03:5fb7 $23
     inc  E                                             ;; 03:5fb8 $1c
-    ld   A, [wD335]                                    ;; 03:5fb9 $fa $35 $d3
+    ld   A, [wD335_Entity_OamAttr]                                    ;; 03:5fb9 $fa $35 $d3
     or   A, [HL]                                       ;; 03:5fbc $b6
     ld   [DE], A                                       ;; 03:5fbd $12
     inc  HL                                            ;; 03:5fbe $23
@@ -552,7 +553,7 @@ call_03_5ebf_Entity_BuildSprites:
     ld   [DE], A                                       ;; 03:6019 $12
     inc  HL                                            ;; 03:601a $23
     inc  E                                             ;; 03:601b $1c
-    ld   A, [wD335]                                    ;; 03:601c $fa $35 $d3
+    ld   A, [wD335_Entity_OamAttr]                                    ;; 03:601c $fa $35 $d3
     or   A, [HL]                                       ;; 03:601f $b6
     ld   [DE], A                                       ;; 03:6020 $12
     inc  HL                                            ;; 03:6021 $23
@@ -623,7 +624,7 @@ call_03_5ebf_Entity_BuildSprites:
     ld   [DE], A                                       ;; 03:6079 $12
     inc  HL                                            ;; 03:607a $23
     inc  E                                             ;; 03:607b $1c
-    ld   A, [wD335]                                    ;; 03:607c $fa $35 $d3
+    ld   A, [wD335_Entity_OamAttr]                                    ;; 03:607c $fa $35 $d3
     or   A, [HL]                                       ;; 03:607f $b6
     ld   [DE], A                                       ;; 03:6080 $12
     inc  HL                                            ;; 03:6081 $23
@@ -935,7 +936,7 @@ call_03_5ebf_Entity_BuildSprites:
     ld   A, [HL+]                                      ;; 03:646f $2a
     ld   [DE], A                                       ;; 03:6470 $12
     inc  E                                             ;; 03:6471 $1c
-    ld   A, [wD335]                                    ;; 03:6472 $fa $35 $d3
+    ld   A, [wD335_Entity_OamAttr]                                    ;; 03:6472 $fa $35 $d3
     or   A, [HL]                                       ;; 03:6475 $b6
     ld   [DE], A                                       ;; 03:6476 $12
     inc  HL                                            ;; 03:6477 $23

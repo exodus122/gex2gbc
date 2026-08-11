@@ -18,9 +18,12 @@
 ;                         entity *type* - size, collision type, graphics
 ;
 ; Re-spawning is prevented by wD000_EntityFlags, indexed by the entry's
-; position in the list. Once an entity has been placed its flag is set, and it
-; will not be placed again until the flag is cleared - which is what makes a
-; defeated enemy stay defeated while you are still in the room.
+; position in the list. The test below is "and A / ret NZ", so any non-zero
+; value blocks placement: ENTITY_LIST_FLAG_PLACED while the entity is live, and
+; ENTITY_LIST_FLAG_NEVER_AGAIN once it has been defeated or collected.
+; call_00_3910_Entity_ClearSlot clears the first back to ABSENT when a slot is
+; recycled but refuses to touch the second, which is what makes a defeated enemy
+; stay defeated while you are still in the room.
 ; ==================================================================
 
 call_0a_4000_EntityList_LoadForCurrentLevel:
@@ -454,8 +457,8 @@ call_0a_7a7c_EntitySpawn_SpawnNextFromList:
     ld   A, [wD33A_SpawningListIndex]                                    ;; 0a:7b50 $fa $3a $d3
     ld   [HL], A                                       ;; 0a:7b53 $77
     ld   L, A                                          ;; 0a:7b54 $6f
-    ld   H, $d0                                        ;; 0a:7b55 $26 $d0
-    ld   [HL], $01                                     ;; 0a:7b57 $36 $01
+    ld   H, HIGH(wD000_EntityFlags)                    ;; 0a:7b55 $26 $d0
+    ld   [HL], ENTITY_LIST_FLAG_PLACED                 ;; 0a:7b57 $36 $01
     xor  A, A                                          ;; 0a:7b59 $af
     FARCALL call_02_7102_Entity_SetAction
     ld   HL, wD339_SpawningSlotIndex                                     ;; 0a:7b65 $21 $39 $d3

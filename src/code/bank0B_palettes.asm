@@ -376,7 +376,7 @@ call_0b_5f57_Entity_LoadGBCPalette:
 ; Loads a GBC OBJ palette for the current entity slot. Derives palette slot from wD300 
 ; (entity address low byte, rotated 3 bits). Reads entity ID from ENTITY_FIELD_ENTITY_ID, 
 ; multiplies by 8, indexes .data_entity_palettes for that entity's 8-byte color data, writes 
-; to the computed wDA0B+ slot. Also stores the palette slot index in wD32D table entry for this entity slot
+; to the computed wDA0B+ slot. Also stores the palette slot index in wD32D_Entity_OamAttrBase table entry for this entity slot
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 0b:5f57 $fa $00 $d3
     rlca                                               ;; 0b:5f5a $07
     rlca                                               ;; 0b:5f5b $07
@@ -384,7 +384,7 @@ call_0b_5f57_Entity_LoadGBCPalette:
     and  A, $07                                        ;; 0b:5f5d $e6 $07
     ld   L, A                                          ;; 0b:5f5f $6f
     ld   H, $00                                        ;; 0b:5f60 $26 $00
-    ld   DE, wD32D                                     ;; 0b:5f62 $11 $2d $d3
+    ld   DE, wD32D_Entity_OamAttrBase                                     ;; 0b:5f62 $11 $2d $d3
     add  HL, DE                                        ;; 0b:5f65 $19
     ld   A, C                                          ;; 0b:5f66 $79
     ld   [HL], A                                       ;; 0b:5f67 $77

@@ -529,7 +529,7 @@ call_02_52ab_EntityAction_ParticleBurst_Update:
     ret  NZ                                            ;; 02:52bb $c0
 .jr_02_52bc:
     ld   C, $01                                        ;; 02:52bc $0e $01
-    call call_00_37e7_Entity_SetSlotCounter                                  ;; 02:52be $cd $e7 $37
+    call call_00_37e7_Entity_SetOamAttrBase                                  ;; 02:52be $cd $e7 $37
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER
     ld   [HL], $ff                                     ;; 02:52c9 $36 $ff
     ld   A, L                                          ;; 02:52cb $7d

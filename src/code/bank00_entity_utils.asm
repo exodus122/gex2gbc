@@ -1324,9 +1324,21 @@ call_00_37d8_Entity_MoveY:
     ld   [HL], A                                       ;; 00:37e5 $77
     ret                                                ;; 00:37e6 $c9
 
-call_00_37e7_Entity_SetSlotCounter:
-; Writes C into the wD32D entry for this entity's slot. Nothing here is specific
-; to projectiles, despite how some callers describe it
+call_00_37e7_Entity_SetOamAttrBase:
+; Writes C into wD32D_Entity_OamAttrBase for this entity's slot - the value that
+; call_03_5ebf_Entity_BuildSprites ORs into every OAM attribute byte the slot
+; produces. In OAM attribute terms the low three bits are the CGB OBJ palette,
+; so this picks the palette the whole entity is drawn in.
+;
+; The slot index comes from wD300_CurrentEntityAddrLo the usual way: slots are
+; $20 bytes apart, so rotating the low address byte left three times and masking
+; $07 turns $00/$20/$40/... into 0/1/2/...
+;
+; Both call sites pass $01, and both are the particle burst - here from
+; call_00_3985_Entity_ParticleBurstInit when the burst is created, and again from
+; call_02_52ab_EntityAction_ParticleBurst_Update when it is recycled into its
+; follow-up effect. Nothing else ever writes the table, so every other slot draws
+; with base $00
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:37e7 $fa $00 $d3
     rlca                                               ;; 00:37ea $07
     rlca                                               ;; 00:37eb $07
@@ -1334,7 +1346,7 @@ call_00_37e7_Entity_SetSlotCounter:
     and  A, $07                                        ;; 00:37ed $e6 $07
     ld   L, A                                          ;; 00:37ef $6f
     ld   H, $00                                        ;; 00:37f0 $26 $00
-    ld   DE, wD32D                                     ;; 00:37f2 $11 $2d $d3
+    ld   DE, wD32D_Entity_OamAttrBase                                     ;; 00:37f2 $11 $2d $d3
     add  HL, DE                                        ;; 00:37f5 $19
     ld   [HL], C                                       ;; 00:37f6 $71
     ret                                                ;; 00:37f7 $c9
@@ -1559,9 +1571,19 @@ call_00_38f0_Entity_ClearAllSlots:
     ret                                                ;; 00:390f $c9
 
 call_00_3910_Entity_ClearSlot:
-; Sets entity ID to $FF, then follows the slot-index link to the wD000 entity-flags
-; table and writes $00 there - but only if the entry is not already $FF. Compare
-; call_00_393c_Entity_SetFlagsEntryNone, which writes $FF to the same byte
+; Frees an entity slot and, unless the entity was permanently removed, allows its
+; list entry to be placed again.
+;
+; Two writes. First ENTITY_ID_NONE into ENTITY_FIELD_ENTITY_ID, which is what
+; actually releases the slot. Then it follows the slot -> list-entry link
+; (wD301_EntityListIndexesForCurrentEntities) into wD000_EntityFlags and stores
+; ENTITY_LIST_FLAG_ABSENT, so the spawner may place that entry again.
+;
+; The "cp ENTITY_LIST_FLAG_NEVER_AGAIN / ret Z" in between is the important part:
+; a $FF entry is never cleared. That is what makes defeat stick. An enemy that
+; merely scrolled off screen goes back to ABSENT and returns when you walk back;
+; one that was killed was marked $FF by call_00_393c_Entity_MarkNeverRespawn
+; first, and stays gone
     LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_ENTITY_ID
     ld   [HL], $ff                                     ;; 00:3918 $36 $ff
     ld   A, L                                          ;; 00:391a $7d
@@ -1576,9 +1598,9 @@ call_00_3910_Entity_ClearSlot:
     ld   L, [HL]                                       ;; 00:3927 $6e
     ld   H, HIGH(wD000_EntityFlags)                                        ;; 00:3928 $26 $d0
     ld   A, [HL]                                       ;; 00:392a $7e
-    cp   A, $ff                                        ;; 00:392b $fe $ff
+    cp   A, ENTITY_LIST_FLAG_NEVER_AGAIN               ;; 00:392b $fe $ff
     ret  Z                                             ;; 00:392d $c8
-    ld   [HL], $00                                     ;; 00:392e $36 $00
+    ld   [HL], ENTITY_LIST_FLAG_ABSENT                 ;; 00:392e $36 $00
     ret                                                ;; 00:3930 $c9
 
 call_00_3931_Entity_DeactivateSelf:
@@ -1587,13 +1609,28 @@ call_00_3931_Entity_DeactivateSelf:
     ld   [HL], $ff                                     ;; 00:3939 $36 $ff
     ret                                                ;; 00:393b $c9
 
-call_00_393c_Entity_SetFlagsEntryNone:
-; Writes $FF into this entity's wD000_EntityFlags entry, following the slot index
-; through wD301.
+call_00_393c_Entity_MarkNeverRespawn:
+; Marks this entity's list entry as permanently gone: follows the slot -> list-entry
+; link through wD301_EntityListIndexesForCurrentEntities into wD000_EntityFlags and
+; stores ENTITY_LIST_FLAG_NEVER_AGAIN.
 ;
-; It writes $FF, not zero. Note call_00_3910_Entity_ClearSlot writes $00 to the very
-; same table - the two are opposites. $FF matches the ENTITY_ID_NONE convention:
-; this marks the entry unused rather than blanking it
+; This does NOT free the slot. It only affects whether the spawner is ever allowed
+; to place this list entry again, and it is sticky:
+; call_00_3910_Entity_ClearSlot bails out rather than overwrite $FF. So the entity
+; is gone for as long as the level's flag array survives - which is until the level
+; is reloaded, since the array is level-scoped and is saved/restored wholesale by
+; call_00_3628_Entity_SaveWorldState around cutscenes.
+;
+; Callers pair it with call_00_3931_Entity_DeactivateSelf, which is what actually
+; releases the slot: the silver and gold remotes, and every enemy that dies through
+; call_00_3985_Entity_ParticleBurstInit. Things that should come back when you
+; re-enter a room - scrolled-off enemies - do not call this.
+;
+; Note the special case: for a dynamically spawned entity,
+; call_00_34d8_Entity_ResetEntityListIndex has already set the slot's list index to
+; $00, so this writes to wD000_EntityFlags entry $00. That entry never belongs to a
+; real list entry (the spawn cursor wD338 starts at 1), so the write is harmless -
+; it is the scratch entry
     ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:393c $fa $00 $d3
     rlca                                               ;; 00:393f $07
     rlca                                               ;; 00:3940 $07
@@ -1605,30 +1642,32 @@ call_00_393c_Entity_SetFlagsEntryNone:
     add  HL, DE                                        ;; 00:394a $19
     ld   L, [HL]                                       ;; 00:394b $6e
     ld   H, HIGH(wD000_EntityFlags)                                        ;; 00:394c $26 $d0
-    ld   [HL], $ff                                     ;; 00:394e $36 $ff
+    ld   [HL], ENTITY_LIST_FLAG_NEVER_AGAIN            ;; 00:394e $36 $ff
     ret                                                ;; 00:3950 $c9
 
 call_00_3951_Entity_SpawnEffectAtPlayer:
-; Spawns a cosmetic burst effect at the player's feet. The entity it creates has
-; no collision handler, so it cannot interact with anything.
+; This is the front door to the particle system for effects that have no
+; enemy to be born from. It finds an empty entity slot, parks it on top of the
+; player, and hands it to call_00_3985_Entity_ParticleBurstInit, which turns it
+; into a PARTICLE_PATTERN_BURST just as it would for a dying enemy.
 ;
-; Scans entity slots $D220, $D240 ... $D2E0 (seven of them; $D200 is the player
-; and is skipped) for one whose first byte is $FF, meaning free. Gives up
-; silently if all seven are busy, so the effect is droppable under load.
+; Scans slots $D220, $D240 ... $D2E0 - the seven NPC slots; $D200 is the player -
+; for one whose ENTITY_FIELD_ENTITY_ID is ENTITY_ID_NONE. If all seven are busy
+; it returns having done nothing, so the effect is droppable under load.
 ;
-; Into the free slot it copies four bytes from wD20E_Player_XPositionLo - the
-; 16-bit X and 16-bit Y. Position only; no velocity is written, so the effect
-; does not move.
+; Into that slot it copies four bytes starting at wD20E_Player_XPositionLo: the
+; player's 16-bit X then 16-bit Y. Position only - the particles carry their own
+; motion in their records, so the host entity never moves.
 ;
-; call_00_3985_Entity_ParticleBurstInit then does the rest, and that is where the
-; evidence sits: it zeroes ENTITY_FIELD_COLLISION_TYPE, which means the entity has
-; no collision handler at all and can neither hit nor be hit. It also sets action
-; 0, loads animation set 1, and queues SFX_ENEMY_DEFEATED. A decoration.
+; call_00_34d8_Entity_ResetEntityListIndex then stamps list index $00 on the slot,
+; which is the "did not come from the level's entity list" marker; without it the
+; slot would inherit whatever entry the previous occupant belonged to and
+; ParticleBurstInit's respawn-blocking write would land on an innocent enemy.
 ;
-; wD300_CurrentEntityAddrLo is borrowed for the duration and restored, since the
-; init helpers all work on "the current entity"
-    ld   h,$D2
-    ld   a,$20
+; wD300_CurrentEntityAddrLo is saved and restored around the call, because every
+; helper it uses operates on "the current entity"
+    ld   h,HIGH(wD220_OtherLoadedEntities)
+    ld   a,LOW(wD220_OtherLoadedEntities)
 .jr_02_3955:
     ld   l,a
     ld   a,[hl]
@@ -1664,19 +1703,29 @@ call_00_3951_Entity_SpawnEffectAtPlayer:
     ret  
 
 call_00_3985_Entity_ParticleBurstInit:
-; Finishes initialising the burst entity that call_00_3951 just placed. In order:
-; slot counter = 1, ENTITY_FIELD_COLLISION_TYPE = $00 (no collision handler, so
-; the entity is inert), ENTITY_FIELD_ENTITY_ID = $07 - which is the write that
-; actually claims the slot, since $FF there means free - then MISC_FLAGS and
-; FACING_FLAGS cleared, animation set 1 loaded, the wD000 flags entry reset,
-; action 0, and SFX_ENEMY_DEFEATED queued.
+; This is the particle system's constructor, and the only routine that ever
+; starts PARTICLE_PATTERN_BURST. It rewrites the current entity in place into the
+; burst effect, so the caller decides which entity dies:
+;
+;   - from call_00_3951_Entity_SpawnEffectAtPlayer the entity is a blank slot that
+;     was just claimed, and the burst is a standalone puff at the player
+;   - from the ~13 sites in bank02_entity_actions.asm and bank03_entity_collision.asm
+;     the entity is a defeated enemy, which becomes its own death burst
+;
+; In order it sets: OAM attribute base $01 (CGB OBJ palette 1, the burst's palette),
+; ENTITY_FIELD_COLLISION_TYPE = $00 so the effect can neither hit nor be hit,
+; ENTITY_FIELD_ENTITY_ID = $07 - the write that claims the slot, since ENTITY_ID_NONE
+; means free - then MISC_FLAGS and FACING_FLAGS cleared, PARTICLE_PATTERN_BURST
+; started via call_00_3a23_Entity_StartParticleEffect, the list entry marked
+; never-respawn, action 0, and SFX_ENEMY_DEFEATED queued. The sound is queued
+; unconditionally, which is why the player-side puff also sounds like a kill.
 ;
 ; The field walk is a chain of XORs on L rather than fresh loads, and it is
 ; CUMULATIVE: starting from $16, `xor $16` lands on $00, then `xor $17` on $17,
 ; then `xor $1a` on $17 xor $1a = $0D. So the last write is FACING_FLAGS ($0D),
 ; not MISC_PARAM ($1A) as the operand suggests at a glance
     ld   C, $01                                        ;; 00:3985 $0e $01
-    call call_00_37e7_Entity_SetSlotCounter                                  ;; 00:3987 $cd $e7 $37
+    call call_00_37e7_Entity_SetOamAttrBase                                  ;; 00:3987 $cd $e7 $37
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_COLLISION_TYPE
     ld   [HL], $00                                     ;; 00:3992 $36 $00
     ld   A, L                                          ;; 00:3994 $7d
@@ -1691,9 +1740,9 @@ call_00_3985_Entity_ParticleBurstInit:
     xor  A, $1a                                        ;; 00:39a1 $ee $1a
     ld   L, A                                          ;; 00:39a3 $6f
     ld   [HL], $00                                     ;; 00:39a4 $36 $00
-    ld   C, $01                                        ;; 00:39a6 $0e $01
+    ld   C, PARTICLE_PATTERN_BURST                     ;; 00:39a6 $0e $01
     call call_00_3a23_Entity_StartParticleEffect                                  ;; 00:39a8 $cd $23 $3a
-    call call_00_393c_Entity_SetFlagsEntryNone                                  ;; 00:39ab $cd $3c $39
+    call call_00_393c_Entity_MarkNeverRespawn                                  ;; 00:39ab $cd $3c $39
     xor  A, A                                          ;; 00:39ae $af
     FARCALL call_02_7102_Entity_SetAction
     ld   C, SFX_ENEMY_DEFEATED                                        ;; 00:39ba $0e $17

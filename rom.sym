@@ -512,7 +512,7 @@
 00:37bd call_00_3760_Entity_PatrolY_FacingBased.jr_02_37BD
 00:37c9 call_00_37c9_Entity_MoveX
 00:37d8 call_00_37d8_Entity_MoveY
-00:37e7 call_00_37e7_Entity_SetSlotCounter
+00:37e7 call_00_37e7_Entity_SetOamAttrBase
 00:37f8 call_00_37f8_Entity_SetMiscFlags
 00:3802 call_00_3802_Entity_SetMiscTimer
 00:380c call_00_380c_Entity_CheckMiscTimerZero
@@ -532,7 +532,7 @@
 00:38f6 call_00_38f0_Entity_ClearAllSlots.jr_00_38f6
 00:3910 call_00_3910_Entity_ClearSlot
 00:3931 call_00_3931_Entity_DeactivateSelf
-00:393c call_00_393c_Entity_SetFlagsEntryNone
+00:393c call_00_393c_Entity_MarkNeverRespawn
 00:3951 call_00_3951_Entity_SpawnEffectAtPlayer
 00:3955 call_00_3951_Entity_SpawnEffectAtPlayer.jr_02_3955
 00:3961 call_00_3951_Entity_SpawnEffectAtPlayer.jr_02_3961
@@ -3305,8 +3305,8 @@
 00:d32a wD32A_MapWindow_BlockXRangeMax
 00:d32b wD32B_MapWindow_BlockYRangeMin
 00:d32c wD32C_MapWindow_BlockYRangeMax
-00:d32d wD32D
-00:d335 wD335
+00:d32d wD32D_Entity_OamAttrBase
+00:d335 wD335_Entity_OamAttr
 00:d336 wD336_CurrentEntityToLoadPtr
 00:d337 wD337_CurrentEntityToLoadPtr
 00:d338 wD338_EntityLoadingFlag

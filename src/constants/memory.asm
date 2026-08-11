@@ -99,8 +99,16 @@ wCF00_TilesetPaletteIds:
     ds 256                                             ;; cf00
 
 wD000_EntityFlags:
-;; FF = killed enemy
-;; 01 = active
+; One byte per entry in the current level's entity list, indexed by the entry's
+; position in that list. The spawner tests it with "and A / ret NZ", so any
+; non-zero value blocks placement:
+;   ENTITY_LIST_FLAG_ABSENT     ($00) not placed, free to be placed
+;   ENTITY_LIST_FLAG_PLACED     ($01) currently occupying an entity slot
+;   ENTITY_LIST_FLAG_NEVER_AGAIN($FF) defeated or collected - sticky, and the
+;                                     reason a killed enemy stays killed
+;
+; Entry $00 is never used by a real list entry (the cursor starts at 1); it is
+; the scratch entry that dynamically spawned entities point at
     ds 256                                             ;; d000
 
 wD100_TilesToLoadBuffer:
@@ -179,10 +187,22 @@ wD32B_MapWindow_BlockYRangeMin:
 wD32C_MapWindow_BlockYRangeMax:
     ds 1                                               ;; d32c
 
-wD32D:
+wD32D_Entity_OamAttrBase:
+; One byte per entity slot, OR'd into every OAM attribute byte that slot writes.
+; call_03_5ebf_Entity_BuildSprites reads it, combines it with the entity's own
+; ENTITY_FIELD_FACING_FLAGS, and leaves the result in wD335_Entity_OamAttr.
+;
+; call_00_37e7_Entity_SetOamAttrBase is the only writer, and both of its call
+; sites pass $01 - CGB OBJ palette 1 - for the particle-burst effect. Every
+; other slot leaves it at $00, so in practice this is "is this slot the burst
+; effect", expressed as a palette number
     ds 8                                               ;; d32d
 
-wD335:
+wD335_Entity_OamAttr:
+; Attribute byte for the entity currently being drawn: wD32D_Entity_OamAttrBase
+; for its slot OR'd with ENTITY_FIELD_FACING_FLAGS. Each sprite writer ORs it
+; again with the per-sprite attribute from the sprite record before storing it
+; into shadow OAM
     ds 1                                               ;; d335
 
 wD336_CurrentEntityToLoadPtr:

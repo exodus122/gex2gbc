@@ -1022,6 +1022,20 @@ DEF ENTITY_SLOT_FIRST_NPC                   EQU $20
 DEF ENTITY_NPC_SLOT_COUNT                   EQU 7
 DEF ENTITY_ID_NONE                          EQU $FF ; an empty slot
 
+; ------------------------------------------------------------------
+; wD000_EntityFlags - one byte per entry in the current level's entity list.
+; call_0a_7a7c_EntitySpawn_SpawnNextFromList reads it with "and A / ret NZ",
+; so ANY non-zero value means "do not place this entry"; the two non-zero
+; values below only differ in who is allowed to clear them again.
+;
+; The list cursor wD338 starts at 1, so entry $00 is never a real list entry.
+; It doubles as the "this entity did not come from the list" sentinel that
+; call_00_34d8_Entity_ResetEntityListIndex stores in wD301
+; ------------------------------------------------------------------
+DEF ENTITY_LIST_FLAG_ABSENT                 EQU $00 ; not placed; free to be placed
+DEF ENTITY_LIST_FLAG_PLACED                 EQU $01 ; currently occupying an entity slot
+DEF ENTITY_LIST_FLAG_NEVER_AGAIN            EQU $FF ; defeated or collected; sticky - call_00_3910_Entity_ClearSlot refuses to clear it
+
 ; Shadow OAM budget for entity sprites. The player owns the first $20 bytes
 ; (8 sprites); entities fill from there and are cut off at the end of the
 ; region that call_03_6484_OAM_ClearUnusedEntries blanks
