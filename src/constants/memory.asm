@@ -481,7 +481,18 @@ wD616_FinalBattleButtonFlags:
 ; channel z final battle. bit 7 set = a button was just slammed down
     ds 1                                               ;; d616
 wD617_TailSpinChargeCounter:
-; charge level (0-$40) built up by tail spinning on a rezopolis gear/platform
+; Rezopolis machinery power, 0 to $40. One producer and two consumers, all in
+; bank02_entity_actions.asm; bank00_home.asm only zeroes it on level entry.
+;
+; ENTITY_REZOPOLIS_TAILSPIN_GEAR has five speed actions, and only the top one
+; (call_02_65db_EntityAction_TailspinGear_Full) raises this - the other four lower
+; it by one a frame. Since the gear only steps up while Gex is actively tail
+; spinning on it, the counter measures how long he has held it flat out, and it
+; bleeds away the moment he stops.
+;
+; Both consumers test for the maximum rather than for any particular level:
+;   call_02_650f_EntityAction_ActivatedRedPlatform_Update  runs its rise/hold/fall
+;   call_02_666c_EntityAction_AntSpawner_Update            produces an ant
     ds 1                                               ;; d617
 
 wD618_CheckpointSpawnId:
@@ -622,7 +633,13 @@ wD648_CollectibleMilestoneIndex:
 
 wD649_CollectibleAmount:
 ; in a bonus level this counts down toward zero (the remaining quota);
-; otherwise it counts up toward the next milestone
+; otherwise it counts up toward the next milestone.
+;
+; Two entities read it as "is the bonus quota still outstanding", and between them
+; they are the whole structure of a bonus level:
+;   call_02_666c_EntityAction_AntSpawner_Update  keeps producing while it is non-zero
+;   call_02_5297_EntityAction_GoldRemote_Gbc     removes itself while it is non-zero,
+;                                                so the prize appears at exactly zero
     ds 1                                               ;; d649
 
 ; wD649_CollectibleAmount split into two decimal digits for the HUD, by

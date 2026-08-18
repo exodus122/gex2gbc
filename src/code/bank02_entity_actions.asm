@@ -313,11 +313,11 @@ data_02_509b_EntityActions_RezopolisActivatedRedPlatform:           ;; ENTITY_RE
 data_02_509f_EntityActions_RezopolisTailspinPlatform:               ;; ENTITY_REZOPOLIS_TAILSPIN_PLATFORM
     dw   call_02_655d_EntityAction_TailspinPlatform_Update, data_02_7baa
 data_02_50a3_EntityActions_RezopolisTailspinGear:                   ;; ENTITY_REZOPOLIS_TAILSPIN_GEAR
-    dw   call_02_65b7_EntityAction_TailspinGear_unk0, data_02_7bbd   ; action $00
-    dw   call_02_65c0_EntityAction_TailspinGear_unk1, data_02_7bc3   ; action $01
-    dw   call_02_65c9_EntityAction_TailspinGear_unk2, data_02_7bcc   ; action $02
-    dw   call_02_65d2_EntityAction_TailspinGear_unk3, data_02_7bd5   ; action $03
-    dw   call_02_65db_EntityAction_TailspinGear_unk4, data_02_7bde   ; action $04
+    dw   call_02_65b7_EntityAction_TailspinGear_Stopped, data_02_7bbd   ; action $00
+    dw   call_02_65c0_EntityAction_TailspinGear_Slow, data_02_7bc3   ; action $01
+    dw   call_02_65c9_EntityAction_TailspinGear_Medium, data_02_7bcc   ; action $02
+    dw   call_02_65d2_EntityAction_TailspinGear_Fast, data_02_7bd5   ; action $03
+    dw   call_02_65db_EntityAction_TailspinGear_Full, data_02_7bde   ; action $04
 data_02_50b7_EntityActions_Unk6B:                                   ;; ENTITY_UNK_6B
     dw   call_02_6626_EntityAction_Unk6B_Update, data_02_7790
 data_02_50bb_EntityActions_Unk6C:                                   ;; ENTITY_UNK_6C
@@ -325,21 +325,21 @@ data_02_50bb_EntityActions_Unk6C:                                   ;; ENTITY_UN
 data_02_50bf_EntityActions_Unk6D:                                   ;; ENTITY_UNK_6D
     dw   call_02_6628_EntityAction_Unk6D_Update, data_02_7bb0
 data_02_50c3_EntityActions_RezopolisGreenMonster:                   ;; ENTITY_REZOPOLIS_GREEN_MONSTER
-    dw   call_02_6629_EntityAction_GreenMonster_unk0, data_02_7865   ; action $00
-    dw   call_02_6632_EntityAction_GreenMonster_unk1, data_02_7872   ; action $01
-    dw   call_02_6633_EntityAction_GreenMonster_unk2, data_02_7879   ; action $02
+    dw   call_02_6629_EntityAction_GreenMonster_Walk, data_02_7865   ; action $00
+    dw   call_02_6632_EntityAction_GreenMonster_Unused1, data_02_7872   ; action $01
+    dw   call_02_6633_EntityAction_GreenMonster_Unused2, data_02_7879   ; action $02
 data_02_50cf_EntityActions_Unk6F:                                   ;; ENTITY_UNK_6F
     dw   call_02_6634_EntityAction_Unk6F_Update, data_02_7bf0
 data_02_50d3_EntityActions_Unk70:                                   ;; ENTITY_UNK_70
-    dw   call_02_6635_EntityAction_Unk6F_Update, data_02_7bf0
+    dw   call_02_6635_EntityAction_Unk70_Update, data_02_7bf0
 data_02_50d7_EntityActions_RezopolisPincer:                         ;; ENTITY_REZOPOLIS_PINCER
     dw   call_02_6636_EntityAction_Pincer_Update, data_02_7880
 data_02_50db_EntityActions_RezopolisFlamethrower:                   ;; ENTITY_REZOPOLIS_FLAMETHROWER
-    dw   call_02_664b_EntityAction_Flamethrower_unk0, data_02_7bb0   ; action $00
-    dw   call_02_664c_EntityAction_Flamethrower_unk1, data_02_7bb0   ; action $01
+    dw   call_02_664b_EntityAction_Flamethrower_Update, data_02_7bb0   ; action $00
+    dw   call_02_664c_EntityAction_Flamethrower_Unused, data_02_7bb0   ; action $01
 data_02_50e3_EntityActions_RezopolisUfo:                            ;; ENTITY_REZOPOLIS_UFO
-    dw   call_02_664d_EntityAction_UFO_unk0, data_02_784d   ; action $00
-    dw   call_02_666b_EntityAction_UFO_unk1, data_02_785c   ; action $01
+    dw   call_02_664d_EntityAction_UFO_Patrol, data_02_784d   ; action $00
+    dw   call_02_666b_EntityAction_UFO_Unused, data_02_785c   ; action $01
 data_02_50eb_EntityActions_RezopolisAnt:                            ;; ENTITY_REZOPOLIS_ANT
     dw   call_02_66bb_EntityAction_Ant_Update, data_02_7be7
 data_02_50ef_EntityActions_RezopolisAntSpawner:                     ;; ENTITY_REZOPOLIS_ANT_SPAWNER
@@ -4030,17 +4030,58 @@ call_02_6449_EntityAction_Unk64_Update:
 
 ; ==================================================================
 ; REZOPOLIS
+;
+; Entity ids $65 (ENTITY_REZOPOLIS_SPECIAL_MOVING_PLATFORM) through $75
+; (ENTITY_REZOPOLIS_ANT_SPAWNER). Action tables data_02_508f .. data_02_50ef.
+;
+; Rezopolis has almost no enemies - it is a channel of MACHINERY, and most of it
+; is wired to one shared byte, wD617_TailSpinChargeCounter:
+;
+;   the TAILSPIN GEAR       is spun up by tail-spinning on it, and only at full
+;                           speed does it raise the charge
+;   everything else         waits for the charge to reach its maximum $40 and
+;                           then does something: the activated red platform rises,
+;                           the ant spawner starts producing ants
+;
+; So the charge is a global "the player is holding the machine at speed" signal,
+; and the gear's other four speeds all drain it. Nothing else in the game reads
+; it; bank00_home.asm only clears it on level entry.
+;
+; THE BONUS LEVEL. That whole loop is one room: entity_list_bugged_out.asm
+; contains exactly three entities - an ant spawner, a tailspin gear and a gold
+; remote. Spin the gear to hold the charge at $40, the spawner emits ants while
+; wD649_CollectibleAmount is non-zero, and when the quota reaches zero the gold
+; remote (see call_02_5297_EntityAction_GoldRemote_Gbc) stops removing itself and
+; starts chirping.
+;
+; UNREACHABLE ACTIONS. Several entities here have action rows past $00 that are
+; bare `ret`s. Nothing can select them: outside this file the only callers of
+; Entity_SetAction are the spawner and the defeat burst, which both pass $00, and
+; the Channel Z Rez boss, which passes $04 to itself
 ; ==================================================================
 
 call_02_644a_EntityAction_RezopolisSpecialMovingPlatform_Update:
+; A patrolling platform that also rides UP under the player: not ridden it settles
+; down 1px a frame for up to $10 pixels, ridden it climbs back at the same rate,
+; with MISC_TIMER_1 counting how far it has settled.
+;
+; Two of its conditions are hard-wired to one room rather than to anything
+; general, which is presumably why this one is the "special" platform:
+;
+;   the player's BLOCK ROW $0A          skips the height logic completely and
+;                                       leaves the platform simply patrolling
+;   nobody standing on any entity       stops the patrol as well
+;
+; So it only travels while the player is aboard something, and only bobs outside
+; that one row
     call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_6456
     ld   a,l
-    xor  a,$10
+    xor  a,$10                                         ; $09 -> $19 MISC_TIMER_2
     ld   l,a
     ldd  a,[hl]
-    dec  l
-    ld   [hl],a
+    dec  l                                             ; -> $17 MISC_FLAGS
+    ld   [hl],a                                        ; patrol config from the spawn record
 .jr_02_6456:
     ld   hl,wD210_Player_YPositionLo
     ldi  a,[hl]
@@ -4048,24 +4089,24 @@ call_02_644a_EntityAction_RezopolisSpecialMovingPlatform_Update:
     ld   l,a
     add  hl,hl
     add  hl,hl
-    add  hl,hl
+    add  hl,hl                                         ; player Y -> block row
     ld   a,h
     cp   a,$0A
-    jr   z,.jr_02_6484
+    jr   z,.jr_02_6484                                 ; that one row: just patrol
     call call_00_34f5_Entity_IsPlayerStandingOnSelf
     bit  0,b
-    jr   nz,.jr_02_648A
+    jr   nz,.jr_02_648A                                ; ridden - climb
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_1
     ld   a,[hl]
     cp   a,$10
-    jr   z,.jr_02_647F
+    jr   z,.jr_02_647F                                 ; fully settled
     inc  [hl]
     ld   bc,$0001
-    call call_00_37d8_Entity_MoveY
+    call call_00_37d8_Entity_MoveY                     ; settle 1px
 .jr_02_647F:
     ld   a,[wD74D_Player_EntityStoodOnLo]
     and  a
-    ret  z
+    ret  z                                             ; player is on foot - hold still
 .jr_02_6484:
     call call_00_3559_Entity_ApplyVelocityXY_SubpixelBoth
     jp   call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip
@@ -4073,12 +4114,13 @@ call_02_644a_EntityAction_RezopolisSpecialMovingPlatform_Update:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_1
     ld   a,[hl]
     and  a
-    ret  z
+    ret  z                                             ; already all the way up
     dec  [hl]
     ld   bc,$FFFF
-    jp   call_00_37d8_Entity_MoveY
+    jp   call_00_37d8_Entity_MoveY                     ; climb 1px, and do not patrol
 
 call_02_649c_EntityAction_RezopolisMovingPlatform_Update:
+; The ordinary ungated patrolling platform - prologue, move, patrol
     call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_64A8
     ld   a,l
@@ -4091,34 +4133,54 @@ call_02_649c_EntityAction_RezopolisMovingPlatform_Update:
     call call_00_3559_Entity_ApplyVelocityXY_SubpixelBoth
     jp   call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip
 
+; ------------------------------------------------------------------
+; RED PLATFORMS - two entities, one that responds to being STOOD ON and one that
+; responds to the TAILSPIN CHARGE. Both write FACING_FLAGS = $80 every frame
+; (SPRITE_FLAG bit 7 in the OAM attribute byte - the CGB VRAM bank select), and
+; both keep their whole state machine in MISC_FLAGS bits 0-2 with MISC_TIMER_1 as
+; a sub-tick counter and MISC_TIMER_2 as the distance travelled
+; ------------------------------------------------------------------
+
 call_02_64ae_EntityAction_RedPlatform_Update:
+; Descends under the player and creeps back up when he leaves. Travel is $0D steps
+; at one pixel per four frames.
+;
+;   flags clear   at rest. Stepping on starts a descent - or, if it is part way
+;                 home, a $3C-frame pause first
+;   bit 0 set     descending. At the far end, if the player has already gone, it
+;                 pauses for $F0 frames
+;   bit 1 set     paused. When the pause ends it TOGGLES bit 0 and clears
+;                 everything else, so a pause always reverses the direction
     ld   c,$80
     call call_00_3290_Entity_SetFacingDirection
-    call call_00_34f5_Entity_IsPlayerStandingOnSelf
+    call call_00_34f5_Entity_IsPlayerStandingOnSelf    ; HL = $17 MISC_FLAGS, B = ridden
     bit  1,[hl]
-    jr   nz,.jr_02_64DA
+    jr   nz,.jr_02_64DA                                ; paused
     bit  0,[hl]
-    jr   z,.jr_02_64E7
-    inc  l
+    jr   z,.jr_02_64E7                                 ; at rest
+; Descending
+    inc  l                                             ; $18 sub-tick
     dec  [hl]
     ret  nz
-    ld   [hl],$04
-    inc  l
+    ld   [hl],$04                                      ; one step every 4 frames
+    inc  l                                             ; $19 travel
     ld   a,[hl]
     cp   a,$0D
-    jr   z,.jr_02_64D0
+    jr   z,.jr_02_64D0                                 ; fully extended
     inc  [hl]
     ld   bc,$0001
     jp   call_00_37d8_Entity_MoveY
 .jr_02_64D0:
     bit  0,b
-    ret  nz
+    ret  nz                                            ; still ridden - stay down
     dec  l
-    ld   [hl],$f0
+    ld   [hl],$f0                                      ; long pause before returning
     dec  l
     set  1,[hl]
-    ret  
+    ret
 .jr_02_64DA:
+; Paused. On expiry, invert bit 0 and clear the rest - so pause always flips
+; between descending and returning
     inc  l
     dec  [hl]
     ret  nz
@@ -4128,27 +4190,29 @@ call_02_64ae_EntityAction_RedPlatform_Update:
     and  a,$01
     xor  a,$01
     ld   [hl],a
-    ret  
+    ret
 .jr_02_64E7:
+; At rest. Only the player stepping on starts anything
     bit  0,b
     jr   z,.jr_02_64FF
     inc  l
-    inc  l
+    inc  l                                             ; $19 travel
     ld   a,[hl]
     and  a
-    jr   nz,.jr_02_64F8
+    jr   nz,.jr_02_64F8                                ; part way home - short pause first
     dec  l
     ld   [hl],$3C
     dec  l
     set  1,[hl]
-    ret  
+    ret
 .jr_02_64F8:
     dec  l
     ld   [hl],$01
     dec  l
-    ld   [hl],$01
-    ret  
+    ld   [hl],$01                                      ; flags = bit 0 only: descend
+    ret
 .jr_02_64FF:
+; Unridden and not extended all the way: creep back up at the same rate
     inc  l
     dec  [hl]
     ret  nz
@@ -4156,26 +4220,33 @@ call_02_64ae_EntityAction_RedPlatform_Update:
     inc  l
     ld   a,[hl]
     and  a
-    ret  z
+    ret  z                                             ; already home
     dec  [hl]
     ld   bc,$FFFF
     jp   call_00_37d8_Entity_MoveY
 
 call_02_650f_EntityAction_ActivatedRedPlatform_Update:
+; The same idea driven by the machine rather than by weight: it does nothing at
+; all until wD617_TailSpinChargeCounter is at its maximum $40, and then runs one
+; fixed cycle - rise $0D pixels, hold for $F0 frames, descend $0D pixels, idle.
+;
+; Unlike the plain red platform it moves a full pixel EVERY frame, and it never
+; looks at the player again once it has started
     ld   c,$80
     call call_00_3290_Entity_SetFacingDirection
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     bit  MISC_FLAGS_BIT_0,[hl]
-    jr   z,.jr_02_654F
+    jr   z,.jr_02_654F                                 ; idle
     bit  MISC_FLAGS_BIT_1,[hl]
-    jr   nz,.jr_02_6544
+    jr   nz,.jr_02_6544                                ; holding at the top
     bit  MISC_FLAGS_BIT_2,[hl]
-    jr   nz,.jr_02_6535
+    jr   nz,.jr_02_6535                                ; rising
+; Descending back to the start
     inc  l
     dec  [hl]
     jr   nz,.jr_02_652F
     dec  l
-    ld   [hl],$00
+    ld   [hl],$00                                      ; arrived - fully idle again
 .jr_02_652F:
     ld   bc,$0001
     jp   call_00_37d8_Entity_MoveY
@@ -4183,7 +4254,7 @@ call_02_650f_EntityAction_ActivatedRedPlatform_Update:
     inc  l
     dec  [hl]
     jr   nz,.jr_02_653E
-    ld   [hl],$f0
+    ld   [hl],$f0                                      ; reached the top - hold
     dec  l
     set  1,[hl]
 .jr_02_653E:
@@ -4193,29 +4264,38 @@ call_02_650f_EntityAction_ActivatedRedPlatform_Update:
     inc  l
     dec  [hl]
     ret  nz
-    ld   [hl],$0D
+    ld   [hl],$0D                                      ; hold over - come back down
     dec  l
     res  1,[hl]
     res  2,[hl]
-    ret  
+    ret
 .jr_02_654F:
     ld   a,[wD617_TailSpinChargeCounter]
     cp   a,$40
-    ret  c
+    ret  c                                             ; charge not full yet
     set  0,[hl]
-    set  2,[hl]
+    set  2,[hl]                                        ; activate, rising
     inc  l
     ld   [hl],$0D
-    ret  
+    ret
 
 call_02_655d_EntityAction_TailspinPlatform_Update:
+; A platform you jack up by tail-spinning on it. It is the only entity that reads
+; the PLAYER'S CURRENT ACTION directly - standing on it is not enough, the action
+; has to be PLAYER_ACTION_TAIL_SPIN - and it rises one pixel per frame for as long
+; as that holds.
+;
+; MISC_TIMER_2 / MISC_PARAM together are a 16-bit "height gained" counter, so the
+; platform can remember more than 255 pixels of travel and sinks back through
+; exactly the same distance when Gex stops. The rise stops at the top of the
+; entity's own bounding box, compared in block coordinates
     call call_00_34f5_Entity_IsPlayerStandingOnSelf
     bit  0,b
-    jr   z,.jr_02_65A2
+    jr   z,.jr_02_65A2                                 ; not ridden - sink
     ld   a,[wD201_Player_ActionId]
     and  a,PLAYER_ACTION_MASK
     cp   a,PLAYER_ACTION_TAIL_SPIN
-    jr   nz,.jr_02_65A2
+    jr   nz,.jr_02_65A2                                ; just standing - sink
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_Y
     ldi  a,[hl]
     ld   h,[hl]
@@ -4223,219 +4303,276 @@ call_02_655d_EntityAction_TailspinPlatform_Update:
     add  hl,hl
     add  hl,hl
     add  hl,hl
-    ld   c,h
+    ld   c,h                                           ; my block row
     ld   a,[wD300_CurrentEntityAddrLo]
-    rrca 
-    rrca 
-    rrca 
+    rrca
+    rrca
+    rrca
     ld   l,a
     ld   h,$00
     ld   de,wD30C_EntityBoundingBoxYMin
     add  hl,de
     ld   a,[hl]
     cp   c
-    ret  nc
+    ret  nc                                            ; already at the top of the span
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_2
     ld   a,[hl]
     add  a,$01
     ldi  [hl],a
     ld   a,[hl]
     adc  a,$00
-    ld   [hl],a
+    ld   [hl],a                                        ; height gained += 1 (16-bit)
     ld   bc,$FFFF
     jp   call_00_37d8_Entity_MoveY
 .jr_02_65A2:
     ld   a,l
-    xor  a,$0D
+    xor  a,$0D                                         ; $17 -> $1A MISC_PARAM
     ld   l,a
     ldd  a,[hl]
     or   [hl]
-    ret  z
+    ret  z                                             ; back at its resting height
     ld   a,[hl]
     sub  a,$01
     ldi  [hl],a
     ld   a,[hl]
     sbc  a,$00
-    ld   [hl],a
+    ld   [hl],a                                        ; height gained -= 1
     ld   bc,$0001
     jp   call_00_37d8_Entity_MoveY
 
-call_02_65b7_EntityAction_TailspinGear_unk0:
-    call call_02_6611_TailSpinGear_Sub2
+; ------------------------------------------------------------------
+; TAILSPIN GEAR - five actions that are five SPEEDS of the same spinning gear,
+; distinguished only by their animation tick: $ff (stopped), then 4, 3, 2 and 1.
+;
+; Each action is three lines - drain or build the charge, load a "spin down"
+; target in C and a "spin up" target in B, and fall into the shared selector. So
+; the whole gear is a table expressed as code:
+;
+;   action     drains/builds   spin down to   spin up to
+;   $00 Stopped    drain            $00           $01
+;   $01 Slow       drain            $00           $02
+;   $02 Medium     drain            $01           $03
+;   $03 Fast       drain            $02           $04
+;   $04 Full       BUILD            $03           $04
+;
+; Only the top speed raises wD617_TailSpinChargeCounter, and every other speed
+; lowers it, so the charge is really a measure of how long the player has managed
+; to hold the gear flat out
+; ------------------------------------------------------------------
+
+call_02_65b7_EntityAction_TailspinGear_Stopped:
+    call call_02_6611_TailSpinGear_DrainCharge
     ld   c,$00
     ld   b,$01
-    jr   call_02_65E2_TailSpinGear_Sub1
+    jr   call_02_65e2_TailSpinGear_SelectSpeed
 
-call_02_65c0_EntityAction_TailspinGear_unk1:
-    call call_02_6611_TailSpinGear_Sub2
+call_02_65c0_EntityAction_TailspinGear_Slow:
+    call call_02_6611_TailSpinGear_DrainCharge
     ld   c,$00
     ld   b,$02
-    jr   call_02_65E2_TailSpinGear_Sub1
+    jr   call_02_65e2_TailSpinGear_SelectSpeed
 
-call_02_65c9_EntityAction_TailspinGear_unk2:
-    call call_02_6611_TailSpinGear_Sub2
+call_02_65c9_EntityAction_TailspinGear_Medium:
+    call call_02_6611_TailSpinGear_DrainCharge
     ld   c,$01
     ld   b,$03
-    jr   call_02_65E2_TailSpinGear_Sub1
+    jr   call_02_65e2_TailSpinGear_SelectSpeed
 
-call_02_65d2_EntityAction_TailspinGear_unk3:
-    call call_02_6611_TailSpinGear_Sub2
+call_02_65d2_EntityAction_TailspinGear_Fast:
+    call call_02_6611_TailSpinGear_DrainCharge
     ld   c,$02
     ld   b,$04
-    jr   call_02_65E2_TailSpinGear_Sub1
+    jr   call_02_65e2_TailSpinGear_SelectSpeed
 
-call_02_65db_EntityAction_TailspinGear_unk4:
-    call call_02_661B_TailSpinGear_Sub3
+call_02_65db_EntityAction_TailspinGear_Full:
+; The only speed that feeds the charge counter
+    call call_02_661b_TailSpinGear_BuildCharge
     ld   c,$03
     ld   b,$04
-call_02_65E2_TailSpinGear_Sub1:
+call_02_65e2_TailSpinGear_SelectSpeed:
+; C = the speed to fall back to, B = the speed to step up to.
+;
+; MISC_FLAGS bit 0 is raised by .jr_03_50ac_CollisionHandler_Gear for exactly as
+; long as Gex is TAIL SPINNING on the gear (interaction type $01), and cleared the
+; moment he stops - so it is a live "is he on it right now" signal rather than a
+; latch. With it set the gear takes B, without it C.
+;
+; Speeding up normally still waits for the current animation to finish, which is
+; what makes the gear ramp rather than jump - except from a standstill (B = $01),
+; which is special-cased to respond immediately
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     bit  MISC_FLAGS_BIT_0,[hl]
     jr   z,.jr_02_65F4
-    ld   c,b
+    ld   c,b                                           ; being spun - step up
     ld   a,b
     cp   a,$01
-    jr   z,.jr_02_65fa
+    jr   z,.jr_02_65fa                                 ; starting from stopped: no wait
 .jr_02_65F4:
     push bc
     call call_00_3843_Entity_CheckAnimationEnded
     pop  bc
-    ret  z
+    ret  z                                             ; one speed change per revolution
 .jr_02_65fa:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_ACTION_ID
     ld   a,[hl]
     and  a,$1F
     cp   c
     ld   a,c
-    ret  z
+    ret  z                                             ; already at that speed
     call call_02_7102_Entity_SetAction
     ld   c,SFX_GEAR
-    call call_00_112f_QueueSFX
-    ret  
+    call call_00_112f_QueueSFX                         ; a clunk on every change
+    ret
 
-call_02_6611_TailSpinGear_Sub2:
+call_02_6611_TailSpinGear_DrainCharge:
+; One unit off the shared charge, floored at zero
     ld   a,[wD617_TailSpinChargeCounter]
     and  a
     ret  z
     dec  a
     ld   [wD617_TailSpinChargeCounter],a
-    ret  
+    ret
 
-call_02_661B_TailSpinGear_Sub3:
+call_02_661b_TailSpinGear_BuildCharge:
+; One unit on, capped at $40 - which is the level every consumer tests for
     ld   a,[wD617_TailSpinChargeCounter]
     cp   a,$40
     ret  nc
     inc  a
     ld   [wD617_TailSpinChargeCounter],a
-    ret  
-    
+    ret
+
 call_02_6626_EntityAction_Unk6B_Update:
-    ret  
-    
+    ret
+
 call_02_6627_EntityAction_Unk6C_Update:
-    ret  
-    
+    ret
+
 call_02_6628_EntityAction_Unk6D_Update:
-    ret  
-    
-call_02_6629_EntityAction_GreenMonster_unk0:
+    ret
+
+call_02_6629_EntityAction_GreenMonster_Walk:
+; Action $00, the plain walker at speed $18. Actions $01 and $02 below have their
+; own animations (data_02_7872 and data_02_7879) but no code anywhere selects them
     ld   c,$18
     call call_00_32e1_Entity_NudgeXVelocityTowardC
     call call_00_36f7_Entity_MoveXByFacingMomentum_BoundsChecked
-    ret  
-    
-call_02_6632_EntityAction_GreenMonster_unk1:
-    ret  
-    
-call_02_6633_EntityAction_GreenMonster_unk2:
-    ret  
-    
+    ret
+
+call_02_6632_EntityAction_GreenMonster_Unused1:
+    ret
+
+call_02_6633_EntityAction_GreenMonster_Unused2:
+    ret
+
 call_02_6634_EntityAction_Unk6F_Update:
-    ret  
-    
-call_02_6635_EntityAction_Unk6F_Update:
-    ret  
-    
+    ret
+
+call_02_6635_EntityAction_Unk70_Update:
+; ENTITY_UNK_70. The label used to read _Unk6F_Update, duplicating the entry above
+    ret
+
 call_02_6636_EntityAction_Pincer_Update:
+; One action and no movement at all: it just picks its orientation. Bit 0 of the
+; spawn parameter MISC_TIMER_2 selects FACING_FLAGS $00 or $40, and $40 is the OAM
+; Y-flip - so the level data decides whether each pincer hangs from the ceiling or
+; stands on the floor, out of one set of tiles
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_2
     ld   c,$00
     bit  0,[hl]
     jr   z,.jr_02_6646
-    ld   c,$40
+    ld   c,$40                                         ; OAM Y flip
 .jr_02_6646:
-    xor  a,$14
+    xor  a,$14                                         ; $19 -> $0D FACING_FLAGS
     ld   l,a
     ld   [hl],c
-    ret  
-    
-call_02_664b_EntityAction_Flamethrower_unk0:
-    ret  
-    
-call_02_664c_EntityAction_Flamethrower_unk1:
-    ret  
-    
-call_02_664d_EntityAction_UFO_unk0:
+    ret
+
+call_02_664b_EntityAction_Flamethrower_Update:
+; Both flamethrower actions are bare `ret`s pointing at the SAME animation block,
+; so the entity is purely an animated sprite and a collision box. Action $01 is
+; unreachable
+    ret
+
+call_02_664c_EntityAction_Flamethrower_Unused:
+    ret
+
+call_02_664d_EntityAction_UFO_Patrol:
+; One routine, two patrol axes, chosen by bit 0 of the spawn parameter
+; MISC_TIMER_2 - the same "level data picks the axis" trick the pincer uses for
+; its orientation. Speed $08 either way
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_2
     bit  0,[hl]
     jr   nz,.jr_02_6662
     ld   c,$08
     call call_00_32e1_Entity_NudgeXVelocityTowardC
-    call call_00_3760_Entity_PatrolY_FacingBased
-    ret  
+    call call_00_3760_Entity_PatrolY_FacingBased       ; vertical
+    ret
 .jr_02_6662:
     ld   c,$08
     call call_00_32e1_Entity_NudgeXVelocityTowardC
-    call call_00_36f7_Entity_MoveXByFacingMomentum_BoundsChecked
-    ret  
-    
-call_02_666b_EntityAction_UFO_unk1:
-    ret  
+    call call_00_36f7_Entity_MoveXByFacingMomentum_BoundsChecked ; horizontal
+    ret
+
+call_02_666b_EntityAction_UFO_Unused:
+    ret
 
 call_02_666c_EntityAction_AntSpawner_Update:
+; The other half of the Bugged Out bonus level. It produces ants only while BOTH
+; conditions hold: there is still a collectible quota left, and the tailspin gear
+; is being held at full charge. Each ant costs a $78-frame cooldown, and it will
+; not let more than two exist at once.
+;
+; SFX_COLLECTIBLE on spawn rather than an enemy sound is the giveaway that the
+; ants are the collectibles here
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
-    ld   [hl],$20
-    xor  a,$1A
+    ld   [hl],$20                                      ; always faces left
+    xor  a,$1A                                         ; $0D -> $17 MISC_FLAGS
     ld   l,a
     bit  0,[hl]
-    jr   nz,.jr_02_66B4
+    jr   nz,.jr_02_66B4                                ; cooling down
     ld   a,[wD649_CollectibleAmount]
     and  a
-    ret  z
+    ret  z                                             ; quota met - stop producing
     ld   a,[wD617_TailSpinChargeCounter]
     cp   a,$40
-    ret  c
+    ret  c                                             ; gear is not at full speed
     set  0,[hl]
     inc  l
-    ld   [hl],$78
+    ld   [hl],$78                                      ; two seconds until the next one
     ld   c,$00
-    ld   a,$20
+    ld   a,ENTITY_SLOT_FIRST_NPC
 .jr_02_6691:
     ld   l,a
     ld   a,[hl]
-    cp   a,$74
+    cp   a,$74                                         ; ENTITY_REZOPOLIS_ANT
     jr   nz,.jr_02_6698
     inc  c
 .jr_02_6698:
     ld   a,l
-    add  a,$20
+    add  a,ENTITY_SLOT_SIZE
     jr   nz,.jr_02_6691
     ld   a,c
     cp   a,$02
-    ret  nc
+    ret  nc                                            ; two already out
     ld   c,SPAWN_CHILD_ENTITY_ANT
     FARCALL call_0a_7b9a_EntitySpawn_SpawnChildEntity
     ld   c,SFX_COLLECTIBLE
     call call_00_112f_QueueSFX
-    ret  
+    ret
 .jr_02_66B4:
     inc  l
     dec  [hl]
     ret  nz
     dec  l
     res  0,[hl]
-    ret  
+    ret
 
 call_02_66bb_EntityAction_Ant_Update:
+; The plain walker at speed $0C, plus an escape hatch: an ant that reaches block
+; column $19-$20 removes itself. That is a fixed map position, not a bound from
+; its spawn record, so it is the mouse hole at one end of the Bugged Out room -
+; catch the ant before it gets there or the collectible is gone
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_X
     ldi  a,[hl]
     ld   h,[hl]
@@ -4443,15 +4580,19 @@ call_02_66bb_EntityAction_Ant_Update:
     add  hl,hl
     add  hl,hl
     add  hl,hl
-    ld   a,h
+    ld   a,h                                           ; block column
     cp   a,$19
     jr   c,.jr_02_66D3
     cp   a,$21
-    jp   c,call_00_3931_Entity_DeactivateSelf
+    jp   c,call_00_3931_Entity_DeactivateSelf          ; reached the hole
 .jr_02_66D3:
     ld   c,$0C
     call call_00_32e1_Entity_NudgeXVelocityTowardC
     jp   call_00_36f7_Entity_MoveXByFacingMomentum_BoundsChecked
+
+; ==================================================================
+; CIRCUIT CENTRAL
+; ==================================================================
 
 call_02_66db_EntityAction_CircuitCentralAnt_Update:
     ld   c,$0C
