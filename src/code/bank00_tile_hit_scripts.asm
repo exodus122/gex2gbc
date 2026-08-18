@@ -1,141 +1,141 @@
 call_00_1f46_TileHit_OnPlayerAttack:
-; Entry point called each frame during TailSpin when the tile under Gex is interactive (type < $C0, inverted in C). 
-; Guards: returns if wD77D_BlockPatch_StepsRemaining nonzero (sequence already running), 
-; wD77B_BlockPatch_VramWritePending nonzero, or wD76B_Player_IsAttacking zero. Clears wD76B. Converts player X and Y 
-; world positions to block coordinates (world_pos × 8, high byte) and stores preliminary values to wD782/wD783. 
-; Uses inverted tile type C × 2 as index into data_00_1ff6_TileHitScriptTable — returns if null. 
+; Entry point called each frame during TailSpin when the tile under Gex is interactive (type < $C0, inverted in C).
+; Guards: returns if wD77D_BlockPatch_StepsRemaining nonzero (sequence already running),
+; wD77B_BlockPatch_VramWritePending nonzero, or wD76B_Player_IsAttacking zero. Clears wD76B. Converts player X and Y
+; world positions to block coordinates (world_pos × 8, high byte) and stores preliminary values to wD782/wD783.
+; Uses inverted tile type C × 2 as index into data_00_1ff6_TileHitScriptTable — returns if null.
 ; Falls into TileHitScript_Run
-    ld   A, [wD77D_BlockPatch_StepsRemaining]                                    ;; 00:1f46 $fa $7d $d7
-    and  A, A                                          ;; 00:1f49 $a7
-    ret  NZ                                            ;; 00:1f4a $c0
-    ld   A, [wD77B_BlockPatch_VramWritePending]                                    ;; 00:1f4b $fa $7b $d7
-    and  A, A                                          ;; 00:1f4e $a7
-    ret  NZ                                            ;; 00:1f4f $c0
-    ld   A, [wD76B_Player_IsAttacking]                                    ;; 00:1f50 $fa $6b $d7
-    and  A, A                                          ;; 00:1f53 $a7
-    ret  Z                                             ;; 00:1f54 $c8
-    xor  A, A                                          ;; 00:1f55 $af
-    ld   [wD76B_Player_IsAttacking], A                                    ;; 00:1f56 $ea $6b $d7
-    ld   HL, wD20E_Player_XPositionLo                                     ;; 00:1f59 $21 $0e $d2
-    ld   A, [HL+]                                      ;; 00:1f5c $2a
-    ld   H, [HL]                                       ;; 00:1f5d $66
-    ld   L, A                                          ;; 00:1f5e $6f
-    add  HL, HL                                        ;; 00:1f5f $29
-    add  HL, HL                                        ;; 00:1f60 $29
-    add  HL, HL                                        ;; 00:1f61 $29
-    ld   A, H                                          ;; 00:1f62 $7c
-    ld   [wD782_BlockPatch_TargetBlockX], A                                    ;; 00:1f63 $ea $82 $d7
-    ld   HL, wD210_Player_YPositionLo                                     ;; 00:1f66 $21 $10 $d2
-    ld   A, [HL+]                                      ;; 00:1f69 $2a
-    ld   H, [HL]                                       ;; 00:1f6a $66
-    ld   L, A                                          ;; 00:1f6b $6f
-    add  HL, HL                                        ;; 00:1f6c $29
-    add  HL, HL                                        ;; 00:1f6d $29
-    add  HL, HL                                        ;; 00:1f6e $29
-    ld   A, H                                          ;; 00:1f6f $7c
-    ld   [wD783_BlockPatch_TargetBlockY], A                                    ;; 00:1f70 $ea $83 $d7
-    ld   L, C                                          ;; 00:1f73 $69
-    ld   H, $00                                        ;; 00:1f74 $26 $00
-    add  HL, HL                                        ;; 00:1f76 $29
-    ld   DE, data_00_1ff6_TileHitScriptTable                                     ;; 00:1f77 $11 $f6 $1f
-    add  HL, DE                                        ;; 00:1f7a $19
-    ld   A, [HL+]                                      ;; 00:1f7b $2a
-    ld   H, [HL]                                       ;; 00:1f7c $66
-    ld   L, A                                          ;; 00:1f7d $6f
-    or   A, H                                          ;; 00:1f7e $b4
-    ret  Z                                             ;; 00:1f7f $c8
+    ld   A, [wD77D_BlockPatch_StepsRemaining]
+    and  A, A
+    ret  NZ
+    ld   A, [wD77B_BlockPatch_VramWritePending]
+    and  A, A
+    ret  NZ
+    ld   A, [wD76B_Player_IsAttacking]
+    and  A, A
+    ret  Z
+    xor  A, A
+    ld   [wD76B_Player_IsAttacking], A
+    ld   HL, wD20E_Player_XPositionLo
+    ld   A, [HL+]
+    ld   H, [HL]
+    ld   L, A
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    ld   A, H
+    ld   [wD782_BlockPatch_TargetBlockX], A
+    ld   HL, wD210_Player_YPositionLo
+    ld   A, [HL+]
+    ld   H, [HL]
+    ld   L, A
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    ld   A, H
+    ld   [wD783_BlockPatch_TargetBlockY], A
+    ld   L, C
+    ld   H, $00
+    add  HL, HL
+    ld   DE, data_00_1ff6_TileHitScriptTable
+    add  HL, DE
+    ld   A, [HL+]
+    ld   H, [HL]
+    ld   L, A
+    or   A, H
+    ret  Z
 call_00_1f80_TileHitScript_Run:
-; Also called directly by the mission preview cutscene system. Reads a callback function pointer (DE) 
+; Also called directly by the mission preview cutscene system. Reads a callback function pointer (DE)
 ; and a step count byte from the script. If count is zero: skips block patch setup, jumps straight to
-; calling DE (fire-and-forget). If nonzero: stores count to wD77D (sequence length), next byte 
-; to wD787 (timer reload), reads X/Y block offset into E/D, reads width/height into wD784/wD785, 
+; calling DE (fire-and-forget). If nonzero: stores count to wD77D (sequence length), next byte
+; to wD787 (timer reload), reads X/Y block offset into E/D, reads width/height into wD784/wD785,
 ; stores remaining script pointer to wD780/wD781. Computes the VRAM tilemap address for the patch
-; rectangle from player Y (low byte masked $E0) shifted left 2 and D × 32, combined with player X low 
-; byte + E × 32 masked to $1C → stored to wD77E/wD77F. Recalculates wD782/wD783 as player block 
-; coords + D/E offset (the final target block coordinates for collision lookup). 
+; rectangle from player Y (low byte masked $E0) shifted left 2 and D × 32, combined with player X low
+; byte + E × 32 masked to $1C → stored to wD77E/wD77F. Recalculates wD782/wD783 as player block
+; coords + D/E offset (the final target block coordinates for collision lookup).
 ; Zeroes wD786_BlockPatch_StepTimer. Pops and conditionally calls DE if nonzero
-    ld   E, [HL]                                       ;; 00:1f80 $5e
-    inc  HL                                            ;; 00:1f81 $23
-    ld   D, [HL]                                       ;; 00:1f82 $56
-    inc  HL                                            ;; 00:1f83 $23
-    push DE                                            ;; 00:1f84 $d5
-    ld   A, [HL+]                                      ;; 00:1f85 $2a
-    and  A, A                                          ;; 00:1f86 $a7
-    jr   Z, .jr_00_1fef                                ;; 00:1f87 $28 $66
-    ld   [wD77D_BlockPatch_StepsRemaining], A                                    ;; 00:1f89 $ea $7d $d7
-    ld   A, [HL+]                                      ;; 00:1f8c $2a
-    ld   [wD787_BlockPatch_StepTimerReload], A                                    ;; 00:1f8d $ea $87 $d7
-    ld   E, [HL]                                       ;; 00:1f90 $5e
-    inc  HL                                            ;; 00:1f91 $23
-    ld   D, [HL]                                       ;; 00:1f92 $56
-    inc  HL                                            ;; 00:1f93 $23
-    ld   A, [HL+]                                      ;; 00:1f94 $2a
-    ld   [wD784_BlockPatch_Width], A                                    ;; 00:1f95 $ea $84 $d7
-    ld   A, [HL+]                                      ;; 00:1f98 $2a
-    ld   [wD785_BlockPatch_Height], A                                    ;; 00:1f99 $ea $85 $d7
-    ld   A, L                                          ;; 00:1f9c $7d
-    ld   [wD780_BlockPatch_DataPtrLo], A                                    ;; 00:1f9d $ea $80 $d7
-    ld   A, H                                          ;; 00:1fa0 $7c
-    ld   [wD781_BlockPatch_DataPtrHi], A                                    ;; 00:1fa1 $ea $81 $d7
-    ld   A, D                                          ;; 00:1fa4 $7a
-    add  A, A                                          ;; 00:1fa5 $87
-    add  A, A                                          ;; 00:1fa6 $87
-    add  A, A                                          ;; 00:1fa7 $87
-    add  A, A                                          ;; 00:1fa8 $87
-    add  A, A                                          ;; 00:1fa9 $87
-    ld   HL, wD210_Player_YPositionLo                                     ;; 00:1faa $21 $10 $d2
-    add  A, [HL]                                       ;; 00:1fad $86
-    and  A, $e0                                        ;; 00:1fae $e6 $e0
-    ld   L, A                                          ;; 00:1fb0 $6f
-    ld   H, $00                                        ;; 00:1fb1 $26 $00
-    add  HL, HL                                        ;; 00:1fb3 $29
-    add  HL, HL                                        ;; 00:1fb4 $29
-    ld   A, E                                          ;; 00:1fb5 $7b
-    add  A, A                                          ;; 00:1fb6 $87
-    add  A, A                                          ;; 00:1fb7 $87
-    add  A, A                                          ;; 00:1fb8 $87
-    add  A, A                                          ;; 00:1fb9 $87
-    add  A, A                                          ;; 00:1fba $87
-    ld   C, A                                          ;; 00:1fbb $4f
-    ld   A, [wD20E_Player_XPositionLo]                                    ;; 00:1fbc $fa $0e $d2
-    add  A, C                                          ;; 00:1fbf $81
-    rrca                                               ;; 00:1fc0 $0f
-    rrca                                               ;; 00:1fc1 $0f
-    rrca                                               ;; 00:1fc2 $0f
-    and  A, $1c                                        ;; 00:1fc3 $e6 $1c
-    or   A, L                                          ;; 00:1fc5 $b5
-    ld   [wD77E_BlockPatch_TilemapAddrLo], A                                    ;; 00:1fc6 $ea $7e $d7
-    ld   A, H                                          ;; 00:1fc9 $7c
-    add  A, $c0                                        ;; 00:1fca $c6 $c0
-    ld   [wD77F_BlockPatch_TilemapAddrHi], A                                    ;; 00:1fcc $ea $7f $d7
-    ld   HL, wD20E_Player_XPositionLo                                     ;; 00:1fcf $21 $0e $d2
-    ld   A, [HL+]                                      ;; 00:1fd2 $2a
-    ld   H, [HL]                                       ;; 00:1fd3 $66
-    ld   L, A                                          ;; 00:1fd4 $6f
-    add  HL, HL                                        ;; 00:1fd5 $29
-    add  HL, HL                                        ;; 00:1fd6 $29
-    add  HL, HL                                        ;; 00:1fd7 $29
-    ld   A, H                                          ;; 00:1fd8 $7c
-    add  A, E                                          ;; 00:1fd9 $83
-    ld   [wD782_BlockPatch_TargetBlockX], A                                    ;; 00:1fda $ea $82 $d7
-    ld   HL, wD210_Player_YPositionLo                                     ;; 00:1fdd $21 $10 $d2
-    ld   A, [HL+]                                      ;; 00:1fe0 $2a
-    ld   H, [HL]                                       ;; 00:1fe1 $66
-    ld   L, A                                          ;; 00:1fe2 $6f
-    add  HL, HL                                        ;; 00:1fe3 $29
-    add  HL, HL                                        ;; 00:1fe4 $29
-    add  HL, HL                                        ;; 00:1fe5 $29
-    ld   A, H                                          ;; 00:1fe6 $7c
-    add  A, D                                          ;; 00:1fe7 $82
-    ld   [wD783_BlockPatch_TargetBlockY], A                                    ;; 00:1fe8 $ea $83 $d7
-    xor  A, A                                          ;; 00:1feb $af
-    ld   [wD786_BlockPatch_StepTimer], A                                    ;; 00:1fec $ea $86 $d7
+    ld   E, [HL]
+    inc  HL
+    ld   D, [HL]
+    inc  HL
+    push DE
+    ld   A, [HL+]
+    and  A, A
+    jr   Z, .jr_00_1fef
+    ld   [wD77D_BlockPatch_StepsRemaining], A
+    ld   A, [HL+]
+    ld   [wD787_BlockPatch_StepTimerReload], A
+    ld   E, [HL]
+    inc  HL
+    ld   D, [HL]
+    inc  HL
+    ld   A, [HL+]
+    ld   [wD784_BlockPatch_Width], A
+    ld   A, [HL+]
+    ld   [wD785_BlockPatch_Height], A
+    ld   A, L
+    ld   [wD780_BlockPatch_DataPtrLo], A
+    ld   A, H
+    ld   [wD781_BlockPatch_DataPtrHi], A
+    ld   A, D
+    add  A, A
+    add  A, A
+    add  A, A
+    add  A, A
+    add  A, A
+    ld   HL, wD210_Player_YPositionLo
+    add  A, [HL]
+    and  A, $e0
+    ld   L, A
+    ld   H, $00
+    add  HL, HL
+    add  HL, HL
+    ld   A, E
+    add  A, A
+    add  A, A
+    add  A, A
+    add  A, A
+    add  A, A
+    ld   C, A
+    ld   A, [wD20E_Player_XPositionLo]
+    add  A, C
+    rrca
+    rrca
+    rrca
+    and  A, $1c
+    or   A, L
+    ld   [wD77E_BlockPatch_TilemapAddrLo], A
+    ld   A, H
+    add  A, $c0
+    ld   [wD77F_BlockPatch_TilemapAddrHi], A
+    ld   HL, wD20E_Player_XPositionLo
+    ld   A, [HL+]
+    ld   H, [HL]
+    ld   L, A
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    ld   A, H
+    add  A, E
+    ld   [wD782_BlockPatch_TargetBlockX], A
+    ld   HL, wD210_Player_YPositionLo
+    ld   A, [HL+]
+    ld   H, [HL]
+    ld   L, A
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    ld   A, H
+    add  A, D
+    ld   [wD783_BlockPatch_TargetBlockY], A
+    xor  A, A
+    ld   [wD786_BlockPatch_StepTimer], A
 .jr_00_1fef:
-    pop  HL                                            ;; 00:1fef $e1
-    ld   A, L                                          ;; 00:1ff0 $7d
-    or   A, H                                          ;; 00:1ff1 $b4
-    call NZ, call_00_10bd_JumpHL                              ;; 00:1ff2 $c4 $bd $10
-    ret                                                ;; 00:1ff5 $c9
+    pop  HL
+    ld   A, L
+    or   A, H
+    call NZ, call_00_10bd_JumpHL
+    ret
 data_00_1ff6_TileHitScriptTable:
 ; Sparse pointer table of 63 entries, running from $1FF6 up to the first script at $2074 - 126
 ; bytes, which is what fixes the count. Null entries ($0000) mean nothing happens when that tile
@@ -309,9 +309,9 @@ data_00_2080_TileHitScript_CheckpointTV_Right:
     blockpatch_sfx  SFX_TV_SMASH
     blockpatch_cells $ea,1
 call_00_208c_Checkpoint_WriteSpawnId:
-; Searches .data_00_20b6_CheckpointBlockCoordTable for a record matching 
-; current level ID + wD782_BlockPatch_TargetBlockX + wD783_BlockPatch_TargetBlockY. 
-; On match: writes the record's 4th byte (checkpoint ID) to wD618_CheckpointSpawnId. 
+; Searches .data_00_20b6_CheckpointBlockCoordTable for a record matching
+; current level ID + wD782_BlockPatch_TargetBlockX + wD783_BlockPatch_TargetBlockY.
+; On match: writes the record's 4th byte (checkpoint ID) to wD618_CheckpointSpawnId.
 ; Records are 4 bytes each: [level_id, block_x, block_y, checkpoint_id], $FF-terminated
     ld   hl,wD782_BlockPatch_TargetBlockX
     ld   c,[hl]
@@ -339,7 +339,7 @@ call_00_208c_Checkpoint_WriteSpawnId:
     ld   a,[hl]
     cp   a,$FF
     jr   nz,.jr_00_209a
-    ret  
+    ret
 .data_00_20b6_CheckpointBlockCoordTable:
 ; Seven checkpoints, terminated by BLOCK_COORD_LIST_END. Checkpoint_WriteSpawnId matches
 ; on all three of level, block X and block Y, so the same block coordinates in a different
@@ -486,7 +486,7 @@ call_00_2186_CountedBreakable_OnHit:
     ld   [de],a
 .jr_00_21a2:
     FARCALL call_00_3951_Entity_SpawnEffectAtPlayer
-    ret  
+    ret
 
 data_00_21ae_TileHitScript_SlotSwitch_Wide:
     blockpatch_header call_00_21bc_SlotSwitch_TriggerSlot0, 1, 0, -1, 0, 2, 1
@@ -496,7 +496,7 @@ data_00_21ae_TileHitScript_SlotSwitch_Wide:
 call_00_21bc_SlotSwitch_TriggerSlot0:
     ld   hl,wD78B_BlockPatch_SlotTable
     ld   [hl],$02
-    ret  
+    ret
 
 data_00_21c2_TileHitScript_Breakable_RightTile:
 ; Multi-stage breakable, no callback, 5 steps at 8 frames, 2x1 blocks, x offset -1
@@ -540,7 +540,7 @@ data_00_2206_TileHitScript_SlotSwitch_Single:
 call_00_2211_SlotSwitch_TriggerSlot0Alt:
     ld   hl,wD78B_BlockPatch_SlotTable
     ld   [hl],$02
-    ret  
+    ret
 
 data_00_2217_TileHitScript_PositionedSwitch:
     blockpatch_header call_00_2225_Switch_ArmSlotByPosition, 1, 8, 0, -1, 1, 2
@@ -579,7 +579,7 @@ call_00_2225_Switch_ArmSlotByPosition:
     ld   a,[hl]
     cp   a,$FF
     jr   nz,.jr_00_2232
-    ret  
+    ret
 .jr_00_2242:
     ld   d,$00
     ld   hl,wD78B_BlockPatch_SlotTable
@@ -592,7 +592,7 @@ call_00_2225_Switch_ArmSlotByPosition:
     cp   a,$06
     ret  nz
     inc  [hl]
-    ret  
+    ret
 .data_00_2253_SwitchBlockCoordTable:
 ; Nine switch positions, terminated by BLOCK_COORD_LIST_END. A switch has no id of its
 ; own - its index here IS its wD78B_BlockPatch_SlotTable slot, so adding a switch means
@@ -644,7 +644,7 @@ call_00_2274_DoorSwitch_UpdateState:
     ld   a,[hl]
     cp   a,$FF
     jr   nz,.jr_00_228b
-    ret  
+    ret
 .jr_00_229b:
     ld   d,$00
     ld   hl,wD78B_BlockPatch_SlotTable
@@ -653,7 +653,7 @@ call_00_2274_DoorSwitch_UpdateState:
     and  a
     ret  nz
     ld   [hl],$02
-    ret  
+    ret
 .data_00_22a7_MaoTseTongue_DoorSwitchCoordTable:
 ; Door switch positions for Mao Tse Tongue. Index = wD78B_BlockPatch_SlotTable slot, same
 ; convention as the switch table above. Slots 0 and 4 are ($00,$00), which no real tile
@@ -695,7 +695,7 @@ call_00_22e1_Cannon_FaceRight:
 ; Writes $20 to wD615_Cannon_FacingDirection. Sets rotating cannon to right state
     ld   a,$20
     ld   [wD615_Cannon_FacingDirection],a
-    ret  
+    ret
 
 data_00_22e7_TileHitScript_Cannon_FaceLeft:
 ; The same three frames turning the other way, from $bb/$bc back down to $b7/$b8
@@ -711,37 +711,37 @@ call_00_22ff_Cannon_FaceLeft:
 ; Writes $00 to wD615_Cannon_FacingDirection. Sets rotating cannon to left state
     ld   a,$00
     ld   [wD615_Cannon_FacingDirection],a
-    ret  
+    ret
 
 call_00_2305_BlockPatch_TickSlots:
-; Scans all 16 wD78B_BlockPatch_SlotTable slots. For each slot with value ≥ 2: increments it. 
-; If the increment wraps to zero (overflowed from $FF): decrements back to $FF, checks wD77D 
-; and wD77B (if either nonzero, a sequence is busy — returns without triggering). Otherwise 
-; sets the slot to $01, re-arming it for the next attack. Slots with value 0 or 1 are skipped. 
-; This drives the per-frame countdown for triggered tiles (state $02 = just triggered, counts 
+; Scans all 16 wD78B_BlockPatch_SlotTable slots. For each slot with value ≥ 2: increments it.
+; If the increment wraps to zero (overflowed from $FF): decrements back to $FF, checks wD77D
+; and wD77B (if either nonzero, a sequence is busy — returns without triggering). Otherwise
+; sets the slot to $01, re-arming it for the next attack. Slots with value 0 or 1 are skipped.
+; This drives the per-frame countdown for triggered tiles (state $02 = just triggered, counts
 ; up to $FF = expired, then re-arms to $01 = active/waiting)
-    ld   HL, wD78B_BlockPatch_SlotTable                                     ;; 00:2305 $21 $8b $d7
-    ld   B, $00                                        ;; 00:2308 $06 $00
-    ld   C, $00                                        ;; 00:230a $0e $00
+    ld   HL, wD78B_BlockPatch_SlotTable
+    ld   B, $00
+    ld   C, $00
 .jr_00_230c:
-    ld   A, [HL]                                       ;; 00:230c $7e
-    cp   A, $02                                        ;; 00:230d $fe $02
-    jr   C, .jr_00_2314                                ;; 00:230f $38 $03
-    inc  [HL]                                          ;; 00:2311 $34
-    jr   Z, .jr_00_231c                                ;; 00:2312 $28 $08
+    ld   A, [HL]
+    cp   A, $02
+    jr   C, .jr_00_2314
+    inc  [HL]
+    jr   Z, .jr_00_231c
 .jr_00_2314:
-    inc  HL                                            ;; 00:2314 $23
-    inc  C                                             ;; 00:2315 $0c
-    ld   A, C                                          ;; 00:2316 $79
-    cp   A, $10                                        ;; 00:2317 $fe $10
-    jr   NZ, .jr_00_230c                               ;; 00:2319 $20 $f1
-    ret                                                ;; 00:231b $c9
+    inc  HL
+    inc  C
+    ld   A, C
+    cp   A, $10
+    jr   NZ, .jr_00_230c
+    ret
 .jr_00_231c:
-    dec  [HL]                                          ;; 00:231c $35
-    ld   A, [wD77D_BlockPatch_StepsRemaining]                                    ;; 00:231d $fa $7d $d7
-    and  A, A                                          ;; 00:2320 $a7
-    ret  NZ                                            ;; 00:2321 $c0
-    ld   A, [wD77B_BlockPatch_VramWritePending]                                    ;; 00:2322 $fa $7b $d7
-    and  A, A                                          ;; 00:2325 $a7
-    ret  NZ                                            ;; 00:2326 $c0
-    ld   [HL], $01                                     ;; 00:2327 $36 $01
+    dec  [HL]
+    ld   A, [wD77D_BlockPatch_StepsRemaining]
+    and  A, A
+    ret  NZ
+    ld   A, [wD77B_BlockPatch_VramWritePending]
+    and  A, A
+    ret  NZ
+    ld   [HL], $01

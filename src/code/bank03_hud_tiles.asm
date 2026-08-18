@@ -1,31 +1,31 @@
 call_03_66ae_HUD_LoadTiles:
-; Top-level HUD tile loader. Copies .image_03_66e1 ($140 bytes) to VRAM $8600 (main HUD graphics), 
-; calls call_03_6d13_HUD_LoadLivesDigits (lives digits) and call_03_6941_HUD_LoadCollectibleSprites (collectible icon). Then conditionally loads 
-; either the "DEMO MODE" banner tiles to $8680 if demo mode is active, or if wD623_CollectibleMode is set (timer mode), 
+; Top-level HUD tile loader. Copies .image_03_66e1 ($140 bytes) to VRAM $8600 (main HUD graphics),
+; calls call_03_6d13_HUD_LoadLivesDigits (lives digits) and call_03_6941_HUD_LoadCollectibleSprites (collectible icon). Then conditionally loads
+; either the "DEMO MODE" banner tiles to $8680 if demo mode is active, or if wD623_CollectibleMode is set (timer mode),
 ; loads the timer's colon glyph (two tiles, $20 bytes, via VRAM_Copy32Bytes) and jumps to
 ; call_03_6ceb_HUD_LoadTimerDigits.
 ;
 ; Note demo mode and timer mode share the same VRAM slot, VRAM_HUD_DEMO_MODE_OR_TIMER - the
 ; banner and the clock can never be on screen together
-    ld   HL, .image_03_66e1                             ;; 03:66ae $21 $e1 $66
-    ld   DE, VRAM_HUD_TILES                                     ;; 03:66b1 $11 $00 $86
-    ld   BC, $140                                      ;; 03:66b4 $01 $40 $01
-    call call_00_07b0_MemCopy                                  ;; 03:66b7 $cd $b0 $07
-    call call_03_6d13_HUD_LoadLivesDigits                                  ;; 03:66ba $cd $13 $6d
-    call call_03_6941_HUD_LoadCollectibleSprites                                  ;; 03:66bd $cd $41 $69
-    ld   HL, .image_demo_mode_03_6821                             ;; 03:66c0 $21 $21 $68
-    ld   DE, VRAM_HUD_DEMO_MODE_OR_TIMER                                     ;; 03:66c3 $11 $80 $86
-    ld   BC, $100                                      ;; 03:66c6 $01 $00 $01
-    ld   A, [wD61E_DemoModeEnabled]                                    ;; 03:66c9 $fa $1e $d6
-    and  A, A                                          ;; 03:66cc $a7
-    jp   NZ, call_00_07b0_MemCopy                              ;; 03:66cd $c2 $b0 $07
-    ld   A, [wD623_CollectibleMode]                                    ;; 03:66d0 $fa $23 $d6
-    and  A, A                                          ;; 03:66d3 $a7
-    ret  Z                                             ;; 03:66d4 $c8
-    ld   HL, .image_colon_03_6921                             ;; 03:66d5 $21 $21 $69
-    ld   DE, VRAM_HUD_DEMO_MODE_OR_TIMER                                     ;; 03:66d8 $11 $80 $86
-    call call_03_6efd_VRAM_Copy32Bytes                                  ;; 03:66db $cd $fd $6e
-    jp   call_03_6ceb_HUD_LoadTimerDigits                                    ;; 03:66de $c3 $eb $6c
+    ld   HL, .image_03_66e1
+    ld   DE, VRAM_HUD_TILES
+    ld   BC, $140
+    call call_00_07b0_MemCopy
+    call call_03_6d13_HUD_LoadLivesDigits
+    call call_03_6941_HUD_LoadCollectibleSprites
+    ld   HL, .image_demo_mode_03_6821
+    ld   DE, VRAM_HUD_DEMO_MODE_OR_TIMER
+    ld   BC, $100
+    ld   A, [wD61E_DemoModeEnabled]
+    and  A, A
+    jp   NZ, call_00_07b0_MemCopy
+    ld   A, [wD623_CollectibleMode]
+    and  A, A
+    ret  Z
+    ld   HL, .image_colon_03_6921
+    ld   DE, VRAM_HUD_DEMO_MODE_OR_TIMER
+    call call_03_6efd_VRAM_Copy32Bytes
+    jp   call_03_6ceb_HUD_LoadTimerDigits
 .image_03_66e1:
     INCBIN ".gfx/misc_sprites/image_003_66e1.bin"
 .image_demo_mode_03_6821:
@@ -34,8 +34,8 @@ call_03_66ae_HUD_LoadTiles:
     INCBIN ".gfx/misc_sprites/image_colon_003_6921.bin"
 
 call_03_6941_HUD_LoadCollectibleSprites:
-; Loads the collectible sprite tiles for the current level. Calls call_03_6be5_HUD_LoadCollectiblePalette first (to set up the palette). 
-; Uses wD624 (level ID) to index .data_image_collectibles_03_6967 — a 31-entry pointer table mapping each 
+; Loads the collectible sprite tiles for the current level. Calls call_03_6be5_HUD_LoadCollectiblePalette first (to set up the palette).
+; Uses wD624 (level ID) to index .data_image_collectibles_03_6967 — a 31-entry pointer table mapping each
 ; level to one of 6 world-specific collectible tile sets (Toon TV, Scream TV, Circuit Central, Kung Fu Theater,
 ;  Prehistory Channel, Rezopolis). Then uses wD648_CollectibleMilestoneIndex (collectible type index, swap-shifted) as a sub-index
 ; within that set to select the specific tile frame, and copies TWO tiles ($20 bytes) to VRAM $87E0
@@ -44,26 +44,26 @@ call_03_6941_HUD_LoadCollectibleSprites:
 ;
 ; Also clears HUD_DIRTY_COLLECTIBLES (bit 3 of wD60E_HUDDirtyFlags) on entry, which the old
 ; comment did not mention - this is the routine that services that dirty flag
-    ld   HL, wD60E_HUDDirtyFlags                                     ;; 03:6941 $21 $0e $d6
-    res  3, [HL]                                       ;; 03:6944 $cb $9e
-    call call_03_6be5_HUD_LoadCollectiblePalette                                  ;; 03:6946 $cd $e5 $6b
-    ld   HL, wD624_CurrentLevelId                                     ;; 03:6949 $21 $24 $d6
-    ld   L, [HL]                                       ;; 03:694c $6e
-    ld   H, $00                                        ;; 03:694d $26 $00
-    add  HL, HL                                        ;; 03:694f $29
-    ld   DE, .data_image_collectibles_03_6967                             ;; 03:6950 $11 $67 $69
-    add  HL, DE                                        ;; 03:6953 $19
-    ld   E, [HL]                                       ;; 03:6954 $5e
-    inc  HL                                            ;; 03:6955 $23
-    ld   D, [HL]                                       ;; 03:6956 $56
-    ld   A, [wD648_CollectibleMilestoneIndex]                                    ;; 03:6957 $fa $48 $d6
-    swap A                                             ;; 03:695a $cb $37
-    ld   L, A                                          ;; 03:695c $6f
-    ld   H, $00                                        ;; 03:695d $26 $00
-    add  HL, HL                                        ;; 03:695f $29
-    add  HL, DE                                        ;; 03:6960 $19
-    ld   DE, VRAM_COLLECTIBLE_SPRITES                                     ;; 03:6961 $11 $e0 $87
-    jp   call_03_6efd_VRAM_Copy32Bytes                                  ;; 03:6964 $c3 $fd $6e
+    ld   HL, wD60E_HUDDirtyFlags
+    res  3, [HL]
+    call call_03_6be5_HUD_LoadCollectiblePalette
+    ld   HL, wD624_CurrentLevelId
+    ld   L, [HL]
+    ld   H, $00
+    add  HL, HL
+    ld   DE, .data_image_collectibles_03_6967
+    add  HL, DE
+    ld   E, [HL]
+    inc  HL
+    ld   D, [HL]
+    ld   A, [wD648_CollectibleMilestoneIndex]
+    swap A
+    ld   L, A
+    ld   H, $00
+    add  HL, HL
+    add  HL, DE
+    ld   DE, VRAM_COLLECTIBLE_SPRITES
+    jp   call_03_6efd_VRAM_Copy32Bytes
 .data_image_collectibles_03_6967:
     dw   .image_collectibles_toon_tv_003_69a5             ; MAP_MEDIA_DIMENSION
     dw   .image_collectibles_toon_tv_003_69a5             ; MAP_TOON_TV_OUT_OF_TOON
@@ -101,7 +101,7 @@ call_03_6941_HUD_LoadCollectibleSprites:
 .image_collectibles_scream_tv_003_6a05:
     INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_scream_tv.bin"
 .image_collectibles_circuit_central_003_6a65:
-    INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_circuit_central.bin"    
+    INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_circuit_central.bin"
 .image_collectibles_kung_fu_theater_003_6ac5:
     INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_kung_fu_theater.bin"
 .image_collectibles_prehistory_channel_003_6b25:
@@ -110,54 +110,54 @@ call_03_6941_HUD_LoadCollectibleSprites:
     INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_rezopolis.bin"
 
 call_03_6be5_HUD_LoadCollectiblePalette:
-; Loads the GBC palette for the collectible icon into wDA13_EntityPalettes_Slot1 (8 bytes = 4 colors × 2 bytes). 
-; Returns immediately if wD59E_OnGBCFlag is zero (mono/non-GBC mode). Uses wD624 (level ID) to index 
-; .data_03_6c1d_collectible_palettes for a world-specific palette pointer, then uses wD648_CollectibleMilestoneIndex × 8 
+; Loads the GBC palette for the collectible icon into wDA13_EntityPalettes_Slot1 (8 bytes = 4 colors × 2 bytes).
+; Returns immediately if wD59E_OnGBCFlag is zero (mono/non-GBC mode). Uses wD624 (level ID) to index
+; .data_03_6c1d_collectible_palettes for a world-specific palette pointer, then uses wD648_CollectibleMilestoneIndex × 8
 ; as a sub-index to select the specific color entry within that palette block, copying 8 bytes to wDA13_EntityPalettes_Slot1
-    ld   A, [wD59E_OnGBCFlag]                                    ;; 03:6be5 $fa $9e $d5
-    and  A, A                                          ;; 03:6be8 $a7
-    ret  Z                                             ;; 03:6be9 $c8
-    ld   HL, wD624_CurrentLevelId                                     ;; 03:6bea $21 $24 $d6
-    ld   L, [HL]                                       ;; 03:6bed $6e
-    ld   H, $00                                        ;; 03:6bee $26 $00
-    add  HL, HL                                        ;; 03:6bf0 $29
-    ld   DE, .data_03_6c1d_collectible_palettes                             ;; 03:6bf1 $11 $1d $6c
-    add  HL, DE                                        ;; 03:6bf4 $19
-    ld   E, [HL]                                       ;; 03:6bf5 $5e
-    inc  HL                                            ;; 03:6bf6 $23
-    ld   D, [HL]                                       ;; 03:6bf7 $56
-    ld   HL, wD648_CollectibleMilestoneIndex                                     ;; 03:6bf8 $21 $48 $d6
-    ld   L, [HL]                                       ;; 03:6bfb $6e
-    ld   H, $00                                        ;; 03:6bfc $26 $00
-    add  HL, HL                                        ;; 03:6bfe $29
-    add  HL, HL                                        ;; 03:6bff $29
-    add  HL, HL                                        ;; 03:6c00 $29
-    add  HL, DE                                        ;; 03:6c01 $19
-    ld   DE, wDA13_EntityPalettes_Slot1                                     ;; 03:6c02 $11 $13 $da
-    ld   A, [HL+]                                      ;; 03:6c05 $2a
-    ld   [DE], A                                       ;; 03:6c06 $12
-    inc  DE                                            ;; 03:6c07 $13
-    ld   A, [HL+]                                      ;; 03:6c08 $2a
-    ld   [DE], A                                       ;; 03:6c09 $12
-    inc  DE                                            ;; 03:6c0a $13
-    ld   A, [HL+]                                      ;; 03:6c0b $2a
-    ld   [DE], A                                       ;; 03:6c0c $12
-    inc  DE                                            ;; 03:6c0d $13
-    ld   A, [HL+]                                      ;; 03:6c0e $2a
-    ld   [DE], A                                       ;; 03:6c0f $12
-    inc  DE                                            ;; 03:6c10 $13
-    ld   A, [HL+]                                      ;; 03:6c11 $2a
-    ld   [DE], A                                       ;; 03:6c12 $12
-    inc  DE                                            ;; 03:6c13 $13
-    ld   A, [HL+]                                      ;; 03:6c14 $2a
-    ld   [DE], A                                       ;; 03:6c15 $12
-    inc  DE                                            ;; 03:6c16 $13
-    ld   A, [HL+]                                      ;; 03:6c17 $2a
-    ld   [DE], A                                       ;; 03:6c18 $12
-    inc  DE                                            ;; 03:6c19 $13
-    ld   A, [HL]                                       ;; 03:6c1a $7e
-    ld   [DE], A                                       ;; 03:6c1b $12
-    ret                                                ;; 03:6c1c $c9
+    ld   A, [wD59E_OnGBCFlag]
+    and  A, A
+    ret  Z
+    ld   HL, wD624_CurrentLevelId
+    ld   L, [HL]
+    ld   H, $00
+    add  HL, HL
+    ld   DE, .data_03_6c1d_collectible_palettes
+    add  HL, DE
+    ld   E, [HL]
+    inc  HL
+    ld   D, [HL]
+    ld   HL, wD648_CollectibleMilestoneIndex
+    ld   L, [HL]
+    ld   H, $00
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    add  HL, DE
+    ld   DE, wDA13_EntityPalettes_Slot1
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  DE
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  DE
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  DE
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  DE
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  DE
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  DE
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  DE
+    ld   A, [HL]
+    ld   [DE], A
+    ret
 .data_03_6c1d_collectible_palettes:
     dw   .palette_toon_tv_collectibles             ; MAP_MEDIA_DIMENSION
     dw   .palette_toon_tv_collectibles             ; MAP_TOON_TV_OUT_OF_TOON
@@ -190,17 +190,17 @@ call_03_6be5_HUD_LoadCollectiblePalette:
     dw   .palette_toon_tv_collectibles             ; MAP_UNUSED_1C
     dw   .palette_toon_tv_collectibles             ; MAP_UNUSED_1D
     dw   .palette_toon_tv_collectibles             ; MAP_BOSS_TV_CHANNEL_Z
-.palette_toon_tv_collectibles: ;; 03:6c5b
+.palette_toon_tv_collectibles:
     INCBIN "gfx/misc_sprites/collectibles/palettes/palette_toon_tv_collectibles.bin"
-.palette_scream_tv_collectibles: ;; 03:6c73
+.palette_scream_tv_collectibles:
     INCBIN "gfx/misc_sprites/collectibles/palettes/palette_scream_tv_collectibles.bin"
-.palette_circuit_central_collectibles: ;; 03:6c8b
+.palette_circuit_central_collectibles:
     INCBIN "gfx/misc_sprites/collectibles/palettes/palette_circuit_central_collectibles.bin"
-.palette_kung_fu_theater_collectibles: ;; 03:6ca3
+.palette_kung_fu_theater_collectibles:
     INCBIN "gfx/misc_sprites/collectibles/palettes/palette_kung_fu_theater_collectibles.bin"
-.palette_prehistory_channel_collectibles: ;; 03:6cbb
+.palette_prehistory_channel_collectibles:
     INCBIN "gfx/misc_sprites/collectibles/palettes/palette_prehistory_channel_collectibles.bin"
-.palette_rezopolis_collectibles: ;; 03:6cd3
+.palette_rezopolis_collectibles:
     INCBIN "gfx/misc_sprites/collectibles/palettes/palette_rezopolis_collectibles.bin"
 
 call_03_6ceb_HUD_LoadTimerDigits:
@@ -208,68 +208,68 @@ call_03_6ceb_HUD_LoadTimerDigits:
 ; Reads wD76F_LevelTimer_Minutes (minutes), wD770_LevelTimer_SecondsBCD high nibble (tens of seconds),
 ; and wD770_LevelTimer_SecondsBCD low nibble (seconds), calling call_03_6d88_HUD_LoadDigitTile for each to write digit tiles to VRAM $8748, $8768,
 ; $8788 respectively. Falls through to call_03_6d5e_HUD_LoadCollectibleCountDigits to also load the collectible count digits
-    ld   HL, wD60E_HUDDirtyFlags                                     ;; 03:6ceb $21 $0e $d6
-    res  2, [HL]                                       ;; 03:6cee $cb $96
-    ld   A, [wD76F_LevelTimer_Minutes]                                    ;; 03:6cf0 $fa $6f $d7
-    ld   DE, VRAM_DIGIT_HUNDREDS                                     ;; 03:6cf3 $11 $48 $87
-    call call_03_6d88_HUD_LoadDigitTile                                  ;; 03:6cf6 $cd $88 $6d
-    ld   A, [wD770_LevelTimer_SecondsBCD]                                    ;; 03:6cf9 $fa $70 $d7
-    swap A                                             ;; 03:6cfc $cb $37
-    and  A, $0f                                        ;; 03:6cfe $e6 $0f
-    ld   DE, VRAM_DIGIT_TENS                                     ;; 03:6d00 $11 $68 $87
-    call call_03_6d88_HUD_LoadDigitTile                                  ;; 03:6d03 $cd $88 $6d
-    ld   A, [wD770_LevelTimer_SecondsBCD]                                    ;; 03:6d06 $fa $70 $d7
-    and  A, $0f                                        ;; 03:6d09 $e6 $0f
-    ld   DE, VRAM_DIGIT_ONES                                     ;; 03:6d0b $11 $88 $87
-    call call_03_6d88_HUD_LoadDigitTile                                  ;; 03:6d0e $cd $88 $6d
-    jr   call_03_6d5e_HUD_LoadCollectibleCountDigits                                    ;; 03:6d11 $18 $4b
+    ld   HL, wD60E_HUDDirtyFlags
+    res  2, [HL]
+    ld   A, [wD76F_LevelTimer_Minutes]
+    ld   DE, VRAM_DIGIT_HUNDREDS
+    call call_03_6d88_HUD_LoadDigitTile
+    ld   A, [wD770_LevelTimer_SecondsBCD]
+    swap A
+    and  A, $0f
+    ld   DE, VRAM_DIGIT_TENS
+    call call_03_6d88_HUD_LoadDigitTile
+    ld   A, [wD770_LevelTimer_SecondsBCD]
+    and  A, $0f
+    ld   DE, VRAM_DIGIT_ONES
+    call call_03_6d88_HUD_LoadDigitTile
+    jr   call_03_6d5e_HUD_LoadCollectibleCountDigits
 
 call_03_6d13_HUD_LoadLivesDigits:
-; Loads the lives counter display tiles. Clears bit 1 of wD60E_HUDDirtyFlags. Decomposes wD73D (lives remaining) 
-; into hundreds/tens/ones digits stored in wD73E/wD73F/wD740 using repeated subtraction. Calls 
-; call_03_6d88_HUD_LoadDigitTile for each digit to write tiles to VRAM $8748/$8768/$8788. Falls through to call_03_6d5e_HUD_LoadCollectibleCountDigits 
+; Loads the lives counter display tiles. Clears bit 1 of wD60E_HUDDirtyFlags. Decomposes wD73D (lives remaining)
+; into hundreds/tens/ones digits stored in wD73E/wD73F/wD740 using repeated subtraction. Calls
+; call_03_6d88_HUD_LoadDigitTile for each digit to write tiles to VRAM $8748/$8768/$8788. Falls through to call_03_6d5e_HUD_LoadCollectibleCountDigits
 ; to load the collectible count
-    ld   HL, wD60E_HUDDirtyFlags                                     ;; 03:6d13 $21 $0e $d6
-    res  1, [HL]                                       ;; 03:6d16 $cb $8e
-    ld   HL, wD73E_LivesRemaining_Hundreds                                     ;; 03:6d18 $21 $3e $d7
-    ld   A, $0a                                        ;; 03:6d1b $3e $0a
-    ld   [HL+], A                                      ;; 03:6d1d $22
-    ld   [HL+], A                                      ;; 03:6d1e $22
-    ld   [HL-], A                                      ;; 03:6d1f $32
-    dec  HL                                            ;; 03:6d20 $2b
-    ld   A, [wD73D_LivesRemaining]                                    ;; 03:6d21 $fa $3d $d7
-    cp   A, $64                                        ;; 03:6d24 $fe $64
-    jr   NC, .jr_03_6d2e                               ;; 03:6d26 $30 $06
-    cp   A, $0a                                        ;; 03:6d28 $fe $0a
-    jr   NC, .jr_03_6d38                               ;; 03:6d2a $30 $0c
-    jr   .jr_03_6d42                                   ;; 03:6d2c $18 $14
+    ld   HL, wD60E_HUDDirtyFlags
+    res  1, [HL]
+    ld   HL, wD73E_LivesRemaining_Hundreds
+    ld   A, $0a
+    ld   [HL+], A
+    ld   [HL+], A
+    ld   [HL-], A
+    dec  HL
+    ld   A, [wD73D_LivesRemaining]
+    cp   A, $64
+    jr   NC, .jr_03_6d2e
+    cp   A, $0a
+    jr   NC, .jr_03_6d38
+    jr   .jr_03_6d42
 .jr_03_6d2e:
-    ld   [HL], $ff                                     ;; 03:6d2e $36 $ff
+    ld   [HL], $ff
 .jr_03_6d30:
-    inc  [HL]                                          ;; 03:6d30 $34
-    sub  A, $64                                        ;; 03:6d31 $d6 $64
-    jr   NC, .jr_03_6d30                               ;; 03:6d33 $30 $fb
-    add  A, $64                                        ;; 03:6d35 $c6 $64
-    inc  HL                                            ;; 03:6d37 $23
+    inc  [HL]
+    sub  A, $64
+    jr   NC, .jr_03_6d30
+    add  A, $64
+    inc  HL
 .jr_03_6d38:
-    ld   [HL], $ff                                     ;; 03:6d38 $36 $ff
+    ld   [HL], $ff
 .jr_03_6d3a:
-    inc  [HL]                                          ;; 03:6d3a $34
-    sub  A, $0a                                        ;; 03:6d3b $d6 $0a
-    jr   NC, .jr_03_6d3a                               ;; 03:6d3d $30 $fb
-    add  A, $0a                                        ;; 03:6d3f $c6 $0a
-    inc  HL                                            ;; 03:6d41 $23
+    inc  [HL]
+    sub  A, $0a
+    jr   NC, .jr_03_6d3a
+    add  A, $0a
+    inc  HL
 .jr_03_6d42:
-    ld   [HL], A                                       ;; 03:6d42 $77
-    ld   A, [wD73E_LivesRemaining_Hundreds]                                    ;; 03:6d43 $fa $3e $d7
-    ld   DE, VRAM_DIGIT_HUNDREDS                                     ;; 03:6d46 $11 $48 $87
-    call call_03_6d88_HUD_LoadDigitTile                                  ;; 03:6d49 $cd $88 $6d
-    ld   A, [wD73F_LivesRemaining_Tens]                                    ;; 03:6d4c $fa $3f $d7
-    ld   DE, VRAM_DIGIT_TENS                                     ;; 03:6d4f $11 $68 $87
-    call call_03_6d88_HUD_LoadDigitTile                                  ;; 03:6d52 $cd $88 $6d
-    ld   A, [wD740_LivesRemaining_Ones]                                    ;; 03:6d55 $fa $40 $d7
-    ld   DE, VRAM_DIGIT_ONES                                     ;; 03:6d58 $11 $88 $87
-    call call_03_6d88_HUD_LoadDigitTile                                  ;; 03:6d5b $cd $88 $6d
+    ld   [HL], A
+    ld   A, [wD73E_LivesRemaining_Hundreds]
+    ld   DE, VRAM_DIGIT_HUNDREDS
+    call call_03_6d88_HUD_LoadDigitTile
+    ld   A, [wD73F_LivesRemaining_Tens]
+    ld   DE, VRAM_DIGIT_TENS
+    call call_03_6d88_HUD_LoadDigitTile
+    ld   A, [wD740_LivesRemaining_Ones]
+    ld   DE, VRAM_DIGIT_ONES
+    call call_03_6d88_HUD_LoadDigitTile
 
 call_03_6d5e_HUD_LoadCollectibleCountDigits:
 ; Shared tail of both the lives and timer loaders: redraws the two collectible-count
@@ -283,46 +283,46 @@ call_03_6d5e_HUD_LoadCollectibleCountDigits:
 ; selects the eleventh glyph in the font, which is blank - so a count under ten simply
 ; skips the tens byte and leaves the blank in place. Leading-zero suppression with no
 ; branch to do it
-    ld   HL, wD64A_HUD_CollectibleCountTens                                     ;; 03:6d5e $21 $4a $d6
-    ld   A, $0a                                        ;; 03:6d61 $3e $0a
-    ld   [HL+], A                                      ;; 03:6d63 $22
-    ld   [HL-], A                                      ;; 03:6d64 $32
-    ld   A, [wD649_CollectibleAmount]                                    ;; 03:6d65 $fa $49 $d6
-    cp   A, $0a                                        ;; 03:6d68 $fe $0a
-    jr   C, .jr_03_6d76                                ;; 03:6d6a $38 $0a
-    ld   [HL], $ff                                     ;; 03:6d6c $36 $ff
+    ld   HL, wD64A_HUD_CollectibleCountTens
+    ld   A, $0a
+    ld   [HL+], A
+    ld   [HL-], A
+    ld   A, [wD649_CollectibleAmount]
+    cp   A, $0a
+    jr   C, .jr_03_6d76
+    ld   [HL], $ff
 .jr_03_6d6e:
-    inc  [HL]                                          ;; 03:6d6e $34
-    sub  A, $0a                                        ;; 03:6d6f $d6 $0a
-    jr   NC, .jr_03_6d6e                               ;; 03:6d71 $30 $fb
-    add  A, $0a                                        ;; 03:6d73 $c6 $0a
-    inc  HL                                            ;; 03:6d75 $23
+    inc  [HL]
+    sub  A, $0a
+    jr   NC, .jr_03_6d6e
+    add  A, $0a
+    inc  HL
 .jr_03_6d76:
-    ld   [HL], A                                       ;; 03:6d76 $77
-    ld   A, [wD64A_HUD_CollectibleCountTens]                                    ;; 03:6d77 $fa $4a $d6
-    ld   DE, VRAM_DIGIT_COLLECTIBLE_TENS                                     ;; 03:6d7a $11 $a8 $87
-    call call_03_6d88_HUD_LoadDigitTile                                  ;; 03:6d7d $cd $88 $6d
-    ld   A, [wD64B_HUD_CollectibleCountOnes]                                    ;; 03:6d80 $fa $4b $d6
-    ld   DE, VRAM_DIGIT_COLLECTIBLE_ONES                                     ;; 03:6d83 $11 $c8 $87
-    jr   call_03_6d88_HUD_LoadDigitTile                                  ;; 03:6d86 $18 $00
+    ld   [HL], A
+    ld   A, [wD64A_HUD_CollectibleCountTens]
+    ld   DE, VRAM_DIGIT_COLLECTIBLE_TENS
+    call call_03_6d88_HUD_LoadDigitTile
+    ld   A, [wD64B_HUD_CollectibleCountOnes]
+    ld   DE, VRAM_DIGIT_COLLECTIBLE_ONES
+    jr   call_03_6d88_HUD_LoadDigitTile
 
 call_03_6d88_HUD_LoadDigitTile:
 ; Core digit tile writer. Takes a glyph index in A (0-9, or $0A for the blank) and a VRAM
 ; destination in DE.
-; Swap-shifts A to use as an index, selects either .numbers_003_6d9d or .numbers_003_6e4d 
-; (alternate digit font, based on wD623_CollectibleMode timer-mode flag), adds to get the correct tile data pointer, 
+; Swap-shifts A to use as an index, selects either .numbers_003_6d9d or .numbers_003_6e4d
+; (alternate digit font, based on wD623_CollectibleMode timer-mode flag), adds to get the correct tile data pointer,
 ; and copies 16 bytes (2 tiles = one digit glyph) to VRAM via VRAM_Copy16Bytes
-    swap A                                             ;; 03:6d88 $cb $37
-    ld   L, A                                          ;; 03:6d8a $6f
-    ld   H, $00                                        ;; 03:6d8b $26 $00
-    ld   BC, .numbers_003_6d9d                             ;; 03:6d8d $01 $9d $6d
-    ld   A, [wD623_CollectibleMode]                                    ;; 03:6d90 $fa $23 $d6
-    and  A, A                                          ;; 03:6d93 $a7
-    jr   Z, .jr_03_6d99                                ;; 03:6d94 $28 $03
-    ld   BC, .numbers_003_6e4d                             ;; 03:6d96 $01 $4d $6e
+    swap A
+    ld   L, A
+    ld   H, $00
+    ld   BC, .numbers_003_6d9d
+    ld   A, [wD623_CollectibleMode]
+    and  A, A
+    jr   Z, .jr_03_6d99
+    ld   BC, .numbers_003_6e4d
 .jr_03_6d99:
-    add  HL, BC                                        ;; 03:6d99 $09
-    jp   call_03_6f2d_VRAM_Copy16Bytes                                  ;; 03:6d9a $c3 $2d $6f
+    add  HL, BC
+    jp   call_03_6f2d_VRAM_Copy16Bytes
 .numbers_003_6d9d:
     INCBIN ".gfx/misc_sprites/numbers_003_6d9d.bin"
 .numbers_003_6e4d:
@@ -338,54 +338,54 @@ call_03_6efd_VRAM_Copy32Bytes:
 ;
 ; Note the join: this half ends on `inc DE` rather than `inc E`, so the pair carries correctly
 ; across a page boundary between the two tiles
-    ld   A, [HL+]                                      ;; 03:6efd $2a
-    ld   [DE], A                                       ;; 03:6efe $12
-    inc  E                                             ;; 03:6eff $1c
-    ld   A, [HL+]                                      ;; 03:6f00 $2a
-    ld   [DE], A                                       ;; 03:6f01 $12
-    inc  E                                             ;; 03:6f02 $1c
-    ld   A, [HL+]                                      ;; 03:6f03 $2a
-    ld   [DE], A                                       ;; 03:6f04 $12
-    inc  E                                             ;; 03:6f05 $1c
-    ld   A, [HL+]                                      ;; 03:6f06 $2a
-    ld   [DE], A                                       ;; 03:6f07 $12
-    inc  E                                             ;; 03:6f08 $1c
-    ld   A, [HL+]                                      ;; 03:6f09 $2a
-    ld   [DE], A                                       ;; 03:6f0a $12
-    inc  E                                             ;; 03:6f0b $1c
-    ld   A, [HL+]                                      ;; 03:6f0c $2a
-    ld   [DE], A                                       ;; 03:6f0d $12
-    inc  E                                             ;; 03:6f0e $1c
-    ld   A, [HL+]                                      ;; 03:6f0f $2a
-    ld   [DE], A                                       ;; 03:6f10 $12
-    inc  E                                             ;; 03:6f11 $1c
-    ld   A, [HL+]                                      ;; 03:6f12 $2a
-    ld   [DE], A                                       ;; 03:6f13 $12
-    inc  E                                             ;; 03:6f14 $1c
-    ld   A, [HL+]                                      ;; 03:6f15 $2a
-    ld   [DE], A                                       ;; 03:6f16 $12
-    inc  E                                             ;; 03:6f17 $1c
-    ld   A, [HL+]                                      ;; 03:6f18 $2a
-    ld   [DE], A                                       ;; 03:6f19 $12
-    inc  E                                             ;; 03:6f1a $1c
-    ld   A, [HL+]                                      ;; 03:6f1b $2a
-    ld   [DE], A                                       ;; 03:6f1c $12
-    inc  E                                             ;; 03:6f1d $1c
-    ld   A, [HL+]                                      ;; 03:6f1e $2a
-    ld   [DE], A                                       ;; 03:6f1f $12
-    inc  E                                             ;; 03:6f20 $1c
-    ld   A, [HL+]                                      ;; 03:6f21 $2a
-    ld   [DE], A                                       ;; 03:6f22 $12
-    inc  E                                             ;; 03:6f23 $1c
-    ld   A, [HL+]                                      ;; 03:6f24 $2a
-    ld   [DE], A                                       ;; 03:6f25 $12
-    inc  E                                             ;; 03:6f26 $1c
-    ld   A, [HL+]                                      ;; 03:6f27 $2a
-    ld   [DE], A                                       ;; 03:6f28 $12
-    inc  E                                             ;; 03:6f29 $1c
-    ld   A, [HL+]                                      ;; 03:6f2a $2a
-    ld   [DE], A                                       ;; 03:6f2b $12
-    inc  DE                                            ;; 03:6f2c $13
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  DE
 call_03_6f2d_VRAM_Copy16Bytes:
 ; Unrolled copy of exactly 16 bytes - one 8x8 2bpp tile - from HL to DE. The fundamental
 ; tile-write primitive, used throughout the HUD system.
@@ -393,52 +393,52 @@ call_03_6f2d_VRAM_Copy16Bytes:
 ; Fifteen `inc E` and then a final `inc DE`, so D is held fixed across the tile but does
 ; carry on the last byte, leaving DE pointing at the next tile even across a page boundary.
 ; leaving DE pointing at the next tile even across a page boundary
-    ld   A, [HL+]                                      ;; 03:6f2d $2a
-    ld   [DE], A                                       ;; 03:6f2e $12
-    inc  E                                             ;; 03:6f2f $1c
-    ld   A, [HL+]                                      ;; 03:6f30 $2a
-    ld   [DE], A                                       ;; 03:6f31 $12
-    inc  E                                             ;; 03:6f32 $1c
-    ld   A, [HL+]                                      ;; 03:6f33 $2a
-    ld   [DE], A                                       ;; 03:6f34 $12
-    inc  E                                             ;; 03:6f35 $1c
-    ld   A, [HL+]                                      ;; 03:6f36 $2a
-    ld   [DE], A                                       ;; 03:6f37 $12
-    inc  E                                             ;; 03:6f38 $1c
-    ld   A, [HL+]                                      ;; 03:6f39 $2a
-    ld   [DE], A                                       ;; 03:6f3a $12
-    inc  E                                             ;; 03:6f3b $1c
-    ld   A, [HL+]                                      ;; 03:6f3c $2a
-    ld   [DE], A                                       ;; 03:6f3d $12
-    inc  E                                             ;; 03:6f3e $1c
-    ld   A, [HL+]                                      ;; 03:6f3f $2a
-    ld   [DE], A                                       ;; 03:6f40 $12
-    inc  E                                             ;; 03:6f41 $1c
-    ld   A, [HL+]                                      ;; 03:6f42 $2a
-    ld   [DE], A                                       ;; 03:6f43 $12
-    inc  E                                             ;; 03:6f44 $1c
-    ld   A, [HL+]                                      ;; 03:6f45 $2a
-    ld   [DE], A                                       ;; 03:6f46 $12
-    inc  E                                             ;; 03:6f47 $1c
-    ld   A, [HL+]                                      ;; 03:6f48 $2a
-    ld   [DE], A                                       ;; 03:6f49 $12
-    inc  E                                             ;; 03:6f4a $1c
-    ld   A, [HL+]                                      ;; 03:6f4b $2a
-    ld   [DE], A                                       ;; 03:6f4c $12
-    inc  E                                             ;; 03:6f4d $1c
-    ld   A, [HL+]                                      ;; 03:6f4e $2a
-    ld   [DE], A                                       ;; 03:6f4f $12
-    inc  E                                             ;; 03:6f50 $1c
-    ld   A, [HL+]                                      ;; 03:6f51 $2a
-    ld   [DE], A                                       ;; 03:6f52 $12
-    inc  E                                             ;; 03:6f53 $1c
-    ld   A, [HL+]                                      ;; 03:6f54 $2a
-    ld   [DE], A                                       ;; 03:6f55 $12
-    inc  E                                             ;; 03:6f56 $1c
-    ld   A, [HL+]                                      ;; 03:6f57 $2a
-    ld   [DE], A                                       ;; 03:6f58 $12
-    inc  E                                             ;; 03:6f59 $1c
-    ld   A, [HL+]                                      ;; 03:6f5a $2a
-    ld   [DE], A                                       ;; 03:6f5b $12
-    inc  DE                                            ;; 03:6f5c $13
-    ret                                                ;; 03:6f5d $c9
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  DE
+    ret

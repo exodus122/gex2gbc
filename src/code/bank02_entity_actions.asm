@@ -49,6 +49,7 @@ data_02_4e03_EntityActions_ParticleBurst:                           ;; ENTITY_PA
     dw   call_02_52ab_EntityAction_ParticleBurst_Update, data_02_7cd4
 data_02_4e07_EntityActions_Unk08:                                   ;; ENTITY_UNK_08
     dw   call_02_52e7_EntityAction_Unk08_Update, data_02_76b5
+
 data_02_4e0b_EntityActions_ScreamTVFallingPlatform:                 ;; ENTITY_SCREAM_TV_FALLING_PLATFORM
     dw   call_02_52e8_EntityAction_ScreamTVFallingPlatform_Update, data_02_7963
 data_02_4e0f_EntityActions_ScreamTVMovingPlatform:                  ;; ENTITY_SCREAM_TV_MOVING_PLATFORM
@@ -108,6 +109,7 @@ data_02_4e97_EntityActions_ScreamTVVanishingPlatform:               ;; ENTITY_SC
     dw   call_02_56a1_EntityAction_ScreamTVVanishingPlatform_Gone,       data_02_7981   ; action $02
 data_02_4ea3_EntityActions_ScreamTVMonaLisaElevator:                ;; ENTITY_SCREAM_TV_MONA_LISA_ELEVATOR
     dw   call_02_56af_EntityAction_MonaLisaElevator_Update, data_02_7987
+
 data_02_4ea7_EntityActions_ToonTVHardHeadAreaHazard:                ;; ENTITY_TOON_TV_HARD_HEAD_AREA_HAZARD
     dw   call_02_56dc_EntityAction_HardHeadAreaHazard_Aim, data_02_798d   ; action $00
     dw   call_02_576e_EntityAction_HardHeadAreaHazard_Drop, data_02_7993   ; action $01
@@ -173,6 +175,7 @@ data_02_4f4b_EntityActions_ToonTVRocket:                            ;; ENTITY_TO
     dw   call_02_5be2_EntityAction_Rocket_Idle, data_02_7c7b   ; action $00
     dw   call_02_5bf7_EntityAction_Rocket_Ignite, data_02_7c81   ; action $01
     dw   call_02_5c00_EntityAction_Rocket_Launch, data_02_7c9a   ; action $02
+
 data_02_4f57_EntityActions_PreHistoryFastDinosaur:                  ;; ENTITY_PRE_HISTORY_FAST_DINOSAUR
     dw   call_02_5c08_EntityAction_FastDinosaur_Update, data_02_7790
 data_02_4f5b_EntityActions_PreHistoryDragonfly:                     ;; ENTITY_PRE_HISTORY_DRAGONFLY
@@ -235,6 +238,7 @@ data_02_4fe3_EntityActions_PreHistoryTriceratopsHorn:               ;; ENTITY_PR
     dw   call_02_5e90_EntityAction_TriceratopsHorn_Update, data_02_7ae9
 data_02_4fe7_EntityActions_Unk4A:                                   ;; ENTITY_UNK_4A
     dw   call_02_5e91_EntityAction_Unk4A_Update, data_02_7790
+
 data_02_4feb_EntityActions_KungFuTheaterHangingBlade:               ;; ENTITY_KUNG_FU_THEATER_HANGING_BLADE
     dw   call_02_5e92_EntityAction_HangingBlade_Update, data_02_7b15
 data_02_4fef_EntityActions_KungFuTheaterCannon:                     ;; ENTITY_KUNG_FU_THEATER_CANNON
@@ -302,6 +306,7 @@ data_02_5087_EntityActions_Unk63:                                   ;; ENTITY_UN
     dw   call_02_6448_EntityAction_Unk63_Update, data_02_7b66
 data_02_508b_EntityActions_Unk64:                                   ;; ENTITY_UNK_64
     dw   call_02_6449_EntityAction_Unk64_Update, data_02_7b98
+
 data_02_508f_EntityActions_RezopolisSpecialMovingPlatform:          ;; ENTITY_REZOPOLIS_SPECIAL_MOVING_PLATFORM
     dw   call_02_644a_EntityAction_RezopolisSpecialMovingPlatform_Update, data_02_7b98
 data_02_5093_EntityActions_RezopolisMovingPlatform:                 ;; ENTITY_REZOPOLIS_MOVING_PLATFORM
@@ -344,6 +349,7 @@ data_02_50eb_EntityActions_RezopolisAnt:                            ;; ENTITY_RE
     dw   call_02_66bb_EntityAction_Ant_Update, data_02_7be7
 data_02_50ef_EntityActions_RezopolisAntSpawner:                     ;; ENTITY_REZOPOLIS_ANT_SPAWNER
     dw   call_02_666c_EntityAction_AntSpawner_Update, data_02_7c6f
+
 data_02_50f3_EntityActions_CircuitCentralAnt:                       ;; ENTITY_CIRCUIT_CENTRAL_ANT
     dw   call_02_66db_EntityAction_CircuitCentralAnt_Update, data_02_7bf0
 data_02_50f7_EntityActions_CircuitCentralCapacitor:                 ;; ENTITY_CIRCUIT_CENTRAL_CAPACITOR
@@ -376,6 +382,7 @@ data_02_5137_EntityActions_CircuitCentralPoweredWalkway:            ;; ENTITY_CI
     dw   call_02_6a3b_EntityAction_PoweredWalkway_Update, data_02_7c56
 data_02_513b_EntityActions_CircuitCentralWalkwayActivator:          ;; ENTITY_CIRCUIT_CENTRAL_WALKWAY_ACTIVATOR
     dw   call_02_6a3c_EntityAction_WalkwayActivator_Update, data_02_7c5c
+
 data_02_513f_EntityActions_ChannelZArcedGunProjectile:              ;; ENTITY_CHANNEL_Z_ARCED_GUN_PROJECTILE
     dw   call_02_6a8b_EntityAction_ArcedGunProjectile_unk0, data_02_7c62   ; action $00
     dw   call_02_6aac_EntityAction_ArcedGunProjectile_unk1, data_02_7c68   ; action $01
@@ -417,6 +424,7 @@ data_02_51ab_EntityActions_ChannelZRezPortal:                       ;; ENTITY_CH
     dw   call_02_6de3_EntityAction_RezPortal_Update, data_02_7894
 data_02_51af_EntityActions_Unk8E:                                   ;; ENTITY_UNK_8E
     dw   call_02_6df0_EntityAction_Unk8E_Update, data_02_791a
+
 data_02_51b3_EntityActions_MediaDimensionMovingPlatform:            ;; ENTITY_MEDIA_DIMENSION_MOVING_PLATFORM
     dw   call_02_6df1_EntityAction_MediaDimensionMovingPlatform_Update, data_02_7cc8
 
@@ -444,29 +452,29 @@ call_02_51b7_EntityAction_CollectibleSpawn_Update:
 ; The usual way to get one of these is not the entity list - it is
 ; call_02_52ab_EntityAction_ParticleBurst_Update below, which rewrites a spent
 ; defeat burst into this entity type
-    call call_00_3b8d_Entity_TickParticles                                  ;; 02:51b7 $cd $8d $3b
-    push AF                                            ;; 02:51ba $f5
+    call call_00_3b8d_Entity_TickParticles
+    push AF
     FARCALL call_03_6584_Entity_BuildSprites_CollectibleSpawn
-    jr   NZ, .jr_02_51cc                               ;; 02:51c6 $20 $04 ; drew something
-    pop  AF                                            ;; 02:51c8 $f1
-    jp   call_00_3931_Entity_DeactivateSelf                                    ;; 02:51c9 $c3 $31 $39 ; nothing visible left
+    jr   NZ, .jr_02_51cc                               ; drew something
+    pop  AF
+    jp   call_00_3931_Entity_DeactivateSelf            ; nothing visible left
 .jr_02_51cc:
-    pop  AF                                            ;; 02:51cc $f1 ; A/flags from TickParticles
-    ret  NZ                                            ;; 02:51cd $c0 ; particles still moving - not settled yet
+    pop  AF                                            ; A/flags from TickParticles
+    ret  NZ                                            ; particles still moving - not settled yet
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_1
-    dec  [HL]                                          ;; 02:51d6 $35 ; lifetime, $FF when the burst created it
-    jp   Z, call_00_3931_Entity_DeactivateSelf                                 ;; 02:51d7 $ca $31 $39 ; timed out
-    ld   C, [HL]                                       ;; 02:51da $4e
-    xor  A, $12                                        ;; 02:51db $ee $12 ; $18 -> $0A SPRITE_FLAGS
-    ld   L, A                                          ;; 02:51dd $6f
-    res  SPRITE_FLAG_INVISIBLE_BIT, [HL]               ;; 02:51de $cb $9e
-    ld   A, C                                          ;; 02:51e0 $79
-    cp   A, $40                                        ;; 02:51e1 $fe $40
-    ret  NC                                            ;; 02:51e3 $d0 ; more than $40 left - solid
-    and  A, $04                                        ;; 02:51e4 $e6 $04 ; last $40 frames: 4 on, 4 off
-    ret  Z                                             ;; 02:51e6 $c8
-    set  SPRITE_FLAG_INVISIBLE_BIT, [HL]               ;; 02:51e7 $cb $de
-    ret                                                ;; 02:51e9 $c9
+    dec  [HL]                                          ; lifetime, $FF when the burst created it
+    jp   Z, call_00_3931_Entity_DeactivateSelf         ; timed out
+    ld   C, [HL]
+    xor  A, $12                                        ; $18 -> $0A SPRITE_FLAGS
+    ld   L, A
+    res  SPRITE_FLAG_INVISIBLE_BIT, [HL]
+    ld   A, C
+    cp   A, $40
+    ret  NC                                            ; more than $40 left - solid
+    and  A, $04                                        ; last $40 frames: 4 on, 4 off
+    ret  Z
+    set  SPRITE_FLAG_INVISIBLE_BIT, [HL]
+    ret
 
 ; ------------------------------------------------------------------
 ; TV BUTTON - the pad in front of each hub television, and the exit pad inside a
@@ -482,65 +490,65 @@ call_02_51b7_EntityAction_CollectibleSpawn_Update:
 ; ------------------------------------------------------------------
 
 call_02_51ea_EntityAction_TVButton_Ready:
-    call call_00_3878_Entity_CheckTVButtonEnabled                                  ;; 02:51ea $cd $78 $38
-    ld   E, A                                          ;; 02:51ed $5f
+    call call_00_3878_Entity_CheckTVButtonEnabled
+    ld   E, A
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_SPRITE_FLAGS
-    res  SPRITE_FLAG_INVISIBLE_BIT, [HL]                                       ;; 02:51f6 $cb $9e
-    inc  E                                             ;; 02:51f8 $1c
-    dec  E                                             ;; 02:51f9 $1d
-    jr   NZ, .jr_02_5207                               ;; 02:51fa $20 $0b
-    ld   A, [wD73B_VBlankFrameCounter]                                    ;; 02:51fc $fa $3b $d7
-    and  A, $1f                                        ;; 02:51ff $e6 $1f
-    cp   A, $0c                                        ;; 02:5201 $fe $0c
-    jr   NC, .jr_02_5207                               ;; 02:5203 $30 $02
-    set  SPRITE_FLAG_INVISIBLE_BIT, [HL]                                       ;; 02:5205 $cb $de
+    res  SPRITE_FLAG_INVISIBLE_BIT, [HL]
+    inc  E
+    dec  E
+    jr   NZ, .jr_02_5207
+    ld   A, [wD73B_VBlankFrameCounter]
+    and  A, $1f
+    cp   A, $0c
+    jr   NC, .jr_02_5207
+    set  SPRITE_FLAG_INVISIBLE_BIT, [HL]
 .jr_02_5207:
-    call call_00_34f5_Entity_IsPlayerStandingOnSelf                                  ;; 02:5207 $cd $f5 $34
-    bit  0, B                                          ;; 02:520a $cb $40
-    ret  Z                                             ;; 02:520c $c8 ; nobody on the pad
-    call call_00_3878_Entity_CheckTVButtonEnabled                                  ;; 02:520d $cd $78 $38
-    ret  Z                                             ;; 02:5210 $c8 ; locked
-    ld   A, [wD624_CurrentLevelId]                                    ;; 02:5211 $fa $24 $d6
-    and  A, A                                          ;; 02:5214 $a7
-    jr   Z, .jr_02_521b                                ;; 02:5215 $28 $04
-    ld   HL, wD647_ExitTVButtonIndex                                     ;; 02:5217 $21 $47 $d6
-    ld   [HL], E                                       ;; 02:521a $73 ; in a level: remember which exit was used
+    call call_00_34f5_Entity_IsPlayerStandingOnSelf
+    bit  0, B
+    ret  Z                                             ; nobody on the pad
+    call call_00_3878_Entity_CheckTVButtonEnabled
+    ret  Z                                             ; locked
+    ld   A, [wD624_CurrentLevelId]
+    and  A, A
+    jr   Z, .jr_02_521b
+    ld   HL, wD647_ExitTVButtonIndex
+    ld   [HL], E                                       ; in a level: remember which exit was used
 .jr_02_521b:
-    call call_00_34f5_Entity_IsPlayerStandingOnSelf                                  ;; 02:521b $cd $f5 $34 ; asked a second time
-    bit  0, B                                          ;; 02:521e $cb $40
-    ret  Z                                             ;; 02:5220 $c8
-    ld   BC, $05                                       ;; 02:5221 $01 $05 $00
-    call call_00_37d8_Entity_MoveY                                  ;; 02:5224 $cd $d8 $37 ; sink the pad 5px
-    ld   A, $01                                        ;; 02:5227 $3e $01
-    call call_02_7102_Entity_SetAction                                  ;; 02:5229 $cd $02 $71 ; pressed pose
-    ld   A, [wD624_CurrentLevelId]                                    ;; 02:522c $fa $24 $d6
-    and  A, A                                          ;; 02:522f $a7
-    jr   NZ, .jr_02_524d                               ;; 02:5230 $20 $1b
+    call call_00_34f5_Entity_IsPlayerStandingOnSelf    ; asked a second time
+    bit  0, B
+    ret  Z
+    ld   BC, $05
+    call call_00_37d8_Entity_MoveY                     ; sink the pad 5px
+    ld   A, $01
+    call call_02_7102_Entity_SetAction                 ; pressed pose
+    ld   A, [wD624_CurrentLevelId]
+    and  A, A
+    jr   NZ, .jr_02_524d
 ; In the hub, the button's position in the level's entity list is what identifies
 ; which television it belongs to: (list index - 1) / 2 becomes the respawn point
 ; Gex will come back out at
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:5232 $fa $00 $d3
-    rlca                                               ;; 02:5235 $07
-    rlca                                               ;; 02:5236 $07
-    rlca                                               ;; 02:5237 $07
-    and  A, $07                                        ;; 02:5238 $e6 $07
-    ld   L, A                                          ;; 02:523a $6f
-    ld   H, $00                                        ;; 02:523b $26 $00
-    ld   DE, wD301_EntityListIndexesForCurrentEntities                                     ;; 02:523d $11 $01 $d3
-    add  HL, DE                                        ;; 02:5240 $19
-    ld   A, [HL]                                       ;; 02:5241 $7e
-    dec  A                                             ;; 02:5242 $3d
-    srl  A                                             ;; 02:5243 $cb $3f
-    ld   [wD628_MediaDimensionRespawnPoint], A                                    ;; 02:5245 $ea $28 $d6
-    ld   A, PLAYER_ACTION_ENTER_TV                                        ;; 02:5248 $3e $12
-    jp   call_02_4ccd_Player_RequestAction                                  ;; 02:524a $c3 $cd $4c
+    ld   A, [wD300_CurrentEntityAddrLo]
+    rlca
+    rlca
+    rlca
+    and  A, $07
+    ld   L, A
+    ld   H, $00
+    ld   DE, wD301_EntityListIndexesForCurrentEntities
+    add  HL, DE
+    ld   A, [HL]
+    dec  A
+    srl  A
+    ld   [wD628_MediaDimensionRespawnPoint], A
+    ld   A, PLAYER_ACTION_ENTER_TV
+    jp   call_02_4ccd_Player_RequestAction
 .jr_02_524d:
-    ld   A, PLAYER_ACTION_ENTER_TV_ALT                                        ;; 02:524d $3e $13
-    jp   call_02_4ccd_Player_RequestAction                                  ;; 02:524f $c3 $cd $4c
+    ld   A, PLAYER_ACTION_ENTER_TV_ALT
+    jp   call_02_4ccd_Player_RequestAction
 call_02_5252_EntityAction_TVButton_Pressed:
 ; Action $01. Nothing to do - Gex is already being carried into the television by
 ; the player action the routine above requested
-    ret                                                ;; 02:5252 $c9
+    ret
 
 ; ------------------------------------------------------------------
 ; THE THREE REMOTES - and the reason each of them has two actions.
@@ -566,30 +574,30 @@ call_02_5253_EntityAction_RedRemote_Dmg:
 ; Action $00. Also the only place the hub's television screen image is requested:
 ; Remote_TriggerPaletteSwap maps this remote's entity-list index to a TV screen id
 ; and raises GFX_XFER_MEDIA_DIMENSION_TV. It does nothing outside the hub
-    call call_00_34ea_Entity_IsFirstFrameOfAction                                  ;; 02:5253 $cd $ea $34
-    call NZ, call_00_3bf4_Remote_TriggerPaletteSwap                              ;; 02:5256 $c4 $f4 $3b
-    ld   HL, wD60F_GfxTransferFlags                                     ;; 02:5259 $21 $0f $d6
-    bit  GFX_XFER_MEDIA_DIMENSION_TV, [HL]             ;; 02:525c $cb $66
-    call Z, call_00_0634_FlyPowerup_StartEntry                               ;; 02:525e $cc $34 $06 ; screen is up - bring the fly in
-    ld   A, [wD59E_OnGBCFlag]                                    ;; 02:5261 $fa $9e $d5
-    and  A, A                                          ;; 02:5264 $a7
-    ld   A, $01                                        ;; 02:5265 $3e $01
-    call NZ, call_02_7102_Entity_SetAction                              ;; 02:5267 $c4 $02 $71 ; GBC: take the colour frames
+    call call_00_34ea_Entity_IsFirstFrameOfAction
+    call NZ, call_00_3bf4_Remote_TriggerPaletteSwap
+    ld   HL, wD60F_GfxTransferFlags
+    bit  GFX_XFER_MEDIA_DIMENSION_TV, [HL]
+    call Z, call_00_0634_FlyPowerup_StartEntry         ; screen is up - bring the fly in
+    ld   A, [wD59E_OnGBCFlag]
+    and  A, A
+    ld   A, $01
+    call NZ, call_02_7102_Entity_SetAction             ; GBC: take the colour frames
 call_02_526a_EntityAction_RedRemote_Gbc:
 ; Action $01, and the tail of action $00. Solid once this level's red remote has
 ; been earned, flickering at 30Hz while it has not
-    call call_00_38c1_Entity_CheckRedRemoteProgressFlag                                  ;; 02:526a $cd $c1 $38
-    ld   E, A                                          ;; 02:526d $5f
+    call call_00_38c1_Entity_CheckRedRemoteProgressFlag
+    ld   E, A
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_SPRITE_FLAGS
-    res  SPRITE_FLAG_INVISIBLE_BIT, [HL]                                       ;; 02:5276 $cb $9e
-    inc  E                                             ;; 02:5278 $1c
-    dec  E                                             ;; 02:5279 $1d ; test E without disturbing A
-    ret  NZ                                            ;; 02:527a $c0 ; earned - draw it solid
-    ld   A, [wD73B_VBlankFrameCounter]                                    ;; 02:527b $fa $3b $d7
-    and  A, $01                                        ;; 02:527e $e6 $01
-    ret  Z                                             ;; 02:5280 $c8
-    set  SPRITE_FLAG_INVISIBLE_BIT, [HL]                                       ;; 02:5281 $cb $de ; every other frame
-    ret                                                ;; 02:5283 $c9
+    res  SPRITE_FLAG_INVISIBLE_BIT, [HL]
+    inc  E
+    dec  E                                             ; test E without disturbing A
+    ret  NZ                                            ; earned - draw it solid
+    ld   A, [wD73B_VBlankFrameCounter]
+    and  A, $01
+    ret  Z
+    set  SPRITE_FLAG_INVISIBLE_BIT, [HL]               ; every other frame
+    ret
 
 call_02_5284_EntityAction_SilverRemote_Dmg:
 ; Action $00. Both silver actions point at the same frame list, so the hand-off
@@ -642,32 +650,32 @@ call_02_52ab_EntityAction_ParticleBurst_Update:
 ;
 ; So "enemy drops a pickup" is one entity changing species in place, and
 ; call_02_51b7_EntityAction_CollectibleSpawn_Update takes over from the next frame
-    call call_00_3b8d_Entity_TickParticles                                  ;; 02:52ab $cd $8d $3b
-    jr   Z, .jr_02_52bc                                ;; 02:52ae $28 $0c ; burst finished
+    call call_00_3b8d_Entity_TickParticles
+    jr   Z, .jr_02_52bc                                ; burst finished
     FARCALL call_03_65f9_Entity_BuildSprites_ParticleBurst
-    ret  NZ                                            ;; 02:52bb $c0
+    ret  NZ
 .jr_02_52bc:
-    ld   C, $01                                        ;; 02:52bc $0e $01
-    call call_00_37e7_Entity_SetOamAttrBase                                  ;; 02:52be $cd $e7 $37 ; OBJ palette 1
+    ld   C, $01
+    call call_00_37e7_Entity_SetOamAttrBase            ; OBJ palette 1
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_1
-    ld   [HL], $ff                                     ;; 02:52c9 $36 $ff ; the pickup's lifetime
-    ld   A, L                                          ;; 02:52cb $7d
-    xor  A, $18                                        ;; 02:52cc $ee $18 ; $18 -> $00 ENTITY_ID
-    ld   L, A                                          ;; 02:52ce $6f
-    ld   [HL], $01                                     ;; 02:52cf $36 $01 ; become ENTITY_COLLECTIBLE_SPAWN
-    ld   A, L                                          ;; 02:52d1 $7d
-    xor  A, $14                                        ;; 02:52d2 $ee $14 ; $00 -> $14 COLLISION_WIDTH
-    ld   L, A                                          ;; 02:52d4 $6f
-    ld   A, $2c                                        ;; 02:52d5 $3e $2c
-    ld   [HL+], A                                      ;; 02:52d7 $22 ; width
-    ld   A, $10                                        ;; 02:52d8 $3e $10
-    ld   [HL+], A                                      ;; 02:52da $22 ; height
-    ld   A, COLLISION_TYPE_COLLECTIBLE                 ;; 02:52db $3e $01
-    ld   [HL], A                                       ;; 02:52dd $77
-    ld   C, PARTICLE_PATTERN_BURST_SMALL               ;; 02:52de $0e $02
-    call call_00_3a23_Entity_StartParticleEffect                                  ;; 02:52e0 $cd $23 $3a
-    xor  A, A                                          ;; 02:52e3 $af
-    jp   call_02_7102_Entity_SetAction                                  ;; 02:52e4 $c3 $02 $71 ; action $00 of the NEW entity id
+    ld   [HL], $ff                                     ; the pickup's lifetime
+    ld   A, L
+    xor  A, $18                                        ; $18 -> $00 ENTITY_ID
+    ld   L, A
+    ld   [HL], $01                                     ; become ENTITY_COLLECTIBLE_SPAWN
+    ld   A, L
+    xor  A, $14                                        ; $00 -> $14 COLLISION_WIDTH
+    ld   L, A
+    ld   A, $2c
+    ld   [HL+], A                                      ; width
+    ld   A, $10
+    ld   [HL+], A                                      ; height
+    ld   A, COLLISION_TYPE_COLLECTIBLE
+    ld   [HL], A
+    ld   C, PARTICLE_PATTERN_BURST_SMALL
+    call call_00_3a23_Entity_StartParticleEffect
+    xor  A, A
+    jp   call_02_7102_Entity_SetAction                 ; action $00 of the NEW entity id
 
 call_02_52e7_EntityAction_Unk08_Update:
 ; ENTITY_UNK_08. Another id that exists but does nothing
@@ -814,30 +822,30 @@ call_02_5348_EntityAction_ScreamTVMovingPlatform_Update:
 ; running", anything else is masked to a slot number and the platform stays
 ; frozen until that block-patch slot goes non-empty. That is how a switch
 ; elsewhere in the room starts a platform moving
-    call call_00_34ea_Entity_IsFirstFrameOfAction                                  ;; 02:5348 $cd $ea $34
-    jr   Z, .jr_02_5354                                ;; 02:534b $28 $07
-    ld   A, L                                          ;; 02:534d $7d
-    xor  A, $10                                        ;; 02:534e $ee $10 ; $09 -> $19 MISC_TIMER_2
-    ld   L, A                                          ;; 02:5350 $6f
-    ld   A, [HL-]                                      ;; 02:5351 $3a
-    dec  L                                             ;; 02:5352 $2d  ; -> $17 MISC_FLAGS
-    ld   [HL], A                                       ;; 02:5353 $77  ; patrol config from the spawn record
+    call call_00_34ea_Entity_IsFirstFrameOfAction
+    jr   Z, .jr_02_5354
+    ld   A, L
+    xor  A, $10                                        ; $09 -> $19 MISC_TIMER_2
+    ld   L, A
+    ld   A, [HL-]
+    dec  L                                             ; -> $17 MISC_FLAGS
+    ld   [HL], A                                       ; patrol config from the spawn record
 .jr_02_5354:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_PARAM
-    ld   A, [HL]                                       ;; 02:535c $7e
-    cp   A, $ff                                        ;; 02:535d $fe $ff ; $FF = ungated
-    jr   Z, .jr_02_536d                                ;; 02:535f $28 $0c
-    and  A, $0f                                        ;; 02:5361 $e6 $0f ; otherwise a block patch slot number
-    ld   L, A                                          ;; 02:5363 $6f
-    ld   H, $00                                        ;; 02:5364 $26 $00
-    ld   DE, wD78B_BlockPatch_SlotTable                                     ;; 02:5366 $11 $8b $d7
-    add  HL, DE                                        ;; 02:5369 $19
-    ld   A, [HL]                                       ;; 02:536a $7e
-    and  A, A                                          ;; 02:536b $a7
-    ret  Z                                             ;; 02:536c $c8 ; slot still empty - stay put
+    ld   A, [HL]
+    cp   A, $ff                                        ; $FF = ungated
+    jr   Z, .jr_02_536d
+    and  A, $0f                                        ; otherwise a block patch slot number
+    ld   L, A
+    ld   H, $00
+    ld   DE, wD78B_BlockPatch_SlotTable
+    add  HL, DE
+    ld   A, [HL]
+    and  A, A
+    ret  Z                                             ; slot still empty - stay put
 .jr_02_536d:
-    call call_00_3559_Entity_ApplyVelocityXY_SubpixelBoth                                  ;; 02:536d $cd $59 $35
-    jp   call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip                                    ;; 02:5370 $c3 $8d $31
+    call call_00_3559_Entity_ApplyVelocityXY_SubpixelBoth
+    jp   call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip
 
 call_02_5373_EntityAction_ScreamTVPushBlock_Update:
 ; The pushable block. It has no movement code of its own - the player pushes it
@@ -869,25 +877,25 @@ call_02_538b_EntityAction_Pumpkin_Crouch:
 ;
 ; NOTE the label used to read call_02_5373, which is the address of the push
 ; block above; the routine has always started at $538b
-    call call_00_3843_Entity_CheckAnimationEnded                                  ;; 02:538b $cd $43 $38
-    ret  Z                                             ;; 02:538e $c8
-    ld   C, $28                                        ;; 02:538f $0e $28
-    call call_00_335a_Entity_SetYVelocity                                  ;; 02:5391 $cd $5a $33
-    ld   A, $01                                        ;; 02:5394 $3e $01
-    jp   call_02_7102_Entity_SetAction                                  ;; 02:5396 $c3 $02 $71
+    call call_00_3843_Entity_CheckAnimationEnded
+    ret  Z
+    ld   C, $28
+    call call_00_335a_Entity_SetYVelocity
+    ld   A, $01
+    jp   call_02_7102_Entity_SetAction
 
 call_02_5399_EntityAction_Pumpkin_Hop:
 ; Action $01. Airborne: gravity, then the landing test. Entity_ClampYToMaxYBound
 ; returns carry while the pumpkin is still above its floor, so `ret c` is "keep
 ; falling"; falling through means it touched down this frame, so thump and go
 ; back to the crouch. The pumpkin never moves horizontally
-    call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped                                ;; 02:5399 $cd $af $30
-    call call_00_3154_Entity_ClampYToMaxYBound                                  ;; 02:539c $cd $54 $31
-    ret  C                                             ;; 02:539f $d8
-    ld   C, SFX_ENEMY_BOUNCE                                        ;; 02:53a0 $0e $24
-    call call_00_112f_QueueSFX                                  ;; 02:53a2 $cd $2f $11
-    ld   A, $00                                        ;; 02:53a5 $3e $00
-    jp   call_02_7102_Entity_SetAction                                  ;; 02:53a7 $c3 $02 $71
+    call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
+    call call_00_3154_Entity_ClampYToMaxYBound
+    ret  C
+    ld   C, SFX_ENEMY_BOUNCE
+    call call_00_112f_QueueSFX
+    ld   A, $00
+    jp   call_02_7102_Entity_SetAction
 
 call_02_53aa_EntityAction_Frankie_Update:
 ; One action, one instruction: walk back and forth between the X bounds in the
@@ -1639,92 +1647,92 @@ call_02_56af_EntityAction_MonaLisaElevator_Update:
 
 call_02_56dc_EntityAction_HardHeadAreaHazard_Aim:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_Y
-    ld   A, [wD6EF_BgMap_ScrollY]                                    ;; 02:56e4 $fa $ef $d6
-    sub  A, $18                                        ;; 02:56e7 $d6 $18
-    ld   [HL+], A                                      ;; 02:56e9 $22
-    ld   A, [wD6EF_BgMap_ScrollY+1]                                    ;; 02:56ea $fa $f0 $d6
-    sbc  A, $00                                        ;; 02:56ed $de $00
-    ld   [HL], A                                       ;; 02:56ef $77 ; hover $18 above the top of the view
-    ld   A, [wD75D_PlayerXSpeedPrev]                                    ;; 02:56f0 $fa $5d $d7
-    add  A, A                                          ;; 02:56f3 $87 ; speed * 2 ...
-    ld   HL, wD20D_Player_FacingFlags                                     ;; 02:56f4 $21 $0d $d2
-    bit  5, [HL]                                       ;; 02:56f7 $cb $6e
-    jr   Z, .jr_02_56fc                                ;; 02:56f9 $28 $01
-    inc  A                                             ;; 02:56fb $3c ; ... + 1 if facing left
+    ld   A, [wD6EF_BgMap_ScrollY]
+    sub  A, $18
+    ld   [HL+], A
+    ld   A, [wD6EF_BgMap_ScrollY+1]
+    sbc  A, $00
+    ld   [HL], A                                       ; hover $18 above the top of the view
+    ld   A, [wD75D_PlayerXSpeedPrev]
+    add  A, A                                          ; speed * 2 ...
+    ld   HL, wD20D_Player_FacingFlags
+    bit  5, [HL]
+    jr   Z, .jr_02_56fc
+    inc  A                                             ; ... + 1 if facing left
 .jr_02_56fc:
-    ld   L, A                                          ;; 02:56fc $6f
-    ld   H, $00                                        ;; 02:56fd $26 $00
-    add  HL, HL                                        ;; 02:56ff $29 ; word-sized entries
-    ld   DE, .data_02_575e                             ;; 02:5700 $11 $5e $57
-    add  HL, DE                                        ;; 02:5703 $19
-    ld   A, [wD20E_Player_XPositionLo]                                    ;; 02:5704 $fa $0e $d2
-    add  A, [HL]                                       ;; 02:5707 $86
-    ld   C, A                                          ;; 02:5708 $4f
-    inc  HL                                            ;; 02:5709 $23
-    ld   A, [wD20F_Player_XPositionHi]                                    ;; 02:570a $fa $0f $d2
-    adc  A, [HL]                                       ;; 02:570d $8e
-    ld   B, A                                          ;; 02:570e $47 ; BC = predicted landing X
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:570f $fa $00 $d3
-    rrca                                               ;; 02:5712 $0f
-    rrca                                               ;; 02:5713 $0f
-    rrca                                               ;; 02:5714 $0f
-    and  A, $1c                                        ;; 02:5715 $e6 $1c
-    ld   L, A                                          ;; 02:5717 $6f
-    ld   H, $00                                        ;; 02:5718 $26 $00
-    ld   DE, wD309_EntityBoundingBoxXMax                                     ;; 02:571a $11 $09 $d3
-    add  HL, DE                                        ;; 02:571d $19
-    ld   D, [HL]                                       ;; 02:571e $56
-    dec  D                                             ;; 02:571f $15 ; D = XMax - 1
-    inc  HL                                            ;; 02:5720 $23
-    ld   E, [HL]                                       ;; 02:5721 $5e
-    inc  E                                             ;; 02:5722 $1c ; E = XMin + 1
-    ld   L, C                                          ;; 02:5723 $69
-    ld   H, B                                          ;; 02:5724 $60
-    add  HL, HL                                        ;; 02:5725 $29
-    add  HL, HL                                        ;; 02:5726 $29
-    add  HL, HL                                        ;; 02:5727 $29 ; predicted X -> block coordinate
-    ld   A, H                                          ;; 02:5728 $7c
-    cp   A, E                                          ;; 02:5729 $bb
-    ret  C                                             ;; 02:572a $d8 ; landing spot left of my span
-    ld   A, D                                          ;; 02:572b $7a
-    cp   A, H                                          ;; 02:572c $bc
-    ret  C                                             ;; 02:572d $d8 ; landing spot right of my span
+    ld   L, A
+    ld   H, $00
+    add  HL, HL                                        ; word-sized entries
+    ld   DE, .data_02_575e
+    add  HL, DE
+    ld   A, [wD20E_Player_XPositionLo]
+    add  A, [HL]
+    ld   C, A
+    inc  HL
+    ld   A, [wD20F_Player_XPositionHi]
+    adc  A, [HL]
+    ld   B, A                                          ; BC = predicted landing X
+    ld   A, [wD300_CurrentEntityAddrLo]
+    rrca
+    rrca
+    rrca
+    and  A, $1c
+    ld   L, A
+    ld   H, $00
+    ld   DE, wD309_EntityBoundingBoxXMax
+    add  HL, DE
+    ld   D, [HL]
+    dec  D                                             ; D = XMax - 1
+    inc  HL
+    ld   E, [HL]
+    inc  E                                             ; E = XMin + 1
+    ld   L, C
+    ld   H, B
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL                                        ; predicted X -> block coordinate
+    ld   A, H
+    cp   A, E
+    ret  C                                             ; landing spot left of my span
+    ld   A, D
+    cp   A, H
+    ret  C                                             ; landing spot right of my span
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_X
-    ld   [HL], C                                       ;; 02:5736 $71
-    inc  L                                             ;; 02:5737 $2c
-    ld   [HL], B                                       ;; 02:5738 $70 ; slide over the landing spot
-    ld   A, L                                          ;; 02:5739 $7d
-    xor  A, $17                                        ;; 02:573a $ee $17 ; $0F -> $18 MISC_TIMER_1
-    ld   L, A                                          ;; 02:573c $6f
-    ld   A, [HL]                                       ;; 02:573d $7e
-    and  A, A                                          ;; 02:573e $a7
-    jr   Z, .jr_02_5743                                ;; 02:573f $28 $02
-    dec  [HL]                                          ;; 02:5741 $35
-    ret  NZ                                            ;; 02:5742 $c0 ; cooldown between drops
+    ld   [HL], C
+    inc  L
+    ld   [HL], B                                       ; slide over the landing spot
+    ld   A, L
+    xor  A, $17                                        ; $0F -> $18 MISC_TIMER_1
+    ld   L, A
+    ld   A, [HL]
+    and  A, A
+    jr   Z, .jr_02_5743
+    dec  [HL]
+    ret  NZ                                            ; cooldown between drops
 .jr_02_5743:
-    dec  L                                             ;; 02:5743 $2d ; $17 MISC_FLAGS
-    ld   [HL], $00                                     ;; 02:5744 $36 $00 ; clear the landed flag
-    ld   A, [wD20E_Player_XPositionLo]                                    ;; 02:5746 $fa $0e $d2
-    swap A                                             ;; 02:5749 $cb $37
-    and  A, $03                                        ;; 02:574b $e6 $03 ; bits 4-5 of Gex's X as a 2-bit die
-    ld   L, A                                          ;; 02:574d $6f
-    ld   H, $00                                        ;; 02:574e $26 $00
-    ld   DE, .data_02_576a                             ;; 02:5750 $11 $6a $57
-    add  HL, DE                                        ;; 02:5753 $19
-    ld   A, [HL]                                       ;; 02:5754 $7e
-    call call_02_7102_Entity_SetAction                                  ;; 02:5755 $cd $02 $71 ; action $01 or $02
-    ld   C, SFX_HARD_HEAD_AREA_HAZARD                                        ;; 02:5758 $0e $19
-    call call_00_112f_QueueSFX                                  ;; 02:575a $cd $2f $11
-    ret                                                ;; 02:575d $c9
+    dec  L                                             ; $17 MISC_FLAGS
+    ld   [HL], $00                                     ; clear the landed flag
+    ld   A, [wD20E_Player_XPositionLo]
+    swap A
+    and  A, $03                                        ; bits 4-5 of Gex's X as a 2-bit die
+    ld   L, A
+    ld   H, $00
+    ld   DE, .data_02_576a
+    add  HL, DE
+    ld   A, [HL]
+    call call_02_7102_Entity_SetAction                 ; action $01 or $02
+    ld   C, SFX_HARD_HEAD_AREA_HAZARD
+    call call_00_112f_QueueSFX
+    ret
 .data_02_575e:
 ; Signed 16-bit aim lead, indexed by (|player X speed| * 2 + facing left). So the
 ; hazard drops on Gex's feet when he is standing still, 36 pixels ahead of him at
 ; speed 1 and 72 ahead at speed 2, in whichever direction he is running
-    db   $00, $00, $00, $00, $24, $00, $dc, $ff        ;; 02:575e  0, 0, +$24, -$24
-    db   $48, $00, $b8, $ff                            ;; 02:5766  +$48, -$48
+    db   $00, $00, $00, $00, $24, $00, $dc, $ff
+    db   $48, $00, $b8, $ff
 .data_02_576a:
 ; Which of the two drop actions to use. Two entries each, so it is a coin flip
-    db   $01, $02, $01, $02                            ;; 02:576a .??.
+    db   $01, $02, $01, $02
 
 call_02_576e_EntityAction_HardHeadAreaHazard_Drop:
 ; Actions $01 AND $02 - the same routine behind two sprites (data_02_7993 and
@@ -1736,78 +1744,78 @@ call_02_576e_EntityAction_HardHeadAreaHazard_Drop:
 ; timer expires it teleports back above the screen, picks a fresh $20-$3F cooldown
 ; out of the player's low X bits, and returns to aiming
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
-    bit  MISC_FLAGS_BIT_0, [HL]                                       ;; 02:5776 $cb $46
-    jr   NZ, .jr_02_5794                               ;; 02:5778 $20 $1a ; already landed
-    call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped                                  ;; 02:577a $cd $af $30
-    call call_00_3154_Entity_ClampYToMaxYBound                                  ;; 02:577d $cd $54 $31
-    ret  C                                             ;; 02:5780 $d8 ; still falling
-    ld   C, SFX_FALLING_HAZARD                                        ;; 02:5781 $0e $1a
-    call call_00_112f_QueueSFX                                  ;; 02:5783 $cd $2f $11
+    bit  MISC_FLAGS_BIT_0, [HL]
+    jr   NZ, .jr_02_5794                               ; already landed
+    call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
+    call call_00_3154_Entity_ClampYToMaxYBound
+    ret  C                                             ; still falling
+    ld   C, SFX_FALLING_HAZARD
+    call call_00_112f_QueueSFX
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
-    set  MISC_FLAGS_BIT_0, [HL]                                       ;; 02:578e $cb $c6 ; landed
-    inc  L                                             ;; 02:5790 $2c ; $18 MISC_TIMER_1
-    ld   [HL], $80                                     ;; 02:5791 $36 $80 ; 128 frames lying there
-    ret                                                ;; 02:5793 $c9
+    set  MISC_FLAGS_BIT_0, [HL]                        ; landed
+    inc  L                                             ; $18 MISC_TIMER_1
+    ld   [HL], $80                                     ; 128 frames lying there
+    ret
 .jr_02_5794:
 ; Landed. Count down and fade out with the same dither the vanishing platforms use
-    inc  L                                             ;; 02:5794 $2c ; $18 MISC_TIMER_1
-    dec  [HL]                                          ;; 02:5795 $35
-    ld   C, [HL]                                       ;; 02:5796 $4e
-    ld   A, L                                          ;; 02:5797 $7d
-    xor  A, $12                                        ;; 02:5798 $ee $12 ; $18 -> $0A SPRITE_FLAGS
-    ld   L, A                                          ;; 02:579a $6f
-    res  SPRITE_FLAG_INVISIBLE_BIT, [HL]               ;; 02:579b $cb $9e
-    ld   A, C                                          ;; 02:579d $79
-    and  A, A                                          ;; 02:579e $a7
-    jr   Z, .jr_02_57c2                                ;; 02:579f $28 $21 ; gone
-    cp   A, $40                                        ;; 02:57a1 $fe $40
-    ret  NC                                            ;; 02:57a3 $d0 ; first half of the linger: solid
-    push HL                                            ;; 02:57a4 $e5
-    srl  A                                             ;; 02:57a5 $cb $3f
-    srl  A                                             ;; 02:57a7 $cb $3f
-    srl  A                                             ;; 02:57a9 $cb $3f ; timer >> 3 = duty pattern
-    ld   E, A                                          ;; 02:57ab $5f
-    ld   D, $00                                        ;; 02:57ac $16 $00
-    ld   HL, .data_02_57e3                             ;; 02:57ae $21 $e3 $57
-    add  HL, DE                                        ;; 02:57b1 $19
-    ld   B, [HL]                                       ;; 02:57b2 $46
-    ld   A, C                                          ;; 02:57b3 $79
-    and  A, $07                                        ;; 02:57b4 $e6 $07 ; timer & 7 = which bit of it
-    ld   E, A                                          ;; 02:57b6 $5f
-    ld   HL, .data_02_57eb                             ;; 02:57b7 $21 $eb $57
-    add  HL, DE                                        ;; 02:57ba $19
-    ld   A, [HL]                                       ;; 02:57bb $7e
-    pop  HL                                            ;; 02:57bc $e1
-    and  A, B                                          ;; 02:57bd $a0
-    ret  NZ                                            ;; 02:57be $c0 ; bit set - draw this frame
-    set  SPRITE_FLAG_INVISIBLE_BIT, [HL]               ;; 02:57bf $cb $de
-    ret                                                ;; 02:57c1 $c9
+    inc  L                                             ; $18 MISC_TIMER_1
+    dec  [HL]
+    ld   C, [HL]
+    ld   A, L
+    xor  A, $12                                        ; $18 -> $0A SPRITE_FLAGS
+    ld   L, A
+    res  SPRITE_FLAG_INVISIBLE_BIT, [HL]
+    ld   A, C
+    and  A, A
+    jr   Z, .jr_02_57c2                                ; gone
+    cp   A, $40
+    ret  NC                                            ; first half of the linger: solid
+    push HL
+    srl  A
+    srl  A
+    srl  A                                             ; timer >> 3 = duty pattern
+    ld   E, A
+    ld   D, $00
+    ld   HL, .data_02_57e3
+    add  HL, DE
+    ld   B, [HL]
+    ld   A, C
+    and  A, $07                                        ; timer & 7 = which bit of it
+    ld   E, A
+    ld   HL, .data_02_57eb
+    add  HL, DE
+    ld   A, [HL]
+    pop  HL
+    and  A, B
+    ret  NZ                                            ; bit set - draw this frame
+    set  SPRITE_FLAG_INVISIBLE_BIT, [HL]
+    ret
 .jr_02_57c2:
 ; Faded out. Go back above the screen and arm a fresh cooldown
-    ld   A, L                                          ;; 02:57c2 $7d
-    xor  A, $1a                                        ;; 02:57c3 $ee $1a ; $0A -> $10 WORLD_Y
-    ld   L, A                                          ;; 02:57c5 $6f
-    ld   A, [wD6EF_BgMap_ScrollY]                                    ;; 02:57c6 $fa $ef $d6
-    sub  A, $18                                        ;; 02:57c9 $d6 $18
-    ld   [HL+], A                                      ;; 02:57cb $22
-    ld   A, [wD6EF_BgMap_ScrollY+1]                                    ;; 02:57cc $fa $f0 $d6
-    sbc  A, $00                                        ;; 02:57cf $de $00
-    ld   [HL], A                                       ;; 02:57d1 $77
-    ld   A, L                                          ;; 02:57d2 $7d
-    xor  A, $09                                        ;; 02:57d3 $ee $09 ; $11 -> $18 MISC_TIMER_1
-    ld   L, A                                          ;; 02:57d5 $6f
-    ld   A, [wD20E_Player_XPositionLo]                                    ;; 02:57d6 $fa $0e $d2
-    and  A, $1f                                        ;; 02:57d9 $e6 $1f
-    or   A, $20                                        ;; 02:57db $f6 $20 ; cooldown $20-$3F, pseudo-random
-    ld   [HL], A                                       ;; 02:57dd $77
-    ld   A, $00                                        ;; 02:57de $3e $00
-    jp   call_02_7102_Entity_SetAction                                  ;; 02:57e0 $c3 $02 $71
+    ld   A, L
+    xor  A, $1a                                        ; $0A -> $10 WORLD_Y
+    ld   L, A
+    ld   A, [wD6EF_BgMap_ScrollY]
+    sub  A, $18
+    ld   [HL+], A
+    ld   A, [wD6EF_BgMap_ScrollY+1]
+    sbc  A, $00
+    ld   [HL], A
+    ld   A, L
+    xor  A, $09                                        ; $11 -> $18 MISC_TIMER_1
+    ld   L, A
+    ld   A, [wD20E_Player_XPositionLo]
+    and  A, $1f
+    or   A, $20                                        ; cooldown $20-$3F, pseudo-random
+    ld   [HL], A
+    ld   A, $00
+    jp   call_02_7102_Entity_SetAction
 .data_02_57e3:
 ; Duty pattern by (timer >> 3) - a private copy of .data_02_5691
-    db   $00, $01, $11, $11, $55, $55, $55, $ff        ;; 02:57e3 ........
+    db   $00, $01, $11, $11, $55, $55, $55, $ff
 .data_02_57eb:
 ; Bit selector by (timer & 7) - a private copy of .data_02_5699
-    db   $01, $02, $04, $08, $10, $20, $40, $80        ;; 02:57eb ........
+    db   $01, $02, $04, $08, $10, $20, $40, $80
 
 ; ------------------------------------------------------------------
 ; BEAR TRAPS - two entities that are the same idea at different scales. Both sit
@@ -1836,7 +1844,7 @@ call_02_5803_EntityAction_StationaryBearTrap_Leap:
     call call_00_316e_Entity_ClampYToMaxYBound_Offset
     ld   a,$00
     jp   nc,call_02_7102_Entity_SetAction              ; landed
-    ret  
+    ret
 
 call_02_5812_EntityAction_MovingBearTrap_Crouch:
 ; Action $00. Closed on the ground. data_02_79b3 is a single frame held for $32
@@ -1845,7 +1853,7 @@ call_02_5812_EntityAction_MovingBearTrap_Crouch:
     call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_581C
     ld   c,$10
-    call call_00_3350_Entity_SetXVelocity               ; drift speed for the next hop
+    call call_00_3350_Entity_SetXVelocity              ; drift speed for the next hop
 .jr_02_581C:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
     call call_00_3154_Entity_ClampYToMaxYBound
@@ -1873,17 +1881,17 @@ call_02_5843_EntityAction_Bumblebee_Cruise:
 ; Action $00. Drifts along its patrol span at speed $08. Gex coming within $20
 ; pixels horizontally starts a charge - note it faces him at that moment and then
 ; never re-aims, so the charge is committed and can be dodged
-    ld   C, $08                                        ;; 02:5843 $0e $08
-    call call_00_32e1_Entity_NudgeXVelocityTowardC                                  ;; 02:5845 $cd $e1 $32
-    call call_00_36f7_Entity_MoveXByFacingMomentum_BoundsChecked                                  ;; 02:5848 $cd $f7 $36
-    ld   C, $20                                        ;; 02:584b $0e $20
-    call call_00_3859_Entity_CheckPlayerXProximity                                  ;; 02:584d $cd $59 $38
-    ret  NC                                            ;; 02:5850 $d0 ; carry = within range
-    call call_00_36bd_Entity_FaceTowardsPlayer                                  ;; 02:5851 $cd $bd $36
-    ld   C, SFX_BUMBLEBEE                                        ;; 02:5854 $0e $1d
-    call call_00_112f_QueueSFX                                  ;; 02:5856 $cd $2f $11
-    ld   A, $01                                        ;; 02:5859 $3e $01
-    jp   call_02_7102_Entity_SetAction                                  ;; 02:585b $c3 $02 $71
+    ld   C, $08
+    call call_00_32e1_Entity_NudgeXVelocityTowardC
+    call call_00_36f7_Entity_MoveXByFacingMomentum_BoundsChecked
+    ld   C, $20
+    call call_00_3859_Entity_CheckPlayerXProximity
+    ret  NC                                            ; carry = within range
+    call call_00_36bd_Entity_FaceTowardsPlayer
+    ld   C, SFX_BUMBLEBEE
+    call call_00_112f_QueueSFX
+    ld   A, $01
+    jp   call_02_7102_Entity_SetAction
 
 call_02_585e_EntityAction_Bumblebee_Charge:
 ; Action $01. Four times the speed, and it keeps charging until Gex is $40 away -
@@ -1957,9 +1965,9 @@ call_02_5871_EntityAction_BowlingBall_Update:
 ; Signed 16-bit floor offset per remaining-step count. Read from index 8 downwards
 ; as the ball descends: -$1C0, -$180, -$140, -$100, -$C0, -$80, -$40, 0, +$80 -
 ; one 64-pixel step per bounce
-    db   $80, $00, $00, $00, $c0        ;; 02:58be ????????
-    db   $ff, $80, $ff, $40, $ff, $00, $ff, $c0        ;; 02:58c6 ????????
-    db   $fe, $80, $fe, $40, $fe                       ;; 02:58ce ?????
+    db   $80, $00, $00, $00, $c0
+    db   $ff, $80, $ff, $40, $ff, $00, $ff, $c0
+    db   $fe, $80, $fe, $40, $fe
 
 ; ------------------------------------------------------------------
 ; CACTUS - a three-stage hopper. Unlike the pumpkin, which hops on a fixed cycle,
@@ -1970,39 +1978,39 @@ call_02_5871_EntityAction_BowlingBall_Update:
 call_02_58d3_EntityAction_Cactus_Dormant:
 ; Action $00. Still, until Gex is near. The wiggle count comes off the low two bits
 ; of the gameplay frame counter, so it varies from approach to approach
-    ld   C, $40                                        ;; 02:58d3 $0e $40
-    call call_00_3859_Entity_CheckPlayerXProximity                                  ;; 02:58d5 $cd $59 $38
-    ret  NC                                            ;; 02:58d8 $d0
-    ld   A, [wD73C_GameplayFrameCounter]                                    ;; 02:58d9 $fa $3c $d7
-    and  A, $03                                        ;; 02:58dc $e6 $03
-    inc  A                                             ;; 02:58de $3c ; 1 to 4 wiggles
-    ld   C, A                                          ;; 02:58df $4f
-    call call_00_3802_Entity_SetMiscTimer                                  ;; 02:58e0 $cd $02 $38
-    ld   A, $01                                        ;; 02:58e3 $3e $01
-    jp   call_02_7102_Entity_SetAction                                  ;; 02:58e5 $c3 $02 $71
+    ld   C, $40
+    call call_00_3859_Entity_CheckPlayerXProximity
+    ret  NC
+    ld   A, [wD73C_GameplayFrameCounter]
+    and  A, $03
+    inc  A                                             ; 1 to 4 wiggles
+    ld   C, A
+    call call_00_3802_Entity_SetMiscTimer
+    ld   A, $01
+    jp   call_02_7102_Entity_SetAction
 
 call_02_58e8_EntityAction_Cactus_WindUp:
 ; Action $01. One wiggle per pass of the two-frame animation; the counter runs out
 ; and it launches
-    call call_00_3843_Entity_CheckAnimationEnded                                  ;; 02:58e8 $cd $43 $38
-    ret  Z                                             ;; 02:58eb $c8
-    call call_00_3817_Entity_DecrementMiscTimer                                  ;; 02:58ec $cd $17 $38
-    ret  NZ                                            ;; 02:58ef $c0
-    ld   C, $34                                        ;; 02:58f0 $0e $34
-    call call_00_335a_Entity_SetYVelocity                                  ;; 02:58f2 $cd $5a $33
-    ld   A, $02                                        ;; 02:58f5 $3e $02
-    jp   call_02_7102_Entity_SetAction                                  ;; 02:58f7 $c3 $02 $71
+    call call_00_3843_Entity_CheckAnimationEnded
+    ret  Z
+    call call_00_3817_Entity_DecrementMiscTimer
+    ret  NZ
+    ld   C, $34
+    call call_00_335a_Entity_SetYVelocity
+    ld   A, $02
+    jp   call_02_7102_Entity_SetAction
 
 call_02_58fa_EntityAction_Cactus_Leap:
 ; Action $02. Straight up and back down; on landing it drops all the way back to
 ; dormant and has to be approached again
-    call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped                                  ;; 02:58fa $cd $af $30
-    call call_00_3154_Entity_ClampYToMaxYBound                                  ;; 02:58fd $cd $54 $31
-    ret  C                                             ;; 02:5900 $d8
-    ld   C, SFX_ENEMY_BOUNCE                                        ;; 02:5901 $0e $24
-    call call_00_112f_QueueSFX                                  ;; 02:5903 $cd $2f $11
-    ld   A, $00                                        ;; 02:5906 $3e $00
-    jp   call_02_7102_Entity_SetAction                                  ;; 02:5908 $c3 $02 $71
+    call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
+    call call_00_3154_Entity_ClampYToMaxYBound
+    ret  C
+    ld   C, SFX_ENEMY_BOUNCE
+    call call_00_112f_QueueSFX
+    ld   A, $00
+    jp   call_02_7102_Entity_SetAction
 
 call_02_590b_EntityAction_Domino_Update:
 ; One action, and the simplest bouncer in the game: fall, and on every touchdown
@@ -2021,14 +2029,14 @@ call_02_591c_EntityAction_Shark_Update:
 ; $30 pixels. Unlike the bumblebee there is no second radius and no separate
 ; action - the speed target simply changes under it, so it accelerates and slows
 ; smoothly through Entity_NudgeXVelocityTowardC
-    ld   C, $30                                        ;; 02:591c $0e $30
-    call call_00_3859_Entity_CheckPlayerXProximity                                  ;; 02:591e $cd $59 $38
-    ld   C, $20                                        ;; 02:5921 $0e $20 ; near: fast
-    jr   C, .jr_02_5927                                ;; 02:5923 $38 $02
-    ld   C, $08                                        ;; 02:5925 $0e $08 ; far: slow
+    ld   C, $30
+    call call_00_3859_Entity_CheckPlayerXProximity
+    ld   C, $20                                        ; near: fast
+    jr   C, .jr_02_5927
+    ld   C, $08                                        ; far: slow
 .jr_02_5927:
-    call call_00_32e1_Entity_NudgeXVelocityTowardC                                  ;; 02:5927 $cd $e1 $32
-    jp   call_00_36f7_Entity_MoveXByFacingMomentum_BoundsChecked                                  ;; 02:592a $c3 $f7 $36
+    call call_00_32e1_Entity_NudgeXVelocityTowardC
+    jp   call_00_36f7_Entity_MoveXByFacingMomentum_BoundsChecked
 
 call_02_592d_EntityAction_Flower_Update:
 ; All three of the flower's actions point here - the action id is not a state
@@ -2044,35 +2052,35 @@ call_02_592d_EntityAction_Flower_Update:
 ;
 ; Only the fully open state attacks, and only when MISC_TIMER_1 - decremented once
 ; a frame here rather than by the engine - has run down to zero
-    call call_00_36bd_Entity_FaceTowardsPlayer                                  ;; 02:592d $cd $bd $36
-    ld   C, $20                                        ;; 02:5930 $0e $20
-    call call_00_3859_Entity_CheckPlayerXProximity                                  ;; 02:5932 $cd $59 $38
-    ld   A, $02                                        ;; 02:5935 $3e $02
-    jr   C, .jr_02_5944                                ;; 02:5937 $38 $0b
-    ld   C, $30                                        ;; 02:5939 $0e $30
-    call call_00_3859_Entity_CheckPlayerXProximity                                  ;; 02:593b $cd $59 $38
-    ld   A, $01                                        ;; 02:593e $3e $01
-    jr   C, .jr_02_5944                                ;; 02:5940 $38 $02
-    ld   A, $00                                        ;; 02:5942 $3e $00
+    call call_00_36bd_Entity_FaceTowardsPlayer
+    ld   C, $20
+    call call_00_3859_Entity_CheckPlayerXProximity
+    ld   A, $02
+    jr   C, .jr_02_5944
+    ld   C, $30
+    call call_00_3859_Entity_CheckPlayerXProximity
+    ld   A, $01
+    jr   C, .jr_02_5944
+    ld   A, $00
 .jr_02_5944:
-    push AF                                            ;; 02:5944 $f5 ; keep the chosen action id
-    call call_02_7102_Entity_SetAction                                  ;; 02:5945 $cd $02 $71
+    push AF                                            ; keep the chosen action id
+    call call_02_7102_Entity_SetAction
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_1
-    inc  [HL]                                          ;; 02:5950 $34 ; test for zero without
-    dec  [HL]                                          ;; 02:5951 $35 ; disturbing the value
-    jr   Z, .jr_02_5955                                ;; 02:5952 $28 $01
-    dec  [HL]                                          ;; 02:5954 $35 ; attack cooldown
+    inc  [HL]                                          ; test for zero without
+    dec  [HL]                                          ; disturbing the value
+    jr   Z, .jr_02_5955
+    dec  [HL]                                          ; attack cooldown
 .jr_02_5955:
-    pop  AF                                            ;; 02:5955 $f1
-    cp   A, $02                                        ;; 02:5956 $fe $02
-    ret  NZ                                            ;; 02:5958 $c0 ; only the open flower attacks
-    ld   A, [HL]                                       ;; 02:5959 $7e
-    and  A, A                                          ;; 02:595a $a7
-    ret  NZ                                            ;; 02:595b $c0 ; still cooling down
-    ld   [HL], $3c                                     ;; 02:595c $36 $3c ; one hammer a second
-    ld   C, SPAWN_CHILD_ENTITY_FLOWER_HAMMER                                        ;; 02:595e $0e $03
+    pop  AF
+    cp   A, $02
+    ret  NZ                                            ; only the open flower attacks
+    ld   A, [HL]
+    and  A, A
+    ret  NZ                                            ; still cooling down
+    ld   [HL], $3c                                     ; one hammer a second
+    ld   C, SPAWN_CHILD_ENTITY_FLOWER_HAMMER
     FARCALL call_0a_7b9a_EntitySpawn_SpawnChildEntity
-    ret                                                ;; 02:596b $c9
+    ret
 
 ; ------------------------------------------------------------------
 ; FLOWER HAMMER - the mallet the flower above drops. Spawned $0B pixels to the
@@ -2082,31 +2090,31 @@ call_02_592d_EntityAction_Flower_Update:
 call_02_596c_EntityAction_FlowerHammer_Hang:
 ; Action $00. Hangs in the air for the length of its one-frame animation, which
 ; gives Gex a moment to see it coming, then it lets go
-    call call_00_3843_Entity_CheckAnimationEnded                                  ;; 02:596c $cd $43 $38
-    ret  Z                                             ;; 02:596f $c8
-    ld   C, SFX_FLOWER_HAMMER                                        ;; 02:5970 $0e $1c
-    call call_00_112f_QueueSFX                                  ;; 02:5972 $cd $2f $11
-    ld   A, $01                                        ;; 02:5975 $3e $01
-    jp   call_02_7102_Entity_SetAction                                  ;; 02:5977 $c3 $02 $71
+    call call_00_3843_Entity_CheckAnimationEnded
+    ret  Z
+    ld   C, SFX_FLOWER_HAMMER
+    call call_00_112f_QueueSFX
+    ld   A, $01
+    jp   call_02_7102_Entity_SetAction
 
 call_02_597a_EntityAction_FlowerHammer_Fall:
 ; Action $01. Note the DOUBLED gravity call - two full gravity steps per frame, so
 ; the hammer accelerates twice as fast as anything else in the game and lands hard.
 ; That is deliberate, not a duplicated line: the second call reads back the
 ; velocity the first one just stored
-    call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped                                  ;; 02:597a $cd $af $30
-    call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped                                  ;; 02:597d $cd $af $30
-    ld   BC, $0c                                       ;; 02:5980 $01 $0c $00
-    call call_00_316e_Entity_ClampYToMaxYBound_Offset                                  ;; 02:5983 $cd $6e $31
-    ld   A, $02                                        ;; 02:5986 $3e $02
-    jp   NC, call_02_7102_Entity_SetAction                              ;; 02:5988 $d2 $02 $71 ; landed
-    ret                                                ;; 02:598b $c9
+    call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
+    call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
+    ld   BC, $0c
+    call call_00_316e_Entity_ClampYToMaxYBound_Offset
+    ld   A, $02
+    jp   NC, call_02_7102_Entity_SetAction             ; landed
+    ret
 
 call_02_598c_EntityAction_FlowerHammer_Shatter:
 ; Action $02. The impact pose, held for $1e ticks, and then the slot is freed
-    call call_00_3843_Entity_CheckAnimationEnded                                  ;; 02:598c $cd $43 $38
-    jp   NZ, call_00_3910_Entity_ClearSlot                              ;; 02:598f $c2 $10 $39
-    ret                                                ;; 02:5992 $c9
+    call call_00_3843_Entity_CheckAnimationEnded
+    jp   NZ, call_00_3910_Entity_ClearSlot
+    ret
 
 ; ------------------------------------------------------------------
 ; HUNTER - the only Toon TV enemy with a real fight to it, and the one with the
@@ -2230,53 +2238,53 @@ call_02_5a28_EntityAction_Mushroom_Update:
 ; the eight icons in data_02_7a21. So each mushroom in the room pops out a
 ; different one
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
-    bit  MISC_FLAGS_BIT_0, [HL]                                       ;; 02:5a30 $cb $46
-    ret  Z                                             ;; 02:5a32 $c8
-    ld   HL, wD774_MushroomsDestroyedCount                                     ;; 02:5a33 $21 $74 $d7
-    inc  [HL]                                          ;; 02:5a36 $34
-    ld   A, [HL]                                       ;; 02:5a37 $7e
-    cp   A, $05                                        ;; 02:5a38 $fe $05
-    jr   NZ, .jr_02_5a41                               ;; 02:5a3a $20 $05
-    ld   HL, wD79A_BlockPatch_SlotTable15                                     ;; 02:5a3c $21 $9a $d7
-    ld   [HL], $02                                     ;; 02:5a3f $36 $02
+    bit  MISC_FLAGS_BIT_0, [HL]
+    ret  Z
+    ld   HL, wD774_MushroomsDestroyedCount
+    inc  [HL]
+    ld   A, [HL]
+    cp   A, $05
+    jr   NZ, .jr_02_5a41
+    ld   HL, wD79A_BlockPatch_SlotTable15
+    ld   [HL], $02
 .jr_02_5a41:
-    ld   C, SPAWN_CHILD_ENTITY_MUSHROOM_PROJECTILE                                        ;; 02:5a41 $0e $08
+    ld   C, SPAWN_CHILD_ENTITY_MUSHROOM_PROJECTILE
     FARCALL call_0a_7b9a_EntitySpawn_SpawnChildEntity
-    call call_00_3985_Entity_ParticleBurstInit                                  ;; 02:5a4e $cd $85 $39
-    ld   H, $d2                                        ;; 02:5a51 $26 $d2
-    ld   A, $20                                        ;; 02:5a53 $3e $20
+    call call_00_3985_Entity_ParticleBurstInit
+    ld   H, $d2
+    ld   A, $20
 .jr_02_5a55:
-    ld   L, A                                          ;; 02:5a55 $6f
-    ld   A, [HL]                                       ;; 02:5a56 $7e
-    cp   A, $28                                        ;; 02:5a57 $fe $28
-    jr   Z, .jr_02_5a61                                ;; 02:5a59 $28 $06
-    ld   A, L                                          ;; 02:5a5b $7d
-    add  A, $20                                        ;; 02:5a5c $c6 $20
-    jr   NZ, .jr_02_5a55                               ;; 02:5a5e $20 $f5
-    ret                                                ;; 02:5a60 $c9
+    ld   L, A
+    ld   A, [HL]
+    cp   A, $28
+    jr   Z, .jr_02_5a61
+    ld   A, L
+    add  A, $20
+    jr   NZ, .jr_02_5a55
+    ret
 .jr_02_5a61:
-    ld   A, L                                          ;; 02:5a61 $7d
-    or   A, $1e                                        ;; 02:5a62 $f6 $1e
-    ld   L, A                                          ;; 02:5a64 $6f
-    ld   [HL], $40                                     ;; 02:5a65 $36 $40
-    xor  A, $16                                        ;; 02:5a67 $ee $16
-    ld   L, A                                          ;; 02:5a69 $6f
-    ld   A, [wD774_MushroomsDestroyedCount]                                    ;; 02:5a6a $fa $74 $d7
-    dec  A                                             ;; 02:5a6d $3d
-    add  A, A                                          ;; 02:5a6e $87
-    add  A, $40                                        ;; 02:5a6f $c6 $40
-    ld   [HL], A                                       ;; 02:5a71 $77
-    ret                                                ;; 02:5a72 $c9
+    ld   A, L
+    or   A, $1e
+    ld   L, A
+    ld   [HL], $40
+    xor  A, $16
+    ld   L, A
+    ld   A, [wD774_MushroomsDestroyedCount]
+    dec  A
+    add  A, A
+    add  A, $40
+    ld   [HL], A
+    ret
 
 call_02_5a73_EntityAction_MushroomProjectile_Update:
 ; One action. The prize the mushroom pops out: it was given an upward velocity of
 ; $40 and a sprite id by its parent, and all it does is arc up and disappear when
 ; it hits the ground. It is scenery, not a pickup - the collision box is what
 ; makes it worth anything, if anything
-    call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped                                  ;; 02:5a73 $cd $af $30
-    call call_00_3154_Entity_ClampYToMaxYBound                                  ;; 02:5a76 $cd $54 $31
-    jp   NC, call_00_3910_Entity_ClearSlot                              ;; 02:5a79 $d2 $10 $39 ; landed
-    ret                                                ;; 02:5a7c $c9
+    call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
+    call call_00_3154_Entity_ClampYToMaxYBound
+    jp   NC, call_00_3910_Entity_ClearSlot             ; landed
+    ret
 
 call_02_5a7d_EntityAction_ToonTVLizard_Update:
 ; One action: walk the patrol span at speed $14. Nothing else.
@@ -2296,20 +2304,20 @@ call_02_5a7d_EntityAction_ToonTVLizard_Update:
 call_02_5a8c_EntityAction_HappyFace_Crouch:
 ; The happy face is the pumpkin again, instruction for instruction: squash, launch
 ; at $28, fall, thump, repeat. See call_02_538b_EntityAction_Pumpkin_Crouch
-    call call_00_3843_Entity_CheckAnimationEnded                                  ;; 02:5a8c $cd $43 $38
-    ret  Z                                             ;; 02:5a8f $c8
-    ld   C, $28                                        ;; 02:5a90 $0e $28
-    call call_00_335a_Entity_SetYVelocity                                  ;; 02:5a92 $cd $5a $33
-    ld   A, $01                                        ;; 02:5a95 $3e $01
-    jp   call_02_7102_Entity_SetAction                                  ;; 02:5a97 $c3 $02 $71
+    call call_00_3843_Entity_CheckAnimationEnded
+    ret  Z
+    ld   C, $28
+    call call_00_335a_Entity_SetYVelocity
+    ld   A, $01
+    jp   call_02_7102_Entity_SetAction
 call_02_5a9a_EntityAction_HappyFace_Hop:
-    call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped                                  ;; 02:5a9a $cd $af $30
-    call call_00_3154_Entity_ClampYToMaxYBound                                  ;; 02:5a9d $cd $54 $31
-    ret  C                                             ;; 02:5aa0 $d8
-    ld   C, SFX_ENEMY_BOUNCE                                        ;; 02:5aa1 $0e $24
-    call call_00_112f_QueueSFX                                  ;; 02:5aa3 $cd $2f $11
-    ld   A, $00                                        ;; 02:5aa6 $3e $00
-    jp   call_02_7102_Entity_SetAction                                  ;; 02:5aa8 $c3 $02 $71
+    call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
+    call call_00_3154_Entity_ClampYToMaxYBound
+    ret  C
+    ld   C, SFX_ENEMY_BOUNCE
+    call call_00_112f_QueueSFX
+    ld   A, $00
+    jp   call_02_7102_Entity_SetAction
 
 ; ------------------------------------------------------------------
 ; TOON TV VANISHING BLOCK - the same three-state blink-and-vanish cycle as
@@ -2504,36 +2512,36 @@ call_02_5bb6_EntityAction_MovingLog_Update:
 ; call_02_5348_EntityAction_ScreamTVMovingPlatform_Update: patrol config from the
 ; spawn record, an optional block patch gate in MISC_PARAM ($FF = ungated), then
 ; move and patrol
-    call call_00_34ea_Entity_IsFirstFrameOfAction                                  ;; 02:5bb6 $cd $ea $34
-    jr   Z, .jr_02_5bc2                                ;; 02:5bb9 $28 $07
-    ld   A, L                                          ;; 02:5bbb $7d
-    xor  A, $10                                        ;; 02:5bbc $ee $10
-    ld   L, A                                          ;; 02:5bbe $6f
-    ld   A, [HL-]                                      ;; 02:5bbf $3a
-    dec  L                                             ;; 02:5bc0 $2d
-    ld   [HL], A                                       ;; 02:5bc1 $77
+    call call_00_34ea_Entity_IsFirstFrameOfAction
+    jr   Z, .jr_02_5bc2
+    ld   A, L
+    xor  A, $10
+    ld   L, A
+    ld   A, [HL-]
+    dec  L
+    ld   [HL], A
 .jr_02_5bc2:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_PARAM
-    ld   A, [HL]                                       ;; 02:5bca $7e
-    cp   A, $ff                                        ;; 02:5bcb $fe $ff
-    jr   Z, .jr_02_5bdb                                ;; 02:5bcd $28 $0c
-    and  A, $0f                                        ;; 02:5bcf $e6 $0f
-    ld   L, A                                          ;; 02:5bd1 $6f
-    ld   H, $00                                        ;; 02:5bd2 $26 $00
-    ld   DE, wD78B_BlockPatch_SlotTable                                     ;; 02:5bd4 $11 $8b $d7
-    add  HL, DE                                        ;; 02:5bd7 $19
-    ld   A, [HL]                                       ;; 02:5bd8 $7e
-    and  A, A                                          ;; 02:5bd9 $a7
-    ret  Z                                             ;; 02:5bda $c8
+    ld   A, [HL]
+    cp   A, $ff
+    jr   Z, .jr_02_5bdb
+    and  A, $0f
+    ld   L, A
+    ld   H, $00
+    ld   DE, wD78B_BlockPatch_SlotTable
+    add  HL, DE
+    ld   A, [HL]
+    and  A, A
+    ret  Z
 .jr_02_5bdb:
-    call call_00_3559_Entity_ApplyVelocityXY_SubpixelBoth                                  ;; 02:5bdb $cd $59 $35
-    jp   call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip                                    ;; 02:5bde $c3 $8d $31
+    call call_00_3559_Entity_ApplyVelocityXY_SubpixelBoth
+    jp   call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip
 call_02_5be1_EntityAction_StationaryLog_Update:
 ; One action that does nothing at all, which is the whole point: the log is a
 ; static platform, and everything it does happens in its collision type. An entity
 ; with no behaviour still needs an action, because Entity_TickAction calls one
 ; unconditionally
-    ret                                                ;; 02:5be1 $c9
+    ret
 
 ; ------------------------------------------------------------------
 ; TOON TV ROCKET - the ride at the end of the channel. It cannot be triggered by
@@ -2734,7 +2742,7 @@ call_02_5ca8_EntityAction_LavaRaft_Drift:
     jp   call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip
 
 call_02_5cba_EntityAction_LavaRaft_Moored:
-    ret  
+    ret
 
 call_02_5cbb_EntityAction_PreHistoryMovingPlatform_Update:
     call call_00_34ea_Entity_IsFirstFrameOfAction
@@ -2750,10 +2758,10 @@ call_02_5cbb_EntityAction_PreHistoryMovingPlatform_Update:
     jp   call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip
 
 call_02_5ccd_EntityAction_Unk3A_Update:
-    ret  
+    ret
 
 call_02_5cce_EntityAction_Unk3B_Update:
-    ret  
+    ret
 
 call_02_5ccf_EntityAction_Pterosaur_Update:
 ; The one entity in the game that uses
@@ -2805,7 +2813,7 @@ call_02_5ccf_EntityAction_Pterosaur_Update:
     ret
 
 call_02_5d0b_EntityAction_Unk3D_Update:
-    ret  
+    ret
 
 ; ------------------------------------------------------------------
 ; FALLING BOULDER - four actions, and the only entity that changes its own
@@ -3047,7 +3055,7 @@ call_02_5e26_EntityAction_Triceratops_Update:
     add  a,$20
     jr   nz,.jr_02_5E5B
     pop  af
-    ret  
+    ret
 .jr_02_5E68:
     ld   a,l
     or   a,$0D
@@ -3080,7 +3088,7 @@ call_02_5e26_EntityAction_Triceratops_Update:
     ld   [hl],c
     inc  l
     ld   [hl],b
-    ret  
+    ret
 
 call_02_5e90_EntityAction_TriceratopsHorn_Update:
 ; Does nothing on purpose - see the body above, which positions it
@@ -3351,22 +3359,22 @@ call_02_5f67_EntityAction_DragonHead_Update:
 ; "table" is the opcode $C9. The search loop compensates by doing `inc hl` before
 ; its first compare, so the thresholds really start at $05
     ret
-    db   $05, $0e, $17, $20, $32, $3b, $44        ;; 02:5fdf ????????
+    db   $05, $0e, $17, $20, $32, $3b, $44
     db   $4d, $56
 .data_02_5fe9:
 ; 32 orientations as (graphics page, OAM attribute flags) pairs: pages 0-8 going
 ; one way, then the same pages back again under X flip ($20), X+Y flip ($60) and
 ; Y flip ($40)
-    db   $00, $00, $01, $00, $02, $00        ;; 02:5fe7 ????????
-    db   $03, $00, $04, $00, $05, $00, $06, $00        ;; 02:5fef ????????
-    db   $07, $00, $08, $00, $07, $20, $06, $20        ;; 02:5ff7 ????????
-    db   $05, $20, $04, $20, $03, $20, $02, $20        ;; 02:5fff ????????
-    db   $01, $20, $00, $20, $01, $60, $02, $60        ;; 02:6007 ????????
-    db   $03, $60, $04, $60, $05, $60, $06, $60        ;; 02:600f ????????
-    db   $07, $60, $08, $60, $07, $40, $06, $40        ;; 02:6017 ????????
-    db   $05, $40, $04, $40, $03, $40, $02, $40        ;; 02:601f ????????
+    db   $00, $00, $01, $00, $02, $00
+    db   $03, $00, $04, $00, $05, $00, $06, $00
+    db   $07, $00, $08, $00, $07, $20, $06, $20
+    db   $05, $20, $04, $20, $03, $20, $02, $20
+    db   $01, $20, $00, $20, $01, $60, $02, $60
+    db   $03, $60, $04, $60, $05, $60, $06, $60
+    db   $07, $60, $08, $60, $07, $40, $06, $40
+    db   $05, $40, $04, $40, $03, $40, $02, $40
     db   $01, $40
-    
+
 call_02_6029_Dragon_StepOrbit:
 ; Flies one step of a closed loop around a FIXED point in the map, ($0230, $04F0).
 ; Nothing here reads the player or the camera - the dragon's path is a constant,
@@ -3461,32 +3469,32 @@ call_02_6029_Dragon_StepOrbit:
     ld   [hl],c
     inc  l
     ld   [hl],b
-    ret  
+    ret
 .data_02_609b:
 ; One quarter of the orbit: $52 pairs of (dx, dy) as signed bytes, from (0, -$3A)
 ; to (+$39, 0). dx and dy together keep a roughly constant radius of 57-58, so
 ; this is a quarter circle sampled by angle rather than by x
-    db   $00, $c6, $01, $c6        ;; 02:6097 ????????
-    db   $02, $c6, $03, $c6, $04, $c6, $05, $c6        ;; 02:609f ????????
-    db   $06, $c6, $07, $c6, $08, $c7, $09, $c7        ;; 02:60a7 ????????
-    db   $0a, $c7, $0b, $c7, $0c, $c7, $0d, $c7        ;; 02:60af ????????
-    db   $0e, $c8, $0f, $c8, $10, $c8, $11, $c9        ;; 02:60b7 ????????
-    db   $12, $c9, $13, $c9, $14, $c9, $15, $ca        ;; 02:60bf ????????
-    db   $16, $ca, $17, $cb, $18, $cb, $19, $cc        ;; 02:60c7 ????????
-    db   $1a, $cc, $1b, $cd, $1c, $cd, $1d, $ce        ;; 02:60cf ????????
-    db   $1e, $ce, $1f, $cf, $20, $cf, $21, $d0        ;; 02:60d7 ????????
-    db   $22, $d1, $23, $d2, $24, $d3, $25, $d4        ;; 02:60df ????????
-    db   $26, $d5, $27, $d6, $28, $d7, $29, $d8        ;; 02:60e7 ????????
-    db   $2a, $d9, $2b, $da, $2c, $db, $2d, $dc        ;; 02:60ef ????????
-    db   $2d, $dd, $2e, $de, $2f, $df, $30, $e0        ;; 02:60f7 ????????
-    db   $30, $e1, $31, $e2, $31, $e3, $32, $e4        ;; 02:60ff ????????
-    db   $32, $e5, $33, $e6, $33, $e7, $34, $e8        ;; 02:6107 ????????
-    db   $34, $e9, $35, $ea, $35, $eb, $36, $ec        ;; 02:610f ????????
-    db   $36, $ed, $36, $ee, $36, $ef, $37, $f0        ;; 02:6117 ????????
-    db   $37, $f1, $37, $f2, $38, $f3, $38, $f4        ;; 02:611f ????????
-    db   $38, $f5, $38, $f6, $38, $f7, $38, $f8        ;; 02:6127 ????????
-    db   $39, $f9, $39, $fa, $39, $fb, $39, $fc        ;; 02:612f ????????
-    db   $39, $fd, $39, $fe, $39, $ff, $39, $00        ;; 02:6137 ????????
+    db   $00, $c6, $01, $c6
+    db   $02, $c6, $03, $c6, $04, $c6, $05, $c6
+    db   $06, $c6, $07, $c6, $08, $c7, $09, $c7
+    db   $0a, $c7, $0b, $c7, $0c, $c7, $0d, $c7
+    db   $0e, $c8, $0f, $c8, $10, $c8, $11, $c9
+    db   $12, $c9, $13, $c9, $14, $c9, $15, $ca
+    db   $16, $ca, $17, $cb, $18, $cb, $19, $cc
+    db   $1a, $cc, $1b, $cd, $1c, $cd, $1d, $ce
+    db   $1e, $ce, $1f, $cf, $20, $cf, $21, $d0
+    db   $22, $d1, $23, $d2, $24, $d3, $25, $d4
+    db   $26, $d5, $27, $d6, $28, $d7, $29, $d8
+    db   $2a, $d9, $2b, $da, $2c, $db, $2d, $dc
+    db   $2d, $dd, $2e, $de, $2f, $df, $30, $e0
+    db   $30, $e1, $31, $e2, $31, $e3, $32, $e4
+    db   $32, $e5, $33, $e6, $33, $e7, $34, $e8
+    db   $34, $e9, $35, $ea, $35, $eb, $36, $ec
+    db   $36, $ed, $36, $ee, $36, $ef, $37, $f0
+    db   $37, $f1, $37, $f2, $38, $f3, $38, $f4
+    db   $38, $f5, $38, $f6, $38, $f7, $38, $f8
+    db   $39, $f9, $39, $fa, $39, $fb, $39, $fc
+    db   $39, $fd, $39, $fe, $39, $ff, $39, $00
 
 call_02_613f_Dragon_UpdateHitFlash:
 ; Called by every part of the dragon. Bit 1 of the shared hit timer drives
@@ -3519,7 +3527,7 @@ call_02_615f_EntityAction_DragonProjectile_Fly:
     jp   call_00_3442_Entity_MoveXByFacingSpeed
 
 call_02_616d_EntityAction_Unk51_Update:
-    ret  
+    ret
 
 ; ------------------------------------------------------------------
 ; NINJAS - two entity ids share these routines:
@@ -4612,7 +4620,7 @@ call_02_66f1_EntityAction_Capacitor_unk1:
     call call_00_3154_Entity_ClampYToMaxYBound
     ld   a,$00
     call nc,call_02_7102_Entity_SetAction
-    ret  
+    ret
 
 call_02_66fd_EntityAction_PowerUp_unk0:
     call call_00_3843_Entity_CheckAnimationEnded
@@ -4631,7 +4639,7 @@ call_02_6710_EntityAction_PowerUp_unk1:
     jp   call_02_7102_Entity_SetAction
 
 call_02_6723_EntityAction_Unk79_Update:
-    ret  
+    ret
 
 call_02_6724_EntityAction_LittleRobot_unk0:
     call call_00_34ea_Entity_IsFirstFrameOfAction
@@ -4660,7 +4668,7 @@ call_02_6724_EntityAction_LittleRobot_unk0:
     ld   a,l
     add  a,$20
     jr   nz,.jr_02_6754
-    ret  
+    ret
 .jr_02_6760:
     ld   a,l
     or   a,$0E
@@ -4671,13 +4679,13 @@ call_02_6724_EntityAction_LittleRobot_unk0:
     xor  a,$03
     ld   l,a
     ld   [hl],c
-    ret  
+    ret
 
 call_02_676c_EntityAction_LittleRobot_unk1:
     call call_00_3843_Entity_CheckAnimationEnded
     ld   a,$00
     jp   nz,call_02_7102_Entity_SetAction
-    ret  
+    ret
 
 call_02_6775_EntityAction_LittleRobotGear_Update:
     ld   h,$D2
@@ -4706,8 +4714,8 @@ call_02_6786_EntityAction_ElectricBall_unk0:
 call_02_679e_EntityAction_ElectricBall_unk1:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     ld   a,[hl]
-    rrca 
-    rrca 
+    rrca
+    rrca
     and  a,$3C
     ld   e,a
     ld   d,$00
@@ -4727,16 +4735,16 @@ call_02_679e_EntityAction_ElectricBall_unk1:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_1
     dec  [hl]
     call z,call_02_680e_ElectricBall_Sub
-    ret  
+    ret
 .data_02_67ce:
-    db   $00, $00, $00        ;; 02:67c9 ????????
-    db   $00, $02, $00, $00, $00, $fe, $ff, $00        ;; 02:67d1 ????????
-    db   $00, $02, $00, $00, $00, $00, $00, $fe        ;; 02:67d9 ????????
-    db   $ff, $02, $00, $fe, $ff, $fe, $ff, $fe        ;; 02:67e1 ????????
-    db   $ff, $02, $00, $fe, $ff, $00, $00, $02        ;; 02:67e9 ????????
-    db   $00, $02, $00, $02, $00, $fe, $ff, $02        ;; 02:67f1 ????????
-    db   $00, $02, $00, $02, $00, $00, $00, $02        ;; 02:67f9 ????????
-    db   $00, $02, $00, $02, $00, $fe, $ff, $02        ;; 02:6801 ????????
+    db   $00, $00, $00
+    db   $00, $02, $00, $00, $00, $fe, $ff, $00
+    db   $00, $02, $00, $00, $00, $00, $00, $fe
+    db   $ff, $02, $00, $fe, $ff, $fe, $ff, $fe
+    db   $ff, $02, $00, $fe, $ff, $00, $00, $02
+    db   $00, $02, $00, $02, $00, $fe, $ff, $02
+    db   $00, $02, $00, $02, $00, $00, $00, $02
+    db   $00, $02, $00, $02, $00, $fe, $ff, $02
     db   $00, $02, $00, $02, $00
 
 call_02_680e_ElectricBall_Sub:
@@ -4764,24 +4772,24 @@ call_02_680e_ElectricBall_Sub:
     inc  e
     ld   a,[hl]
     ld   [de],a
-    ret  
+    ret
 .data_02_683c:
-    db   $50, $68, $57, $68, $5e        ;; 02:6839 ????????
-    db   $68, $65, $68, $70, $68, $83, $68, $8a        ;; 02:6841 ????????
-    db   $68, $8d, $68, $98, $68, $9f, $68, $10        ;; 02:6849 ????????
-    db   $2e, $90, $10, $10, $3c, $ff, $10, $3e        ;; 02:6851 ????????
-    db   $90, $20, $10, $5c, $ff, $10, $5e, $90        ;; 02:6859 ????????
-    db   $10, $10, $2c, $ff, $10, $4e, $90, $10        ;; 02:6861 ????????
-    db   $10, $70, $90, $20, $10, $5c, $ff, $10        ;; 02:6869 ????????
-    db   $5e, $90, $10, $10, $40, $90, $10, $10        ;; 02:6871 ????????
-    db   $50, $50, $10, $10, $40, $50, $10, $10        ;; 02:6879 ????????
-    db   $0c, $ff, $10, $ee, $10, $f0, $10, $8c        ;; 02:6881 ????????
-    db   $ff, $10, $6a, $ff, $10, $3e, $90, $10        ;; 02:6889 ????????
-    db   $10, $2c, $50, $10, $10, $20, $ff, $10        ;; 02:6891 ????????
-    db   $2e, $90, $10, $10, $1c, $ff, $10, $6e        ;; 02:6899 ????????
-    db   $90, $20, $10, $4c, $50, $20, $10, $54        ;; 02:68a1 ????????
-    db   $90, $10, $10, $4c, $50, $10, $10, $30        ;; 02:68a9 ????????
-    db   $50, $20, $10, $f0, $10, $54, $90, $10        ;; 02:68b1 ????????
+    db   $50, $68, $57, $68, $5e
+    db   $68, $65, $68, $70, $68, $83, $68, $8a
+    db   $68, $8d, $68, $98, $68, $9f, $68, $10
+    db   $2e, $90, $10, $10, $3c, $ff, $10, $3e
+    db   $90, $20, $10, $5c, $ff, $10, $5e, $90
+    db   $10, $10, $2c, $ff, $10, $4e, $90, $10
+    db   $10, $70, $90, $20, $10, $5c, $ff, $10
+    db   $5e, $90, $10, $10, $40, $90, $10, $10
+    db   $50, $50, $10, $10, $40, $50, $10, $10
+    db   $0c, $ff, $10, $ee, $10, $f0, $10, $8c
+    db   $ff, $10, $6a, $ff, $10, $3e, $90, $10
+    db   $10, $2c, $50, $10, $10, $20, $ff, $10
+    db   $2e, $90, $10, $10, $1c, $ff, $10, $6e
+    db   $90, $20, $10, $4c, $50, $20, $10, $54
+    db   $90, $10, $10, $4c, $50, $10, $10, $30
+    db   $50, $20, $10, $f0, $10, $54, $90, $10
     db   $10, $40, $90, $10, $10, $5c, $ff
 
 call_02_68c0_EntityAction_CircuitCentralMovingPlatform_Update:
@@ -4791,7 +4799,7 @@ call_02_68c0_EntityAction_CircuitCentralMovingPlatform_Update:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_PARAM_HI
     dec  [hl]
     call z,.jr_02_68D6
-    ret  
+    ret
 .jr_02_68D6:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_PARAM
     ld   c,[hl]
@@ -4824,23 +4832,23 @@ call_02_68c0_EntityAction_CircuitCentralMovingPlatform_Update:
     inc  e
     ld   a,[hl]
     ld   [de],a
-    ret  
+    ret
 .jr_02_6909:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_PARAM
     ld   [hl],$00
     jr   .jr_02_68D6
 .data_02_6915:
-    db   $1d, $69, $2a, $69        ;; 02:6911 ????????  
-    db   $43, $69, $5c, $69, $e0, $10, $f0, $a0        ;; 02:6919 ????????
-    db   $10, $10, $a0, $f0, $f0, $e0, $f0, $10        ;; 02:6921 ????????
-    db   $ff, $80, $f0, $00, $80, $f0, $00, $80        ;; 02:6929 ????????
-    db   $f0, $00, $80, $f0, $00, $80, $10, $00        ;; 02:6931 ????????
-    db   $80, $10, $00, $80, $10, $00, $80, $10        ;; 02:6939 ????????
-    db   $00, $ff, $e0, $f0, $00, $e0, $f0, $00        ;; 02:6941 ????????
-    db   $20, $f0, $00, $80, $10, $f0, $80, $10        ;; 02:6949 ????????
-    db   $f0, $e0, $10, $00, $80, $00, $10, $80        ;; 02:6951 ????????
-    db   $00, $10, $ff, $e0, $f0, $f0, $e0, $10        ;; 02:6959 ????????
-    db   $f0, $e0, $f0, $f0, $e0, $10, $10, $e0        ;; 02:6961 ????????
+    db   $1d, $69, $2a, $69
+    db   $43, $69, $5c, $69, $e0, $10, $f0, $a0
+    db   $10, $10, $a0, $f0, $f0, $e0, $f0, $10
+    db   $ff, $80, $f0, $00, $80, $f0, $00, $80
+    db   $f0, $00, $80, $f0, $00, $80, $10, $00
+    db   $80, $10, $00, $80, $10, $00, $80, $10
+    db   $00, $ff, $e0, $f0, $00, $e0, $f0, $00
+    db   $20, $f0, $00, $80, $10, $f0, $80, $10
+    db   $f0, $e0, $10, $00, $80, $00, $10, $80
+    db   $00, $10, $ff, $e0, $f0, $f0, $e0, $10
+    db   $f0, $e0, $f0, $f0, $e0, $10, $10, $e0
     db   $f0, $10, $e0, $10, $10, $ff
 
 call_02_696f_EntityAction_CircuitCentralPoweredPlatform_unk0:
@@ -4876,8 +4884,8 @@ call_02_6993_EntityAction_CircuitCentralPoweredPlatform_unk1:
     and  a,$c0
     ld   c,a
     ld   a,[hl]
-    rlca 
-    rlca 
+    rlca
+    rlca
     and  a,$c0
     sub  c
     jr   nz,.jr_02_69B6
@@ -4925,7 +4933,7 @@ call_02_69d7_EntityAction_CircuitCentralLoweringPlatform_Update:
     ld   [hl],$f0
     dec  l
     set  1,[hl]
-    ret  
+    ret
 .jr_02_69FE:
     inc  l
     dec  [hl]
@@ -4936,7 +4944,7 @@ call_02_69d7_EntityAction_CircuitCentralLoweringPlatform_Update:
     and  a,$01
     xor  a,$01
     ld   [hl],a
-    ret  
+    ret
 .jr_02_6A0B:
     bit  0,b
     jr   z,.jr_02_6A23
@@ -4949,13 +4957,13 @@ call_02_69d7_EntityAction_CircuitCentralLoweringPlatform_Update:
     ld   [hl],$3C
     dec  l
     set  1,[hl]
-    ret  
+    ret
 .jr_02_6A1C:
     dec  l
     ld   [hl],$01
     dec  l
     ld   [hl],$01
-    ret  
+    ret
 .jr_02_6A23:
     inc  l
     dec  [hl]
@@ -4975,7 +4983,7 @@ call_02_6a33_EntityAction_WalkerRobot_Update:
     jp   call_00_36f7_Entity_MoveXByFacingMomentum_BoundsChecked
 
 call_02_6a3b_EntityAction_PoweredWalkway_Update:
-    ret  
+    ret
 
 call_02_6a3c_EntityAction_WalkwayActivator_Update:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_2
@@ -5001,9 +5009,9 @@ call_02_6a3c_EntityAction_WalkwayActivator_Update:
     add  hl,hl
     ld   c,h
     ld   a,[wD300_CurrentEntityAddrLo]
-    rrca 
-    rrca 
-    rrca 
+    rrca
+    rrca
+    rrca
     ld   l,a
     ld   h,$00
     ld   de,wD309_EntityBoundingBoxXMax
@@ -5019,7 +5027,7 @@ call_02_6a3c_EntityAction_WalkwayActivator_Update:
     ldi  [hl],a
     ld   a,[wD20F_Player_XPositionHi]
     ld   [hl],a
-    ret  
+    ret
 
 call_02_6a8b_EntityAction_ArcedGunProjectile_unk0:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_2
@@ -5138,9 +5146,9 @@ call_02_6b81_EntityAction_GunProjectile_unk1:
     bit  0,c
     jr   z,.jr_02_6baf
     ld   a,[wD300_CurrentEntityAddrLo]
-    rrca 
-    rrca 
-    rrca 
+    rrca
+    rrca
+    rrca
     and  a,$1C
     ld   l,a
     ld   h,$00
@@ -5153,9 +5161,9 @@ call_02_6b81_EntityAction_GunProjectile_unk1:
     jr   .jr_02_6bc4
 .jr_02_6baf:
     ld   a,[wD300_CurrentEntityAddrLo]
-    rrca 
-    rrca 
-    rrca 
+    rrca
+    rrca
+    rrca
     and  a,$1C
     ld   l,a
     ld   h,$00
@@ -5223,10 +5231,10 @@ call_02_6c18_EntityAction_Rez_unk0:
     call call_00_3843_Entity_CheckAnimationEnded
     ld   a,$02
     jp   nz,call_02_7102_Entity_SetAction
-    ret  
+    ret
 
 call_02_6c41_EntityAction_Rez_unk1:
-    ret  
+    ret
 
 call_02_6c42_EntityAction_Rez_unk3:
     call call_00_3843_Entity_CheckAnimationEnded
@@ -5273,20 +5281,20 @@ call_02_6c82_EntityAction_Rez_unk4:
     cp   a,$19
     ret  c
     dec  [hl]
-    ret  
+    ret
 
 call_02_6c99_EntityAction_Rez_unk5:
     call call_02_6Ca7_Rez_Unk5Sub
-    ret  
+    ret
 
 call_02_6c9d_EntityAction_Rez_unk9:
     call call_00_3843_Entity_CheckAnimationEnded
     ld   a,$08
     jp   nz,call_02_7102_Entity_SetAction
-    ret  
+    ret
 
 call_02_6ca6_EntityAction_Rez_unk10:
-    ret  
+    ret
 
 call_02_6Ca7_Rez_Unk5Sub:
     ld   hl,wD616_FinalBattleButtonFlags
@@ -5313,7 +5321,7 @@ call_02_6cca_EntityAction_RezFollowingFire_Update:
     ld   a,l
     add  a,$20
     jr   nz,.jr_02_6CCE
-    ret  
+    ret
 .jr_02_6CDA:
     ld   a,l
     or   a,$0D
@@ -5357,7 +5365,7 @@ call_02_6cca_EntityAction_RezFollowingFire_Update:
     ld   [hl],e
     inc  l
     ld   [hl],d
-    ret  
+    ret
 
 call_02_6d11_EntityAction_ChannelZUnusedPlatform1_Update:
     call call_00_34ea_Entity_IsFirstFrameOfAction
@@ -5373,7 +5381,7 @@ call_02_6d11_EntityAction_ChannelZUnusedPlatform1_Update:
     jp   call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip
 
 call_02_6d23_EntityAction_ChannelZUnusedPlatform2_Update:
-    ret  
+    ret
 
 call_02_6d24_EntityAction_GunProjectileExplosion_Update:
     call call_00_3843_Entity_CheckAnimationEnded
@@ -5395,7 +5403,7 @@ call_02_6d24_EntityAction_GunProjectileExplosion_Update:
     res  3,a
     or   d
     ld   [hl],a
-    ret  
+    ret
 .data_02_6d4f:
     db   $00, $00, $20, $00, $00, $00, $00, $08
     db   $20, $00, $00, $08, $00, $00
@@ -5419,7 +5427,7 @@ call_02_6d5d_EntityAction_FinalBattleButtonProjectile_unk0:
     jp   call_00_3931_Entity_DeactivateSelf
 
 call_02_6d7f_EntityAction_FinalBattleButtonProjectile_unk1:
-    ret  
+    ret
 
 call_02_6d80_EntityAction_FinalBattleButton_unk0:
     call call_00_34f5_Entity_IsPlayerStandingOnSelf
@@ -5458,7 +5466,7 @@ call_02_6db8_EntityAction_FinalBattleButton_unk1:
     ld   a,l
     add  a,$20
     jr   nz,.jr_02_6DBC
-    ret  
+    ret
 .jr_02_6DCE:
     ld   a,l
     or   a,$01
@@ -5481,27 +5489,27 @@ call_02_6de3_EntityAction_RezPortal_Update:
     jp   call_02_4ccd_Player_RequestAction
 
 call_02_6df0_EntityAction_Unk8E_Update:
-    ret  
+    ret
 
 call_02_6df1_EntityAction_MediaDimensionMovingPlatform_Update:
-    call call_00_34ea_Entity_IsFirstFrameOfAction                                  ;; 02:6df1 $cd $ea $34
-    jr   Z, .jr_02_6dfd                                ;; 02:6df4 $28 $07
-    ld   A, L                                          ;; 02:6df6 $7d
-    xor  A, $10                                        ;; 02:6df7 $ee $10
-    ld   L, A                                          ;; 02:6df9 $6f
-    ld   A, [HL-]                                      ;; 02:6dfa $3a
-    dec  L                                             ;; 02:6dfb $2d
-    ld   [HL], A                                       ;; 02:6dfc $77
+    call call_00_34ea_Entity_IsFirstFrameOfAction
+    jr   Z, .jr_02_6dfd
+    ld   A, L
+    xor  A, $10
+    ld   L, A
+    ld   A, [HL-]
+    dec  L
+    ld   [HL], A
 .jr_02_6dfd:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_PARAM
-    ld   A, [HL]                                       ;; 02:6e05 $7e
-    cp   A, $ff                                        ;; 02:6e06 $fe $ff
-    jr   Z, .jr_02_6e11                                ;; 02:6e08 $28 $07
-    ld   A, [wD64F_MissionRemoteTotal]                                    ;; 02:6e0a $fa $4f $d6
-    and  A, $7f                                        ;; 02:6e0d $e6 $7f
-    cp   A, [HL]                                       ;; 02:6e0f $be
-    ret  C                                             ;; 02:6e10 $d8
+    ld   A, [HL]
+    cp   A, $ff
+    jr   Z, .jr_02_6e11
+    ld   A, [wD64F_MissionRemoteTotal]
+    and  A, $7f
+    cp   A, [HL]
+    ret  C
 .jr_02_6e11:
-    call call_00_3559_Entity_ApplyVelocityXY_SubpixelBoth                                  ;; 02:6e11 $cd $59 $35
-    jp   call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip                                    ;; 02:6e14 $c3 $8d $31
+    call call_00_3559_Entity_ApplyVelocityXY_SubpixelBoth
+    jp   call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip
     

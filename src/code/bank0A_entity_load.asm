@@ -30,19 +30,19 @@ call_0a_4000_EntityList_LoadForCurrentLevel:
 ; Points the spawn cursor at the start of the current level's entity list.
 ; Also called mid-level by SpawnNextFromList when it hits the list terminator,
 ; which is what makes the walk cyclic rather than one-shot
-    ld   HL, wD624_CurrentLevelId                                     ;; 0a:4000 $21 $24 $d6
-    ld   L, [HL]                                       ;; 0a:4003 $6e ; L = current level
-    ld   H, $00                                        ;; 0a:4004 $26 $00
-    add  HL, HL                                        ;; 0a:4006 $29 ; multiply by 2?
-    ld   DE, .data_0a_4019                             ;; 0a:4007 $11 $19 $40
-    add  HL, DE                                        ;; 0a:400a $19
-    ld   A, [HL+]                                      ;; 0a:400b $2a
-    ld   [wD336_CurrentEntityToLoadPtr], A                                    ;; 0a:400c $ea $36 $d3
-    ld   A, [HL+]                                      ;; 0a:400f $2a
-    ld   [wD337_CurrentEntityToLoadPtr], A                                    ;; 0a:4010 $ea $37 $d3
-    ld   A, $01                                        ;; 0a:4013 $3e $01
-    ld   [wD338_EntityLoadingFlag], A                                    ;; 0a:4015 $ea $38 $d3
-    ret                                                ;; 0a:4018 $c9
+    ld   HL, wD624_CurrentLevelId
+    ld   L, [HL]                                       ; L = current level
+    ld   H, $00
+    add  HL, HL                                        ; multiply by 2?
+    ld   DE, .data_0a_4019
+    add  HL, DE
+    ld   A, [HL+]
+    ld   [wD336_CurrentEntityToLoadPtr], A
+    ld   A, [HL+]
+    ld   [wD337_CurrentEntityToLoadPtr], A
+    ld   A, $01
+    ld   [wD338_EntityLoadingFlag], A
+    ret
 .data_0a_4019:
     dw   .data_MediaDimension_entity_list         ; MAP_MEDIA_DIMENSION
     dw   .data_OutOfToon_entity_list              ; MAP_TOON_TV_OUT_OF_TOON
@@ -75,54 +75,54 @@ call_0a_4000_EntityList_LoadForCurrentLevel:
     dw   .data_MediaDimension_entity_list         ; MAP_UNUSED_1C
     dw   .data_MediaDimension_entity_list         ; MAP_UNUSED_1D
     dw   .data_ChannelZ_entity_list               ; MAP_BOSS_TV_CHANNEL_Z
-.data_MediaDimension_entity_list:                             ;; 0a:4057
+.data_MediaDimension_entity_list:
     INCBIN "data/maps/media_dimension/entity_list_media_dimension.bin"
-.data_OutOfToon_entity_list:                             ;; 0a:4488
+.data_OutOfToon_entity_list:
     INCBIN "data/maps/toon_tv/entity_list_out_of_toon.bin"
-.data_Smellraiser_entity_list:                             ;; 0a:48c9
+.data_Smellraiser_entity_list:
     INCBIN "data/maps/scream_tv/entity_list_smellraiser.bin"
-.data_Frankensteinfeld_entity_list:                             ;; 0a:4aba
+.data_Frankensteinfeld_entity_list:
     INCBIN "data/maps/scream_tv/entity_list_frankensteinfeld.bin"
-.data_wwwdotcomcom_entity_list:                             ;; 0a:4ddb
+.data_wwwdotcomcom_entity_list:
     INCBIN "data/maps/circuit_central/entity_list_wwwdotcomcom.bin"
-.data_MaoTseTongue_entity_list:                             ;; 0a:51ec
+.data_MaoTseTongue_entity_list:
     INCBIN "data/maps/kung_fu_theater/entity_list_mao_tse_tongue.bin"
-.data_Pangaea90210_entity_list:                             ;; 0a:54ed
+.data_Pangaea90210_entity_list:
     INCBIN "data/maps/prehistory_channel/entity_list_pangaea_90210.bin"
-.data_FineTooning_entity_list:                             ;; 0a:57ee
+.data_FineTooning_entity_list:
     INCBIN "data/maps/toon_tv/entity_list_fine_tooning.bin"
-.data_ThisOldCave_entity_list:                             ;; 0a:5c8f
+.data_ThisOldCave_entity_list:
     INCBIN "data/maps/prehistory_channel/entity_list_this_old_cave.bin"
-.data_HoneyIShrunkTheGecko_entity_list:                             ;; 0a:5e20
+.data_HoneyIShrunkTheGecko_entity_list:
     INCBIN "data/maps/circuit_central/entity_list_honey_i_shrunk_the_gecko.bin"
-.data_Poltergex_entity_list:                             ;; 0a:6331
+.data_Poltergex_entity_list:
     INCBIN "data/maps/scream_tv/entity_list_poltergex.bin"
-.data_SamuraiNightFever_entity_list:                             ;; 0a:6692
+.data_SamuraiNightFever_entity_list:
     INCBIN "data/maps/kung_fu_theater/entity_list_samurai_night_fever.bin"
-.data_NoWeddingsAndAFuneral_entity_list:                             ;; 0a:6a43
+.data_NoWeddingsAndAFuneral_entity_list:
     INCBIN "data/maps/rezopolis/entity_list_no_weddings_and_a_funeral.bin"
-.data_ThursdayThe12th_entity_list:                             ;; 0a:6c84
+.data_ThursdayThe12th_entity_list:
     INCBIN "data/maps/scream_tv/entity_list_thursday_the_12th.bin"
-.data_LizardInAChinaShop_entity_list:                             ;; 0a:6d45
+.data_LizardInAChinaShop_entity_list:
     INCBIN "data/maps/kung_fu_theater/entity_list_lizard_in_a_china_shop.bin"
-.data_BuggedOut_entity_list:                             ;; 0a:6dc6
+.data_BuggedOut_entity_list:
     INCBIN "data/maps/rezopolis/entity_list_bugged_out.bin"
-.data_ChipsAndDips_entity_list:                             ;; 0a:6df7
+.data_ChipsAndDips_entity_list:
     INCBIN "data/maps/circuit_central/entity_list_chips_and_dips.bin"
-.data_LavaDabbaDoo_entity_list:                             ;; 0a:6e78
+.data_LavaDabbaDoo_entity_list:
     INCBIN "data/maps/prehistory_channel/entity_list_lava_dabba_doo.bin"
-.data_TexasChainsawManicure_entity_list:                             ;; 0a:7149
+.data_TexasChainsawManicure_entity_list:
     INCBIN "data/maps/scream_tv/entity_list_texas_chainsaw_manicure.bin"
-.data_MazedAndConfused_entity_list:                             ;; 0a:734a
+.data_MazedAndConfused_entity_list:
     INCBIN "data/maps/rezopolis/entity_list_mazed_and_confused.bin"
-.data_ChannelZ_entity_list:                             ;; 0a:751b
+.data_ChannelZ_entity_list:
     INCBIN "data/maps/channel_z/entity_list_channel_z.bin"
 
 data_0a_75fc:
 ; Byte 0 of ENTITY_GEX's record. The spawn code indexes from *here*, not from the label
 ; below, so every record is 8 bytes starting at data_0a_75fc + id*8 - which is why the Gex
 ; row below is one byte short and every later row appears shifted by one
-    db   $00                                           ;; 0a:75fc ?
+    db   $00
 data_0a_75fd_EntityAttributeTable:
 ; The per-entity-type template applied to a slot when it spawns. 8 bytes per entity id:
 ;
@@ -312,368 +312,368 @@ call_0a_7a7c_EntitySpawn_SpawnNextFromList:
 ; type's record in data_0a_75fd_EntityAttributeTable. The record's mask byte decides where
 ; the entry's three free parameter bytes are stored. Finally facing is zeroed, action 0 is
 ; set, the tiles are queued and on GBC the palette is loaded
-    ld   H, $d2                                        ;; 0a:7a7c $26 $d2
-    ld   A, $20                                        ;; 0a:7a7e $3e $20
+    ld   H, $d2
+    ld   A, $20
 .jr_0a_7a80:
-    ld   L, A                                          ;; 0a:7a80 $6f ; L = 0x20
-    ld   A, [HL]                                       ;; 0a:7a81 $7e ; load from $d2xx, start at $d220
-    cp   A, $ff                                        ;; 0a:7a82 $fe $ff ; if loaded value is ff, then jump
-    jr   Z, .jr_0a_7a8c                                ;; 0a:7a84 $28 $06
-    ld   A, L                                          ;; 0a:7a86 $7d
-    add  A, $20                                        ;; 0a:7a87 $c6 $20
-    jr   NZ, .jr_0a_7a80                               ;; 0a:7a89 $20 $f5
-    ret                                                ;; 0a:7a8b $c9
+    ld   L, A                                          ; L = 0x20
+    ld   A, [HL]                                       ; load from $d2xx, start at $d220
+    cp   A, $ff                                        ; if loaded value is ff, then jump
+    jr   Z, .jr_0a_7a8c
+    ld   A, L
+    add  A, $20
+    jr   NZ, .jr_0a_7a80
+    ret
 .jr_0a_7a8c: ; jump here if the value was 0xff. so basically it is looping through 7 sets of 32 bytes looking for a free slot (ff)
-    ld   A, L                                          ;; 0a:7a8c $7d
-    ld   [wD300_CurrentEntityAddrLo], A                                    ;; 0a:7a8d $ea $00 $d3 ; so d300 is the address of the ff byte it found
-    rlca                                               ;; 0a:7a90 $07
-    rlca                                               ;; 0a:7a91 $07
-    rlca                                               ;; 0a:7a92 $07 so now a is the slot number, where slot 1 is dd20, and slot 3 is dd60
-    ld   [wD339_SpawningSlotIndex], A                                    ;; 0a:7a93 $ea $39 $d3
-    ld   HL, wD336_CurrentEntityToLoadPtr                                     ;; 0a:7a96 $21 $36 $d3
-    ld   E, [HL]                                       ;; 0a:7a99 $5e
-    inc  HL                                            ;; 0a:7a9a $23
-    ld   D, [HL]                                       ;; 0a:7a9b $56
-    ld   A, [DE]                                       ;; 0a:7a9c $1a ; load first byte from data
-    cp   A, $ff                                        ;; 0a:7a9d $fe $ff
-    jp   Z, call_0a_4000_EntityList_LoadForCurrentLevel                                 ;; 0a:7a9f $ca $00 $40
-    ld   [wD33B_SpawningEntityId], A                                    ;; 0a:7aa2 $ea $3b $d3 ; first byte from data
-    ld   HL, ENTITY_SPAWN_RECORD_SIZE                  ;; 0a:7aa5 $21 $10 $00
-    add  HL, DE                                        ;; 0a:7aa8 $19
-    ld   A, L                                          ;; 0a:7aa9 $7d
-    ld   [wD336_CurrentEntityToLoadPtr], A                                    ;; 0a:7aaa $ea $36 $d3
-    ld   A, H                                          ;; 0a:7aad $7c
-    ld   [wD337_CurrentEntityToLoadPtr], A                                    ;; 0a:7aae $ea $37 $d3 ; load 2 bytes 0x10 after first
-    ld   HL, wD338_EntityLoadingFlag                                     ;; 0a:7ab1 $21 $38 $d3 
-    ld   C, [HL]                                       ;; 0a:7ab4 $4e 
-    inc  [HL]                                          ;; 0a:7ab5 $34
-    ld   B, $d0                                        ;; 0a:7ab6 $06 $d0
-    ld   A, [BC]                                       ;; 0a:7ab8 $0a
-    and  A, A                                          ;; 0a:7ab9 $a7
-    ret  NZ                                            ;; 0a:7aba $c0
-    ld   A, C                                          ;; 0a:7abb $79
-    ld   [wD33A_SpawningListIndex], A                                    ;; 0a:7abc $ea $3a $d3
-    inc  DE                                            ;; 0a:7abf $13
+    ld   A, L
+    ld   [wD300_CurrentEntityAddrLo], A                                    ; so d300 is the address of the ff byte it found
+    rlca
+    rlca
+    rlca
+    ld   [wD339_SpawningSlotIndex], A
+    ld   HL, wD336_CurrentEntityToLoadPtr
+    ld   E, [HL]
+    inc  HL
+    ld   D, [HL]
+    ld   A, [DE]                                       ; load first byte from data
+    cp   A, $ff
+    jp   Z, call_0a_4000_EntityList_LoadForCurrentLevel
+    ld   [wD33B_SpawningEntityId], A                                    ; first byte from data
+    ld   HL, ENTITY_SPAWN_RECORD_SIZE
+    add  HL, DE
+    ld   A, L
+    ld   [wD336_CurrentEntityToLoadPtr], A
+    ld   A, H
+    ld   [wD337_CurrentEntityToLoadPtr], A                                    ; load 2 bytes 0x10 after first
+    ld   HL, wD338_EntityLoadingFlag
+    ld   C, [HL]
+    inc  [HL]
+    ld   B, $d0
+    ld   A, [BC]
+    and  A, A
+    ret  NZ
+    ld   A, C
+    ld   [wD33A_SpawningListIndex], A
+    inc  DE
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_X
-    ld   A, [DE]                                       ;; 0a:7ac8 $1a
-    ld   [HL+], A                                      ;; 0a:7ac9 $22 ; this is where the x and y coords of the entity are read and written
-    inc  DE                                            ;; 0a:7aca $13
-    ld   A, [DE]                                       ;; 0a:7acb $1a
-    ld   [HL+], A                                      ;; 0a:7acc $22
-    inc  DE                                            ;; 0a:7acd $13
-    ld   A, [DE]                                       ;; 0a:7ace $1a
-    ld   [HL+], A                                      ;; 0a:7acf $22
-    inc  DE                                            ;; 0a:7ad0 $13
-    ld   A, [DE]                                       ;; 0a:7ad1 $1a
-    ld   [HL], A                                       ;; 0a:7ad2 $77
-    inc  DE                                            ;; 0a:7ad3 $13
-    ld   HL, wD339_SpawningSlotIndex                                     ;; 0a:7ad4 $21 $39 $d3
-    ld   L, [HL]                                       ;; 0a:7ad7 $6e
-    ld   H, $00                                        ;; 0a:7ad8 $26 $00
-    add  HL, HL                                        ;; 0a:7ada $29
-    add  HL, HL                                        ;; 0a:7adb $29
-    ld   BC, wD309_EntityBoundingBoxXMax               ;; 0a:7adc $01 $09 $d3 ; this is where bounding box is set
-    add  HL, BC                                        ;; 0a:7adf $09
-    ld   A, [DE]                                       ;; 0a:7ae0 $1a
-    ld   [HL+], A                                      ;; 0a:7ae1 $22
-    inc  DE                                            ;; 0a:7ae2 $13
-    ld   A, [DE]                                       ;; 0a:7ae3 $1a
-    ld   [HL+], A                                      ;; 0a:7ae4 $22
-    inc  DE                                            ;; 0a:7ae5 $13
-    ld   A, [DE]                                       ;; 0a:7ae6 $1a
-    ld   [HL+], A                                      ;; 0a:7ae7 $22
-    inc  DE                                            ;; 0a:7ae8 $13
-    ld   A, [DE]                                       ;; 0a:7ae9 $1a
-    ld   [HL+], A                                      ;; 0a:7aea $22
-    inc  DE                                            ;; 0a:7aeb $13
-    push DE                                            ;; 0a:7aec $d5
+    ld   A, [DE]
+    ld   [HL+], A                                      ; this is where the x and y coords of the entity are read and written
+    inc  DE
+    ld   A, [DE]
+    ld   [HL+], A
+    inc  DE
+    ld   A, [DE]
+    ld   [HL+], A
+    inc  DE
+    ld   A, [DE]
+    ld   [HL], A
+    inc  DE
+    ld   HL, wD339_SpawningSlotIndex
+    ld   L, [HL]
+    ld   H, $00
+    add  HL, HL
+    add  HL, HL
+    ld   BC, wD309_EntityBoundingBoxXMax               ; this is where bounding box is set
+    add  HL, BC
+    ld   A, [DE]
+    ld   [HL+], A
+    inc  DE
+    ld   A, [DE]
+    ld   [HL+], A
+    inc  DE
+    ld   A, [DE]
+    ld   [HL+], A
+    inc  DE
+    ld   A, [DE]
+    ld   [HL+], A
+    inc  DE
+    push DE
     FARCALL call_00_350c_Entity_CheckIfOnScreen
-    pop  DE                                            ;; 0a:7af8 $d1
-    ret  C                                             ;; 0a:7af9 $d8
-    push DE                                            ;; 0a:7afa $d5
+    pop  DE
+    ret  C
+    push DE
     LOAD_OBJ_FIELD_TO_DE_ALT ENTITY_FIELD_ENTITY_ID
-    ld   A, [wD33B_SpawningEntityId]                                    ;; 0a:7b03 $fa $3b $d3
-    ld   [DE], A                                       ;; 0a:7b06 $12
-    ld   L, A                                          ;; 0a:7b07 $6f
-    ld   H, $00                                        ;; 0a:7b08 $26 $00
-    add  HL, HL                                        ;; 0a:7b0a $29
-    add  HL, HL                                        ;; 0a:7b0b $29
-    add  HL, HL                                        ;; 0a:7b0c $29
-    ld   BC, data_0a_75fc                             ;; 0a:7b0d $01 $fc $75
-    add  HL, BC                                        ;; 0a:7b10 $09
-    ld   C, L                                          ;; 0a:7b11 $4d
-    ld   B, H                                          ;; 0a:7b12 $44
-    pop  HL                                            ;; 0a:7b13 $e1
-    ld   A, E                                          ;; 0a:7b14 $7b
-    xor  A, $17                                        ;; 0a:7b15 $ee $17
-    ld   E, A                                          ;; 0a:7b17 $5f
-    xor  A, A                                          ;; 0a:7b18 $af
-    ld   [DE], A                                       ;; 0a:7b19 $12
-    inc  E                                             ;; 0a:7b1a $1c
+    ld   A, [wD33B_SpawningEntityId]
+    ld   [DE], A
+    ld   L, A
+    ld   H, $00
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    ld   BC, data_0a_75fc
+    add  HL, BC
+    ld   C, L
+    ld   B, H
+    pop  HL
+    ld   A, E
+    xor  A, $17
+    ld   E, A
+    xor  A, A
+    ld   [DE], A
+    inc  E
     ; Distribute the spawn record's parameter bytes. B is the type's SPAWN_PARAM_TO_* mask
     ; and HL walks the entry's parameter bytes; DE walks entity fields $18..$1F. Each field
     ; is zeroed first, then overwritten only if its mask bit is set - so HL advances once per
     ; set bit, not once per field
-    ld   A, [BC]                                       ;; 0a:7b1b $0a
-    inc  BC                                            ;; 0a:7b1c $03
-    push BC                                            ;; 0a:7b1d $c5
-    ld   B, A                                          ;; 0a:7b1e $47
-    ld   C, $08                                        ;; 0a:7b1f $0e $08 ; fields $18..$1F
+    ld   A, [BC]
+    inc  BC
+    push BC
+    ld   B, A
+    ld   C, $08                                        ; fields $18..$1F
 .jr_0a_7b21:
-    xor  A, A                                          ;; 0a:7b21 $af
-    ld   [DE], A                                       ;; 0a:7b22 $12
-    bit  7, B                                          ;; 0a:7b23 $cb $78
-    jr   Z, .jr_0a_7b29                                ;; 0a:7b25 $28 $02
-    ld   A, [HL+]                                      ;; 0a:7b27 $2a
-    ld   [DE], A                                       ;; 0a:7b28 $12
+    xor  A, A
+    ld   [DE], A
+    bit  7, B
+    jr   Z, .jr_0a_7b29
+    ld   A, [HL+]
+    ld   [DE], A
 .jr_0a_7b29:
-    inc  E                                             ;; 0a:7b29 $1c
-    sla  B                                             ;; 0a:7b2a $cb $20 ; next mask bit
-    dec  C                                             ;; 0a:7b2c $0d
-    jr   NZ, .jr_0a_7b21                               ;; 0a:7b2d $20 $f2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 0a:7b2f $fa $00 $d3
-    or   A, $14                                        ;; 0a:7b32 $f6 $14
-    ld   E, A                                          ;; 0a:7b34 $5f
-    pop  HL                                            ;; 0a:7b35 $e1
-    ld   A, [HL+]                                      ;; 0a:7b36 $2a
-    ld   [DE], A                                       ;; 0a:7b37 $12
-    inc  E                                             ;; 0a:7b38 $1c
-    ld   A, [HL+]                                      ;; 0a:7b39 $2a
-    ld   [DE], A                                       ;; 0a:7b3a $12
-    inc  E                                             ;; 0a:7b3b $1c
-    ld   A, [HL+]                                      ;; 0a:7b3c $2a
-    ld   [DE], A                                       ;; 0a:7b3d $12
-    push HL                                            ;; 0a:7b3e $e5
-    ld   A, E                                          ;; 0a:7b3f $7b
-    xor  A, $1b                                        ;; 0a:7b40 $ee $1b
-    ld   E, A                                          ;; 0a:7b42 $5f
-    ld   A, $00                                        ;; 0a:7b43 $3e $00
-    ld   [DE], A                                       ;; 0a:7b45 $12 ; sets instance+0x0D facing angle to 0 by default
-    ld   HL, wD339_SpawningSlotIndex                                     ;; 0a:7b46 $21 $39 $d3
-    ld   L, [HL]                                       ;; 0a:7b49 $6e
-    ld   H, $00                                        ;; 0a:7b4a $26 $00
-    ld   DE, wD301_EntityListIndexesForCurrentEntities                                     ;; 0a:7b4c $11 $01 $d3
-    add  HL, DE                                        ;; 0a:7b4f $19
-    ld   A, [wD33A_SpawningListIndex]                                    ;; 0a:7b50 $fa $3a $d3
-    ld   [HL], A                                       ;; 0a:7b53 $77
-    ld   L, A                                          ;; 0a:7b54 $6f
-    ld   H, HIGH(wD000_EntityFlags)                    ;; 0a:7b55 $26 $d0
-    ld   [HL], ENTITY_LIST_FLAG_PLACED                 ;; 0a:7b57 $36 $01
-    xor  A, A                                          ;; 0a:7b59 $af
+    inc  E
+    sla  B                                             ; next mask bit
+    dec  C
+    jr   NZ, .jr_0a_7b21
+    ld   A, [wD300_CurrentEntityAddrLo]
+    or   A, $14
+    ld   E, A
+    pop  HL
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    push HL
+    ld   A, E
+    xor  A, $1b
+    ld   E, A
+    ld   A, $00
+    ld   [DE], A                                       ; sets instance+0x0D facing angle to 0 by default
+    ld   HL, wD339_SpawningSlotIndex
+    ld   L, [HL]
+    ld   H, $00
+    ld   DE, wD301_EntityListIndexesForCurrentEntities
+    add  HL, DE
+    ld   A, [wD33A_SpawningListIndex]
+    ld   [HL], A
+    ld   L, A
+    ld   H, HIGH(wD000_EntityFlags)
+    ld   [HL], ENTITY_LIST_FLAG_PLACED
+    xor  A, A
     FARCALL call_02_7102_Entity_SetAction
-    ld   HL, wD339_SpawningSlotIndex                                     ;; 0a:7b65 $21 $39 $d3
-    ld   L, [HL]                                       ;; 0a:7b68 $6e
-    ld   H, $00                                        ;; 0a:7b69 $26 $00
-    add  HL, HL                                        ;; 0a:7b6b $29
-    add  HL, HL                                        ;; 0a:7b6c $29
-    ld   DE, data_00_39c0_EntityEffectBuffers                                     ;; 0a:7b6d $11 $c0 $39
-    add  HL, DE                                        ;; 0a:7b70 $19
-    ld   A, [HL+]                                      ;; 0a:7b71 $2a
-    ld   H, [HL]                                       ;; 0a:7b72 $66
-    ld   L, A                                          ;; 0a:7b73 $6f
-    ld   [HL], $00                                     ;; 0a:7b74 $36 $00
-    pop  HL                                            ;; 0a:7b76 $e1
-    ld   A, [HL+]                                      ;; 0a:7b77 $2a
-    push HL                                            ;; 0a:7b78 $e5
-    and  A, A                                          ;; 0a:7b79 $a7
-    jr   Z, .jr_0a_7b87                                ;; 0a:7b7a $28 $0b
+    ld   HL, wD339_SpawningSlotIndex
+    ld   L, [HL]
+    ld   H, $00
+    add  HL, HL
+    add  HL, HL
+    ld   DE, data_00_39c0_EntityEffectBuffers
+    add  HL, DE
+    ld   A, [HL+]
+    ld   H, [HL]
+    ld   L, A
+    ld   [HL], $00
+    pop  HL
+    ld   A, [HL+]
+    push HL
+    and  A, A
+    jr   Z, .jr_0a_7b87
     FARCALL call_02_7211_EntityGfxQueue_Enqueue
 .jr_0a_7b87:
-    pop  HL                                            ;; 0a:7b87 $e1
-    ld   A, [wD59E_OnGBCFlag]                                    ;; 0a:7b88 $fa $9e $d5
-    and  A, A                                          ;; 0a:7b8b $a7
-    ret  Z                                             ;; 0a:7b8c $c8
-    ld   C, [HL]                                       ;; 0a:7b8d $4e
+    pop  HL
+    ld   A, [wD59E_OnGBCFlag]
+    and  A, A
+    ret  Z
+    ld   C, [HL]
     FARCALL call_0b_5f57_Entity_LoadGBCPalette
-    ret                                                ;; 0a:7b99 $c9
+    ret
 
 call_0a_7b9a_EntitySpawn_SpawnChildEntity:
-; Finds a free NPC slot, then copies position fields from the calling entity into the new slot 
-; (preserving the parent's wD300 address around the operation), applies a signed X or Y offset 
-; from .data_0a_7c92_EntityChildSpawnData based on child entity type (add or subtract depending 
-; on a direction flag), copies collision/size attributes from data_0a_75fd_EntityAttributeTable, calls the init farCall, 
+; Finds a free NPC slot, then copies position fields from the calling entity into the new slot
+; (preserving the parent's wD300 address around the operation), applies a signed X or Y offset
+; from .data_0a_7c92_EntityChildSpawnData based on child entity type (add or subtract depending
+; on a direction flag), copies collision/size attributes from data_0a_75fd_EntityAttributeTable, calls the init farCall,
 ; clears the slot counter, sets action 0, and copies room bounds from the parent's slot into the child's slot
-    ld   D, $d2                                        ;; 0a:7b9a $16 $d2
-    ld   A, $20                                        ;; 0a:7b9c $3e $20
+    ld   D, $d2
+    ld   A, $20
 .jr_0a_7b9e:
-    ld   E, A                                          ;; 0a:7b9e $5f
-    ld   A, [DE]                                       ;; 0a:7b9f $1a
-    cp   A, $ff                                        ;; 0a:7ba0 $fe $ff
-    jr   Z, .jr_0a_7baa                                ;; 0a:7ba2 $28 $06
-    ld   A, E                                          ;; 0a:7ba4 $7b
-    add  A, $20                                        ;; 0a:7ba5 $c6 $20
-    jr   NZ, .jr_0a_7b9e                               ;; 0a:7ba7 $20 $f5
-    ret                                                ;; 0a:7ba9 $c9
+    ld   E, A
+    ld   A, [DE]
+    cp   A, $ff
+    jr   Z, .jr_0a_7baa
+    ld   A, E
+    add  A, $20
+    jr   NZ, .jr_0a_7b9e
+    ret
 .jr_0a_7baa:
-    ld   HL, wD300_CurrentEntityAddrLo                                     ;; 0a:7baa $21 $00 $d3
-    ld   A, [HL]                                       ;; 0a:7bad $7e
-    ld   [HL], E                                       ;; 0a:7bae $73
-    push AF                                            ;; 0a:7baf $f5
-    ld   H, $d2                                        ;; 0a:7bb0 $26 $d2
-    or   A, $0e                                        ;; 0a:7bb2 $f6 $0e
-    ld   L, A                                          ;; 0a:7bb4 $6f
-    ld   D, H                                          ;; 0a:7bb5 $54
-    ld   A, E                                          ;; 0a:7bb6 $7b
-    or   A, $0e                                        ;; 0a:7bb7 $f6 $0e
-    ld   E, A                                          ;; 0a:7bb9 $5f
-    push BC                                            ;; 0a:7bba $c5
-    ld   B, H                                          ;; 0a:7bbb $44
-    xor  A, $16                                        ;; 0a:7bbc $ee $16
-    ld   C, A                                          ;; 0a:7bbe $4f
+    ld   HL, wD300_CurrentEntityAddrLo
+    ld   A, [HL]
+    ld   [HL], E
+    push AF
+    ld   H, $d2
+    or   A, $0e
+    ld   L, A
+    ld   D, H
+    ld   A, E
+    or   A, $0e
+    ld   E, A
+    push BC
+    ld   B, H
+    xor  A, $16
+    ld   C, A
 .jr_0a_7bbf:
-    ld   A, [HL+]                                      ;; 0a:7bbf $2a
-    ld   [DE], A                                       ;; 0a:7bc0 $12
-    ld   [BC], A                                       ;; 0a:7bc1 $02
-    inc  E                                             ;; 0a:7bc2 $1c
-    inc  C                                             ;; 0a:7bc3 $0c
-    ld   A, L                                          ;; 0a:7bc4 $7d
-    and  A, $1f                                        ;; 0a:7bc5 $e6 $1f
-    cp   A, $12                                        ;; 0a:7bc7 $fe $12
-    jr   NZ, .jr_0a_7bbf                               ;; 0a:7bc9 $20 $f4
-    xor  A, A                                          ;; 0a:7bcb $af
-    ld   [BC], A                                       ;; 0a:7bcc $02
-    inc  C                                             ;; 0a:7bcd $0c
-    ld   [BC], A                                       ;; 0a:7bce $02
-    inc  C                                             ;; 0a:7bcf $0c
-    ld   [BC], A                                       ;; 0a:7bd0 $02
-    inc  C                                             ;; 0a:7bd1 $0c
-    ld   [BC], A                                       ;; 0a:7bd2 $02
-    pop  BC                                            ;; 0a:7bd3 $c1
-    ld   A, L                                          ;; 0a:7bd4 $7d
-    xor  A, $1f                                        ;; 0a:7bd5 $ee $1f
-    ld   L, A                                          ;; 0a:7bd7 $6f
-    ld   A, E                                          ;; 0a:7bd8 $7b
-    xor  A, $1f                                        ;; 0a:7bd9 $ee $1f
-    ld   E, A                                          ;; 0a:7bdb $5f
-    ld   A, [HL]                                       ;; 0a:7bdc $7e
-    ld   [DE], A                                       ;; 0a:7bdd $12
-    push AF                                            ;; 0a:7bde $f5
-    ld   L, C                                          ;; 0a:7bdf $69
-    ld   H, $00                                        ;; 0a:7be0 $26 $00
-    add  HL, HL                                        ;; 0a:7be2 $29
-    add  HL, HL                                        ;; 0a:7be3 $29
-    add  HL, HL                                        ;; 0a:7be4 $29
-    ld   BC, .data_0a_7c92_EntityChildSpawnData                             ;; 0a:7be5 $01 $92 $7c
-    add  HL, BC                                        ;; 0a:7be8 $09
-    ld   A, E                                          ;; 0a:7be9 $7b
-    xor  A, $0d                                        ;; 0a:7bea $ee $0d
-    ld   E, A                                          ;; 0a:7bec $5f
-    ld   A, [HL+]                                      ;; 0a:7bed $2a
-    ld   [DE], A                                       ;; 0a:7bee $12
-    ld   C, A                                          ;; 0a:7bef $4f
-    ld   A, E                                          ;; 0a:7bf0 $7b
-    xor  A, $0e                                        ;; 0a:7bf1 $ee $0e
-    ld   E, A                                          ;; 0a:7bf3 $5f
-    pop  AF                                            ;; 0a:7bf4 $f1
-    cp   A, $00                                        ;; 0a:7bf5 $fe $00
-    jr   NZ, .jr_0a_7c05                               ;; 0a:7bf7 $20 $0c
-    ld   A, [DE]                                       ;; 0a:7bf9 $1a
-    add  A, [HL]                                       ;; 0a:7bfa $86
-    ld   [DE], A                                       ;; 0a:7bfb $12
-    inc  HL                                            ;; 0a:7bfc $23
-    inc  DE                                            ;; 0a:7bfd $13
-    ld   A, [DE]                                       ;; 0a:7bfe $1a
-    adc  A, [HL]                                       ;; 0a:7bff $8e
-    ld   [DE], A                                       ;; 0a:7c00 $12
-    inc  HL                                            ;; 0a:7c01 $23
-    inc  E                                             ;; 0a:7c02 $1c
-    jr   .jr_0a_7c0f                                   ;; 0a:7c03 $18 $0a
+    ld   A, [HL+]
+    ld   [DE], A
+    ld   [BC], A
+    inc  E
+    inc  C
+    ld   A, L
+    and  A, $1f
+    cp   A, $12
+    jr   NZ, .jr_0a_7bbf
+    xor  A, A
+    ld   [BC], A
+    inc  C
+    ld   [BC], A
+    inc  C
+    ld   [BC], A
+    inc  C
+    ld   [BC], A
+    pop  BC
+    ld   A, L
+    xor  A, $1f
+    ld   L, A
+    ld   A, E
+    xor  A, $1f
+    ld   E, A
+    ld   A, [HL]
+    ld   [DE], A
+    push AF
+    ld   L, C
+    ld   H, $00
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    ld   BC, .data_0a_7c92_EntityChildSpawnData
+    add  HL, BC
+    ld   A, E
+    xor  A, $0d
+    ld   E, A
+    ld   A, [HL+]
+    ld   [DE], A
+    ld   C, A
+    ld   A, E
+    xor  A, $0e
+    ld   E, A
+    pop  AF
+    cp   A, $00
+    jr   NZ, .jr_0a_7c05
+    ld   A, [DE]
+    add  A, [HL]
+    ld   [DE], A
+    inc  HL
+    inc  DE
+    ld   A, [DE]
+    adc  A, [HL]
+    ld   [DE], A
+    inc  HL
+    inc  E
+    jr   .jr_0a_7c0f
 .jr_0a_7c05:
-    ld   A, [DE]                                       ;; 0a:7c05 $1a
-    sub  A, [HL]                                       ;; 0a:7c06 $96
-    ld   [DE], A                                       ;; 0a:7c07 $12
-    inc  HL                                            ;; 0a:7c08 $23
-    inc  DE                                            ;; 0a:7c09 $13
-    ld   A, [DE]                                       ;; 0a:7c0a $1a
-    sbc  A, [HL]                                       ;; 0a:7c0b $9e
-    ld   [DE], A                                       ;; 0a:7c0c $12
-    inc  HL                                            ;; 0a:7c0d $23
-    inc  E                                             ;; 0a:7c0e $1c
+    ld   A, [DE]
+    sub  A, [HL]
+    ld   [DE], A
+    inc  HL
+    inc  DE
+    ld   A, [DE]
+    sbc  A, [HL]
+    ld   [DE], A
+    inc  HL
+    inc  E
 .jr_0a_7c0f:
-    ld   A, [DE]                                       ;; 0a:7c0f $1a
-    add  A, [HL]                                       ;; 0a:7c10 $86
-    ld   [DE], A                                       ;; 0a:7c11 $12
-    inc  HL                                            ;; 0a:7c12 $23
-    inc  DE                                            ;; 0a:7c13 $13
-    ld   A, [DE]                                       ;; 0a:7c14 $1a
-    adc  A, [HL]                                       ;; 0a:7c15 $8e
-    ld   [DE], A                                       ;; 0a:7c16 $12
-    ld   A, E                                          ;; 0a:7c17 $7b
-    xor  A, $05                                        ;; 0a:7c18 $ee $05
-    ld   E, A                                          ;; 0a:7c1a $5f
-    ld   L, C                                          ;; 0a:7c1b $69
-    ld   H, $00                                        ;; 0a:7c1c $26 $00
-    add  HL, HL                                        ;; 0a:7c1e $29
-    add  HL, HL                                        ;; 0a:7c1f $29
-    add  HL, HL                                        ;; 0a:7c20 $29
-    ld   BC, data_0a_75fd_EntityAttributeTable                             ;; 0a:7c21 $01 $fd $75
-    add  HL, BC                                        ;; 0a:7c24 $09
-    ld   A, [HL+]                                      ;; 0a:7c25 $2a
-    ld   [DE], A                                       ;; 0a:7c26 $12
-    inc  E                                             ;; 0a:7c27 $1c
-    ld   A, [HL+]                                      ;; 0a:7c28 $2a
-    ld   [DE], A                                       ;; 0a:7c29 $12
-    inc  E                                             ;; 0a:7c2a $1c
-    ld   A, [HL+]                                      ;; 0a:7c2b $2a
-    ld   [DE], A                                       ;; 0a:7c2c $12
-    ld   A, E                                          ;; 0a:7c2d $7b
-    xor  A, $08                                        ;; 0a:7c2e $ee $08
-    ld   E, A                                          ;; 0a:7c30 $5f
-    xor  A, A                                          ;; 0a:7c31 $af
-    ld   [DE], A                                       ;; 0a:7c32 $12
-    ld   A, [HL+]                                      ;; 0a:7c33 $2a
-    push HL                                            ;; 0a:7c34 $e5
-    and  A, A                                          ;; 0a:7c35 $a7
-    jr   Z, .jr_0a_7c43                                ;; 0a:7c36 $28 $0b
+    ld   A, [DE]
+    add  A, [HL]
+    ld   [DE], A
+    inc  HL
+    inc  DE
+    ld   A, [DE]
+    adc  A, [HL]
+    ld   [DE], A
+    ld   A, E
+    xor  A, $05
+    ld   E, A
+    ld   L, C
+    ld   H, $00
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    ld   BC, data_0a_75fd_EntityAttributeTable
+    add  HL, BC
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    ld   A, E
+    xor  A, $08
+    ld   E, A
+    xor  A, A
+    ld   [DE], A
+    ld   A, [HL+]
+    push HL
+    and  A, A
+    jr   Z, .jr_0a_7c43
     FARCALL call_02_7211_EntityGfxQueue_Enqueue
 .jr_0a_7c43:
-    pop  HL                                            ;; 0a:7c43 $e1
-    ld   A, [wD59E_OnGBCFlag]                                    ;; 0a:7c44 $fa $9e $d5
-    and  A, A                                          ;; 0a:7c47 $a7
-    jr   Z, .jr_0a_7c56                                ;; 0a:7c48 $28 $0c
-    ld   C, [HL]                                       ;; 0a:7c4a $4e
+    pop  HL
+    ld   A, [wD59E_OnGBCFlag]
+    and  A, A
+    jr   Z, .jr_0a_7c56
+    ld   C, [HL]
     FARCALL call_0b_5f57_Entity_LoadGBCPalette
 .jr_0a_7c56:
-    call call_00_34d8_Entity_ResetEntityListIndex                                  ;; 0a:7c56 $cd $d8 $34
-    xor  A, A                                          ;; 0a:7c59 $af
+    call call_00_34d8_Entity_ResetEntityListIndex
+    xor  A, A
     FARCALL call_02_7102_Entity_SetAction
-    pop  AF                                            ;; 0a:7c65 $f1
-    ld   HL, wD300_CurrentEntityAddrLo                                     ;; 0a:7c66 $21 $00 $d3
-    ld   C, [HL]                                       ;; 0a:7c69 $4e
-    ld   [HL], A                                       ;; 0a:7c6a $77
-    rrca                                               ;; 0a:7c6b $0f
-    rrca                                               ;; 0a:7c6c $0f
-    rrca                                               ;; 0a:7c6d $0f
-    and  A, $1c                                        ;; 0a:7c6e $e6 $1c
-    ld   L, A                                          ;; 0a:7c70 $6f
-    ld   H, $00                                        ;; 0a:7c71 $26 $00
-    ld   DE, wD309_EntityBoundingBoxXMax                                     ;; 0a:7c73 $11 $09 $d3
-    add  HL, DE                                        ;; 0a:7c76 $19
-    ld   E, L                                          ;; 0a:7c77 $5d
-    ld   D, H                                          ;; 0a:7c78 $54
-    ld   A, C                                          ;; 0a:7c79 $79
-    rrca                                               ;; 0a:7c7a $0f
-    rrca                                               ;; 0a:7c7b $0f
-    rrca                                               ;; 0a:7c7c $0f
-    and  A, $1c                                        ;; 0a:7c7d $e6 $1c
-    ld   L, A                                          ;; 0a:7c7f $6f
-    ld   H, $00                                        ;; 0a:7c80 $26 $00
-    ld   BC, wD309_EntityBoundingBoxXMax                                     ;; 0a:7c82 $01 $09 $d3
-    add  HL, BC                                        ;; 0a:7c85 $09
-    ld   A, [DE]                                       ;; 0a:7c86 $1a
-    ld   [HL+], A                                      ;; 0a:7c87 $22
-    inc  DE                                            ;; 0a:7c88 $13
-    ld   A, [DE]                                       ;; 0a:7c89 $1a
-    ld   [HL+], A                                      ;; 0a:7c8a $22
-    inc  DE                                            ;; 0a:7c8b $13
-    ld   A, [DE]                                       ;; 0a:7c8c $1a
-    ld   [HL+], A                                      ;; 0a:7c8d $22
-    inc  DE                                            ;; 0a:7c8e $13
-    ld   A, [DE]                                       ;; 0a:7c8f $1a
-    ld   [HL], A                                       ;; 0a:7c90 $77
-    ret                                                ;; 0a:7c91 $c9
+    pop  AF
+    ld   HL, wD300_CurrentEntityAddrLo
+    ld   C, [HL]
+    ld   [HL], A
+    rrca
+    rrca
+    rrca
+    and  A, $1c
+    ld   L, A
+    ld   H, $00
+    ld   DE, wD309_EntityBoundingBoxXMax
+    add  HL, DE
+    ld   E, L
+    ld   D, H
+    ld   A, C
+    rrca
+    rrca
+    rrca
+    and  A, $1c
+    ld   L, A
+    ld   H, $00
+    ld   BC, wD309_EntityBoundingBoxXMax
+    add  HL, BC
+    ld   A, [DE]
+    ld   [HL+], A
+    inc  DE
+    ld   A, [DE]
+    ld   [HL+], A
+    inc  DE
+    ld   A, [DE]
+    ld   [HL+], A
+    inc  DE
+    ld   A, [DE]
+    ld   [HL], A
+    ret
 .data_0a_7c92_EntityChildSpawnData:
-; 8-byte records (child entity ID + signed 16-bit X offset + signed 16-bit Y offset + padding) 
+; 8-byte records (child entity ID + signed 16-bit X offset + signed 16-bit Y offset + padding)
 ; defining where each spawnable child appears relative to its parent.
     EntityChildSpawnData ENTITY_SCREAM_TV_HEAD_GHOST_HEAD,             $0006, -$000E
     EntityChildSpawnData ENTITY_SCREAM_TV_FLOATING_SKULL_PROJECTILE,   $0000, $000C

@@ -41,169 +41,169 @@ call_0b_4efe_Player_SetSpawnPosition:
 ;
 ; All three end in the same jump to call_00_13a6_BgMap_UpdateWindowFromPlayerPos,
 ; which is what makes the camera follow rather than tearing on the first frame
-    ld   HL, wD621_WarpFlags                                     ;; 0b:4efe $21 $21 $d6
-    ld   A, [HL]                                       ;; 0b:4f01 $7e
-    and  A, WARP_FLAG_ENTERED_DOOR                     ;; 0b:4f02 $e6 $08
-    jr   Z, .jr_0b_4f70_NotADoor                                ;; 0b:4f04 $28 $6a
-    ld   A, [HL]                                       ;; 0b:4f06 $7e
-    and  A, $ff ^ WARP_FLAG_ENTERED_DOOR               ;; 0b:4f07 $e6 $f7
-    ld   [HL], A                                       ;; 0b:4f09 $77
-    ld   HL, wD20E_Player_XPositionLo                                     ;; 0b:4f0a $21 $0e $d2
-    ld   A, [HL+]                                      ;; 0b:4f0d $2a
-    ld   H, [HL]                                       ;; 0b:4f0e $66
-    ld   L, A                                          ;; 0b:4f0f $6f
-    ld   DE, -DOOR_MATCH_X_BIAS                        ;; 0b:4f10 $11 $f1 $ff
-    add  HL, DE                                        ;; 0b:4f13 $19
-    add  HL, HL                                        ;; 0b:4f14 $29
-    add  HL, HL                                        ;; 0b:4f15 $29
-    add  HL, HL                                        ;; 0b:4f16 $29
-    ld   C, H                                          ;; 0b:4f17 $4c ; C = block X: (x - bias) * 8 >> 8
-    ld   HL, wD210_Player_YPositionLo                                     ;; 0b:4f18 $21 $10 $d2
-    ld   A, [HL+]                                      ;; 0b:4f1b $2a
-    ld   H, [HL]                                       ;; 0b:4f1c $66
-    ld   L, A                                          ;; 0b:4f1d $6f
-    add  HL, HL                                        ;; 0b:4f1e $29
-    add  HL, HL                                        ;; 0b:4f1f $29
-    add  HL, HL                                        ;; 0b:4f20 $29
-    ld   B, H                                          ;; 0b:4f21 $44 ; B = block Y, no bias
-    ld   HL, wD624_CurrentLevelId                                     ;; 0b:4f22 $21 $24 $d6
-    ld   L, [HL]                                       ;; 0b:4f25 $6e
-    ld   H, $00                                        ;; 0b:4f26 $26 $00
-    add  HL, HL                                        ;; 0b:4f28 $29
-    ld   DE, .data_0b_4ff2_LevelDoorLists              ;; 0b:4f29 $11 $f2 $4f
-    add  HL, DE                                        ;; 0b:4f2c $19
-    ld   A, [HL+]                                      ;; 0b:4f2d $2a
-    ld   H, [HL]                                       ;; 0b:4f2e $66
-    ld   L, A                                          ;; 0b:4f2f $6f
-    ld   DE, DOOR_RECORD_SIZE - 1                      ;; 0b:4f30 $11 $03 $00 ; the first byte is already consumed
+    ld   HL, wD621_WarpFlags
+    ld   A, [HL]
+    and  A, WARP_FLAG_ENTERED_DOOR
+    jr   Z, .jr_0b_4f70_NotADoor
+    ld   A, [HL]
+    and  A, $ff ^ WARP_FLAG_ENTERED_DOOR
+    ld   [HL], A
+    ld   HL, wD20E_Player_XPositionLo
+    ld   A, [HL+]
+    ld   H, [HL]
+    ld   L, A
+    ld   DE, -DOOR_MATCH_X_BIAS
+    add  HL, DE
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    ld   C, H                                          ; C = block X: (x - bias) * 8 >> 8
+    ld   HL, wD210_Player_YPositionLo
+    ld   A, [HL+]
+    ld   H, [HL]
+    ld   L, A
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    ld   B, H                                          ; B = block Y, no bias
+    ld   HL, wD624_CurrentLevelId
+    ld   L, [HL]
+    ld   H, $00
+    add  HL, HL
+    ld   DE, .data_0b_4ff2_LevelDoorLists
+    add  HL, DE
+    ld   A, [HL+]
+    ld   H, [HL]
+    ld   L, A
+    ld   DE, DOOR_RECORD_SIZE - 1                      ; the first byte is already consumed
 .jr_0b_4f33_SearchDoors:
-    ld   A, [HL+]                                      ;; 0b:4f33 $2a
-    cp   A, SPAWN_LIST_END                             ;; 0b:4f34 $fe $ff
-    ret  Z                                             ;; 0b:4f36 $c8 ; end of list: leave the player where they are
-    cp   A, C                                          ;; 0b:4f37 $b9
-    jr   NZ, .jr_0b_4f3e_NextDoor                               ;; 0b:4f38 $20 $04
-    ld   A, [HL]                                       ;; 0b:4f3a $7e
-    cp   A, B                                          ;; 0b:4f3b $b8
-    jr   Z, .jr_0b_4f41_DoorFound                                ;; 0b:4f3c $28 $03
+    ld   A, [HL+]
+    cp   A, SPAWN_LIST_END
+    ret  Z                                             ; end of list: leave the player where they are
+    cp   A, C
+    jr   NZ, .jr_0b_4f3e_NextDoor
+    ld   A, [HL]
+    cp   A, B
+    jr   Z, .jr_0b_4f41_DoorFound
 .jr_0b_4f3e_NextDoor:
-    add  HL, DE                                        ;; 0b:4f3e $19
-    jr   .jr_0b_4f33_SearchDoors                                   ;; 0b:4f3f $18 $f2
+    add  HL, DE
+    jr   .jr_0b_4f33_SearchDoors
 .jr_0b_4f41_DoorFound:
-    inc  HL                                            ;; 0b:4f41 $23
-    ld   C, [HL]                                       ;; 0b:4f42 $4e
-    inc  HL                                            ;; 0b:4f43 $23
-    ld   B, [HL]                                       ;; 0b:4f44 $46
-    ld   L, C                                          ;; 0b:4f45 $69
-    ld   H, $00                                        ;; 0b:4f46 $26 $00
-    add  HL, HL                                        ;; 0b:4f48 $29
-    add  HL, HL                                        ;; 0b:4f49 $29
-    add  HL, HL                                        ;; 0b:4f4a $29
-    add  HL, HL                                        ;; 0b:4f4b $29
-    add  HL, HL                                        ;; 0b:4f4c $29
-    ld   DE, SPAWN_DOOR_X_OFFSET                       ;; 0b:4f4d $11 $20 $00
-    add  HL, DE                                        ;; 0b:4f50 $19
-    ld   A, L                                          ;; 0b:4f51 $7d
-    ld   [wD20E_Player_XPositionLo], A                                    ;; 0b:4f52 $ea $0e $d2
-    ld   A, H                                          ;; 0b:4f55 $7c
-    ld   [wD20F_Player_XPositionHi], A                                    ;; 0b:4f56 $ea $0f $d2
-    ld   L, B                                          ;; 0b:4f59 $68
-    ld   H, $00                                        ;; 0b:4f5a $26 $00
-    add  HL, HL                                        ;; 0b:4f5c $29
-    add  HL, HL                                        ;; 0b:4f5d $29
-    add  HL, HL                                        ;; 0b:4f5e $29
-    add  HL, HL                                        ;; 0b:4f5f $29
-    add  HL, HL                                        ;; 0b:4f60 $29
-    ld   DE, SPAWN_DOOR_Y_OFFSET                       ;; 0b:4f61 $11 $10 $00
-    add  HL, DE                                        ;; 0b:4f64 $19
-    ld   A, L                                          ;; 0b:4f65 $7d
-    ld   [wD210_Player_YPositionLo], A                                    ;; 0b:4f66 $ea $10 $d2
-    ld   A, H                                          ;; 0b:4f69 $7c
-    ld   [wD211_Player_YPositionHi], A                                    ;; 0b:4f6a $ea $11 $d2
-    jp   call_00_13a6_BgMap_UpdateWindowFromPlayerPos                                  ;; 0b:4f6d $c3 $a6 $13
+    inc  HL
+    ld   C, [HL]
+    inc  HL
+    ld   B, [HL]
+    ld   L, C
+    ld   H, $00
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    ld   DE, SPAWN_DOOR_X_OFFSET
+    add  HL, DE
+    ld   A, L
+    ld   [wD20E_Player_XPositionLo], A
+    ld   A, H
+    ld   [wD20F_Player_XPositionHi], A
+    ld   L, B
+    ld   H, $00
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    ld   DE, SPAWN_DOOR_Y_OFFSET
+    add  HL, DE
+    ld   A, L
+    ld   [wD210_Player_YPositionLo], A
+    ld   A, H
+    ld   [wD211_Player_YPositionHi], A
+    jp   call_00_13a6_BgMap_UpdateWindowFromPlayerPos
 .jr_0b_4f70_NotADoor:
-    ld   A, [wD624_CurrentLevelId]                                    ;; 0b:4f70 $fa $24 $d6
-    and  A, A                                          ;; 0b:4f73 $a7
-    jr   NZ, .jr_0b_4faf_LevelSpawn                               ;; 0b:4f74 $20 $39
-    ld   HL, wD628_MediaDimensionRespawnPoint                                     ;; 0b:4f76 $21 $28 $d6
-    ld   L, [HL]                                       ;; 0b:4f79 $6e
-    ld   H, $00                                        ;; 0b:4f7a $26 $00
-    add  HL, HL                                        ;; 0b:4f7c $29
-    ld   DE, .data_0b_5401_MediaDimensionSpawnPoints   ;; 0b:4f7d $11 $01 $54
-    add  HL, DE                                        ;; 0b:4f80 $19
-    ld   C, [HL]                                       ;; 0b:4f81 $4e
-    inc  HL                                            ;; 0b:4f82 $23
-    ld   B, [HL]                                       ;; 0b:4f83 $46
-    ld   L, C                                          ;; 0b:4f84 $69
-    ld   H, $00                                        ;; 0b:4f85 $26 $00
-    add  HL, HL                                        ;; 0b:4f87 $29
-    add  HL, HL                                        ;; 0b:4f88 $29
-    add  HL, HL                                        ;; 0b:4f89 $29
-    add  HL, HL                                        ;; 0b:4f8a $29
-    add  HL, HL                                        ;; 0b:4f8b $29
-    ld   DE, SPAWN_HUB_X_OFFSET                        ;; 0b:4f8c $11 $20 $00
-    add  HL, DE                                        ;; 0b:4f8f $19
-    ld   A, L                                          ;; 0b:4f90 $7d
-    ld   [wD20E_Player_XPositionLo], A                                    ;; 0b:4f91 $ea $0e $d2
-    ld   A, H                                          ;; 0b:4f94 $7c
-    ld   [wD20F_Player_XPositionHi], A                                    ;; 0b:4f95 $ea $0f $d2
-    ld   L, B                                          ;; 0b:4f98 $68
-    ld   H, $00                                        ;; 0b:4f99 $26 $00
-    add  HL, HL                                        ;; 0b:4f9b $29
-    add  HL, HL                                        ;; 0b:4f9c $29
-    add  HL, HL                                        ;; 0b:4f9d $29
-    add  HL, HL                                        ;; 0b:4f9e $29
-    add  HL, HL                                        ;; 0b:4f9f $29
-    ld   DE, SPAWN_HUB_Y_OFFSET                        ;; 0b:4fa0 $11 $30 $00
-    add  HL, DE                                        ;; 0b:4fa3 $19
-    ld   A, L                                          ;; 0b:4fa4 $7d
-    ld   [wD210_Player_YPositionLo], A                                    ;; 0b:4fa5 $ea $10 $d2
-    ld   A, H                                          ;; 0b:4fa8 $7c
-    ld   [wD211_Player_YPositionHi], A                                    ;; 0b:4fa9 $ea $11 $d2
-    jp   call_00_13a6_BgMap_UpdateWindowFromPlayerPos                                  ;; 0b:4fac $c3 $a6 $13
+    ld   A, [wD624_CurrentLevelId]
+    and  A, A
+    jr   NZ, .jr_0b_4faf_LevelSpawn
+    ld   HL, wD628_MediaDimensionRespawnPoint
+    ld   L, [HL]
+    ld   H, $00
+    add  HL, HL
+    ld   DE, .data_0b_5401_MediaDimensionSpawnPoints
+    add  HL, DE
+    ld   C, [HL]
+    inc  HL
+    ld   B, [HL]
+    ld   L, C
+    ld   H, $00
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    ld   DE, SPAWN_HUB_X_OFFSET
+    add  HL, DE
+    ld   A, L
+    ld   [wD20E_Player_XPositionLo], A
+    ld   A, H
+    ld   [wD20F_Player_XPositionHi], A
+    ld   L, B
+    ld   H, $00
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    ld   DE, SPAWN_HUB_Y_OFFSET
+    add  HL, DE
+    ld   A, L
+    ld   [wD210_Player_YPositionLo], A
+    ld   A, H
+    ld   [wD211_Player_YPositionHi], A
+    jp   call_00_13a6_BgMap_UpdateWindowFromPlayerPos
 .jr_0b_4faf_LevelSpawn:
-    ld   HL, wD624_CurrentLevelId                                     ;; 0b:4faf $21 $24 $d6
-    ld   L, [HL]                                       ;; 0b:4fb2 $6e
-    ld   H, $00                                        ;; 0b:4fb3 $26 $00
-    add  HL, HL                                        ;; 0b:4fb5 $29
-    add  HL, HL                                        ;; 0b:4fb6 $29
-    add  HL, HL                                        ;; 0b:4fb7 $29
-    ld   A, [wD618_CheckpointSpawnId]                                    ;; 0b:4fb8 $fa $18 $d6
-    add  A, A                                          ;; 0b:4fbb $87
-    ld   E, A                                          ;; 0b:4fbc $5f
-    ld   D, $00                                        ;; 0b:4fbd $16 $00
-    add  HL, DE                                        ;; 0b:4fbf $19
-    ld   DE, .data_0b_543f_LevelCheckpointSpawns       ;; 0b:4fc0 $11 $3f $54
-    add  HL, DE                                        ;; 0b:4fc3 $19
-    ld   C, [HL]                                       ;; 0b:4fc4 $4e
-    inc  HL                                            ;; 0b:4fc5 $23
-    ld   B, [HL]                                       ;; 0b:4fc6 $46
-    ld   L, C                                          ;; 0b:4fc7 $69
-    ld   H, $00                                        ;; 0b:4fc8 $26 $00
-    add  HL, HL                                        ;; 0b:4fca $29
-    add  HL, HL                                        ;; 0b:4fcb $29
-    add  HL, HL                                        ;; 0b:4fcc $29
-    add  HL, HL                                        ;; 0b:4fcd $29
-    add  HL, HL                                        ;; 0b:4fce $29
-    ld   DE, SPAWN_LEVEL_X_OFFSET                      ;; 0b:4fcf $11 $10 $00
-    add  HL, DE                                        ;; 0b:4fd2 $19
-    ld   A, L                                          ;; 0b:4fd3 $7d
-    ld   [wD20E_Player_XPositionLo], A                                    ;; 0b:4fd4 $ea $0e $d2
-    ld   A, H                                          ;; 0b:4fd7 $7c
-    ld   [wD20F_Player_XPositionHi], A                                    ;; 0b:4fd8 $ea $0f $d2
-    ld   L, B                                          ;; 0b:4fdb $68
-    ld   H, $00                                        ;; 0b:4fdc $26 $00
-    add  HL, HL                                        ;; 0b:4fde $29
-    add  HL, HL                                        ;; 0b:4fdf $29
-    add  HL, HL                                        ;; 0b:4fe0 $29
-    add  HL, HL                                        ;; 0b:4fe1 $29
-    add  HL, HL                                        ;; 0b:4fe2 $29
-    ld   DE, SPAWN_LEVEL_Y_OFFSET                      ;; 0b:4fe3 $11 $10 $00
-    add  HL, DE                                        ;; 0b:4fe6 $19
-    ld   A, L                                          ;; 0b:4fe7 $7d
-    ld   [wD210_Player_YPositionLo], A                                    ;; 0b:4fe8 $ea $10 $d2
-    ld   A, H                                          ;; 0b:4feb $7c
-    ld   [wD211_Player_YPositionHi], A                                    ;; 0b:4fec $ea $11 $d2
-    jp   call_00_13a6_BgMap_UpdateWindowFromPlayerPos                                  ;; 0b:4fef $c3 $a6 $13
+    ld   HL, wD624_CurrentLevelId
+    ld   L, [HL]
+    ld   H, $00
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    ld   A, [wD618_CheckpointSpawnId]
+    add  A, A
+    ld   E, A
+    ld   D, $00
+    add  HL, DE
+    ld   DE, .data_0b_543f_LevelCheckpointSpawns
+    add  HL, DE
+    ld   C, [HL]
+    inc  HL
+    ld   B, [HL]
+    ld   L, C
+    ld   H, $00
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    ld   DE, SPAWN_LEVEL_X_OFFSET
+    add  HL, DE
+    ld   A, L
+    ld   [wD20E_Player_XPositionLo], A
+    ld   A, H
+    ld   [wD20F_Player_XPositionHi], A
+    ld   L, B
+    ld   H, $00
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    ld   DE, SPAWN_LEVEL_Y_OFFSET
+    add  HL, DE
+    ld   A, L
+    ld   [wD210_Player_YPositionLo], A
+    ld   A, H
+    ld   [wD211_Player_YPositionHi], A
+    jp   call_00_13a6_BgMap_UpdateWindowFromPlayerPos
 .data_0b_4ff2_LevelDoorLists:
 ; One pointer per level to that level's door list. Levels with no doors of their own
 ; point at the Media Dimension list, which is harmless because a door only fires when

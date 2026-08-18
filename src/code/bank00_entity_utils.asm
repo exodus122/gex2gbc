@@ -1,29 +1,29 @@
 call_00_30af_Entity_ApplyGravityAndMoveY_Clamped:
-; Applies gravity (subtracts 2 from Y velocity, clamps to $C0 minimum), negates velocity, 
+; Applies gravity (subtracts 2 from Y velocity, clamps to $C0 minimum), negates velocity,
 ; right-shifts 4x to get pixel delta, then jumps to move Y position
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_Y_VELOCITY
-    ld   A, [HL]                                       ;; 00:30b7 $7e
-    sub  A, $02                                        ;; 00:30b8 $d6 $02
-    bit  7, A                                          ;; 00:30ba $cb $7f
-    jr   Z, .jr_00_30c4                                ;; 00:30bc $28 $06
-    cp   A, $c0                                        ;; 00:30be $fe $c0
-    jr   NC, .jr_00_30c4                               ;; 00:30c0 $30 $02
-    ld   A, $c0                                        ;; 00:30c2 $3e $c0
+    ld   A, [HL]
+    sub  A, $02
+    bit  7, A
+    jr   Z, .jr_00_30c4
+    cp   A, $c0
+    jr   NC, .jr_00_30c4
+    ld   A, $c0
 .jr_00_30c4:
-    ld   [HL], A                                       ;; 00:30c4 $77
-    cpl                                                ;; 00:30c5 $2f
-    inc  A                                             ;; 00:30c6 $3c
-    sra  A                                             ;; 00:30c7 $cb $2f
-    sra  A                                             ;; 00:30c9 $cb $2f
-    sra  A                                             ;; 00:30cb $cb $2f
-    sra  A                                             ;; 00:30cd $cb $2f
-    ld   C, A                                          ;; 00:30cf $4f
-    cp   A, $80                                        ;; 00:30d0 $fe $80
-    ld   A, $ff                                        ;; 00:30d2 $3e $ff
-    adc  A, $00                                        ;; 00:30d4 $ce $00
-    ld   B, A                                          ;; 00:30d6 $47
-    jp   call_00_37d8_Entity_MoveY                                  ;; 00:30d7 $c3 $d8 $37
-    
+    ld   [HL], A
+    cpl
+    inc  A
+    sra  A
+    sra  A
+    sra  A
+    sra  A
+    ld   C, A
+    cp   A, $80
+    ld   A, $ff
+    adc  A, $00
+    ld   B, A
+    jp   call_00_37d8_Entity_MoveY
+
 call_00_30da_Entity_ApplyGravityMoveY_WithFloorCollision:
 ; Same gravity and clamp as above, and it keeps the sign-extension - what it drops
 ; is the `cpl / inc A` NEGATION. That is not a cosmetic difference: for the same
@@ -90,7 +90,7 @@ call_00_30da_Entity_ApplyGravityMoveY_WithFloorCollision:
     ld   l,a
     xor  a
     ld   [hl],a
-    ret  
+    ret
 
 call_00_3125_Entity_SetYFloorToCurrentPos:
 ; Records the entity's current Y as its floor, by copying the 16-bit YPOS into the
@@ -114,7 +114,7 @@ call_00_3125_Entity_SetYFloorToCurrentPos:
     ld   [hl],e
     inc  l
     ld   [hl],d
-    ret  
+    ret
 
 call_00_3137_Entity_ClampYToStoredFloor:
 ; Enforces the floor recorded by call_00_3125_Entity_SetYFloorToCurrentPos: reads
@@ -143,7 +143,7 @@ call_00_3137_Entity_ClampYToStoredFloor:
     ld   l,a
     xor  a
     ld   [hl],a
-    ret  
+    ret
 
 call_00_3154_Entity_ClampYToMaxYBound:
 ; Enforces the floor from the bounding-box tables. Calls Entity_GetMaxYBound, and
@@ -159,48 +159,48 @@ call_00_3154_Entity_ClampYToMaxYBound:
 ;
 ; Every hopping enemy in bank 2 is built out of "apply gravity, then `ret c` on
 ; this" (see call_02_5399_EntityAction_Pumpkin_Hop)
-    call call_00_34ba_Entity_GetMaxYBound                                  ;; 00:3154 $cd $ba $34
+    call call_00_34ba_Entity_GetMaxYBound
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_Y
-    ld   A, [HL+]                                      ;; 00:315f $2a
-    sub  A, E                                          ;; 00:3160 $93
-    ld   A, [HL]                                       ;; 00:3161 $7e
-    sbc  A, D                                          ;; 00:3162 $9a
-    ret  C                                             ;; 00:3163 $d8
-    ld   [HL], D                                       ;; 00:3164 $72
-    dec  L                                             ;; 00:3165 $2d
-    ld   [HL], E                                       ;; 00:3166 $73
-    ld   A, L                                          ;; 00:3167 $7d
-    xor  A, $0e                                        ;; 00:3168 $ee $0e
-    ld   L, A                                          ;; 00:316a $6f
-    xor  A, A                                          ;; 00:316b $af
-    ld   [HL], A                                       ;; 00:316c $77
-    ret                                                ;; 00:316d $c9
+    ld   A, [HL+]
+    sub  A, E
+    ld   A, [HL]
+    sbc  A, D
+    ret  C
+    ld   [HL], D
+    dec  L
+    ld   [HL], E
+    ld   A, L
+    xor  A, $0e
+    ld   L, A
+    xor  A, A
+    ld   [HL], A
+    ret
 
 call_00_316e_Entity_ClampYToMaxYBound_Offset:
 ; Same as above, including the carry-means-airborne convention, but adds the signed
 ; BC offset to the bound first - a floor a fixed distance above or below the one the
 ; bounding box declares
-    push BC                                            ;; 00:316e $c5
-    call call_00_34ba_Entity_GetMaxYBound                                  ;; 00:316f $cd $ba $34
-    pop  HL                                            ;; 00:3172 $e1
-    add  HL, DE                                        ;; 00:3173 $19
-    ld   E, L                                          ;; 00:3174 $5d
-    ld   D, H                                          ;; 00:3175 $54
+    push BC
+    call call_00_34ba_Entity_GetMaxYBound
+    pop  HL
+    add  HL, DE
+    ld   E, L
+    ld   D, H
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_Y
-    ld   A, [HL+]                                      ;; 00:317e $2a
-    sub  A, E                                          ;; 00:317f $93
-    ld   A, [HL]                                       ;; 00:3180 $7e
-    sbc  A, D                                          ;; 00:3181 $9a
-    ret  C                                             ;; 00:3182 $d8
-    ld   [HL], D                                       ;; 00:3183 $72
-    dec  L                                             ;; 00:3184 $2d
-    ld   [HL], E                                       ;; 00:3185 $73
-    ld   A, L                                          ;; 00:3186 $7d
-    xor  A, $0e                                        ;; 00:3187 $ee $0e
-    ld   L, A                                          ;; 00:3189 $6f
-    xor  A, A                                          ;; 00:318a $af
-    ld   [HL], A                                       ;; 00:318b $77
-    ret                                                ;; 00:318c $c9
+    ld   A, [HL+]
+    sub  A, E
+    ld   A, [HL]
+    sbc  A, D
+    ret  C
+    ld   [HL], D
+    dec  L
+    ld   [HL], E
+    ld   A, L
+    xor  A, $0e
+    ld   L, A
+    xor  A, A
+    ld   [HL], A
+    ret
 
 call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip:
 ; Patrol driver for moving platforms. MISC_FLAGS bit 1 picks the axis (clear = X,
@@ -226,136 +226,136 @@ call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip:
 ; whatever its flags say. The $17 is an entity id, not a field offset, despite
 ; sitting next to a lot of field arithmetic
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
-    bit  MISC_FLAGS_BIT_3, [HL]                                       ;; 00:3195 $cb $5e
-    jr   Z, .jr_00_319c                                ;; 00:3197 $28 $03
-    bit  MISC_FLAGS_BIT_0, [HL]                                       ;; 00:3199 $cb $46
-    ret  Z                                             ;; 00:319b $c8
+    bit  MISC_FLAGS_BIT_3, [HL]
+    jr   Z, .jr_00_319c
+    bit  MISC_FLAGS_BIT_0, [HL]
+    ret  Z
 .jr_00_319c:
-    bit  MISC_FLAGS_BIT_1, [HL]                                       ;; 00:319c $cb $4e
-    jr   NZ, .jr_00_3202                               ;; 00:319e $20 $62
-    bit  MISC_FLAGS_BIT_7, [HL]                                       ;; 00:31a0 $cb $7e
-    jr   NZ, .jr_00_31de                               ;; 00:31a2 $20 $3a
-    call call_00_347e_Entity_GetMaxXBound                                  ;; 00:31a4 $cd $7e $34
+    bit  MISC_FLAGS_BIT_1, [HL]
+    jr   NZ, .jr_00_3202
+    bit  MISC_FLAGS_BIT_7, [HL]
+    jr   NZ, .jr_00_31de
+    call call_00_347e_Entity_GetMaxXBound
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_X
-    ld   A, [HL+]                                      ;; 00:31af $2a
-    sub  A, E                                          ;; 00:31b0 $93
-    ld   A, [HL]                                       ;; 00:31b1 $7e
-    sbc  A, D                                          ;; 00:31b2 $9a
-    jr   NC, .jr_00_31be                               ;; 00:31b3 $30 $09
-    ld   A, L                                          ;; 00:31b5 $7d
-    xor  A, $14                                        ;; 00:31b6 $ee $14
-    ld   L, A                                          ;; 00:31b8 $6f
-    ld   A, [HL+]                                      ;; 00:31b9 $2a
-    cp   A, [HL]                                       ;; 00:31ba $be
-    ret  Z                                             ;; 00:31bb $c8
-    inc  [HL]                                          ;; 00:31bc $34
-    ret                                                ;; 00:31bd $c9
+    ld   A, [HL+]
+    sub  A, E
+    ld   A, [HL]
+    sbc  A, D
+    jr   NC, .jr_00_31be
+    ld   A, L
+    xor  A, $14
+    ld   L, A
+    ld   A, [HL+]
+    cp   A, [HL]
+    ret  Z
+    inc  [HL]
+    ret
 .jr_00_31be:
-    ld   A, L                                          ;; 00:31be $7d
-    xor  A, $18                                        ;; 00:31bf $ee $18
-    ld   L, A                                          ;; 00:31c1 $6f
-    set  MISC_FLAGS_BIT_7, [HL]                                       ;; 00:31c2 $cb $fe
+    ld   A, L
+    xor  A, $18
+    ld   L, A
+    set  MISC_FLAGS_BIT_7, [HL]
 .jp_00_31c4:
-    push HL                                            ;; 00:31c4 $e5
-    ld   A, L                                          ;; 00:31c5 $7d
-    xor  A, $17                                        ;; 00:31c6 $ee $17
-    ld   L, A                                          ;; 00:31c8 $6f
-    ld   A, [HL]                                       ;; 00:31c9 $7e
-    pop  HL                                            ;; 00:31ca $e1
-    cp   A, $17                                        ;; 00:31cb $fe $17
-    jr   Z, .jr_00_31d4                                ;; 00:31cd $28 $05
-    bit  MISC_FLAGS_BIT_3, [HL]                                       ;; 00:31cf $cb $5e
-    ret  Z                                             ;; 00:31d1 $c8
-    res  MISC_FLAGS_BIT_0, [HL]                                       ;; 00:31d2 $cb $86
+    push HL
+    ld   A, L
+    xor  A, $17
+    ld   L, A
+    ld   A, [HL]
+    pop  HL
+    cp   A, $17
+    jr   Z, .jr_00_31d4
+    bit  MISC_FLAGS_BIT_3, [HL]
+    ret  Z
+    res  MISC_FLAGS_BIT_0, [HL]
 .jr_00_31d4:
-    ld   A, L                                          ;; 00:31d4 $7d
-    xor  A, $0b                                        ;; 00:31d5 $ee $0b
-    ld   L, A                                          ;; 00:31d7 $6f
-    xor  A, A                                          ;; 00:31d8 $af
-    ld   [HL+], A                                      ;; 00:31d9 $22
-    ld   [HL+], A                                      ;; 00:31da $22
-    ld   [HL+], A                                      ;; 00:31db $22
-    ld   [HL], A                                       ;; 00:31dc $77
-    ret                                                ;; 00:31dd $c9
+    ld   A, L
+    xor  A, $0b
+    ld   L, A
+    xor  A, A
+    ld   [HL+], A
+    ld   [HL+], A
+    ld   [HL+], A
+    ld   [HL], A
+    ret
 .jr_00_31de:
-    call call_00_3460_Entity_GetMinXBound                                  ;; 00:31de $cd $60 $34
+    call call_00_3460_Entity_GetMinXBound
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_X
-    ld   A, [HL+]                                      ;; 00:31e9 $2a
-    sub  A, E                                          ;; 00:31ea $93
-    ld   A, [HL]                                       ;; 00:31eb $7e
-    sbc  A, D                                          ;; 00:31ec $9a
-    jr   C, .jr_00_31fa                                ;; 00:31ed $38 $0b
-    ld   A, L                                          ;; 00:31ef $7d
-    xor  A, $14                                        ;; 00:31f0 $ee $14
-    ld   L, A                                          ;; 00:31f2 $6f
-    ld   A, [HL+]                                      ;; 00:31f3 $2a
-    cpl                                                ;; 00:31f4 $2f
-    inc  A                                             ;; 00:31f5 $3c
-    cp   A, [HL]                                       ;; 00:31f6 $be
-    ret  Z                                             ;; 00:31f7 $c8
-    dec  [HL]                                          ;; 00:31f8 $35
-    ret                                                ;; 00:31f9 $c9
+    ld   A, [HL+]
+    sub  A, E
+    ld   A, [HL]
+    sbc  A, D
+    jr   C, .jr_00_31fa
+    ld   A, L
+    xor  A, $14
+    ld   L, A
+    ld   A, [HL+]
+    cpl
+    inc  A
+    cp   A, [HL]
+    ret  Z
+    dec  [HL]
+    ret
 .jr_00_31fa:
-    ld   A, L                                          ;; 00:31fa $7d
-    xor  A, $18                                        ;; 00:31fb $ee $18
-    ld   L, A                                          ;; 00:31fd $6f
-    res  MISC_FLAGS_BIT_7, [HL]                                       ;; 00:31fe $cb $be
-    jr   .jp_00_31c4                                   ;; 00:3200 $18 $c2
+    ld   A, L
+    xor  A, $18
+    ld   L, A
+    res  MISC_FLAGS_BIT_7, [HL]
+    jr   .jp_00_31c4
 .jr_00_3202:
-    bit  MISC_FLAGS_BIT_6, [HL]                                       ;; 00:3202 $cb $76
-    jr   NZ, .jr_00_322a                               ;; 00:3204 $20 $24
-    call call_00_34ba_Entity_GetMaxYBound                                  ;; 00:3206 $cd $ba $34
+    bit  MISC_FLAGS_BIT_6, [HL]
+    jr   NZ, .jr_00_322a
+    call call_00_34ba_Entity_GetMaxYBound
    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_Y
-    ld   A, [HL+]                                      ;; 00:3211 $2a
-    sub  A, E                                          ;; 00:3212 $93
-    ld   A, [HL]                                       ;; 00:3213 $7e
-    sbc  A, D                                          ;; 00:3214 $9a
-    jr   NC, .jr_00_3222                               ;; 00:3215 $30 $0b
-    ld   A, L                                          ;; 00:3217 $7d
-    xor  A, $0a                                        ;; 00:3218 $ee $0a
-    ld   L, A                                          ;; 00:321a $6f
-    ld   A, [HL+]                                      ;; 00:321b $2a
-    inc  L                                             ;; 00:321c $2c
-    inc  L                                             ;; 00:321d $2c
-    cp   A, [HL]                                       ;; 00:321e $be
-    ret  Z                                             ;; 00:321f $c8
-    inc  [HL]                                          ;; 00:3220 $34
-    ret                                                ;; 00:3221 $c9
+    ld   A, [HL+]
+    sub  A, E
+    ld   A, [HL]
+    sbc  A, D
+    jr   NC, .jr_00_3222
+    ld   A, L
+    xor  A, $0a
+    ld   L, A
+    ld   A, [HL+]
+    inc  L
+    inc  L
+    cp   A, [HL]
+    ret  Z
+    inc  [HL]
+    ret
 .jr_00_3222:
-    ld   A, L                                          ;; 00:3222 $7d
-    xor  A, $06                                        ;; 00:3223 $ee $06
-    ld   L, A                                          ;; 00:3225 $6f
-    set  MISC_FLAGS_BIT_6, [HL]                                       ;; 00:3226 $cb $f6
-    jr   .jp_00_31c4                                   ;; 00:3228 $18 $9a
+    ld   A, L
+    xor  A, $06
+    ld   L, A
+    set  MISC_FLAGS_BIT_6, [HL]
+    jr   .jp_00_31c4
 .jr_00_322a:
-    call call_00_349c_Entity_GetMinYBound                                  ;; 00:322a $cd $9c $34
+    call call_00_349c_Entity_GetMinYBound
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_Y
-    ld   A, [HL+]                                      ;; 00:3235 $2a
-    sub  A, E                                          ;; 00:3236 $93
-    ld   A, [HL]                                       ;; 00:3237 $7e
-    sbc  A, D                                          ;; 00:3238 $9a
-    jr   C, .jr_00_3248                                ;; 00:3239 $38 $0d
-    ld   A, L                                          ;; 00:323b $7d
-    xor  A, $0a                                        ;; 00:323c $ee $0a
-    ld   L, A                                          ;; 00:323e $6f
-    ld   A, [HL+]                                      ;; 00:323f $2a
-    cpl                                                ;; 00:3240 $2f
-    inc  A                                             ;; 00:3241 $3c
-    inc  L                                             ;; 00:3242 $2c
-    inc  L                                             ;; 00:3243 $2c
-    cp   A, [HL]                                       ;; 00:3244 $be
-    ret  Z                                             ;; 00:3245 $c8
-    dec  [HL]                                          ;; 00:3246 $35
-    ret                                                ;; 00:3247 $c9
+    ld   A, [HL+]
+    sub  A, E
+    ld   A, [HL]
+    sbc  A, D
+    jr   C, .jr_00_3248
+    ld   A, L
+    xor  A, $0a
+    ld   L, A
+    ld   A, [HL+]
+    cpl
+    inc  A
+    inc  L
+    inc  L
+    cp   A, [HL]
+    ret  Z
+    dec  [HL]
+    ret
 .jr_00_3248:
-    ld   A, L                                          ;; 00:3248 $7d
-    xor  A, $06                                        ;; 00:3249 $ee $06
-    ld   L, A                                          ;; 00:324b $6f
-    res  MISC_FLAGS_BIT_6, [HL]                                       ;; 00:324c $cb $b6
-    jp   .jp_00_31c4                                   ;; 00:324e $c3 $c4 $31
+    ld   A, L
+    xor  A, $06
+    ld   L, A
+    res  MISC_FLAGS_BIT_6, [HL]
+    jp   .jp_00_31c4
 
 call_00_3251_Entity_UpdateFacingMomentumAndMoveX:
-; Nudges a momentum/facing sub-field toward a target based on facing direction bit 5, 
+; Nudges a momentum/facing sub-field toward a target based on facing direction bit 5,
 ; then adds fractional accumulator and moves X
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
     ld   c,[hl]
@@ -364,7 +364,7 @@ call_00_3251_Entity_UpdateFacingMomentumAndMoveX:
     ldi  a,[hl]
     bit  5,c
     jr   z,.jr_02_326A
-    cpl  
+    cpl
     inc  a
     cp   [hl]
     jr   z,.jr_02_326E
@@ -399,16 +399,16 @@ call_00_3251_Entity_UpdateFacingMomentumAndMoveX:
     ld   a,[hl]
     adc  b
     ld   [hl],a
-    ret  
+    ret
 
 call_00_3290_Entity_SetFacingDirection:
 ; Writes C into the facing direction field
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
     ld   [hl],c
-    ret  
+    ret
 
 call_00_329a_Entity_UpdateFacingMomentumMoveX_WithWallFlip:
-; Similar momentum update as call_00_3251; additionally checks if entity has exceeded horizontal bounds 
+; Similar momentum update as call_00_3251; additionally checks if entity has exceeded horizontal bounds
 ; and flips facing direction (bit 5 of flags)
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
     ld   c,[hl]
@@ -418,7 +418,7 @@ call_00_329a_Entity_UpdateFacingMomentumMoveX_WithWallFlip:
     ldi  a,[hl]
     bit  5,c
     jr   z,.jr_02_32AE
-    cpl  
+    cpl
     inc  a
 .jr_02_32AE:
     add  [hl]
@@ -444,7 +444,7 @@ call_00_329a_Entity_UpdateFacingMomentumMoveX_WithWallFlip:
     ldd  [hl],a
     bit  7,a
     jr   z,.jr_02_32D2
-    cpl  
+    cpl
     inc  a
 .jr_02_32D2:
     cp   [hl]
@@ -462,18 +462,18 @@ call_00_329a_Entity_UpdateFacingMomentumMoveX_WithWallFlip:
 call_00_32e1_Entity_NudgeXVelocityTowardC:
 ; Increments or decrements X velocity by 1 step toward target value in C (simple approach)
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_X_VELOCITY
-    ld   A, [HL]                                       ;; 00:32e9 $7e
-    cp   A, C                                          ;; 00:32ea $b9
-    ret  Z                                             ;; 00:32eb $c8
-    jr   C, .jr_00_32f0                                ;; 00:32ec $38 $02
-    dec  [HL]                                          ;; 00:32ee $35
-    ret                                                ;; 00:32ef $c9
+    ld   A, [HL]
+    cp   A, C
+    ret  Z
+    jr   C, .jr_00_32f0
+    dec  [HL]
+    ret
 .jr_00_32f0:
-    inc  [HL]                                          ;; 00:32f0 $34
-    ret                                                ;; 00:32f1 $c9
+    inc  [HL]
+    ret
 
 call_00_32f2_Entity_NudgeXVelocityTowardC_Signed:
-; Same nudge logic as above but sign-aware — handles negative C correctly by checking sign 
+; Same nudge logic as above but sign-aware — handles negative C correctly by checking sign
 ; bits before deciding direction
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_X_VELOCITY
     bit  7,c
@@ -494,10 +494,10 @@ call_00_32f2_Entity_NudgeXVelocityTowardC_Signed:
     jr   c,.jr_02_3314
 .jr_02_3312:
     dec  [hl]
-    ret  
+    ret
 .jr_02_3314:
     inc  [hl]
-    ret  
+    ret
 
 call_00_3316_Entity_NudgeYVelocityTowardC_Signed:
 ; Identical signed nudge logic as above, applied to Y velocity
@@ -520,44 +520,44 @@ call_00_3316_Entity_NudgeYVelocityTowardC_Signed:
     jr   c,.jr_02_3338
 .jr_02_3336:
     dec  [hl]
-    ret  
+    ret
 .jr_02_3338:
     inc  [hl]
-    ret  
+    ret
 
 call_00_333a_Entity_CheckIfXVelocityIsZero:
 ; Loads X velocity into A and ANDs with itself; sets Z if zero
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_X_VELOCITY
     ld   a,[hl]
     and  a
-    ret  
+    ret
 
 call_00_3345_Entity_CheckIfYVelocityIsZero:
 ; Loads Y velocity into A and ANDs with itself; sets Z flag if zero
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_Y_VELOCITY
     ld   a,[hl]
     and  a
-    ret  
+    ret
 
-call_00_3350_Entity_SetXVelocity: 
-; Sets X velocity field to C 
+call_00_3350_Entity_SetXVelocity:
+; Sets X velocity field to C
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_X_VELOCITY
     ld   [hl],c
-    ret  
+    ret
 
 call_00_335a_Entity_SetYVelocity:
 ; Sets Y velocity field to C
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_Y_VELOCITY
-    ld   [HL], C                                       ;; 00:3362 $71
-    ret                                                ;; 00:3363 $c9
+    ld   [HL], C
+    ret
 
 call_00_3364_Entity_ApproachPlayerXWithBounds:
-; Compares entity X (block-scaled) against bounding box from wD309_EntityBoundingBoxXMax; if player is within range, 
+; Compares entity X (block-scaled) against bounding box from wD309_EntityBoundingBoxXMax; if player is within range,
 ; sets facing direction toward player and applies movement delta to X pos
     ld   a,[wD300_CurrentEntityAddrLo]
-    rrca 
-    rrca 
-    rrca 
+    rrca
+    rrca
+    rrca
     and  a,$1C
     ld   l,a
     ld   h,$00
@@ -613,7 +613,7 @@ call_00_3364_Entity_ApproachPlayerXWithBounds:
     ld   a,[hl]
     sbc  a,$00
     ld   [hl],a
-    ret  
+    ret
 .jr_02_33C7:
     ld   a,e
     cp   b
@@ -632,7 +632,7 @@ call_00_3364_Entity_ApproachPlayerXWithBounds:
     ld   a,[hl]
     adc  a,$00
     ld   [hl],a
-    ret  
+    ret
 
 call_00_33dd_Entity_ApplyXVelocityFriction:
 ; First checks SPRITE_FLAG_ON_SCREEN — if clear, returns immediately (offscreen entities are not simulated).
@@ -640,14 +640,14 @@ call_00_33dd_Entity_ApplyXVelocityFriction:
 ; the `xor $1D` is applied to L while it still holds SPRITE_FLAGS ($0A), and $0A xor $1D = $17. The
 ; bit is also spelled with a SPRITE_FLAG_* constant, which is the wrong family for a MISC_FLAGS read
 ; even though the number happens to work:
-; Bit 1 clear (.jr_02_33F2): Adds X velocity (C) into a subpixel accumulator. Includes a clamping check 
-;   — if the accumulator would overflow past $80 (i.e. exceed half-range), it saturates and folds the 
-;   remainder back through C before applying. Then adds the adjusted C into the X position subpixel field 
+; Bit 1 clear (.jr_02_33F2): Adds X velocity (C) into a subpixel accumulator. Includes a clamping check
+;   — if the accumulator would overflow past $80 (i.e. exceed half-range), it saturates and folds the
+;   remainder back through C before applying. Then adds the adjusted C into the X position subpixel field
 ;   and propagates carry into the high byte.
-; Bit 1 set (.jr_02_341B): Same logic but subtracts — if the accumulator would go below $80 it saturates similarly. 
+; Bit 1 set (.jr_02_341B): Same logic but subtracts — if the accumulator would go below $80 it saturates similarly.
 ;   Subtracts from the X position subpixel field with borrow propagation.
-; In both cases it's applying velocity-scaled positional drag with half-precision saturation clamping to 
-; avoid wrap-around artifacts — essentially a friction/momentum integrator that bleeds off X velocity 
+; In both cases it's applying velocity-scaled positional drag with half-precision saturation clamping to
+; avoid wrap-around artifacts — essentially a friction/momentum integrator that bleeds off X velocity
 ; into position while preventing the accumulator from flipping sign unexpectedly.
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_SPRITE_FLAGS
     bit  SPRITE_FLAG_ON_SCREEN_BIT,[hl]
@@ -669,7 +669,7 @@ call_00_33dd_Entity_ApplyXVelocityFriction:
     cp   a,$80
     jr   c,.jr_02_340E
     sub  a,$7F
-    cpl  
+    cpl
     inc  a
     add  c
     ld   c,a
@@ -687,7 +687,7 @@ call_00_33dd_Entity_ApplyXVelocityFriction:
     ld   a,[hl]
     adc  a,$00
     ld   [hl],a
-    ret  
+    ret
 .jr_02_341B:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_X_VELOCITY
     ld   c,[hl]
@@ -715,10 +715,10 @@ call_00_33dd_Entity_ApplyXVelocityFriction:
     ld   a,[hl]
     sbc  a,$00
     ld   [hl],a
-    ret  
+    ret
 
 call_00_3442_Entity_MoveXByFacingSpeed:
-; Reads facing direction and a speed field, negates speed if facing left, 
+; Reads facing direction and a speed field, negates speed if facing left,
 ; sign-extends, then calls Entity_MoveX
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
     ld   c,[hl]
@@ -727,7 +727,7 @@ call_00_3442_Entity_MoveXByFacingSpeed:
     ld   a,[hl]
     bit  5,c
     jr   z,.jr_02_3455
-    cpl  
+    cpl
     inc  a
 .jr_02_3455:
     ld   c,a
@@ -743,124 +743,124 @@ call_00_3460_Entity_GetMinXBound:
 ;
 ; call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip calls this on the leftward
 ; leg and flips when XPOS drops BELOW the result
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3460 $fa $00 $d3
-    rrca                                               ;; 00:3463 $0f
-    rrca                                               ;; 00:3464 $0f
-    rrca                                               ;; 00:3465 $0f
-    and  A, $1c                                        ;; 00:3466 $e6 $1c
-    ld   L, A                                          ;; 00:3468 $6f
-    ld   H, $00                                        ;; 00:3469 $26 $00
-    ld   DE, wD30A_EntityBoundingBoxXMin                                     ;; 00:346b $11 $0a $d3
-    add  HL, DE                                        ;; 00:346e $19
-    ld   L, [HL]                                       ;; 00:346f $6e
-    ld   H, $00                                        ;; 00:3470 $26 $00
-    add  HL, HL                                        ;; 00:3472 $29
-    add  HL, HL                                        ;; 00:3473 $29
-    add  HL, HL                                        ;; 00:3474 $29
-    add  HL, HL                                        ;; 00:3475 $29
-    add  HL, HL                                        ;; 00:3476 $29
-    ld   DE, $30                                       ;; 00:3477 $11 $30 $00
-    add  HL, DE                                        ;; 00:347a $19
-    ld   E, L                                          ;; 00:347b $5d
-    ld   D, H                                          ;; 00:347c $54
-    ret                                                ;; 00:347d $c9
+    ld   A, [wD300_CurrentEntityAddrLo]
+    rrca
+    rrca
+    rrca
+    and  A, $1c
+    ld   L, A
+    ld   H, $00
+    ld   DE, wD30A_EntityBoundingBoxXMin
+    add  HL, DE
+    ld   L, [HL]
+    ld   H, $00
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    ld   DE, $30
+    add  HL, DE
+    ld   E, L
+    ld   D, H
+    ret
 
 call_00_347e_Entity_GetMaxXBound:
 ; DE = the HIGH end of the X patrol range: wD309_EntityBoundingBoxXMax scaled by
 ; 32, minus $10. The patrol code calls it on the rightward leg and flips when
 ; XPOS rises above the result
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:347e $fa $00 $d3
-    rrca                                               ;; 00:3481 $0f
-    rrca                                               ;; 00:3482 $0f
-    rrca                                               ;; 00:3483 $0f
-    and  A, $1c                                        ;; 00:3484 $e6 $1c
-    ld   L, A                                          ;; 00:3486 $6f
-    ld   H, $00                                        ;; 00:3487 $26 $00
-    ld   DE, wD309_EntityBoundingBoxXMax                                     ;; 00:3489 $11 $09 $d3
-    add  HL, DE                                        ;; 00:348c $19
-    ld   L, [HL]                                       ;; 00:348d $6e
-    ld   H, $00                                        ;; 00:348e $26 $00
-    add  HL, HL                                        ;; 00:3490 $29
-    add  HL, HL                                        ;; 00:3491 $29
-    add  HL, HL                                        ;; 00:3492 $29
-    add  HL, HL                                        ;; 00:3493 $29
-    add  HL, HL                                        ;; 00:3494 $29
-    ld   DE, hFFF0                                     ;; 00:3495 $11 $f0 $ff
-    add  HL, DE                                        ;; 00:3498 $19
-    ld   E, L                                          ;; 00:3499 $5d
-    ld   D, H                                          ;; 00:349a $54
-    ret                                                ;; 00:349b $c9
+    ld   A, [wD300_CurrentEntityAddrLo]
+    rrca
+    rrca
+    rrca
+    and  A, $1c
+    ld   L, A
+    ld   H, $00
+    ld   DE, wD309_EntityBoundingBoxXMax
+    add  HL, DE
+    ld   L, [HL]
+    ld   H, $00
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    ld   DE, hFFF0
+    add  HL, DE
+    ld   E, L
+    ld   D, H
+    ret
 
 call_00_349c_Entity_GetMinYBound:
 ; DE = low end of the Y range: wD30C_EntityBoundingBoxYMin scaled by 32, plus $30.
 ; Smaller Y is higher on screen, so this is the CEILING despite reading as "min"
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:349c $fa $00 $d3
-    rrca                                               ;; 00:349f $0f
-    rrca                                               ;; 00:34a0 $0f
-    rrca                                               ;; 00:34a1 $0f
-    and  A, $1c                                        ;; 00:34a2 $e6 $1c
-    ld   L, A                                          ;; 00:34a4 $6f
-    ld   H, $00                                        ;; 00:34a5 $26 $00
-    ld   DE, wD30C_EntityBoundingBoxYMin                                     ;; 00:34a7 $11 $0c $d3
-    add  HL, DE                                        ;; 00:34aa $19
-    ld   L, [HL]                                       ;; 00:34ab $6e
-    ld   H, $00                                        ;; 00:34ac $26 $00
-    add  HL, HL                                        ;; 00:34ae $29
-    add  HL, HL                                        ;; 00:34af $29
-    add  HL, HL                                        ;; 00:34b0 $29
-    add  HL, HL                                        ;; 00:34b1 $29
-    add  HL, HL                                        ;; 00:34b2 $29
-    ld   DE, $30                                       ;; 00:34b3 $11 $30 $00
-    add  HL, DE                                        ;; 00:34b6 $19
-    ld   E, L                                          ;; 00:34b7 $5d
-    ld   D, H                                          ;; 00:34b8 $54
-    ret                                                ;; 00:34b9 $c9
+    ld   A, [wD300_CurrentEntityAddrLo]
+    rrca
+    rrca
+    rrca
+    and  A, $1c
+    ld   L, A
+    ld   H, $00
+    ld   DE, wD30C_EntityBoundingBoxYMin
+    add  HL, DE
+    ld   L, [HL]
+    ld   H, $00
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    ld   DE, $30
+    add  HL, DE
+    ld   E, L
+    ld   D, H
+    ret
 
 call_00_34ba_Entity_GetMaxYBound:
 ; DE = high end of the Y range: wD30B_EntityBoundingBoxYMax scaled by 32, minus
 ; $10. Larger Y is lower on screen, so this is the FLOOR - which is why the
 ; "move down until floor" helpers all call this one
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:34ba $fa $00 $d3
-    rrca                                               ;; 00:34bd $0f
-    rrca                                               ;; 00:34be $0f
-    rrca                                               ;; 00:34bf $0f
-    and  A, $1c                                        ;; 00:34c0 $e6 $1c
-    ld   L, A                                          ;; 00:34c2 $6f
-    ld   H, $00                                        ;; 00:34c3 $26 $00
-    ld   DE, wD30B_EntityBoundingBoxYMax                                     ;; 00:34c5 $11 $0b $d3
-    add  HL, DE                                        ;; 00:34c8 $19
-    ld   L, [HL]                                       ;; 00:34c9 $6e
-    ld   H, $00                                        ;; 00:34ca $26 $00
-    add  HL, HL                                        ;; 00:34cc $29
-    add  HL, HL                                        ;; 00:34cd $29
-    add  HL, HL                                        ;; 00:34ce $29
-    add  HL, HL                                        ;; 00:34cf $29
-    add  HL, HL                                        ;; 00:34d0 $29
-    ld   DE, hFFF0                                     ;; 00:34d1 $11 $f0 $ff
-    add  HL, DE                                        ;; 00:34d4 $19
-    ld   E, L                                          ;; 00:34d5 $5d
-    ld   D, H                                          ;; 00:34d6 $54
-    ret                                                ;; 00:34d7 $c9
+    ld   A, [wD300_CurrentEntityAddrLo]
+    rrca
+    rrca
+    rrca
+    and  A, $1c
+    ld   L, A
+    ld   H, $00
+    ld   DE, wD30B_EntityBoundingBoxYMax
+    add  HL, DE
+    ld   L, [HL]
+    ld   H, $00
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    ld   DE, hFFF0
+    add  HL, DE
+    ld   E, L
+    ld   D, H
+    ret
 
 call_00_34d8_Entity_ResetEntityListIndex:
 ; Zeros the wD301_EntityListIndexesForCurrentEntities-indexed slot counter byte for this entity's slot
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:34d8 $fa $00 $d3
-    rlca                                               ;; 00:34db $07
-    rlca                                               ;; 00:34dc $07
-    rlca                                               ;; 00:34dd $07
-    and  A, $07                                        ;; 00:34de $e6 $07
-    ld   L, A                                          ;; 00:34e0 $6f
-    ld   H, $00                                        ;; 00:34e1 $26 $00
-    ld   DE, wD301_EntityListIndexesForCurrentEntities                                     ;; 00:34e3 $11 $01 $d3
-    add  HL, DE                                        ;; 00:34e6 $19
-    ld   [HL], $00                                     ;; 00:34e7 $36 $00
-    ret                                                ;; 00:34e9 $c9
+    ld   A, [wD300_CurrentEntityAddrLo]
+    rlca
+    rlca
+    rlca
+    and  A, $07
+    ld   L, A
+    ld   H, $00
+    ld   DE, wD301_EntityListIndexesForCurrentEntities
+    add  HL, DE
+    ld   [HL], $00
+    ret
 
 call_00_34ea_Entity_IsFirstFrameOfAction:
 ; Tests bit 5 of ACTION_STATE; returns Z/NZ for use as an activation/spawn gate
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_ACTION_STATE_FLAGS
-    bit  ACTION_STATE_IS_FIRST_FRAME_BIT, [HL]                                       ;; 00:34f2 $cb $6e
-    ret                                                ;; 00:34f4 $c9
+    bit  ACTION_STATE_IS_FIRST_FRAME_BIT, [HL]
+    ret
 
 call_00_34f5_Entity_IsPlayerStandingOnSelf:
 ; "Is Gex standing on me this frame?" - compares wD74D_Player_EntityStoodOnLo, which
@@ -879,51 +879,51 @@ call_00_34f5_Entity_IsPlayerStandingOnSelf:
 ; The old name (Entity_CompareMiscFlags) described the LOAD_OBJ_FIELD_TO_HL on the
 ; first line and not what the routine actually decides - it never reads MISC_FLAGS
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
-    ld   A, [wD74D_Player_EntityStoodOnLo]                                    ;; 00:34fd $fa $4d $d7
-    ld   B, A                                          ;; 00:3500 $47
-    and  A, A                                          ;; 00:3501 $a7
-    ret  Z                                             ;; 00:3502 $c8
-    ld   A, L                                          ;; 00:3503 $7d
-    and  A, $e0                                        ;; 00:3504 $e6 $e0
-    cp   A, B                                          ;; 00:3506 $b8
-    ld   B, $00                                        ;; 00:3507 $06 $00
-    ret  NZ                                            ;; 00:3509 $c0
-    inc  B                                             ;; 00:350a $04
-    ret                                                ;; 00:350b $c9
+    ld   A, [wD74D_Player_EntityStoodOnLo]
+    ld   B, A
+    and  A, A
+    ret  Z
+    ld   A, L
+    and  A, $e0
+    cp   A, B
+    ld   B, $00
+    ret  NZ
+    inc  B
+    ret
 
 call_00_350c_Entity_CheckIfOnScreen:
-; Reads this entity's bounding box (X min/max, Y min/max) from wD309_EntityBoundingBoxXMax–wD30C_EntityBoundingBoxYMin; 
+; Reads this entity's bounding box (X min/max, Y min/max) from wD309_EntityBoundingBoxXMax–wD30C_EntityBoundingBoxYMin;
 ; compares against wD329_MapWindow_BlockXRangeMin (camera/scroll bounds); returns carry if entity is outside
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:350c $fa $00 $d3
-    rrca                                               ;; 00:350f $0f
-    rrca                                               ;; 00:3510 $0f
-    rrca                                               ;; 00:3511 $0f
-    ld   L, A                                          ;; 00:3512 $6f
-    ld   H, $00                                        ;; 00:3513 $26 $00
-    ld   BC, wD309_EntityBoundingBoxXMax                                     ;; 00:3515 $01 $09 $d3
-    add  HL, BC                                        ;; 00:3518 $09
-    ld   B, [HL]                                       ;; 00:3519 $46
-    inc  HL                                            ;; 00:351a $23
-    ld   C, [HL]                                       ;; 00:351b $4e
-    inc  HL                                            ;; 00:351c $23
-    ld   D, [HL]                                       ;; 00:351d $56
-    inc  HL                                            ;; 00:351e $23
-    ld   E, [HL]                                       ;; 00:351f $5e
-    ld   HL, wD329_MapWindow_BlockXRangeMin                                     ;; 00:3520 $21 $29 $d3
-    ld   A, B                                          ;; 00:3523 $78
-    cp   A, [HL]                                       ;; 00:3524 $be
-    ret  C                                             ;; 00:3525 $d8
-    inc  HL                                            ;; 00:3526 $23
-    ld   A, [HL+]                                      ;; 00:3527 $2a
-    cp   A, C                                          ;; 00:3528 $b9
-    ret  C                                             ;; 00:3529 $d8
-    ld   A, D                                          ;; 00:352a $7a
-    cp   A, [HL]                                       ;; 00:352b $be
-    ret  C                                             ;; 00:352c $d8
-    inc  HL                                            ;; 00:352d $23
-    ld   A, [HL]                                       ;; 00:352e $7e
-    cp   A, E                                          ;; 00:352f $bb
-    ret                                                ;; 00:3530 $c9
+    ld   A, [wD300_CurrentEntityAddrLo]
+    rrca
+    rrca
+    rrca
+    ld   L, A
+    ld   H, $00
+    ld   BC, wD309_EntityBoundingBoxXMax
+    add  HL, BC
+    ld   B, [HL]
+    inc  HL
+    ld   C, [HL]
+    inc  HL
+    ld   D, [HL]
+    inc  HL
+    ld   E, [HL]
+    ld   HL, wD329_MapWindow_BlockXRangeMin
+    ld   A, B
+    cp   A, [HL]
+    ret  C
+    inc  HL
+    ld   A, [HL+]
+    cp   A, C
+    ret  C
+    ld   A, D
+    cp   A, [HL]
+    ret  C
+    inc  HL
+    ld   A, [HL]
+    cp   A, E
+    ret
 
 call_00_3531_Entity_IsXOutsideBounds:
 ; The bounds test out of call_00_3364_Entity_ApproachPlayerXWithBounds with the facing
@@ -937,9 +937,9 @@ call_00_3531_Entity_IsXOutsideBounds:
 ; Named for the carry, because the one caller (call_02_5612_EntityAction_Ghost_Chase)
 ; branches on `jr c` to give up the chase
     ld   a,[wD300_CurrentEntityAddrLo]
-    rrca 
-    rrca 
-    rrca 
+    rrca
+    rrca
+    rrca
     and  a,$1C
     ld   l,a
     ld   h,$00
@@ -962,49 +962,49 @@ call_00_3531_Entity_IsXOutsideBounds:
     ret  c
     ld   a,b
     cp   h
-    ret  
+    ret
 
 call_00_3559_Entity_ApplyVelocityXY_SubpixelBoth:
-; Integrates subpixel accumulator for both X and Y velocity (4-bit fractional), 
+; Integrates subpixel accumulator for both X and Y velocity (4-bit fractional),
 ; then moves entity and calls Y movement
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_X_VELOCITY
-    ld   A, [HL+]                                      ;; 00:3561 $2a
-    ld   C, A                                          ;; 00:3562 $4f
-    ld   A, [HL]                                       ;; 00:3563 $7e
-    and  A, $0f                                        ;; 00:3564 $e6 $0f
-    add  A, C                                          ;; 00:3566 $81
-    ld   [HL+], A                                      ;; 00:3567 $22
-    sra  A                                             ;; 00:3568 $cb $2f
-    sra  A                                             ;; 00:356a $cb $2f
-    sra  A                                             ;; 00:356c $cb $2f
-    sra  A                                             ;; 00:356e $cb $2f
-    ld   C, A                                          ;; 00:3570 $4f
-    cp   A, $80                                        ;; 00:3571 $fe $80
-    ld   A, $ff                                        ;; 00:3573 $3e $ff
-    adc  A, $00                                        ;; 00:3575 $ce $00
-    ld   B, A                                          ;; 00:3577 $47
-    push BC                                            ;; 00:3578 $c5
-    ld   A, [HL+]                                      ;; 00:3579 $2a
-    ld   C, A                                          ;; 00:357a $4f
-    ld   A, [HL]                                       ;; 00:357b $7e
-    and  A, $0f                                        ;; 00:357c $e6 $0f
-    add  A, C                                          ;; 00:357e $81
-    ld   [HL], A                                       ;; 00:357f $77
-    sra  A                                             ;; 00:3580 $cb $2f
-    sra  A                                             ;; 00:3582 $cb $2f
-    sra  A                                             ;; 00:3584 $cb $2f
-    sra  A                                             ;; 00:3586 $cb $2f
-    ld   C, A                                          ;; 00:3588 $4f
-    cp   A, $80                                        ;; 00:3589 $fe $80
-    ld   A, $ff                                        ;; 00:358b $3e $ff
-    adc  A, $00                                        ;; 00:358d $ce $00
-    ld   B, A                                          ;; 00:358f $47
-    call call_00_37d8_Entity_MoveY                                  ;; 00:3590 $cd $d8 $37
-    pop  BC                                            ;; 00:3593 $c1
-    jp   call_00_35d5_Entity_MoveXAndPushPlayer                                   ;; 00:3594 $c3 $d5 $35
+    ld   A, [HL+]
+    ld   C, A
+    ld   A, [HL]
+    and  A, $0f
+    add  A, C
+    ld   [HL+], A
+    sra  A
+    sra  A
+    sra  A
+    sra  A
+    ld   C, A
+    cp   A, $80
+    ld   A, $ff
+    adc  A, $00
+    ld   B, A
+    push BC
+    ld   A, [HL+]
+    ld   C, A
+    ld   A, [HL]
+    and  A, $0f
+    add  A, C
+    ld   [HL], A
+    sra  A
+    sra  A
+    sra  A
+    sra  A
+    ld   C, A
+    cp   A, $80
+    ld   A, $ff
+    adc  A, $00
+    ld   B, A
+    call call_00_37d8_Entity_MoveY
+    pop  BC
+    jp   call_00_35d5_Entity_MoveXAndPushPlayer
 
 call_00_3597_Entity_ApplyVelocityXY_Subpixel_NoPlayerPush:
-; Same subpixel integration for X and Y, but calls plain Entity_MoveX/Entity_MoveY 
+; Same subpixel integration for X and Y, but calls plain Entity_MoveX/Entity_MoveY
 ; with no player-push side effect
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_X_VELOCITY
     ldi  a,[hl]
@@ -1056,53 +1056,53 @@ call_00_35d5_Entity_MoveXAndPushPlayer:
 ;
 ; Anything else returns without touching the player
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_X
-    ld   A, [HL]                                       ;; 00:35dd $7e
-    add  A, C                                          ;; 00:35de $81
-    ld   [HL+], A                                      ;; 00:35df $22
-    ld   E, A                                          ;; 00:35e0 $5f
-    ld   A, [HL]                                       ;; 00:35e1 $7e
-    adc  A, B                                          ;; 00:35e2 $88
-    ld   [HL], A                                       ;; 00:35e3 $77
-    ld   D, A                                          ;; 00:35e4 $57
-    ld   A, L                                          ;; 00:35e5 $7d
-    and  A, $e0                                        ;; 00:35e6 $e6 $e0
-    ld   HL, wD74D_Player_EntityStoodOnLo                                     ;; 00:35e8 $21 $4d $d7
-    cp   A, [HL]                                       ;; 00:35eb $be
-    jr   NZ, .jr_00_35f3                               ;; 00:35ec $20 $05
-    ld   A, C                                          ;; 00:35ee $79
-    ld   [wD75C_PlayerXDeltaExtra], A                                    ;; 00:35ef $ea $5c $d7
-    ret                                                ;; 00:35f2 $c9
+    ld   A, [HL]
+    add  A, C
+    ld   [HL+], A
+    ld   E, A
+    ld   A, [HL]
+    adc  A, B
+    ld   [HL], A
+    ld   D, A
+    ld   A, L
+    and  A, $e0
+    ld   HL, wD74D_Player_EntityStoodOnLo
+    cp   A, [HL]
+    jr   NZ, .jr_00_35f3
+    ld   A, C
+    ld   [wD75C_PlayerXDeltaExtra], A
+    ret
 .jr_00_35f3:
-    ld   HL, wD74F_Player_PushedMovingPlatformLo                                     ;; 00:35f3 $21 $4f $d7
-    cp   A, [HL]                                       ;; 00:35f6 $be
-    ret  NZ                                            ;; 00:35f7 $c0
+    ld   HL, wD74F_Player_PushedMovingPlatformLo
+    cp   A, [HL]
+    ret  NZ
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_SCREEN_X
-    ld   A, [wD212_Player_ScreenXPosition]                                    ;; 00:3600 $fa $12 $d2
-    cp   A, [HL]                                       ;; 00:3603 $be
-    jr   C, .jr_00_3616                                ;; 00:3604 $38 $10
-    ld   A, L                                          ;; 00:3606 $7d
-    xor  A, $06                                        ;; 00:3607 $ee $06
-    ld   L, A                                          ;; 00:3609 $6f
-    ld   A, E                                          ;; 00:360a $7b
-    add  A, [HL]                                       ;; 00:360b $86
-    ld   [wD20E_Player_XPositionLo], A                                    ;; 00:360c $ea $0e $d2
-    ld   A, D                                          ;; 00:360f $7a
-    adc  A, $00                                        ;; 00:3610 $ce $00
-    ld   [wD20F_Player_XPositionHi], A                                    ;; 00:3612 $ea $0f $d2
-    ret                                                ;; 00:3615 $c9
+    ld   A, [wD212_Player_ScreenXPosition]
+    cp   A, [HL]
+    jr   C, .jr_00_3616
+    ld   A, L
+    xor  A, $06
+    ld   L, A
+    ld   A, E
+    add  A, [HL]
+    ld   [wD20E_Player_XPositionLo], A
+    ld   A, D
+    adc  A, $00
+    ld   [wD20F_Player_XPositionHi], A
+    ret
 .jr_00_3616:
-    ld   A, L                                          ;; 00:3616 $7d
-    xor  A, $06                                        ;; 00:3617 $ee $06
-    ld   L, A                                          ;; 00:3619 $6f
-    ld   C, [HL]                                       ;; 00:361a $4e
-    inc  C                                             ;; 00:361b $0c
-    ld   A, E                                          ;; 00:361c $7b
-    sub  A, C                                          ;; 00:361d $91
-    ld   [wD20E_Player_XPositionLo], A                                    ;; 00:361e $ea $0e $d2
-    ld   A, D                                          ;; 00:3621 $7a
-    sbc  A, $00                                        ;; 00:3622 $de $00
-    ld   [wD20F_Player_XPositionHi], A                                    ;; 00:3624 $ea $0f $d2
-    ret                                                ;; 00:3627 $c9
+    ld   A, L
+    xor  A, $06
+    ld   L, A
+    ld   C, [HL]
+    inc  C
+    ld   A, E
+    sub  A, C
+    ld   [wD20E_Player_XPositionLo], A
+    ld   A, D
+    sbc  A, $00
+    ld   [wD20F_Player_XPositionHi], A
+    ret
 
 call_00_3628_Entity_SaveWorldState:
 ; Note the side effect: as well as backing up
@@ -1111,82 +1111,82 @@ call_00_3628_Entity_SaveWorldState:
 ; code brackets whole previews with Save/Restore.
 ;
 ; Backs up camera/interaction pointers (wD74D_Player_EntityStoodOnLo–wD74F_Player_PushedMovingPlatformLo,
-; wD688_FlyAnimationPosition), copies entity table (wD000), player entity (wD200), 
-; slot table (wD301_EntityListIndexesForCurrentEntities), and bounding box (wD309_EntityBoundingBoxXMax) into 
+; wD688_FlyAnimationPosition), copies entity table (wD000), player entity (wD200),
+; slot table (wD301_EntityListIndexesForCurrentEntities), and bounding box (wD309_EntityBoundingBoxXMax) into
 ; save buffers at wD79F_BackupBuffer_EntityFlags/wD89F_BackupBuffer_EntityMemory/
 ; wD99F_BackupBuffer_EntityListIndexes/wD9A7_BackupBuffer_BoundingBoxAndMore
-    ld   A, [wD74D_Player_EntityStoodOnLo]                                    ;; 00:3628 $fa $4d $d7
-    ld   [wD9C7_BackupPlayer_EntityStoodOnLo], A                                    ;; 00:362b $ea $c7 $d9
-    ld   A, [wD74E_Player_PushedStationaryPlatformLo]                                    ;; 00:362e $fa $4e $d7
-    ld   [wD9C8_BackupPlayer_PushedStationaryPlatformLo], A                                    ;; 00:3631 $ea $c8 $d9
-    ld   A, [wD74F_Player_PushedMovingPlatformLo]                                    ;; 00:3634 $fa $4f $d7
-    ld   [wD9C9_BackupPlayer_PushedMovingPlatformLo], A                                    ;; 00:3637 $ea $c9 $d9
-    ld   A, [wD688_FlyAnimationPosition]                                    ;; 00:363a $fa $88 $d6
-    ld   [wD9CA_BackupBuffer_FlyAnimationPosition], A                                    ;; 00:363d $ea $ca $d9
-    ld   A, $a0                                        ;; 00:3640 $3e $a0
-    ld   [wD688_FlyAnimationPosition], A                                    ;; 00:3642 $ea $88 $d6
-    ld   HL, wD000_EntityFlags                                     ;; 00:3645 $21 $00 $d0
-    ld   DE, wD79F_BackupBuffer_EntityFlags                                     ;; 00:3648 $11 $9f $d7
-    ld   BC, $100                                      ;; 00:364b $01 $00 $01
-    call call_00_07b0_MemCopy                                  ;; 00:364e $cd $b0 $07
-    ld   HL, wD200_EntityMemory                                     ;; 00:3651 $21 $00 $d2
-    ld   DE, wD89F_BackupBuffer_EntityMemory                                     ;; 00:3654 $11 $9f $d8
-    ld   BC, $100                                      ;; 00:3657 $01 $00 $01
-    call call_00_07b0_MemCopy                                  ;; 00:365a $cd $b0 $07
-    ld   HL, wD301_EntityListIndexesForCurrentEntities                                     ;; 00:365d $21 $01 $d3
-    ld   DE, wD99F_BackupBuffer_EntityListIndexes                                     ;; 00:3660 $11 $9f $d9
-    ld   BC, $08                                       ;; 00:3663 $01 $08 $00
-    call call_00_07b0_MemCopy                                  ;; 00:3666 $cd $b0 $07
-    ld   HL, wD309_EntityBoundingBoxXMax                                     ;; 00:3669 $21 $09 $d3
-    ld   DE, wD9A7_BackupBuffer_BoundingBoxAndMore                                     ;; 00:366c $11 $a7 $d9
-    ld   BC, $20                                       ;; 00:366f $01 $20 $00
-    jp   call_00_07b0_MemCopy                                  ;; 00:3672 $c3 $b0 $07
+    ld   A, [wD74D_Player_EntityStoodOnLo]
+    ld   [wD9C7_BackupPlayer_EntityStoodOnLo], A
+    ld   A, [wD74E_Player_PushedStationaryPlatformLo]
+    ld   [wD9C8_BackupPlayer_PushedStationaryPlatformLo], A
+    ld   A, [wD74F_Player_PushedMovingPlatformLo]
+    ld   [wD9C9_BackupPlayer_PushedMovingPlatformLo], A
+    ld   A, [wD688_FlyAnimationPosition]
+    ld   [wD9CA_BackupBuffer_FlyAnimationPosition], A
+    ld   A, $a0
+    ld   [wD688_FlyAnimationPosition], A
+    ld   HL, wD000_EntityFlags
+    ld   DE, wD79F_BackupBuffer_EntityFlags
+    ld   BC, $100
+    call call_00_07b0_MemCopy
+    ld   HL, wD200_EntityMemory
+    ld   DE, wD89F_BackupBuffer_EntityMemory
+    ld   BC, $100
+    call call_00_07b0_MemCopy
+    ld   HL, wD301_EntityListIndexesForCurrentEntities
+    ld   DE, wD99F_BackupBuffer_EntityListIndexes
+    ld   BC, $08
+    call call_00_07b0_MemCopy
+    ld   HL, wD309_EntityBoundingBoxXMax
+    ld   DE, wD9A7_BackupBuffer_BoundingBoxAndMore
+    ld   BC, $20
+    jp   call_00_07b0_MemCopy
 
 call_00_3675_Entity_RestoreWorldState:
 ; Inverse of call_00_3628_Entity_SaveWorldState — restores all saved buffers back to live RAM
-    ld   A, [wD9C7_BackupPlayer_EntityStoodOnLo]                                    ;; 00:3675 $fa $c7 $d9
-    ld   [wD74D_Player_EntityStoodOnLo], A                                    ;; 00:3678 $ea $4d $d7
-    ld   A, [wD9C8_BackupPlayer_PushedStationaryPlatformLo]                                    ;; 00:367b $fa $c8 $d9
-    ld   [wD74E_Player_PushedStationaryPlatformLo], A                                    ;; 00:367e $ea $4e $d7
-    ld   A, [wD9C9_BackupPlayer_PushedMovingPlatformLo]                                    ;; 00:3681 $fa $c9 $d9
-    ld   [wD74F_Player_PushedMovingPlatformLo], A                                    ;; 00:3684 $ea $4f $d7
-    ld   A, [wD9CA_BackupBuffer_FlyAnimationPosition]                                    ;; 00:3687 $fa $ca $d9
-    ld   [wD688_FlyAnimationPosition], A                                    ;; 00:368a $ea $88 $d6
-    ld   HL, wD79F_BackupBuffer_EntityFlags                                     ;; 00:368d $21 $9f $d7
-    ld   DE, wD000_EntityFlags                                     ;; 00:3690 $11 $00 $d0
-    ld   BC, $100                                      ;; 00:3693 $01 $00 $01
-    call call_00_07b0_MemCopy                                  ;; 00:3696 $cd $b0 $07
-    ld   HL, wD89F_BackupBuffer_EntityMemory                                     ;; 00:3699 $21 $9f $d8
-    ld   DE, wD200_Player_EntityId                                     ;; 00:369c $11 $00 $d2
-    ld   BC, $100                                      ;; 00:369f $01 $00 $01
-    call call_00_07b0_MemCopy                                  ;; 00:36a2 $cd $b0 $07
-    ld   HL, wD99F_BackupBuffer_EntityListIndexes                                     ;; 00:36a5 $21 $9f $d9
-    ld   DE, wD301_EntityListIndexesForCurrentEntities                                     ;; 00:36a8 $11 $01 $d3
-    ld   BC, $08                                       ;; 00:36ab $01 $08 $00
-    call call_00_07b0_MemCopy                                  ;; 00:36ae $cd $b0 $07
-    ld   HL, wD9A7_BackupBuffer_BoundingBoxAndMore                                     ;; 00:36b1 $21 $a7 $d9
-    ld   DE, wD309_EntityBoundingBoxXMax                                     ;; 00:36b4 $11 $09 $d3
-    ld   BC, $20                                       ;; 00:36b7 $01 $20 $00
-    jp   call_00_07b0_MemCopy                                  ;; 00:36ba $c3 $b0 $07
+    ld   A, [wD9C7_BackupPlayer_EntityStoodOnLo]
+    ld   [wD74D_Player_EntityStoodOnLo], A
+    ld   A, [wD9C8_BackupPlayer_PushedStationaryPlatformLo]
+    ld   [wD74E_Player_PushedStationaryPlatformLo], A
+    ld   A, [wD9C9_BackupPlayer_PushedMovingPlatformLo]
+    ld   [wD74F_Player_PushedMovingPlatformLo], A
+    ld   A, [wD9CA_BackupBuffer_FlyAnimationPosition]
+    ld   [wD688_FlyAnimationPosition], A
+    ld   HL, wD79F_BackupBuffer_EntityFlags
+    ld   DE, wD000_EntityFlags
+    ld   BC, $100
+    call call_00_07b0_MemCopy
+    ld   HL, wD89F_BackupBuffer_EntityMemory
+    ld   DE, wD200_Player_EntityId
+    ld   BC, $100
+    call call_00_07b0_MemCopy
+    ld   HL, wD99F_BackupBuffer_EntityListIndexes
+    ld   DE, wD301_EntityListIndexesForCurrentEntities
+    ld   BC, $08
+    call call_00_07b0_MemCopy
+    ld   HL, wD9A7_BackupBuffer_BoundingBoxAndMore
+    ld   DE, wD309_EntityBoundingBoxXMax
+    ld   BC, $20
+    jp   call_00_07b0_MemCopy
 
 call_00_36bd_Entity_FaceTowardsPlayer:
 ; Computes sign of (player X − entity X); sets facing direction to $20 (left) or $00 (right)
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_X
-    ld   A, [wD20E_Player_XPositionLo]                                    ;; 00:36c5 $fa $0e $d2
-    sub  A, [HL]                                       ;; 00:36c8 $96
-    inc  HL                                            ;; 00:36c9 $23
-    ld   A, [wD20F_Player_XPositionHi]                                    ;; 00:36ca $fa $0f $d2
-    sbc  A, [HL]                                       ;; 00:36cd $9e
-    ld   C, $20                                        ;; 00:36ce $0e $20
-    jr   C, .jr_00_36d4                                ;; 00:36d0 $38 $02
-    ld   C, $00                                        ;; 00:36d2 $0e $00
+    ld   A, [wD20E_Player_XPositionLo]
+    sub  A, [HL]
+    inc  HL
+    ld   A, [wD20F_Player_XPositionHi]
+    sbc  A, [HL]
+    ld   C, $20
+    jr   C, .jr_00_36d4
+    ld   C, $00
 .jr_00_36d4:
-    ld   A, L                                          ;; 00:36d4 $7d
-    xor  A, $02                                        ;; 00:36d5 $ee $02
-    ld   L, A                                          ;; 00:36d7 $6f
-    ld   [HL], C                                       ;; 00:36d8 $71
-    ret                                                ;; 00:36d9 $c9
-    
+    ld   A, L
+    xor  A, $02
+    ld   L, A
+    ld   [HL], C
+    ret
+
 call_00_36da_Entity_FaceAwayFromPlayer:
 ; Inverse of above — faces away from player
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_X
@@ -1203,7 +1203,7 @@ call_00_36da_Entity_FaceAwayFromPlayer:
     xor  a,$02
     ld   l,a
     ld   [hl],c
-    ret  
+    ret
 
 call_00_36f7_Entity_MoveXByFacingMomentum_BoundsChecked:
 ; The standard "pace back and forth" step, and the second half of nearly every
@@ -1223,79 +1223,79 @@ call_00_36f7_Entity_MoveXByFacingMomentum_BoundsChecked:
 ; pterosaur only lets its dive cooldown tick on those frames, and the Kung Fu ninja
 ; abandons a stalk when it fires
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
-    ld   C, [HL]                                       ;; 00:36ff $4e
-    ld   A, L                                          ;; 00:3700 $7d
-    xor  A, $11                                        ;; 00:3701 $ee $11
-    ld   L, A                                          ;; 00:3703 $6f
-    ld   A, [HL+]                                      ;; 00:3704 $2a
-    bit  5, C                                          ;; 00:3705 $cb $69
-    jr   Z, .jr_00_370b                                ;; 00:3707 $28 $02
-    cpl                                                ;; 00:3709 $2f
-    inc  A                                             ;; 00:370a $3c
+    ld   C, [HL]
+    ld   A, L
+    xor  A, $11
+    ld   L, A
+    ld   A, [HL+]
+    bit  5, C
+    jr   Z, .jr_00_370b
+    cpl
+    inc  A
 .jr_00_370b:
-    add  A, [HL]                                       ;; 00:370b $86
-    ld   C, A                                          ;; 00:370c $4f
-    and  A, $0f                                        ;; 00:370d $e6 $0f
-    ld   [HL], A                                       ;; 00:370f $77
-    ld   A, C                                          ;; 00:3710 $79
-    sra  A                                             ;; 00:3711 $cb $2f
-    sra  A                                             ;; 00:3713 $cb $2f
-    sra  A                                             ;; 00:3715 $cb $2f
-    sra  A                                             ;; 00:3717 $cb $2f
-    ld   C, A                                          ;; 00:3719 $4f
-    cp   A, $80                                        ;; 00:371a $fe $80
-    ld   A, $ff                                        ;; 00:371c $3e $ff
-    adc  A, $00                                        ;; 00:371e $ce $00
-    ld   B, A                                          ;; 00:3720 $47
-    ld   A, L                                          ;; 00:3721 $7d
-    xor  A, $13                                        ;; 00:3722 $ee $13
-    ld   L, A                                          ;; 00:3724 $6f
-    ld   A, [HL]                                       ;; 00:3725 $7e
-    add  A, C                                          ;; 00:3726 $81
-    ld   [HL+], A                                      ;; 00:3727 $22
-    ld   C, A                                          ;; 00:3728 $4f
-    ld   A, [HL]                                       ;; 00:3729 $7e
-    adc  A, B                                          ;; 00:372a $88
-    ld   [HL], A                                       ;; 00:372b $77
-    ld   L, C                                          ;; 00:372c $69
-    ld   H, A                                          ;; 00:372d $67
-    add  HL, HL                                        ;; 00:372e $29
-    add  HL, HL                                        ;; 00:372f $29
-    add  HL, HL                                        ;; 00:3730 $29
-    ld   D, H                                          ;; 00:3731 $54
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3732 $fa $00 $d3
-    rrca                                               ;; 00:3735 $0f
-    rrca                                               ;; 00:3736 $0f
-    rrca                                               ;; 00:3737 $0f
-    and  A, $1c                                        ;; 00:3738 $e6 $1c
-    ld   L, A                                          ;; 00:373a $6f
-    ld   H, $00                                        ;; 00:373b $26 $00
-    ld   BC, wD309_EntityBoundingBoxXMax                                     ;; 00:373d $01 $09 $d3
-    add  HL, BC                                        ;; 00:3740 $09
-    ld   B, [HL]                                       ;; 00:3741 $46
-    dec  B                                             ;; 00:3742 $05
-    inc  HL                                            ;; 00:3743 $23
-    ld   C, [HL]                                       ;; 00:3744 $4e
-    inc  C                                             ;; 00:3745 $0c
-    ld   A, D                                          ;; 00:3746 $7a
-    cp   A, C                                          ;; 00:3747 $b9
-    ld   C, $00                                        ;; 00:3748 $0e $00
-    jr   C, .jr_00_3754                                ;; 00:374a $38 $08
-    ld   A, B                                          ;; 00:374c $78
-    cp   A, D                                          ;; 00:374d $ba
-    ld   C, $20                                        ;; 00:374e $0e $20
-    jr   C, .jr_00_3754                                ;; 00:3750 $38 $02
-    xor  A, A                                          ;; 00:3752 $af
-    ret                                                ;; 00:3753 $c9
+    add  A, [HL]
+    ld   C, A
+    and  A, $0f
+    ld   [HL], A
+    ld   A, C
+    sra  A
+    sra  A
+    sra  A
+    sra  A
+    ld   C, A
+    cp   A, $80
+    ld   A, $ff
+    adc  A, $00
+    ld   B, A
+    ld   A, L
+    xor  A, $13
+    ld   L, A
+    ld   A, [HL]
+    add  A, C
+    ld   [HL+], A
+    ld   C, A
+    ld   A, [HL]
+    adc  A, B
+    ld   [HL], A
+    ld   L, C
+    ld   H, A
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    ld   D, H
+    ld   A, [wD300_CurrentEntityAddrLo]
+    rrca
+    rrca
+    rrca
+    and  A, $1c
+    ld   L, A
+    ld   H, $00
+    ld   BC, wD309_EntityBoundingBoxXMax
+    add  HL, BC
+    ld   B, [HL]
+    dec  B
+    inc  HL
+    ld   C, [HL]
+    inc  C
+    ld   A, D
+    cp   A, C
+    ld   C, $00
+    jr   C, .jr_00_3754
+    ld   A, B
+    cp   A, D
+    ld   C, $20
+    jr   C, .jr_00_3754
+    xor  A, A
+    ret
 .jr_00_3754:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
-    ld   A, [HL]                                       ;; 00:375c $7e
-    ld   [HL], C                                       ;; 00:375d $71
-    cp   A, C                                          ;; 00:375e $b9
-    ret                                                ;; 00:375f $c9
-    
+    ld   A, [HL]
+    ld   [HL], C
+    cp   A, C
+    ret
+
 call_00_3760_Entity_PatrolY_FacingBased:
-; Vertical patrol using facing direction bit 6 to determine up/down; 
+; Vertical patrol using facing direction bit 6 to determine up/down;
 ; moves Y, checks against wD30B_EntityBoundingBoxYMax bounds, flips a $40/$00 flag in facing when bound hit
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
     ld   c,[hl]
@@ -1305,7 +1305,7 @@ call_00_3760_Entity_PatrolY_FacingBased:
     ldi  a,[hl]
     bit  6,c
     jr   nz,.jr_02_3774
-    cpl  
+    cpl
     inc  a
 .jr_02_3774:
     add  [hl]
@@ -1339,9 +1339,9 @@ call_00_3760_Entity_PatrolY_FacingBased:
     add  hl,hl
     ld   d,h
     ld   a,[wD300_CurrentEntityAddrLo]
-    rrca 
-    rrca 
-    rrca 
+    rrca
+    rrca
+    rrca
     and  a,$1C
     ld   l,a
     ld   h,$00
@@ -1361,13 +1361,13 @@ call_00_3760_Entity_PatrolY_FacingBased:
     ld   c,$00
     jr   c,.jr_02_37BD
     xor  a
-    ret  
+    ret
 .jr_02_37BD:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
     ld   a,[hl]
     ld   [hl],c
     cp   c
-    ret  
+    ret
 
 call_00_37c9_Entity_MoveX:
 ; Adds BC (signed delta) to entity's X position
@@ -1378,18 +1378,18 @@ call_00_37c9_Entity_MoveX:
     ld   a,[hl]
     adc  a, b
     ld   [hl],a
-    ret  
+    ret
 
 call_00_37d8_Entity_MoveY:
 ; Adds BC (signed delta) to entity's Y position
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_Y
-    ld   A, [HL]                                       ;; 00:37e0 $7e
-    add  A, C                                          ;; 00:37e1 $81
-    ld   [HL+], A                                      ;; 00:37e2 $22
-    ld   A, [HL]                                       ;; 00:37e3 $7e
-    adc  A, B                                          ;; 00:37e4 $88
-    ld   [HL], A                                       ;; 00:37e5 $77
-    ret                                                ;; 00:37e6 $c9
+    ld   A, [HL]
+    add  A, C
+    ld   [HL+], A
+    ld   A, [HL]
+    adc  A, B
+    ld   [HL], A
+    ret
 
 call_00_37e7_Entity_SetOamAttrBase:
 ; Writes C into wD32D_Entity_OamAttrBase for this entity's slot - the value that
@@ -1406,64 +1406,64 @@ call_00_37e7_Entity_SetOamAttrBase:
 ; call_02_52ab_EntityAction_ParticleBurst_Update when it is recycled into its
 ; follow-up effect. Nothing else ever writes the table, so every other slot draws
 ; with base $00
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:37e7 $fa $00 $d3
-    rlca                                               ;; 00:37ea $07
-    rlca                                               ;; 00:37eb $07
-    rlca                                               ;; 00:37ec $07
-    and  A, $07                                        ;; 00:37ed $e6 $07
-    ld   L, A                                          ;; 00:37ef $6f
-    ld   H, $00                                        ;; 00:37f0 $26 $00
-    ld   DE, wD32D_Entity_OamAttrBase                                     ;; 00:37f2 $11 $2d $d3
-    add  HL, DE                                        ;; 00:37f5 $19
-    ld   [HL], C                                       ;; 00:37f6 $71
-    ret                                                ;; 00:37f7 $c9
+    ld   A, [wD300_CurrentEntityAddrLo]
+    rlca
+    rlca
+    rlca
+    and  A, $07
+    ld   L, A
+    ld   H, $00
+    ld   DE, wD32D_Entity_OamAttrBase
+    add  HL, DE
+    ld   [HL], C
+    ret
 
 call_00_37f8_Entity_SetMiscFlags:
 ; Writes C to the MISC_FLAGS field
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     ld   [hl],c
-    ret  
+    ret
 
 call_00_3802_Entity_SetMiscTimer:
 ; Writes C to misc timer field
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_1
-    ld   [HL], C                                       ;; 00:380a $71
-    ret                                                ;; 00:380b $c9
-    
+    ld   [HL], C
+    ret
+
 call_00_380c_Entity_CheckMiscTimerZero:
 ; Loads misc timer and ANDs; Z set if zero
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_1
     ld   a,[hl]
     and  a
-    ret  
+    ret
 
 call_00_3817_Entity_DecrementMiscTimer:
 ; Decrements misc timer if non-zero; returns new value in A
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_1
-    ld   A, [HL]                                       ;; 00:381f $7e
-    and  A, A                                          ;; 00:3820 $a7
-    ret  Z                                             ;; 00:3821 $c8
-    dec  [HL]                                          ;; 00:3822 $35
-    ld   A, [HL]                                       ;; 00:3823 $7e
-    ret                                                ;; 00:3824 $c9
+    ld   A, [HL]
+    and  A, A
+    ret  Z
+    dec  [HL]
+    ld   A, [HL]
+    ret
 
 call_00_3825_Entity_SetCollisionType:
 ; Writes C to collision type field
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_COLLISION_TYPE
     ld   [hl],c
-    ret  
+    ret
 
 call_00_382f_Entity_SetWidth:
 ; Writes C to width field
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_COLLISION_WIDTH
     ld   [hl],c
-    ret  
+    ret
 
 call_00_3839_Entity_GetSpriteCounter:
 ; A = ENTITY_FIELD_ANIM_FRAME_INDEX, the index into the current frame list
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_ANIM_FRAME_INDEX
     ld   a,[hl]
-    ret  
+    ret
 
 call_00_3843_Entity_CheckAnimationEnded:
 ; Z if the current action's animation did NOT wrap this frame, NZ if it just
@@ -1473,8 +1473,8 @@ call_00_3843_Entity_CheckAnimationEnded:
 ; This is how nearly every action hands off to the next one - it has around 45
 ; call sites in bank02_entity_actions.asm, easily the most-used helper here
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_SPRITE_FLAGS
-    bit  SPRITE_FLAG_ANIM_ENDED_BIT, [HL]                                       ;; 00:384b $cb $56
-    ret                                                ;; 00:384d $c9
+    bit  SPRITE_FLAG_ANIM_ENDED_BIT, [HL]
+    ret
 
 call_00_384e_Entity_CheckSpriteIdChanged:
 ; NZ if the entity's sprite id changed this frame and its tiles need refetching.
@@ -1485,7 +1485,7 @@ call_00_384e_Entity_CheckSpriteIdChanged:
 ; is a leftover
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_SPRITE_FLAGS
     bit  SPRITE_FLAG_ID_CHANGED_BIT,[hl]
-    ret  
+    ret
 
 call_00_3859_Entity_CheckPlayerXProximity:
 ; "Is Gex within +/- C pixels of me horizontally?"
@@ -1504,22 +1504,22 @@ call_00_3859_Entity_CheckPlayerXProximity:
 ; $40 to stop) so that standing on the boundary does not make them flicker between
 ; two actions
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_X
-    ld   A, [wD20E_Player_XPositionLo]                                    ;; 00:3861 $fa $0e $d2
-    sub  A, [HL]                                       ;; 00:3864 $96
-    ld   E, A                                          ;; 00:3865 $5f
-    inc  HL                                            ;; 00:3866 $23
-    ld   A, [wD20F_Player_XPositionHi]                                    ;; 00:3867 $fa $0f $d2
-    sbc  A, [HL]                                       ;; 00:386a $9e
-    ld   D, A                                          ;; 00:386b $57
-    ld   L, C                                          ;; 00:386c $69
-    ld   H, $00                                        ;; 00:386d $26 $00
-    add  HL, DE                                        ;; 00:386f $19
-    sla  C                                             ;; 00:3870 $cb $21
-    ld   A, L                                          ;; 00:3872 $7d
-    sub  A, C                                          ;; 00:3873 $91
-    ld   A, H                                          ;; 00:3874 $7c
-    sbc  A, $00                                        ;; 00:3875 $de $00
-    ret                                                ;; 00:3877 $c9
+    ld   A, [wD20E_Player_XPositionLo]
+    sub  A, [HL]
+    ld   E, A
+    inc  HL
+    ld   A, [wD20F_Player_XPositionHi]
+    sbc  A, [HL]
+    ld   D, A
+    ld   L, C
+    ld   H, $00
+    add  HL, DE
+    sla  C
+    ld   A, L
+    sub  A, C
+    ld   A, H
+    sbc  A, $00
+    ret
 
 call_00_3878_Entity_CheckTVButtonEnabled:
 ; Is this TV button active? Two entirely different tests depending on where you are.
@@ -1530,27 +1530,27 @@ call_00_3878_Entity_CheckTVButtonEnabled:
 ; wD798_BlockPatch_SlotTable13 and returns whether that slot is nonzero.
 ;
 ; Neither path involves distance
-    ld   A, [wD624_CurrentLevelId]                                    ;; 00:3878 $fa $24 $d6
-    and  A, A                                          ;; 00:387b $a7
-    jr   Z, call_00_3899_Entity_CheckRemoteTotalsUnlock                                 ;; 00:387c $28 $1b
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:387e $fa $00 $d3
-    rlca                                               ;; 00:3881 $07
-    rlca                                               ;; 00:3882 $07
-    rlca                                               ;; 00:3883 $07
-    and  A, $07                                        ;; 00:3884 $e6 $07
-    ld   E, A                                          ;; 00:3886 $5f
-    ld   D, $00                                        ;; 00:3887 $16 $00
-    ld   HL, wD301_EntityListIndexesForCurrentEntities                                     ;; 00:3889 $21 $01 $d3
-    add  HL, DE                                        ;; 00:388c $19
-    ld   A, [HL]                                       ;; 00:388d $7e
-    dec  A                                             ;; 00:388e $3d
-    srl  A                                             ;; 00:388f $cb $3f
-    ld   E, A                                          ;; 00:3891 $5f
-    ld   HL, wD798_BlockPatch_SlotTable13                                     ;; 00:3892 $21 $98 $d7
-    add  HL, DE                                        ;; 00:3895 $19
-    ld   A, [HL]                                       ;; 00:3896 $7e
-    and  A, A                                          ;; 00:3897 $a7
-    ret                                                ;; 00:3898 $c9
+    ld   A, [wD624_CurrentLevelId]
+    and  A, A
+    jr   Z, call_00_3899_Entity_CheckRemoteTotalsUnlock
+    ld   A, [wD300_CurrentEntityAddrLo]
+    rlca
+    rlca
+    rlca
+    and  A, $07
+    ld   E, A
+    ld   D, $00
+    ld   HL, wD301_EntityListIndexesForCurrentEntities
+    add  HL, DE
+    ld   A, [HL]
+    dec  A
+    srl  A
+    ld   E, A
+    ld   HL, wD798_BlockPatch_SlotTable13
+    add  HL, DE
+    ld   A, [HL]
+    and  A, A
+    ret
 
 call_00_3899_Entity_CheckRemoteTotalsUnlock:
 ; Hub-world unlock gate: has the player collected enough remotes for this entity?
@@ -1570,59 +1570,59 @@ call_00_3899_Entity_CheckRemoteTotalsUnlock:
 ; Nothing here reads a position - the three variables are collection totals. It is
 ; a progress requirement, which is why it gates the hub TVs
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_2
-    ld   A, [wD64F_MissionRemoteTotal]                                    ;; 00:38a1 $fa $4f $d6
-    and  A, $7f                                        ;; 00:38a4 $e6 $7f
-    cp   A, [HL]                                       ;; 00:38a6 $be
-    jr   C, .jr_00_38bf                                ;; 00:38a7 $38 $16
-    inc  L                                             ;; 00:38a9 $2c
-    ld   A, [wD650_HiddenRemoteTotal]                                    ;; 00:38aa $fa $50 $d6
-    and  A, $7f                                        ;; 00:38ad $e6 $7f
-    cp   A, [HL]                                       ;; 00:38af $be
-    jr   C, .jr_00_38bf                                ;; 00:38b0 $38 $0d
-    inc  L                                             ;; 00:38b2 $2c
-    ld   A, [wD651_BonusMissionTotal]                                    ;; 00:38b3 $fa $51 $d6
-    and  A, $7f                                        ;; 00:38b6 $e6 $7f
-    cp   A, [HL]                                       ;; 00:38b8 $be
-    jr   C, .jr_00_38bf                                ;; 00:38b9 $38 $04
-    ld   A, $01                                        ;; 00:38bb $3e $01
-    and  A, A                                          ;; 00:38bd $a7
-    ret                                                ;; 00:38be $c9
+    ld   A, [wD64F_MissionRemoteTotal]
+    and  A, $7f
+    cp   A, [HL]
+    jr   C, .jr_00_38bf
+    inc  L
+    ld   A, [wD650_HiddenRemoteTotal]
+    and  A, $7f
+    cp   A, [HL]
+    jr   C, .jr_00_38bf
+    inc  L
+    ld   A, [wD651_BonusMissionTotal]
+    and  A, $7f
+    cp   A, [HL]
+    jr   C, .jr_00_38bf
+    ld   A, $01
+    and  A, A
+    ret
 .jr_00_38bf:
-    xor  A, A                                          ;; 00:38bf $af
-    ret                                                ;; 00:38c0 $c9
+    xor  A, A
+    ret
 
 call_00_38c1_Entity_CheckRedRemoteProgressFlag:
-; In non-hub levels, maps slot to a bitmask via a 3-byte table and ANDs against 
+; In non-hub levels, maps slot to a bitmask via a 3-byte table and ANDs against
 ; wD629 remote progress flags; in hub delegates to call_00_3899_Entity_CheckRemoteTotalsUnlock
-    ld   A, [wD624_CurrentLevelId]                                    ;; 00:38c1 $fa $24 $d6
-    and  A, A                                          ;; 00:38c4 $a7
-    jr   Z, call_00_3899_Entity_CheckRemoteTotalsUnlock                                 ;; 00:38c5 $28 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:38c7 $fa $00 $d3
-    rlca                                               ;; 00:38ca $07
-    rlca                                               ;; 00:38cb $07
-    rlca                                               ;; 00:38cc $07
-    and  A, $07                                        ;; 00:38cd $e6 $07
-    ld   E, A                                          ;; 00:38cf $5f
-    ld   D, $00                                        ;; 00:38d0 $16 $00
-    ld   HL, wD301_EntityListIndexesForCurrentEntities                                     ;; 00:38d2 $21 $01 $d3
-    add  HL, DE                                        ;; 00:38d5 $19
-    ld   A, [HL]                                       ;; 00:38d6 $7e
-    dec  A                                             ;; 00:38d7 $3d
-    srl  A                                             ;; 00:38d8 $cb $3f
-    ld   E, A                                          ;; 00:38da $5f
-    ld   HL, .data_02_38ed                                     ;; 00:38db $21 $ed $38
-    add  HL, DE                                        ;; 00:38de $19
-    ld   A, [HL]                                       ;; 00:38df $7e
-    ld   HL, wD624_CurrentLevelId                                     ;; 00:38e0 $21 $24 $d6
-    ld   L, [HL]                                       ;; 00:38e3 $6e
-    ld   H, $00                                        ;; 00:38e4 $26 $00
-    ld   DE, wD629_RemoteProgressFlags                                     ;; 00:38e6 $11 $29 $d6
-    add  HL, DE                                        ;; 00:38e9 $19
-    and  A, [HL]                                       ;; 00:38ea $a6
-    ld   E, A                                          ;; 00:38eb $5f
-    ret                                                ;; 00:38ec $c9
+    ld   A, [wD624_CurrentLevelId]
+    and  A, A
+    jr   Z, call_00_3899_Entity_CheckRemoteTotalsUnlock
+    ld   A, [wD300_CurrentEntityAddrLo]
+    rlca
+    rlca
+    rlca
+    and  A, $07
+    ld   E, A
+    ld   D, $00
+    ld   HL, wD301_EntityListIndexesForCurrentEntities
+    add  HL, DE
+    ld   A, [HL]
+    dec  A
+    srl  A
+    ld   E, A
+    ld   HL, .data_02_38ed
+    add  HL, DE
+    ld   A, [HL]
+    ld   HL, wD624_CurrentLevelId
+    ld   L, [HL]
+    ld   H, $00
+    ld   DE, wD629_RemoteProgressFlags
+    add  HL, DE
+    and  A, [HL]
+    ld   E, A
+    ret
 .data_02_38ed:
-    db   $01, $02, $04                                 ;; 00:38ed .?.
+    db   $01, $02, $04
 
 call_00_38f0_Entity_ClearAllSlots:
 ; Iterates the seven NPC entity slots - $D220 to $D2E0 in steps of $20, stopping
@@ -1632,23 +1632,23 @@ call_00_38f0_Entity_ClearAllSlots:
 ; Seven, not eight, and the range ends at $D2E0 rather than $D3E0; the same seven
 ; are what call_00_3951_Entity_SpawnEffectAtPlayer scans for a free slot.
 ; wD300_CurrentEntityAddrLo is saved and restored around the loop
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:38f0 $fa $00 $d3
-    push AF                                            ;; 00:38f3 $f5
-    ld   A, $20                                        ;; 00:38f4 $3e $20
+    ld   A, [wD300_CurrentEntityAddrLo]
+    push AF
+    ld   A, $20
 .jr_00_38f6:
-    ld   [wD300_CurrentEntityAddrLo], A                                    ;; 00:38f6 $ea $00 $d3
-    or   A, $00                                        ;; 00:38f9 $f6 $00
-    ld   L, A                                          ;; 00:38fb $6f
-    ld   H, $d2                                        ;; 00:38fc $26 $d2
-    ld   A, [HL]                                       ;; 00:38fe $7e
-    cp   A, $ff                                        ;; 00:38ff $fe $ff
-    call NZ, call_00_3910_Entity_ClearSlot                              ;; 00:3901 $c4 $10 $39
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:3904 $fa $00 $d3
-    add  A, $20                                        ;; 00:3907 $c6 $20
-    jr   NZ, .jr_00_38f6                               ;; 00:3909 $20 $eb
-    pop  AF                                            ;; 00:390b $f1
-    ld   [wD300_CurrentEntityAddrLo], A                                    ;; 00:390c $ea $00 $d3
-    ret                                                ;; 00:390f $c9
+    ld   [wD300_CurrentEntityAddrLo], A
+    or   A, $00
+    ld   L, A
+    ld   H, $d2
+    ld   A, [HL]
+    cp   A, $ff
+    call NZ, call_00_3910_Entity_ClearSlot
+    ld   A, [wD300_CurrentEntityAddrLo]
+    add  A, $20
+    jr   NZ, .jr_00_38f6
+    pop  AF
+    ld   [wD300_CurrentEntityAddrLo], A
+    ret
 
 call_00_3910_Entity_ClearSlot:
 ; Frees an entity slot and, unless the entity was permanently removed, allows its
@@ -1665,29 +1665,29 @@ call_00_3910_Entity_ClearSlot:
 ; one that was killed was marked $FF by call_00_393c_Entity_MarkNeverRespawn
 ; first, and stays gone
     LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_ENTITY_ID
-    ld   [HL], $ff                                     ;; 00:3918 $36 $ff
-    ld   A, L                                          ;; 00:391a $7d
-    rlca                                               ;; 00:391b $07
-    rlca                                               ;; 00:391c $07
-    rlca                                               ;; 00:391d $07
-    and  A, $07                                        ;; 00:391e $e6 $07
-    ld   L, A                                          ;; 00:3920 $6f
-    ld   H, $00                                        ;; 00:3921 $26 $00
-    ld   DE, wD301_EntityListIndexesForCurrentEntities                                     ;; 00:3923 $11 $01 $d3
-    add  HL, DE                                        ;; 00:3926 $19
-    ld   L, [HL]                                       ;; 00:3927 $6e
-    ld   H, HIGH(wD000_EntityFlags)                                        ;; 00:3928 $26 $d0
-    ld   A, [HL]                                       ;; 00:392a $7e
-    cp   A, ENTITY_LIST_FLAG_NEVER_AGAIN               ;; 00:392b $fe $ff
-    ret  Z                                             ;; 00:392d $c8
-    ld   [HL], ENTITY_LIST_FLAG_ABSENT                 ;; 00:392e $36 $00
-    ret                                                ;; 00:3930 $c9
+    ld   [HL], $ff
+    ld   A, L
+    rlca
+    rlca
+    rlca
+    and  A, $07
+    ld   L, A
+    ld   H, $00
+    ld   DE, wD301_EntityListIndexesForCurrentEntities
+    add  HL, DE
+    ld   L, [HL]
+    ld   H, HIGH(wD000_EntityFlags)
+    ld   A, [HL]
+    cp   A, ENTITY_LIST_FLAG_NEVER_AGAIN
+    ret  Z
+    ld   [HL], ENTITY_LIST_FLAG_ABSENT
+    ret
 
 call_00_3931_Entity_DeactivateSelf:
 ; Sets own entity ID field to $FF (marks slot as dead)
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_ENTITY_ID
-    ld   [HL], $ff                                     ;; 00:3939 $36 $ff
-    ret                                                ;; 00:393b $c9
+    ld   [HL], $ff
+    ret
 
 call_00_393c_Entity_MarkNeverRespawn:
 ; Marks this entity's list entry as permanently gone: follows the slot -> list-entry
@@ -1711,16 +1711,16 @@ call_00_393c_Entity_MarkNeverRespawn:
 ; $00, so this writes to wD000_EntityFlags entry $00. That entry never belongs to a
 ; real list entry (the spawn cursor wD338 starts at 1), so the write is harmless -
 ; it is the scratch entry
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 00:393c $fa $00 $d3
-    rlca                                               ;; 00:393f $07
-    rlca                                               ;; 00:3940 $07
-    rlca                                               ;; 00:3941 $07
-    and  A, $07                                        ;; 00:3942 $e6 $07
-    ld   L, A                                          ;; 00:3944 $6f
-    ld   H, $00                                        ;; 00:3945 $26 $00
-    ld   DE, wD301_EntityListIndexesForCurrentEntities                                     ;; 00:3947 $11 $01 $d3
-    add  HL, DE                                        ;; 00:394a $19
-    ld   L, [HL]                                       ;; 00:394b $6e
-    ld   H, HIGH(wD000_EntityFlags)                                        ;; 00:394c $26 $d0
-    ld   [HL], ENTITY_LIST_FLAG_NEVER_AGAIN            ;; 00:394e $36 $ff
-    ret                                                ;; 00:3950 $c9
+    ld   A, [wD300_CurrentEntityAddrLo]
+    rlca
+    rlca
+    rlca
+    and  A, $07
+    ld   L, A
+    ld   H, $00
+    ld   DE, wD301_EntityListIndexesForCurrentEntities
+    add  HL, DE
+    ld   L, [HL]
+    ld   H, HIGH(wD000_EntityFlags)
+    ld   [HL], ENTITY_LIST_FLAG_NEVER_AGAIN
+    ret

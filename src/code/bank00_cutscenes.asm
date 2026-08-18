@@ -57,178 +57,178 @@ call_00_2329_Cutscene_LoadAndRun:
 ; Each phase runs its own cut-down game loop rather than the real one: vblank wait, the phase's
 ; own update, entity update, and the VRAM transfer setup. Skipping jumps straight to the
 ; restore code, and only a non-skipped preview bothers to rebuild the map on the way out
-    ld   A, B                                          ;; 00:2329 $78
-    ld   [wD775_Cutscene_Skippable], A                                    ;; 00:232a $ea $75 $d7
-    ld   B, $00                                        ;; 00:232d $06 $00
-    ld   HL, wD624_CurrentLevelId                                     ;; 00:232f $21 $24 $d6
-    ld   L, [HL]                                       ;; 00:2332 $6e
-    ld   H, $00                                        ;; 00:2333 $26 $00
-    add  HL, HL                                        ;; 00:2335 $29
-    add  HL, HL                                        ;; 00:2336 $29
-    add  HL, HL                                        ;; 00:2337 $29
-    add  HL, HL                                        ;; 00:2338 $29
-    ld   DE, .data_00_2472_CutsceneIndexLookupTable                                     ;; 00:2339 $11 $72 $24
-    add  HL, DE                                        ;; 00:233c $19
-    add  HL, BC                                        ;; 00:233d $09
-    ld   A, [HL]                                       ;; 00:233e $7e
-    cp   A, CUTSCENE_NONE                              ;; 00:233f $fe $ff
-    ret  Z                                             ;; 00:2341 $c8
-    ld   L, A                                          ;; 00:2342 $6f
-    ld   H, $00                                        ;; 00:2343 $26 $00
-    add  HL, HL                                        ;; 00:2345 $29
-    ld   DE, .data_00_2662_CutsceneScriptPointerTable                                     ;; 00:2346 $11 $62 $26
-    add  HL, DE                                        ;; 00:2349 $19
-    ld   E, [HL]                                       ;; 00:234a $5e
-    inc  HL                                            ;; 00:234b $23
-    ld   D, [HL]                                       ;; 00:234c $56
-    push DE                                            ;; 00:234d $d5
-    call call_00_3628_Entity_SaveWorldState                                  ;; 00:234e $cd $28 $36
-    pop  DE                                            ;; 00:2351 $d1
-    ld   HL, wD20E_Player_XPositionLo                                     ;; 00:2352 $21 $0e $d2
-    ld   C, [HL]                                       ;; 00:2355 $4e
-    ld   A, [DE]                                       ;; 00:2356 $1a
-    ld   [HL+], A                                      ;; 00:2357 $22
-    inc  DE                                            ;; 00:2358 $13
-    ld   B, [HL]                                       ;; 00:2359 $46
-    ld   A, [DE]                                       ;; 00:235a $1a
-    ld   [HL+], A                                      ;; 00:235b $22
-    inc  DE                                            ;; 00:235c $13
-    push BC                                            ;; 00:235d $c5
-    ld   C, [HL]                                       ;; 00:235e $4e
-    ld   A, [DE]                                       ;; 00:235f $1a
-    ld   [HL+], A                                      ;; 00:2360 $22
-    inc  DE                                            ;; 00:2361 $13
-    ld   B, [HL]                                       ;; 00:2362 $46
-    ld   A, [DE]                                       ;; 00:2363 $1a
-    ld   [HL], A                                       ;; 00:2364 $77
-    inc  DE                                            ;; 00:2365 $13
-    push BC                                            ;; 00:2366 $c5
-    push DE                                            ;; 00:2367 $d5
-    call call_00_13a6_BgMap_UpdateWindowFromPlayerPos                                  ;; 00:2368 $cd $a6 $13
-    xor  A, A                                          ;; 00:236b $af
-    ld   [wD743_Player_UpdateFlag], A                                    ;; 00:236c $ea $43 $d7
-    call call_00_1264_BgMap_LoadFull                                  ;; 00:236f $cd $64 $12
+    ld   A, B
+    ld   [wD775_Cutscene_Skippable], A
+    ld   B, $00
+    ld   HL, wD624_CurrentLevelId
+    ld   L, [HL]
+    ld   H, $00
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    ld   DE, .data_00_2472_CutsceneIndexLookupTable
+    add  HL, DE
+    add  HL, BC
+    ld   A, [HL]
+    cp   A, CUTSCENE_NONE
+    ret  Z
+    ld   L, A
+    ld   H, $00
+    add  HL, HL
+    ld   DE, .data_00_2662_CutsceneScriptPointerTable
+    add  HL, DE
+    ld   E, [HL]
+    inc  HL
+    ld   D, [HL]
+    push DE
+    call call_00_3628_Entity_SaveWorldState
+    pop  DE
+    ld   HL, wD20E_Player_XPositionLo
+    ld   C, [HL]
+    ld   A, [DE]
+    ld   [HL+], A
+    inc  DE
+    ld   B, [HL]
+    ld   A, [DE]
+    ld   [HL+], A
+    inc  DE
+    push BC
+    ld   C, [HL]
+    ld   A, [DE]
+    ld   [HL+], A
+    inc  DE
+    ld   B, [HL]
+    ld   A, [DE]
+    ld   [HL], A
+    inc  DE
+    push BC
+    push DE
+    call call_00_13a6_BgMap_UpdateWindowFromPlayerPos
+    xor  A, A
+    ld   [wD743_Player_UpdateFlag], A
+    call call_00_1264_BgMap_LoadFull
     FARCALL call_02_6e68_Entities_InitNPCSlots
-    call call_00_0521_Screen_PresentAndFadeIn                                  ;; 00:237d $cd $21 $05
-    pop  HL                                            ;; 00:2380 $e1
-    ld   E, [HL]                                       ;; 00:2381 $5e
-    inc  HL                                            ;; 00:2382 $23
-    ld   D, [HL]                                       ;; 00:2383 $56
-    inc  HL                                            ;; 00:2384 $23
-    ld   A, E                                          ;; 00:2385 $7b
-    or   A, D                                          ;; 00:2386 $b2
-    jr   Z, .jr_00_23e9                                ;; 00:2387 $28 $60
-    push HL                                            ;; 00:2389 $e5
-    ld   L, E                                          ;; 00:238a $6b
-    ld   H, D                                          ;; 00:238b $62
-    xor  A, A                                          ;; 00:238c $af
-    ld   [wD79D_Cutscene_MoveSpeed], A                                    ;; 00:238d $ea $9d $d7
-    ld   [wD79E_Cutscene_MoveSubPixel], A                                    ;; 00:2390 $ea $9e $d7
-    ld   A, [HL+]                                      ;; 00:2393 $2a
+    call call_00_0521_Screen_PresentAndFadeIn
+    pop  HL
+    ld   E, [HL]
+    inc  HL
+    ld   D, [HL]
+    inc  HL
+    ld   A, E
+    or   A, D
+    jr   Z, .jr_00_23e9
+    push HL
+    ld   L, E
+    ld   H, D
+    xor  A, A
+    ld   [wD79D_Cutscene_MoveSpeed], A
+    ld   [wD79E_Cutscene_MoveSubPixel], A
+    ld   A, [HL+]
 .jr_00_2394:
-    ld   [wD75A_Player_EffectiveInputs], A                                    ;; 00:2394 $ea $5a $d7
-    ld   A, [HL+]                                      ;; 00:2397 $2a
-    ld   [wD79B_Cutscene_MoveFramesRemaining], A                                    ;; 00:2398 $ea $9b $d7
-    ld   A, [HL+]                                      ;; 00:239b $2a
-    ld   [wD79B_Cutscene_MoveFramesRemaining+1], A                                    ;; 00:239c $ea $9c $d7
-    push HL                                            ;; 00:239f $e5
+    ld   [wD75A_Player_EffectiveInputs], A
+    ld   A, [HL+]
+    ld   [wD79B_Cutscene_MoveFramesRemaining], A
+    ld   A, [HL+]
+    ld   [wD79B_Cutscene_MoveFramesRemaining+1], A
+    push HL
 .jr_00_23a0:
-    ld   A, [wD775_Cutscene_Skippable]                                    ;; 00:23a0 $fa $75 $d7
-    and  A, A                                          ;; 00:23a3 $a7
-    jr   Z, .jr_00_23b1                                ;; 00:23a4 $28 $0b
-    ld   A, [wD59F_RawInputs]                                    ;; 00:23a6 $fa $9f $d5
-    and  A, A                                          ;; 00:23a9 $a7
-    jr   Z, .jr_00_23b1                                ;; 00:23aa $28 $05
-    pop  HL                                            ;; 00:23ac $e1
-    pop  HL                                            ;; 00:23ad $e1
-    jp   .jp_00_2445                                   ;; 00:23ae $c3 $45 $24
+    ld   A, [wD775_Cutscene_Skippable]
+    and  A, A
+    jr   Z, .jr_00_23b1
+    ld   A, [wD59F_RawInputs]
+    and  A, A
+    jr   Z, .jr_00_23b1
+    pop  HL
+    pop  HL
+    jp   .jp_00_2445
 .jr_00_23b1:
-    call call_00_0ab4_WaitForInterrupt                                  ;; 00:23b1 $cd $b4 $0a
-    call call_00_2dbf_Cutscene_UpdateMovement                                  ;; 00:23b4 $cd $bf $2d
+    call call_00_0ab4_WaitForInterrupt
+    call call_00_2dbf_Cutscene_UpdateMovement
     FARCALL call_02_715a_MapWindow_Update
     FARCALL call_02_6eba_Entities_UpdateAll
-    call call_00_1455_BgMap_LoadDirtyRegions                                  ;; 00:23cd $cd $55 $14
-    call call_00_08fc_StageNextGfxTransfer                                  ;; 00:23d0 $cd $fc $08
-    ld   HL, wD79B_Cutscene_MoveFramesRemaining                                     ;; 00:23d3 $21 $9b $d7
-    ld   A, [HL]                                       ;; 00:23d6 $7e
-    sub  A, $01                                        ;; 00:23d7 $d6 $01
-    ld   [HL+], A                                      ;; 00:23d9 $22
-    ld   C, A                                          ;; 00:23da $4f
-    ld   A, [HL]                                       ;; 00:23db $7e
-    sbc  A, $00                                        ;; 00:23dc $de $00
-    ld   [HL], A                                       ;; 00:23de $77
-    or   A, C                                          ;; 00:23df $b1
-    jr   NZ, .jr_00_23a0                               ;; 00:23e0 $20 $be
-    pop  HL                                            ;; 00:23e2 $e1
-    ld   A, [HL+]                                      ;; 00:23e3 $2a
-    cp   A, CUTSCENE_MOVE_END                          ;; 00:23e4 $fe $ff
-    jr   NZ, .jr_00_2394                               ;; 00:23e6 $20 $ac
-    pop  HL                                            ;; 00:23e8 $e1
+    call call_00_1455_BgMap_LoadDirtyRegions
+    call call_00_08fc_StageNextGfxTransfer
+    ld   HL, wD79B_Cutscene_MoveFramesRemaining
+    ld   A, [HL]
+    sub  A, $01
+    ld   [HL+], A
+    ld   C, A
+    ld   A, [HL]
+    sbc  A, $00
+    ld   [HL], A
+    or   A, C
+    jr   NZ, .jr_00_23a0
+    pop  HL
+    ld   A, [HL+]
+    cp   A, CUTSCENE_MOVE_END
+    jr   NZ, .jr_00_2394
+    pop  HL
 .jr_00_23e9:
-    ld   A, [HL+]                                      ;; 00:23e9 $2a
-    ld   H, [HL]                                       ;; 00:23ea $66
-    ld   L, A                                          ;; 00:23eb $6f
-    or   A, H                                          ;; 00:23ec $b4
-    jr   Z, .jr_00_241e                                ;; 00:23ed $28 $2f
-    call call_00_1f80_TileHitScript_Run                                  ;; 00:23ef $cd $80 $1f
+    ld   A, [HL+]
+    ld   H, [HL]
+    ld   L, A
+    or   A, H
+    jr   Z, .jr_00_241e
+    call call_00_1f80_TileHitScript_Run
 .jr_00_23f2:
-    ld   A, [wD775_Cutscene_Skippable]                                    ;; 00:23f2 $fa $75 $d7
-    and  A, A                                          ;; 00:23f5 $a7
-    jr   Z, .jr_00_23fe                                ;; 00:23f6 $28 $06
-    ld   A, [wD59F_RawInputs]                                    ;; 00:23f8 $fa $9f $d5
-    and  A, A                                          ;; 00:23fb $a7
-    jr   NZ, .jp_00_2445                               ;; 00:23fc $20 $47
+    ld   A, [wD775_Cutscene_Skippable]
+    and  A, A
+    jr   Z, .jr_00_23fe
+    ld   A, [wD59F_RawInputs]
+    and  A, A
+    jr   NZ, .jp_00_2445
 .jr_00_23fe:
-    call call_00_0ab4_WaitForInterrupt                                  ;; 00:23fe $cd $b4 $0a
-    call call_00_1e5b_BlockPatch_TickSequence                                  ;; 00:2401 $cd $5b $1e
+    call call_00_0ab4_WaitForInterrupt
+    call call_00_1e5b_BlockPatch_TickSequence
     FARCALL call_02_6eba_Entities_UpdateAll
-    call call_00_08fc_StageNextGfxTransfer                                  ;; 00:240f $cd $fc $08
-    ld   A, [wD77D_BlockPatch_StepsRemaining]                                    ;; 00:2412 $fa $7d $d7
-    and  A, A                                          ;; 00:2415 $a7
-    jr   NZ, .jr_00_23f2                               ;; 00:2416 $20 $da
-    ld   A, [wD77B_BlockPatch_VramWritePending]                                    ;; 00:2418 $fa $7b $d7
-    and  A, A                                          ;; 00:241b $a7
-    jr   NZ, .jr_00_23f2                               ;; 00:241c $20 $d4
+    call call_00_08fc_StageNextGfxTransfer
+    ld   A, [wD77D_BlockPatch_StepsRemaining]
+    and  A, A
+    jr   NZ, .jr_00_23f2
+    ld   A, [wD77B_BlockPatch_VramWritePending]
+    and  A, A
+    jr   NZ, .jr_00_23f2
 .jr_00_241e:
-    ld   A, CUTSCENE_HOLD_FRAMES                       ;; 00:241e $3e $b4
+    ld   A, CUTSCENE_HOLD_FRAMES
 .jr_00_2420:
-    push AF                                            ;; 00:2420 $f5
-    call call_00_0ab4_WaitForInterrupt                                  ;; 00:2421 $cd $b4 $0a
+    push AF
+    call call_00_0ab4_WaitForInterrupt
     FARCALL call_02_6eba_Entities_UpdateAll
-    call call_00_08fc_StageNextGfxTransfer                                  ;; 00:242f $cd $fc $08
-    ld   A, [wD775_Cutscene_Skippable]                                    ;; 00:2432 $fa $75 $d7
-    and  A, A                                          ;; 00:2435 $a7
-    jr   Z, .jr_00_2441                                ;; 00:2436 $28 $09
-    ld   A, [wD59F_RawInputs]                                    ;; 00:2438 $fa $9f $d5
-    and  A, A                                          ;; 00:243b $a7
-    jr   Z, .jr_00_2441                                ;; 00:243c $28 $03
-    pop  AF                                            ;; 00:243e $f1
-    jr   .jp_00_2445                                   ;; 00:243f $18 $04
+    call call_00_08fc_StageNextGfxTransfer
+    ld   A, [wD775_Cutscene_Skippable]
+    and  A, A
+    jr   Z, .jr_00_2441
+    ld   A, [wD59F_RawInputs]
+    and  A, A
+    jr   Z, .jr_00_2441
+    pop  AF
+    jr   .jp_00_2445
 .jr_00_2441:
-    pop  AF                                            ;; 00:2441 $f1
-    dec  A                                             ;; 00:2442 $3d
-    jr   NZ, .jr_00_2420                               ;; 00:2443 $20 $db
+    pop  AF
+    dec  A
+    jr   NZ, .jr_00_2420
 .jp_00_2445:
-    ld   A, $01                                        ;; 00:2445 $3e $01
-    ld   [wD743_Player_UpdateFlag], A                                    ;; 00:2447 $ea $43 $d7
-    call call_00_3675_Entity_RestoreWorldState                                  ;; 00:244a $cd $75 $36
-    ld   HL, wD211_Player_YPositionHi                                     ;; 00:244d $21 $11 $d2
-    pop  BC                                            ;; 00:2450 $c1
-    ld   [HL], B                                       ;; 00:2451 $70
-    dec  HL                                            ;; 00:2452 $2b
-    ld   [HL], C                                       ;; 00:2453 $71
-    dec  HL                                            ;; 00:2454 $2b
-    pop  BC                                            ;; 00:2455 $c1
-    ld   [HL], B                                       ;; 00:2456 $70
-    dec  HL                                            ;; 00:2457 $2b
-    ld   [HL], C                                       ;; 00:2458 $71
-    ld   A, [wD775_Cutscene_Skippable]                                    ;; 00:2459 $fa $75 $d7
-    and  A, A                                          ;; 00:245c $a7
-    ret  NZ                                            ;; 00:245d $c0
-    call call_00_13a6_BgMap_UpdateWindowFromPlayerPos                                  ;; 00:245e $cd $a6 $13
-    call call_00_1264_BgMap_LoadFull                                  ;; 00:2461 $cd $64 $12
+    ld   A, $01
+    ld   [wD743_Player_UpdateFlag], A
+    call call_00_3675_Entity_RestoreWorldState
+    ld   HL, wD211_Player_YPositionHi
+    pop  BC
+    ld   [HL], B
+    dec  HL
+    ld   [HL], C
+    dec  HL
+    pop  BC
+    ld   [HL], B
+    dec  HL
+    ld   [HL], C
+    ld   A, [wD775_Cutscene_Skippable]
+    and  A, A
+    ret  NZ
+    call call_00_13a6_BgMap_UpdateWindowFromPlayerPos
+    call call_00_1264_BgMap_LoadFull
     FARCALL call_02_71c8_Entities_QueueGraphicsAndPalettes
-    jp   call_00_0521_Screen_PresentAndFadeIn                                  ;; 00:246f $c3 $21 $05
+    jp   call_00_0521_Screen_PresentAndFadeIn
 .data_00_2472_CutsceneIndexLookupTable:
 ; 31 rows of CUTSCENE_SLOTS_PER_LEVEL bytes, indexed by (level id, slot). The value is an
 ; index into .data_00_2662_CutsceneScriptPointerTable, or CUTSCENE_NONE for nothing.
@@ -1358,68 +1358,68 @@ call_00_2dbf_Cutscene_UpdateMovement:
 ; `ld [HL],CUTSCENE_MOVE_SPEED_MAX`. So the speed is only ever $00 or $10 - the preview always
 ; glides at exactly one pixel per frame and the sub-pixel accumulator never does anything
 ; interesting. Presumably the ramp was meant to ease the pan in and out
-    ld   A, [wD75A_Player_EffectiveInputs]                                    ;; 00:2dbf $fa $5a $d7
-    and  A, A                                          ;; 00:2dc2 $a7
-    jr   NZ, .jr_00_2dd1                               ;; 00:2dc3 $20 $0c
-    ld   HL, wD79D_Cutscene_MoveSpeed                                     ;; 00:2dc5 $21 $9d $d7
-    inc  [HL]                                          ;; 00:2dc8 $34 ; inc/dec = test for zero
-    dec  [HL]                                          ;; 00:2dc9 $35
-    jr   Z, .jr_00_2ddc                                ;; 00:2dca $28 $10
-    dec  [HL]                                          ;; 00:2dcc $35 ; dead - overwritten below
-    ld   [HL], $00                                     ;; 00:2dcd $36 $00
-    jr   .jr_00_2ddc                                   ;; 00:2dcf $18 $0b
+    ld   A, [wD75A_Player_EffectiveInputs]
+    and  A, A
+    jr   NZ, .jr_00_2dd1
+    ld   HL, wD79D_Cutscene_MoveSpeed
+    inc  [HL]                                          ; inc/dec = test for zero
+    dec  [HL]
+    jr   Z, .jr_00_2ddc
+    dec  [HL]                                          ; dead - overwritten below
+    ld   [HL], $00
+    jr   .jr_00_2ddc
 .jr_00_2dd1:
-    ld   HL, wD79D_Cutscene_MoveSpeed                                     ;; 00:2dd1 $21 $9d $d7
-    ld   A, [HL]                                       ;; 00:2dd4 $7e
-    cp   A, CUTSCENE_MOVE_SPEED_MAX                    ;; 00:2dd5 $fe $10
-    jr   Z, .jr_00_2ddc                                ;; 00:2dd7 $28 $03
-    inc  [HL]                                          ;; 00:2dd9 $34 ; dead - overwritten below
-    ld   [HL], CUTSCENE_MOVE_SPEED_MAX                 ;; 00:2dda $36 $10
+    ld   HL, wD79D_Cutscene_MoveSpeed
+    ld   A, [HL]
+    cp   A, CUTSCENE_MOVE_SPEED_MAX
+    jr   Z, .jr_00_2ddc
+    inc  [HL]                                          ; dead - overwritten below
+    ld   [HL], CUTSCENE_MOVE_SPEED_MAX
 .jr_00_2ddc:
-    ld   HL, wD79D_Cutscene_MoveSpeed                                     ;; 00:2ddc $21 $9d $d7
-    ld   A, [HL+]                                      ;; 00:2ddf $2a
-    ld   C, A                                          ;; 00:2de0 $4f
-    ld   A, [HL]                                       ;; 00:2de1 $7e
-    and  A, $0f                                        ;; 00:2de2 $e6 $0f
-    add  A, C                                          ;; 00:2de4 $81
-    ld   [HL], A                                       ;; 00:2de5 $77
-    swap A                                             ;; 00:2de6 $cb $37
-    and  A, $0f                                        ;; 00:2de8 $e6 $0f
-    ld   C, A                                          ;; 00:2dea $4f
-    ld   HL, wD75A_Player_EffectiveInputs                                     ;; 00:2deb $21 $5a $d7
-    bit  PADF_RIGHT_BIT, [HL]                                       ;; 00:2dee $cb $66
-    jr   Z, .jr_00_2e01                                ;; 00:2df0 $28 $0f
-    ld   A, [wD20E_Player_XPositionLo]                                    ;; 00:2df2 $fa $0e $d2
-    add  A, C                                          ;; 00:2df5 $81
-    ld   [wD20E_Player_XPositionLo], A                                    ;; 00:2df6 $ea $0e $d2
-    ld   A, [wD20F_Player_XPositionHi]                                    ;; 00:2df9 $fa $0f $d2
-    adc  A, $00                                        ;; 00:2dfc $ce $00
-    ld   [wD20F_Player_XPositionHi], A                                    ;; 00:2dfe $ea $0f $d2
+    ld   HL, wD79D_Cutscene_MoveSpeed
+    ld   A, [HL+]
+    ld   C, A
+    ld   A, [HL]
+    and  A, $0f
+    add  A, C
+    ld   [HL], A
+    swap A
+    and  A, $0f
+    ld   C, A
+    ld   HL, wD75A_Player_EffectiveInputs
+    bit  PADF_RIGHT_BIT, [HL]
+    jr   Z, .jr_00_2e01
+    ld   A, [wD20E_Player_XPositionLo]
+    add  A, C
+    ld   [wD20E_Player_XPositionLo], A
+    ld   A, [wD20F_Player_XPositionHi]
+    adc  A, $00
+    ld   [wD20F_Player_XPositionHi], A
 .jr_00_2e01:
-    bit  PADF_LEFT_BIT, [HL]                                       ;; 00:2e01 $cb $6e
-    jr   Z, .jr_00_2e14                                ;; 00:2e03 $28 $0f
-    ld   A, [wD20E_Player_XPositionLo]                                    ;; 00:2e05 $fa $0e $d2
-    sub  A, C                                          ;; 00:2e08 $91
-    ld   [wD20E_Player_XPositionLo], A                                    ;; 00:2e09 $ea $0e $d2
-    ld   A, [wD20F_Player_XPositionHi]                                    ;; 00:2e0c $fa $0f $d2
-    sbc  A, $00                                        ;; 00:2e0f $de $00
-    ld   [wD20F_Player_XPositionHi], A                                    ;; 00:2e11 $ea $0f $d2
+    bit  PADF_LEFT_BIT, [HL]
+    jr   Z, .jr_00_2e14
+    ld   A, [wD20E_Player_XPositionLo]
+    sub  A, C
+    ld   [wD20E_Player_XPositionLo], A
+    ld   A, [wD20F_Player_XPositionHi]
+    sbc  A, $00
+    ld   [wD20F_Player_XPositionHi], A
 .jr_00_2e14:
-    bit  PADF_DOWN_BIT, [HL]                                       ;; 00:2e14 $cb $7e
-    jr   Z, .jr_00_2e27                                ;; 00:2e16 $28 $0f
-    ld   A, [wD210_Player_YPositionLo]                                    ;; 00:2e18 $fa $10 $d2
-    add  A, C                                          ;; 00:2e1b $81
-    ld   [wD210_Player_YPositionLo], A                                    ;; 00:2e1c $ea $10 $d2
-    ld   A, [wD211_Player_YPositionHi]                                    ;; 00:2e1f $fa $11 $d2
-    adc  A, $00                                        ;; 00:2e22 $ce $00
-    ld   [wD211_Player_YPositionHi], A                                    ;; 00:2e24 $ea $11 $d2
+    bit  PADF_DOWN_BIT, [HL]
+    jr   Z, .jr_00_2e27
+    ld   A, [wD210_Player_YPositionLo]
+    add  A, C
+    ld   [wD210_Player_YPositionLo], A
+    ld   A, [wD211_Player_YPositionHi]
+    adc  A, $00
+    ld   [wD211_Player_YPositionHi], A
 .jr_00_2e27:
-    bit  PADF_UP_BIT, [HL]                                       ;; 00:2e27 $cb $76
-    ret  Z                                             ;; 00:2e29 $c8
-    ld   A, [wD210_Player_YPositionLo]                                    ;; 00:2e2a $fa $10 $d2
-    sub  A, C                                          ;; 00:2e2d $91
-    ld   [wD210_Player_YPositionLo], A                                    ;; 00:2e2e $ea $10 $d2
-    ld   A, [wD211_Player_YPositionHi]                                    ;; 00:2e31 $fa $11 $d2
-    sbc  A, $00                                        ;; 00:2e34 $de $00
-    ld   [wD211_Player_YPositionHi], A                                    ;; 00:2e36 $ea $11 $d2
-    ret                                                ;; 00:2e39 $c9
+    bit  PADF_UP_BIT, [HL]
+    ret  Z
+    ld   A, [wD210_Player_YPositionLo]
+    sub  A, C
+    ld   [wD210_Player_YPositionLo], A
+    ld   A, [wD211_Player_YPositionHi]
+    sbc  A, $00
+    ld   [wD211_Player_YPositionHi], A
+    ret

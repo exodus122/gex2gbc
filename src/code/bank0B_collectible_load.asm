@@ -20,83 +20,83 @@ call_0b_4000_CollectibleList_LoadForCurrentLevel:
 ;
 ; The cost is 256 list walks at level load in exchange for two array reads per frame
 ; in call_03_6499_Collectible_BuildSprites
-    xor  A, A                                          ;; 0b:4000 $af
-    ld   L, A                                          ;; 0b:4001 $6f
+    xor  A, A
+    ld   L, A
 .jr_0b_4002:
-    ld   H, HIGH(wC400_Collectible_GridX)              ;; 0b:4002 $26 $c4
-    ld   [HL], $ff                                     ;; 0b:4004 $36 $ff
-    inc  H                                             ;; 0b:4006 $24
-    ld   [HL], A                                       ;; 0b:4007 $77
-    inc  H                                             ;; 0b:4008 $24
-    ld   [HL], A                                       ;; 0b:4009 $77
-    inc  H                                             ;; 0b:400a $24
-    ld   [HL], A                                       ;; 0b:400b $77
-    inc  L                                             ;; 0b:400c $2c
-    jr   NZ, .jr_0b_4002                                ;; 0b:400d $20 $f3
-    ld   HL, wD624_CurrentLevelId                                     ;; 0b:400f $21 $24 $d6
-    ld   L, [HL]                                       ;; 0b:4012 $6e
-    ld   H, $00                                        ;; 0b:4013 $26 $00
-    add  HL, HL                                        ;; 0b:4015 $29
-    ld   DE, .data_0b_4062_MapCollectibleLists                             ;; 0b:4016 $11 $62 $40
-    add  HL, DE                                        ;; 0b:4019 $19
-    ld   A, [HL+]                                      ;; 0b:401a $2a
-    ld   H, [HL]                                       ;; 0b:401b $66
-    ld   L, A                                          ;; 0b:401c $6f
-    ld   DE, wC400_Collectible_GridX                                     ;; 0b:401d $11 $00 $c4
+    ld   H, HIGH(wC400_Collectible_GridX)
+    ld   [HL], $ff
+    inc  H
+    ld   [HL], A
+    inc  H
+    ld   [HL], A
+    inc  H
+    ld   [HL], A
+    inc  L
+    jr   NZ, .jr_0b_4002
+    ld   HL, wD624_CurrentLevelId
+    ld   L, [HL]
+    ld   H, $00
+    add  HL, HL
+    ld   DE, .data_0b_4062_MapCollectibleLists
+    add  HL, DE
+    ld   A, [HL+]
+    ld   H, [HL]
+    ld   L, A
+    ld   DE, wC400_Collectible_GridX
 .jr_0b_4020:
-    ld   A, [HL+]                                      ;; 0b:4020 $2a
-    ld   [DE], A                                       ;; 0b:4021 $12
-    inc  D                                             ;; 0b:4022 $14
-    ld   A, [HL+]                                      ;; 0b:4023 $2a
-    ld   [DE], A                                       ;; 0b:4024 $12
-    dec  D                                             ;; 0b:4025 $15
-    inc  E                                             ;; 0b:4026 $1c
-    and  A, A                                          ;; 0b:4027 $a7
-    jr   NZ, .jr_0b_4020                               ;; 0b:4028 $20 $f6
-    ld   DE, wC600_Collectible_ScanStartByColumn                                     ;; 0b:402a $11 $00 $c6
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  D
+    ld   A, [HL+]
+    ld   [DE], A
+    dec  D
+    inc  E
+    and  A, A
+    jr   NZ, .jr_0b_4020
+    ld   DE, wC600_Collectible_ScanStartByColumn
 .jr_0b_402d:
-    ld   HL, wC400_Collectible_GridX                                     ;; 0b:402d $21 $00 $c4
+    ld   HL, wC400_Collectible_GridX
 .jr_0b_4030:
-    ld   A, [HL+]                                      ;; 0b:4030 $2a
-    cp   A, $ff                                        ;; 0b:4031 $fe $ff
-    jr   Z, .jr_0b_4038                                ;; 0b:4033 $28 $03
-    cp   A, E                                          ;; 0b:4035 $bb
-    jr   C, .jr_0b_4030                                ;; 0b:4036 $38 $f8
+    ld   A, [HL+]
+    cp   A, $ff
+    jr   Z, .jr_0b_4038
+    cp   A, E
+    jr   C, .jr_0b_4030
 .jr_0b_4038:
-    ld   A, L                                          ;; 0b:4038 $7d
-    dec  A                                             ;; 0b:4039 $3d
-    ld   [DE], A                                       ;; 0b:403a $12
-    inc  E                                             ;; 0b:403b $1c
-    jr   NZ, .jr_0b_402d                               ;; 0b:403c $20 $ef
-    ld   E, $00                                        ;; 0b:403e $1e $00
+    ld   A, L
+    dec  A
+    ld   [DE], A
+    inc  E
+    jr   NZ, .jr_0b_402d
+    ld   E, $00
 .jr_0b_4040:
-    ld   D, HIGH(wC600_Collectible_ScanStartByColumn)  ;; 0b:4040 $16 $c6
-    ld   A, [DE]                                       ;; 0b:4042 $1a
-    ld   L, A                                          ;; 0b:4043 $6f
-    ld   H, HIGH(wC400_Collectible_GridX)              ;; 0b:4044 $26 $c4
-    ld   B, $00                                        ;; 0b:4046 $06 $00
-    ld   C, $ff                                        ;; 0b:4048 $0e $ff
-    ld   A, E                                          ;; 0b:404a $7b
-    add  A, $0b                                        ;; 0b:404b $c6 $0b
-    jr   C, .jr_0b_4050                                ;; 0b:404d $38 $01
-    ld   C, A                                          ;; 0b:404f $4f
+    ld   D, HIGH(wC600_Collectible_ScanStartByColumn)
+    ld   A, [DE]
+    ld   L, A
+    ld   H, HIGH(wC400_Collectible_GridX)
+    ld   B, $00
+    ld   C, $ff
+    ld   A, E
+    add  A, $0b
+    jr   C, .jr_0b_4050
+    ld   C, A
 .jr_0b_4050:
-    inc  B                                             ;; 0b:4050 $04
-    ld   A, [HL+]                                      ;; 0b:4051 $2a
-    cp   A, $ff                                        ;; 0b:4052 $fe $ff
-    jr   Z, .jr_0b_4059                                ;; 0b:4054 $28 $03
-    cp   A, C                                          ;; 0b:4056 $b9
-    jr   C, .jr_0b_4050                                ;; 0b:4057 $38 $f7
+    inc  B
+    ld   A, [HL+]
+    cp   A, $ff
+    jr   Z, .jr_0b_4059
+    cp   A, C
+    jr   C, .jr_0b_4050
 .jr_0b_4059:
-    ld   D, HIGH(wC700_Collectible_ScanCountByColumn)  ;; 0b:4059 $16 $c7
-    ld   A, B                                          ;; 0b:405b $78
-    dec  A                                             ;; 0b:405c $3d
-    ld   [DE], A                                       ;; 0b:405d $12
-    inc  E                                             ;; 0b:405e $1c
-    jr   NZ, .jr_0b_4040                               ;; 0b:405f $20 $df
-    ret                                                ;; 0b:4061 $c9
+    ld   D, HIGH(wC700_Collectible_ScanCountByColumn)
+    ld   A, B
+    dec  A
+    ld   [DE], A
+    inc  E
+    jr   NZ, .jr_0b_4040
+    ret
 .data_0b_4062_MapCollectibleLists:
-; 31-entry pointer table mapping level IDs to per-level collectible coordinate lists. 
+; 31-entry pointer table mapping level IDs to per-level collectible coordinate lists.
 ; Media Dimension and hub levels share a stub entry. The 19 non-hub playable levels each have unique lists
     dw   .data_40a0_media_dimension_collectible_list            ; MAP_MEDIA_DIMENSION
     dw   .data_40a4_out_of_toon_collectible_list                ; MAP_TOON_TV_OUT_OF_TOON
