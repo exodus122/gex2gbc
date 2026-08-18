@@ -1,393 +1,423 @@
-; Entity Action Pointer table
-data_02_4ddb:                        ;; ENTITY_COLLECTIBLE_SPAWN
+; ==================================================================
+; ENTITY ACTION TABLES
+;
+; One table per entity type. call_02_7102_Entity_SetAction reaches them in two
+; steps: data_02_4000_EntityActionJumpTable (bank02_update_entities.asm) maps an
+; ENTITY_FIELD_ENTITY_ID to the table below, and the requested action id then
+; indexes 4 bytes into it. So the ROWS of each table ARE the action ids, and
+; every entity begins life in row $00 - Entity_SetAction is called with A = 0
+; when the entity is placed.
+;
+; Each row is
+;
+;     dw <action function>, <action data block>
+;
+; The action function is called once a frame while that action is current, with
+; wD300_CurrentEntityAddrLo pointing at the entity's slot. It is entered through
+; call_00_10bd_JumpHL, so HL holds the function's own address on entry - which a
+; couple of routines here accidentally depend on.
+;
+; The action data block is the animation, in bank02_entity_animation_data.asm.
+; Entity_SetAction copies its 4-byte header into the instance
+; (ACTION_STATE flags, SPRITE_FLAGS, frame tick, frame count) and points
+; ANIM_FRAME_LIST_PTR at the list of frame ids that follows. Two rows pointing at
+; the same function with different data blocks is therefore one behaviour drawn
+; two ways - see ENTITY_SCREAM_TV_ZOMBIE, whose actions $00 and $01 are the same
+; walk with and without a head.
+;
+; A table with a single row is an entity with exactly one action, whose function
+; is named _Update by convention; multi-row tables name each row for its state.
+; ==================================================================
+
+data_02_4ddb_EntityActions_CollectibleSpawn:                        ;; ENTITY_COLLECTIBLE_SPAWN
     dw   call_02_51b7_EntityAction_CollectibleSpawn_Update, data_02_7cce
-data_02_4ddf:                        ;; ENTITY_TV_BUTTON
-    dw   call_02_51ea_EntityAction_TVButton_unk0, data_02_7945
-    dw   call_02_5252_EntityAction_TVButton_unk1, data_02_794b
-data_02_4de7:                        ;; ENTITY_RED_REMOTE
-    dw   call_02_5253_EntityAction_RedRemote_unk0, data_02_7690
-    dw   call_02_526a_EntityAction_RedRemote_unk1, data_02_769d
-data_02_4def:                        ;; ENTITY_SILVER_REMOTE
-    dw   call_02_5284_EntityAction_SilverRemote_unk0, data_02_769d
-    dw   call_02_528d_EntityAction_SilverRemote_unk1, data_02_769d
-data_02_4df7:                        ;; ENTITY_GOLD_REMOTE
-    dw   call_02_528e_EntityAction_GoldRemote_unk0, data_02_76a8
-    dw   call_02_5297_EntityAction_GoldRemote_unk1, data_02_769d
-data_02_4dff:                        ;; ENTITY_UNK_02
+data_02_4ddf_EntityActions_TVButton:                                ;; ENTITY_TV_BUTTON
+    dw   call_02_51ea_EntityAction_TVButton_unk0, data_02_7945   ; action $00
+    dw   call_02_5252_EntityAction_TVButton_unk1, data_02_794b   ; action $01
+data_02_4de7_EntityActions_RedRemote:                               ;; ENTITY_RED_REMOTE
+    dw   call_02_5253_EntityAction_RedRemote_unk0, data_02_7690   ; action $00
+    dw   call_02_526a_EntityAction_RedRemote_unk1, data_02_769d   ; action $01
+data_02_4def_EntityActions_SilverRemote:                            ;; ENTITY_SILVER_REMOTE
+    dw   call_02_5284_EntityAction_SilverRemote_unk0, data_02_769d   ; action $00
+    dw   call_02_528d_EntityAction_SilverRemote_unk1, data_02_769d   ; action $01
+data_02_4df7_EntityActions_GoldRemote:                              ;; ENTITY_GOLD_REMOTE
+    dw   call_02_528e_EntityAction_GoldRemote_unk0, data_02_76a8   ; action $00
+    dw   call_02_5297_EntityAction_GoldRemote_unk1, data_02_769d   ; action $01
+data_02_4dff_EntityActions_Unk02:                                   ;; ENTITY_UNK_02
     dw   call_02_52aa_EntityAction_Unk02_Update, data_02_768a
-data_02_4e03:                        ;; ENTITY_PARTICLE_BURST
+data_02_4e03_EntityActions_ParticleBurst:                           ;; ENTITY_PARTICLE_BURST
     dw   call_02_52ab_EntityAction_ParticleBurst_Update, data_02_7cd4
-data_02_4e07:                        ;; ENTITY_UNK_08
+data_02_4e07_EntityActions_Unk08:                                   ;; ENTITY_UNK_08
     dw   call_02_52e7_EntityAction_Unk08_Update, data_02_76b5
-data_02_4e0b:                        ;; ENTITY_SCREAM_TV_FALLING_PLATFORM
+data_02_4e0b_EntityActions_ScreamTVFallingPlatform:                 ;; ENTITY_SCREAM_TV_FALLING_PLATFORM
     dw   call_02_52e8_EntityAction_ScreamTVFallingPlatform_Update, data_02_7963
-data_02_4e0f:                        ;; ENTITY_SCREAM_TV_MOVING_PLATFORM
+data_02_4e0f_EntityActions_ScreamTVMovingPlatform:                  ;; ENTITY_SCREAM_TV_MOVING_PLATFORM
     dw   call_02_5348_EntityAction_ScreamTVMovingPlatform_Update, data_02_7969
-data_02_4e13:                        ;; ENTITY_SCREAM_TV_PUSH_BLOCK
+data_02_4e13_EntityActions_ScreamTVPushBlock:                       ;; ENTITY_SCREAM_TV_PUSH_BLOCK
     dw   call_02_5373_EntityAction_ScreamTVPushBlock_Update, data_02_796f
-data_02_4e17:                        ;; ENTITY_SCREAM_TV_PUMPKIN
-    dw   call_02_5373_EntityAction_Pumpkin_unk0, data_02_76b5
-    dw   call_02_5399_EntityAction_Pumpkin_unk1, data_02_76bf
-data_02_4e1f:                        ;; ENTITY_SCREAM_TV_FRANKIE
+data_02_4e17_EntityActions_ScreamTVPumpkin:                         ;; ENTITY_SCREAM_TV_PUMPKIN
+    dw   call_02_538b_EntityAction_Pumpkin_Crouch, data_02_76b5   ; action $00
+    dw   call_02_5399_EntityAction_Pumpkin_Hop,    data_02_76bf   ; action $01
+data_02_4e1f_EntityActions_ScreamTVFrankie:                         ;; ENTITY_SCREAM_TV_FRANKIE
     dw   call_02_53aa_EntityAction_Frankie_Update, data_02_76c7
-data_02_4e23:                        ;; ENTITY_SCREAM_TV_HEAD_GHOST
-    dw   call_02_53ad_EntityAction_HeadGhost_unk0, data_02_7920
-    dw   call_02_53d9_EntityAction_HeadGhost_unk1, data_02_792d
-data_02_4e2b:                        ;; ENTITY_SCREAM_TV_HEAD_GHOST_HEAD
+data_02_4e23_EntityActions_ScreamTVHeadGhost:                       ;; ENTITY_SCREAM_TV_HEAD_GHOST
+    dw   call_02_53ad_EntityAction_HeadGhost_ThrowHead, data_02_7920   ; action $00
+    dw   call_02_53d9_EntityAction_HeadGhost_Recover,   data_02_792d   ; action $01
+data_02_4e2b_EntityActions_ScreamTVHeadGhostHead:                   ;; ENTITY_SCREAM_TV_HEAD_GHOST_HEAD
     dw   call_02_53e2_EntityAction_GhostHead_Update, data_02_7933
-data_02_4e2f:                        ;; ENTITY_SCREAM_TV_FLOATING_SKULL
-    dw   call_02_5434_EntityAction_FloatingSkull_unk0, data_02_76d0
-    dw   call_02_5440_EntityAction_FloatingSkull_unk1, data_02_76d9
-    dw   call_02_545b_EntityAction_FloatingSkull_unk2, data_02_76df
-data_02_4e3b:                        ;; ENTITY_SCREAM_TV_FLOATING_SKULL_PROJECTILE
-    dw   call_02_5464_EntityAction_FloatingSkullProjectile_unk0, data_02_7b0f
-    dw   call_02_546e_EntityAction_FloatingSkullProjectile_unk1, data_02_7ce6
-data_02_4e43:                        ;; ENTITY_SCREAM_TV_ZOMBIE
-    dw   call_02_5480_EntityAction_Zombie_unk0, data_02_76e5
-    dw   call_02_5480_EntityAction_Zombie_unk0, data_02_76ee
-    dw   call_02_54b4_EntityAction_Zombie_unk2, data_02_76f7
-data_02_4e4f:                        ;; ENTITY_SCREAM_TV_ZOMBIE_HEAD
-    dw   call_02_54c6_EntityAction_ZombieHead_unk0, data_02_768a
-    dw   call_02_54df_EntityAction_ZombieHead_unk1, data_02_768a
-    dw   call_02_54fc_EntityAction_ZombieHead_unk2, data_02_768a
-data_02_4e5b:                        ;; ENTITY_SCREAM_TV_FALLING_AXE
-    dw   call_02_54ff_EntityAction_FallingAxe_unk0, data_02_7939
-    dw   call_02_5513_EntityAction_FallingAxe_unk1, data_02_7939
-    dw   call_02_552c_EntityAction_FallingAxe_unk2, data_02_793f
-    dw   call_02_5535_EntityAction_FallingAxe_unk3, data_02_7939
-data_02_4e6b:                        ;; ENTITY_SCREAM_TV_LANTERN
-    dw   call_02_5544_EntityAction_Lantern_unk0, data_02_7951
-    dw   call_02_5551_EntityAction_Lantern_unk1, data_02_7957
-data_02_4e73:                        ;; ENTITY_SCREAM_TV_BAT
+data_02_4e2f_EntityActions_ScreamTVFloatingSkull:                   ;; ENTITY_SCREAM_TV_FLOATING_SKULL
+    dw   call_02_5434_EntityAction_FloatingSkull_Idle,    data_02_76d0   ; action $00
+    dw   call_02_5440_EntityAction_FloatingSkull_Spit,    data_02_76d9   ; action $01
+    dw   call_02_545b_EntityAction_FloatingSkull_Recover, data_02_76df   ; action $02
+data_02_4e3b_EntityActions_ScreamTVFloatingSkullProjectile:         ;; ENTITY_SCREAM_TV_FLOATING_SKULL_PROJECTILE
+    dw   call_02_5464_EntityAction_FloatingSkullProjectile_Init, data_02_7b0f   ; action $00
+    dw   call_02_546e_EntityAction_FloatingSkullProjectile_Fly,  data_02_7ce6   ; action $01
+data_02_4e43_EntityActions_ScreamTVZombie:                          ;; ENTITY_SCREAM_TV_ZOMBIE
+    dw   call_02_5480_EntityAction_Zombie_Walk,    data_02_76e5   ; action $00
+    dw   call_02_5480_EntityAction_Zombie_Walk,    data_02_76ee   ; action $01
+    dw   call_02_54b4_EntityAction_Zombie_Stagger, data_02_76f7   ; action $02
+data_02_4e4f_EntityActions_ScreamTVZombieHead:                      ;; ENTITY_SCREAM_TV_ZOMBIE_HEAD
+    dw   call_02_54c6_EntityAction_ZombieHead_Launch,   data_02_768a   ; action $00
+    dw   call_02_54df_EntityAction_ZombieHead_Bounce,   data_02_768a   ; action $01
+    dw   call_02_54fc_EntityAction_ZombieHead_Grounded, data_02_768a   ; action $02
+data_02_4e5b_EntityActions_ScreamTVFallingAxe:                      ;; ENTITY_SCREAM_TV_FALLING_AXE
+    dw   call_02_54ff_EntityAction_FallingAxe_WaitForCue, data_02_7939   ; action $00
+    dw   call_02_5513_EntityAction_FallingAxe_Fall,       data_02_7939   ; action $01
+    dw   call_02_552c_EntityAction_FallingAxe_Impact,     data_02_793f   ; action $02
+    dw   call_02_5535_EntityAction_FallingAxe_Retract,    data_02_7939   ; action $03
+data_02_4e6b_EntityActions_ScreamTVLantern:                         ;; ENTITY_SCREAM_TV_LANTERN
+    dw   call_02_5544_EntityAction_Lantern_Lit,    data_02_7951   ; action $00
+    dw   call_02_5551_EntityAction_Lantern_Doused, data_02_7957   ; action $01
+data_02_4e73_EntityActions_ScreamTVBat:                             ;; ENTITY_SCREAM_TV_BAT
     dw   call_02_557c_EntityAction_Bat_Update, data_02_76fd
-data_02_4e77:                        ;; ENTITY_SCREAM_TV_ORANGE_MOVING_PLATFORM
+data_02_4e77_EntityActions_ScreamTVOrangeMovingPlatform:            ;; ENTITY_SCREAM_TV_ORANGE_MOVING_PLATFORM
     dw   call_02_5589_EntityAction_ScreamTVOrangeMovingPlatform_Update, data_02_7975
-data_02_4e7b:                        ;; ENTITY_SCREAM_TV_DOOR_OPENING
-    dw   call_02_559b_EntityAction_ScreamTVDoorOpening_None, data_02_7706
-    dw   call_02_559c_EntityAction_ScreamTVDoorOpening_unk1, data_02_770f
-data_02_4e83:                        ;; ENTITY_SCREAM_TV_GHOST
-    dw   call_02_55a3_EntityAction_Ghost_unk0, data_02_7718
-    dw   call_02_55e8_EntityAction_Ghost_unk1, data_02_7722
-    dw   call_02_55f1_EntityAction_Ghost_unk2, data_02_772c
-    dw   call_02_5612_EntityAction_Ghost_unk3, data_02_7733
-data_02_4e93:                        ;; ENTITY_SCREAM_TV_CLIMB_WALL_SUN_ENEMY
+data_02_4e7b_EntityActions_ScreamTVDoorOpening:                     ;; ENTITY_SCREAM_TV_DOOR_OPENING
+    dw   call_02_559b_EntityAction_ScreamTVDoorOpening_Idle, data_02_7706   ; action $00
+    dw   call_02_559c_EntityAction_ScreamTVDoorOpening_Open, data_02_770f   ; action $01
+data_02_4e83_EntityActions_ScreamTVGhost:                           ;; ENTITY_SCREAM_TV_GHOST
+    dw   call_02_55a3_EntityAction_Ghost_VanishAndRelocate, data_02_7718   ; action $00
+    dw   call_02_55e8_EntityAction_Ghost_Reappear,          data_02_7722   ; action $01
+    dw   call_02_55f1_EntityAction_Ghost_Dormant,           data_02_772c   ; action $02
+    dw   call_02_5612_EntityAction_Ghost_Chase,             data_02_7733   ; action $03
+data_02_4e93_EntityActions_ScreamTVClimbWallSunEnemy:               ;; ENTITY_SCREAM_TV_CLIMB_WALL_SUN_ENEMY
     dw   call_02_5628_EntityAction_ClimbWallSunEnemy_Update, data_02_795d
-data_02_4e97:                        ;; ENTITY_SCREAM_TV_VANISHING_PLATFORM
-    dw   call_02_563a_EntityAction_ScreamTVVanishingPlatform_unk0, data_02_797b
-    dw   call_02_5652_EntityAction_ScreamTVVanishingPlatform_unk1, data_02_797b
-    dw   call_02_56a1_EntityAction_ScreamTVVanishingPlatform_unk2, data_02_7981
-data_02_4ea3:                        ;; ENTITY_SCREAM_TV_MONA_LISA_ELEVATOR
+data_02_4e97_EntityActions_ScreamTVVanishingPlatform:               ;; ENTITY_SCREAM_TV_VANISHING_PLATFORM
+    dw   call_02_563a_EntityAction_ScreamTVVanishingPlatform_WaitForCue, data_02_797b   ; action $00
+    dw   call_02_5652_EntityAction_ScreamTVVanishingPlatform_BlinkOut,   data_02_797b   ; action $01
+    dw   call_02_56a1_EntityAction_ScreamTVVanishingPlatform_Gone,       data_02_7981   ; action $02
+data_02_4ea3_EntityActions_ScreamTVMonaLisaElevator:                ;; ENTITY_SCREAM_TV_MONA_LISA_ELEVATOR
     dw   call_02_56af_EntityAction_MonaLisaElevator_Update, data_02_7987
-data_02_4ea7:                        ;; ENTITY_TOON_TV_HARD_HEAD_AREA_HAZARD
-    dw   call_02_56dc_EntityAction_HardHeadAreaHazard_unk0, data_02_798d
-    dw   call_02_576e_EntityAction_HardHeadAreaHazard_unk1, data_02_7993
-    dw   call_02_576e_EntityAction_HardHeadAreaHazard_unk1, data_02_7999
-data_02_4eb3:                        ;; ENTITY_TOON_TV_STATIONARY_BEAR_TRAP
-    dw   call_02_57f3_EntityAction_StationaryBearTrap_unk0, data_02_79a6
-    dw   call_02_5803_EntityAction_StationaryBearTrap_unk1, data_02_79ac
-data_02_4ebb:                        ;; ENTITY_TOON_TV_MOVING_BEAR_TRAP
-    dw   call_02_5812_EntityAction_MovingBearTrap_unk0, data_02_79b3
-    dw   call_02_5830_EntityAction_MovingBearTrap_unk1, data_02_79b9
-data_02_4ec3:                        ;; ENTITY_TOON_TV_BUMBLEBEE
-    dw   call_02_5843_EntityAction_Bumblebee_unk0, data_02_799f
-    dw   call_02_585e_EntityAction_Bumblebee_unk1, data_02_799f
-data_02_4ecb:                        ;; ENTITY_TOON_TV_BOWLING_BALL
+data_02_4ea7_EntityActions_ToonTVHardHeadAreaHazard:                ;; ENTITY_TOON_TV_HARD_HEAD_AREA_HAZARD
+    dw   call_02_56dc_EntityAction_HardHeadAreaHazard_unk0, data_02_798d   ; action $00
+    dw   call_02_576e_EntityAction_HardHeadAreaHazard_unk1, data_02_7993   ; action $01
+    dw   call_02_576e_EntityAction_HardHeadAreaHazard_unk1, data_02_7999   ; action $02
+data_02_4eb3_EntityActions_ToonTVStationaryBearTrap:                ;; ENTITY_TOON_TV_STATIONARY_BEAR_TRAP
+    dw   call_02_57f3_EntityAction_StationaryBearTrap_unk0, data_02_79a6   ; action $00
+    dw   call_02_5803_EntityAction_StationaryBearTrap_unk1, data_02_79ac   ; action $01
+data_02_4ebb_EntityActions_ToonTVMovingBearTrap:                    ;; ENTITY_TOON_TV_MOVING_BEAR_TRAP
+    dw   call_02_5812_EntityAction_MovingBearTrap_unk0, data_02_79b3   ; action $00
+    dw   call_02_5830_EntityAction_MovingBearTrap_unk1, data_02_79b9   ; action $01
+data_02_4ec3_EntityActions_ToonTVBumblebee:                         ;; ENTITY_TOON_TV_BUMBLEBEE
+    dw   call_02_5843_EntityAction_Bumblebee_unk0, data_02_799f   ; action $00
+    dw   call_02_585e_EntityAction_Bumblebee_unk1, data_02_799f   ; action $01
+data_02_4ecb_EntityActions_ToonTVBowlingBall:                       ;; ENTITY_TOON_TV_BOWLING_BALL
     dw   call_02_5871_EntityAction_BowlingBall_Update, data_02_79c5
-data_02_4ecf:                        ;; ENTITY_TOON_TV_CACTUS
-    dw   call_02_58d3_EntityAction_Cactus_unk0, data_02_79d6
-    dw   call_02_58e8_EntityAction_Cactus_unk1, data_02_79dc
-    dw   call_02_58fa_EntityAction_Cactus_unk2, data_02_79e3
-data_02_4edb:                        ;; ENTITY_TOON_TV_DOMINO
+data_02_4ecf_EntityActions_ToonTVCactus:                            ;; ENTITY_TOON_TV_CACTUS
+    dw   call_02_58d3_EntityAction_Cactus_unk0, data_02_79d6   ; action $00
+    dw   call_02_58e8_EntityAction_Cactus_unk1, data_02_79dc   ; action $01
+    dw   call_02_58fa_EntityAction_Cactus_unk2, data_02_79e3   ; action $02
+data_02_4edb_EntityActions_ToonTVDomino:                            ;; ENTITY_TOON_TV_DOMINO
     dw   call_02_590b_EntityAction_Domino_Update, data_02_79e9
-data_02_4edf:                        ;; ENTITY_TOON_TV_SHARK
+data_02_4edf_EntityActions_ToonTVShark:                             ;; ENTITY_TOON_TV_SHARK
     dw   call_02_591c_EntityAction_Shark_Update, data_02_79ef
-data_02_4ee3:                        ;; ENTITY_TOON_TV_FLOWER
-    dw   call_02_592d_EntityAction_Flower_Update, data_02_79f6
-    dw   call_02_592d_EntityAction_Flower_Update, data_02_79fc
-    dw   call_02_592d_EntityAction_Flower_Update, data_02_7a02
-data_02_4eef:                        ;; ENTITY_TOON_TV_HUNTER
-    dw   call_02_5993_EntityAction_Hunter_unk0, data_02_774c
-    dw   call_02_59c8_EntityAction_Hunter_unk1, data_02_7759
-    dw   call_02_59d2_EntityAction_Hunter_unk2, data_02_7768
-    dw   call_02_59db_EntityAction_Hunter_unk3, data_02_777c
-    dw   call_02_59e4_EntityAction_Hunter_unk4, data_02_7784
-    dw   call_02_59ed_EntityAction_Hunter_unk5, data_02_778a
-data_02_4f07:                        ;; ENTITY_TOON_TV_MUSHROOM
+data_02_4ee3_EntityActions_ToonTVFlower:                            ;; ENTITY_TOON_TV_FLOWER
+    dw   call_02_592d_EntityAction_Flower_Update, data_02_79f6   ; action $00
+    dw   call_02_592d_EntityAction_Flower_Update, data_02_79fc   ; action $01
+    dw   call_02_592d_EntityAction_Flower_Update, data_02_7a02   ; action $02
+data_02_4eef_EntityActions_ToonTVHunter:                            ;; ENTITY_TOON_TV_HUNTER
+    dw   call_02_5993_EntityAction_Hunter_unk0, data_02_774c   ; action $00
+    dw   call_02_59c8_EntityAction_Hunter_unk1, data_02_7759   ; action $01
+    dw   call_02_59d2_EntityAction_Hunter_unk2, data_02_7768   ; action $02
+    dw   call_02_59db_EntityAction_Hunter_unk3, data_02_777c   ; action $03
+    dw   call_02_59e4_EntityAction_Hunter_unk4, data_02_7784   ; action $04
+    dw   call_02_59ed_EntityAction_Hunter_unk5, data_02_778a   ; action $05
+data_02_4f07_EntityActions_ToonTVMushroom:                          ;; ENTITY_TOON_TV_MUSHROOM
     dw   call_02_5a28_EntityAction_Mushroom_Update, data_02_7a1b
-data_02_4f0b:                        ;; ENTITY_TOON_TV_MUSHROOM_PROJECTILE
+data_02_4f0b_EntityActions_ToonTVMushroomProjectile:                ;; ENTITY_TOON_TV_MUSHROOM_PROJECTILE
     dw   call_02_5a73_EntityAction_MushroomProjectile_Update, data_02_7a21
-data_02_4f0f:                        ;; ENTITY_TOON_TV_LIZARD
+data_02_4f0f_EntityActions_ToonTVLizard:                            ;; ENTITY_TOON_TV_LIZARD
     dw   call_02_5a7d_EntityAction_Lizard_Update, data_02_7a3a
-data_02_4f13:                        ;; ENTITY_TOON_TV_HAPPY_FACE
-    dw   call_02_5a8c_EntityAction_HappyFace_unk0, data_02_773a
-    dw   call_02_5a9a_EntityAction_HappyFace_unk1, data_02_7744
-data_02_4f1b:                        ;; ENTITY_TOON_TV_VANISHING_BLOCK
-    dw   call_02_5aab_EntityAction_ToonTVVanishingBlock_unk0, data_02_7a45
-    dw   call_02_5aea_EntityAction_ToonTVVanishingBlock_unk1, data_02_7a45
-    dw   call_02_5b39_EntityAction_ToonTVVanishingBlock_unk2, data_02_7a4b
-data_02_4f27:                        ;; ENTITY_TOON_TV_MOVING_BLOCK
-    dw   call_02_5b47_EntityAction_ToonTVMovingBlock_unk0, data_02_7a51
-    dw   call_02_5b9d_EntityAction_ToonTVMovingBlock_unk1, data_02_7a51
-data_02_4f2f:                        ;; ENTITY_TOON_TV_MOVING_LOG
+data_02_4f13_EntityActions_ToonTVHappyFace:                         ;; ENTITY_TOON_TV_HAPPY_FACE
+    dw   call_02_5a8c_EntityAction_HappyFace_unk0, data_02_773a   ; action $00
+    dw   call_02_5a9a_EntityAction_HappyFace_unk1, data_02_7744   ; action $01
+data_02_4f1b_EntityActions_ToonTVVanishingBlock:                    ;; ENTITY_TOON_TV_VANISHING_BLOCK
+    dw   call_02_5aab_EntityAction_ToonTVVanishingBlock_unk0, data_02_7a45   ; action $00
+    dw   call_02_5aea_EntityAction_ToonTVVanishingBlock_unk1, data_02_7a45   ; action $01
+    dw   call_02_5b39_EntityAction_ToonTVVanishingBlock_unk2, data_02_7a4b   ; action $02
+data_02_4f27_EntityActions_ToonTVMovingBlock:                       ;; ENTITY_TOON_TV_MOVING_BLOCK
+    dw   call_02_5b47_EntityAction_ToonTVMovingBlock_unk0, data_02_7a51   ; action $00
+    dw   call_02_5b9d_EntityAction_ToonTVMovingBlock_unk1, data_02_7a51   ; action $01
+data_02_4f2f_EntityActions_ToonTVMovingLog:                         ;; ENTITY_TOON_TV_MOVING_LOG
     dw   call_02_5bb6_EntityAction_MovingLog_Update, data_02_7a2e
-data_02_4f33:                        ;; ENTITY_TOON_TV_STATIONARY_LOG
+data_02_4f33_EntityActions_ToonTVStationaryLog:                     ;; ENTITY_TOON_TV_STATIONARY_LOG
     dw   call_02_5be1_EntityAction_StationaryLog_Update, data_02_7a34
-data_02_4f37:                        ;; ENTITY_TOON_TV_FLOWER_HAMMER
-    dw   call_02_596c_EntityAction_FlowerHammer_unk0, data_02_7a08
-    dw   call_02_597a_EntityAction_FlowerHammer_unk1, data_02_7a0e
-    dw   call_02_598c_EntityAction_FlowerHammer_unk2, data_02_7a15
-data_02_4f43:                        ;; ENTITY_TOON_TV_HUNTER_BULLET
-    dw   call_02_5a10_EntityAction_HunterBullet_unk0, data_02_79d0
-    dw   call_02_5a1f_EntityAction_HunterBullet_unk1, data_02_79d0
-data_02_4f4b:                        ;; ENTITY_TOON_TV_ROCKET
-    dw   call_02_5be2_EntityAction_Rocket_unk0, data_02_7c7b
-    dw   call_02_5bf7_EntityAction_Rocket_unk1, data_02_7c81
-    dw   call_02_5c00_EntityAction_Rocket_unk2, data_02_7c9a
-data_02_4f57:                        ;; ENTITY_PRE_HISTORY_FAST_DINOSAUR
+data_02_4f37_EntityActions_ToonTVFlowerHammer:                      ;; ENTITY_TOON_TV_FLOWER_HAMMER
+    dw   call_02_596c_EntityAction_FlowerHammer_unk0, data_02_7a08   ; action $00
+    dw   call_02_597a_EntityAction_FlowerHammer_unk1, data_02_7a0e   ; action $01
+    dw   call_02_598c_EntityAction_FlowerHammer_unk2, data_02_7a15   ; action $02
+data_02_4f43_EntityActions_ToonTVHunterBullet:                      ;; ENTITY_TOON_TV_HUNTER_BULLET
+    dw   call_02_5a10_EntityAction_HunterBullet_unk0, data_02_79d0   ; action $00
+    dw   call_02_5a1f_EntityAction_HunterBullet_unk1, data_02_79d0   ; action $01
+data_02_4f4b_EntityActions_ToonTVRocket:                            ;; ENTITY_TOON_TV_ROCKET
+    dw   call_02_5be2_EntityAction_Rocket_unk0, data_02_7c7b   ; action $00
+    dw   call_02_5bf7_EntityAction_Rocket_unk1, data_02_7c81   ; action $01
+    dw   call_02_5c00_EntityAction_Rocket_unk2, data_02_7c9a   ; action $02
+data_02_4f57_EntityActions_PreHistoryFastDinosaur:                  ;; ENTITY_PRE_HISTORY_FAST_DINOSAUR
     dw   call_02_5c08_EntityAction_FastDinosaur_Update, data_02_7790
-data_02_4f5b:                        ;; ENTITY_PRE_HISTORY_DRAGONFLY
+data_02_4f5b_EntityActions_PreHistoryDragonfly:                     ;; ENTITY_PRE_HISTORY_DRAGONFLY
     dw   call_02_5c10_EntityAction_Dragonfly_Update, data_02_77a7
-data_02_4f5f:                        ;; ENTITY_PRE_HISTORY_EGG
-    dw   call_02_5c18_EntityAction_Egg_unk0, data_02_77d5
-    dw   call_02_5c47_EntityAction_Egg_unk1, data_02_77e2
-    dw   call_02_5c5b_EntityAction_Egg_unk2, data_02_77ea
-data_02_4f6b:                        ;; ENTITY_UNK_35
-    dw   call_02_5c69_EntityAction_Unk35_unk0, data_02_7a62
-    dw   call_02_5c73_EntityAction_Unk35_unk1, data_02_7a68
-data_02_4f73:                        ;; ENTITY_UNK_36
+data_02_4f5f_EntityActions_PreHistoryEgg:                           ;; ENTITY_PRE_HISTORY_EGG
+    dw   call_02_5c18_EntityAction_Egg_unk0, data_02_77d5   ; action $00
+    dw   call_02_5c47_EntityAction_Egg_unk1, data_02_77e2   ; action $01
+    dw   call_02_5c5b_EntityAction_Egg_unk2, data_02_77ea   ; action $02
+data_02_4f6b_EntityActions_Unk35:                                   ;; ENTITY_UNK_35
+    dw   call_02_5c69_EntityAction_Unk35_unk0, data_02_7a62   ; action $00
+    dw   call_02_5c73_EntityAction_Unk35_unk1, data_02_7a68   ; action $01
+data_02_4f73_EntityActions_Unk36:                                   ;; ENTITY_UNK_36
     dw   call_02_5c7c_EntityAction_Unk36_Update, data_02_7a57
-data_02_4f77:                        ;; ENTITY_PRE_HISTORY_FALLING_LAVA
-    dw   call_02_5c7d_EntityAction_FallingLava_unk0, data_02_7a73
-    dw   call_02_5c9c_EntityAction_FallingLava_unk1, data_02_7a79
-data_02_4f7f:                        ;; ENTITY_PRE_HISTORY_LAVA_RAFT
-    dw   call_02_5ca8_EntityAction_LavaRaft_unk0, data_02_7a84
-    dw   call_02_5cba_EntityAction_LavaRaft_unk1, data_02_7a8a
-data_02_4f87:                        ;; ENTITY_PRE_HISTORY_MOVING_PLATFORM
+data_02_4f77_EntityActions_PreHistoryFallingLava:                   ;; ENTITY_PRE_HISTORY_FALLING_LAVA
+    dw   call_02_5c7d_EntityAction_FallingLava_unk0, data_02_7a73   ; action $00
+    dw   call_02_5c9c_EntityAction_FallingLava_unk1, data_02_7a79   ; action $01
+data_02_4f7f_EntityActions_PreHistoryLavaRaft:                      ;; ENTITY_PRE_HISTORY_LAVA_RAFT
+    dw   call_02_5ca8_EntityAction_LavaRaft_unk0, data_02_7a84   ; action $00
+    dw   call_02_5cba_EntityAction_LavaRaft_unk1, data_02_7a8a   ; action $01
+data_02_4f87_EntityActions_PreHistoryMovingPlatform:                ;; ENTITY_PRE_HISTORY_MOVING_PLATFORM
     dw   call_02_5cbb_EntityAction_PreHistoryMovingPlatform_Update, data_02_7a90
-data_02_4f8b:                        ;; ENTITY_UNK_3A
+data_02_4f8b_EntityActions_Unk3A:                                   ;; ENTITY_UNK_3A
     dw   call_02_5ccd_EntityAction_Unk3A_Update, data_02_7a96
-data_02_4f8f:                        ;; ENTITY_UNK_3B
+data_02_4f8f_EntityActions_Unk3B:                                   ;; ENTITY_UNK_3B
     dw   call_02_5cce_EntityAction_Unk3B_Update, data_02_7a9c
-data_02_4f93:                        ;; ENTITY_PRE_HISTORY_PTEROSAUR
+data_02_4f93_EntityActions_PreHistoryPterosaur:                     ;; ENTITY_PRE_HISTORY_PTEROSAUR
     dw   call_02_5ccf_EntityAction_Pterosaur_Update, data_02_77b2
-data_02_4f97:                        ;; ENTITY_UNK_3D
+data_02_4f97_EntityActions_Unk3D:                                   ;; ENTITY_UNK_3D
     dw   call_02_5d0b_EntityAction_Unk3D_Update, data_02_7aa8
-data_02_4f9b:                        ;; ENTITY_PRE_HISTORY_FALLING_BOULDER
-    dw   call_02_5d0c_EntityAction_FallingBoulder_unk0, data_02_7aae
-    dw   call_02_5d37_EntityAction_FallingBoulder_unk1, data_02_7ab4
-    dw   call_02_5d48_EntityAction_FallingBoulder_unk2, data_02_7aba
-    dw   call_02_5d5b_EntityAction_FallingBoulder_unk3, data_02_7cda
-data_02_4fab:                        ;; ENTITY_UNK_3F
+data_02_4f9b_EntityActions_PreHistoryFallingBoulder:                ;; ENTITY_PRE_HISTORY_FALLING_BOULDER
+    dw   call_02_5d0c_EntityAction_FallingBoulder_unk0, data_02_7aae   ; action $00
+    dw   call_02_5d37_EntityAction_FallingBoulder_unk1, data_02_7ab4   ; action $01
+    dw   call_02_5d48_EntityAction_FallingBoulder_unk2, data_02_7aba   ; action $02
+    dw   call_02_5d5b_EntityAction_FallingBoulder_unk3, data_02_7cda   ; action $03
+data_02_4fab_EntityActions_Unk3F:                                   ;; ENTITY_UNK_3F
     dw   call_02_5d6f_EntityAction_Unk3F_Update, data_02_7790
-data_02_4faf:                        ;; ENTITY_PRE_HISTORY_BEETLE_HORIZONTAL
+data_02_4faf_EntityActions_PreHistoryBeetleHorizontal:              ;; ENTITY_PRE_HISTORY_BEETLE_HORIZONTAL
     dw   call_02_5d81_EntityAction_BeetleHorizontal_Update, data_02_7ac1
-data_02_4fb3:                        ;; ENTITY_PRE_HISTORY_BEETLE_VERTICAL
+data_02_4fb3_EntityActions_PreHistoryBeetleVertical:                ;; ENTITY_PRE_HISTORY_BEETLE_VERTICAL
     dw   call_02_5d70_EntityAction_BeetleVertical_Update, data_02_7ac8
-data_02_4fb7:                        ;; ENTITY_PRE_HISTORY_ANT
+data_02_4fb7_EntityActions_PreHistoryAnt:                           ;; ENTITY_PRE_HISTORY_ANT
     dw   call_02_5d81_EntityAction_BeetleHorizontal_Update, data_02_7acf
-data_02_4fbb:                        ;; ENTITY_PRE_HISTORY_FIRE_PLANT
-    dw   call_02_5d92_EntityAction_FirePlant_unk0, data_02_7aef
-    dw   call_02_5db2_EntityAction_FirePlant_unk1, data_02_7af8
-    dw   call_02_5dd3_EntityAction_FirePlant_unk2, data_02_7b01
-data_02_4fc7:                        ;; ENTITY_PRE_HISTORY_FIRE_PLANT_PROJECTILES
-    dw   call_02_5ddc_EntityAction_FirePlantProjectiles_unk0, data_02_7b08
-    dw   call_02_5de6_EntityAction_FirePlantProjectiles_unk1, data_02_7ce0
-data_02_4fcf:                        ;; ENTITY_PRE_HISTORY_GEYSER
-    dw   call_02_5df8_EntityAction_Geyser_unk0, data_02_7ad8
-    dw   call_02_5e02_EntityAction_Geyser_unk1, data_02_7ade
-data_02_4fd7:                        ;; ENTITY_UNK_46
+data_02_4fbb_EntityActions_PreHistoryFirePlant:                     ;; ENTITY_PRE_HISTORY_FIRE_PLANT
+    dw   call_02_5d92_EntityAction_FirePlant_unk0, data_02_7aef   ; action $00
+    dw   call_02_5db2_EntityAction_FirePlant_unk1, data_02_7af8   ; action $01
+    dw   call_02_5dd3_EntityAction_FirePlant_unk2, data_02_7b01   ; action $02
+data_02_4fc7_EntityActions_PreHistoryFirePlantProjectiles:          ;; ENTITY_PRE_HISTORY_FIRE_PLANT_PROJECTILES
+    dw   call_02_5ddc_EntityAction_FirePlantProjectiles_unk0, data_02_7b08   ; action $00
+    dw   call_02_5de6_EntityAction_FirePlantProjectiles_unk1, data_02_7ce0   ; action $01
+data_02_4fcf_EntityActions_PreHistoryGeyser:                        ;; ENTITY_PRE_HISTORY_GEYSER
+    dw   call_02_5df8_EntityAction_Geyser_unk0, data_02_7ad8   ; action $00
+    dw   call_02_5e02_EntityAction_Geyser_unk1, data_02_7ade   ; action $01
+data_02_4fd7_EntityActions_Unk46:                                   ;; ENTITY_UNK_46
     dw   call_02_5e0b_EntityAction_Unk46_Update, data_02_7aa2
-data_02_4fdb:                        ;; ENTITY_PRE_HISTORY_DINOSAUR
+data_02_4fdb_EntityActions_PreHistoryDinosaur:                      ;; ENTITY_PRE_HISTORY_DINOSAUR
     dw   call_02_5e0c_EntityAction_Dinosaur_Update, data_02_77bd
-data_02_4fdf:                        ;; ENTITY_PRE_HISTORY_TRICERATOPS
+data_02_4fdf_EntityActions_PreHistoryTriceratops:                   ;; ENTITY_PRE_HISTORY_TRICERATOPS
     dw   call_02_5e26_EntityAction_Triceratops_Update, data_02_77ca
-data_02_4fe3:                        ;; ENTITY_PRE_HISTORY_TRICERATOPS_HORN
+data_02_4fe3_EntityActions_PreHistoryTriceratopsHorn:               ;; ENTITY_PRE_HISTORY_TRICERATOPS_HORN
     dw   call_02_5e90_EntityAction_TriceratopsHorn_Update, data_02_7ae9
-data_02_4fe7:                        ;; ENTITY_UNK_4A
+data_02_4fe7_EntityActions_Unk4A:                                   ;; ENTITY_UNK_4A
     dw   call_02_5e91_EntityAction_Unk4A_Update, data_02_7790
-data_02_4feb:                        ;; ENTITY_KUNG_FU_THEATER_HANGING_BLADE
+data_02_4feb_EntityActions_KungFuTheaterHangingBlade:               ;; ENTITY_KUNG_FU_THEATER_HANGING_BLADE
     dw   call_02_5e92_EntityAction_HangingBlade_Update, data_02_7b15
-data_02_4fef:                        ;; ENTITY_KUNG_FU_THEATER_CANNON
+data_02_4fef_EntityActions_KungFuTheaterCannon:                     ;; ENTITY_KUNG_FU_THEATER_CANNON
     dw   call_02_5ebd_EntityAction_Cannon_Update, data_02_7b1b
-data_02_4ff3:                        ;; ENTITY_KUNG_FU_THEATER_CANNON_PROJECTILE
-    dw   call_02_5ef0_EntityAction_CannonProjectile_unk0, data_02_7b21
-    dw   call_02_5efa_EntityAction_CannonProjectile_unk1, data_02_7b21
-data_02_4ffb:                        ;; ENTITY_KUNG_FU_THEATER_DRAGONFLY
+data_02_4ff3_EntityActions_KungFuTheaterCannonProjectile:           ;; ENTITY_KUNG_FU_THEATER_CANNON_PROJECTILE
+    dw   call_02_5ef0_EntityAction_CannonProjectile_unk0, data_02_7b21   ; action $00
+    dw   call_02_5efa_EntityAction_CannonProjectile_unk1, data_02_7b21   ; action $01
+data_02_4ffb_EntityActions_KungFuTheaterDragonfly:                  ;; ENTITY_KUNG_FU_THEATER_DRAGONFLY
     dw   call_02_5f48_EntityAction_Dragonfly_Update, data_02_77f2
-data_02_4fff:                        ;; ENTITY_KUNG_FU_THEATER_DRAGON_BODY_SEGMENT
+data_02_4fff_EntityActions_KungFuTheaterDragonBodySegment:          ;; ENTITY_KUNG_FU_THEATER_DRAGON_BODY_SEGMENT
     dw   call_02_5f50_EntityAction_DragonBodySegment_Update, data_02_7b27
-data_02_5003:                        ;; ENTITY_KUNG_FU_THEATER_DRAGON_HEAD
+data_02_5003_EntityActions_KungFuTheaterDragonHead:                 ;; ENTITY_KUNG_FU_THEATER_DRAGON_HEAD
     dw   call_02_5f67_EntityAction_DragonHead_Update, data_02_7824
-data_02_5007:                        ;; ENTITY_UNK_51
+data_02_5007_EntityActions_Unk51:                                   ;; ENTITY_UNK_51
     dw   call_02_616d_EntityAction_Unk51_Update, data_02_7b2d
-data_02_500b:                        ;; ENTITY_KUNG_FU_THEATER_DRAGON_PROJECTILE
-    dw   call_02_6152_EntityAction_DragonProjectile_unk0, data_02_7b39
-    dw   call_02_615f_EntityAction_DragonProjectile_unk1, data_02_7b39
-data_02_5013:                        ;; ENTITY_KUNG_FU_THEATER_WALKING_NINJA
-    dw   call_02_616e_EntityAction_Ninja_unk0, data_02_77fd
-    dw   call_02_6213_EntityAction_Ninja_unk1, data_02_7806
-    dw   call_02_621c_EntityAction_Ninja_unk2, data_02_7815
-data_02_501f:                        ;; ENTITY_KUNG_FU_THEATER_JUMPING_NINJA
-    dw   call_02_616e_EntityAction_Ninja_unk0, data_02_77fd
-    dw   call_02_6213_EntityAction_Ninja_unk1, data_02_7806
-    dw   call_02_621c_EntityAction_Ninja_unk2, data_02_7815
-    dw   call_02_6235_EntityAction_Ninja_Jump, data_02_781e
-data_02_502f:                        ;; ENTITY_KUNG_FU_THEATER_SAMURAI_BODY
-    dw   call_02_624c_EntityAction_SamuraiBody_unk0, data_02_782a
-    dw   call_02_62c3_EntityAction_SamuraiBody_unk1, data_02_7837
-data_02_5037:                        ;; ENTITY_KUNG_FU_THEATER_SAMURAI_HEAD
-    dw   call_02_62db_EntityAction_SamuraiHead_unk0, data_02_7b6c
-    dw   call_02_62fc_EntityAction_SamuraiHead_unk1, data_02_7b6c
-    dw   call_02_6327_EntityAction_SamuraiHead_unk2, data_02_7b72
-data_02_5043:                        ;; ENTITY_KUNG_FU_THEATER_LIZARD
+data_02_500b_EntityActions_KungFuTheaterDragonProjectile:           ;; ENTITY_KUNG_FU_THEATER_DRAGON_PROJECTILE
+    dw   call_02_6152_EntityAction_DragonProjectile_unk0, data_02_7b39   ; action $00
+    dw   call_02_615f_EntityAction_DragonProjectile_unk1, data_02_7b39   ; action $01
+data_02_5013_EntityActions_KungFuTheaterWalkingNinja:               ;; ENTITY_KUNG_FU_THEATER_WALKING_NINJA
+    dw   call_02_616e_EntityAction_Ninja_unk0, data_02_77fd   ; action $00
+    dw   call_02_6213_EntityAction_Ninja_unk1, data_02_7806   ; action $01
+    dw   call_02_621c_EntityAction_Ninja_unk2, data_02_7815   ; action $02
+data_02_501f_EntityActions_KungFuTheaterJumpingNinja:               ;; ENTITY_KUNG_FU_THEATER_JUMPING_NINJA
+    dw   call_02_616e_EntityAction_Ninja_unk0, data_02_77fd   ; action $00
+    dw   call_02_6213_EntityAction_Ninja_unk1, data_02_7806   ; action $01
+    dw   call_02_621c_EntityAction_Ninja_unk2, data_02_7815   ; action $02
+    dw   call_02_6235_EntityAction_Ninja_Jump, data_02_781e   ; action $03
+data_02_502f_EntityActions_KungFuTheaterSamuraiBody:                ;; ENTITY_KUNG_FU_THEATER_SAMURAI_BODY
+    dw   call_02_624c_EntityAction_SamuraiBody_unk0, data_02_782a   ; action $00
+    dw   call_02_62c3_EntityAction_SamuraiBody_unk1, data_02_7837   ; action $01
+data_02_5037_EntityActions_KungFuTheaterSamuraiHead:                ;; ENTITY_KUNG_FU_THEATER_SAMURAI_HEAD
+    dw   call_02_62db_EntityAction_SamuraiHead_unk0, data_02_7b6c   ; action $00
+    dw   call_02_62fc_EntityAction_SamuraiHead_unk1, data_02_7b6c   ; action $01
+    dw   call_02_6327_EntityAction_SamuraiHead_unk2, data_02_7b72   ; action $02
+data_02_5043_EntityActions_KungFuTheaterLizard:                     ;; ENTITY_KUNG_FU_THEATER_LIZARD
     dw   call_02_6335_EntityAction_Lizard_Update, data_02_7b7a
-data_02_5047:                        ;; ENTITY_KUNG_FU_THEATER_NINJA_PROJECTILE
-    dw   call_02_633d_EntityAction_NinjaProjectile_unk0, data_02_7b85
-    dw   call_02_6347_EntityAction_NinjaProjectile_unk1, data_02_7b85
-data_02_504f:                        ;; ENTITY_KUNG_FU_THEATER_SPIKY_LOG
+data_02_5047_EntityActions_KungFuTheaterNinjaProjectile:            ;; ENTITY_KUNG_FU_THEATER_NINJA_PROJECTILE
+    dw   call_02_633d_EntityAction_NinjaProjectile_unk0, data_02_7b85   ; action $00
+    dw   call_02_6347_EntityAction_NinjaProjectile_unk1, data_02_7b85   ; action $01
+data_02_504f_EntityActions_KungFuTheaterSpikyLog:                   ;; ENTITY_KUNG_FU_THEATER_SPIKY_LOG
     dw   call_02_6355_EntityAction_SpikyLog_Update, data_02_7b8c
-data_02_5053:                        ;; ENTITY_KUNG_FU_THEATER_TALL_JAR
-    dw   call_02_635d_EntityAction_Jar_unk0, data_02_7b92
-    dw   call_02_6375_EntityAction_Jar_unk1, data_02_7cec
-data_02_505b:                        ;; ENTITY_KUNG_FU_THEATER_JAR
-    dw   call_02_635d_EntityAction_Jar_unk0, data_02_7b92
-    dw   call_02_6375_EntityAction_Jar_unk1, data_02_7cec
-data_02_5063:                        ;; ENTITY_UNK_5C
+data_02_5053_EntityActions_KungFuTheaterTallJar:                    ;; ENTITY_KUNG_FU_THEATER_TALL_JAR
+    dw   call_02_635d_EntityAction_Jar_unk0, data_02_7b92   ; action $00
+    dw   call_02_6375_EntityAction_Jar_unk1, data_02_7cec   ; action $01
+data_02_505b_EntityActions_KungFuTheaterJar:                        ;; ENTITY_KUNG_FU_THEATER_JAR
+    dw   call_02_635d_EntityAction_Jar_unk0, data_02_7b92   ; action $00
+    dw   call_02_6375_EntityAction_Jar_unk1, data_02_7cec   ; action $01
+data_02_5063_EntityActions_Unk5C:                                   ;; ENTITY_UNK_5C
     dw   call_02_6387_EntityAction_Unk5C_Update, data_02_7b98
-data_02_5067:                        ;; ENTITY_UNK_5D
+data_02_5067_EntityActions_Unk5D:                                   ;; ENTITY_UNK_5D
     dw   call_02_6388_EntityAction_KungFuVanishingPlatform_unk0, data_02_7b98
-data_02_506b:                        ;; ENTITY_KUNG_FU_THEATER_VANISHING_PLATFORM
-    dw   call_02_6388_EntityAction_KungFuVanishingPlatform_unk0, data_02_7b42
-    dw   call_02_63ac_EntityAction_KungFuVanishingPlatform_unk1, data_02_7b42
-    dw   call_02_63fb_EntityAction_KungFuVanishingPlatform_unk2, data_02_7b48
-data_02_5077:                        ;; ENTITY_KUNG_FU_THEATER_MOVING_PLATFORM
+data_02_506b_EntityActions_KungFuTheaterVanishingPlatform:          ;; ENTITY_KUNG_FU_THEATER_VANISHING_PLATFORM
+    dw   call_02_6388_EntityAction_KungFuVanishingPlatform_unk0, data_02_7b42   ; action $00
+    dw   call_02_63ac_EntityAction_KungFuVanishingPlatform_unk1, data_02_7b42   ; action $01
+    dw   call_02_63fb_EntityAction_KungFuVanishingPlatform_unk2, data_02_7b48   ; action $02
+data_02_5077_EntityActions_KungFuTheaterMovingPlatform:             ;; ENTITY_KUNG_FU_THEATER_MOVING_PLATFORM
     dw   call_02_6409_EntityAction_KungFuMovingPlatform_Update, data_02_7b4e
-data_02_507b:                        ;; ENTITY_UNK_60
+data_02_507b_EntityActions_Unk60:                                   ;; ENTITY_UNK_60
     dw   call_02_6434_EntityAction_Unk60_Update, data_02_7b54
-data_02_507f:                        ;; ENTITY_KUNG_FU_THEATER_MOVING_RAFT
+data_02_507f_EntityActions_KungFuTheaterMovingRaft:                 ;; ENTITY_KUNG_FU_THEATER_MOVING_RAFT
     dw   call_02_6435_EntityAction_MovingRaft_Update, data_02_7b5a
-data_02_5083:                        ;; ENTITY_KUNG_FU_THEATER_STATIONARY_RAFT
+data_02_5083_EntityActions_KungFuTheaterStationaryRaft:             ;; ENTITY_KUNG_FU_THEATER_STATIONARY_RAFT
     dw   call_02_6447_EntityAction_StationaryRaft_Update, data_02_7b60
-data_02_5087:                        ;; ENTITY_UNK_63
+data_02_5087_EntityActions_Unk63:                                   ;; ENTITY_UNK_63
     dw   call_02_6448_EntityAction_Unk63_None, data_02_7b66
-data_02_508b:                        ;; ENTITY_UNK_64
+data_02_508b_EntityActions_Unk64:                                   ;; ENTITY_UNK_64
     dw   call_02_6449_EntityAction_Unk64_None, data_02_7b98
-data_02_508f:                        ;; ENTITY_REZOPOLIS_SPECIAL_MOVING_PLATFORM
+data_02_508f_EntityActions_RezopolisSpecialMovingPlatform:          ;; ENTITY_REZOPOLIS_SPECIAL_MOVING_PLATFORM
     dw   call_02_644a_EntityAction_RezopolisSpecialMovingPlatform_Update, data_02_7b98
-data_02_5093:                        ;; ENTITY_REZOPOLIS_MOVING_PLATFORM
+data_02_5093_EntityActions_RezopolisMovingPlatform:                 ;; ENTITY_REZOPOLIS_MOVING_PLATFORM
     dw   call_02_649c_EntityAction_RezopolisMovingPlatform_Update, data_02_7b9e
-data_02_5097:                        ;; ENTITY_REZOPOLIS_RED_PLATFORM
+data_02_5097_EntityActions_RezopolisRedPlatform:                    ;; ENTITY_REZOPOLIS_RED_PLATFORM
     dw   call_02_64ae_EntityAction_RedPlatform_Update, data_02_7ba4
-data_02_509b:                        ;; ENTITY_REZOPOLIS_ACTIVATED_RED_PLATFORM
+data_02_509b_EntityActions_RezopolisActivatedRedPlatform:           ;; ENTITY_REZOPOLIS_ACTIVATED_RED_PLATFORM
     dw   call_02_650f_EntityAction_ActivatedRedPlatform_Update, data_02_7ba4
-data_02_509f:                        ;; ENTITY_REZOPOLIS_TAILSPIN_PLATFORM
+data_02_509f_EntityActions_RezopolisTailspinPlatform:               ;; ENTITY_REZOPOLIS_TAILSPIN_PLATFORM
     dw   call_02_655d_EntityAction_TailspinPlatform_Update, data_02_7baa
-data_02_50a3:                        ;; ENTITY_REZOPOLIS_TAILSPIN_GEAR
-    dw   call_02_65b7_EntityAction_TailspinGear_unk0, data_02_7bbd
-    dw   call_02_65c0_EntityAction_TailspinGear_unk1, data_02_7bc3
-    dw   call_02_65c9_EntityAction_TailspinGear_unk2, data_02_7bcc
-    dw   call_02_65d2_EntityAction_TailspinGear_unk3, data_02_7bd5
-    dw   call_02_65db_EntityAction_TailspinGear_unk4, data_02_7bde
-data_02_50b7:                        ;; ENTITY_UNK_6B
+data_02_50a3_EntityActions_RezopolisTailspinGear:                   ;; ENTITY_REZOPOLIS_TAILSPIN_GEAR
+    dw   call_02_65b7_EntityAction_TailspinGear_unk0, data_02_7bbd   ; action $00
+    dw   call_02_65c0_EntityAction_TailspinGear_unk1, data_02_7bc3   ; action $01
+    dw   call_02_65c9_EntityAction_TailspinGear_unk2, data_02_7bcc   ; action $02
+    dw   call_02_65d2_EntityAction_TailspinGear_unk3, data_02_7bd5   ; action $03
+    dw   call_02_65db_EntityAction_TailspinGear_unk4, data_02_7bde   ; action $04
+data_02_50b7_EntityActions_Unk6B:                                   ;; ENTITY_UNK_6B
     dw   call_02_6626_EntityAction_Unk6B_Update, data_02_7790
-data_02_50bb:                        ;; ENTITY_UNK_6C
+data_02_50bb_EntityActions_Unk6C:                                   ;; ENTITY_UNK_6C
     dw   call_02_6627_EntityAction_Unk6C_Update, data_02_7bb0
-data_02_50bf:                        ;; ENTITY_UNK_6D
+data_02_50bf_EntityActions_Unk6D:                                   ;; ENTITY_UNK_6D
     dw   call_02_6628_EntityAction_Unk6D_Update, data_02_7bb0
-data_02_50c3:                        ;; ENTITY_REZOPOLIS_GREEN_MONSTER
-    dw   call_02_6629_EntityAction_GreenMonster_unk0, data_02_7865
-    dw   call_02_6632_EntityAction_GreenMonster_unk1, data_02_7872
-    dw   call_02_6633_EntityAction_GreenMonster_unk2, data_02_7879
-data_02_50cf:                        ;; ENTITY_UNK_6F
+data_02_50c3_EntityActions_RezopolisGreenMonster:                   ;; ENTITY_REZOPOLIS_GREEN_MONSTER
+    dw   call_02_6629_EntityAction_GreenMonster_unk0, data_02_7865   ; action $00
+    dw   call_02_6632_EntityAction_GreenMonster_unk1, data_02_7872   ; action $01
+    dw   call_02_6633_EntityAction_GreenMonster_unk2, data_02_7879   ; action $02
+data_02_50cf_EntityActions_Unk6F:                                   ;; ENTITY_UNK_6F
     dw   call_02_6634_EntityAction_Unk6F_Update, data_02_7bf0
-data_02_50d3:                        ;; ENTITY_UNK_70
+data_02_50d3_EntityActions_Unk70:                                   ;; ENTITY_UNK_70
     dw   call_02_6635_EntityAction_Unk6F_Update, data_02_7bf0
-data_02_50d7:                        ;; ENTITY_REZOPOLIS_PINCER
+data_02_50d7_EntityActions_RezopolisPincer:                         ;; ENTITY_REZOPOLIS_PINCER
     dw   call_02_6636_EntityAction_Pincer_Update, data_02_7880
-data_02_50db:                        ;; ENTITY_REZOPOLIS_FLAMETHROWER
-    dw   call_02_664b_EntityAction_Flamethrower_unk0, data_02_7bb0
-    dw   call_02_664c_EntityAction_Flamethrower_unk1, data_02_7bb0
-data_02_50e3:                        ;; ENTITY_REZOPOLIS_UFO
-    dw   call_02_664d_EntityAction_UFO_unk0, data_02_784d
-    dw   call_02_666b_EntityAction_UFO_unk1, data_02_785c
-data_02_50eb:                        ;; ENTITY_REZOPOLIS_ANT
+data_02_50db_EntityActions_RezopolisFlamethrower:                   ;; ENTITY_REZOPOLIS_FLAMETHROWER
+    dw   call_02_664b_EntityAction_Flamethrower_unk0, data_02_7bb0   ; action $00
+    dw   call_02_664c_EntityAction_Flamethrower_unk1, data_02_7bb0   ; action $01
+data_02_50e3_EntityActions_RezopolisUfo:                            ;; ENTITY_REZOPOLIS_UFO
+    dw   call_02_664d_EntityAction_UFO_unk0, data_02_784d   ; action $00
+    dw   call_02_666b_EntityAction_UFO_unk1, data_02_785c   ; action $01
+data_02_50eb_EntityActions_RezopolisAnt:                            ;; ENTITY_REZOPOLIS_ANT
     dw   call_02_66bb_EntityAction_Ant_Update, data_02_7be7
-data_02_50ef:                        ;; ENTITY_REZOPOLIS_ANT_SPAWNER
+data_02_50ef_EntityActions_RezopolisAntSpawner:                     ;; ENTITY_REZOPOLIS_ANT_SPAWNER
     dw   call_02_666c_EntityAction_AntSpawner_Update, data_02_7c6f
-data_02_50f3:                        ;; ENTITY_CIRCUIT_CENTRAL_ANT
+data_02_50f3_EntityActions_CircuitCentralAnt:                       ;; ENTITY_CIRCUIT_CENTRAL_ANT
     dw   call_02_66db_EntityAction_CircuitCentralAnt_Update, data_02_7bf0
-data_02_50f7:                        ;; ENTITY_CIRCUIT_CENTRAL_CAPACITOR
-    dw   call_02_66e3_EntityAction_Capacitor_unk0, data_02_7bf9
-    dw   call_02_66f1_EntityAction_Capacitor_unk1, data_02_7c01
-data_02_50ff:                        ;; ENTITY_CIRCUIT_CENTRAL_POWER_UP
-    dw   call_02_66fd_EntityAction_PowerUp_unk0, data_02_7c07
-    dw   call_02_6710_EntityAction_PowerUp_unk1, data_02_7c07
-data_02_5107:                        ;; ENTITY_UNK_79
+data_02_50f7_EntityActions_CircuitCentralCapacitor:                 ;; ENTITY_CIRCUIT_CENTRAL_CAPACITOR
+    dw   call_02_66e3_EntityAction_Capacitor_unk0, data_02_7bf9   ; action $00
+    dw   call_02_66f1_EntityAction_Capacitor_unk1, data_02_7c01   ; action $01
+data_02_50ff_EntityActions_CircuitCentralPowerUp:                   ;; ENTITY_CIRCUIT_CENTRAL_POWER_UP
+    dw   call_02_66fd_EntityAction_PowerUp_unk0, data_02_7c07   ; action $00
+    dw   call_02_6710_EntityAction_PowerUp_unk1, data_02_7c07   ; action $01
+data_02_5107_EntityActions_Unk79:                                   ;; ENTITY_UNK_79
     dw   call_02_6723_EntityAction_Unk79_Update, data_02_7790
-data_02_510b:                        ;; ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT
-    dw   call_02_6724_EntityAction_LittleRobot_unk0, data_02_7c10
-    dw   call_02_676c_EntityAction_LittleRobot_unk1, data_02_7c16
-data_02_5113:                        ;; ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT_GEAR
+data_02_510b_EntityActions_CircuitCentralLittleRobot:               ;; ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT
+    dw   call_02_6724_EntityAction_LittleRobot_unk0, data_02_7c10   ; action $00
+    dw   call_02_676c_EntityAction_LittleRobot_unk1, data_02_7c16   ; action $01
+data_02_5113_EntityActions_CircuitCentralLittleRobotGear:           ;; ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT_GEAR
     dw   call_02_6775_EntityAction_LittleRobotGear_Update, data_02_7c1d
-data_02_5117:                        ;; ENTITY_CIRCUIT_CENTRAL_ELECTRIC_BALL
-    dw   call_02_6786_EntityAction_ElectricBall_unk0, data_02_7c25
-    dw   call_02_679e_EntityAction_ElectricBall_unk1, data_02_7c2b
-data_02_511f:                        ;; ENTITY_CIRCUIT_CENTRAL_MOVING_PLATFORM
+data_02_5117_EntityActions_CircuitCentralElectricBall:              ;; ENTITY_CIRCUIT_CENTRAL_ELECTRIC_BALL
+    dw   call_02_6786_EntityAction_ElectricBall_unk0, data_02_7c25   ; action $00
+    dw   call_02_679e_EntityAction_ElectricBall_unk1, data_02_7c2b   ; action $01
+data_02_511f_EntityActions_CircuitCentralMovingPlatform:            ;; ENTITY_CIRCUIT_CENTRAL_MOVING_PLATFORM
     dw   call_02_68c0_EntityAction_CircuitCentralMovingPlatform_Update, data_02_7c42
-data_02_5123:                        ;; ENTITY_CIRCUIT_CENTRAL_POWERED_PLATFORM
-    dw   call_02_696f_EntityAction_CircuitCentralPoweredPlatform_unk0, data_02_7c34
-    dw   call_02_6993_EntityAction_CircuitCentralPoweredPlatform_unk1, data_02_7c3a
-    dw   call_02_69c4_EntityAction_CircuitCentralPoweredPlatform_unk2, data_02_7c48
-data_02_512f:                        ;; ENTITY_CIRCUIT_CENTRAL_LOWERING_PLATFORM
+data_02_5123_EntityActions_CircuitCentralPoweredPlatform:           ;; ENTITY_CIRCUIT_CENTRAL_POWERED_PLATFORM
+    dw   call_02_696f_EntityAction_CircuitCentralPoweredPlatform_unk0, data_02_7c34   ; action $00
+    dw   call_02_6993_EntityAction_CircuitCentralPoweredPlatform_unk1, data_02_7c3a   ; action $01
+    dw   call_02_69c4_EntityAction_CircuitCentralPoweredPlatform_unk2, data_02_7c48   ; action $02
+data_02_512f_EntityActions_CircuitCentralLoweringPlatform:          ;; ENTITY_CIRCUIT_CENTRAL_LOWERING_PLATFORM
     dw   call_02_69d7_EntityAction_CircuitCentralLoweringPlatform_Update, data_02_7c50
-data_02_5133:                        ;; ENTITY_CIRCUIT_CENTRAL_WALKER_ROBOT
+data_02_5133_EntityActions_CircuitCentralWalkerRobot:               ;; ENTITY_CIRCUIT_CENTRAL_WALKER_ROBOT
     dw   call_02_6a33_EntityAction_WalkerRobot_Update, data_02_7889
-data_02_5137:                        ;; ENTITY_CIRCUIT_CENTRAL_POWERED_WALKWAY
+data_02_5137_EntityActions_CircuitCentralPoweredWalkway:            ;; ENTITY_CIRCUIT_CENTRAL_POWERED_WALKWAY
     dw   call_02_6a3b_EntityAction_PoweredWalkway_Update, data_02_7c56
-data_02_513b:                        ;; ENTITY_CIRCUIT_CENTRAL_WALKWAY_ACTIVATOR
+data_02_513b_EntityActions_CircuitCentralWalkwayActivator:          ;; ENTITY_CIRCUIT_CENTRAL_WALKWAY_ACTIVATOR
     dw   call_02_6a3c_EntityAction_WalkwayActivator_Update, data_02_7c5c
-data_02_513f:                        ;; ENTITY_CHANNEL_Z_ARCED_GUN_PROJECTILE
-    dw   call_02_6a8b_EntityAction_ArcedGunProjectile_unk0, data_02_7c62
-    dw   call_02_6aac_EntityAction_ArcedGunProjectile_unk1, data_02_7c68
-data_02_5147:                        ;; ENTITY_CHANNEL_Z_ARCED_GUN_PROJECTILE2
-    dw   call_02_6ad3_EntityAction_ArcedGunProjectile2_unk0, data_02_7c62
-    dw   call_02_6af9_EntityAction_ArcedGunProjectile2_unk1, data_02_7c68
-    dw   call_02_6b30_EntityAction_ArcedGunProjectile2_unk2, data_02_7c68
-    dw   call_02_6b43_EntityAction_ArcedGunProjectile2_unk3, data_02_7c68
-data_02_5157:                        ;; ENTITY_CHANNEL_Z_GUN_PROJECTILE
-    dw   call_02_6b6a_EntityAction_GunProjectile_unk0, data_02_7c62
-    dw   call_02_6b81_EntityAction_GunProjectile_unk1, data_02_7c68
-data_02_515f:                        ;; ENTITY_CHANNEL_Z_REZ
-    dw   call_02_6c18_EntityAction_Rez_unk0, data_02_78a8
-    dw   call_02_6c41_EntityAction_Rez_unk1, data_02_78b5
-    dw   call_02_6c4a_EntityAction_Rez_unk2, data_02_78d7
-    dw   call_02_6c42_EntityAction_Rez_unk3, data_02_78e4
-    dw   call_02_6c82_EntityAction_Rez_unk4, data_02_78c2
-    dw   call_02_6c99_EntityAction_Rez_unk5, data_02_78f1
-    dw   call_02_6c99_EntityAction_Rez_unk5, data_02_78f1
-    dw   call_02_6c99_EntityAction_Rez_unk5, data_02_78f1
-    dw   call_02_6c99_EntityAction_Rez_unk5, data_02_78f1
-    dw   call_02_6c9d_EntityAction_Rez_unk9, data_02_78fc
-    dw   call_02_6ca6_EntityAction_Rez_unk10, data_02_790b
-data_02_518b:                        ;; ENTITY_CHANNEL_Z_UNUSED_PLATFORM_1
+data_02_513f_EntityActions_ChannelZArcedGunProjectile:              ;; ENTITY_CHANNEL_Z_ARCED_GUN_PROJECTILE
+    dw   call_02_6a8b_EntityAction_ArcedGunProjectile_unk0, data_02_7c62   ; action $00
+    dw   call_02_6aac_EntityAction_ArcedGunProjectile_unk1, data_02_7c68   ; action $01
+data_02_5147_EntityActions_ChannelZArcedGunProjectile2:             ;; ENTITY_CHANNEL_Z_ARCED_GUN_PROJECTILE2
+    dw   call_02_6ad3_EntityAction_ArcedGunProjectile2_unk0, data_02_7c62   ; action $00
+    dw   call_02_6af9_EntityAction_ArcedGunProjectile2_unk1, data_02_7c68   ; action $01
+    dw   call_02_6b30_EntityAction_ArcedGunProjectile2_unk2, data_02_7c68   ; action $02
+    dw   call_02_6b43_EntityAction_ArcedGunProjectile2_unk3, data_02_7c68   ; action $03
+data_02_5157_EntityActions_ChannelZGunProjectile:                   ;; ENTITY_CHANNEL_Z_GUN_PROJECTILE
+    dw   call_02_6b6a_EntityAction_GunProjectile_unk0, data_02_7c62   ; action $00
+    dw   call_02_6b81_EntityAction_GunProjectile_unk1, data_02_7c68   ; action $01
+data_02_515f_EntityActions_ChannelZRez:                             ;; ENTITY_CHANNEL_Z_REZ
+    dw   call_02_6c18_EntityAction_Rez_unk0,  data_02_78a8   ; action $00
+    dw   call_02_6c41_EntityAction_Rez_unk1,  data_02_78b5   ; action $01
+    dw   call_02_6c4a_EntityAction_Rez_unk2,  data_02_78d7   ; action $02
+    dw   call_02_6c42_EntityAction_Rez_unk3,  data_02_78e4   ; action $03
+    dw   call_02_6c82_EntityAction_Rez_unk4,  data_02_78c2   ; action $04
+    dw   call_02_6c99_EntityAction_Rez_unk5,  data_02_78f1   ; action $05
+    dw   call_02_6c99_EntityAction_Rez_unk5,  data_02_78f1   ; action $06
+    dw   call_02_6c99_EntityAction_Rez_unk5,  data_02_78f1   ; action $07
+    dw   call_02_6c99_EntityAction_Rez_unk5,  data_02_78f1   ; action $08
+    dw   call_02_6c9d_EntityAction_Rez_unk9,  data_02_78fc   ; action $09
+    dw   call_02_6ca6_EntityAction_Rez_unk10, data_02_790b   ; action $0A
+data_02_518b_EntityActions_ChannelZUnusedPlatform1:                 ;; ENTITY_CHANNEL_Z_UNUSED_PLATFORM_1
     dw   call_02_6d11_EntityAction_ChannelZUnusedPlatform1_Update, data_02_7c75
-data_02_518f:                        ;; ENTITY_CHANNEL_Z_UNUSED_PLATFORM_2
+data_02_518f_EntityActions_ChannelZUnusedPlatform2:                 ;; ENTITY_CHANNEL_Z_UNUSED_PLATFORM_2
     dw   call_02_6d23_EntityAction_ChannelZUnusedPlatform2_Update, data_02_7c75
-data_02_5193:                        ;; ENTITY_CHANNEL_Z_REZ_FOLLOWING_FIRE
+data_02_5193_EntityActions_ChannelZRezFollowingFire:                ;; ENTITY_CHANNEL_Z_REZ_FOLLOWING_FIRE
     dw   call_02_6cca_EntityAction_RezFollowingFire_Update, data_02_7ca1
-data_02_5197:                        ;; ENTITY_CHANNEL_Z_GUN_PROJECTILE_EXPLOSION
+data_02_5197_EntityActions_ChannelZGunProjectileExplosion:          ;; ENTITY_CHANNEL_Z_GUN_PROJECTILE_EXPLOSION
     dw   call_02_6d24_EntityAction_GunProjectileExplosion_Update, data_02_7caa
-data_02_519b:                        ;; ENTITY_FINAL_BATTLE_BUTTON_PROJECTILE
-    dw   call_02_6d5d_EntityAction_FinalBattleButtonProjectile_unk0, data_02_7cb6
-    dw   call_02_6d7f_EntityAction_FinalBattleButtonProjectile_unk1, data_02_7cb6
-data_02_51a3:                        ;; ENTITY_CHANNEL_Z_FINAL_BATTLE_BUTTON
-    dw   call_02_6d80_EntityAction_FinalBattleButton_unk0, data_02_7cbc
-    dw   call_02_6db8_EntityAction_FinalBattleButton_unk1, data_02_7cc2
-data_02_51ab:                        ;; ENTITY_CHANNEL_Z_REZ_PORTAL
+data_02_519b_EntityActions_FinalBattleButtonProjectile:             ;; ENTITY_FINAL_BATTLE_BUTTON_PROJECTILE
+    dw   call_02_6d5d_EntityAction_FinalBattleButtonProjectile_unk0, data_02_7cb6   ; action $00
+    dw   call_02_6d7f_EntityAction_FinalBattleButtonProjectile_unk1, data_02_7cb6   ; action $01
+data_02_51a3_EntityActions_ChannelZFinalBattleButton:               ;; ENTITY_CHANNEL_Z_FINAL_BATTLE_BUTTON
+    dw   call_02_6d80_EntityAction_FinalBattleButton_unk0, data_02_7cbc   ; action $00
+    dw   call_02_6db8_EntityAction_FinalBattleButton_unk1, data_02_7cc2   ; action $01
+data_02_51ab_EntityActions_ChannelZRezPortal:                       ;; ENTITY_CHANNEL_Z_REZ_PORTAL
     dw   call_02_6de3_EntityAction_RezPortal_Update, data_02_7894
-data_02_51af:                        ;; ENTITY_UNK_8E
+data_02_51af_EntityActions_Unk8E:                                   ;; ENTITY_UNK_8E
     dw   call_02_6df0_EntityAction_Unk8E_Update, data_02_791a
-data_02_51b3:                        ;; ENTITY_MEDIA_DIMENSION_MOVING_PLATFORM
+data_02_51b3_EntityActions_MediaDimensionMovingPlatform:            ;; ENTITY_MEDIA_DIMENSION_MOVING_PLATFORM
     dw   call_02_6df1_EntityAction_MediaDimensionMovingPlatform_Update, data_02_7cc8
 
 call_02_51b7_EntityAction_CollectibleSpawn_Update:
@@ -429,7 +459,7 @@ call_02_51ea_EntityAction_TVButton_unk0:
     jr   NC, .jr_02_5207                               ;; 02:5203 $30 $02
     set  SPRITE_FLAG_INVISIBLE_BIT, [HL]                                       ;; 02:5205 $cb $de
 .jr_02_5207:
-    call call_00_34f5_Entity_CompareMiscFlags                                  ;; 02:5207 $cd $f5 $34
+    call call_00_34f5_Entity_IsPlayerStandingOnSelf                                  ;; 02:5207 $cd $f5 $34
     bit  0, B                                          ;; 02:520a $cb $40
     ret  Z                                             ;; 02:520c $c8
     call call_00_3878_Entity_CheckTVButtonEnabled                                  ;; 02:520d $cd $78 $38
@@ -440,7 +470,7 @@ call_02_51ea_EntityAction_TVButton_unk0:
     ld   HL, wD647_ExitTVButtonIndex                                     ;; 02:5217 $21 $47 $d6
     ld   [HL], E                                       ;; 02:521a $73
 .jr_02_521b:
-    call call_00_34f5_Entity_CompareMiscFlags                                  ;; 02:521b $cd $f5 $34
+    call call_00_34f5_Entity_IsPlayerStandingOnSelf                                  ;; 02:521b $cd $f5 $34
     bit  0, B                                          ;; 02:521e $cb $40
     ret  Z                                             ;; 02:5220 $c8
     ld   BC, $05                                       ;; 02:5221 $01 $05 $00
@@ -553,119 +583,202 @@ call_02_52ab_EntityAction_ParticleBurst_Update:
 call_02_52e7_EntityAction_Unk08_Update:
     ret  
 
+; ==================================================================
+; SCREAM TV
+;
+; Entity ids $09 (ENTITY_SCREAM_TV_FALLING_PLATFORM) through $1C
+; (ENTITY_SCREAM_TV_MONA_LISA_ELEVATOR). Their action tables are data_02_4e0b_EntityActions_ScreamTVFallingPlatform
+; through data_02_4ea3_EntityActions_ScreamTVMonaLisaElevator at the top of this file.
+;
+; Two conventions run through the whole set and are worth reading once rather
+; than re-deriving per entity:
+;
+; HL WALKING. An action is entered with HL pointing wherever the last helper
+; left it, and the code then walks HL up and down the $20-byte instance with
+; `inc l` / `dec l` / `xor` rather than re-deriving the address. So a bare
+; `inc l` is a field step. The offsets that matter here are
+;   $0A SPRITE_FLAGS   $17 MISC_FLAGS      $18 MISC_TIMER_1   $19 MISC_TIMER_2
+;   $1A MISC_PARAM     $1B MISC_PARAM_HI   $1C X_VELOCITY     $1E Y_VELOCITY
+;
+; CHILD SPAWN PARAMETERS. When one of these spawns a child through
+; call_0a_7b9a_EntitySpawn_SpawnChildEntity, the child is handed the PARENT's
+; position: the parent's 16-bit world X lands in the child's $18/$19 and the
+; parent's 16-bit world Y in its $1A/$1B, before the per-child offset from
+; .data_0a_7c92_EntityChildSpawnData is applied to the child's own $0E/$10.
+; That is why the ghost head and the zombie head read timer and misc-param
+; fields as coordinates - they are "where my parent was standing"
+; ==================================================================
+
 call_02_52e8_EntityAction_ScreamTVFallingPlatform_Update:
-    call call_00_34f5_Entity_CompareMiscFlags
-    bit  0,[hl]
+; The platform that sags under Gex and then climbs back. One action; the phase
+; lives in MISC_FLAGS bits 0 and 1 instead of in the action id, so the sprite
+; never changes (data_02_7963 is a single frozen frame).
+;
+;   neither bit   parked at the top, waiting to be stood on
+;   bit 0         armed: 100-frame grace period, then sinking
+;   bit 1         bottomed out: 250-frame pause, then climbing back
+;
+; The travel distance is not a constant - MISC_TIMER_2 holds it as a spawn
+; parameter, in units of the 2px step below, and MISC_PARAM counts down through
+; it on the way down and back up to it on the way up. Two entries in the same
+; level can therefore sink by different amounts.
+;
+; Stepping back on during the climb cancels it (bit 1 -> bit 0, grace timer
+; zeroed) so the platform starts sinking again immediately from wherever it is
+    call call_00_34f5_Entity_IsPlayerStandingOnSelf    ; HL = $17 MISC_FLAGS, B = player is riding
+    bit  0,[hl]                                        ; already sinking?
     jr   nz,.jr_02_52FF
-    bit  1,[hl]
+    bit  1,[hl]                                        ; already climbing back?
     jr   nz,.jr_02_5323
-    bit  0,b
+    bit  0,b                                           ; parked: nothing to do until Gex steps on
     ret  z
-    set  0,[hl]
-    inc  l
+    set  0,[hl]                                        ; arm it
+    inc  l                                             ; $18 MISC_TIMER_1
     ld   a,$64
-    ldi  [hl],a
-    ldi  a,[hl]
-    ld   [hl],a
-    ret  
+    ldi  [hl],a                                        ; grace period = 100 frames; HL = $19 MISC_TIMER_2
+    ldi  a,[hl]                                        ; A = total travel; HL = $1A MISC_PARAM
+    ld   [hl],a                                        ; travel remaining = total travel
+    ret
 .jr_02_52FF:
-    inc  l
+; Armed. Burn the grace period, creak once as it expires, then descend.
+    inc  l                                             ; $18 MISC_TIMER_1
     ld   a,[hl]
     and  a
-    jr   z,.jr_02_530C
+    jr   z,.jr_02_530C                                 ; grace period already spent
     dec  [hl]
     ret  nz
-    ld   c,SFX_FALLING_PLATFORM
+    ld   c,SFX_FALLING_PLATFORM                        ; the creak, on the frame it hits zero
     call call_00_112f_QueueSFX
-    ret  
+    ret
 .jr_02_530C:
     inc  l
-    inc  l
+    inc  l                                             ; $1A MISC_PARAM = travel remaining
     ld   a,[hl]
     and  a
     jr   nz,.jr_02_531C
     dec  l
-    dec  l
-    ld   [hl],$FA
-    dec  l
+    dec  l                                             ; $18 MISC_TIMER_1
+    ld   [hl],$FA                                      ; bottomed out: hold for 250 frames
+    dec  l                                             ; $17 MISC_FLAGS
     res  0,[hl]
-    set  1,[hl]
-    ret  
+    set  1,[hl]                                        ; hand over to the climb-back phase
+    ret
 .jr_02_531C:
-    dec  [hl]
+    dec  [hl]                                          ; one step of travel used
     ld   bc,$0002
-    jp   call_00_37d8_Entity_MoveY
+    jp   call_00_37d8_Entity_MoveY                     ; sink 2px
 .jr_02_5323:
+; Bottomed out or climbing. Gex stepping back on restarts the sink from here.
     bit  0,b
     jr   z,.jr_02_532F
     res  1,[hl]
     set  0,[hl]
-    inc  l
-    ld   [hl],$00
-    ret  
+    inc  l                                             ; $18 MISC_TIMER_1
+    ld   [hl],$00                                      ; no grace period on the retrigger
+    ret
 .jr_02_532F:
-    inc  l
+    inc  l                                             ; $18 MISC_TIMER_1
     ld   a,[hl]
     and  a
     jr   z,.jr_02_5336
-    dec  [hl]
-    ret  
+    dec  [hl]                                          ; still resting at the bottom
+    ret
 .jr_02_5336:
-    inc  l
-    ldi  a,[hl]
-    cp   [hl]
+    inc  l                                             ; $19 MISC_TIMER_2 = total travel
+    ldi  a,[hl]                                        ; HL = $1A MISC_PARAM
+    cp   [hl]                                          ; travelled back all the way?
     jr   nz,.jr_02_5341
     dec  l
     dec  l
-    dec  l
-    ld   [hl],$00
-    ret  
+    dec  l                                             ; $17 MISC_FLAGS
+    ld   [hl],$00                                      ; back to parked
+    ret
 .jr_02_5341:
-    inc  [hl]
+    inc  [hl]                                          ; one step of travel recovered
     ld   bc,$FFFE
-    jp   call_00_37d8_Entity_MoveY
+    jp   call_00_37d8_Entity_MoveY                     ; climb 2px
+
+; ------------------------------------------------------------------
+; PATROLLING PLATFORM PROLOGUE
+;
+; Four of the Scream TV platforms share the same opening five instructions:
+;
+;     call Entity_IsFirstFrameOfAction     ; leaves HL at $09 ACTION_STATE
+;     jr   z, ...
+;     ld   a, l / xor $10 / ld l, a        ; $09 xor $10 = $19 MISC_TIMER_2
+;     ld   a, [hl-] / dec l                ; read it, step back to $17
+;     ld   [hl], a                         ; MISC_FLAGS = MISC_TIMER_2
+;
+; MISC_TIMER_2 is one of the spawn-parameter slots (SPAWN_PARAM_TO_TIMER_2), so
+; this copies a byte straight out of the level's entity list into MISC_FLAGS on
+; the platform's first frame. That byte is the patrol configuration that
+; call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip then reads: bit 1 picks
+; the axis and bits 7/6 the starting direction. In other words the level data,
+; not the code, decides which way each copy of the platform runs
+; ------------------------------------------------------------------
 
 call_02_5348_EntityAction_ScreamTVMovingPlatform_Update:
+; Straight patrolling platform, optionally gated on a switch.
+;
+; MISC_PARAM is a wD78B_BlockPatch_SlotTable index: $FF means "no gate, always
+; running", anything else is masked to a slot number and the platform stays
+; frozen until that block-patch slot goes non-empty. That is how a switch
+; elsewhere in the room starts a platform moving
     call call_00_34ea_Entity_IsFirstFrameOfAction                                  ;; 02:5348 $cd $ea $34
     jr   Z, .jr_02_5354                                ;; 02:534b $28 $07
     ld   A, L                                          ;; 02:534d $7d
-    xor  A, $10                                        ;; 02:534e $ee $10
+    xor  A, $10                                        ;; 02:534e $ee $10 ; $09 -> $19 MISC_TIMER_2
     ld   L, A                                          ;; 02:5350 $6f
     ld   A, [HL-]                                      ;; 02:5351 $3a
-    dec  L                                             ;; 02:5352 $2d
-    ld   [HL], A                                       ;; 02:5353 $77
+    dec  L                                             ;; 02:5352 $2d  ; -> $17 MISC_FLAGS
+    ld   [HL], A                                       ;; 02:5353 $77  ; patrol config from the spawn record
 .jr_02_5354:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_PARAM
     ld   A, [HL]                                       ;; 02:535c $7e
-    cp   A, $ff                                        ;; 02:535d $fe $ff
+    cp   A, $ff                                        ;; 02:535d $fe $ff ; $FF = ungated
     jr   Z, .jr_02_536d                                ;; 02:535f $28 $0c
-    and  A, $0f                                        ;; 02:5361 $e6 $0f
+    and  A, $0f                                        ;; 02:5361 $e6 $0f ; otherwise a block patch slot number
     ld   L, A                                          ;; 02:5363 $6f
     ld   H, $00                                        ;; 02:5364 $26 $00
     ld   DE, wD78B_BlockPatch_SlotTable                                     ;; 02:5366 $11 $8b $d7
     add  HL, DE                                        ;; 02:5369 $19
     ld   A, [HL]                                       ;; 02:536a $7e
     and  A, A                                          ;; 02:536b $a7
-    ret  Z                                             ;; 02:536c $c8
+    ret  Z                                             ;; 02:536c $c8 ; slot still empty - stay put
 .jr_02_536d:
     call call_00_3559_Entity_ApplyVelocityXY_SubpixelBoth                                  ;; 02:536d $cd $59 $35
     jp   call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip                                    ;; 02:5370 $c3 $8d $31
 
 call_02_5373_EntityAction_ScreamTVPushBlock_Update:
+; The pushable block. It has no movement code of its own - the player pushes it
+; through call_00_35d5_Entity_MoveXAndPushPlayer, driven from the collision side.
+; All this action does is watch where the block has got to and fire the level
+; event once it is far enough left.
+;
+; The threshold is the literal world X $02A0, and the event is block patch slot 0
+; going from empty to $02 (triggered), which runs the tile sequence that opens
+; the way on. The `and a / ret nz` guard means it only fires once, and only if
+; nothing else is already using slot 0
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_X
     ldi  a,[hl]
     sub  a,$A0
     ld   a,[hl]
-    sbc  a,$02
-    ret  nc
-    ld   hl,wD78B_BlockPatch_SlotTable
+    sbc  a,$02                                         ; world X - $02A0
+    ret  nc                                            ; not pushed far enough left yet
+    ld   hl,wD78B_BlockPatch_SlotTable                 ; slot 0
     ld   a,[hl]
     and  a
-    ret  nz
+    ret  nz                                            ; already triggered
     ld   [hl],$02
-    ret  
-    
-call_02_5373_EntityAction_Pumpkin_unk0:
+    ret
+
+call_02_538b_EntityAction_Pumpkin_Crouch:
+; Action $00. Squash-and-stretch wind-up: hold still until the 5-frame squash
+; animation (data_02_76b5) wraps, then set an upward Y velocity and hand over to
+; the hop. Nothing here moves the pumpkin - the launch is one write to YVEL.
+;
+; NOTE the label used to read call_02_5373, which is the address of the push
+; block above; the routine has always started at $538b
     call call_00_3843_Entity_CheckAnimationEnded                                  ;; 02:538b $cd $43 $38
     ret  Z                                             ;; 02:538e $c8
     ld   C, $28                                        ;; 02:538f $0e $28
@@ -673,9 +786,13 @@ call_02_5373_EntityAction_Pumpkin_unk0:
     ld   A, $01                                        ;; 02:5394 $3e $01
     jp   call_02_7102_Entity_SetAction                                  ;; 02:5396 $c3 $02 $71
 
-call_02_5399_EntityAction_Pumpkin_unk1:
-    call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped                                  ;; 02:5399 $cd $af $30
-    call call_00_3154_Entity_MoveYDownWithFloorBound                                  ;; 02:539c $cd $54 $31
+call_02_5399_EntityAction_Pumpkin_Hop:
+; Action $01. Airborne: gravity, then the landing test. Entity_ClampYToMaxYBound
+; returns carry while the pumpkin is still above its floor, so `ret c` is "keep
+; falling"; falling through means it touched down this frame, so thump and go
+; back to the crouch. The pumpkin never moves horizontally
+    call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped                                ;; 02:5399 $cd $af $30
+    call call_00_3154_Entity_ClampYToMaxYBound                                  ;; 02:539c $cd $54 $31
     ret  C                                             ;; 02:539f $d8
     ld   C, SFX_ENEMY_BOUNCE                                        ;; 02:53a0 $0e $24
     call call_00_112f_QueueSFX                                  ;; 02:53a2 $cd $2f $11
@@ -683,21 +800,30 @@ call_02_5399_EntityAction_Pumpkin_unk1:
     jp   call_02_7102_Entity_SetAction                                  ;; 02:53a7 $c3 $02 $71
 
 call_02_53aa_EntityAction_Frankie_Update:
+; One action, one instruction: walk back and forth between the X bounds in the
+; spawn record, turning to face Gex whenever he is inside them. The step size is
+; whatever the spawn record put in X_VELOCITY
     jp   call_00_3364_Entity_ApproachPlayerXWithBounds
 
-call_02_53ad_EntityAction_HeadGhost_unk0:
-    call call_00_34ea_Entity_IsFirstFrameOfAction
+call_02_53ad_EntityAction_HeadGhost_ThrowHead:
+; Action $00. The ghost that lobs its own head at you.
+;
+; On the first frame it takes its facing from bit 0 of MISC_TIMER_2, so the level
+; data picks which way each one is aimed. After that it just waits out the 8-frame
+; wind-up (data_02_7920) and, on the frame it wraps, spawns the head and drops
+; into the recovery action. It never moves
+    call call_00_34ea_Entity_IsFirstFrameOfAction      ; HL = $09 ACTION_STATE
     jr   z,.jr_02_53C3
     ld   a,l
-    xor  a,$10
+    xor  a,$10                                         ; $09 -> $19 MISC_TIMER_2
     ld   l,a
-    ld   c,$00
+    ld   c,$00                                         ; face right
     bit  0,[hl]
     jr   z,.jr_02_53BE
-    ld   c,$20
+    ld   c,$20                                         ; face left
 .jr_02_53BE:
     ld   a,l
-    xor  a,$14
+    xor  a,$14                                         ; $19 -> $0D FACING_FLAGS
     ld   l,a
     ld   [hl],c
 .jr_02_53C3:
@@ -708,13 +834,35 @@ call_02_53ad_EntityAction_HeadGhost_unk0:
     ld   a,$01
     jp   call_02_7102_Entity_SetAction
 
-call_02_53d9_EntityAction_HeadGhost_unk1:
+call_02_53d9_EntityAction_HeadGhost_Recover:
+; Action $01. Cooldown - one frozen frame held for $2d ticks (data_02_792d), then
+; straight back to the throw. So the ghost fires on a fixed cycle regardless of
+; where Gex is
     call call_00_3843_Entity_CheckAnimationEnded
     ld   a,$00
     call nz,call_02_7102_Entity_SetAction
-    ret  
+    ret
 
 call_02_53e2_EntityAction_GhostHead_Update:
+; The thrown head, and the most interesting movement code in the Scream TV set:
+; it does not bounce along the ground, it bounces along a 45-degree line anchored
+; to wherever its parent was standing.
+;
+; The child spawn handed it the parent's position (see the CHILD SPAWN PARAMETERS
+; note at the top of this section):
+;
+;   $18/$19 MISC_TIMER_1/2      the ghost's world X when it threw
+;   $1A/$1B MISC_PARAM/_HI      the ghost's world Y when it threw
+;
+; Each frame it flies forwards at speed 1 in its facing direction, takes gravity,
+; and then compares its Y against a floor computed on the spot as
+;
+;   floor = thrownY + $10 + |X - thrownX|
+;
+; Y grows downwards, so the further the head travels the lower that floor sits and
+; the further it can drop before it bounces - which is exactly the staircase it is
+; thrown down. On contact it snaps to the floor and gets a fresh $28 of upward Y
+; velocity, so the bounces never decay
     ld   c,$01
     call call_00_3350_Entity_SetXVelocity
     call call_00_3442_Entity_MoveXByFacingSpeed
@@ -722,21 +870,21 @@ call_02_53e2_EntityAction_GhostHead_Update:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_1
     ld   e,[hl]
     inc  l
-    ld   d,[hl]
-    inc  l
+    ld   d,[hl]                                        ; DE = thrownX
+    inc  l                                             ; $1A MISC_PARAM
     ldi  a,[hl]
     add  a,$10
     ld   c,a
     ld   a,[hl]
     adc  a,$00
-    ld   b,a
+    ld   b,a                                           ; BC = thrownY + $10
     ld   a,l
-    xor  a,$16
+    xor  a,$16                                         ; $1B -> $0D FACING_FLAGS
     ld   l,a
-    bit  5,[hl]
+    bit  5,[hl]                                        ; FACING_LEFT?
     jr   z,.jr_02_5417
     ld   a,l
-    xor  a,$03
+    xor  a,$03                                         ; $0D -> $0E WORLD_X
     ld   l,a
     ld   a,e
     sub  [hl]
@@ -744,45 +892,59 @@ call_02_53e2_EntityAction_GhostHead_Update:
     inc  hl
     ld   a,d
     sbc  [hl]
-    ld   d,a
-    inc  hl
+    ld   d,a                                           ; DE = thrownX - X (travelling left)
+    inc  hl                                            ; HL = $10 WORLD_Y
     jr   .jr_02_5421
 .jr_02_5417:
     ld   a,l
-    xor  a,$03
+    xor  a,$03                                         ; $0D -> $0E WORLD_X
     ld   l,a
     ldi  a,[hl]
     sub  e
     ld   e,a
     ldi  a,[hl]
     sbc  d
-    ld   d,a
+    ld   d,a                                           ; DE = X - thrownX (travelling right)
+                                                       ; HL = $10 WORLD_Y
 .jr_02_5421:
     ld   a,c
     add  e
     ld   c,a
     ld   a,b
     adc  d
-    ld   b,a
+    ld   b,a                                           ; BC = floor = thrownY + $10 + distance
     ldi  a,[hl]
     sub  c
     ld   a,[hl]
-    sbc  b
-    ret  c
+    sbc  b                                             ; Y - floor
+    ret  c                                             ; still above it, keep falling
     ld   [hl],b
     dec  l
-    ld   [hl],c
+    ld   [hl],c                                        ; land exactly on the sloped floor
     ld   c,$28
-    jp   call_00_335a_Entity_SetYVelocity
+    jp   call_00_335a_Entity_SetYVelocity               ; and bounce, at full height again
 
-call_02_5434_EntityAction_FloatingSkull_unk0:
+; ------------------------------------------------------------------
+; FLOATING SKULL - a stationary turret on a three-action cycle, each stage
+; driven purely by its own animation running out:
+;
+;   $00 Idle     4 slow frames (data_02_76d0, tick $4b); on the wrap it turns to
+;                face Gex, which is the only aiming it does
+;   $01 Spit     1 frame; on the wrap it spawns the projectile
+;   $02 Recover  1 frame; on the wrap it returns to Idle
+;
+; The skull itself never moves and the timing is fixed, so the whole enemy is
+; three "wait for the animation, then do one thing" states
+; ------------------------------------------------------------------
+
+call_02_5434_EntityAction_FloatingSkull_Idle:
     call call_00_3843_Entity_CheckAnimationEnded
     ret  z
     call call_00_36bd_Entity_FaceTowardsPlayer
     ld   a,$01
     jp   call_02_7102_Entity_SetAction
 
-call_02_5440_EntityAction_FloatingSkull_unk1:
+call_02_5440_EntityAction_FloatingSkull_Spit:
     call call_00_3843_Entity_CheckAnimationEnded
     ret  z
     ld   c,SFX_MULTI_PROJECTILE
@@ -792,204 +954,325 @@ call_02_5440_EntityAction_FloatingSkull_unk1:
     ld   a,$02
     jp   call_02_7102_Entity_SetAction
 
-call_02_545b_EntityAction_FloatingSkull_unk2:
+call_02_545b_EntityAction_FloatingSkull_Recover:
     call call_00_3843_Entity_CheckAnimationEnded
     ld   a,$00
     jp   nz,call_02_7102_Entity_SetAction
-    ret  
+    ret
 
-call_02_5464_EntityAction_FloatingSkullProjectile_unk0:
-    ld   c,$06
+call_02_5464_EntityAction_FloatingSkullProjectile_Init:
+; Action $00, one frame long. The skull's projectile is not a sprite entity at
+; all - it is a particle emitter. This arms PARTICLE_PATTERN_MULTI_PROJECTILE in
+; the slot's particle buffer and immediately hands over to the update action
+    ld   c,PARTICLE_PATTERN_MULTI_PROJECTILE
     call call_00_3a23_Entity_StartParticleEffect
     ld   a,$01
     jp   call_02_7102_Entity_SetAction
 
-call_02_546e_EntityAction_FloatingSkullProjectile_unk1:
+call_02_546e_EntityAction_FloatingSkullProjectile_Fly:
+; Action $01. Step the particles; when the last one dies (Z) the entity has
+; nothing left to draw and frees its slot. Otherwise it builds its own OAM
+; records from the particle buffer rather than going through the normal
+; frame-list path
     call call_00_3b8d_Entity_TickParticles
     jp   z,call_00_3931_Entity_DeactivateSelf
     FARCALL call_03_6549_Entity_BuildSprites_FloatingSkullProjectile
-    ret  
+    ret
 
-call_02_5480_EntityAction_Zombie_unk0:
+call_02_5480_EntityAction_Zombie_Walk:
+; Actions $00 AND $01 - the action table points both at this routine, and they
+; differ only in their animation: $00 is the zombie with its head on
+; (data_02_76e5), $01 the same walk cycle without it (data_02_76ee). The routine
+; tells them apart by reading ACTION_ID back out of the instance.
+;
+; MISC_FLAGS bit 0 is the "Gex just hit me" flag, set by
+; .jr_03_4d9a_CollisionHandler_Zombie in bank 3 along with a $3C stagger timer.
+; When it is set the zombie drops its head - but only the first time, because
+; only action $00 spawns the child.
+;
+; The `ld [hl], $02` into MISC_PARAM is the zombie's hit counter, which the same
+; collision handler decrements. Since this routine rewrites it to 2 on EVERY
+; frame it can never actually reach zero, so hitting the zombie itself only ever
+; staggers it; the way to finish it off is to destroy the head it dropped, which
+; is what .jr_03_4df4_CollisionHandler_ZombieHead does on the zombie's behalf
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_PARAM
-    ld   [hl],$02
+    ld   [hl],$02                                      ; hit counter, reset every frame
     inc  l
-    inc  l
-    ld   [hl],$01
+    inc  l                                             ; $1C X_VELOCITY
+    ld   [hl],$01                                      ; shuffle speed
     ld   a,l
-    xor  a,$0B
+    xor  a,$0B                                         ; $1C -> $17 MISC_FLAGS
     ld   l,a
-    bit  0,[hl]
-    jp   z,call_00_3364_Entity_ApproachPlayerXWithBounds
+    bit  0,[hl]                                        ; hit this frame?
+    jp   z,call_00_3364_Entity_ApproachPlayerXWithBounds ; no - just keep shuffling
     ld   a,l
-    xor  a,$16
+    xor  a,$16                                         ; $17 -> $01 ACTION_ID
     ld   l,a
     ld   a,[hl]
     and  a,$1F
-    cp   a,$00
+    cp   a,$00                                         ; still the headed variant?
     jr   nz,.jr_02_54AF
     ld   c,SPAWN_CHILD_ENTITY_ZOMBIE_HEAD
-    FARCALL call_0a_7b9a_EntitySpawn_SpawnChildEntity
+    FARCALL call_0a_7b9a_EntitySpawn_SpawnChildEntity  ; pop the head off
 .jr_02_54AF:
     ld   a,$02
     jp   call_02_7102_Entity_SetAction
 
-call_02_54b4_EntityAction_Zombie_unk2:
+call_02_54b4_EntityAction_Zombie_Stagger:
+; Action $02. Stand still for the $3C frames the collision handler loaded into
+; MISC_TIMER_1, then clear the hit flag and resume walking as action $01 - the
+; headless variant, whichever action it was hit in
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_1
     dec  [hl]
     ret  nz
-    dec  l
-    res  0,[hl]
+    dec  l                                             ; $17 MISC_FLAGS
+    res  0,[hl]                                        ; clear the hit flag
     ld   a,$01
     jp   call_02_7102_Entity_SetAction
 
-call_02_54c6_EntityAction_ZombieHead_unk0:
+; ------------------------------------------------------------------
+; ZOMBIE HEAD - the head the zombie above drops when it is hit. It falls, bounces
+; twice with decreasing height, then settles and watches Gex.
+;
+; The floor it bounces on is the one in MISC_PARAM, which for a child entity is
+; the PARENT's world Y at the moment of the spawn (see the note at the top of this
+; section) - so the head lands level with the zombie's feet no matter where it
+; happened to be spawned above them
+; ------------------------------------------------------------------
+
+call_02_54c6_EntityAction_ZombieHead_Launch:
+; Action $00, one frame. Pop upwards, load the bounce counter, and clear the
+; inherited facing so the head starts drawn unflipped
     ld   c,$28
     call call_00_335a_Entity_SetYVelocity
     ld   c,$03
-    call call_00_3802_Entity_SetMiscTimer
+    call call_00_3802_Entity_SetMiscTimer              ; 3 bounces remaining
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
     ld   [hl],$00
     ld   a,$01
     jp   call_02_7102_Entity_SetAction
 
-call_02_54df_EntityAction_ZombieHead_unk1:
+call_02_54df_EntityAction_ZombieHead_Bounce:
+; Action $01. Fall until it reaches the stored floor; each landing spends one of
+; the three bounces and re-launches at the height that bounce number indexes out
+; of the table below - $14, then $0a, then nothing, so the hops visibly die out.
+; When the counter reaches 0 the head is done moving
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
     call call_00_3137_Entity_ClampYToStoredFloor
-    ret  c
-    call call_00_3817_Entity_DecrementMiscTimer
+    ret  c                                             ; carry = still in the air
+    call call_00_3817_Entity_DecrementMiscTimer        ; HL = $18, A = bounces left
     ld   a,$02
-    jp   z,call_02_7102_Entity_SetAction
-    ld   l,[hl]
+    jp   z,call_02_7102_Entity_SetAction               ; out of bounces - settle
+    ld   l,[hl]                                        ; index the table by bounces left
     ld   h,$00
     ld   de,.data_02_54f9
     add  hl,de
     ld   c,[hl]
     jp   call_00_335a_Entity_SetYVelocity
 .data_02_54f9:
+; Bounce height by remaining-bounce count: [0] is never used as a launch, [1] is
+; the final little hop, [2] the first one
     db   $00, $0a, $14
 
-call_02_54fc_EntityAction_ZombieHead_unk2:
+call_02_54fc_EntityAction_ZombieHead_Grounded:
+; Action $02. Sits where it landed and keeps turning to face Gex. Still lethal to
+; touch, and still the thing that has to be destroyed to finish off the zombie
     jp   call_00_36bd_Entity_FaceTowardsPlayer
 
-call_02_54ff_EntityAction_FallingAxe_unk0:
+; ------------------------------------------------------------------
+; FALLING AXE - a four-state loop on a fixed global cadence: drop $24 units in
+; 2px steps, land, then crank back up 1px at a time.
+;
+; MISC_TIMER_1 is the distance counter and is shared between the fall and the
+; retract: the fall counts it up to $24, the retract counts it back down to 0,
+; which is why the axe always returns to exactly where it started
+; ------------------------------------------------------------------
+
+call_02_54ff_EntityAction_FallingAxe_WaitForCue:
+; Action $00. Hangs frozen (data_02_7939, tick $ff) until the low 7 bits of the
+; global frame counter match MISC_TIMER_2. That byte is a spawn parameter, so
+; each axe in a room gets its own phase within the shared 128-frame cycle and
+; they fall in sequence rather than together
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_2
     ld   a,[wD73B_VBlankFrameCounter]
-    and  a,$7F
-    cp   [hl]
+    and  a,$7F                                         ; 128-frame cycle
+    cp   [hl]                                          ; my phase within it
     ld   a,$01
     jp   z,call_02_7102_Entity_SetAction
-    ret  
+    ret
 
-call_02_5513_EntityAction_FallingAxe_unk1:
+call_02_5513_EntityAction_FallingAxe_Fall:
+; Action $01. 2px a frame for $24 units - 18 frames, 36 pixels
     ld   bc,$0002
     call call_00_37d8_Entity_MoveY
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_1
     inc  [hl]
-    inc  [hl]
+    inc  [hl]                                          ; distance travelled += 2
     ld   a,[hl]
     cp   a,$24
     ret  nz
     ld   a,$02
     jp   call_02_7102_Entity_SetAction
 
-call_02_552c_EntityAction_FallingAxe_unk2:
+call_02_552c_EntityAction_FallingAxe_Impact:
+; Action $02. The one-frame strike pose, held for $1e ticks (data_02_793f); on the
+; wrap it starts winding back up
     call call_00_3843_Entity_CheckAnimationEnded
     ld   a,$03
     jp   nz,call_02_7102_Entity_SetAction
-    ret  
+    ret
 
-call_02_5535_EntityAction_FallingAxe_unk3:
+call_02_5535_EntityAction_FallingAxe_Retract:
+; Action $03. 1px a frame, counting the same MISC_TIMER_1 back down - so the climb
+; takes $24 frames, twice as long as the drop, and ends exactly at the start
+; height before rejoining the wait
     ld   bc,$FFFF
     call call_00_37d8_Entity_MoveY
     call call_00_3817_Entity_DecrementMiscTimer
     ld   a,$00
     jp   z,call_02_7102_Entity_SetAction
-    ret  
+    ret
 
-call_02_5544_EntityAction_Lantern_unk0:
-    call call_02_555e_Lantern_Sub
+; ------------------------------------------------------------------
+; LANTERN - two actions that are purely a costume change driven by
+; wD757_LanternLitFlag. Both do the same swaying movement; they differ only in
+; which sprite they show and in which direction they watch the flag.
+;
+; The flag is not owned by the lantern's action code at all - it is written by
+; .jr_03_4d8c_CollisionHandler_Lantern in bank 3, which raises it every frame the
+; lantern is processed and drops it on the frame Gex is overlapping it. So it
+; means "a lantern exists and Gex is not on it", and the Scream TV ghost reads
+; the same byte to decide whether it is chasing and whether it can be hurt
+; ------------------------------------------------------------------
+
+call_02_5544_EntityAction_Lantern_Lit:
+; Action $00, sprite $50. The normal state; drops to Doused when the flag clears
+    call call_02_555e_Lantern_Sway
     ld   a,[wD757_LanternLitFlag]
     and  a
     ret  nz
     ld   a,$01
     jp   call_02_7102_Entity_SetAction
 
-call_02_5551_EntityAction_Lantern_unk1:
-    call call_02_555e_Lantern_Sub
+call_02_5551_EntityAction_Lantern_Doused:
+; Action $01, sprite $58. Shown while Gex is at the lantern; back to Lit as soon
+; as he leaves
+    call call_02_555e_Lantern_Sway
     ld   a,[wD757_LanternLitFlag]
     and  a
     ret  z
     ld   a,$00
     jp   call_02_7102_Entity_SetAction
 
-call_02_555e_Lantern_Sub:
+call_02_555e_Lantern_Sway:
+; Shared by both lantern actions. MISC_TIMER_1 is a free-running counter, and the
+; low four bits of it are read as a little state machine rather than as a number:
+;
+;   bit 0   only act on every other frame, halving the speed
+;   bit 2   only act on the second half of each group of four - so the lantern is
+;           still for 4 counts, then moves for 4
+;   bit 3   which way to move during those 4 counts
+;
+; The result is a 16-count cycle of "still, down 2px, still, up 2px": the lantern
+; hangs and swings. Nothing else in the entity ever writes MISC_TIMER_1
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_1
     inc  [hl]
     ld   a,[hl]
     and  a,$01
-    ret  nz
+    ret  nz                                            ; every other frame only
     bit  2,[hl]
-    ret  z
+    ret  z                                             ; first half of the cycle: hang still
     ld   bc,$0001
     bit  3,[hl]
-    jp   z,call_00_37d8_Entity_MoveY
+    jp   z,call_00_37d8_Entity_MoveY                   ; swing down
     ld   bc,$FFFF
-    jp   call_00_37d8_Entity_MoveY
+    jp   call_00_37d8_Entity_MoveY                     ; swing back up
 
 call_02_557c_EntityAction_Bat_Update:
+; One action. Same patrol-and-face-Gex helper as Frankie, but the bat forces its
+; own speed to 1 every frame instead of taking it from the spawn record. There is
+; no vertical movement at all - the flapping is entirely in the animation
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_X_VELOCITY
     ld   [hl],$01
     jp   call_00_3364_Entity_ApproachPlayerXWithBounds
 
 call_02_5589_EntityAction_ScreamTVOrangeMovingPlatform_Update:
+; One action: the PATROLLING PLATFORM PROLOGUE above, then move and patrol. No
+; switch gate, unlike call_02_5348 - this one runs from the moment it spawns.
+; Byte for byte the same routine as call_02_5628_EntityAction_ClimbWallSunEnemy,
+; which the level data configures for vertical travel instead
     call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_5595
     ld   a,l
-    xor  a,$10
+    xor  a,$10                                         ; $09 -> $19 MISC_TIMER_2
     ld   l,a
     ldd  a,[hl]
-    dec  l
-    ld   [hl],a
+    dec  l                                             ; -> $17 MISC_FLAGS
+    ld   [hl],a                                        ; patrol config from the spawn record
 .jr_02_5595:
     call call_00_3559_Entity_ApplyVelocityXY_SubpixelBoth
     jp   call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip
 
-call_02_559b_EntityAction_ScreamTVDoorOpening_None:
-    ret  
+call_02_559b_EntityAction_ScreamTVDoorOpening_Idle:
+; Action $00. The closed door: a do-nothing action it sits in until something
+; outside calls Entity_SetAction $01 on it
+    ret
 
-call_02_559c_EntityAction_ScreamTVDoorOpening_unk1:
+call_02_559c_EntityAction_ScreamTVDoorOpening_Open:
+; Action $01. Play the opening animation once and free the slot on the last frame
+; - the open doorway itself is background tiles, not this entity
     call call_00_3843_Entity_CheckAnimationEnded
     call nz,call_00_3931_Entity_DeactivateSelf
-    ret  
+    ret
 
-call_02_55a3_EntityAction_Ghost_unk0:
+; ------------------------------------------------------------------
+; SCREAM TV GHOST - four actions built around wD757_LanternLitFlag, the byte the
+; lantern's collision handler raises every frame it is processed and drops on the
+; frame Gex is standing at it:
+;
+;   $00 VanishAndRelocate  fade out, then teleport next to the lantern
+;   $01 Reappear           fade back in
+;   $02 Dormant            lantern flag clear - hold still, and vulnerable
+;   $03 Chase              lantern flag set - walk Gex down, and untouchable
+;
+; The pairing with .jr_03_4dd4_CollisionHandler_Ghost in bank 3 is deliberate:
+; that handler only lets an attack register while the flag is clear, which is the
+; same condition that puts the ghost in Dormant. You cannot fight it while it is
+; chasing you - you have to reach the lantern first
+; ------------------------------------------------------------------
+
+call_02_55a3_EntityAction_Ghost_VanishAndRelocate:
+; Action $00. Waits out the fade animation, then hunts the entity slots for an
+; ENTITY_SCREAM_TV_LANTERN ($15) and teleports to it: $30 pixels to one side
+; depending on which way Gex is facing, and $38 below it. If no lantern is loaded
+; there is nowhere to go, so the ghost frees its own slot instead
     call call_00_3843_Entity_CheckAnimationEnded
     ret  z
     ld   h,$d2
-    ld   a,$20
+    ld   a,ENTITY_SLOT_FIRST_NPC
 .jr_02_55AB:
     ld   l,a
-    ld   a,[hl]
-    cp   a,$15
+    ld   a,[hl]                                        ; ENTITY_FIELD_ENTITY_ID of that slot
+    cp   a,$15                                         ; ENTITY_SCREAM_TV_LANTERN
     jr   z,.jr_02_55B9
     ld   a,l
-    add  a,$20
-    jr   nz,.jr_02_55AB
-    jp   call_00_3910_Entity_ClearSlot
+    add  a,ENTITY_SLOT_SIZE
+    jr   nz,.jr_02_55AB                                ; wraps to 0 after the last slot
+    jp   call_00_3910_Entity_ClearSlot                 ; no lantern in the room - despawn
 .jr_02_55B9:
+; HL = the lantern's WORLD_X, DE = our own. Copy X (biased) and Y (+$38) across.
     ld   a,l
     or   a,$0E
-    ld   l,a
+    ld   l,a                                           ; lantern $0E WORLD_X
     ld   d,h
     ld   a,[wD300_CurrentEntityAddrLo]
     or   a,$0E
-    ld   e,a
-    ld   bc,$0030
+    ld   e,a                                           ; our $0E WORLD_X
+    ld   bc,$0030                                      ; appear to the lantern's right
     ld   a,[wD20D_Player_FacingFlags]
-    bit  5,a
+    bit  5,a                                           ; unless Gex is facing left
     jr   z,.jr_02_55D1
-    ld   bc,$FFD0
+    ld   bc,$FFD0                                      ; then appear to its left
 .jr_02_55D1:
     ldi  a,[hl]
     add  c
@@ -998,7 +1281,7 @@ call_02_55a3_EntityAction_Ghost_unk0:
     ldi  a,[hl]
     adc  b
     ld   [de],a
-    inc  e
+    inc  e                                             ; X = lantern X +/- $30
     ldi  a,[hl]
     add  a,$38
     ld   [de],a
@@ -1006,41 +1289,65 @@ call_02_55a3_EntityAction_Ghost_unk0:
     ldi  a,[hl]
     adc  a,$00
     ld   [de],a
-    inc  e
+    inc  e                                             ; Y = lantern Y + $38
     ld   a,$01
     jp   call_02_7102_Entity_SetAction
 
-call_02_55e8_EntityAction_Ghost_unk1:
+call_02_55e8_EntityAction_Ghost_Reappear:
+; Action $01. Plays the fade-in and drops into Dormant; the relocation has already
+; happened, so this action exists only to keep the ghost intangible while it is
+; still materialising
     call call_00_3843_Entity_CheckAnimationEnded
     ret  z
     ld   a,$02
     jp   call_02_7102_Entity_SetAction
 
-call_02_55f1_EntityAction_Ghost_unk2:
+call_02_55f1_EntityAction_Ghost_Dormant:
+; Action $02. Holds still while the lantern flag is clear - which is exactly when
+; .jr_03_4dd4_CollisionHandler_Ghost will let an attack land. As soon as the flag
+; comes back it zeroes its speed and starts chasing.
+;
+; QUIRK: the "I was hit" bit this polls is NOT in this entity's own MISC_FLAGS.
+; HL is not set up before the read - an action function is entered through
+; call_00_10bd_JumpHL, so on entry HL is the address of the action function
+; itself, here $55F1. `or l` with any slot base leaves $F1 unchanged, so the
+; `bit 0, [hl]` below always reads $D2F1 - byte $11 of slot 7, the high half of
+; that slot's world Y.
+;
+; The collision handler that is supposed to raise the bit has the mirror image of
+; the same bug: it still has L = $57 left over from `ld hl, wD757`, so it writes
+; to slot (own slot | 2), field $17. The two only agree when the ghost is in slot
+; 2, 3, 6 or 7, and even then the read address is wrong. Both are faithful to the
+; ROM - see 02:55F1 and 03:4DE5
     ld   a,[wD757_LanternLitFlag]
     and  a
     jr   nz,.jr_02_5608
     ld   h,$d2
     ld   a,[wD300_CurrentEntityAddrLo]
-    or   l
+    or   l                                             ; L is the low byte of $55F1, not a field offset
     ld   l,a
-    bit  0,[hl]
+    bit  0,[hl]                                        ; ends up reading $D2F1
     ret  z
     res  0,[hl]
     ld   a,$00
     jp   call_02_7102_Entity_SetAction
 .jr_02_5608:
     ld   c,$00
-    call call_00_3350_Entity_SetXVelocity
+    call call_00_3350_Entity_SetXVelocity               ; start the chase from a standstill
     ld   a,$03
     jp   call_02_7102_Entity_SetAction
 
-call_02_5612_EntityAction_Ghost_unk3:
+call_02_5612_EntityAction_Ghost_Chase:
+; Action $03. Faces Gex and accelerates towards him, using the momentum path
+; rather than a fixed step - MISC_PARAM_HI is the top speed it ramps up to.
+;
+; Two things send it back to action $00 and its lantern: Gex reaching the lantern
+; (the flag clearing), or the ghost drifting outside its own patrol span
     ld   a,[wD757_LanternLitFlag]
     and  a
-    jr   z,.jr_02_5623
-    call call_00_3531_Entity_CheckIfXWithinBoundingBox
-    jr   c,.jr_02_5623
+    jr   z,.jr_02_5623                                 ; Gex is at the lantern - give up
+    call call_00_3531_Entity_IsXOutsideBounds
+    jr   c,.jr_02_5623                                 ; chased past its own bounds
     call call_00_36bd_Entity_FaceTowardsPlayer
     jp   call_00_3251_Entity_UpdateFacingMomentumAndMoveX
 .jr_02_5623:
@@ -1048,6 +1355,11 @@ call_02_5612_EntityAction_Ghost_unk3:
     jp   call_02_7102_Entity_SetAction
 
 call_02_5628_EntityAction_ClimbWallSunEnemy_Update:
+; One action, and instruction for instruction the same routine as
+; call_02_5589_EntityAction_ScreamTVOrangeMovingPlatform_Update: read the patrol
+; config out of the spawn record on the first frame, then move and patrol. What
+; makes this one climb a wall rather than slide along a floor is the config byte,
+; not the code
     call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_5634
     ld   a,l
@@ -1060,62 +1372,94 @@ call_02_5628_EntityAction_ClimbWallSunEnemy_Update:
     call call_00_3559_Entity_ApplyVelocityXY_SubpixelBoth
     jp   call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip
 
-call_02_563a_EntityAction_ScreamTVVanishingPlatform_unk0:
+; ------------------------------------------------------------------
+; SCREAM TV VANISHING PLATFORM - a three-action loop that blinks out from under
+; Gex and comes back a second later:
+;
+;   $00 WaitForCue  solid, waiting for its slot in the global cycle
+;   $01 BlinkOut    $40 frames of flashing, faster and faster, then it goes
+;   $02 Gone        $3c frames with no sprite and no collision width
+;
+; The flashing is not a plain alternation - it is a dither read out of two small
+; tables, so the platform is fully solid at first and then flickers at 1/2, 1/4
+; and 1/8 duty before disappearing outright. That is the warning
+; ------------------------------------------------------------------
+
+call_02_563a_EntityAction_ScreamTVVanishingPlatform_WaitForCue:
+; Action $00. Fires when the global frame counter matches MISC_PARAM_HI, a spawn
+; parameter, so a row of these blink out one after another rather than all at
+; once. Loads the $40-frame blink timer on the way through
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_PARAM_HI
     ld   a,[wD73B_VBlankFrameCounter]
-    cp   [hl]
+    cp   [hl]                                          ; my phase in the 256-frame cycle
     ret  nz
     ld   a,l
-    xor  a,$03
+    xor  a,$03                                         ; $1B -> $18 MISC_TIMER_1
     ld   l,a
-    ld   [hl],$40
+    ld   [hl],$40                                      ; blink for $40 frames
     ld   a,$01
     jp   call_02_7102_Entity_SetAction
 
-call_02_5652_EntityAction_ScreamTVVanishingPlatform_unk1:
+call_02_5652_EntityAction_ScreamTVVanishingPlatform_BlinkOut:
+; Action $01. Counts MISC_TIMER_1 down from $40 and derives SPRITE_FLAG_INVISIBLE
+; from it each frame, by splitting the counter into a coarse and a fine half:
+;
+;   timer >> 3   picks a duty pattern from .data_02_5691
+;   timer & 7    picks which bit of that pattern to test in .data_02_5699
+;
+; $ff is every frame visible, $55 every other, $11 one in four, $01 one in eight
+; and $00 none - so as the counter falls the platform flickers harder and harder.
+; The bit is cleared unconditionally first, so "visible" is the default and the
+; table only ever adds blanks
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_1
     dec  [hl]
     ld   c,[hl]
     ld   a,l
-    xor  a,$12
+    xor  a,$12                                         ; $18 -> $0A SPRITE_FLAGS
     ld   l,a
-    res  3,[hl]
+    res  SPRITE_FLAG_INVISIBLE_BIT,[hl]                ; visible unless the pattern says otherwise
     ld   a,c
     and  a
-    jr   z,.jr_02_5687
+    jr   z,.jr_02_5687                                 ; timer ran out
     cp   a,$40
-    ret  nc
+    ret  nc                                            ; guards the >> 3 table index
     push hl
     srl  a
     srl  a
-    srl  a
+    srl  a                                             ; timer >> 3 = which duty pattern
     ld   e,a
     ld   d,$00
     ld   hl,.data_02_5691
     add  hl,de
     ld   b,[hl]
     ld   a,c
-    and  a,$07
+    and  a,$07                                         ; timer & 7 = which bit of it
     ld   e,a
     ld   hl,.data_02_5699
     add  hl,de
     ld   a,[hl]
     pop  hl
     and  b
-    ret  nz
-    set  3,[hl]
-    ret  
+    ret  nz                                            ; bit set - draw this frame
+    set  SPRITE_FLAG_INVISIBLE_BIT,[hl]                ; bit clear - blank this frame
+    ret
 .jr_02_5687:
     ld   c,$00
-    call call_00_382f_Entity_SetWidth
+    call call_00_382f_Entity_SetWidth                  ; width 0 = nothing left to stand on
     ld   a,$02
     jp   call_02_7102_Entity_SetAction
 .data_02_5691:
+; Duty pattern by (timer >> 3), so read right to left as the timer counts down:
+; solid, then 1/2, then 1/4, then 1/8, then gone
     db   $00, $01, $11, $11, $55, $55, $55, $ff
 .data_02_5699:
+; Bit selector by (timer & 7)
     db   $01, $02, $04, $08, $10, $20, $40, $80
 
-call_02_56a1_EntityAction_ScreamTVVanishingPlatform_unk2:
+call_02_56a1_EntityAction_ScreamTVVanishingPlatform_Gone:
+; Action $02. data_02_7981 draws nothing (SPRITE_FLAG_INVISIBLE) and holds for $3c
+; ticks; when that wraps, the collision width goes back to $10 and the platform is
+; solid again
     call call_00_3843_Entity_CheckAnimationEnded
     ret  z
     ld   c,$10
@@ -1124,35 +1468,48 @@ call_02_56a1_EntityAction_ScreamTVVanishingPlatform_unk2:
     jp   call_02_7102_Entity_SetAction
 
 call_02_56af_EntityAction_MonaLisaElevator_Update:
+; One action, and the most gated platform in the level: it needs BOTH block patch
+; slot 0 to have been triggered AND Gex to step on before it will run.
+;
+; The direction latch is the unusual part. MISC_FLAGS arrives from the spawn
+; record through the PATROLLING PLATFORM PROLOGUE, and on the frame Gex first
+; boards, bits 5 and 4 of it are rotated up into bits 7 and 6 - the direction bits
+; Entity_PlatformPatrol_WithBoundsAndFlip actually reads. So bits 5/4 are a
+; "which way do I set off" seed that only takes effect once, and bit 0 is the
+; latch that stops it happening twice
     call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_56BB
     ld   a,l
-    xor  a,$10
+    xor  a,$10                                         ; $09 -> $19 MISC_TIMER_2
     ld   l,a
     ldd  a,[hl]
-    dec  l
-    ld   [hl],a
+    dec  l                                             ; -> $17 MISC_FLAGS
+    ld   [hl],a                                        ; patrol config from the spawn record
 .jr_02_56BB:
     ld   a,[wD78B_BlockPatch_SlotTable]
     and  a
     ret  z
     call call_00_3559_Entity_ApplyVelocityXY_SubpixelBoth
-    call call_00_34f5_Entity_CompareMiscFlags
-    bit  0,[hl]
+    call call_00_34f5_Entity_IsPlayerStandingOnSelf
+    bit  0,[hl]                                        ; already started?
     jr   nz,.jr_02_56D9
-    bit  0,b
+    bit  0,b                                           ; no - wait for Gex to board
     ret  z
-    set  0,[hl]
+    set  0,[hl]                                        ; latch: only do this once
     ld   a,[hl]
     and  a,$3F
     ld   c,a
-    rlca 
-    rlca 
-    and  a,$C0
+    rlca
+    rlca
+    and  a,$C0                                         ; bits 5,4 -> bits 7,6
     or   c
-    ld   [hl],a
+    ld   [hl],a                                        ; seed the patrol direction
 .jr_02_56D9:
     jp   call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip
+
+; ==================================================================
+; TOON TV
+; ==================================================================
 
 call_02_56dc_EntityAction_HardHeadAreaHazard_unk0:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_Y
@@ -1244,7 +1601,7 @@ call_02_576e_EntityAction_HardHeadAreaHazard_unk1:
     bit  MISC_FLAGS_BIT_0, [HL]                                       ;; 02:5776 $cb $46
     jr   NZ, .jr_02_5794                               ;; 02:5778 $20 $1a
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped                                  ;; 02:577a $cd $af $30
-    call call_00_3154_Entity_MoveYDownWithFloorBound                                  ;; 02:577d $cd $54 $31
+    call call_00_3154_Entity_ClampYToMaxYBound                                  ;; 02:577d $cd $54 $31
     ret  C                                             ;; 02:5780 $d8
     ld   C, SFX_FALLING_HAZARD                                        ;; 02:5781 $0e $1a
     call call_00_112f_QueueSFX                                  ;; 02:5783 $cd $2f $11
@@ -1322,7 +1679,7 @@ call_02_57f3_EntityAction_StationaryBearTrap_unk0:
 call_02_5803_EntityAction_StationaryBearTrap_unk1:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
     ld   bc,$0008
-    call call_00_316e_Entity_MoveYDownWithOffsetFloorBound
+    call call_00_316e_Entity_ClampYToMaxYBound_Offset
     ld   a,$00
     jp   nc,call_02_7102_Entity_SetAction
     ret  
@@ -1334,7 +1691,7 @@ call_02_5812_EntityAction_MovingBearTrap_unk0:
     call call_00_3350_Entity_SetXVelocity
 .jr_02_581C:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
-    call call_00_3154_Entity_MoveYDownWithFloorBound
+    call call_00_3154_Entity_ClampYToMaxYBound
     call call_00_3843_Entity_CheckAnimationEnded
     ret  z
     ld   c,$24
@@ -1344,7 +1701,7 @@ call_02_5812_EntityAction_MovingBearTrap_unk0:
 
 call_02_5830_EntityAction_MovingBearTrap_unk1:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
-    call call_00_3154_Entity_MoveYDownWithFloorBound
+    call call_00_3154_Entity_ClampYToMaxYBound
     jp   c,call_00_36f7_Entity_MoveXByFacingMomentum_BoundsChecked
     ld   c,$09
     call call_00_335a_Entity_SetYVelocity
@@ -1390,7 +1747,7 @@ call_02_5871_EntityAction_BowlingBall_Update:
     ld   c,[hl]
     inc  hl
     ld   b,[hl]
-    call call_00_316e_Entity_MoveYDownWithOffsetFloorBound
+    call call_00_316e_Entity_ClampYToMaxYBound_Offset
     ret  c
     ld   c,SFX_FALLING_HAZARD
     call call_00_112f_QueueSFX
@@ -1444,7 +1801,7 @@ call_02_58e8_EntityAction_Cactus_unk1:
 
 call_02_58fa_EntityAction_Cactus_unk2:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped                                  ;; 02:58fa $cd $af $30
-    call call_00_3154_Entity_MoveYDownWithFloorBound                                  ;; 02:58fd $cd $54 $31
+    call call_00_3154_Entity_ClampYToMaxYBound                                  ;; 02:58fd $cd $54 $31
     ret  C                                             ;; 02:5900 $d8
     ld   C, SFX_ENEMY_BOUNCE                                        ;; 02:5901 $0e $24
     call call_00_112f_QueueSFX                                  ;; 02:5903 $cd $2f $11
@@ -1453,7 +1810,7 @@ call_02_58fa_EntityAction_Cactus_unk2:
 
 call_02_590b_EntityAction_Domino_Update:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
-    call call_00_3154_Entity_MoveYDownWithFloorBound
+    call call_00_3154_Entity_ClampYToMaxYBound
     ret  c
     ld   c,SFX_FALLING_HAZARD
     call call_00_112f_QueueSFX
@@ -1513,7 +1870,7 @@ call_02_597a_EntityAction_FlowerHammer_unk1:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped                                  ;; 02:597a $cd $af $30
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped                                  ;; 02:597d $cd $af $30
     ld   BC, $0c                                       ;; 02:5980 $01 $0c $00
-    call call_00_316e_Entity_MoveYDownWithOffsetFloorBound                                  ;; 02:5983 $cd $6e $31
+    call call_00_316e_Entity_ClampYToMaxYBound_Offset                                  ;; 02:5983 $cd $6e $31
     ld   A, $02                                        ;; 02:5986 $3e $02
     jp   NC, call_02_7102_Entity_SetAction                              ;; 02:5988 $d2 $02 $71
     ret                                                ;; 02:598b $c9
@@ -1639,7 +1996,7 @@ call_02_5a28_EntityAction_Mushroom_Update:
 
 call_02_5a73_EntityAction_MushroomProjectile_Update:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped                                  ;; 02:5a73 $cd $af $30
-    call call_00_3154_Entity_MoveYDownWithFloorBound                                  ;; 02:5a76 $cd $54 $31
+    call call_00_3154_Entity_ClampYToMaxYBound                                  ;; 02:5a76 $cd $54 $31
     jp   NC, call_00_3910_Entity_ClearSlot                              ;; 02:5a79 $d2 $10 $39
     ret                                                ;; 02:5a7c $c9
 
@@ -1661,7 +2018,7 @@ call_02_5a8c_EntityAction_HappyFace_unk0:
     jp   call_02_7102_Entity_SetAction                                  ;; 02:5a97 $c3 $02 $71
 call_02_5a9a_EntityAction_HappyFace_unk1:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped                                  ;; 02:5a9a $cd $af $30
-    call call_00_3154_Entity_MoveYDownWithFloorBound                                  ;; 02:5a9d $cd $54 $31
+    call call_00_3154_Entity_ClampYToMaxYBound                                  ;; 02:5a9d $cd $54 $31
     ret  C                                             ;; 02:5aa0 $d8
     ld   C, SFX_ENEMY_BOUNCE                                        ;; 02:5aa1 $0e $24
     call call_00_112f_QueueSFX                                  ;; 02:5aa3 $cd $2f $11
@@ -1906,7 +2263,7 @@ call_02_5c47_EntityAction_Egg_unk1:
     call call_00_32e1_Entity_NudgeXVelocityTowardC
     call call_00_36f7_Entity_MoveXByFacingMomentum_BoundsChecked
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
-    call call_00_3154_Entity_MoveYDownWithFloorBound
+    call call_00_3154_Entity_ClampYToMaxYBound
     ld   a,$02
     jp   nc,call_02_7102_Entity_SetAction
     ret  
@@ -1952,7 +2309,7 @@ call_02_5c7d_EntityAction_FallingLava_unk0:
 
 call_02_5c9c_EntityAction_FallingLava_unk1:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
-    call call_00_3154_Entity_MoveYDownWithFloorBound
+    call call_00_3154_Entity_ClampYToMaxYBound
     ld   a,$00
     jp   nc,call_02_7102_Entity_SetAction
     ret  
@@ -2052,7 +2409,7 @@ call_02_5d0c_EntityAction_FallingBoulder_unk0:
 
 call_02_5d37_EntityAction_FallingBoulder_unk1:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
-    call call_00_3154_Entity_MoveYDownWithFloorBound
+    call call_00_3154_Entity_ClampYToMaxYBound
     ret  c
     ld   c,SFX_FALLING_BOULDER
     call call_00_112f_QueueSFX
@@ -2118,7 +2475,7 @@ call_02_5d92_EntityAction_FirePlant_unk0:
 call_02_5db2_EntityAction_FirePlant_unk1:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
     ld   bc,$0008
-    call call_00_316e_Entity_MoveYDownWithOffsetFloorBound
+    call call_00_316e_Entity_ClampYToMaxYBound_Offset
     ret  c
     ld   c,SFX_MULTI_PROJECTILE
     call call_00_112f_QueueSFX
@@ -2166,7 +2523,7 @@ call_02_5e0c_EntityAction_Dinosaur_Update:
     call call_00_32e1_Entity_NudgeXVelocityTowardC
     call call_00_36f7_Entity_MoveXByFacingMomentum_BoundsChecked
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
-    call call_00_3154_Entity_MoveYDownWithFloorBound
+    call call_00_3154_Entity_ClampYToMaxYBound
     ret  c
     ld   c,$34
     call call_00_3859_Entity_CheckPlayerXProximity
@@ -2257,7 +2614,7 @@ call_02_5e92_EntityAction_HangingBlade_Update:
     bit  MISC_FLAGS_BIT_0,[hl]
     jr   nz,.jr_02_5EAF
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
-    call call_00_3154_Entity_MoveYDownWithFloorBound
+    call call_00_3154_Entity_ClampYToMaxYBound
     ret  c
     ld   c,$3C
     call call_00_3802_Entity_SetMiscTimer
@@ -2663,7 +3020,7 @@ call_02_621c_EntityAction_Ninja_unk2:
 call_02_6235_EntityAction_Ninja_Jump:
     call call_00_36f7_Entity_MoveXByFacingMomentum_BoundsChecked
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
-    call call_00_3154_Entity_MoveYDownWithFloorBound
+    call call_00_3154_Entity_ClampYToMaxYBound
     ret  c
     ld   c,$00
     call call_00_37f8_Entity_SetMiscFlags
@@ -2785,7 +3142,7 @@ call_02_62db_EntityAction_SamuraiHead_unk0:
 
 call_02_62fc_EntityAction_SamuraiHead_unk1:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
-    call call_00_3154_Entity_MoveYDownWithFloorBound
+    call call_00_3154_Entity_ClampYToMaxYBound
     ret  c
     ld   a,[wD59E_OnGBCFlag]
     and  a
@@ -2995,7 +3352,7 @@ call_02_644a_EntityAction_RezopolisSpecialMovingPlatform_Update:
     ld   a,h
     cp   a,$0A
     jr   z,.jr_02_6484
-    call call_00_34f5_Entity_CompareMiscFlags
+    call call_00_34f5_Entity_IsPlayerStandingOnSelf
     bit  0,b
     jr   nz,.jr_02_648A
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_1
@@ -3037,7 +3394,7 @@ call_02_649c_EntityAction_RezopolisMovingPlatform_Update:
 call_02_64ae_EntityAction_RedPlatform_Update:
     ld   c,$80
     call call_00_3290_Entity_SetFacingDirection
-    call call_00_34f5_Entity_CompareMiscFlags
+    call call_00_34f5_Entity_IsPlayerStandingOnSelf
     bit  1,[hl]
     jr   nz,.jr_02_64DA
     bit  0,[hl]
@@ -3152,7 +3509,7 @@ call_02_650f_EntityAction_ActivatedRedPlatform_Update:
     ret  
 
 call_02_655d_EntityAction_TailspinPlatform_Update:
-    call call_00_34f5_Entity_CompareMiscFlags
+    call call_00_34f5_Entity_IsPlayerStandingOnSelf
     bit  0,b
     jr   z,.jr_02_65A2
     ld   a,[wD201_Player_ActionId]
@@ -3411,7 +3768,7 @@ call_02_66e3_EntityAction_Capacitor_unk0:
 
 call_02_66f1_EntityAction_Capacitor_unk1:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
-    call call_00_3154_Entity_MoveYDownWithFloorBound
+    call call_00_3154_Entity_ClampYToMaxYBound
     ld   a,$00
     call nc,call_02_7102_Entity_SetAction
     ret  
@@ -3655,7 +4012,7 @@ call_02_696f_EntityAction_CircuitCentralPoweredPlatform_unk0:
     dec  l
     ld   [hl],a
 .jr_02_697B:
-    call call_00_34f5_Entity_CompareMiscFlags
+    call call_00_34f5_Entity_IsPlayerStandingOnSelf
     bit  0,b
     ret  z
     ld   a,[wD751_Player_CircuitPowerUpTimerLo]
@@ -3704,7 +4061,7 @@ call_02_69c4_EntityAction_CircuitCentralPoweredPlatform_unk2:
     jp   call_02_7102_Entity_SetAction
 
 call_02_69d7_EntityAction_CircuitCentralLoweringPlatform_Update:
-    call call_00_34f5_Entity_CompareMiscFlags
+    call call_00_34f5_Entity_IsPlayerStandingOnSelf
     bit  1,[hl]
     jr   nz,.jr_02_69FE
     bit  MISC_FLAGS_BIT_0,[hl]
@@ -3848,7 +4205,7 @@ call_02_6aac_EntityAction_ArcedGunProjectile_unk1:
 .jr_02_6AC4:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
     ld   bc,hFFF1
-    call call_00_316e_Entity_MoveYDownWithOffsetFloorBound
+    call call_00_316e_Entity_ClampYToMaxYBound_Offset
     jp   nc,call_02_6c03_GunProjectile_Sub
     jp   call_02_6bf8_GunProjectile_Sub2
 
@@ -3885,7 +4242,7 @@ call_02_6af9_EntityAction_ArcedGunProjectile2_unk1:
     ld   a,$02
     jp   nz,call_02_7102_Entity_SetAction
     ld   bc,hFFF1
-    call call_00_316e_Entity_MoveYDownWithOffsetFloorBound
+    call call_00_316e_Entity_ClampYToMaxYBound_Offset
     jp   nc,call_02_6c03_GunProjectile_Sub
     jp   call_02_6bf8_GunProjectile_Sub2
 
@@ -3911,7 +4268,7 @@ call_02_6b43_EntityAction_ArcedGunProjectile2_unk3:
 .jr_02_6B5B:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
     ld   bc,hFFF1
-    call call_00_316e_Entity_MoveYDownWithOffsetFloorBound
+    call call_00_316e_Entity_ClampYToMaxYBound_Offset
     jp   nc,call_02_6c03_GunProjectile_Sub
     jp   call_02_6bf8_GunProjectile_Sub2
 
@@ -4224,7 +4581,7 @@ call_02_6d7f_EntityAction_FinalBattleButtonProjectile_unk1:
     ret  
 
 call_02_6d80_EntityAction_FinalBattleButton_unk0:
-    call call_00_34f5_Entity_CompareMiscFlags
+    call call_00_34f5_Entity_IsPlayerStandingOnSelf
     bit  0,b
     ret  z
     ld   a,[wD616_FinalBattleButtonFlags]

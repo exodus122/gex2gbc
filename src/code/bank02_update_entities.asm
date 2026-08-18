@@ -1,151 +1,159 @@
 data_02_4000_EntityActionJumpTable:
-; Array of pointers (one per entity type) into per-entity action sub-tables. 
-; Each sub-table has 4-byte records per action: lo/hi of action function pointer, lo/hi of action data pointer. 
-; Indexed by entity ID then action index inside call_02_7102_Entity_SetAction
-    dw   data_02_4120 ; ENTITY_GEX
-    dw   data_02_4ddb ; ENTITY_COLLECTIBLE_SPAWN
-    dw   data_02_4dff ; ENTITY_UNK_02
-    dw   data_02_4ddf ; ENTITY_TV_BUTTON
-    dw   data_02_4de7 ; ENTITY_RED_REMOTE
-    dw   data_02_4def ; ENTITY_SILVER_REMOTE
-    dw   data_02_4df7 ; ENTITY_GOLD_REMOTE
-    dw   data_02_4e03 ; ENTITY_ENEMY_DEFEATED
-    dw   data_02_4e07 ; ENTITY_UNK_08
-    dw   data_02_4e0b ; ENTITY_SCREAM_TV_FALLING_PLATFORM
-    dw   data_02_4e0f ; ENTITY_SCREAM_TV_MOVING_PLATFORM
-    dw   data_02_4e13 ; ENTITY_SCREAM_TV_PUSH_BLOCK
-    dw   data_02_4e17 ; ENTITY_SCREAM_TV_PUMPKIN
-    dw   data_02_4e1f ; ENTITY_SCREAM_TV_FRANKIE
-    dw   data_02_4e23 ; ENTITY_SCREAM_TV_HEAD_GHOST
-    dw   data_02_4e2b ; ENTITY_SCREAM_TV_HEAD_GHOST_HEAD
-    dw   data_02_4e2f ; ENTITY_SCREAM_TV_FLOATING_SKULL
-    dw   data_02_4e3b ; ENTITY_SCREAM_TV_FLOATING_SKULL_PROJECTILE
-    dw   data_02_4e43 ; ENTITY_SCREAM_TV_ZOMBIE
-    dw   data_02_4e4f ; ENTITY_SCREAM_TV_ZOMBIE_HEAD
-    dw   data_02_4e5b ; ENTITY_SCREAM_TV_FALLING_AXE
-    dw   data_02_4e6b ; ENTITY_SCREAM_TV_LANTERN
-    dw   data_02_4e73 ; ENTITY_SCREAM_TV_BAT
-    dw   data_02_4e77 ; ENTITY_SCREAM_TV_ORANGE_MOVING_PLATFORM
-    dw   data_02_4e7b ; ENTITY_SCREAM_TV_DOOR_OPENING
-    dw   data_02_4e83 ; ENTITY_SCREAM_TV_GHOST
-    dw   data_02_4e93 ; ENTITY_SCREAM_TV_CLIMB_WALL_SUN_ENEMY
-    dw   data_02_4e97 ; ENTITY_SCREAM_TV_VANISHING_PLATFORM
-    dw   data_02_4ea3 ; ENTITY_SCREAM_TV_MONA_LISA_ELEVATOR
-    dw   data_02_4ea7 ; ENTITY_TOON_TV_HARD_HEAD_AREA_HAZARD
-    dw   data_02_4eb3 ; ENTITY_TOON_TV_STATIONARY_BEAR_TRAP
-    dw   data_02_4ebb ; ENTITY_TOON_TV_MOVING_BEAR_TRAP
-    dw   data_02_4ec3 ; ENTITY_TOON_TV_BUMBLEBEE
-    dw   data_02_4ecb ; ENTITY_TOON_TV_BOWLING_BALL
-    dw   data_02_4ecf ; ENTITY_TOON_TV_CACTUS
-    dw   data_02_4edb ; ENTITY_TOON_TV_DOMINO
-    dw   data_02_4edf ; ENTITY_TOON_TV_SHARK
-    dw   data_02_4ee3 ; ENTITY_TOON_TV_FLOWER
-    dw   data_02_4eef ; ENTITY_TOON_TV_HUNTER
-    dw   data_02_4f07 ; ENTITY_TOON_TV_MUSHROOM
-    dw   data_02_4f0b ; ENTITY_TOON_TV_MUSHROOM_PROJECTILE
-    dw   data_02_4f0f ; ENTITY_TOON_TV_LIZARD
-    dw   data_02_4f13 ; ENTITY_TOON_TV_HAPPY_FACE
-    dw   data_02_4f1b ; ENTITY_TOON_TV_VANISHING_BLOCK
-    dw   data_02_4f27 ; ENTITY_TOON_TV_MOVING_BLOCK
-    dw   data_02_4f2f ; ENTITY_TOON_TV_MOVING_LOG
-    dw   data_02_4f33 ; ENTITY_TOON_TV_STATIONARY_LOG
-    dw   data_02_4f37 ; ENTITY_TOON_TV_FLOWER_HAMMER
-    dw   data_02_4f43 ; ENTITY_TOON_TV_HUNTER_BULLET
-    dw   data_02_4f4b ; ENTITY_TOON_TV_ROCKET
-    dw   data_02_4f57 ; ENTITY_PRE_HISTORY_FAST_DINOSAUR
-    dw   data_02_4f5b ; ENTITY_PRE_HISTORY_DRAGONFLY
-    dw   data_02_4f5f ; ENTITY_PRE_HISTORY_EGG
-    dw   data_02_4f6b ; ENTITY_UNK_35
-    dw   data_02_4f73 ; ENTITY_UNK_36
-    dw   data_02_4f77 ; ENTITY_PRE_HISTORY_FALLING_LAVA
-    dw   data_02_4f7f ; ENTITY_PRE_HISTORY_LAVA_RAFT
-    dw   data_02_4f87 ; ENTITY_PRE_HISTORY_MOVING_PLATFORM
-    dw   data_02_4f8b ; ENTITY_UNK_3A
-    dw   data_02_4f8f ; ENTITY_UNK_3B
-    dw   data_02_4f93 ; ENTITY_PRE_HISTORY_PTEROSAUR
-    dw   data_02_4f97 ; ENTITY_UNK_3D
-    dw   data_02_4f9b ; ENTITY_PRE_HISTORY_FALLING_BOULDER
-    dw   data_02_4fab ; ENTITY_UNK_3F
-    dw   data_02_4faf ; ENTITY_PRE_HISTORY_BEETLE_HORIZONTAL
-    dw   data_02_4fb3 ; ENTITY_PRE_HISTORY_BEETLE_VERTICAL
-    dw   data_02_4fb7 ; ENTITY_PRE_HISTORY_ANT
-    dw   data_02_4fbb ; ENTITY_PRE_HISTORY_FIRE_PLANT
-    dw   data_02_4fc7 ; ENTITY_PRE_HISTORY_FIRE_PLANT_PROJECTILES
-    dw   data_02_4fcf ; ENTITY_PRE_HISTORY_GEYSER
-    dw   data_02_4fd7 ; ENTITY_UNK_46
-    dw   data_02_4fdb ; ENTITY_PRE_HISTORY_DINOSAUR
-    dw   data_02_4fdf ; ENTITY_PRE_HISTORY_TRICERATOPS
-    dw   data_02_4fe3 ; ENTITY_PRE_HISTORY_TRICERATOPS_HORN
-    dw   data_02_4fe7 ; ENTITY_UNK_4A
-    dw   data_02_4feb ; ENTITY_KUNG_FU_THEATER_HANGING_BLADE
-    dw   data_02_4fef ; ENTITY_KUNG_FU_THEATER_CANNON
-    dw   data_02_4ff3 ; ENTITY_KUNG_FU_THEATER_CANNON_PROJECTILE
-    dw   data_02_4ffb ; ENTITY_KUNG_FU_THEATER_DRAGONFLY
-    dw   data_02_4fff ; ENTITY_KUNG_FU_THEATER_DRAGON_BODY_SEGMENT
-    dw   data_02_5003 ; ENTITY_KUNG_FU_THEATER_DRAGON_HEAD
-    dw   data_02_5007 ; ENTITY_UNK_51
-    dw   data_02_500b ; ENTITY_KUNG_FU_THEATER_DRAGON_PROJECTILE
-    dw   data_02_5013 ; ENTITY_KUNG_FU_THEATER_WALKING_NINJA
-    dw   data_02_501f ; ENTITY_KUNG_FU_THEATER_JUMPING_NINJA
-    dw   data_02_502f ; ENTITY_KUNG_FU_THEATER_SAMURAI_BODY
-    dw   data_02_5037 ; ENTITY_KUNG_FU_THEATER_SAMURAI_HEAD
-    dw   data_02_5043 ; ENTITY_KUNG_FU_THEATER_LIZARD
-    dw   data_02_5047 ; ENTITY_KUNG_FU_THEATER_NINJA_PROJECTILE
-    dw   data_02_504f ; ENTITY_KUNG_FU_THEATER_SPIKY_LOG
-    dw   data_02_5053 ; ENTITY_KUNG_FU_THEATER_TALL_JAR
-    dw   data_02_505b ; ENTITY_KUNG_FU_THEATER_JAR
-    dw   data_02_5063 ; ENTITY_UNK_5C
-    dw   data_02_5067 ; ENTITY_UNK_5D
-    dw   data_02_506b ; ENTITY_KUNG_FU_THEATER_VANISHING_PLATFORM
-    dw   data_02_5077 ; ENTITY_KUNG_FU_THEATER_MOVING_PLATFORM
-    dw   data_02_507b ; ENTITY_UNK_60
-    dw   data_02_507f ; ENTITY_KUNG_FU_THEATER_MOVING_RAFT
-    dw   data_02_5083 ; ENTITY_KUNG_FU_THEATER_STATIONARY_RAFT
-    dw   data_02_5087 ; ENTITY_UNK_63
-    dw   data_02_508b ; ENTITY_UNK_64
-    dw   data_02_508f ; ENTITY_REZOPOLIS_SPECIAL_MOVING_PLATFORM
-    dw   data_02_5093 ; ENTITY_REZOPOLIS_MOVING_PLATFORM
-    dw   data_02_5097 ; ENTITY_REZOPOLIS_RED_PLATFORM
-    dw   data_02_509b ; ENTITY_REZOPOLIS_ACTIVATED_RED_PLATFORM
-    dw   data_02_509f ; ENTITY_REZOPOLIS_TAILSPIN_PLATFORM
-    dw   data_02_50a3 ; ENTITY_REZOPOLIS_TAILSPIN_GEAR
-    dw   data_02_50b7 ; ENTITY_UNK_6B
-    dw   data_02_50bb ; ENTITY_UNK_6C
-    dw   data_02_50bf ; ENTITY_UNK_6D
-    dw   data_02_50c3 ; ENTITY_REZOPOLIS_GREEN_MONSTER
-    dw   data_02_50cf ; ENTITY_UNK_6F
-    dw   data_02_50d3 ; ENTITY_UNK_70
-    dw   data_02_50d7 ; ENTITY_REZOPOLIS_PINCER
-    dw   data_02_50db ; ENTITY_REZOPOLIS_FLAMETHROWER
-    dw   data_02_50e3 ; ENTITY_REZOPOLIS_UFO
-    dw   data_02_50eb ; ENTITY_REZOPOLIS_ANT
-    dw   data_02_50ef ; ENTITY_REZOPOLIS_ANT_SPAWNER
-    dw   data_02_50f3 ; ENTITY_CIRCUIT_CENTRAL_ANT
-    dw   data_02_50f7 ; ENTITY_CIRCUIT_CENTRAL_CAPACITOR
-    dw   data_02_50ff ; ENTITY_CIRCUIT_CENTRAL_POWER_UP
-    dw   data_02_5107 ; ENTITY_UNK_79
-    dw   data_02_510b ; ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT
-    dw   data_02_5113 ; ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT_GEAR
-    dw   data_02_5117 ; ENTITY_CIRCUIT_CENTRAL_ELECTRIC_BALL
-    dw   data_02_511f ; ENTITY_CIRCUIT_CENTRAL_MOVING_PLATFORM
-    dw   data_02_5123 ; ENTITY_CIRCUIT_CENTRAL_POWERED_PLAFORM
-    dw   data_02_512f ; ENTITY_CIRCUIT_CENTRAL_LOWERING_PLATFORM
-    dw   data_02_5133 ; ENTITY_CIRCUIT_CENTRAL_WALKER_ROBOT
-    dw   data_02_5137 ; ENTITY_CIRCUIT_CENTRAL_POWERED_WALKWAY
-    dw   data_02_513b ; ENTITY_CIRCUIT_CENTRAL_WALKWAY_ACTIVATOR
-    dw   data_02_513f ; ENTITY_CHANNEL_Z_ARCED_GUN_PROJECTILE
-    dw   data_02_5147 ; ENTITY_CHANNEL_Z_ARCED_GUN_PROJECTILE2
-    dw   data_02_5157 ; ENTITY_CHANNEL_Z_GUN_PROJECTILE
-    dw   data_02_515f ; ENTITY_CHANNEL_Z_REZ
-    dw   data_02_518b ; ENTITY_CHANNEL_Z_UNUSED_PLATFORM_1
-    dw   data_02_518f ; ENTITY_CHANNEL_Z_UNUSED_PLATFORM_2
-    dw   data_02_5193 ; ENTITY_CHANNEL_Z_REZ_FOLLOWING_FIRE
-    dw   data_02_5197 ; ENTITY_CHANNEL_Z_GUN_PROJECTILE_EXPLOSION
-    dw   data_02_519b ; ENTITY_FINAL_BATTLE_BUTTON_PROJECTILE
-    dw   data_02_51a3 ; ENTITY_CHANNEL_Z_FINAL_BATTLE_BUTTON
-    dw   data_02_51ab ; ENTITY_CHANNEL_Z_REZ_PORTAL
-    dw   data_02_51af ; ENTITY_UNK_8E
-    dw   data_02_51b3 ; ENTITY_MEDIA_DIMENSION_MOVING_PLATFORM
+; One word per entity type, indexed by ENTITY_FIELD_ENTITY_ID, pointing at that
+; type's action table. The tables themselves are at the top of
+; bank02_entity_actions.asm, where the format is documented; each of their rows
+; is 4 bytes (action function, action data block) and the row number is the
+; action id.
+;
+; call_02_7102_Entity_SetAction is the only reader, and it does both lookups in
+; one go: entity id x 2 into this table, then action id x 4 into the result.
+;
+; The comment on each line is the entity id, which is also this line's index -
+; ENTITY_* ids are positions in this table, not values stored anywhere else
+    dw   data_02_4120                                               ; $00 ENTITY_GEX
+    dw   data_02_4ddb_EntityActions_CollectibleSpawn                ; $01 ENTITY_COLLECTIBLE_SPAWN
+    dw   data_02_4dff_EntityActions_Unk02                           ; $02 ENTITY_UNK_02
+    dw   data_02_4ddf_EntityActions_TVButton                        ; $03 ENTITY_TV_BUTTON
+    dw   data_02_4de7_EntityActions_RedRemote                       ; $04 ENTITY_RED_REMOTE
+    dw   data_02_4def_EntityActions_SilverRemote                    ; $05 ENTITY_SILVER_REMOTE
+    dw   data_02_4df7_EntityActions_GoldRemote                      ; $06 ENTITY_GOLD_REMOTE
+    dw   data_02_4e03_EntityActions_ParticleBurst                   ; $07 ENTITY_ENEMY_DEFEATED
+    dw   data_02_4e07_EntityActions_Unk08                           ; $08 ENTITY_UNK_08
+    dw   data_02_4e0b_EntityActions_ScreamTVFallingPlatform         ; $09 ENTITY_SCREAM_TV_FALLING_PLATFORM
+    dw   data_02_4e0f_EntityActions_ScreamTVMovingPlatform          ; $0A ENTITY_SCREAM_TV_MOVING_PLATFORM
+    dw   data_02_4e13_EntityActions_ScreamTVPushBlock               ; $0B ENTITY_SCREAM_TV_PUSH_BLOCK
+    dw   data_02_4e17_EntityActions_ScreamTVPumpkin                 ; $0C ENTITY_SCREAM_TV_PUMPKIN
+    dw   data_02_4e1f_EntityActions_ScreamTVFrankie                 ; $0D ENTITY_SCREAM_TV_FRANKIE
+    dw   data_02_4e23_EntityActions_ScreamTVHeadGhost               ; $0E ENTITY_SCREAM_TV_HEAD_GHOST
+    dw   data_02_4e2b_EntityActions_ScreamTVHeadGhostHead           ; $0F ENTITY_SCREAM_TV_HEAD_GHOST_HEAD
+    dw   data_02_4e2f_EntityActions_ScreamTVFloatingSkull           ; $10 ENTITY_SCREAM_TV_FLOATING_SKULL
+    dw   data_02_4e3b_EntityActions_ScreamTVFloatingSkullProjectile ; $11 ENTITY_SCREAM_TV_FLOATING_SKULL_PROJECTILE
+    dw   data_02_4e43_EntityActions_ScreamTVZombie                  ; $12 ENTITY_SCREAM_TV_ZOMBIE
+    dw   data_02_4e4f_EntityActions_ScreamTVZombieHead              ; $13 ENTITY_SCREAM_TV_ZOMBIE_HEAD
+    dw   data_02_4e5b_EntityActions_ScreamTVFallingAxe              ; $14 ENTITY_SCREAM_TV_FALLING_AXE
+    dw   data_02_4e6b_EntityActions_ScreamTVLantern                 ; $15 ENTITY_SCREAM_TV_LANTERN
+    dw   data_02_4e73_EntityActions_ScreamTVBat                     ; $16 ENTITY_SCREAM_TV_BAT
+    dw   data_02_4e77_EntityActions_ScreamTVOrangeMovingPlatform    ; $17 ENTITY_SCREAM_TV_ORANGE_MOVING_PLATFORM
+    dw   data_02_4e7b_EntityActions_ScreamTVDoorOpening             ; $18 ENTITY_SCREAM_TV_DOOR_OPENING
+    dw   data_02_4e83_EntityActions_ScreamTVGhost                   ; $19 ENTITY_SCREAM_TV_GHOST
+    dw   data_02_4e93_EntityActions_ScreamTVClimbWallSunEnemy       ; $1A ENTITY_SCREAM_TV_CLIMB_WALL_SUN_ENEMY
+    dw   data_02_4e97_EntityActions_ScreamTVVanishingPlatform       ; $1B ENTITY_SCREAM_TV_VANISHING_PLATFORM
+    dw   data_02_4ea3_EntityActions_ScreamTVMonaLisaElevator        ; $1C ENTITY_SCREAM_TV_MONA_LISA_ELEVATOR
+    dw   data_02_4ea7_EntityActions_ToonTVHardHeadAreaHazard        ; $1D ENTITY_TOON_TV_HARD_HEAD_AREA_HAZARD
+    dw   data_02_4eb3_EntityActions_ToonTVStationaryBearTrap        ; $1E ENTITY_TOON_TV_STATIONARY_BEAR_TRAP
+    dw   data_02_4ebb_EntityActions_ToonTVMovingBearTrap            ; $1F ENTITY_TOON_TV_MOVING_BEAR_TRAP
+    dw   data_02_4ec3_EntityActions_ToonTVBumblebee                 ; $20 ENTITY_TOON_TV_BUMBLEBEE
+    dw   data_02_4ecb_EntityActions_ToonTVBowlingBall               ; $21 ENTITY_TOON_TV_BOWLING_BALL
+    dw   data_02_4ecf_EntityActions_ToonTVCactus                    ; $22 ENTITY_TOON_TV_CACTUS
+    dw   data_02_4edb_EntityActions_ToonTVDomino                    ; $23 ENTITY_TOON_TV_DOMINO
+    dw   data_02_4edf_EntityActions_ToonTVShark                     ; $24 ENTITY_TOON_TV_SHARK
+    dw   data_02_4ee3_EntityActions_ToonTVFlower                    ; $25 ENTITY_TOON_TV_FLOWER
+    dw   data_02_4eef_EntityActions_ToonTVHunter                    ; $26 ENTITY_TOON_TV_HUNTER
+    dw   data_02_4f07_EntityActions_ToonTVMushroom                  ; $27 ENTITY_TOON_TV_MUSHROOM
+    dw   data_02_4f0b_EntityActions_ToonTVMushroomProjectile        ; $28 ENTITY_TOON_TV_MUSHROOM_PROJECTILE
+    dw   data_02_4f0f_EntityActions_ToonTVLizard                    ; $29 ENTITY_TOON_TV_LIZARD
+    dw   data_02_4f13_EntityActions_ToonTVHappyFace                 ; $2A ENTITY_TOON_TV_HAPPY_FACE
+    dw   data_02_4f1b_EntityActions_ToonTVVanishingBlock            ; $2B ENTITY_TOON_TV_VANISHING_BLOCK
+    dw   data_02_4f27_EntityActions_ToonTVMovingBlock               ; $2C ENTITY_TOON_TV_MOVING_BLOCK
+    dw   data_02_4f2f_EntityActions_ToonTVMovingLog                 ; $2D ENTITY_TOON_TV_MOVING_LOG
+    dw   data_02_4f33_EntityActions_ToonTVStationaryLog             ; $2E ENTITY_TOON_TV_STATIONARY_LOG
+    dw   data_02_4f37_EntityActions_ToonTVFlowerHammer              ; $2F ENTITY_TOON_TV_FLOWER_HAMMER
+    dw   data_02_4f43_EntityActions_ToonTVHunterBullet              ; $30 ENTITY_TOON_TV_HUNTER_BULLET
+    dw   data_02_4f4b_EntityActions_ToonTVRocket                    ; $31 ENTITY_TOON_TV_ROCKET
+    dw   data_02_4f57_EntityActions_PreHistoryFastDinosaur          ; $32 ENTITY_PRE_HISTORY_FAST_DINOSAUR
+    dw   data_02_4f5b_EntityActions_PreHistoryDragonfly             ; $33 ENTITY_PRE_HISTORY_DRAGONFLY
+    dw   data_02_4f5f_EntityActions_PreHistoryEgg                   ; $34 ENTITY_PRE_HISTORY_EGG
+    dw   data_02_4f6b_EntityActions_Unk35                           ; $35 ENTITY_UNK_35
+    dw   data_02_4f73_EntityActions_Unk36                           ; $36 ENTITY_UNK_36
+    dw   data_02_4f77_EntityActions_PreHistoryFallingLava           ; $37 ENTITY_PRE_HISTORY_FALLING_LAVA
+    dw   data_02_4f7f_EntityActions_PreHistoryLavaRaft              ; $38 ENTITY_PRE_HISTORY_LAVA_RAFT
+    dw   data_02_4f87_EntityActions_PreHistoryMovingPlatform        ; $39 ENTITY_PRE_HISTORY_MOVING_PLATFORM
+    dw   data_02_4f8b_EntityActions_Unk3A                           ; $3A ENTITY_UNK_3A
+    dw   data_02_4f8f_EntityActions_Unk3B                           ; $3B ENTITY_UNK_3B
+    dw   data_02_4f93_EntityActions_PreHistoryPterosaur             ; $3C ENTITY_PRE_HISTORY_PTEROSAUR
+    dw   data_02_4f97_EntityActions_Unk3D                           ; $3D ENTITY_UNK_3D
+    dw   data_02_4f9b_EntityActions_PreHistoryFallingBoulder        ; $3E ENTITY_PRE_HISTORY_FALLING_BOULDER
+    dw   data_02_4fab_EntityActions_Unk3F                           ; $3F ENTITY_UNK_3F
+    dw   data_02_4faf_EntityActions_PreHistoryBeetleHorizontal      ; $40 ENTITY_PRE_HISTORY_BEETLE_HORIZONTAL
+    dw   data_02_4fb3_EntityActions_PreHistoryBeetleVertical        ; $41 ENTITY_PRE_HISTORY_BEETLE_VERTICAL
+    dw   data_02_4fb7_EntityActions_PreHistoryAnt                   ; $42 ENTITY_PRE_HISTORY_ANT
+    dw   data_02_4fbb_EntityActions_PreHistoryFirePlant             ; $43 ENTITY_PRE_HISTORY_FIRE_PLANT
+    dw   data_02_4fc7_EntityActions_PreHistoryFirePlantProjectiles  ; $44 ENTITY_PRE_HISTORY_FIRE_PLANT_PROJECTILES
+    dw   data_02_4fcf_EntityActions_PreHistoryGeyser                ; $45 ENTITY_PRE_HISTORY_GEYSER
+    dw   data_02_4fd7_EntityActions_Unk46                           ; $46 ENTITY_UNK_46
+    dw   data_02_4fdb_EntityActions_PreHistoryDinosaur              ; $47 ENTITY_PRE_HISTORY_DINOSAUR
+    dw   data_02_4fdf_EntityActions_PreHistoryTriceratops           ; $48 ENTITY_PRE_HISTORY_TRICERATOPS
+    dw   data_02_4fe3_EntityActions_PreHistoryTriceratopsHorn       ; $49 ENTITY_PRE_HISTORY_TRICERATOPS_HORN
+    dw   data_02_4fe7_EntityActions_Unk4A                           ; $4A ENTITY_UNK_4A
+    dw   data_02_4feb_EntityActions_KungFuTheaterHangingBlade       ; $4B ENTITY_KUNG_FU_THEATER_HANGING_BLADE
+    dw   data_02_4fef_EntityActions_KungFuTheaterCannon             ; $4C ENTITY_KUNG_FU_THEATER_CANNON
+    dw   data_02_4ff3_EntityActions_KungFuTheaterCannonProjectile   ; $4D ENTITY_KUNG_FU_THEATER_CANNON_PROJECTILE
+    dw   data_02_4ffb_EntityActions_KungFuTheaterDragonfly          ; $4E ENTITY_KUNG_FU_THEATER_DRAGONFLY
+    dw   data_02_4fff_EntityActions_KungFuTheaterDragonBodySegment  ; $4F ENTITY_KUNG_FU_THEATER_DRAGON_BODY_SEGMENT
+    dw   data_02_5003_EntityActions_KungFuTheaterDragonHead         ; $50 ENTITY_KUNG_FU_THEATER_DRAGON_HEAD
+    dw   data_02_5007_EntityActions_Unk51                           ; $51 ENTITY_UNK_51
+    dw   data_02_500b_EntityActions_KungFuTheaterDragonProjectile   ; $52 ENTITY_KUNG_FU_THEATER_DRAGON_PROJECTILE
+    dw   data_02_5013_EntityActions_KungFuTheaterWalkingNinja       ; $53 ENTITY_KUNG_FU_THEATER_WALKING_NINJA
+    dw   data_02_501f_EntityActions_KungFuTheaterJumpingNinja       ; $54 ENTITY_KUNG_FU_THEATER_JUMPING_NINJA
+    dw   data_02_502f_EntityActions_KungFuTheaterSamuraiBody        ; $55 ENTITY_KUNG_FU_THEATER_SAMURAI_BODY
+    dw   data_02_5037_EntityActions_KungFuTheaterSamuraiHead        ; $56 ENTITY_KUNG_FU_THEATER_SAMURAI_HEAD
+    dw   data_02_5043_EntityActions_KungFuTheaterLizard             ; $57 ENTITY_KUNG_FU_THEATER_LIZARD
+    dw   data_02_5047_EntityActions_KungFuTheaterNinjaProjectile    ; $58 ENTITY_KUNG_FU_THEATER_NINJA_PROJECTILE
+    dw   data_02_504f_EntityActions_KungFuTheaterSpikyLog           ; $59 ENTITY_KUNG_FU_THEATER_SPIKY_LOG
+    dw   data_02_5053_EntityActions_KungFuTheaterTallJar            ; $5A ENTITY_KUNG_FU_THEATER_TALL_JAR
+    dw   data_02_505b_EntityActions_KungFuTheaterJar                ; $5B ENTITY_KUNG_FU_THEATER_JAR
+    dw   data_02_5063_EntityActions_Unk5C                           ; $5C ENTITY_UNK_5C
+    dw   data_02_5067_EntityActions_Unk5D                           ; $5D ENTITY_UNK_5D
+    dw   data_02_506b_EntityActions_KungFuTheaterVanishingPlatform  ; $5E ENTITY_KUNG_FU_THEATER_VANISHING_PLATFORM
+    dw   data_02_5077_EntityActions_KungFuTheaterMovingPlatform     ; $5F ENTITY_KUNG_FU_THEATER_MOVING_PLATFORM
+    dw   data_02_507b_EntityActions_Unk60                           ; $60 ENTITY_UNK_60
+    dw   data_02_507f_EntityActions_KungFuTheaterMovingRaft         ; $61 ENTITY_KUNG_FU_THEATER_MOVING_RAFT
+    dw   data_02_5083_EntityActions_KungFuTheaterStationaryRaft     ; $62 ENTITY_KUNG_FU_THEATER_STATIONARY_RAFT
+    dw   data_02_5087_EntityActions_Unk63                           ; $63 ENTITY_UNK_63
+    dw   data_02_508b_EntityActions_Unk64                           ; $64 ENTITY_UNK_64
+    dw   data_02_508f_EntityActions_RezopolisSpecialMovingPlatform  ; $65 ENTITY_REZOPOLIS_SPECIAL_MOVING_PLATFORM
+    dw   data_02_5093_EntityActions_RezopolisMovingPlatform         ; $66 ENTITY_REZOPOLIS_MOVING_PLATFORM
+    dw   data_02_5097_EntityActions_RezopolisRedPlatform            ; $67 ENTITY_REZOPOLIS_RED_PLATFORM
+    dw   data_02_509b_EntityActions_RezopolisActivatedRedPlatform   ; $68 ENTITY_REZOPOLIS_ACTIVATED_RED_PLATFORM
+    dw   data_02_509f_EntityActions_RezopolisTailspinPlatform       ; $69 ENTITY_REZOPOLIS_TAILSPIN_PLATFORM
+    dw   data_02_50a3_EntityActions_RezopolisTailspinGear           ; $6A ENTITY_REZOPOLIS_TAILSPIN_GEAR
+    dw   data_02_50b7_EntityActions_Unk6B                           ; $6B ENTITY_UNK_6B
+    dw   data_02_50bb_EntityActions_Unk6C                           ; $6C ENTITY_UNK_6C
+    dw   data_02_50bf_EntityActions_Unk6D                           ; $6D ENTITY_UNK_6D
+    dw   data_02_50c3_EntityActions_RezopolisGreenMonster           ; $6E ENTITY_REZOPOLIS_GREEN_MONSTER
+    dw   data_02_50cf_EntityActions_Unk6F                           ; $6F ENTITY_UNK_6F
+    dw   data_02_50d3_EntityActions_Unk70                           ; $70 ENTITY_UNK_70
+    dw   data_02_50d7_EntityActions_RezopolisPincer                 ; $71 ENTITY_REZOPOLIS_PINCER
+    dw   data_02_50db_EntityActions_RezopolisFlamethrower           ; $72 ENTITY_REZOPOLIS_FLAMETHROWER
+    dw   data_02_50e3_EntityActions_RezopolisUfo                    ; $73 ENTITY_REZOPOLIS_UFO
+    dw   data_02_50eb_EntityActions_RezopolisAnt                    ; $74 ENTITY_REZOPOLIS_ANT
+    dw   data_02_50ef_EntityActions_RezopolisAntSpawner             ; $75 ENTITY_REZOPOLIS_ANT_SPAWNER
+    dw   data_02_50f3_EntityActions_CircuitCentralAnt               ; $76 ENTITY_CIRCUIT_CENTRAL_ANT
+    dw   data_02_50f7_EntityActions_CircuitCentralCapacitor         ; $77 ENTITY_CIRCUIT_CENTRAL_CAPACITOR
+    dw   data_02_50ff_EntityActions_CircuitCentralPowerUp           ; $78 ENTITY_CIRCUIT_CENTRAL_POWER_UP
+    dw   data_02_5107_EntityActions_Unk79                           ; $79 ENTITY_UNK_79
+    dw   data_02_510b_EntityActions_CircuitCentralLittleRobot       ; $7A ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT
+    dw   data_02_5113_EntityActions_CircuitCentralLittleRobotGear   ; $7B ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT_GEAR
+    dw   data_02_5117_EntityActions_CircuitCentralElectricBall      ; $7C ENTITY_CIRCUIT_CENTRAL_ELECTRIC_BALL
+    dw   data_02_511f_EntityActions_CircuitCentralMovingPlatform    ; $7D ENTITY_CIRCUIT_CENTRAL_MOVING_PLATFORM
+    dw   data_02_5123_EntityActions_CircuitCentralPoweredPlatform   ; $7E ENTITY_CIRCUIT_CENTRAL_POWERED_PLAFORM
+    dw   data_02_512f_EntityActions_CircuitCentralLoweringPlatform  ; $7F ENTITY_CIRCUIT_CENTRAL_LOWERING_PLATFORM
+    dw   data_02_5133_EntityActions_CircuitCentralWalkerRobot       ; $80 ENTITY_CIRCUIT_CENTRAL_WALKER_ROBOT
+    dw   data_02_5137_EntityActions_CircuitCentralPoweredWalkway    ; $81 ENTITY_CIRCUIT_CENTRAL_POWERED_WALKWAY
+    dw   data_02_513b_EntityActions_CircuitCentralWalkwayActivator  ; $82 ENTITY_CIRCUIT_CENTRAL_WALKWAY_ACTIVATOR
+    dw   data_02_513f_EntityActions_ChannelZArcedGunProjectile      ; $83 ENTITY_CHANNEL_Z_ARCED_GUN_PROJECTILE
+    dw   data_02_5147_EntityActions_ChannelZArcedGunProjectile2     ; $84 ENTITY_CHANNEL_Z_ARCED_GUN_PROJECTILE2
+    dw   data_02_5157_EntityActions_ChannelZGunProjectile           ; $85 ENTITY_CHANNEL_Z_GUN_PROJECTILE
+    dw   data_02_515f_EntityActions_ChannelZRez                     ; $86 ENTITY_CHANNEL_Z_REZ
+    dw   data_02_518b_EntityActions_ChannelZUnusedPlatform1         ; $87 ENTITY_CHANNEL_Z_UNUSED_PLATFORM_1
+    dw   data_02_518f_EntityActions_ChannelZUnusedPlatform2         ; $88 ENTITY_CHANNEL_Z_UNUSED_PLATFORM_2
+    dw   data_02_5193_EntityActions_ChannelZRezFollowingFire        ; $89 ENTITY_CHANNEL_Z_REZ_FOLLOWING_FIRE
+    dw   data_02_5197_EntityActions_ChannelZGunProjectileExplosion  ; $8A ENTITY_CHANNEL_Z_GUN_PROJECTILE_EXPLOSION
+    dw   data_02_519b_EntityActions_FinalBattleButtonProjectile     ; $8B ENTITY_FINAL_BATTLE_BUTTON_PROJECTILE
+    dw   data_02_51a3_EntityActions_ChannelZFinalBattleButton       ; $8C ENTITY_CHANNEL_Z_FINAL_BATTLE_BUTTON
+    dw   data_02_51ab_EntityActions_ChannelZRezPortal               ; $8D ENTITY_CHANNEL_Z_REZ_PORTAL
+    dw   data_02_51af_EntityActions_Unk8E                           ; $8E ENTITY_UNK_8E
+    dw   data_02_51b3_EntityActions_MediaDimensionMovingPlatform    ; $8F ENTITY_MEDIA_DIMENSION_MOVING_PLATFORM
 
 INCLUDE "code/bank02_player_actions.asm"
 

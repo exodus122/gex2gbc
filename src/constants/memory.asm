@@ -1303,6 +1303,21 @@ wD756_FlyPowerup2_TimerHi:
     ds 1                                               ;; d756
 
 wD757_LanternLitFlag:
+; Scream TV only, and rewritten from scratch every frame rather than latched.
+; .jr_03_4d8c_CollisionHandler_Lantern raises it to $01 as the first thing it does
+; and drops it back to $00 if Gex is overlapping the lantern, so it reads as
+; "a lantern is loaded this frame and Gex is not at it".
+;
+; Nothing clears it when the lantern leaves the room, so it keeps whatever the
+; last lantern to run left behind - which is why the ghost sits harmlessly in
+; call_02_55f1_EntityAction_Ghost_Dormant in rooms with no lantern at all.
+;
+; Three things read it, and they agree on the sense:
+;   the lantern's own actions   pick which sprite to draw
+;   the ghost's actions         chase while set, hold still while clear
+;   the ghost collision handler let an attack land only while it is clear
+;
+; So the flag is what makes the ghost invulnerable until Gex reaches the lantern
     ds 1                                               ;; d757
 
 wD758_JumpVelocityOverride:

@@ -134,10 +134,20 @@ call_00_3137_Entity_ClampYToStoredFloor:
     ld   [hl],a
     ret  
 
-call_00_3154_Entity_MoveYDownWithFloorBound:
-; Calls Entity_GetMaxYBound - the floor - compares entity Y against it, and if the
-; entity has fallen past it, snaps Y to the bound and zeroes Y velocity.
+call_00_3154_Entity_ClampYToMaxYBound:
+; Enforces the floor from the bounding-box tables. Calls Entity_GetMaxYBound, and
+; if the entity has reached or passed it, snaps YPOS to the bound and zeroes YVEL.
 ;
+; It does NOT move the entity down - the caller has already done that, normally
+; with call_00_30af_Entity_ApplyGravityAndMoveY_Clamped on the line before. This
+; is purely the landing check, which is why the carry flag on return is the
+; interesting part:
+;
+;   carry SET    still above the floor - the entity is airborne this frame
+;   carry CLEAR  it has just been snapped to the floor - the entity has landed
+;
+; Every hopping enemy in bank 2 is built out of "apply gravity, then `ret c` on
+; this" (see call_02_5399_EntityAction_Pumpkin_Hop)
     call call_00_34ba_Entity_GetMaxYBound                                  ;; 00:3154 $cd $ba $34
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_Y
     ld   A, [HL+]                                      ;; 00:315f $2a
@@ -155,8 +165,10 @@ call_00_3154_Entity_MoveYDownWithFloorBound:
     ld   [HL], A                                       ;; 00:316c $77
     ret                                                ;; 00:316d $c9
 
-call_00_316e_Entity_MoveYDownWithOffsetFloorBound:
-; Same as above but adds a BC offset to the bound before comparing, allowing a relative floor threshold
+call_00_316e_Entity_ClampYToMaxYBound_Offset:
+; Same as above, including the carry-means-airborne convention, but adds the signed
+; BC offset to the bound first - a floor a fixed distance above or below the one the
+; bounding box declares
     push BC                                            ;; 00:316e $c5
     call call_00_34ba_Entity_GetMaxYBound                                  ;; 00:316f $cd $ba $34
     pop  HL                                            ;; 00:3172 $e1
@@ -831,9 +843,22 @@ call_00_34ea_Entity_IsFirstFrameOfAction:
     bit  ACTION_STATE_IS_FIRST_FRAME_BIT, [HL]                                       ;; 00:34f2 $cb $6e
     ret                                                ;; 00:34f4 $c9
 
-call_00_34f5_Entity_CompareMiscFlags:
-; Checks wD74D_Player_EntityStoodOnLo (current player interacted entity) against high bits of entity address; 
-; sets B=1 if player is interacting with the current entity
+call_00_34f5_Entity_IsPlayerStandingOnSelf:
+; "Is Gex standing on me this frame?" - compares wD74D_Player_EntityStoodOnLo, which
+; holds the slot base ($00/$20/$40/...) of whatever the player is riding, against this
+; entity's own slot base. Returns B = 1 on a match, B = 0 otherwise (and B = 0 with Z
+; set when the player is not standing on anything at all).
+;
+; It also returns HL pointing at this entity's ENTITY_FIELD_MISC_FLAGS, and every
+; caller relies on that: the idiom throughout bank02_entity_actions.asm is
+;
+;     call call_00_34f5_Entity_IsPlayerStandingOnSelf
+;     bit  0, [hl]      ; my own state flags, HL is still MISC_FLAGS
+;     ...
+;     bit  0, B         ; and B is the "player is on me" answer
+;
+; The old name (Entity_CompareMiscFlags) described the LOAD_OBJ_FIELD_TO_HL on the
+; first line and not what the routine actually decides - it never reads MISC_FLAGS
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     ld   A, [wD74D_Player_EntityStoodOnLo]                                    ;; 00:34fd $fa $4d $d7
     ld   B, A                                          ;; 00:3500 $47
@@ -881,8 +906,17 @@ call_00_350c_Entity_CheckIfOnScreen:
     cp   A, E                                          ;; 00:352f $bb
     ret                                                ;; 00:3530 $c9
 
-call_00_3531_Entity_CheckIfXWithinBoundingBox:
-; Stripped-down version of call_00_3364 — only checks if entity X is within X bounding box, no movement
+call_00_3531_Entity_IsXOutsideBounds:
+; The bounds test out of call_00_3364_Entity_ApproachPlayerXWithBounds with the facing
+; and movement stripped off: converts the entity's own 16-bit world X to a block
+; coordinate (x8, keep the high byte) and compares it against its patrol range,
+; wD309_EntityBoundingBoxXMax - 1 down to wD30A_EntityBoundingBoxXMin + 1.
+;
+;   carry SET    outside the range - the entity has run off its own patrol span
+;   carry CLEAR  inside it
+;
+; Named for the carry, because the one caller (call_02_5612_EntityAction_Ghost_Chase)
+; branches on `jr c` to give up the chase
     ld   a,[wD300_CurrentEntityAddrLo]
     rrca 
     rrca 

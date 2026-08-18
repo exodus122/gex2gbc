@@ -969,15 +969,46 @@ DEF ENTITY_FIELD_SCREEN_Y                   EQU $13
 DEF ENTITY_FIELD_COLLISION_WIDTH            EQU $14 ; collision box, not sprite size
 DEF ENTITY_FIELD_COLLISION_HEIGHT           EQU $15
 DEF ENTITY_FIELD_COLLISION_TYPE             EQU $16 ; COLLISION_TYPE_*; picks the handler in bank 3
+; ------------------------------------------------------------------
+; $17 - per-entity-type state flags. There is no shared meaning: the bit numbers
+; below are named after the ONE consumer that gives them a fixed interpretation,
+; call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip, and every other entity
+; type is free to use the same byte for something unrelated. The Scream TV
+; falling platform, for instance, keeps its entire sinking/rising state machine
+; in bits 0 and 1 and never goes near the patrol driver.
+;
+; For patrolling platforms the byte is usually not written by code at all - the
+; level's entity list supplies it through MISC_TIMER_2, which the platform
+; actions copy into MISC_FLAGS on their first frame. So the direction and axis of
+; each individual platform is level data
+; ------------------------------------------------------------------
 DEF ENTITY_FIELD_MISC_FLAGS                 EQU $17 ; different entities use these flags for different purposes
     DEF MISC_FLAGS_BIT_7                 EQU 7 ; for platforms: set = left platform movement, unset = right
     DEF MISC_FLAGS_BIT_6                 EQU 6 ; for platforms: set = up platform movement, unset = down
-    DEF MISC_FLAGS_BIT_5                 EQU 5 ; unused?
-    DEF MISC_FLAGS_BIT_4                 EQU 4 ; unused?
+    DEF MISC_FLAGS_BIT_5                 EQU 5 ; seed for bit 7 - see call_02_56af_EntityAction_MonaLisaElevator_Update
+    DEF MISC_FLAGS_BIT_4                 EQU 4 ; seed for bit 6 - ditto
     DEF MISC_FLAGS_BIT_3                 EQU 3 ; used
     DEF MISC_FLAGS_BIT_2                 EQU 2 ; used
     DEF MISC_FLAGS_BIT_1                 EQU 1 ; for platforms: set = vertical platform movement, unset = horizontal
-    DEF MISC_FLAGS_BIT_0                 EQU 0 ; used
+    DEF MISC_FLAGS_BIT_0                 EQU 0 ; commonly a per-entity "has been hit / has been activated" latch
+; ------------------------------------------------------------------
+; $18-$1B - the four spawn-parameter bytes. Named for their most common use, but
+; each entity type decides what they mean, and the entity list supplies the value
+; (see SPAWN_PARAM_TO_* below). Two whole-block conventions cut across the
+; individual entities:
+;
+; A 16-BIT COORDINATE PAIR. call_00_3125_Entity_SetYFloorToCurrentPos writes the
+; entity's own Y across $1A/$1B and call_00_3137_Entity_ClampYToStoredFloor reads
+; it back, so an entity can remember a floor it reached at runtime.
+;
+; A CHILD'S INHERITED POSITION. call_0a_7b9a_EntitySpawn_SpawnChildEntity copies
+; the PARENT's world X into the child's $18/$19 and the parent's world Y into its
+; $1A/$1B before applying the per-child offset. So for anything spawned as a
+; child, all four bytes are "where my parent was" rather than spawn parameters -
+; that is how call_02_53e2_EntityAction_GhostHead_Update reconstructs the sloped
+; floor it bounces along, and how the zombie head knows where the zombie's feet
+; were.
+; ------------------------------------------------------------------
 DEF ENTITY_FIELD_MISC_TIMER_1               EQU $18 ; general countdown; several entities despawn when it hits 0
 DEF ENTITY_FIELD_MISC_TIMER_2               EQU $19
 ; General-purpose per-entity byte. Not a flags field - it is one of the six spawn
@@ -993,11 +1024,33 @@ DEF ENTITY_FIELD_MISC_TIMER_2               EQU $19
 ;     call_00_3137_Entity_ClampYToStoredFloor
 ; The last one is why $1B has no meaning of its own in that case
 DEF ENTITY_FIELD_MISC_PARAM                 EQU $1A
-DEF ENTITY_FIELD_MISC_PARAM_HI              EQU $1B ; never referenced through the field macros
+; Never referenced through the field macros - everything reaches it by xor'ing L
+; from a neighbouring field - but it is not spare. Besides the high half of the
+; $1A/$1B coordinate pair above, it is the TOP SPEED for the momentum helpers:
+; call_00_3251_Entity_UpdateFacingMomentumAndMoveX and
+; call_00_329a_Entity_UpdateFacingMomentumMoveX_WithWallFlip step X_VELOCITY one
+; unit per frame towards +/- this value rather than snapping to it, which is what
+; makes the Scream TV ghost accelerate into its chase instead of starting at full
+; pelt
+DEF ENTITY_FIELD_MISC_PARAM_HI              EQU $1B
+; ------------------------------------------------------------------
+; $1C-$1F - velocity, as two (speed, accumulator) pairs.
+;
+; Speeds are whole units per frame but movement is applied at 1/16 of that: the
+; movement helpers add the speed into the accumulator's LOW NIBBLE, take the top
+; four bits as this frame's pixel delta, and leave the remainder behind. So the
+; accumulators are the fractional part, and the entity actually travels
+; speed/16 pixels a frame. See call_00_3559_Entity_ApplyVelocityXY_SubpixelBoth,
+; which does both axes, and call_00_3597 for the version that does not carry the
+; player along.
+;
+; Speeds are signed: $C0 is the terminal velocity that
+; call_00_30af_Entity_ApplyGravityAndMoveY_Clamped clamps falls to
+; ------------------------------------------------------------------
 DEF ENTITY_FIELD_X_VELOCITY                 EQU $1C
-DEF ENTITY_FIELD_X_VELOCITY_RELATED         EQU $1D
+DEF ENTITY_FIELD_X_SUBPIXEL                 EQU $1D ; fractional part of $1C
 DEF ENTITY_FIELD_Y_VELOCITY                 EQU $1E
-DEF ENTITY_FIELD_UNK_1F                     EQU $1F ; unused?
+DEF ENTITY_FIELD_Y_SUBPIXEL                 EQU $1F ; fractional part of $1E
 
 ; ------------------------------------------------------------------
 ; Entity slots. wD200_EntityMemory is 8 consecutive $20-byte instances: slot 0
@@ -1056,12 +1109,12 @@ DEF ENTITY_SPAWN_RECORD_SIZE                EQU $10 ; 4 bytes of the record are 
 ; record's parameter bytes this entity type consumes
 DEF SPAWN_PARAM_TO_MISC_TIMER               EQU $80 ; -> ENTITY_FIELD_MISC_TIMER_1   ($18)
 DEF SPAWN_PARAM_TO_TIMER_2                  EQU $40 ; -> ENTITY_FIELD_MISC_TIMER_2      ($19)
-DEF SPAWN_PARAM_TO_MISC_PARAM               EQU $20 ; -> ENTITY_FIELD_MISC_PARAM   ($1A)
-DEF SPAWN_PARAM_TO_UNK_1B                   EQU $10 ; -> ENTITY_FIELD_MISC_PARAM_HI       ($1B)
-DEF SPAWN_PARAM_TO_XVEL                     EQU $08 ; -> ENTITY_FIELD_X_VELOCITY         ($1C)
-DEF SPAWN_PARAM_TO_XVEL_RELATED             EQU $04 ; -> ENTITY_FIELD_X_VELOCITY_RELATED ($1D)
-DEF SPAWN_PARAM_TO_YVEL                     EQU $02 ; -> ENTITY_FIELD_Y_VELOCITY         ($1E)
-DEF SPAWN_PARAM_TO_UNK_1F                   EQU $01 ; -> ENTITY_FIELD_UNK_1F       ($1F)
+DEF SPAWN_PARAM_TO_MISC_PARAM               EQU $20 ; -> ENTITY_FIELD_MISC_PARAM    ($1A)
+DEF SPAWN_PARAM_TO_MISC_PARAM_HI            EQU $10 ; -> ENTITY_FIELD_MISC_PARAM_HI ($1B)
+DEF SPAWN_PARAM_TO_XVEL                     EQU $08 ; -> ENTITY_FIELD_X_VELOCITY    ($1C)
+DEF SPAWN_PARAM_TO_X_SUBPIXEL               EQU $04 ; -> ENTITY_FIELD_X_SUBPIXEL    ($1D)
+DEF SPAWN_PARAM_TO_YVEL                     EQU $02 ; -> ENTITY_FIELD_Y_VELOCITY    ($1E)
+DEF SPAWN_PARAM_TO_Y_SUBPIXEL               EQU $01 ; -> ENTITY_FIELD_Y_SUBPIXEL    ($1F)
 
 ; Entity child spawn id's
 DEF SPAWN_CHILD_ENTITY_GHOST_HEAD                       EQU $00
