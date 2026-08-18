@@ -980,14 +980,24 @@ DEF ENTITY_FIELD_COLLISION_TYPE             EQU $16 ; COLLISION_TYPE_*; picks th
 ; For patrolling platforms the byte is usually not written by code at all - the
 ; level's entity list supplies it through MISC_TIMER_2, which the platform
 ; actions copy into MISC_FLAGS on their first frame. So the direction and axis of
-; each individual platform is level data
+; each individual platform is level data.
+;
+; Bits 3, 5 and 4 only make sense together with the patrol driver. Bit 3 asks it
+; to STOP when it reaches a bound, which it does by clearing bit 0, so bit 0 reads
+; as "currently running". Bits 5 and 4 are a frozen copy of the direction bits 7
+; and 6 as they were at spawn, which is how an entity can tell a far end from a
+; return to its starting point - see
+; call_02_5b47_EntityAction_ToonTVMovingBlock_Run, which uses exactly that to
+; recognise a completed round trip, and
+; call_02_56af_EntityAction_MonaLisaElevator_Update, which rotates 5/4 up into 7/6
+; to choose its starting direction
 ; ------------------------------------------------------------------
 DEF ENTITY_FIELD_MISC_FLAGS                 EQU $17 ; different entities use these flags for different purposes
     DEF MISC_FLAGS_BIT_7                 EQU 7 ; for platforms: set = left platform movement, unset = right
     DEF MISC_FLAGS_BIT_6                 EQU 6 ; for platforms: set = up platform movement, unset = down
-    DEF MISC_FLAGS_BIT_5                 EQU 5 ; seed for bit 7 - see call_02_56af_EntityAction_MonaLisaElevator_Update
-    DEF MISC_FLAGS_BIT_4                 EQU 4 ; seed for bit 6 - ditto
-    DEF MISC_FLAGS_BIT_3                 EQU 3 ; used
+    DEF MISC_FLAGS_BIT_5                 EQU 5 ; a copy of the STARTING value of bit 7
+    DEF MISC_FLAGS_BIT_4                 EQU 4 ; a copy of the STARTING value of bit 6
+    DEF MISC_FLAGS_BIT_3                 EQU 3 ; for platforms: stop on reaching a bound
     DEF MISC_FLAGS_BIT_2                 EQU 2 ; used
     DEF MISC_FLAGS_BIT_1                 EQU 1 ; for platforms: set = vertical platform movement, unset = horizontal
     DEF MISC_FLAGS_BIT_0                 EQU 0 ; commonly a per-entity "has been hit / has been activated" latch
@@ -1445,9 +1455,14 @@ DEF  TILE_TYPE_POWERED_SPRING_HIGH            EQU $F1
 DEF  TILE_TYPE_INTERACTIVE_MIN                EQU $C0
 DEF  TILE_TYPE_INTERACTIVE_MIN_CPL            EQU $40 ; 256 - TILE_TYPE_INTERACTIVE_MIN
 
-DEF  HUNTER_ACTION_UNK0  EQU $00
-DEF  HUNTER_ACTION_UNK1  EQU $01
-DEF  HUNTER_ACTION_UNK2  EQU $02
-DEF  HUNTER_ACTION_UNK3  EQU $03
-DEF  HUNTER_ACTION_UNK4  EQU $04
-DEF  HUNTER_ACTION_UNK5  EQU $05
+; Row numbers in data_02_4eef_EntityActions_ToonTVHunter. The Toon TV hunter is
+; the only entity whose action ids are spelled out as constants - everything else
+; in bank02_entity_actions.asm passes them as bare numbers - because it is the
+; only one with a long enough chain for the numbers to stop being obvious.
+; $02-$05 are the four stages of one knockdown, run in order
+DEF  HUNTER_ACTION_PATROL     EQU $00
+DEF  HUNTER_ACTION_FIRE       EQU $01
+DEF  HUNTER_ACTION_STAGGER    EQU $02
+DEF  HUNTER_ACTION_FALL_OVER  EQU $03
+DEF  HUNTER_ACTION_DOWNED     EQU $04
+DEF  HUNTER_ACTION_GET_UP     EQU $05

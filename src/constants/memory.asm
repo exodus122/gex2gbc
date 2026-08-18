@@ -340,6 +340,14 @@ wD59D_ReturnBank:
     ds 1                                               ;; d59d
 
 wD59E_OnGBCFlag:
+; $01 on a Colour Game Boy, $00 otherwise. Set once during boot, from the A = $11
+; the CGB boot ROM leaves behind, and never written again.
+;
+; Mostly it gates colour-only work - VRAM bank 1 attribute writes, palette
+; uploads, the 9800/9C00 map split. The three remote entities read it for a
+; different reason: they use it to pick between two sets of sprite frames, because
+; on a DMG there is no palette to tell a red remote from a gold one and the
+; artwork has to do it instead. See call_02_5253_EntityAction_RedRemote_Dmg
     ds 1                                               ;; d59e
 
 wD59F_RawInputs:
@@ -1374,7 +1382,11 @@ wD75C_PlayerXDeltaExtra:
 ; slope correction in bank 3 - and zeroed again on a wall hit
     ds 1                                               ;; d75c
 wD75D_PlayerXSpeedPrev:
-; (1 = walk, 2 = run)
+; (0 = still, 1 = walk, 2 = run)
+;
+; call_02_56dc_EntityAction_HardHeadAreaHazard_Aim reads it as an index rather than
+; a speed: 0/1/2 select how far ahead of Gex the falling hazard aims, so the three
+; values here are the three lead distances in .data_02_575e
     ds 1                                               ;; d75d
 wD75E_PlayerXSpeed:
 ; how fast gex runs (1 = walk, 2 = run)
@@ -1500,8 +1512,11 @@ wD773_HuntersDefeatedCount:
 ; handler writes $02 into wD799_BlockPatch_SlotTable14, opening the way onward
     ds 1                                               ;; d773
 wD774_MushroomsDestroyedCount:
-; bumped by an entity action when the entity's MISC_FLAGS bit 0 is set, then
-; used as a table index - a "how many of these have been triggered" counter
+; Bumped by call_02_5a28_EntityAction_Mushroom_Update the frame a Toon TV mushroom
+; is attacked. It does two jobs at once: the fifth one opens
+; wD79A_BlockPatch_SlotTable15, and the count also picks which of the eight icons
+; in data_02_7a21 the mushroom pops out, as sprite id $40 + 2 * (count - 1). So
+; each mushroom in the room gives a different prize, in the order they are broken
     ds 1                                               ;; d774
 
 wD775_Cutscene_Skippable:

@@ -199,13 +199,21 @@ call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip:
 ; direction bit and falls into the shared flip path.
 ;
 ; The flip path zeroes four consecutive bytes at MISC_FLAGS xor $0b = $1C, which is
-; XVEL, XVEL_RELATED, YVEL and UNK_1F - so a direction change wipes the velocity
-; block outright rather than reversing it.
+; XVEL, X_SUBPIXEL, YVEL and Y_SUBPIXEL - so a direction change wipes the velocity
+; block outright rather than reversing it, and the entity has to accelerate from a
+; standstill again.
 ;
-; It also reads ENTITY_FIELD_ENTITY_ID and special-cases the value $17: that entity
-; type skips the MISC_FLAGS bit 3/0 handling and goes straight to the velocity
-; wipe. The $17 is an entity id, not a field offset, despite sitting next to a lot
-; of field arithmetic
+; Bit 3 is a stop-at-the-ends option, and it works through bit 0: with bit 3 set,
+; the routine refuses to move at all unless bit 0 is also set, and it CLEARS bit 0
+; on the flip path. So the platform runs one leg, stops on arrival, and stays
+; stopped until whatever owns it sets bit 0 again - see
+; call_02_5b9d_EntityAction_ToonTVMovingBlock_PauseAtEnd.
+;
+; It also reads ENTITY_FIELD_ENTITY_ID and special-cases the value $17, which is
+; ENTITY_SCREAM_TV_ORANGE_MOVING_PLATFORM: that one entity type skips the bit 3/0
+; handling and goes straight to the velocity wipe, so it never stops at its ends
+; whatever its flags say. The $17 is an entity id, not a field offset, despite
+; sitting next to a lot of field arithmetic
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     bit  MISC_FLAGS_BIT_3, [HL]                                       ;; 00:3195 $cb $5e
     jr   Z, .jr_00_319c                                ;; 00:3197 $28 $03
@@ -1455,8 +1463,21 @@ call_00_384e_Entity_CheckSpriteIdChanged:
     ret  
 
 call_00_3859_Entity_CheckPlayerXProximity:
-; Computes (player X − entity X), adds C offset, doubles C, subtracts; 
-; returns carry/sign indicating whether player is within C-pixel horizontal range
+; "Is Gex within +/- C pixels of me horizontally?"
+;
+;   carry SET    yes, he is inside the window
+;   carry CLEAR  no, on either side
+;
+; The one-sided compare does both directions at once by biasing first: it forms
+; (playerX - myX) + C and then subtracts 2C, so a player anywhere in the window
+; lands in [0, 2C) and anywhere outside it - including far to the LEFT, where the
+; difference goes negative and wraps to a large unsigned value - lands at or above
+; 2C. No sign handling needed.
+;
+; This is the trigger for most of Toon TV. Note that entities which need to latch
+; on and off call it twice with different radii (bumblebee: $20 to start charging,
+; $40 to stop) so that standing on the boundary does not make them flicker between
+; two actions
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_X
     ld   A, [wD20E_Player_XPositionLo]                                    ;; 00:3861 $fa $0e $d2
     sub  A, [HL]                                       ;; 00:3864 $96
