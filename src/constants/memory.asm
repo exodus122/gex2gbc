@@ -450,13 +450,32 @@ wD612_AnimatedTime_FrameCounter:
     ds 1                                               ;; d612
 
 wD613_Dragon_SegmentsRemaining:
-; kung fu theater dragon boss. Set to $0A on level start and decremented as body
-; segments are destroyed; at 0 the head bursts
+; Kung Fu Theater dragon boss. Set to $0A on level start; the boss's health lives
+; here rather than in any entity, because the dragon is a head plus a string of
+; body segments that all read it.
+;
+; Only one thing decrements it: call_02_5efa_EntityAction_CannonProjectile_Fly,
+; when a cannon shot passes within 8 screen pixels of the dragon's HEAD. Gex never
+; damages the dragon directly - he aims the cannon with the tile blocks beside it
+; and stomps it to fire. At zero every part of the dragon bursts and the head opens
+; wD78F_BlockPatch_SlotTable4
     ds 1                                               ;; d613
 wD614_Dragon_HitTimer:
-; counts down after the dragon is hit; bit 1 makes the body segments flash
+; Set to $80 by a cannon hit. Bit 1 drives SPRITE_FLAG_INVISIBLE through
+; call_02_613f_Dragon_UpdateHitFlash, so the whole dragon strobes in 2-frame
+; blocks while it runs.
+;
+; It is decremented by call_02_5f50_EntityAction_DragonBodySegment_Update - i.e.
+; once per body segment per frame - so the flash runs N times faster with N
+; segments alive, and visibly lengthens as the boss is whittled down
     ds 1                                               ;; d614
 wD615_Cannon_FacingDirection:
+; Which way the Kung Fu Theater cannon is pointing, as an OAM facing byte ($00
+; right, $20 left). Not owned by the cannon entity: the rotating blocks beside it
+; are tile hit scripts, and their callbacks (call_00_22e1_Cannon_FaceRight /
+; call_00_22ff_Cannon_FaceLeft in bank00_tile_hit_scripts.asm) write it. The
+; cannon reads it only at the instant it fires, so aiming and firing are two
+; separate things the player does to two different objects
     ds 1                                               ;; d615
 wD616_FinalBattleButtonFlags:
 ; channel z final battle. bit 7 set = a button was just slammed down

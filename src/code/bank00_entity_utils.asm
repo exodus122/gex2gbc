@@ -29,8 +29,19 @@ call_00_30da_Entity_ApplyGravityMoveY_WithFloorCollision:
 ; is the `cpl / inc A` NEGATION. That is not a cosmetic difference: for the same
 ; stored YVEL the two routines move the entity in OPPOSITE directions.
 ;
-; Applies the delta to YPOS inline, then calls Entity_GetMinYBound and, if YPOS has
-; not passed it, snaps YPOS to the bound and zeroes YVEL.
+; Because of that, "gravity" here pulls UPWARDS. call_00_30af treats a positive
+; YVEL as up and subtracting 2 as falling; this routine treats a positive YVEL as
+; down, so subtracting 2 accelerates the entity towards the ceiling until it is
+; clamped there. Its one caller, call_02_5ccf_EntityAction_Pterosaur_Update, is
+; built around exactly that: hanging at the top of its span is the rest state and
+; a positive velocity is a swoop DOWN.
+;
+; Applies the delta to YPOS inline, then calls Entity_GetMinYBound - the CEILING,
+; not a floor - and, if YPOS has reached or passed it, snaps YPOS to the bound and
+; zeroes YVEL:
+;
+;   carry SET    still below the bound, moving freely
+;   carry CLEAR  clamped to the bound this frame
 ;
 ; The code after the `ret` below is a separate routine that used to run on from
 ; here unlabelled - now split out as call_00_3125_Entity_SetYFloorToCurrentPos,
@@ -1195,8 +1206,22 @@ call_00_36da_Entity_FaceAwayFromPlayer:
     ret  
 
 call_00_36f7_Entity_MoveXByFacingMomentum_BoundsChecked:
-; Applies facing-based momentum to X, then checks if the resulting X block coordinate 
-; is outside bounding box; updates facing direction accordingly; returns non-zero if direction changed
+; The standard "pace back and forth" step, and the second half of nearly every
+; walking enemy in bank02_entity_actions.asm. Moves X by the current speed in the
+; current facing direction, integrating the subpixel accumulator, then converts the
+; new X to a block coordinate and compares it against the entity's own patrol span
+; (wD309_EntityBoundingBoxXMax - 1 .. wD30A_EntityBoundingBoxXMin + 1), flipping
+; FACING_FLAGS if it has run past either end.
+;
+; The return value is the flip, not the position:
+;
+;   NZ  the facing changed this frame - the entity has just turned around
+;   Z   still going the same way (including when it is comfortably inside)
+;
+; Several entities use that as a "reached the end of my run" event instead of
+; tracking position: the pre-history egg treats it as being cornered, the
+; pterosaur only lets its dive cooldown tick on those frames, and the Kung Fu ninja
+; abandons a stalk when it fires
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
     ld   C, [HL]                                       ;; 00:36ff $4e
     ld   A, L                                          ;; 00:3700 $7d

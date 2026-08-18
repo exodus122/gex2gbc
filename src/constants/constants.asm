@@ -1175,8 +1175,10 @@ DEF PARTICLE_PATTERN_NONE                   EQU 0 ; all zeros, spawns nothing
 DEF PARTICLE_PATTERN_BURST                  EQU 1 ; 8 shards, 4 left and 4 right
 DEF PARTICLE_PATTERN_BURST_SMALL            EQU 2 ; only 3 of the 8 records are used
 DEF PARTICLE_PATTERN_UNUSED_3               EQU 3
-DEF PARTICLE_PATTERN_FALLING_BOULDER        EQU 4
+DEF PARTICLE_PATTERN_FALLING_BOULDER        EQU 4 ; the shards, which are themselves lethal
 DEF PARTICLE_PATTERN_JAR_BURST              EQU 5
+; Used by every "spits several things at once" enemy: the Scream TV floating
+; skull, the Pre-History fire plant and the boulder's collision type all reach it
 DEF PARTICLE_PATTERN_MULTI_PROJECTILE       EQU 6
 
 ; Player vs Entity interaction events
