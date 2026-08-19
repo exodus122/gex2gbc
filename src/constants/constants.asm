@@ -934,7 +934,7 @@ DEF ENTITY_FIELD_ACTION_STATE_FLAGS         EQU $09
 DEF ENTITY_FIELD_SPRITE_FLAGS               EQU $0A
     ; --- configuration: how this entity is drawn ---
     DEF SPRITE_FLAG_STREAMS_OWN_GFX_BIT       EQU 7 ; streams its own tiles; attributes from FACING_FLAGS
-    DEF SPRITE_FLAG_FIXED_SHAPE_BIT           EQU 4 ; layout selected by action id, not animation frame
+    DEF SPRITE_FLAG_FIXED_SHAPE_BIT           EQU 4 ; one shape for life; the action changes the tile base, not the shape
     DEF SPRITE_FLAG_INVISIBLE_BIT             EQU 3 ; draws nothing; collision only
     DEF SPRITE_FLAG_LOOP_LAST_FRAME_BIT       EQU 1 ; on wrap, restart at the last frame instead of the first
     DEF SPRITE_FLAG_EMBEDDED_SPRITE_DATA_BIT  EQU 0 ; sprite records embedded in the entity's data block

@@ -353,7 +353,7 @@ call_02_4939_Player_UpdateMain:
     call call_02_6fda_Entity_TickAction
     call call_02_715a_MapWindow_Update
     call call_02_4c28_Player_CheckLavaAndWaterTiles
-    FARCALL call_03_5ca8_Entity_BuildPlayerSprites
+    FARCALL call_03_5ca8_Player_BuildSprites
     ld   HL, wD751_Player_CircuitPowerUpTimerLo
     call call_02_4a30_Player_DecrementPowerupTimer
     ld   HL, wD755_FlyPowerup2_TimerLo

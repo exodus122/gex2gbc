@@ -441,7 +441,7 @@ data_02_51b3_EntityActions_MediaDimensionMovingPlatform:            ;; ENTITY_ME
 call_02_51b7_EntityAction_CollectibleSpawn_Update:
 ; One action. This entity draws itself entirely out of its particle buffer -
 ; data_02_7cce sets SPRITE_FLAG_EMBEDDED_SPRITE_DATA and
-; call_03_6584_Entity_BuildSprites_CollectibleSpawn emits one OAM record per
+; call_03_6584_Particles_BuildSpriteList_Collectible emits one OAM record per
 ; particle whose bit 7 is set, so there is no frame list involved.
 ;
 ; Note that the builder tests particle bit 7 while Entity_TickParticles tests
@@ -454,7 +454,7 @@ call_02_51b7_EntityAction_CollectibleSpawn_Update:
 ; defeat burst into this entity type
     call call_00_3b8d_Entity_TickParticles
     push AF
-    FARCALL call_03_6584_Entity_BuildSprites_CollectibleSpawn
+    FARCALL call_03_6584_Particles_BuildSpriteList_Collectible
     jr   NZ, .jr_02_51cc                               ; drew something
     pop  AF
     jp   call_00_3931_Entity_DeactivateSelf            ; nothing visible left
@@ -652,7 +652,7 @@ call_02_52ab_EntityAction_ParticleBurst_Update:
 ; call_02_51b7_EntityAction_CollectibleSpawn_Update takes over from the next frame
     call call_00_3b8d_Entity_TickParticles
     jr   Z, .jr_02_52bc                                ; burst finished
-    FARCALL call_03_65f9_Entity_BuildSprites_ParticleBurst
+    FARCALL call_03_65f9_Particles_BuildSpriteList_DefeatBurst
     ret  NZ
 .jr_02_52bc:
     ld   C, $01
@@ -1071,7 +1071,7 @@ call_02_546e_EntityAction_FloatingSkullProjectile_Fly:
 ; frame-list path
     call call_00_3b8d_Entity_TickParticles
     jp   z,call_00_3931_Entity_DeactivateSelf
-    FARCALL call_03_6549_Entity_BuildSprites_FloatingSkullProjectile
+    FARCALL call_03_6549_Particles_BuildSpriteList_SkullFire
     ret
 
 call_02_5480_EntityAction_Zombie_Walk:
@@ -2875,7 +2875,7 @@ call_02_5d5b_EntityAction_FallingBoulder_Shards:
     call call_00_3b8d_Entity_TickParticles
     ld   a,$00
     jp   z,call_02_7102_Entity_SetAction
-    FARCALL call_03_65b8_Entity_BuildSprites_FallingBoulder
+    FARCALL call_03_65b8_Particles_BuildSpriteList_BoulderDebris
     ret
 
 call_02_5d6f_EntityAction_Unk3F_Update:
@@ -2963,7 +2963,7 @@ call_02_5ddc_EntityAction_FirePlantProjectiles_Init:
 call_02_5de6_EntityAction_FirePlantProjectiles_Fly:
     call call_00_3b8d_Entity_TickParticles
     jp   z,call_00_3931_Entity_DeactivateSelf
-    FARCALL call_03_663a_Entity_BuildSprites_FirePlantProjectiles
+    FARCALL call_03_663a_Particles_BuildSpriteList_FirePlant
     ret
 
 call_02_5df8_EntityAction_Geyser_Dormant:
@@ -3884,7 +3884,7 @@ call_02_6375_EntityAction_Jar_Shatter:
 ; call_02_52ab_EntityAction_ParticleBurst_Update). So a smashed jar leaves a pickup
     call call_00_3b8d_Entity_TickParticles
     jp   z,call_00_3985_Entity_ParticleBurstInit
-    FARCALL call_03_6675_Entity_BuildSprites_Jar
+    FARCALL call_03_6675_Particles_BuildSpriteList_JarShards
     ret
 
 call_02_6387_EntityAction_Unk5C_Update:

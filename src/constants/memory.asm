@@ -1355,7 +1355,7 @@ wD74A_Player_InWaterOrLava:
     ds 1                                               ;; d74a
 
 wD74B_Player_ClimbingFlags:
-; bit 6 (CLIMB_FLAG_ALT_FRAMES) makes call_03_5ca8_Entity_BuildPlayerSprites draw
+; bit 6 (CLIMB_FLAG_ALT_FRAMES) makes call_03_5ca8_Player_BuildSprites draw
 ; Gex upside down - it selects a shape with OAMF_YFLIP set on every part and the two
 ; sprite rows swapped. Cleared whenever a new action is queued.
 ; Together with FACING_LEFT in wD20D this is what lets eight climb directions be
@@ -1551,7 +1551,7 @@ wD76B_Player_IsAttacking:
     ds 1                                               ;; d76b
 
 ; Screen position the orbiting fly sprite circles around, written and read a few
-; instructions apart inside call_03_5ca8_Entity_BuildPlayerSprites - scratch, not
+; instructions apart inside call_03_5ca8_Player_BuildSprites - scratch, not
 ; state. The routine needs both of Gex's coordinates live while it is also indexing
 ; .data_03_5e9f_FlyParticleOffsetTable, which is more than the registers hold
 wD76C_FlyPowerup_AnchorX:
@@ -1564,7 +1564,7 @@ wD76D_FlyPowerup_AnchorY:
 
 wD76E_FlyPowerup_OrbitPhase:
 ; Animation phase of the single fly sprite that circles above Gex while he is
-; carrying a fly (wD742_Player_CurrentFly). call_03_5ca8_Entity_BuildPlayerSprites
+; carrying a fly (wD742_Player_CurrentFly). call_03_5ca8_Player_BuildSprites
 ; increments it once per frame, then uses (phase >> 1) AND $0F to index the 16
 ; signed (Y, X) offsets in .data_03_5e9f_FlyParticleOffsetTable - so the fly steps
 ; every other frame and completes its loop every 32 frames.

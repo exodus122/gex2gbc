@@ -79,7 +79,7 @@
 ; PLAYER_ACTION_ENTER_TV and PLAYER_ACTION_ENTER_TV_ALT share data_02_75f9. These
 ; are the only blocks in the file that use byte +0. They are also the only ones drawn by the default sprite path -
 ; no SPRITE_FLAG_* configuration bits at all except SPRITE_FLAG_LOOP_LAST_FRAME,
-; because Gex is drawn by call_03_5ca8_Entity_BuildPlayerSprites, a separate
+; because Gex is drawn by call_03_5ca8_Player_BuildSprites, a separate
 ; routine that reads none of the path-selection bits.
 ;
 ; Read down the ANIM_ENDED-driven ones and the flow of Gex's state machine is
