@@ -27,8 +27,8 @@
 ; whole of a boss's animation costs nothing more than a couple of dozen bytes of
 ; layout shared with every other enemy the same size.
 ;
-; These data tables are reached only from the two frame-based sprite builders - 
-; the SPRITE_FLAG_FIXED_SHAPE path uses .data_03_608e_FixedSpriteShapeTable 
+; These data tables are reached only from the two frame-based sprite builders -
+; the SPRITE_FLAG_FIXED_SHAPE path uses .data_03_608e_FixedSpriteShapeTable
 ; instead, and Gex has his own builder entirely.
 ;
 ; THE META TABLE IS READ BACKWARDS. The builders load
@@ -804,59 +804,59 @@ call_03_5b5b_HUD_BuildSprites:
 ; wD687_FlyAnimationState bit 7 is the switch. A level entered with the fly popup up
 ; ($41) shows the lives and collectible counters, then FlyPowerup_Update flips it to
 ; $81 and the hearts take over
-    ld   A, [wD688_FlyAnimationPosition]                                    ;; 03:5b5b $fa $88 $d6
-    ld   C, A                                          ;; 03:5b5e $4f
-    ld   DE, .data_03_5beb_HudRow_MediaDimension                             ;; 03:5b5f $11 $eb $5b
-    ld   A, [wD624_CurrentLevelId]                                    ;; 03:5b62 $fa $24 $d6
-    and  A, A                                          ;; 03:5b65 $a7
-    jr   Z, .jr_03_5ba7                                ;; 03:5b66 $28 $3f
-    ld   C, $88                                        ;; 03:5b68 $0e $88
-    ld   DE, .data_03_5bd3_HudRow_DemoBanner                             ;; 03:5b6a $11 $d3 $5b
-    ld   A, [wD61E_DemoModeEnabled]                                    ;; 03:5b6d $fa $1e $d6
-    and  A, A                                          ;; 03:5b70 $a7
-    jr   NZ, .jr_03_5ba7                               ;; 03:5b71 $20 $34
-    ld   A, [wD623_CollectibleMode]                                    ;; 03:5b73 $fa $23 $d6
-    and  A, A                                          ;; 03:5b76 $a7
-    jr   Z, .jr_03_5b98                                ;; 03:5b77 $28 $1f
-    ld   DE, .data_03_5c03_HudRow_Timer                             ;; 03:5b79 $11 $03 $5c
-    ld   A, [wD76F_LevelTimer_Minutes]                                    ;; 03:5b7c $fa $6f $d7
-    and  A, A                                          ;; 03:5b7f $a7
-    jr   NZ, .jr_03_5ba7                               ;; 03:5b80 $20 $25
-    ld   A, [wD770_LevelTimer_SecondsBCD]                                    ;; 03:5b82 $fa $70 $d7
-    and  A, A                                          ;; 03:5b85 $a7
-    jr   Z, .jr_03_5ba7                                ;; 03:5b86 $28 $1f
-    and  A, $f0                                        ;; 03:5b88 $e6 $f0
-    jr   NZ, .jr_03_5ba7                               ;; 03:5b8a $20 $1b
-    ld   A, [wD771_LevelTimer_FrameCounter]                                    ;; 03:5b8c $fa $71 $d7
-    cp   A, $0f                                        ;; 03:5b8f $fe $0f
-    jr   NC, .jr_03_5ba7                               ;; 03:5b91 $30 $14
-    ld   DE, .data_03_5c1b_HudRow_TimerBlink                             ;; 03:5b93 $11 $1b $5c
-    jr   .jr_03_5ba7                                   ;; 03:5b96 $18 $0f
+    ld   A, [wD688_FlyAnimationPosition]
+    ld   C, A
+    ld   DE, .data_03_5beb_HudRow_MediaDimension
+    ld   A, [wD624_CurrentLevelId]
+    and  A, A
+    jr   Z, .jr_03_5ba7
+    ld   C, $88
+    ld   DE, .data_03_5bd3_HudRow_DemoBanner
+    ld   A, [wD61E_DemoModeEnabled]
+    and  A, A
+    jr   NZ, .jr_03_5ba7
+    ld   A, [wD623_CollectibleMode]
+    and  A, A
+    jr   Z, .jr_03_5b98
+    ld   DE, .data_03_5c03_HudRow_Timer
+    ld   A, [wD76F_LevelTimer_Minutes]
+    and  A, A
+    jr   NZ, .jr_03_5ba7
+    ld   A, [wD770_LevelTimer_SecondsBCD]
+    and  A, A
+    jr   Z, .jr_03_5ba7
+    and  A, $f0
+    jr   NZ, .jr_03_5ba7
+    ld   A, [wD771_LevelTimer_FrameCounter]
+    cp   A, $0f
+    jr   NC, .jr_03_5ba7
+    ld   DE, .data_03_5c1b_HudRow_TimerBlink
+    jr   .jr_03_5ba7
 .jr_03_5b98:
-    ld   A, [wD687_FlyAnimationState]                                    ;; 03:5b98 $fa $87 $d6
-    and  A, $80                                        ;; 03:5b9b $e6 $80
-    jp   NZ, .jp_03_5c33_HUD_BuildSprites_Health                               ;; 03:5b9d $c2 $33 $5c
-    ld   A, [wD688_FlyAnimationPosition]                                    ;; 03:5ba0 $fa $88 $d6
-    ld   C, A                                          ;; 03:5ba3 $4f
-    ld   DE, .data_03_5bbb_HudRow_LivesAndCollectibles                             ;; 03:5ba4 $11 $bb $5b
+    ld   A, [wD687_FlyAnimationState]
+    and  A, $80
+    jp   NZ, .jp_03_5c33_HUD_BuildSprites_Health
+    ld   A, [wD688_FlyAnimationPosition]
+    ld   C, A
+    ld   DE, .data_03_5bbb_HudRow_LivesAndCollectibles
 .jr_03_5ba7:
-    ld   HL, wCC80_ShadowOAM_HudSprites                                     ;; 03:5ba7 $21 $80 $cc
-    ld   B, $08                                        ;; 03:5baa $06 $08
+    ld   HL, wCC80_ShadowOAM_HudSprites
+    ld   B, $08
 .jr_03_5bac:
-    ld   A, C                                          ;; 03:5bac $79
-    ld   [HL+], A                                      ;; 03:5bad $22
-    ld   A, [DE]                                       ;; 03:5bae $1a
-    inc  DE                                            ;; 03:5baf $13
-    ld   [HL+], A                                      ;; 03:5bb0 $22
-    ld   A, [DE]                                       ;; 03:5bb1 $1a
-    inc  DE                                            ;; 03:5bb2 $13
-    ld   [HL+], A                                      ;; 03:5bb3 $22
-    ld   A, [DE]                                       ;; 03:5bb4 $1a
-    ld   [HL+], A                                      ;; 03:5bb5 $22
-    inc  DE                                            ;; 03:5bb6 $13
-    dec  B                                             ;; 03:5bb7 $05
-    jr   NZ, .jr_03_5bac                               ;; 03:5bb8 $20 $f2
-    ret                                                ;; 03:5bba $c9
+    ld   A, C
+    ld   [HL+], A
+    ld   A, [DE]
+    inc  DE
+    ld   [HL+], A
+    ld   A, [DE]
+    inc  DE
+    ld   [HL+], A
+    ld   A, [DE]
+    ld   [HL+], A
+    inc  DE
+    dec  B
+    jr   NZ, .jr_03_5bac
+    ret
 ; All five rows use OAMF_PAL1 (DMG palette 1) and CGB OBJ palette 0, except the
 ; collectible icon, which takes CGB palette 1 because its artwork is per-level and
 ; loaded with its own palette by call_03_6941_HUD_LoadCollectibleSprites
@@ -941,31 +941,31 @@ call_03_5b5b_HUD_BuildSprites:
 ; (call_00_06b7_Player_ResetHealth is the only thing that raises it, and it writes a
 ; literal $04), but a value of $05 would read the 16 bytes at $5CA8, which are the
 ; first instructions of call_03_5ca8_Player_BuildSprites
-    ld   A, [wD741_Player_Health]                                    ;; 03:5c33 $fa $41 $d7
-    swap A                                             ;; 03:5c36 $cb $37 ; health * 16
-    add  A, $58                                        ;; 03:5c38 $c6 $58
-    ld   E, A                                          ;; 03:5c3a $5f
-    ld   A, $00                                        ;; 03:5c3b $3e $00
-    adc  A, $5c                                        ;; 03:5c3d $ce $5c
-    ld   D, A                                          ;; 03:5c3f $57
-    ld   A, [wD688_FlyAnimationPosition]                                    ;; 03:5c40 $fa $88 $d6
-    ld   C, A                                          ;; 03:5c43 $4f
-    ld   HL, wCC80_ShadowOAM_HudSprites                                     ;; 03:5c44 $21 $80 $cc
-    ld   B, $08                                        ;; 03:5c47 $06 $08
+    ld   A, [wD741_Player_Health]
+    swap A                                             ; health * 16
+    add  A, $58
+    ld   E, A
+    ld   A, $00
+    adc  A, $5c
+    ld   D, A
+    ld   A, [wD688_FlyAnimationPosition]
+    ld   C, A
+    ld   HL, wCC80_ShadowOAM_HudSprites
+    ld   B, $08
 .jr_03_5c49:
-    ld   A, C                                          ;; 03:5c49 $79
-    ld   [HL+], A                                      ;; 03:5c4a $22
-    ld   A, [DE]                                       ;; 03:5c4b $1a
-    ld   [HL+], A                                      ;; 03:5c4c $22
-    inc  DE                                            ;; 03:5c4d $13
-    ld   A, [DE]                                       ;; 03:5c4e $1a
-    ld   [HL+], A                                      ;; 03:5c4f $22
-    inc  DE                                            ;; 03:5c50 $13
-    ld   A, OAMF_PAL1                                  ;; 03:5c51 $3e $10
-    ld   [HL+], A                                      ;; 03:5c53 $22
-    dec  B                                             ;; 03:5c54 $05
-    jr   NZ, .jr_03_5c49                               ;; 03:5c55 $20 $f2
-    ret                                                ;; 03:5c57 $c9
+    ld   A, C
+    ld   [HL+], A
+    ld   A, [DE]
+    ld   [HL+], A
+    inc  DE
+    ld   A, [DE]
+    ld   [HL+], A
+    inc  DE
+    ld   A, OAMF_PAL1
+    ld   [HL+], A
+    dec  B
+    jr   NZ, .jr_03_5c49
+    ret
 
 .data_03_5c58_HudHeartsByHealth:
 ; Five prebuilt heart rows, indexed by wD741_Player_Health. Each row is eight
@@ -1024,120 +1024,120 @@ call_03_5ca8_Player_BuildSprites:
 ; That byte is $80 - OAMF_PRI - while he is NOT in liquid and $00 while he is, so he
 ; normally renders behind solid background pixels and comes to the front on the frames
 ; he is in water or lava
-    ld   A, [wD586_PlayerGfxVramPage]                                    ;; 03:5ca8 $fa $86 $d5
-    ld   HL, wD20D_Player_FacingFlags                                     ;; 03:5cab $21 $0d $d2
-    bit  5, [HL]                                       ;; 03:5cae $cb $6e
-    jr   Z, .jr_03_5cb4                                ;; 03:5cb0 $28 $02
-    add  A, $02                                        ;; 03:5cb2 $c6 $02
+    ld   A, [wD586_PlayerGfxVramPage]
+    ld   HL, wD20D_Player_FacingFlags
+    bit  5, [HL]
+    jr   Z, .jr_03_5cb4
+    add  A, $02
 .jr_03_5cb4:
-    ld   HL, wD74B_Player_ClimbingFlags                                     ;; 03:5cb4 $21 $4b $d7
-    bit  6, [HL]                                       ;; 03:5cb7 $cb $76
-    jr   Z, .jr_03_5cbd                                ;; 03:5cb9 $28 $02
-    add  A, $04                                        ;; 03:5cbb $c6 $04
+    ld   HL, wD74B_Player_ClimbingFlags
+    bit  6, [HL]
+    jr   Z, .jr_03_5cbd
+    add  A, $04
 .jr_03_5cbd:
-    ld   DE, .data_03_5d6f_PlayerSpriteShapeTable                             ;; 03:5cbd $11 $6f $5d
-    call call_00_07b9_GetPointerFromTable                                  ;; 03:5cc0 $cd $b9 $07
-    ld   A, [wD6ED_BgMap_ScrollX]                                    ;; 03:5cc3 $fa $ed $d6
-    ld   C, A                                          ;; 03:5cc6 $4f
-    ld   A, [wD20E_Player_XPositionLo]                                    ;; 03:5cc7 $fa $0e $d2
-    sub  A, C                                          ;; 03:5cca $91
-    add  A, $08                                        ;; 03:5ccb $c6 $08
-    ld   C, A                                          ;; 03:5ccd $4f
-    ld   [wD212_Player_ScreenXPosition], A                                    ;; 03:5cce $ea $12 $d2
-    ld   A, [wD6EF_BgMap_ScrollY]                                    ;; 03:5cd1 $fa $ef $d6
-    ld   B, A                                          ;; 03:5cd4 $47
-    ld   A, [wD210_Player_YPositionLo]                                    ;; 03:5cd5 $fa $10 $d2
-    sub  A, B                                          ;; 03:5cd8 $90
-    add  A, $10                                        ;; 03:5cd9 $c6 $10
-    ld   B, A                                          ;; 03:5cdb $47
-    ld   [wD213_Player_ScreenYPosition], A                                    ;; 03:5cdc $ea $13 $d2
-    ld   A, [wD201_Player_ActionId]                                    ;; 03:5cdf $fa $01 $d2
-    and  A, PLAYER_ACTION_MASK                                        ;; 03:5ce2 $e6 $1f
-    cp   A, PLAYER_ACTION_DEATH_SET_UP_WARP                                        ;; 03:5ce4 $fe $11
-    jr   Z, .jr_03_5d11                                ;; 03:5ce6 $28 $29
-    ld   A, [wD750_Player_DamageCooldownTimer]                                    ;; 03:5ce8 $fa $50 $d7
-    and  A, $08                                        ;; 03:5ceb $e6 $08
-    jr   NZ, .jr_03_5d0b                               ;; 03:5ced $20 $1c
-    ld   A, [wD59E_OnGBCFlag]                                    ;; 03:5cef $fa $9e $d5
-    and  A, A                                          ;; 03:5cf2 $a7
-    jr   NZ, .jr_03_5d11                               ;; 03:5cf3 $20 $1c
-    push HL                                            ;; 03:5cf5 $e5
-    ld   A, [wD755_FlyPowerup2_TimerLo]                                    ;; 03:5cf6 $fa $55 $d7
-    ld   HL, wD753_FlyPowerup1_TimerLo                                     ;; 03:5cf9 $21 $53 $d7
-    or   A, [HL]                                       ;; 03:5cfc $b6
-    ld   HL, wD751_Player_CircuitPowerUpTimerLo                                     ;; 03:5cfd $21 $51 $d7
-    or   A, [HL]                                       ;; 03:5d00 $b6
-    pop  HL                                            ;; 03:5d01 $e1
-    jr   Z, .jr_03_5d11                                ;; 03:5d02 $28 $0d
-    ld   A, [wD73B_VBlankFrameCounter]                                    ;; 03:5d04 $fa $3b $d7
-    and  A, $08                                        ;; 03:5d07 $e6 $08
-    jr   Z, .jr_03_5d11                                ;; 03:5d09 $28 $06
+    ld   DE, .data_03_5d6f_PlayerSpriteShapeTable
+    call call_00_07b9_GetPointerFromTable
+    ld   A, [wD6ED_BgMap_ScrollX]
+    ld   C, A
+    ld   A, [wD20E_Player_XPositionLo]
+    sub  A, C
+    add  A, $08
+    ld   C, A
+    ld   [wD212_Player_ScreenXPosition], A
+    ld   A, [wD6EF_BgMap_ScrollY]
+    ld   B, A
+    ld   A, [wD210_Player_YPositionLo]
+    sub  A, B
+    add  A, $10
+    ld   B, A
+    ld   [wD213_Player_ScreenYPosition], A
+    ld   A, [wD201_Player_ActionId]
+    and  A, PLAYER_ACTION_MASK
+    cp   A, PLAYER_ACTION_DEATH_SET_UP_WARP
+    jr   Z, .jr_03_5d11
+    ld   A, [wD750_Player_DamageCooldownTimer]
+    and  A, $08
+    jr   NZ, .jr_03_5d0b
+    ld   A, [wD59E_OnGBCFlag]
+    and  A, A
+    jr   NZ, .jr_03_5d11
+    push HL
+    ld   A, [wD755_FlyPowerup2_TimerLo]
+    ld   HL, wD753_FlyPowerup1_TimerLo
+    or   A, [HL]
+    ld   HL, wD751_Player_CircuitPowerUpTimerLo
+    or   A, [HL]
+    pop  HL
+    jr   Z, .jr_03_5d11
+    ld   A, [wD73B_VBlankFrameCounter]
+    and  A, $08
+    jr   Z, .jr_03_5d11
 .jr_03_5d0b:
-    ld   HL, .data_03_5e7f_PlayerShapeHidden                             ;; 03:5d0b $21 $7f $5e
-    ld   BC, $00                                       ;; 03:5d0e $01 $00 $00
+    ld   HL, .data_03_5e7f_PlayerShapeHidden
+    ld   BC, $00
 .jr_03_5d11:
-    ld   DE, wCC00_ShadowOAM                                     ;; 03:5d11 $11 $00 $cc
-    ld   A, $08                                        ;; 03:5d14 $3e $08
+    ld   DE, wCC00_ShadowOAM
+    ld   A, $08
 .jr_03_5d16:
-    push AF                                            ;; 03:5d16 $f5
-    ld   A, [HL+]                                      ;; 03:5d17 $2a
-    add  A, B                                          ;; 03:5d18 $80
-    ld   [DE], A                                       ;; 03:5d19 $12
-    inc  E                                             ;; 03:5d1a $1c
-    ld   A, [HL+]                                      ;; 03:5d1b $2a
-    add  A, C                                          ;; 03:5d1c $81
-    ld   [DE], A                                       ;; 03:5d1d $12
-    inc  E                                             ;; 03:5d1e $1c
-    ld   A, [HL+]                                      ;; 03:5d1f $2a
-    ld   [DE], A                                       ;; 03:5d20 $12
-    inc  E                                             ;; 03:5d21 $1c
-    ld   A, [wD74A_Player_InWaterOrLava]                                    ;; 03:5d22 $fa $4a $d7
-    or   A, [HL]                                       ;; 03:5d25 $b6
-    ld   [DE], A                                       ;; 03:5d26 $12
-    inc  HL                                            ;; 03:5d27 $23
-    inc  E                                             ;; 03:5d28 $1c
-    pop  AF                                            ;; 03:5d29 $f1
-    dec  A                                             ;; 03:5d2a $3d
-    jr   NZ, .jr_03_5d16                               ;; 03:5d2b $20 $e9
-    ld   A, [wD742_Player_CurrentFly]                                    ;; 03:5d2d $fa $42 $d7
-    and  A, A                                          ;; 03:5d30 $a7
-    ret  Z                                             ;; 03:5d31 $c8
-    ld   A, [wD212_Player_ScreenXPosition]                                    ;; 03:5d32 $fa $12 $d2
-    ld   [wD76C_FlyPowerup_AnchorX], A                                    ;; 03:5d35 $ea $6c $d7
-    ld   A, [wD213_Player_ScreenYPosition]                                    ;; 03:5d38 $fa $13 $d2
-    sub  A, $20                                        ;; 03:5d3b $d6 $20
-    ld   [wD76D_FlyPowerup_AnchorY], A                                    ;; 03:5d3d $ea $6d $d7
-    ld   HL, wD739_Entity_OamWriteOffset                                     ;; 03:5d40 $21 $39 $d7
-    ld   E, [HL]                                       ;; 03:5d43 $5e
-    ld   A, E                                          ;; 03:5d44 $7b
-    add  A, $04                                        ;; 03:5d45 $c6 $04
-    ld   [HL], A                                       ;; 03:5d47 $77
-    ld   D, $cc                                        ;; 03:5d48 $16 $cc
-    ld   HL, wD76E_FlyPowerup_OrbitPhase                                     ;; 03:5d4a $21 $6e $d7
-    inc  [HL]                                          ;; 03:5d4d $34
-    ld   A, [HL]                                       ;; 03:5d4e $7e
-    rrca                                               ;; 03:5d4f $0f
-    and  A, $0f                                        ;; 03:5d50 $e6 $0f
-    add  A, A                                          ;; 03:5d52 $87
-    ld   L, A                                          ;; 03:5d53 $6f
-    ld   H, $00                                        ;; 03:5d54 $26 $00
-    ld   BC, .data_03_5e9f_FlyParticleOffsetTable                             ;; 03:5d56 $01 $9f $5e
-    add  HL, BC                                        ;; 03:5d59 $09
-    ld   A, [wD76D_FlyPowerup_AnchorY]                                    ;; 03:5d5a $fa $6d $d7
-    add  A, [HL]                                       ;; 03:5d5d $86
-    ld   [DE], A                                       ;; 03:5d5e $12
-    inc  E                                             ;; 03:5d5f $1c
-    inc  HL                                            ;; 03:5d60 $23
-    ld   A, [wD76C_FlyPowerup_AnchorX]                                    ;; 03:5d61 $fa $6c $d7
-    add  A, [HL]                                       ;; 03:5d64 $86
-    ld   [DE], A                                       ;; 03:5d65 $12
-    inc  E                                             ;; 03:5d66 $1c
-    ld   A, $66                                        ;; 03:5d67 $3e $66
-    ld   [DE], A                                       ;; 03:5d69 $12
-    inc  E                                             ;; 03:5d6a $1c
-    ld   A, $02                                        ;; 03:5d6b $3e $02
-    ld   [DE], A                                       ;; 03:5d6d $12
-    ret                                                ;; 03:5d6e $c9
+    push AF
+    ld   A, [HL+]
+    add  A, B
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    add  A, C
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [wD74A_Player_InWaterOrLava]
+    or   A, [HL]
+    ld   [DE], A
+    inc  HL
+    inc  E
+    pop  AF
+    dec  A
+    jr   NZ, .jr_03_5d16
+    ld   A, [wD742_Player_CurrentFly]
+    and  A, A
+    ret  Z
+    ld   A, [wD212_Player_ScreenXPosition]
+    ld   [wD76C_FlyPowerup_AnchorX], A
+    ld   A, [wD213_Player_ScreenYPosition]
+    sub  A, $20
+    ld   [wD76D_FlyPowerup_AnchorY], A
+    ld   HL, wD739_Entity_OamWriteOffset
+    ld   E, [HL]
+    ld   A, E
+    add  A, $04
+    ld   [HL], A
+    ld   D, $cc
+    ld   HL, wD76E_FlyPowerup_OrbitPhase
+    inc  [HL]
+    ld   A, [HL]
+    rrca
+    and  A, $0f
+    add  A, A
+    ld   L, A
+    ld   H, $00
+    ld   BC, .data_03_5e9f_FlyParticleOffsetTable
+    add  HL, BC
+    ld   A, [wD76D_FlyPowerup_AnchorY]
+    add  A, [HL]
+    ld   [DE], A
+    inc  E
+    inc  HL
+    ld   A, [wD76C_FlyPowerup_AnchorX]
+    add  A, [HL]
+    ld   [DE], A
+    inc  E
+    ld   A, $66
+    ld   [DE], A
+    inc  E
+    ld   A, $02
+    ld   [DE], A
+    ret
 .data_03_5d6f_PlayerSpriteShapeTable:
 ; Gex is always the same shape: four columns of 8x16 sprites by two rows, 32x32
 ; pixels, centred on his position. All eight entries here are that one rectangle - what
@@ -1295,102 +1295,102 @@ call_03_5ebf_Entity_BuildSprites:
 ; Note the entity is drawn either way - failing the inner test only clears the flag. Which of
 ; the five sprite paths runs is then decided by the SPRITE_FLAG_* bits; see the struct notes in
 ; constants.asm
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 03:5ebf $fa $00 $d3
-    rlca                                               ;; 03:5ec2 $07
-    rlca                                               ;; 03:5ec3 $07
-    rlca                                               ;; 03:5ec4 $07
-    and  A, $07                                        ;; 03:5ec5 $e6 $07
-    ld   L, A                                          ;; 03:5ec7 $6f
-    ld   H, $00                                        ;; 03:5ec8 $26 $00
-    ld   DE, wD32D_Entity_OamAttrBase                                     ;; 03:5eca $11 $2d $d3
-    add  HL, DE                                        ;; 03:5ecd $19
-    ld   E, [HL]                                       ;; 03:5ece $5e
+    ld   A, [wD300_CurrentEntityAddrLo]
+    rlca
+    rlca
+    rlca
+    and  A, $07
+    ld   L, A
+    ld   H, $00
+    ld   DE, wD32D_Entity_OamAttrBase
+    add  HL, DE
+    ld   E, [HL]
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
-    ld   A, [HL]                                       ;; 03:5ed7 $7e
-    or   A, E                                          ;; 03:5ed8 $b3
-    ld   [wD335_Entity_OamAttr], A                                    ;; 03:5ed9 $ea $35 $d3
+    ld   A, [HL]
+    or   A, E
+    ld   [wD335_Entity_OamAttr], A
     LOAD_OBJ_FIELD_TO_DE ENTITY_FIELD_SPRITE_FLAGS
-    ld   A, [DE]                                       ;; 03:5ee4 $1a
-    res  SPRITE_FLAG_ON_SCREEN_BIT, A                                          ;; 03:5ee5 $cb $af
-    ld   [DE], A                                       ;; 03:5ee7 $12
-    ld   A, E                                          ;; 03:5ee8 $7b
-    xor  A, $04                                        ;; 03:5ee9 $ee $04
-    ld   E, A                                          ;; 03:5eeb $5f
-    ld   HL, wD6ED_BgMap_ScrollX                                     ;; 03:5eec $21 $ed $d6
-    ld   A, [DE]                                       ;; 03:5eef $1a
-    sub  A, [HL]                                       ;; 03:5ef0 $96
-    ld   C, A                                          ;; 03:5ef1 $4f
-    inc  HL                                            ;; 03:5ef2 $23
-    inc  DE                                            ;; 03:5ef3 $13
-    ld   A, [DE]                                       ;; 03:5ef4 $1a
-    sbc  A, [HL]                                       ;; 03:5ef5 $9e
-    jr   C, .jr_03_5f02                                ;; 03:5ef6 $38 $0a
-    and  A, A                                          ;; 03:5ef8 $a7
-    jr   NZ, .jr_03_5f2b                               ;; 03:5ef9 $20 $30
-    ld   A, C                                          ;; 03:5efb $79
-    cp   A, $b8                                        ;; 03:5efc $fe $b8
-    jr   C, .jr_03_5f0b                                ;; 03:5efe $38 $0b
-    jr   .jr_03_5f2b                                   ;; 03:5f00 $18 $29
+    ld   A, [DE]
+    res  SPRITE_FLAG_ON_SCREEN_BIT, A
+    ld   [DE], A
+    ld   A, E
+    xor  A, $04
+    ld   E, A
+    ld   HL, wD6ED_BgMap_ScrollX
+    ld   A, [DE]
+    sub  A, [HL]
+    ld   C, A
+    inc  HL
+    inc  DE
+    ld   A, [DE]
+    sbc  A, [HL]
+    jr   C, .jr_03_5f02
+    and  A, A
+    jr   NZ, .jr_03_5f2b
+    ld   A, C
+    cp   A, $b8
+    jr   C, .jr_03_5f0b
+    jr   .jr_03_5f2b
 .jr_03_5f02:
-    cp   A, $ff                                        ;; 03:5f02 $fe $ff
-    jr   NZ, .jr_03_5f2b                               ;; 03:5f04 $20 $25
-    ld   A, C                                          ;; 03:5f06 $79
-    cp   A, $d8                                        ;; 03:5f07 $fe $d8
-    jr   C, .jr_03_5f2b                                ;; 03:5f09 $38 $20
+    cp   A, $ff
+    jr   NZ, .jr_03_5f2b
+    ld   A, C
+    cp   A, $d8
+    jr   C, .jr_03_5f2b
 .jr_03_5f0b:
-    inc  E                                             ;; 03:5f0b $1c
-    ld   HL, wD6EF_BgMap_ScrollY                                     ;; 03:5f0c $21 $ef $d6
-    ld   A, [DE]                                       ;; 03:5f0f $1a
-    sub  A, [HL]                                       ;; 03:5f10 $96
-    ld   B, A                                          ;; 03:5f11 $47
-    inc  HL                                            ;; 03:5f12 $23
-    inc  DE                                            ;; 03:5f13 $13
-    ld   A, [DE]                                       ;; 03:5f14 $1a
-    sbc  A, [HL]                                       ;; 03:5f15 $9e
-    jr   C, .jr_03_5f22                                ;; 03:5f16 $38 $0a
-    and  A, A                                          ;; 03:5f18 $a7
-    jr   NZ, .jr_03_5f2b                               ;; 03:5f19 $20 $10
-    ld   A, B                                          ;; 03:5f1b $78
-    cp   A, $f0                                        ;; 03:5f1c $fe $f0
-    jr   NC, .jr_03_5f2b                               ;; 03:5f1e $30 $0b
-    jr   .jr_03_5f32                                   ;; 03:5f20 $18 $10
+    inc  E
+    ld   HL, wD6EF_BgMap_ScrollY
+    ld   A, [DE]
+    sub  A, [HL]
+    ld   B, A
+    inc  HL
+    inc  DE
+    ld   A, [DE]
+    sbc  A, [HL]
+    jr   C, .jr_03_5f22
+    and  A, A
+    jr   NZ, .jr_03_5f2b
+    ld   A, B
+    cp   A, $f0
+    jr   NC, .jr_03_5f2b
+    jr   .jr_03_5f32
 .jr_03_5f22:
-    cp   A, $ff                                        ;; 03:5f22 $fe $ff
-    jr   NZ, .jr_03_5f2b                               ;; 03:5f24 $20 $05
-    ld   A, B                                          ;; 03:5f26 $78
-    cp   A, $f0                                        ;; 03:5f27 $fe $f0
-    jr   NC, .jr_03_5f32                               ;; 03:5f29 $30 $07
+    cp   A, $ff
+    jr   NZ, .jr_03_5f2b
+    ld   A, B
+    cp   A, $f0
+    jr   NC, .jr_03_5f32
 .jr_03_5f2b:
-    call call_00_350c_Entity_CheckIfOnScreen                                  ;; 03:5f2b $cd $0c $35
-    call C, call_00_3910_Entity_ClearSlot                               ;; 03:5f2e $dc $10 $39
-    ret                                                ;; 03:5f31 $c9
+    call call_00_350c_Entity_CheckIfOnScreen
+    call C, call_00_3910_Entity_ClearSlot
+    ret
 .jr_03_5f32:
-    inc  E                                             ;; 03:5f32 $1c
-    ld   A, C                                          ;; 03:5f33 $79
-    add  A, $08                                        ;; 03:5f34 $c6 $08
-    ld   C, A                                          ;; 03:5f36 $4f
-    ld   [DE], A                                       ;; 03:5f37 $12 ; updates entity instance + 0x12
-    inc  E                                             ;; 03:5f38 $1c
-    ld   A, B                                          ;; 03:5f39 $78
-    add  A, $10                                        ;; 03:5f3a $c6 $10
-    ld   B, A                                          ;; 03:5f3c $47
-    ld   [DE], A                                       ;; 03:5f3d $12 ; updates entity instance + 0x13
-    ld   A, E                                          ;; 03:5f3e $7b
-    xor  A, $19                                        ;; 03:5f3f $ee $19
-    ld   E, A                                          ;; 03:5f41 $5f
-    ld   A, C                                          ;; 03:5f42 $79
-    cp   A, $08                                        ;; 03:5f43 $fe $08
-    jr   C, .jr_03_5f58_Entity_SelectSpritePath                                ;; 03:5f45 $38 $11
-    cp   A, $a8                                        ;; 03:5f47 $fe $a8
-    jr   NC, .jr_03_5f58_Entity_SelectSpritePath                               ;; 03:5f49 $30 $0d
-    ld   A, B                                          ;; 03:5f4b $78
-    cp   A, $10                                        ;; 03:5f4c $fe $10
-    jr   C, .jr_03_5f58_Entity_SelectSpritePath                                ;; 03:5f4e $38 $08
-    cp   A, $a0                                        ;; 03:5f50 $fe $a0
-    jr   NC, .jr_03_5f58_Entity_SelectSpritePath                               ;; 03:5f52 $30 $04
-    ld   A, [DE]                                       ;; 03:5f54 $1a
-    set  SPRITE_FLAG_ON_SCREEN_BIT, A                       ;; 03:5f55 $cb $ef
-    ld   [DE], A                                       ;; 03:5f57 $12
+    inc  E
+    ld   A, C
+    add  A, $08
+    ld   C, A
+    ld   [DE], A                                       ; updates entity instance + 0x12
+    inc  E
+    ld   A, B
+    add  A, $10
+    ld   B, A
+    ld   [DE], A                                       ; updates entity instance + 0x13
+    ld   A, E
+    xor  A, $19
+    ld   E, A
+    ld   A, C
+    cp   A, $08
+    jr   C, .jr_03_5f58_Entity_SelectSpritePath
+    cp   A, $a8
+    jr   NC, .jr_03_5f58_Entity_SelectSpritePath
+    ld   A, B
+    cp   A, $10
+    jr   C, .jr_03_5f58_Entity_SelectSpritePath
+    cp   A, $a0
+    jr   NC, .jr_03_5f58_Entity_SelectSpritePath
+    ld   A, [DE]
+    set  SPRITE_FLAG_ON_SCREEN_BIT, A
+    ld   [DE], A
 .jr_03_5f58_Entity_SelectSpritePath:
 ; Picks one of five drawing paths from the SPRITE_FLAG_* bits, tested in this order:
 ; invisible, embedded sprite list, streams-own-gfx, layout-by-action, and finally the
@@ -1408,80 +1408,80 @@ call_03_5ebf_Entity_BuildSprites:
 ; (dY + B, dX + C, tile + wD73A_Entity_TileIdBase, attr | wD335_Entity_OamAttr).
 ; The offset is capped at $A0, so an entity that would overflow OAM is silently and
 ; partially dropped rather than corrupting anything past it
-    ld   A, [DE]                                       ;; 03:5f58 $1a
-    bit  SPRITE_FLAG_INVISIBLE_BIT, A                      ;; 03:5f59 $cb $5f
-    jp   NZ, call_03_4c76_EntityCollision_Dispatch                                ;; 03:5f5b $c2 $76 $4c
-    bit  SPRITE_FLAG_EMBEDDED_SPRITE_DATA_BIT, A                ;; 03:5f5e $cb $47
-    jp   NZ, .jp_03_6451_Entity_BuildSprites_SpriteList                               ;; 03:5f60 $c2 $51 $64
-    bit  SPRITE_FLAG_STREAMS_OWN_GFX_BIT, A                 ;; 03:5f63 $cb $7f
-    jr   NZ, .jr_03_5fcb_Entity_BuildSprites_Streamed                               ;; 03:5f65 $20 $64
-    bit  SPRITE_FLAG_FIXED_SHAPE_BIT, A                ;; 03:5f67 $cb $67
-    jp   NZ, .jp_03_602e_Entity_BuildSprites_FixedShape                               ;; 03:5f69 $c2 $2e $60
-    ld   A, E                                          ;; 03:5f6c $7b
-    xor  A, $07                                        ;; 03:5f6d $ee $07
-    ld   E, A                                          ;; 03:5f6f $5f
-    ld   A, [DE]                                       ;; 03:5f70 $1a
-    swap A                                             ;; 03:5f71 $cb $37
-    ld   HL, wD587_EntityGfxVramPage                                     ;; 03:5f73 $21 $87 $d5
-    or   A, [HL]                                       ;; 03:5f76 $b6
-    push AF                                            ;; 03:5f77 $f5
-    ld   A, E                                          ;; 03:5f78 $7b
-    xor  A, $0d                                        ;; 03:5f79 $ee $0d
-    ld   E, A                                          ;; 03:5f7b $5f
-    ld   A, [DE]                                       ;; 03:5f7c $1a
-    ld   L, A                                          ;; 03:5f7d $6f
-    ld   H, $00                                        ;; 03:5f7e $26 $00
-    add  HL, HL                                        ;; 03:5f80 $29
-    ld   DE, data_03_5446_EntitySpriteDescriptors + 1     ;; 03:5f81 $11 $47 $54
-    add  HL, DE                                        ;; 03:5f84 $19
-    ld   A, [HL-]                                      ;; 03:5f85 $3a
-    ld   [wD73A_Entity_TileIdBase], A                                    ;; 03:5f86 $ea $3a $d7
-    pop  AF                                            ;; 03:5f89 $f1
-    bit  7, [HL]                                       ;; 03:5f8a $cb $7e
-    jr   Z, .jr_03_5f96                                ;; 03:5f8c $28 $08
-    ld   A, [HL]                                       ;; 03:5f8e $7e
-    sub  A, $80                                        ;; 03:5f8f $d6 $80
-    ld   DE, data_03_5a8a_SpriteShapeTable_Alt                              ;; 03:5f91 $11 $8a $5a
-    jr   .jr_03_5f9a                                   ;; 03:5f94 $18 $04
+    ld   A, [DE]
+    bit  SPRITE_FLAG_INVISIBLE_BIT, A
+    jp   NZ, call_03_4c76_EntityCollision_Dispatch
+    bit  SPRITE_FLAG_EMBEDDED_SPRITE_DATA_BIT, A
+    jp   NZ, .jp_03_6451_Entity_BuildSprites_SpriteList
+    bit  SPRITE_FLAG_STREAMS_OWN_GFX_BIT, A
+    jr   NZ, .jr_03_5fcb_Entity_BuildSprites_Streamed
+    bit  SPRITE_FLAG_FIXED_SHAPE_BIT, A
+    jp   NZ, .jp_03_602e_Entity_BuildSprites_FixedShape
+    ld   A, E
+    xor  A, $07
+    ld   E, A
+    ld   A, [DE]
+    swap A
+    ld   HL, wD587_EntityGfxVramPage
+    or   A, [HL]
+    push AF
+    ld   A, E
+    xor  A, $0d
+    ld   E, A
+    ld   A, [DE]
+    ld   L, A
+    ld   H, $00
+    add  HL, HL
+    ld   DE, data_03_5446_EntitySpriteDescriptors + 1
+    add  HL, DE
+    ld   A, [HL-]
+    ld   [wD73A_Entity_TileIdBase], A
+    pop  AF
+    bit  7, [HL]
+    jr   Z, .jr_03_5f96
+    ld   A, [HL]
+    sub  A, $80
+    ld   DE, data_03_5a8a_SpriteShapeTable_Alt
+    jr   .jr_03_5f9a
 .jr_03_5f96:
-    add  A, [HL]                                       ;; 03:5f96 $86
-    ld   DE, data_03_5566_SpriteShapeTable_Main                              ;; 03:5f97 $11 $66 $55
+    add  A, [HL]
+    ld   DE, data_03_5566_SpriteShapeTable_Main
 .jr_03_5f9a:
-    call call_00_07b9_GetPointerFromTable                                  ;; 03:5f9a $cd $b9 $07
-    ld   A, [wD739_Entity_OamWriteOffset]                                    ;; 03:5f9d $fa $39 $d7
-    ld   E, A                                          ;; 03:5fa0 $5f
-    ld   D, $cc                                        ;; 03:5fa1 $16 $cc
-    ld   A, [HL+]                                      ;; 03:5fa3 $2a
+    call call_00_07b9_GetPointerFromTable
+    ld   A, [wD739_Entity_OamWriteOffset]
+    ld   E, A
+    ld   D, $cc
+    ld   A, [HL+]
 .jr_03_5fa4:
-    push AF                                            ;; 03:5fa4 $f5
-    ld   A, E                                          ;; 03:5fa5 $7b
-    cp   A, $a0                                        ;; 03:5fa6 $fe $a0
-    jr   NC, .jr_03_5fc0                               ;; 03:5fa8 $30 $16
-    ld   A, [HL+]                                      ;; 03:5faa $2a
-    add  A, B                                          ;; 03:5fab $80
-    ld   [DE], A                                       ;; 03:5fac $12
-    inc  E                                             ;; 03:5fad $1c
-    ld   A, [HL+]                                      ;; 03:5fae $2a
-    add  A, C                                          ;; 03:5faf $81
-    ld   [DE], A                                       ;; 03:5fb0 $12
-    inc  E                                             ;; 03:5fb1 $1c
-    ld   A, [wD73A_Entity_TileIdBase]                                    ;; 03:5fb2 $fa $3a $d7
-    add  A, [HL]                                       ;; 03:5fb5 $86
-    ld   [DE], A                                       ;; 03:5fb6 $12
-    inc  HL                                            ;; 03:5fb7 $23
-    inc  E                                             ;; 03:5fb8 $1c
-    ld   A, [wD335_Entity_OamAttr]                                    ;; 03:5fb9 $fa $35 $d3
-    or   A, [HL]                                       ;; 03:5fbc $b6
-    ld   [DE], A                                       ;; 03:5fbd $12
-    inc  HL                                            ;; 03:5fbe $23
-    inc  E                                             ;; 03:5fbf $1c
+    push AF
+    ld   A, E
+    cp   A, $a0
+    jr   NC, .jr_03_5fc0
+    ld   A, [HL+]
+    add  A, B
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    add  A, C
+    ld   [DE], A
+    inc  E
+    ld   A, [wD73A_Entity_TileIdBase]
+    add  A, [HL]
+    ld   [DE], A
+    inc  HL
+    inc  E
+    ld   A, [wD335_Entity_OamAttr]
+    or   A, [HL]
+    ld   [DE], A
+    inc  HL
+    inc  E
 .jr_03_5fc0:
-    pop  AF                                            ;; 03:5fc0 $f1
-    dec  A                                             ;; 03:5fc1 $3d
-    jr   NZ, .jr_03_5fa4                               ;; 03:5fc2 $20 $e0
-    ld   A, E                                          ;; 03:5fc4 $7b
-    ld   [wD739_Entity_OamWriteOffset], A                                    ;; 03:5fc5 $ea $39 $d7
-    jp   call_03_4c76_EntityCollision_Dispatch                                    ;; 03:5fc8 $c3 $76 $4c
+    pop  AF
+    dec  A
+    jr   NZ, .jr_03_5fa4
+    ld   A, E
+    ld   [wD739_Entity_OamWriteOffset], A
+    jp   call_03_4c76_EntityCollision_Dispatch
 .jr_03_5fcb_Entity_BuildSprites_Streamed:
 ; Sprite path for entities with SPRITE_FLAG_STREAMS_OWN_GFX set - and a byte-for-byte
 ; copy of the default path above it. From the `ld A, [DE]` that reads
@@ -1495,68 +1495,68 @@ call_03_5ebf_Entity_BuildSprites:
 ; VRAM. That is the whole animation system for these entities: the shape stays put and
 ; the tiles underneath it are replaced
     LOAD_OBJ_FIELD_TO_DE ENTITY_FIELD_FACING_FLAGS
-    ld   A, [DE]                                       ;; 03:5fd3 $1a
-    swap A                                             ;; 03:5fd4 $cb $37
-    ld   HL, wD587_EntityGfxVramPage                                     ;; 03:5fd6 $21 $87 $d5
-    or   A, [HL]                                       ;; 03:5fd9 $b6
-    push AF                                            ;; 03:5fda $f5
-    ld   A, E                                          ;; 03:5fdb $7b
-    xor  A, $0d                                        ;; 03:5fdc $ee $0d
-    ld   E, A                                          ;; 03:5fde $5f
-    ld   A, [DE]                                       ;; 03:5fdf $1a
-    ld   L, A                                          ;; 03:5fe0 $6f
-    ld   H, $00                                        ;; 03:5fe1 $26 $00
-    add  HL, HL                                        ;; 03:5fe3 $29
-    ld   DE, data_03_5446_EntitySpriteDescriptors + 1     ;; 03:5fe4 $11 $47 $54
-    add  HL, DE                                        ;; 03:5fe7 $19
-    ld   A, [HL-]                                      ;; 03:5fe8 $3a
-    ld   [wD73A_Entity_TileIdBase], A                                    ;; 03:5fe9 $ea $3a $d7
-    pop  AF                                            ;; 03:5fec $f1
-    bit  7, [HL]                                       ;; 03:5fed $cb $7e
-    jr   Z, .jr_03_5ff9                                ;; 03:5fef $28 $08
-    ld   A, [HL]                                       ;; 03:5ff1 $7e
-    sub  A, $80                                        ;; 03:5ff2 $d6 $80
-    ld   DE, data_03_5a8a_SpriteShapeTable_Alt                              ;; 03:5ff4 $11 $8a $5a
-    jr   .jr_03_5ffd                                   ;; 03:5ff7 $18 $04
+    ld   A, [DE]
+    swap A
+    ld   HL, wD587_EntityGfxVramPage
+    or   A, [HL]
+    push AF
+    ld   A, E
+    xor  A, $0d
+    ld   E, A
+    ld   A, [DE]
+    ld   L, A
+    ld   H, $00
+    add  HL, HL
+    ld   DE, data_03_5446_EntitySpriteDescriptors + 1
+    add  HL, DE
+    ld   A, [HL-]
+    ld   [wD73A_Entity_TileIdBase], A
+    pop  AF
+    bit  7, [HL]
+    jr   Z, .jr_03_5ff9
+    ld   A, [HL]
+    sub  A, $80
+    ld   DE, data_03_5a8a_SpriteShapeTable_Alt
+    jr   .jr_03_5ffd
 .jr_03_5ff9:
-    add  A, [HL]                                       ;; 03:5ff9 $86
-    ld   DE, data_03_5566_SpriteShapeTable_Main                              ;; 03:5ffa $11 $66 $55
+    add  A, [HL]
+    ld   DE, data_03_5566_SpriteShapeTable_Main
 .jr_03_5ffd:
-    call call_00_07b9_GetPointerFromTable                                  ;; 03:5ffd $cd $b9 $07
-    ld   A, [wD739_Entity_OamWriteOffset]                                    ;; 03:6000 $fa $39 $d7
-    ld   E, A                                          ;; 03:6003 $5f
-    ld   D, $cc                                        ;; 03:6004 $16 $cc
-    ld   A, [HL+]                                      ;; 03:6006 $2a
+    call call_00_07b9_GetPointerFromTable
+    ld   A, [wD739_Entity_OamWriteOffset]
+    ld   E, A
+    ld   D, $cc
+    ld   A, [HL+]
 .jr_03_6007:
-    push AF                                            ;; 03:6007 $f5
-    ld   A, E                                          ;; 03:6008 $7b
-    cp   A, $a0                                        ;; 03:6009 $fe $a0
-    jr   NC, .jr_03_6023                               ;; 03:600b $30 $16
-    ld   A, [HL+]                                      ;; 03:600d $2a
-    add  A, B                                          ;; 03:600e $80
-    ld   [DE], A                                       ;; 03:600f $12
-    inc  E                                             ;; 03:6010 $1c
-    ld   A, [HL+]                                      ;; 03:6011 $2a
-    add  A, C                                          ;; 03:6012 $81
-    ld   [DE], A                                       ;; 03:6013 $12
-    inc  E                                             ;; 03:6014 $1c
-    ld   A, [wD73A_Entity_TileIdBase]                                    ;; 03:6015 $fa $3a $d7
-    add  A, [HL]                                       ;; 03:6018 $86
-    ld   [DE], A                                       ;; 03:6019 $12
-    inc  HL                                            ;; 03:601a $23
-    inc  E                                             ;; 03:601b $1c
-    ld   A, [wD335_Entity_OamAttr]                                    ;; 03:601c $fa $35 $d3
-    or   A, [HL]                                       ;; 03:601f $b6
-    ld   [DE], A                                       ;; 03:6020 $12
-    inc  HL                                            ;; 03:6021 $23
-    inc  E                                             ;; 03:6022 $1c
+    push AF
+    ld   A, E
+    cp   A, $a0
+    jr   NC, .jr_03_6023
+    ld   A, [HL+]
+    add  A, B
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    add  A, C
+    ld   [DE], A
+    inc  E
+    ld   A, [wD73A_Entity_TileIdBase]
+    add  A, [HL]
+    ld   [DE], A
+    inc  HL
+    inc  E
+    ld   A, [wD335_Entity_OamAttr]
+    or   A, [HL]
+    ld   [DE], A
+    inc  HL
+    inc  E
 .jr_03_6023:
-    pop  AF                                            ;; 03:6023 $f1
-    dec  A                                             ;; 03:6024 $3d
-    jr   NZ, .jr_03_6007                               ;; 03:6025 $20 $e0
-    ld   A, E                                          ;; 03:6027 $7b
-    ld   [wD739_Entity_OamWriteOffset], A                                    ;; 03:6028 $ea $39 $d7
-    jp   call_03_4c76_EntityCollision_Dispatch                                    ;; 03:602b $c3 $76 $4c
+    pop  AF
+    dec  A
+    jr   NZ, .jr_03_6007
+    ld   A, E
+    ld   [wD739_Entity_OamWriteOffset], A
+    jp   call_03_4c76_EntityCollision_Dispatch
 .jp_03_602e_Entity_BuildSprites_FixedShape:
 ; Sprite path for entities with SPRITE_FLAG_FIXED_SHAPE set - the platforms,
 ; blocks, buttons and projectiles.
@@ -1577,71 +1577,71 @@ call_03_5ebf_Entity_BuildSprites:
 ;
 ; The shape blocks are the same format as the ones in bank03_sprite_frame_data.asm -
 ; a part count then that many obj_part records
-    push BC                                            ;; 03:602e $c5
+    push BC
     LOAD_OBJ_FIELD_TO_DE ENTITY_FIELD_SPRITE_ID
-    ld   A, [DE]                                       ;; 03:6037 $1a
-    ld   [wD73A_Entity_TileIdBase], A                                    ;; 03:6038 $ea $3a $d7
-    ld   A, E                                          ;; 03:603b $7b
-    xor  A, $08                                        ;; 03:603c $ee $08
-    ld   E, A                                          ;; 03:603e $5f
-    ld   A, [DE]                                       ;; 03:603f $1a
-    ld   L, A                                          ;; 03:6040 $6f
-    ld   H, $00                                        ;; 03:6041 $26 $00
-    add  HL, HL                                        ;; 03:6043 $29
-    ld   BC, data_03_5446_EntitySpriteDescriptors         ;; 03:6044 $01 $46 $54
-    add  HL, BC                                        ;; 03:6047 $09
-    ld   A, E                                          ;; 03:6048 $7b
-    xor  A, $0d                                        ;; 03:6049 $ee $0d
-    ld   E, A                                          ;; 03:604b $5f
-    ld   A, [DE]                                       ;; 03:604c $1a
-    sub  A, $00                                        ;; 03:604d $d6 $00
-    jr   Z, .jr_03_6053                                ;; 03:604f $28 $02
-    ld   A, $01                                        ;; 03:6051 $3e $01
+    ld   A, [DE]
+    ld   [wD73A_Entity_TileIdBase], A
+    ld   A, E
+    xor  A, $08
+    ld   E, A
+    ld   A, [DE]
+    ld   L, A
+    ld   H, $00
+    add  HL, HL
+    ld   BC, data_03_5446_EntitySpriteDescriptors
+    add  HL, BC
+    ld   A, E
+    xor  A, $0d
+    ld   E, A
+    ld   A, [DE]
+    sub  A, $00
+    jr   Z, .jr_03_6053
+    ld   A, $01
 .jr_03_6053:
-    add  A, [HL]                                       ;; 03:6053 $86
-    ld   L, A                                          ;; 03:6054 $6f
-    ld   H, $00                                        ;; 03:6055 $26 $00
-    add  HL, HL                                        ;; 03:6057 $29
-    ld   DE, .data_03_608e_FixedSpriteShapeTable                             ;; 03:6058 $11 $8e $60
-    add  HL, DE                                        ;; 03:605b $19
-    ld   A, [HL+]                                      ;; 03:605c $2a
-    ld   H, [HL]                                       ;; 03:605d $66
-    ld   L, A                                          ;; 03:605e $6f
-    pop  BC                                            ;; 03:605f $c1
-    ld   A, [wD739_Entity_OamWriteOffset]                                    ;; 03:6060 $fa $39 $d7
-    ld   E, A                                          ;; 03:6063 $5f
-    ld   D, $cc                                        ;; 03:6064 $16 $cc
-    ld   A, [HL+]                                      ;; 03:6066 $2a
+    add  A, [HL]
+    ld   L, A
+    ld   H, $00
+    add  HL, HL
+    ld   DE, .data_03_608e_FixedSpriteShapeTable
+    add  HL, DE
+    ld   A, [HL+]
+    ld   H, [HL]
+    ld   L, A
+    pop  BC
+    ld   A, [wD739_Entity_OamWriteOffset]
+    ld   E, A
+    ld   D, $cc
+    ld   A, [HL+]
 .jr_03_6067:
-    push AF                                            ;; 03:6067 $f5
-    ld   A, E                                          ;; 03:6068 $7b
-    cp   A, $a0                                        ;; 03:6069 $fe $a0
-    jr   NC, .jr_03_6083                               ;; 03:606b $30 $16
-    ld   A, [HL+]                                      ;; 03:606d $2a
-    add  A, B                                          ;; 03:606e $80
-    ld   [DE], A                                       ;; 03:606f $12
-    inc  E                                             ;; 03:6070 $1c
-    ld   A, [HL+]                                      ;; 03:6071 $2a
-    add  A, C                                          ;; 03:6072 $81
-    ld   [DE], A                                       ;; 03:6073 $12
-    inc  E                                             ;; 03:6074 $1c
-    ld   A, [wD73A_Entity_TileIdBase]                                    ;; 03:6075 $fa $3a $d7
-    add  A, [HL]                                       ;; 03:6078 $86
-    ld   [DE], A                                       ;; 03:6079 $12
-    inc  HL                                            ;; 03:607a $23
-    inc  E                                             ;; 03:607b $1c
-    ld   A, [wD335_Entity_OamAttr]                                    ;; 03:607c $fa $35 $d3
-    or   A, [HL]                                       ;; 03:607f $b6
-    ld   [DE], A                                       ;; 03:6080 $12
-    inc  HL                                            ;; 03:6081 $23
-    inc  E                                             ;; 03:6082 $1c
+    push AF
+    ld   A, E
+    cp   A, $a0
+    jr   NC, .jr_03_6083
+    ld   A, [HL+]
+    add  A, B
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    add  A, C
+    ld   [DE], A
+    inc  E
+    ld   A, [wD73A_Entity_TileIdBase]
+    add  A, [HL]
+    ld   [DE], A
+    inc  HL
+    inc  E
+    ld   A, [wD335_Entity_OamAttr]
+    or   A, [HL]
+    ld   [DE], A
+    inc  HL
+    inc  E
 .jr_03_6083:
-    pop  AF                                            ;; 03:6083 $f1
-    dec  A                                             ;; 03:6084 $3d
-    jr   NZ, .jr_03_6067                               ;; 03:6085 $20 $e0
-    ld   A, E                                          ;; 03:6087 $7b
-    ld   [wD739_Entity_OamWriteOffset], A                                    ;; 03:6088 $ea $39 $d7
-    jp   call_03_4c76_EntityCollision_Dispatch                                    ;; 03:608b $c3 $76 $4c
+    pop  AF
+    dec  A
+    jr   NZ, .jr_03_6067
+    ld   A, E
+    ld   [wD739_Entity_OamWriteOffset], A
+    jp   call_03_4c76_EntityCollision_Dispatch
 .data_03_608e_FixedSpriteShapeTable:
 ; The shape catalogue for everything drawn by the routine above - the platforms,
 ; blocks, buttons, projectiles and other scenery. Format is exactly the same as the
@@ -2108,61 +2108,61 @@ call_03_5ebf_Entity_BuildSprites:
 ;
 ; So the particle builders never touch OAM themselves; they only produce the list, and
 ; this is the one place it is drawn
-    call call_00_39e0_Entity_GetSpriteListPtr                                  ;; 03:6451 $cd $e0 $39
-    ld   L, E                                          ;; 03:6454 $6b
-    ld   H, D                                          ;; 03:6455 $62
-    ld   A, [wD739_Entity_OamWriteOffset]                                    ;; 03:6456 $fa $39 $d7
-    ld   E, A                                          ;; 03:6459 $5f
-    ld   D, $cc                                        ;; 03:645a $16 $cc
-    ld   A, [HL+]                                      ;; 03:645c $2a
-    and  A, A                                          ;; 03:645d $a7
-    jp   Z, call_03_4c76_EntityCollision_Dispatch                                 ;; 03:645e $ca $76 $4c
+    call call_00_39e0_Entity_GetSpriteListPtr
+    ld   L, E
+    ld   H, D
+    ld   A, [wD739_Entity_OamWriteOffset]
+    ld   E, A
+    ld   D, $cc
+    ld   A, [HL+]
+    and  A, A
+    jp   Z, call_03_4c76_EntityCollision_Dispatch
 .jr_03_6461:
-    push AF                                            ;; 03:6461 $f5
-    ld   A, E                                          ;; 03:6462 $7b
-    cp   A, $a0                                        ;; 03:6463 $fe $a0
-    jr   NC, .jr_03_6479                               ;; 03:6465 $30 $12
-    ld   A, [HL+]                                      ;; 03:6467 $2a
-    add  A, B                                          ;; 03:6468 $80
-    ld   [DE], A                                       ;; 03:6469 $12
-    inc  E                                             ;; 03:646a $1c
-    ld   A, [HL+]                                      ;; 03:646b $2a
-    add  A, C                                          ;; 03:646c $81
-    ld   [DE], A                                       ;; 03:646d $12
-    inc  E                                             ;; 03:646e $1c
-    ld   A, [HL+]                                      ;; 03:646f $2a
-    ld   [DE], A                                       ;; 03:6470 $12
-    inc  E                                             ;; 03:6471 $1c
-    ld   A, [wD335_Entity_OamAttr]                                    ;; 03:6472 $fa $35 $d3
-    or   A, [HL]                                       ;; 03:6475 $b6
-    ld   [DE], A                                       ;; 03:6476 $12
-    inc  HL                                            ;; 03:6477 $23
-    inc  E                                             ;; 03:6478 $1c
+    push AF
+    ld   A, E
+    cp   A, $a0
+    jr   NC, .jr_03_6479
+    ld   A, [HL+]
+    add  A, B
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    add  A, C
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [wD335_Entity_OamAttr]
+    or   A, [HL]
+    ld   [DE], A
+    inc  HL
+    inc  E
 .jr_03_6479:
-    pop  AF                                            ;; 03:6479 $f1
-    dec  A                                             ;; 03:647a $3d
-    jr   NZ, .jr_03_6461                               ;; 03:647b $20 $e4
-    ld   A, E                                          ;; 03:647d $7b
-    ld   [wD739_Entity_OamWriteOffset], A                                    ;; 03:647e $ea $39 $d7
-    jp   call_03_4c76_EntityCollision_Dispatch                                    ;; 03:6481 $c3 $76 $4c
+    pop  AF
+    dec  A
+    jr   NZ, .jr_03_6461
+    ld   A, E
+    ld   [wD739_Entity_OamWriteOffset], A
+    jp   call_03_4c76_EntityCollision_Dispatch
 
 call_03_6484_OAM_ClearUnusedEntries:
-; Clears all OAM entries from wD739_Entity_OamWriteOffset (current write cursor) up to $5F (end of NPC OAM region) 
+; Clears all OAM entries from wD739_Entity_OamWriteOffset (current write cursor) up to $5F (end of NPC OAM region)
 ; by writing $00 to every Y byte (stride 4). Effectively hides any sprite slots not written this frame
-    ld   A, $5f                                        ;; 03:6484 $3e $5f
-    ld   HL, wD739_Entity_OamWriteOffset                                     ;; 03:6486 $21 $39 $d7
-    ld   L, [HL]                                       ;; 03:6489 $6e
-    cp   A, L                                          ;; 03:648a $bd
-    ret  C                                             ;; 03:648b $d8
-    ld   H, $cc                                        ;; 03:648c $26 $cc
-    ld   DE, $04                                       ;; 03:648e $11 $04 $00
-    ld   C, $00                                        ;; 03:6491 $0e $00
+    ld   A, $5f
+    ld   HL, wD739_Entity_OamWriteOffset
+    ld   L, [HL]
+    cp   A, L
+    ret  C
+    ld   H, $cc
+    ld   DE, $04
+    ld   C, $00
 .jr_03_6493:
-    ld   [HL], C                                       ;; 03:6493 $71
-    add  HL, DE                                        ;; 03:6494 $19
-    cp   A, L                                          ;; 03:6495 $bd
-    jr   NC, .jr_03_6493                               ;; 03:6496 $30 $fb
-    ret                                                ;; 03:6498 $c9
+    ld   [HL], C
+    add  HL, DE
+    cp   A, L
+    jr   NC, .jr_03_6493
+    ret
 
 call_03_6499_Collectible_BuildSprites:
 ; Draws the on-screen collectibles into wCC60_ShadowOAM_CollectibleSprites, and collects
@@ -2190,118 +2190,118 @@ call_03_6499_Collectible_BuildSprites:
 ; The OAM region is capped by "bit 7, L" - once the write pointer passes $CC80 the loop
 ; stops advancing it, so a crowded screen silently drops the extras rather than
 ; overrunning into the next OAM block. Unused entries after the last one are cleared
-    ld   HL, wD6ED_BgMap_ScrollX                                     ;; 03:6499 $21 $ed $d6
-    ld   A, [HL]                                       ;; 03:649c $7e
-    and  A, $0f                                        ;; 03:649d $e6 $0f
-    ld   C, A                                          ;; 03:649f $4f
-    ld   A, $0c                                        ;; 03:64a0 $3e $0c
-    sub  A, C                                          ;; 03:64a2 $91
-    ld   [wD64D_Collectible_OamOriginX], A                                    ;; 03:64a3 $ea $4d $d6
-    ld   A, [HL+]                                      ;; 03:64a6 $2a
-    swap A                                             ;; 03:64a7 $cb $37
-    and  A, $0f                                        ;; 03:64a9 $e6 $0f
-    ld   C, A                                          ;; 03:64ab $4f
-    ld   A, [HL+]                                      ;; 03:64ac $2a
-    swap A                                             ;; 03:64ad $cb $37
-    or   A, C                                          ;; 03:64af $b1
-    ld   C, A                                          ;; 03:64b0 $4f
-    ld   B, HIGH(wC700_Collectible_ScanCountByColumn)  ;; 03:64b1 $06 $c7
-    ld   A, [BC]                                       ;; 03:64b3 $0a
-    and  A, A                                          ;; 03:64b4 $a7
-    ret  Z                                             ;; 03:64b5 $c8
-    push AF                                            ;; 03:64b6 $f5
-    dec  B                                             ;; 03:64b7 $05
-    ld   A, [BC]                                       ;; 03:64b8 $0a
-    ld   E, A                                          ;; 03:64b9 $5f
-    ld   HL, wD6EF_BgMap_ScrollY                                     ;; 03:64ba $21 $ef $d6
-    ld   A, [HL]                                       ;; 03:64bd $7e
-    and  A, $0f                                        ;; 03:64be $e6 $0f
-    ld   B, A                                          ;; 03:64c0 $47
-    ld   A, $10                                        ;; 03:64c1 $3e $10
-    sub  A, B                                          ;; 03:64c3 $90
-    ld   [wD64E_Collectible_OamOriginY], A                                    ;; 03:64c4 $ea $4e $d6
-    ld   A, [HL+]                                      ;; 03:64c7 $2a
-    swap A                                             ;; 03:64c8 $cb $37
-    and  A, $0f                                        ;; 03:64ca $e6 $0f
-    ld   B, A                                          ;; 03:64cc $47
-    ld   A, [HL+]                                      ;; 03:64cd $2a
-    swap A                                             ;; 03:64ce $cb $37
-    or   A, B                                          ;; 03:64d0 $b0
-    ld   B, A                                          ;; 03:64d1 $47
-    ld   HL, wCC60_ShadowOAM_CollectibleSprites                                     ;; 03:64d2 $21 $60 $cc
-    pop  AF                                            ;; 03:64d5 $f1
+    ld   HL, wD6ED_BgMap_ScrollX
+    ld   A, [HL]
+    and  A, $0f
+    ld   C, A
+    ld   A, $0c
+    sub  A, C
+    ld   [wD64D_Collectible_OamOriginX], A
+    ld   A, [HL+]
+    swap A
+    and  A, $0f
+    ld   C, A
+    ld   A, [HL+]
+    swap A
+    or   A, C
+    ld   C, A
+    ld   B, HIGH(wC700_Collectible_ScanCountByColumn)
+    ld   A, [BC]
+    and  A, A
+    ret  Z
+    push AF
+    dec  B
+    ld   A, [BC]
+    ld   E, A
+    ld   HL, wD6EF_BgMap_ScrollY
+    ld   A, [HL]
+    and  A, $0f
+    ld   B, A
+    ld   A, $10
+    sub  A, B
+    ld   [wD64E_Collectible_OamOriginY], A
+    ld   A, [HL+]
+    swap A
+    and  A, $0f
+    ld   B, A
+    ld   A, [HL+]
+    swap A
+    or   A, B
+    ld   B, A
+    ld   HL, wCC60_ShadowOAM_CollectibleSprites
+    pop  AF
 .jr_03_64d6:
-    push AF                                            ;; 03:64d6 $f5
-    push BC                                            ;; 03:64d7 $c5
-    ld   D, HIGH(wC500_Collectible_GridY)              ;; 03:64d8 $16 $c5
-    ld   A, [DE]                                       ;; 03:64da $1a
-    sub  A, B                                          ;; 03:64db $90
-    cp   A, $0a                                        ;; 03:64dc $fe $0a
-    jr   NC, .jr_03_653d                               ;; 03:64de $30 $5d
-    swap A                                             ;; 03:64e0 $cb $37
-    ld   B, A                                          ;; 03:64e2 $47
-    ld   A, [wD64E_Collectible_OamOriginY]                                    ;; 03:64e3 $fa $4e $d6
-    add  A, B                                          ;; 03:64e6 $80
-    ld   B, A                                          ;; 03:64e7 $47
-    ld   [HL+], A                                      ;; 03:64e8 $22
-    ld   D, HIGH(wC400_Collectible_GridX)              ;; 03:64e9 $16 $c4
-    ld   A, [DE]                                       ;; 03:64eb $1a
-    sub  A, C                                          ;; 03:64ec $91
-    swap A                                             ;; 03:64ed $cb $37
-    ld   C, A                                          ;; 03:64ef $4f
-    ld   A, [wD64D_Collectible_OamOriginX]                                    ;; 03:64f0 $fa $4d $d6
-    add  A, C                                          ;; 03:64f3 $81
-    ld   C, A                                          ;; 03:64f4 $4f
-    ld   [HL+], A                                      ;; 03:64f5 $22
-    inc  E                                             ;; 03:64f6 $1c
-    ld   [HL], $7e                                     ;; 03:64f7 $36 $7e
-    inc  L                                             ;; 03:64f9 $2c
-    ld   [HL], $01                                     ;; 03:64fa $36 $01
-    inc  L                                             ;; 03:64fc $2c
-    ld   A, [wD743_Player_UpdateFlag]                                    ;; 03:64fd $fa $43 $d7
-    and  A, A                                          ;; 03:6500 $a7
-    jr   Z, .jr_03_6524                                ;; 03:6501 $28 $21
-    ld   A, [wD212_Player_ScreenXPosition]                                    ;; 03:6503 $fa $12 $d2
-    sub  A, C                                          ;; 03:6506 $91
-    add  A, $05                                        ;; 03:6507 $c6 $05
-    cp   A, $12                                        ;; 03:6509 $fe $12
-    jr   NC, .jr_03_6524                               ;; 03:650b $30 $17
-    ld   A, [wD213_Player_ScreenYPosition]                                    ;; 03:650d $fa $13 $d2
-    sub  A, B                                          ;; 03:6510 $90
-    add  A, $0a                                        ;; 03:6511 $c6 $0a
-    cp   A, $24                                        ;; 03:6513 $fe $24
-    jr   NC, .jr_03_6524                               ;; 03:6515 $30 $0d
-    push HL                                            ;; 03:6517 $e5
-    push DE                                            ;; 03:6518 $d5
-    ld   D, HIGH(wC500_Collectible_GridY)              ;; 03:6519 $16 $c5
-    dec  E                                             ;; 03:651b $1d
-    ld   A, $ff                                        ;; 03:651c $3e $ff
-    ld   [DE], A                                       ;; 03:651e $12
-    call call_00_06ec_Player_ObtainedCollectible                                  ;; 03:651f $cd $ec $06
-    pop  DE                                            ;; 03:6522 $d1
-    pop  HL                                            ;; 03:6523 $e1
+    push AF
+    push BC
+    ld   D, HIGH(wC500_Collectible_GridY)
+    ld   A, [DE]
+    sub  A, B
+    cp   A, $0a
+    jr   NC, .jr_03_653d
+    swap A
+    ld   B, A
+    ld   A, [wD64E_Collectible_OamOriginY]
+    add  A, B
+    ld   B, A
+    ld   [HL+], A
+    ld   D, HIGH(wC400_Collectible_GridX)
+    ld   A, [DE]
+    sub  A, C
+    swap A
+    ld   C, A
+    ld   A, [wD64D_Collectible_OamOriginX]
+    add  A, C
+    ld   C, A
+    ld   [HL+], A
+    inc  E
+    ld   [HL], $7e
+    inc  L
+    ld   [HL], $01
+    inc  L
+    ld   A, [wD743_Player_UpdateFlag]
+    and  A, A
+    jr   Z, .jr_03_6524
+    ld   A, [wD212_Player_ScreenXPosition]
+    sub  A, C
+    add  A, $05
+    cp   A, $12
+    jr   NC, .jr_03_6524
+    ld   A, [wD213_Player_ScreenYPosition]
+    sub  A, B
+    add  A, $0a
+    cp   A, $24
+    jr   NC, .jr_03_6524
+    push HL
+    push DE
+    ld   D, HIGH(wC500_Collectible_GridY)
+    dec  E
+    ld   A, $ff
+    ld   [DE], A
+    call call_00_06ec_Player_ObtainedCollectible
+    pop  DE
+    pop  HL
 .jr_03_6524:
-    bit  7, L                                          ;; 03:6524 $cb $7d
-    jr   Z, .jr_03_652a                                ;; 03:6526 $28 $02
-    ld   L, $80                                        ;; 03:6528 $2e $80
+    bit  7, L
+    jr   Z, .jr_03_652a
+    ld   L, $80
 .jr_03_652a:
-    pop  BC                                            ;; 03:652a $c1
-    pop  AF                                            ;; 03:652b $f1
-    dec  A                                             ;; 03:652c $3d
-    jr   NZ, .jr_03_64d6                               ;; 03:652d $20 $a7
-    bit  7, L                                          ;; 03:652f $cb $7d
-    ret  NZ                                            ;; 03:6531 $c0
-    ld   DE, $04                                       ;; 03:6532 $11 $04 $00
-    xor  A, A                                          ;; 03:6535 $af
+    pop  BC
+    pop  AF
+    dec  A
+    jr   NZ, .jr_03_64d6
+    bit  7, L
+    ret  NZ
+    ld   DE, $04
+    xor  A, A
 .jr_03_6536:
-    ld   [HL], A                                       ;; 03:6536 $77
-    add  HL, DE                                        ;; 03:6537 $19
-    bit  7, L                                          ;; 03:6538 $cb $7d
-    jr   Z, .jr_03_6536                                ;; 03:653a $28 $fa
-    ret                                                ;; 03:653c $c9
+    ld   [HL], A
+    add  HL, DE
+    bit  7, L
+    jr   Z, .jr_03_6536
+    ret
 .jr_03_653d:
-    inc  E                                             ;; 03:653d $1c
-    jr   .jr_03_652a                                   ;; 03:653e $18 $ea
+    inc  E
+    jr   .jr_03_652a
 
 call_03_6540_OAM_FinishFrame:
 ; Closes out the frame's OAM pass, after the entity builders have already filled the
@@ -2310,6 +2310,6 @@ call_03_6540_OAM_FinishFrame:
 ;
 ; Only the middle step is HUD, and it does not build all the sprites - it finishes a
 ; list the entity code started
-    call call_03_6499_Collectible_BuildSprites                                  ;; 03:6540 $cd $99 $64
-    call call_03_5b5b_HUD_BuildSprites                                  ;; 03:6543 $cd $5b $5b
-    jp   call_03_6484_OAM_ClearUnusedEntries                                    ;; 03:6546 $c3 $84 $64
+    call call_03_6499_Collectible_BuildSprites
+    call call_03_5b5b_HUD_BuildSprites
+    jp   call_03_6484_OAM_ClearUnusedEntries

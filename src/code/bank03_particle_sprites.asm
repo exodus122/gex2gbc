@@ -79,7 +79,7 @@ call_03_6549_Particles_BuildSpriteList_SkullFire:
     ld   [hl],c
     ld   a,c
     and  a
-    ret  
+    ret
 .jr_03_657d:
     inc  hl
     inc  hl
@@ -99,49 +99,49 @@ call_03_6584_Particles_BuildSpriteList_Collectible:
 ; still draws it, which is exactly what a settled pickup lying on the floor is. See
 ; call_02_51b7_EntityAction_CollectibleSpawn_Update, which from then on is only a
 ; lifetime counter
-    call call_00_3a0a_Entity_GetSpriteListAndParticles                                  ;; 03:6584 $cd $0a $3a
-    push DE                                            ;; 03:6587 $d5
-    inc  DE                                            ;; 03:6588 $13
-    ld   C, $00                                        ;; 03:6589 $0e $00
-    ld   B, $08                                        ;; 03:658b $06 $08
+    call call_00_3a0a_Entity_GetSpriteListAndParticles
+    push DE
+    inc  DE
+    ld   C, $00
+    ld   B, $08
 .jr_03_658d:
-    bit  7, [HL]                                       ;; 03:658d $cb $7e ; drawn, not alive
-    jr   Z, .jr_03_65b1                                ;; 03:658f $28 $20
-    ld   A, [HL+]                                      ;; 03:6591 $2a
-    ld   A, [HL+]                                      ;; 03:6592 $2a
-    ld   A, [HL+]                                      ;; 03:6593 $2a
-    cpl                                                ;; 03:6594 $2f
-    inc  A                                             ;; 03:6595 $3c
-    sub  A, $08                                        ;; 03:6596 $d6 $08
-    ld   [DE], A                                       ;; 03:6598 $12
-    inc  DE                                            ;; 03:6599 $13
-    ld   A, [HL+]                                      ;; 03:659a $2a
-    ld   A, [HL+]                                      ;; 03:659b $2a
-    sub  A, $04                                        ;; 03:659c $d6 $04
-    ld   [DE], A                                       ;; 03:659e $12
-    inc  DE                                            ;; 03:659f $13
-    ld   A, $7e                                        ;; 03:65a0 $3e $7e
-    ld   [DE], A                                       ;; 03:65a2 $12
-    inc  DE                                            ;; 03:65a3 $13
-    ld   A, $01                                        ;; 03:65a4 $3e $01
-    ld   [DE], A                                       ;; 03:65a6 $12
-    inc  DE                                            ;; 03:65a7 $13
-    inc  C                                             ;; 03:65a8 $0c
+    bit  7, [HL]                                       ; drawn, not alive
+    jr   Z, .jr_03_65b1
+    ld   A, [HL+]
+    ld   A, [HL+]
+    ld   A, [HL+]
+    cpl
+    inc  A
+    sub  A, $08
+    ld   [DE], A
+    inc  DE
+    ld   A, [HL+]
+    ld   A, [HL+]
+    sub  A, $04
+    ld   [DE], A
+    inc  DE
+    ld   A, $7e
+    ld   [DE], A
+    inc  DE
+    ld   A, $01
+    ld   [DE], A
+    inc  DE
+    inc  C
 .jr_03_65a9:
-    dec  B                                             ;; 03:65a9 $05
-    jr   NZ, .jr_03_658d                               ;; 03:65aa $20 $e1
-    pop  HL                                            ;; 03:65ac $e1
-    ld   [HL], C                                       ;; 03:65ad $71
-    ld   A, C                                          ;; 03:65ae $79
-    and  A, A                                          ;; 03:65af $a7
-    ret                                                ;; 03:65b0 $c9
+    dec  B
+    jr   NZ, .jr_03_658d
+    pop  HL
+    ld   [HL], C
+    ld   A, C
+    and  A, A
+    ret
 .jr_03_65b1:
-    inc  HL                                            ;; 03:65b1 $23
-    inc  HL                                            ;; 03:65b2 $23
-    inc  HL                                            ;; 03:65b3 $23
-    inc  HL                                            ;; 03:65b4 $23
-    inc  HL                                            ;; 03:65b5 $23
-    jr   .jr_03_65a9                                   ;; 03:65b6 $18 $f1
+    inc  HL
+    inc  HL
+    inc  HL
+    inc  HL
+    inc  HL
+    jr   .jr_03_65a9
 
 call_03_65b8_Particles_BuildSpriteList_BoulderDebris:
 ; The chips a Pre-History falling boulder throws off when it lands. Six tiles,
@@ -168,7 +168,7 @@ call_03_65b8_Particles_BuildSpriteList_BoulderDebris:
     ldi  a,[hl]
     ldi  a,[hl]
     push af
-    cpl  
+    cpl
     inc  a
     sub  a,$08
     ld   [de],a
@@ -200,7 +200,7 @@ call_03_65b8_Particles_BuildSpriteList_BoulderDebris:
     ld   [hl],c
     ld   a,c
     and  a
-    ret  
+    ret
 .jr_03_65f2:
     inc  hl
     inc  hl
@@ -217,58 +217,58 @@ call_03_65f9_Particles_BuildSpriteList_DefeatBurst:
 ;
 ; Its X handling is the correct version of the boulder's: both reads happen before the
 ; subtract, so the centring bias survives
-    call call_00_3a0a_Entity_GetSpriteListAndParticles                                  ;; 03:65f9 $cd $0a $3a
-    push DE                                            ;; 03:65fc $d5
-    inc  DE                                            ;; 03:65fd $13
-    ld   C, $00                                        ;; 03:65fe $0e $00
-    ld   B, $08                                        ;; 03:6600 $06 $08
+    call call_00_3a0a_Entity_GetSpriteListAndParticles
+    push DE
+    inc  DE
+    ld   C, $00
+    ld   B, $08
 .jr_03_6602:
-    bit  0, [HL]                                       ;; 03:6602 $cb $46
-    jr   Z, .jr_03_6633                                ;; 03:6604 $28 $2d
-    ld   A, [HL+]                                      ;; 03:6606 $2a
-    ld   A, [HL+]                                      ;; 03:6607 $2a
-    ld   A, [HL+]                                      ;; 03:6608 $2a
-    push AF                                            ;; 03:6609 $f5
-    cpl                                                ;; 03:660a $2f
-    inc  A                                             ;; 03:660b $3c
-    sub  A, $08                                        ;; 03:660c $d6 $08
-    ld   [DE], A                                       ;; 03:660e $12
-    inc  DE                                            ;; 03:660f $13
-    ld   A, [HL+]                                      ;; 03:6610 $2a
-    ld   A, [HL+]                                      ;; 03:6611 $2a
-    sub  A, $04                                        ;; 03:6612 $d6 $04
-    ld   [DE], A                                       ;; 03:6614 $12
-    inc  DE                                            ;; 03:6615 $13
-    pop  AF                                            ;; 03:6616 $f1
-    swap A                                             ;; 03:6617 $cb $37
-    and  A, $0f                                        ;; 03:6619 $e6 $0f
-    cp   A, $03                                        ;; 03:661b $fe $03
-    jr   C, .jr_03_6621                                ;; 03:661d $38 $02
-    ld   A, $02                                        ;; 03:661f $3e $02
+    bit  0, [HL]
+    jr   Z, .jr_03_6633
+    ld   A, [HL+]
+    ld   A, [HL+]
+    ld   A, [HL+]
+    push AF
+    cpl
+    inc  A
+    sub  A, $08
+    ld   [DE], A
+    inc  DE
+    ld   A, [HL+]
+    ld   A, [HL+]
+    sub  A, $04
+    ld   [DE], A
+    inc  DE
+    pop  AF
+    swap A
+    and  A, $0f
+    cp   A, $03
+    jr   C, .jr_03_6621
+    ld   A, $02
 .jr_03_6621:
-    add  A, A                                          ;; 03:6621 $87
-    add  A, $60                                        ;; 03:6622 $c6 $60
-    ld   [DE], A                                       ;; 03:6624 $12
-    inc  DE                                            ;; 03:6625 $13
-    ld   A, $01                                        ;; 03:6626 $3e $01
-    ld   [DE], A                                       ;; 03:6628 $12
-    inc  DE                                            ;; 03:6629 $13
-    inc  C                                             ;; 03:662a $0c
+    add  A, A
+    add  A, $60
+    ld   [DE], A
+    inc  DE
+    ld   A, $01
+    ld   [DE], A
+    inc  DE
+    inc  C
 .jr_03_662b:
-    dec  B                                             ;; 03:662b $05
-    jr   NZ, .jr_03_6602                               ;; 03:662c $20 $d4
-    pop  HL                                            ;; 03:662e $e1
-    ld   [HL], C                                       ;; 03:662f $71
-    ld   A, C                                          ;; 03:6630 $79
-    and  A, A                                          ;; 03:6631 $a7
-    ret                                                ;; 03:6632 $c9
+    dec  B
+    jr   NZ, .jr_03_6602
+    pop  HL
+    ld   [HL], C
+    ld   A, C
+    and  A, A
+    ret
 .jr_03_6633:
-    inc  HL                                            ;; 03:6633 $23
-    inc  HL                                            ;; 03:6634 $23
-    inc  HL                                            ;; 03:6635 $23
-    inc  HL                                            ;; 03:6636 $23
-    inc  HL                                            ;; 03:6637 $23
-    jr   .jr_03_662b                                   ;; 03:6638 $18 $f1
+    inc  HL
+    inc  HL
+    inc  HL
+    inc  HL
+    inc  HL
+    jr   .jr_03_662b
 
 call_03_663a_Particles_BuildSpriteList_FirePlant:
 ; The spray the Pre-History fire plant spits. Instruction for instruction the same as
@@ -286,7 +286,7 @@ call_03_663a_Particles_BuildSpriteList_FirePlant:
     ldi  a,[hl]
     ldi  a,[hl]
     ldi  a,[hl]
-    cpl  
+    cpl
     inc  a
     sub  a,$08
     ld   [de],a
@@ -297,8 +297,8 @@ call_03_663a_Particles_BuildSpriteList_FirePlant:
     ld   [de],a
     inc  de
     ld   a,[wD73B_VBlankFrameCounter]
-    rrca 
-    rrca 
+    rrca
+    rrca
     and  a,$02
     add  a,$58
     ld   [de],a
@@ -314,7 +314,7 @@ call_03_663a_Particles_BuildSpriteList_FirePlant:
     ld   [hl],c
     ld   a,c
     and  a
-    ret  
+    ret
 .jr_03_666e:
     inc  hl
     inc  hl
@@ -341,7 +341,7 @@ call_03_6675_Particles_BuildSpriteList_JarShards:
     ldi  a,[hl]
     ldi  a,[hl]
     push af
-    cpl  
+    cpl
     inc  a
     sub  a,$08
     ld   [de],a
@@ -352,7 +352,7 @@ call_03_6675_Particles_BuildSpriteList_JarShards:
     ld   [de],a
     inc  de
     pop  af
-    rrca 
+    rrca
     and  a,$02
     add  a,$5C
     ld   [de],a
@@ -368,7 +368,7 @@ call_03_6675_Particles_BuildSpriteList_JarShards:
     ld   [hl],c
     ld   a,c
     and  a
-    ret  
+    ret
 .jr_03_66a7:
     inc  hl
     inc  hl

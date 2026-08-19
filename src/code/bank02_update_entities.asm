@@ -160,83 +160,83 @@ INCLUDE "code/bank02_player_actions.asm"
 INCLUDE "code/bank02_update_player.asm"
 
 INCLUDE "code/bank02_entity_actions.asm"
-    
+
 call_02_6e17_Entities_InitAndSpawnAll:
-; Full level-start initialization: zeros player entity state (velocities, flags, climbing, collision), 
-; resets all 7 NPC slots to $FF, conditionally spawns Gex via call_02_48b7_Player_SpawnOpeningDoorEntity, 
+; Full level-start initialization: zeros player entity state (velocities, flags, climbing, collision),
+; resets all 7 NPC slots to $FF, conditionally spawns Gex via call_02_48b7_Player_SpawnOpeningDoorEntity,
 ; then calls EntityList_LoadForCurrentLevel and loops EntitySpawn_SpawnNextFromList until wD338_EntityLoadingFlag returns to 1
-    xor  A, A                                          ;; 02:6e17 $af
-    ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:6e18 $ea $00 $d3
-    ld   A, $00                                        ;; 02:6e1b $3e $00
-    ld   [wD200_Player_EntityId], A                                    ;; 02:6e1d $ea $00 $d2
-    ld   A, [wD744_Player_SpawnAction]                                    ;; 02:6e20 $fa $44 $d7
-    call call_02_7102_Entity_SetAction                                  ;; 02:6e23 $cd $02 $71
-    xor  A, A                                          ;; 02:6e26 $af
-    ld   [wD621_WarpFlags], A                                    ;; 02:6e27 $ea $21 $d6
-    xor  A, A                                          ;; 02:6e2a $af
-    ld   [wD74C_Player_KarateKickTimer], A                                    ;; 02:6e2b $ea $4c $d7
-    ld   [wD75D_PlayerXSpeedPrev], A                                    ;; 02:6e2e $ea $5d $d7
-    ld   [wD75E_PlayerXSpeed], A                                    ;; 02:6e31 $ea $5e $d7
-    ld   [wD75C_PlayerXDeltaExtra], A                                    ;; 02:6e34 $ea $5c $d7
-    ld   [wD760_PlayerYVelocity], A                                    ;; 02:6e37 $ea $60 $d7
-    ld   [wD761_Player_FloorSnapVelocity], A                                    ;; 02:6e3a $ea $61 $d7
-    ld   [wD762_PlayerInitialYVelocity], A                                    ;; 02:6e3d $ea $62 $d7
-    ld   [wD763_FallDistanceCounter], A                                    ;; 02:6e40 $ea $63 $d7
-    ld   [wD759_ButtonBlockingFlags], A                                    ;; 02:6e43 $ea $59 $d7
-    ld   [wD758_JumpVelocityOverride], A                                    ;; 02:6e46 $ea $58 $d7
-    ld   [wD585_CollisionFlags], A                                    ;; 02:6e49 $ea $85 $d5
-    ld   [wD584_CollisionFlagsPrev], A                                    ;; 02:6e4c $ea $84 $d5
-    ld   A, PLAYER_ACTION_NONE_PENDING                                        ;; 02:6e4f $3e $ff
-    ld   [wD745_Player_QueuedAction], A                                    ;; 02:6e51 $ea $45 $d7
-    ld   [wD746_Player_ClimbingState], A                                    ;; 02:6e54 $ea $46 $d7
-    xor  A, A                                          ;; 02:6e57 $af
-    ld   [wD586_PlayerGfxVramPage], A                                    ;; 02:6e58 $ea $86 $d5
-    ld   [wD74A_Player_InWaterOrLava], A                                    ;; 02:6e5b $ea $4a $d7
-    ld   A, $00                                        ;; 02:6e5e $3e $00
-    ld   [wD74B_Player_ClimbingFlags], A                                    ;; 02:6e60 $ea $4b $d7
-    ld   A, $00                                        ;; 02:6e63 $3e $00
-    ld   [wD20D_Player_FacingFlags], A                                    ;; 02:6e65 $ea $0d $d2
+    xor  A, A
+    ld   [wD300_CurrentEntityAddrLo], A
+    ld   A, $00
+    ld   [wD200_Player_EntityId], A
+    ld   A, [wD744_Player_SpawnAction]
+    call call_02_7102_Entity_SetAction
+    xor  A, A
+    ld   [wD621_WarpFlags], A
+    xor  A, A
+    ld   [wD74C_Player_KarateKickTimer], A
+    ld   [wD75D_PlayerXSpeedPrev], A
+    ld   [wD75E_PlayerXSpeed], A
+    ld   [wD75C_PlayerXDeltaExtra], A
+    ld   [wD760_PlayerYVelocity], A
+    ld   [wD761_Player_FloorSnapVelocity], A
+    ld   [wD762_PlayerInitialYVelocity], A
+    ld   [wD763_FallDistanceCounter], A
+    ld   [wD759_ButtonBlockingFlags], A
+    ld   [wD758_JumpVelocityOverride], A
+    ld   [wD585_CollisionFlags], A
+    ld   [wD584_CollisionFlagsPrev], A
+    ld   A, PLAYER_ACTION_NONE_PENDING
+    ld   [wD745_Player_QueuedAction], A
+    ld   [wD746_Player_ClimbingState], A
+    xor  A, A
+    ld   [wD586_PlayerGfxVramPage], A
+    ld   [wD74A_Player_InWaterOrLava], A
+    ld   A, $00
+    ld   [wD74B_Player_ClimbingFlags], A
+    ld   A, $00
+    ld   [wD20D_Player_FacingFlags], A
 call_02_6e68_Entities_InitNPCSlots:
-; Subset of above — only zeros entity interaction-tracking vars (wD74D–wD74F, wD587_EntityGfxVramPage) and 
+; Subset of above — only zeros entity interaction-tracking vars (wD74D–wD74F, wD587_EntityGfxVramPage) and
 ; fills the 7 NPC slots (D220–D3E0) with $FF
-    xor  A, A                                          ;; 02:6e68 $af
-    ld   [wD587_EntityGfxVramPage], A                                    ;; 02:6e69 $ea $87 $d5
-    ld   [wD74D_Player_EntityStoodOnLo], A                                    ;; 02:6e6c $ea $4d $d7
-    ld   [wD74E_Player_PushedStationaryPlatformLo], A                                    ;; 02:6e6f $ea $4e $d7
-    ld   [wD74F_Player_PushedMovingPlatformLo], A                                    ;; 02:6e72 $ea $4f $d7
-    ld   HL, wD220_OtherLoadedEntities                                     ;; 02:6e75 $21 $20 $d2
-    ld   DE, ENTITY_SLOT_SIZE                          ;; 02:6e78 $11 $20 $00
-    ld   B, ENTITY_NPC_SLOT_COUNT                      ;; 02:6e7b $06 $07
+    xor  A, A
+    ld   [wD587_EntityGfxVramPage], A
+    ld   [wD74D_Player_EntityStoodOnLo], A
+    ld   [wD74E_Player_PushedStationaryPlatformLo], A
+    ld   [wD74F_Player_PushedMovingPlatformLo], A
+    ld   HL, wD220_OtherLoadedEntities
+    ld   DE, ENTITY_SLOT_SIZE
+    ld   B, ENTITY_NPC_SLOT_COUNT
 .jr_02_6e7d:
-    ld   [HL], ENTITY_ID_NONE                          ;; 02:6e7d $36 $ff
-    add  HL, DE                                        ;; 02:6e7f $19
-    dec  B                                             ;; 02:6e80 $05
-    jr   NZ, .jr_02_6e7d                               ;; 02:6e81 $20 $fa
-    ld   A, [wD743_Player_UpdateFlag]                                    ;; 02:6e83 $fa $43 $d7
-    and  A, A                                          ;; 02:6e86 $a7
-    jr   Z, .jr_02_6e93                                ;; 02:6e87 $28 $0a
-    ld   A, [wD744_Player_SpawnAction]                                    ;; 02:6e89 $fa $44 $d7
-    cp   A, PLAYER_ACTION_LEAVE_DOOR                                        ;; 02:6e8c $fe $1b
-    ld   A, $01                                        ;; 02:6e8e $3e $01
-    call Z, call_02_48b7_Player_SpawnOpeningDoorEntity                               ;; 02:6e90 $cc $b7 $48
+    ld   [HL], ENTITY_ID_NONE
+    add  HL, DE
+    dec  B
+    jr   NZ, .jr_02_6e7d
+    ld   A, [wD743_Player_UpdateFlag]
+    and  A, A
+    jr   Z, .jr_02_6e93
+    ld   A, [wD744_Player_SpawnAction]
+    cp   A, PLAYER_ACTION_LEAVE_DOOR
+    ld   A, $01
+    call Z, call_02_48b7_Player_SpawnOpeningDoorEntity
 .jr_02_6e93:
     FARCALL call_0a_4000_EntityList_LoadForCurrentLevel
 .jr_02_6e9e:
     FARCALL call_0a_7a7c_EntitySpawn_SpawnNextFromList
-    ld   A, [wD338_EntityLoadingFlag]                                    ;; 02:6ea9 $fa $38 $d3
-    cp   A, $01                                        ;; 02:6eac $fe $01
-    jr   NZ, .jr_02_6e9e                               ;; 02:6eae $20 $ee
-    ret                                                ;; 02:6eb0 $c9
+    ld   A, [wD338_EntityLoadingFlag]
+    cp   A, $01
+    jr   NZ, .jr_02_6e9e
+    ret
 
 call_02_6eb1_Entities_ClearFlagsTable:
 ; Zeroes the entire 256-byte wD000 entity-flags table
-    xor  A, A                                          ;; 02:6eb1 $af
-    ld   HL, wD000_EntityFlags                                     ;; 02:6eb2 $21 $00 $d0
+    xor  A, A
+    ld   HL, wD000_EntityFlags
 .jr_02_6eb5:
-    ld   [HL], A                                       ;; 02:6eb5 $77
-    inc  L                                             ;; 02:6eb6 $2c
-    jr   NZ, .jr_02_6eb5                               ;; 02:6eb7 $20 $fc
-    ret                                                ;; 02:6eb9 $c9
+    ld   [HL], A
+    inc  L
+    jr   NZ, .jr_02_6eb5
+    ret
 
 call_02_6eba_Entities_UpdateAll:
 ; The per-frame entity pass. Ordering matters more than it looks.
@@ -253,139 +253,139 @@ call_02_6eba_Entities_UpdateAll:
 ;
 ; The tail is the deferred work the loop accumulated - queued sound, one spawn from the
 ; level's entity list, the next entity graphics transfer, and the shared sprite pipeline
-    xor  A, A                                          ;; 02:6eba $af
-    ld   [wD75C_PlayerXDeltaExtra], A                                    ;; 02:6ebb $ea $5c $d7
-    ld   A, OAM_ENTITY_FIRST_BYTE                      ;; 02:6ebe $3e $20
-    ld   [wD739_Entity_OamWriteOffset], A                                    ;; 02:6ec0 $ea $39 $d7
-    ld   A, [wD743_Player_UpdateFlag]                                    ;; 02:6ec3 $fa $43 $d7
-    and  A, A                                          ;; 02:6ec6 $a7
-    jr   Z, .jr_02_6f0f                                ;; 02:6ec7 $28 $46
-    ld   A, [wD74D_Player_EntityStoodOnLo]                                    ;; 02:6ec9 $fa $4d $d7
-    and  A, A                                          ;; 02:6ecc $a7
-    jr   Z, .jr_02_6ef3                                ;; 02:6ecd $28 $24
-    ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:6ecf $ea $00 $d3
-    or   A, $02                                        ;; 02:6ed2 $f6 $02
-    ld   L, A                                          ;; 02:6ed4 $6f
-    ld   H, $d2                                        ;; 02:6ed5 $26 $d2
-    ld   A, [HL+]                                      ;; 02:6ed7 $2a
-    ld   H, [HL]                                       ;; 02:6ed8 $66
-    ld   L, A                                          ;; 02:6ed9 $6f
-    call call_00_10bd_JumpHL                                  ;; 02:6eda $cd $bd $10
-    ld   H, $d2                                        ;; 02:6edd $26 $d2
-    ld   A, [wD74D_Player_EntityStoodOnLo]                                    ;; 02:6edf $fa $4d $d7
-    and  A, $e0                                        ;; 02:6ee2 $e6 $e0
-    or   A, $10                                        ;; 02:6ee4 $f6 $10
-    ld   L, A                                          ;; 02:6ee6 $6f
-    ld   A, [HL+]                                      ;; 02:6ee7 $2a
-    sub  A, $10                                        ;; 02:6ee8 $d6 $10
-    ld   [wD210_Player_YPositionLo], A                                    ;; 02:6eea $ea $10 $d2
-    ld   A, [HL]                                       ;; 02:6eed $7e
-    sbc  A, $00                                        ;; 02:6eee $de $00
-    ld   [wD211_Player_YPositionHi], A                                    ;; 02:6ef0 $ea $11 $d2
+    xor  A, A
+    ld   [wD75C_PlayerXDeltaExtra], A
+    ld   A, OAM_ENTITY_FIRST_BYTE
+    ld   [wD739_Entity_OamWriteOffset], A
+    ld   A, [wD743_Player_UpdateFlag]
+    and  A, A
+    jr   Z, .jr_02_6f0f
+    ld   A, [wD74D_Player_EntityStoodOnLo]
+    and  A, A
+    jr   Z, .jr_02_6ef3
+    ld   [wD300_CurrentEntityAddrLo], A
+    or   A, $02
+    ld   L, A
+    ld   H, $d2
+    ld   A, [HL+]
+    ld   H, [HL]
+    ld   L, A
+    call call_00_10bd_JumpHL
+    ld   H, $d2
+    ld   A, [wD74D_Player_EntityStoodOnLo]
+    and  A, $e0
+    or   A, $10
+    ld   L, A
+    ld   A, [HL+]
+    sub  A, $10
+    ld   [wD210_Player_YPositionLo], A
+    ld   A, [HL]
+    sbc  A, $00
+    ld   [wD211_Player_YPositionHi], A
 .jr_02_6ef3:
-    ld   A, [wD74F_Player_PushedMovingPlatformLo]                                    ;; 02:6ef3 $fa $4f $d7
-    and  A, A                                          ;; 02:6ef6 $a7
-    jr   Z, .jr_02_6f07                                ;; 02:6ef7 $28 $0e
-    ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:6ef9 $ea $00 $d3
-    or   A, $02                                        ;; 02:6efc $f6 $02
-    ld   L, A                                          ;; 02:6efe $6f
-    ld   H, $d2                                        ;; 02:6eff $26 $d2
-    ld   A, [HL+]                                      ;; 02:6f01 $2a
-    ld   H, [HL]                                       ;; 02:6f02 $66
-    ld   L, A                                          ;; 02:6f03 $6f
-    call call_00_10bd_JumpHL                                  ;; 02:6f04 $cd $bd $10
+    ld   A, [wD74F_Player_PushedMovingPlatformLo]
+    and  A, A
+    jr   Z, .jr_02_6f07
+    ld   [wD300_CurrentEntityAddrLo], A
+    or   A, $02
+    ld   L, A
+    ld   H, $d2
+    ld   A, [HL+]
+    ld   H, [HL]
+    ld   L, A
+    call call_00_10bd_JumpHL
 .jr_02_6f07:
-    ld   A, $00                                        ;; 02:6f07 $3e $00
-    ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:6f09 $ea $00 $d3
-    call call_02_4939_Player_UpdateMain                                  ;; 02:6f0c $cd $39 $49
+    ld   A, $00
+    ld   [wD300_CurrentEntityAddrLo], A
+    call call_02_4939_Player_UpdateMain
 .jr_02_6f0f:
-    ld   A, ENTITY_SLOT_FIRST_NPC                      ;; 02:6f0f $3e $20
+    ld   A, ENTITY_SLOT_FIRST_NPC
 .jr_02_6f11:
-    ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:6f11 $ea $00 $d3
-    or   A, $00                                        ;; 02:6f14 $f6 $00
-    ld   L, A                                          ;; 02:6f16 $6f
-    ld   H, $d2                                        ;; 02:6f17 $26 $d2
-    ld   A, [HL]                                       ;; 02:6f19 $7e
-    cp   A, ENTITY_ID_NONE                             ;; 02:6f1a $fe $ff
-    jr   Z, .jr_02_6f5c                                ;; 02:6f1c $28 $3e
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:6f1e $fa $00 $d3
-    ld   HL, wD74D_Player_EntityStoodOnLo                                     ;; 02:6f21 $21 $4d $d7
-    cp   A, [HL]                                       ;; 02:6f24 $be
-    jr   Z, .jr_02_6f38                                ;; 02:6f25 $28 $11
-    ld   HL, wD74F_Player_PushedMovingPlatformLo                                     ;; 02:6f27 $21 $4f $d7
-    cp   A, [HL]                                       ;; 02:6f2a $be
-    jr   Z, .jr_02_6f38                                ;; 02:6f2b $28 $0b
-    or   A, $02                                        ;; 02:6f2d $f6 $02
-    ld   L, A                                          ;; 02:6f2f $6f
-    ld   H, $d2                                        ;; 02:6f30 $26 $d2
-    ld   A, [HL+]                                      ;; 02:6f32 $2a
-    ld   H, [HL]                                       ;; 02:6f33 $66
-    ld   L, A                                          ;; 02:6f34 $6f
-    call call_00_10bd_JumpHL                                  ;; 02:6f35 $cd $bd $10
+    ld   [wD300_CurrentEntityAddrLo], A
+    or   A, $00
+    ld   L, A
+    ld   H, $d2
+    ld   A, [HL]
+    cp   A, ENTITY_ID_NONE
+    jr   Z, .jr_02_6f5c
+    ld   A, [wD300_CurrentEntityAddrLo]
+    ld   HL, wD74D_Player_EntityStoodOnLo
+    cp   A, [HL]
+    jr   Z, .jr_02_6f38
+    ld   HL, wD74F_Player_PushedMovingPlatformLo
+    cp   A, [HL]
+    jr   Z, .jr_02_6f38
+    or   A, $02
+    ld   L, A
+    ld   H, $d2
+    ld   A, [HL+]
+    ld   H, [HL]
+    ld   L, A
+    call call_00_10bd_JumpHL
 .jr_02_6f38:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_ENTITY_ID
-    ld   A, [HL]                                       ;; 02:6f40 $7e
-    cp   A, ENTITY_ID_NONE                             ;; 02:6f41 $fe $ff ; the despawn check may have freed it
-    jr   Z, .jr_02_6f5c                                ;; 02:6f43 $28 $17
-    ld   A, L                                          ;; 02:6f45 $7d
-    xor  A, $09                                        ;; 02:6f46 $ee $09
-    ld   L, A                                          ;; 02:6f48 $6f
-    res  ACTION_STATE_IS_FIRST_FRAME_BIT, [HL]         ;; 02:6f49 $cb $ae
-    inc  L                                             ;; 02:6f4b $2c
-    res  SPRITE_FLAG_ID_CHANGED_BIT, [HL]            ;; 02:6f4c $cb $b6
-    call call_02_6fda_Entity_TickAction                                  ;; 02:6f4e $cd $da $6f
+    ld   A, [HL]
+    cp   A, ENTITY_ID_NONE                             ; the despawn check may have freed it
+    jr   Z, .jr_02_6f5c
+    ld   A, L
+    xor  A, $09
+    ld   L, A
+    res  ACTION_STATE_IS_FIRST_FRAME_BIT, [HL]
+    inc  L
+    res  SPRITE_FLAG_ID_CHANGED_BIT, [HL]
+    call call_02_6fda_Entity_TickAction
     FARCALL call_03_5ebf_Entity_BuildSprites
 .jr_02_6f5c:
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:6f5c $fa $00 $d3
-    add  A, ENTITY_SLOT_SIZE                           ;; 02:6f5f $c6 $20 ; wraps to 0 after the last slot
-    jr   NZ, .jr_02_6f11                               ;; 02:6f61 $20 $ae
-    call call_00_1138_PlayQueuedSFX                                  ;; 02:6f63 $cd $38 $11
+    ld   A, [wD300_CurrentEntityAddrLo]
+    add  A, ENTITY_SLOT_SIZE                           ; wraps to 0 after the last slot
+    jr   NZ, .jr_02_6f11
+    call call_00_1138_PlayQueuedSFX
     FARCALL call_0a_7a7c_EntitySpawn_SpawnNextFromList
-    call call_02_722c_EntityGfxQueue_StartNextTransfer                                  ;; 02:6f71 $cd $2c $72
+    call call_02_722c_EntityGfxQueue_StartNextTransfer
     FARCALL call_03_6540_OAM_FinishFrame
-    ret                                                ;; 02:6f7f $c9
-    
+    ret
+
 call_02_6f80_Entities_DrawAll:
 ; Rebuilds every sprite without running any logic. Used when the world has to stay on screen
 ; but must not advance - the mission preview pans over a frozen level, for example.
 ; Because nothing ticks, the graphics requests that Entity_NotifyActionChanged would normally
 ; raise are re-raised here instead: GFX_XFER_PLAYER_GFX unconditionally, and
 ; GFX_XFER_ENTITY_GFX for any entity whose SPRITE_FLAG_STREAMS_OWN_GFX is set
-    ld   A, OAM_ENTITY_FIRST_BYTE                      ;; 02:6f80 $3e $20
-    ld   [wD739_Entity_OamWriteOffset], A                                    ;; 02:6f82 $ea $39 $d7
-    ld   A, [wD743_Player_UpdateFlag]                                    ;; 02:6f85 $fa $43 $d7
-    and  A, A                                          ;; 02:6f88 $a7
-    jr   Z, .jr_02_6fa0                                ;; 02:6f89 $28 $15
-    ld   A, $00                                        ;; 02:6f8b $3e $00
-    ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:6f8d $ea $00 $d3
+    ld   A, OAM_ENTITY_FIRST_BYTE
+    ld   [wD739_Entity_OamWriteOffset], A
+    ld   A, [wD743_Player_UpdateFlag]
+    and  A, A
+    jr   Z, .jr_02_6fa0
+    ld   A, $00
+    ld   [wD300_CurrentEntityAddrLo], A
     FARCALL call_03_5ca8_Player_BuildSprites
-    ld   HL, wD60F_GfxTransferFlags                                     ;; 02:6f9b $21 $0f $d6
-    set  GFX_XFER_PLAYER_GFX, [HL]                     ;; 02:6f9e $cb $c6
+    ld   HL, wD60F_GfxTransferFlags
+    set  GFX_XFER_PLAYER_GFX, [HL]
 .jr_02_6fa0:
-    ld   A, ENTITY_SLOT_FIRST_NPC                      ;; 02:6fa0 $3e $20
+    ld   A, ENTITY_SLOT_FIRST_NPC
 .jr_02_6fa2:
-    ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:6fa2 $ea $00 $d3
-    or   A, $00                                        ;; 02:6fa5 $f6 $00
-    ld   L, A                                          ;; 02:6fa7 $6f
-    ld   H, $d2                                        ;; 02:6fa8 $26 $d2
-    ld   A, [HL]                                       ;; 02:6faa $7e
-    cp   A, ENTITY_ID_NONE                             ;; 02:6fab $fe $ff
-    jr   Z, .jr_02_6fc7                                ;; 02:6fad $28 $18
-    ld   A, L                                          ;; 02:6faf $7d
-    xor  A, $0a                                        ;; 02:6fb0 $ee $0a
-    ld   L, A                                          ;; 02:6fb2 $6f
-    bit  SPRITE_FLAG_STREAMS_OWN_GFX_BIT, [HL]              ;; 02:6fb3 $cb $7e
-    jr   Z, .jr_02_6fbc                                ;; 02:6fb5 $28 $05
-    ld   HL, wD60F_GfxTransferFlags                                     ;; 02:6fb7 $21 $0f $d6
-    set  GFX_XFER_ENTITY_GFX, [HL]                     ;; 02:6fba $cb $ce
+    ld   [wD300_CurrentEntityAddrLo], A
+    or   A, $00
+    ld   L, A
+    ld   H, $d2
+    ld   A, [HL]
+    cp   A, ENTITY_ID_NONE
+    jr   Z, .jr_02_6fc7
+    ld   A, L
+    xor  A, $0a
+    ld   L, A
+    bit  SPRITE_FLAG_STREAMS_OWN_GFX_BIT, [HL]
+    jr   Z, .jr_02_6fbc
+    ld   HL, wD60F_GfxTransferFlags
+    set  GFX_XFER_ENTITY_GFX, [HL]
 .jr_02_6fbc:
     FARCALL call_03_5ebf_Entity_BuildSprites
 .jr_02_6fc7:
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:6fc7 $fa $00 $d3
-    add  A, ENTITY_SLOT_SIZE                           ;; 02:6fca $c6 $20
-    jr   NZ, .jr_02_6fa2                               ;; 02:6fcc $20 $d4
+    ld   A, [wD300_CurrentEntityAddrLo]
+    add  A, ENTITY_SLOT_SIZE
+    jr   NZ, .jr_02_6fa2
     FARCALL call_03_6540_OAM_FinishFrame
-    ret                                                ;; 02:6fd9 $c9
+    ret
 
 call_02_6fda_Entity_TickAction:
 ; The animation player, run once per frame for every entity including Gex.
@@ -411,72 +411,72 @@ call_02_6fda_Entity_TickAction:
 ; Finally the new frame's sprite id is fetched through SPRITE_IDS_PTR into SPRITE_ID,
 ; SPRITE_FLAG_ID_CHANGED is raised, and it falls through into
 ; Entity_NotifyActionChanged to get the tiles fetched
-    ld   H, $d2                                        ;; 02:6fda $26 $d2
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:6fdc $fa $00 $d3
-    ld   C, A                                          ;; 02:6fdf $4f
-    or   A, $0a                                        ;; 02:6fe0 $f6 $0a
-    ld   L, A                                          ;; 02:6fe2 $6f
-    res  SPRITE_FLAG_ANIM_ENDED_BIT, [HL]                   ;; 02:6fe3 $cb $96
-    ld   A, C                                          ;; 02:6fe5 $79
-    or   A, $06                                        ;; 02:6fe6 $f6 $06
-    ld   L, A                                          ;; 02:6fe8 $6f
-    ld   A, [HL]                                       ;; 02:6fe9 $7e
-    cp   A, $ff                                        ;; 02:6fea $fe $ff
-    ret  Z                                             ;; 02:6fec $c8
-    dec  [HL]                                          ;; 02:6fed $35
-    ret  NZ                                            ;; 02:6fee $c0
-    ld   A, C                                          ;; 02:6fef $79
-    or   A, $0b                                        ;; 02:6ff0 $f6 $0b
-    ld   E, A                                          ;; 02:6ff2 $5f
-    ld   D, H                                          ;; 02:6ff3 $54
-    ld   A, [DE]                                       ;; 02:6ff4 $1a
-    ld   [HL+], A                                      ;; 02:6ff5 $22
-    inc  [HL]                                          ;; 02:6ff6 $34
-    inc  E                                             ;; 02:6ff7 $1c
-    ld   A, [DE]                                       ;; 02:6ff8 $1a
-    sub  A, [HL]                                       ;; 02:6ff9 $96
-    jr   NZ, .jr_02_7013                               ;; 02:6ffa $20 $17
-    inc  L                                             ;; 02:6ffc $2c
-    inc  L                                             ;; 02:6ffd $2c
-    bit  ACTION_STATE_ADVANCE_ON_END_BIT, [HL]         ;; 02:6ffe $cb $76
-    jp   NZ, call_02_70f1_Entity_RequestQueuedAction                                ;; 02:7000 $c2 $f1 $70
-    inc  L                                             ;; 02:7003 $2c
-    ld   B, [HL]                                       ;; 02:7004 $46
-    dec  L                                             ;; 02:7005 $2d
-    dec  L                                             ;; 02:7006 $2d
-    dec  L                                             ;; 02:7007 $2d
-    bit  SPRITE_FLAG_LOOP_LAST_FRAME_BIT, B                 ;; 02:7008 $cb $48
-    jr   Z, .jr_02_700e                                ;; 02:700a $28 $02
-    ld   A, [DE]                                       ;; 02:700c $1a
-    dec  A                                             ;; 02:700d $3d
+    ld   H, $d2
+    ld   A, [wD300_CurrentEntityAddrLo]
+    ld   C, A
+    or   A, $0a
+    ld   L, A
+    res  SPRITE_FLAG_ANIM_ENDED_BIT, [HL]
+    ld   A, C
+    or   A, $06
+    ld   L, A
+    ld   A, [HL]
+    cp   A, $ff
+    ret  Z
+    dec  [HL]
+    ret  NZ
+    ld   A, C
+    or   A, $0b
+    ld   E, A
+    ld   D, H
+    ld   A, [DE]
+    ld   [HL+], A
+    inc  [HL]
+    inc  E
+    ld   A, [DE]
+    sub  A, [HL]
+    jr   NZ, .jr_02_7013
+    inc  L
+    inc  L
+    bit  ACTION_STATE_ADVANCE_ON_END_BIT, [HL]
+    jp   NZ, call_02_70f1_Entity_RequestQueuedAction
+    inc  L
+    ld   B, [HL]
+    dec  L
+    dec  L
+    dec  L
+    bit  SPRITE_FLAG_LOOP_LAST_FRAME_BIT, B
+    jr   Z, .jr_02_700e
+    ld   A, [DE]
+    dec  A
 .jr_02_700e:
-    ld   [HL+], A                                      ;; 02:700e $22
-    inc  L                                             ;; 02:700f $2c
-    inc  L                                             ;; 02:7010 $2c
-    set  SPRITE_FLAG_ANIM_ENDED_BIT, [HL]                   ;; 02:7011 $cb $d6
+    ld   [HL+], A
+    inc  L
+    inc  L
+    set  SPRITE_FLAG_ANIM_ENDED_BIT, [HL]
 .jr_02_7013:
-    ld   A, C                                          ;; 02:7013 $79
-    or   A, $0a                                        ;; 02:7014 $f6 $0a
-    ld   L, A                                          ;; 02:7016 $6f
-    set  SPRITE_FLAG_ID_CHANGED_BIT, [HL]            ;; 02:7017 $cb $f6
-    ld   A, C                                          ;; 02:7019 $79
-    or   A, $07                                        ;; 02:701a $f6 $07
-    ld   L, A                                          ;; 02:701c $6f
-    ld   E, [HL]                                       ;; 02:701d $5e
-    ld   D, $00                                        ;; 02:701e $16 $00
-    ld   A, C                                          ;; 02:7020 $79
-    or   A, $04                                        ;; 02:7021 $f6 $04
-    ld   L, A                                          ;; 02:7023 $6f
-    ld   A, [HL+]                                      ;; 02:7024 $2a
-    ld   H, [HL]                                       ;; 02:7025 $66
-    ld   L, A                                          ;; 02:7026 $6f
-    add  HL, DE                                        ;; 02:7027 $19
-    ld   B, [HL]                                       ;; 02:7028 $46
-    ld   A, C                                          ;; 02:7029 $79
-    or   A, $08                                        ;; 02:702a $f6 $08
-    ld   L, A                                          ;; 02:702c $6f
-    ld   H, $d2                                        ;; 02:702d $26 $d2
-    ld   [HL], B                                       ;; 02:702f $70
+    ld   A, C
+    or   A, $0a
+    ld   L, A
+    set  SPRITE_FLAG_ID_CHANGED_BIT, [HL]
+    ld   A, C
+    or   A, $07
+    ld   L, A
+    ld   E, [HL]
+    ld   D, $00
+    ld   A, C
+    or   A, $04
+    ld   L, A
+    ld   A, [HL+]
+    ld   H, [HL]
+    ld   L, A
+    add  HL, DE
+    ld   B, [HL]
+    ld   A, C
+    or   A, $08
+    ld   L, A
+    ld   H, $d2
+    ld   [HL], B
 
 call_02_7030_Entity_NotifyActionChanged:
 ; Requests the graphics for whatever the entity just changed into. Nothing here is sound
@@ -508,35 +508,35 @@ call_02_7030_Entity_NotifyActionChanged:
 ; both tables - ENTITY_PRE_HISTORY_TRICERATOPS and the three Kung Fu Theater humans -
 ; which is how a large enemy gets a streamed animation in one VRAM window plus a
 ; preloaded page in another
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:7030 $fa $00 $d3
-    and  A, A                                          ;; 02:7033 $a7
-    jr   NZ, .jr_02_703c                               ;; 02:7034 $20 $06
-    ld   HL, wD60F_GfxTransferFlags                                     ;; 02:7036 $21 $0f $d6
-    set  GFX_XFER_PLAYER_GFX, [HL]                     ;; 02:7039 $cb $c6
-    ret                                                ;; 02:703b $c9
+    ld   A, [wD300_CurrentEntityAddrLo]
+    and  A, A
+    jr   NZ, .jr_02_703c
+    ld   HL, wD60F_GfxTransferFlags
+    set  GFX_XFER_PLAYER_GFX, [HL]
+    ret
 .jr_02_703c:
-    or   A, $0a                                        ;; 02:703c $f6 $0a
-    ld   L, A                                          ;; 02:703e $6f
-    ld   H, $d2                                        ;; 02:703f $26 $d2
-    bit  SPRITE_FLAG_STREAMS_OWN_GFX_BIT, [HL]              ;; 02:7041 $cb $7e
-    ret  Z                                             ;; 02:7043 $c8
-    ld   A, L                                          ;; 02:7044 $7d
-    xor  A, $02                                        ;; 02:7045 $ee $02
-    ld   L, A                                          ;; 02:7047 $6f
-    ld   A, [HL]                                       ;; 02:7048 $7e
-    ld   [wD588_EntityGfxSrcAddrHi], A                                    ;; 02:7049 $ea $88 $d5
-    ld   A, L                                          ;; 02:704c $7d
-    xor  A, $08                                        ;; 02:704d $ee $08
-    ld   L, A                                          ;; 02:704f $6f
-    ld   L, [HL]                                       ;; 02:7050 $6e
-    ld   H, $00                                        ;; 02:7051 $26 $00
-    ld   DE, .data_02_7061_EntityGfxBankTable          ;; 02:7053 $11 $61 $70
-    add  HL, DE                                        ;; 02:7056 $19
-    ld   A, [HL]                                       ;; 02:7057 $7e
-    ld   [wD589_EntityGfxSrcBank], A                                    ;; 02:7058 $ea $89 $d5
-    ld   HL, wD60F_GfxTransferFlags                                     ;; 02:705b $21 $0f $d6
-    set  GFX_XFER_ENTITY_GFX, [HL]                     ;; 02:705e $cb $ce
-    ret                                                ;; 02:7060 $c9
+    or   A, $0a
+    ld   L, A
+    ld   H, $d2
+    bit  SPRITE_FLAG_STREAMS_OWN_GFX_BIT, [HL]
+    ret  Z
+    ld   A, L
+    xor  A, $02
+    ld   L, A
+    ld   A, [HL]
+    ld   [wD588_EntityGfxSrcAddrHi], A
+    ld   A, L
+    xor  A, $08
+    ld   L, A
+    ld   L, [HL]
+    ld   H, $00
+    ld   DE, .data_02_7061_EntityGfxBankTable
+    add  HL, DE
+    ld   A, [HL]
+    ld   [wD589_EntityGfxSrcBank], A
+    ld   HL, wD60F_GfxTransferFlags
+    set  GFX_XFER_ENTITY_GFX, [HL]
+    ret
 .data_02_7061_EntityGfxBankTable:
 ; One ROM bank per entity id, and the whole of the streaming path's addressing: the
 ; page number comes from the entity's live ENTITY_FIELD_SPRITE_ID, so bank plus sprite
@@ -692,169 +692,169 @@ call_02_7030_Entity_NotifyActionChanged:
     db   $00             ; $8F ENTITY_MEDIA_DIMENSION_MOVING_PLATFORM
 
 call_02_70f1_Entity_RequestQueuedAction:
-; Called when an animation sequence finishes. Reads ACTION_STATE, checks bit 7; if clear, returns (sequence loops). 
-; If set, masks to low 5 bits and calls call_02_4ccd_Player_RequestAction (likely a state-machine transition 
+; Called when an animation sequence finishes. Reads ACTION_STATE, checks bit 7; if clear, returns (sequence loops).
+; If set, masks to low 5 bits and calls call_02_4ccd_Player_RequestAction (likely a state-machine transition
 ; or death/reset handler)
     LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_ACTION_STATE_FLAGS
-    ld   A, [HL]                                       ;; 02:70f9 $7e
-    bit  ACTION_STATE_HAS_PENDING_BIT, A                                          ;; 02:70fa $cb $7f
-    ret  Z                                             ;; 02:70fc $c8
-    and  A, ACTION_STATE_PENDING_ACTION_MASK                                        ;; 02:70fd $e6 $1f
-    jp   call_02_4ccd_Player_RequestAction                                  ;; 02:70ff $c3 $cd $4c
+    ld   A, [HL]
+    bit  ACTION_STATE_HAS_PENDING_BIT, A
+    ret  Z
+    and  A, ACTION_STATE_PENDING_ACTION_MASK
+    jp   call_02_4ccd_Player_RequestAction
 
 call_02_7102_Entity_SetAction:
-; Sets a new action on the current entity. Masks action index to 5 bits, writes to ACTION_ID field, 
-; then double-indexes data_02_4000_EntityDataTables (by entity ID, then by action index × 4) to get 
-; the action function pointer and data pointer. Writes function pointer to ACTION_FUNC, reads 4 bytes 
+; Sets a new action on the current entity. Masks action index to 5 bits, writes to ACTION_ID field,
+; then double-indexes data_02_4000_EntityDataTables (by entity ID, then by action index × 4) to get
+; the action function pointer and data pointer. Writes function pointer to ACTION_FUNC, reads 4 bytes
 ; from the data block: byte 0 → ACTION_STATE | $20, byte 1 → SPRITE_FLAGS | $40, byte 2 → SPRITE_FRAME_COUNTER_MAX
-; and SPRITE_FRAME_COUNTER, byte 3 → SPRITE_COUNTER_MAX; sets SPRITE_IDS_PTR to 4 bytes into the data block; 
+; and SPRITE_FRAME_COUNTER, byte 3 → SPRITE_COUNTER_MAX; sets SPRITE_IDS_PTR to 4 bytes into the data block;
 ; zeroes SPRITE_COUNTER; writes byte 4 to SPRITE_ID; then falls into Entity_NotifyActionChanged
-    and  A, $1f                                        ;; 02:7102 $e6 $1f
-    ld   C, A                                          ;; 02:7104 $4f
+    and  A, $1f
+    ld   C, A
     LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_ACTION_ID
-    ld   [HL], C                                       ;; 02:710d $71
-    dec  L                                             ;; 02:710e $2d
-    ld   L, [HL]                                       ;; 02:710f $6e
-    ld   H, $00                                        ;; 02:7110 $26 $00
-    add  HL, HL                                        ;; 02:7112 $29
-    ld   DE, data_02_4000_EntityActionJumpTable             ;; 02:7113 $11 $00 $40
-    add  HL, DE                                        ;; 02:7116 $19 ; HL = data_02_4000_EntityActionJumpTable + 2*ENTITY_FIELD_ENTITY_ID
-    ld   E, [HL]                                       ;; 02:7117 $5e
-    inc  HL                                            ;; 02:7118 $23
-    ld   D, [HL]                                       ;; 02:7119 $56
-    ld   L, C                                          ;; 02:711a $69
-    ld   H, $00                                        ;; 02:711b $26 $00
-    add  HL, HL                                        ;; 02:711d $29
-    add  HL, HL                                        ;; 02:711e $29
-    add  HL, DE                                        ;; 02:711f $19
+    ld   [HL], C
+    dec  L
+    ld   L, [HL]
+    ld   H, $00
+    add  HL, HL
+    ld   DE, data_02_4000_EntityActionJumpTable
+    add  HL, DE                                        ; HL = data_02_4000_EntityActionJumpTable + 2*ENTITY_FIELD_ENTITY_ID
+    ld   E, [HL]
+    inc  HL
+    ld   D, [HL]
+    ld   L, C
+    ld   H, $00
+    add  HL, HL
+    add  HL, HL
+    add  HL, DE
     LOAD_OBJ_FIELD_TO_DE_ALT ENTITY_FIELD_ACTION_FUNC
-    ld   A, [HL+]                                      ;; 02:7128 $2a
-    ld   [DE], A                                       ;; 02:7129 $12 ; sets current action pointer in entity instance
-    inc  E                                             ;; 02:712a $1c
-    ld   A, [HL+]                                      ;; 02:712b $2a
-    ld   [DE], A                                       ;; 02:712c $12 ; sets current action pointer in entity instance
-    inc  E                                             ;; 02:712d $1c ; DE = ENTITY_FIELD_ANIM_FRAME_LIST_PTR
-    ld   A, [HL+]                                      ;; 02:712e $2a
-    ld   H, [HL]                                       ;; 02:712f $66
-    ld   L, A                                          ;; 02:7130 $6f ; HL = action data ptr
+    ld   A, [HL+]
+    ld   [DE], A                                       ; sets current action pointer in entity instance
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A                                       ; sets current action pointer in entity instance
+    inc  E                                             ; DE = ENTITY_FIELD_ANIM_FRAME_LIST_PTR
+    ld   A, [HL+]
+    ld   H, [HL]
+    ld   L, A                                          ; HL = action data ptr
     LOAD_OBJ_FIELD_TO_BC_ALT ENTITY_FIELD_ACTION_STATE_FLAGS
-    ld   A, [HL+]                                      ;; 02:7139 $2a
-    or   A, ACTION_STATE_IS_FIRST_FRAME                     ;; 02:713a $f6 $20
-    ld   [BC], A                                       ;; 02:713c $02 ; ENTITY_FIELD_ACTION_STATE_FLAGS = first byte in data table | 0x20
-    inc  C                                             ;; 02:713d $0c ; BC = ENTITY_FIELD_SPRITE_FLAGS
-    ld   A, [HL+]                                      ;; 02:713e $2a
-    or   A, 1 << SPRITE_FLAG_ID_CHANGED_BIT          ;; 02:713f $f6 $40
-    ld   [BC], A                                       ;; 02:7141 $02 ; force a graphics refresh on the new action's first frame
-    inc  C                                             ;; 02:7142 $0c ; BC = ENTITY_FIELD_ANIM_SPEED
-    ld   A, [HL+]                                      ;; 02:7143 $2a
-    ld   [BC], A                                       ;; 02:7144 $02 ; ENTITY_FIELD_ANIM_SPEED = third byte in data table
-    inc  C                                             ;; 02:7145 $0c ; BC = ENTITY_FIELD_ANIM_FRAME_COUNT
-    push AF                                            ;; 02:7146 $f5
-    ld   A, [HL+]                                      ;; 02:7147 $2a
-    ld   [BC], A                                       ;; 02:7148 $02 ; ENTITY_FIELD_ANIM_FRAME_COUNT = fourth byte in data table
-    ld   A, L                                          ;; 02:7149 $7d
-    ld   [DE], A                                       ;; 02:714a $12 ; ENTITY_FIELD_ANIM_FRAME_LIST_PTR = ptr to 4 bytes after start of data table
-    inc  E                                             ;; 02:714b $1c ; DE = ENTITY_FIELD_ANIM_FRAME_LIST_PTR+1
-    ld   A, H                                          ;; 02:714c $7c
-    ld   [DE], A                                       ;; 02:714d $12 ; ENTITY_FIELD_ANIM_FRAME_LIST_PTR+1 = ptr to 5 bytes after start of data table
-    inc  E                                             ;; 02:714e $1c ; DE = ENTITY_FIELD_ANIM_FRAME_TIMER
-    pop  AF                                            ;; 02:714f $f1
-    ld   [DE], A                                       ;; 02:7150 $12 ; ENTITY_FIELD_UNK_06 = third byte in data table
-    inc  E                                             ;; 02:7151 $1c ; DE = ENTITY_FIELD_ANIM_FRAME_INDEX
-    xor  A, A                                          ;; 02:7152 $af
-    ld   [DE], A                                       ;; 02:7153 $12 ; ENTITY_FIELD_ANIM_FRAME_INDEX = 0
-    inc  E                                             ;; 02:7154 $1c ; DE = ENTITY_FIELD_SPRITE_ID
-    ld   A, [HL]                                       ;; 02:7155 $7e
-    ld   [DE], A                                       ;; 02:7156 $12 ; ENTITY_FIELD_SPRITE_ID = fifth byte in data table
-    jp   call_02_7030_Entity_NotifyActionChanged                                    ;; 02:7157 $c3 $30 $70
+    ld   A, [HL+]
+    or   A, ACTION_STATE_IS_FIRST_FRAME
+    ld   [BC], A                                       ; ENTITY_FIELD_ACTION_STATE_FLAGS = first byte in data table | 0x20
+    inc  C                                             ; BC = ENTITY_FIELD_SPRITE_FLAGS
+    ld   A, [HL+]
+    or   A, 1 << SPRITE_FLAG_ID_CHANGED_BIT
+    ld   [BC], A                                       ; force a graphics refresh on the new action's first frame
+    inc  C                                             ; BC = ENTITY_FIELD_ANIM_SPEED
+    ld   A, [HL+]
+    ld   [BC], A                                       ; ENTITY_FIELD_ANIM_SPEED = third byte in data table
+    inc  C                                             ; BC = ENTITY_FIELD_ANIM_FRAME_COUNT
+    push AF
+    ld   A, [HL+]
+    ld   [BC], A                                       ; ENTITY_FIELD_ANIM_FRAME_COUNT = fourth byte in data table
+    ld   A, L
+    ld   [DE], A                                       ; ENTITY_FIELD_ANIM_FRAME_LIST_PTR = ptr to 4 bytes after start of data table
+    inc  E                                             ; DE = ENTITY_FIELD_ANIM_FRAME_LIST_PTR+1
+    ld   A, H
+    ld   [DE], A                                       ; ENTITY_FIELD_ANIM_FRAME_LIST_PTR+1 = ptr to 5 bytes after start of data table
+    inc  E                                             ; DE = ENTITY_FIELD_ANIM_FRAME_TIMER
+    pop  AF
+    ld   [DE], A                                       ; ENTITY_FIELD_UNK_06 = third byte in data table
+    inc  E                                             ; DE = ENTITY_FIELD_ANIM_FRAME_INDEX
+    xor  A, A
+    ld   [DE], A                                       ; ENTITY_FIELD_ANIM_FRAME_INDEX = 0
+    inc  E                                             ; DE = ENTITY_FIELD_SPRITE_ID
+    ld   A, [HL]
+    ld   [DE], A                                       ; ENTITY_FIELD_SPRITE_ID = fifth byte in data table
+    jp   call_02_7030_Entity_NotifyActionChanged
 
 call_02_715a_MapWindow_Update:
-; Calls all three map-window update routines: player window update, vertical scroll check, 
+; Calls all three map-window update routines: player window update, vertical scroll check,
 ; horizontal scroll check
-    call call_00_13a6_BgMap_UpdateWindowFromPlayerPos                                  ;; 02:715a $cd $a6 $13
-    call call_02_7164_MapScroll_CheckVertical                                  ;; 02:715d $cd $64 $71
-    call call_02_7196_MapScroll_CheckHorizontal                                  ;; 02:7160 $cd $96 $71
-    ret                                                ;; 02:7163 $c9
+    call call_00_13a6_BgMap_UpdateWindowFromPlayerPos
+    call call_02_7164_MapScroll_CheckVertical
+    call call_02_7196_MapScroll_CheckHorizontal
+    ret
 
 call_02_7164_MapScroll_CheckVertical:
-; Reads wD6EF (Y position in map, 16-bit), right-shifts 3 to get tile row, compares against previously 
-; stored row in wD6F3_BgMap_PrevRow; if changed, sets bit 0 (scroll down) or bit 1 (scroll up) in 
+; Reads wD6EF (Y position in map, 16-bit), right-shifts 3 to get tile row, compares against previously
+; stored row in wD6F3_BgMap_PrevRow; if changed, sets bit 0 (scroll down) or bit 1 (scroll up) in
 ; wD6F9_BgMap_LoadingFlags scroll-request flags
-    ld   HL, wD6EF_BgMap_ScrollY                                     ;; 02:7164 $21 $ef $d6
-    ld   A, [HL+]                                      ;; 02:7167 $2a
-    ld   D, [HL]                                       ;; 02:7168 $56
-    ld   [wD5A2_BgMap_ScrollYLo], A                                    ;; 02:7169 $ea $a2 $d5
-    srl  D                                             ;; 02:716c $cb $3a
-    rra                                                ;; 02:716e $1f
-    srl  D                                             ;; 02:716f $cb $3a
-    rra                                                ;; 02:7171 $1f
-    srl  D                                             ;; 02:7172 $cb $3a
-    rra                                                ;; 02:7174 $1f
-    ld   E, A                                          ;; 02:7175 $5f
-    ld   HL, wD6F3_BgMap_PrevRow                                     ;; 02:7176 $21 $f3 $d6
-    ld   A, [HL]                                       ;; 02:7179 $7e
-    ld   [HL], E                                       ;; 02:717a $73
-    sub  A, E                                          ;; 02:717b $93
-    ld   E, A                                          ;; 02:717c $5f
-    inc  HL                                            ;; 02:717d $23
-    ld   A, [HL]                                       ;; 02:717e $7e
-    ld   [HL], D                                       ;; 02:717f $72
-    sbc  A, D                                          ;; 02:7180 $9a
-    ld   D, A                                          ;; 02:7181 $57
-    jr   C, .jr_02_718e                                ;; 02:7182 $38 $0a
-    or   A, E                                          ;; 02:7184 $b3
-    ret  Z                                             ;; 02:7185 $c8
-    ld   HL, wD6F9_BgMap_LoadingFlags                                     ;; 02:7186 $21 $f9 $d6
-    ld   A, [HL]                                       ;; 02:7189 $7e
-    or   A, MAP_SCROLL_DOWN                                        ;; 02:718a $f6 $01
-    ld   [HL], A                                       ;; 02:718c $77
-    ret                                                ;; 02:718d $c9
+    ld   HL, wD6EF_BgMap_ScrollY
+    ld   A, [HL+]
+    ld   D, [HL]
+    ld   [wD5A2_BgMap_ScrollYLo], A
+    srl  D
+    rra
+    srl  D
+    rra
+    srl  D
+    rra
+    ld   E, A
+    ld   HL, wD6F3_BgMap_PrevRow
+    ld   A, [HL]
+    ld   [HL], E
+    sub  A, E
+    ld   E, A
+    inc  HL
+    ld   A, [HL]
+    ld   [HL], D
+    sbc  A, D
+    ld   D, A
+    jr   C, .jr_02_718e
+    or   A, E
+    ret  Z
+    ld   HL, wD6F9_BgMap_LoadingFlags
+    ld   A, [HL]
+    or   A, MAP_SCROLL_DOWN
+    ld   [HL], A
+    ret
 .jr_02_718e:
-    ld   HL, wD6F9_BgMap_LoadingFlags                                     ;; 02:718e $21 $f9 $d6
-    ld   A, [HL]                                       ;; 02:7191 $7e
-    or   A, MAP_SCROLL_UP                                        ;; 02:7192 $f6 $02
-    ld   [HL], A                                       ;; 02:7194 $77
-    ret                                                ;; 02:7195 $c9
+    ld   HL, wD6F9_BgMap_LoadingFlags
+    ld   A, [HL]
+    or   A, MAP_SCROLL_UP
+    ld   [HL], A
+    ret
 
 call_02_7196_MapScroll_CheckHorizontal:
-; Same logic as above for wD6ED (X position in map); sets bit 2 (scroll right) or bit 3 (scroll left) 
+; Same logic as above for wD6ED (X position in map); sets bit 2 (scroll right) or bit 3 (scroll left)
 ; in wD6F9_BgMap_LoadingFlags
-    ld   HL, wD6ED_BgMap_ScrollX                                     ;; 02:7196 $21 $ed $d6
-    ld   A, [HL+]                                      ;; 02:7199 $2a
-    ld   D, [HL]                                       ;; 02:719a $56
-    ld   [wD5A1_BgMap_ScrollXLo], A                                    ;; 02:719b $ea $a1 $d5
-    srl  D                                             ;; 02:719e $cb $3a
-    rra                                                ;; 02:71a0 $1f
-    srl  D                                             ;; 02:71a1 $cb $3a
-    rra                                                ;; 02:71a3 $1f
-    srl  D                                             ;; 02:71a4 $cb $3a
-    rra                                                ;; 02:71a6 $1f
-    ld   E, A                                          ;; 02:71a7 $5f
-    ld   HL, wD6F1_BgMap_PrevColumn                                     ;; 02:71a8 $21 $f1 $d6
-    ld   A, [HL]                                       ;; 02:71ab $7e
-    ld   [HL], E                                       ;; 02:71ac $73
-    sub  A, E                                          ;; 02:71ad $93
-    ld   E, A                                          ;; 02:71ae $5f
-    inc  HL                                            ;; 02:71af $23
-    ld   A, [HL]                                       ;; 02:71b0 $7e
-    ld   [HL], D                                       ;; 02:71b1 $72
-    sbc  A, D                                          ;; 02:71b2 $9a
-    ld   D, A                                          ;; 02:71b3 $57
-    jr   C, .jr_02_71c0                                ;; 02:71b4 $38 $0a
-    or   A, E                                          ;; 02:71b6 $b3
-    ret  Z                                             ;; 02:71b7 $c8
-    ld   HL, wD6F9_BgMap_LoadingFlags                                     ;; 02:71b8 $21 $f9 $d6
-    ld   A, [HL]                                       ;; 02:71bb $7e
-    or   A, MAP_SCROLL_RIGHT                                        ;; 02:71bc $f6 $04
-    ld   [HL], A                                       ;; 02:71be $77
-    ret                                                ;; 02:71bf $c9
+    ld   HL, wD6ED_BgMap_ScrollX
+    ld   A, [HL+]
+    ld   D, [HL]
+    ld   [wD5A1_BgMap_ScrollXLo], A
+    srl  D
+    rra
+    srl  D
+    rra
+    srl  D
+    rra
+    ld   E, A
+    ld   HL, wD6F1_BgMap_PrevColumn
+    ld   A, [HL]
+    ld   [HL], E
+    sub  A, E
+    ld   E, A
+    inc  HL
+    ld   A, [HL]
+    ld   [HL], D
+    sbc  A, D
+    ld   D, A
+    jr   C, .jr_02_71c0
+    or   A, E
+    ret  Z
+    ld   HL, wD6F9_BgMap_LoadingFlags
+    ld   A, [HL]
+    or   A, MAP_SCROLL_RIGHT
+    ld   [HL], A
+    ret
 .jr_02_71c0:
-    ld   HL, wD6F9_BgMap_LoadingFlags                                     ;; 02:71c0 $21 $f9 $d6
-    ld   A, [HL]                                       ;; 02:71c3 $7e
-    or   A, MAP_SCROLL_LEFT                                        ;; 02:71c4 $f6 $08
-    ld   [HL], A                                       ;; 02:71c6 $77
-    ret                                                ;; 02:71c7 $c9
-    
+    ld   HL, wD6F9_BgMap_LoadingFlags
+    ld   A, [HL]
+    or   A, MAP_SCROLL_LEFT
+    ld   [HL], A
+    ret
+
 call_02_71c8_Entities_QueueGraphicsAndPalettes:
 ; Iterates all 7 NPC slots; for each active entity looks up its entity ID in
 ; data_02_743c_EntityGfxAndPaletteTable to get a (gfx-set id, palette id) pair.
@@ -862,64 +862,64 @@ call_02_71c8_Entities_QueueGraphicsAndPalettes:
 ; entity's tiles get streamed into VRAM; on GBC the palette id is loaded via
 ; call_0b_5f57_Entity_LoadGBCPalette. After the loop, refreshes the fly power-up
 ; particle palette
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:71c8 $fa $00 $d3
-    push AF                                            ;; 02:71cb $f5
-    ld   A, ENTITY_SLOT_FIRST_NPC                      ;; 02:71cc $3e $20
+    ld   A, [wD300_CurrentEntityAddrLo]
+    push AF
+    ld   A, ENTITY_SLOT_FIRST_NPC
 .jr_02_71ce:
-    ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:71ce $ea $00 $d3
-    ld   L, A                                          ;; 02:71d1 $6f
-    ld   H, $d2                                        ;; 02:71d2 $26 $d2
-    ld   A, [HL]                                       ;; 02:71d4 $7e
-    cp   A, ENTITY_ID_NONE                             ;; 02:71d5 $fe $ff
-    jr   Z, .jr_02_71fa                                ;; 02:71d7 $28 $21
-    ld   L, A                                          ;; 02:71d9 $6f
-    ld   H, $00                                        ;; 02:71da $26 $00
-    add  HL, HL                                        ;; 02:71dc $29
-    ld   DE, data_02_743c_EntityGfxAndPaletteTable                              ;; 02:71dd $11 $3c $74
-    add  HL, DE                                        ;; 02:71e0 $19
-    ld   A, [HL+]                                      ;; 02:71e1 $2a
-    push HL                                            ;; 02:71e2 $e5
-    and  A, A                                          ;; 02:71e3 $a7
-    call NZ, call_02_7211_EntityGfxQueue_Enqueue                              ;; 02:71e4 $c4 $11 $72
-    pop  HL                                            ;; 02:71e7 $e1
-    ld   A, [wD59E_OnGBCFlag]                                    ;; 02:71e8 $fa $9e $d5
-    and  A, A                                          ;; 02:71eb $a7
-    jr   Z, .jr_02_71fa                                ;; 02:71ec $28 $0c
-    ld   C, [HL]                                       ;; 02:71ee $4e
+    ld   [wD300_CurrentEntityAddrLo], A
+    ld   L, A
+    ld   H, $d2
+    ld   A, [HL]
+    cp   A, ENTITY_ID_NONE
+    jr   Z, .jr_02_71fa
+    ld   L, A
+    ld   H, $00
+    add  HL, HL
+    ld   DE, data_02_743c_EntityGfxAndPaletteTable
+    add  HL, DE
+    ld   A, [HL+]
+    push HL
+    and  A, A
+    call NZ, call_02_7211_EntityGfxQueue_Enqueue
+    pop  HL
+    ld   A, [wD59E_OnGBCFlag]
+    and  A, A
+    jr   Z, .jr_02_71fa
+    ld   C, [HL]
     FARCALL call_0b_5f57_Entity_LoadGBCPalette
 .jr_02_71fa:
-    ld   A, [wD300_CurrentEntityAddrLo]                                    ;; 02:71fa $fa $00 $d3
-    add  A, ENTITY_SLOT_SIZE                           ;; 02:71fd $c6 $20
-    jr   NZ, .jr_02_71ce                               ;; 02:71ff $20 $cd
+    ld   A, [wD300_CurrentEntityAddrLo]
+    add  A, ENTITY_SLOT_SIZE
+    jr   NZ, .jr_02_71ce
     FARCALL call_0b_5f1b_FlyPowerup_LoadParticlePalette
-    pop  AF                                            ;; 02:720c $f1
-    ld   [wD300_CurrentEntityAddrLo], A                                    ;; 02:720d $ea $00 $d3
-    ret                                                ;; 02:7210 $c9
+    pop  AF
+    ld   [wD300_CurrentEntityAddrLo], A
+    ret
 
 call_02_7211_EntityGfxQueue_Enqueue:
 ; Checks if A (entity graphics set id) is already present in the 4-entry queue at
 ; wD71A_EntityGfxQueue; if found, returns without duplicating it. If the queue has space
 ; (checked via wD71E_EntityGfxQueueCount), writes A into the next free slot and
 ; increments the count
-    ld   HL, wD71E_EntityGfxQueueCount                                     ;; 02:7211 $21 $1e $d7
-    ld   E, [HL]                                       ;; 02:7214 $5e
-    ld   HL, wD71A_EntityGfxQueue                                     ;; 02:7215 $21 $1a $d7
-    ld   D, ENTITY_GFX_QUEUE_SIZE                      ;; 02:7218 $16 $04
+    ld   HL, wD71E_EntityGfxQueueCount
+    ld   E, [HL]
+    ld   HL, wD71A_EntityGfxQueue
+    ld   D, ENTITY_GFX_QUEUE_SIZE
 .jr_02_721a:
-    dec  E                                             ;; 02:721a $1d
-    bit  7, E                                          ;; 02:721b $cb $7b
-    jr   NZ, .jr_02_7226                               ;; 02:721d $20 $07
-    cp   A, [HL]                                       ;; 02:721f $be
-    ret  Z                                             ;; 02:7220 $c8
-    inc  HL                                            ;; 02:7221 $23
-    dec  D                                             ;; 02:7222 $15
-    jr   NZ, .jr_02_721a                               ;; 02:7223 $20 $f5
-    ret                                                ;; 02:7225 $c9
+    dec  E
+    bit  7, E
+    jr   NZ, .jr_02_7226
+    cp   A, [HL]
+    ret  Z
+    inc  HL
+    dec  D
+    jr   NZ, .jr_02_721a
+    ret
 .jr_02_7226:
-    ld   [HL], A                                       ;; 02:7226 $77
-    ld   HL, wD71E_EntityGfxQueueCount                                     ;; 02:7227 $21 $1e $d7
-    inc  [HL]                                          ;; 02:722a $34
-    ret                                                ;; 02:722b $c9
+    ld   [HL], A
+    ld   HL, wD71E_EntityGfxQueueCount
+    inc  [HL]
+    ret
 
 call_02_722c_EntityGfxQueue_StartNextTransfer:
 ; If GFX_XFER_QUEUED_ENTITY_GFX is already set, returns immediately (a transfer is still
@@ -928,42 +928,42 @@ call_02_722c_EntityGfxQueue_StartNextTransfer:
 ; dest addr lo/hi, size lo/hi, pad), copies the record into
 ; wD71F_GfxCopy_SrcBank..wD725_GfxCopy_SizeHi and raises GFX_XFER_QUEUED_ENTITY_GFX
 ; so call_00_0a21_FlushEntityGfxQueue performs the copy
-    ld   HL, wD60F_GfxTransferFlags                                     ;; 02:722c $21 $0f $d6
-    bit  GFX_XFER_QUEUED_ENTITY_GFX, [HL]              ;; 02:722f $cb $5e
-    ret  NZ                                            ;; 02:7231 $c0
-    ld   HL, wD71E_EntityGfxQueueCount                                     ;; 02:7232 $21 $1e $d7
-    ld   A, [HL]                                       ;; 02:7235 $7e
-    and  A, A                                          ;; 02:7236 $a7
-    ret  Z                                             ;; 02:7237 $c8
-    dec  [HL]                                          ;; 02:7238 $35
-    ld   L, [HL]                                       ;; 02:7239 $6e
-    ld   H, $00                                        ;; 02:723a $26 $00
-    ld   DE, wD71A_EntityGfxQueue                                     ;; 02:723c $11 $1a $d7
-    add  HL, DE                                        ;; 02:723f $19
-    ld   L, [HL]                                       ;; 02:7240 $6e
-    ld   H, $00                                        ;; 02:7241 $26 $00
-    add  HL, HL                                        ;; 02:7243 $29
-    add  HL, HL                                        ;; 02:7244 $29
-    add  HL, HL                                        ;; 02:7245 $29
-    ld   DE, .data_02_726c_EntityGfxDescriptors                             ;; 02:7246 $11 $6c $72
-    add  HL, DE                                        ;; 02:7249 $19
-    ld   A, [HL+]                                      ;; 02:724a $2a
-    ld   [wD71F_GfxCopy_SrcBank], A                                    ;; 02:724b $ea $1f $d7
-    ld   A, [HL+]                                      ;; 02:724e $2a
-    ld   [wD720_GfxCopy_SrcAddrLo], A                                    ;; 02:724f $ea $20 $d7
-    ld   A, [HL+]                                      ;; 02:7252 $2a
-    ld   [wD721_GfxCopy_SrcAddrHi], A                                    ;; 02:7253 $ea $21 $d7
-    ld   A, [HL+]                                      ;; 02:7256 $2a
-    ld   [wD722_GfxCopy_DestAddrLo], A                                    ;; 02:7257 $ea $22 $d7
-    ld   A, [HL+]                                      ;; 02:725a $2a
-    ld   [wD723_GfxCopy_DestAddrHi], A                                    ;; 02:725b $ea $23 $d7
-    ld   A, [HL+]                                      ;; 02:725e $2a
-    ld   [wD724_GfxCopy_SizeLo], A                                    ;; 02:725f $ea $24 $d7
-    ld   A, [HL+]                                      ;; 02:7262 $2a
-    ld   [wD725_GfxCopy_SizeHi], A                                    ;; 02:7263 $ea $25 $d7
-    ld   HL, wD60F_GfxTransferFlags                                     ;; 02:7266 $21 $0f $d6
-    set  GFX_XFER_QUEUED_ENTITY_GFX, [HL]              ;; 02:7269 $cb $de
-    ret                                                ;; 02:726b $c9
+    ld   HL, wD60F_GfxTransferFlags
+    bit  GFX_XFER_QUEUED_ENTITY_GFX, [HL]
+    ret  NZ
+    ld   HL, wD71E_EntityGfxQueueCount
+    ld   A, [HL]
+    and  A, A
+    ret  Z
+    dec  [HL]
+    ld   L, [HL]
+    ld   H, $00
+    ld   DE, wD71A_EntityGfxQueue
+    add  HL, DE
+    ld   L, [HL]
+    ld   H, $00
+    add  HL, HL
+    add  HL, HL
+    add  HL, HL
+    ld   DE, .data_02_726c_EntityGfxDescriptors
+    add  HL, DE
+    ld   A, [HL+]
+    ld   [wD71F_GfxCopy_SrcBank], A
+    ld   A, [HL+]
+    ld   [wD720_GfxCopy_SrcAddrLo], A
+    ld   A, [HL+]
+    ld   [wD721_GfxCopy_SrcAddrHi], A
+    ld   A, [HL+]
+    ld   [wD722_GfxCopy_DestAddrLo], A
+    ld   A, [HL+]
+    ld   [wD723_GfxCopy_DestAddrHi], A
+    ld   A, [HL+]
+    ld   [wD724_GfxCopy_SizeLo], A
+    ld   A, [HL+]
+    ld   [wD725_GfxCopy_SizeHi], A
+    ld   HL, wD60F_GfxTransferFlags
+    set  GFX_XFER_QUEUED_ENTITY_GFX, [HL]
+    ret
 .data_02_726c_EntityGfxDescriptors:
 ; Fifty-eight tile-streaming jobs, indexed by the graphics-set id in byte +0 of a row
 ; of data_02_743c_EntityGfxAndPaletteTable. Id $00 is the "this entity has no tiles"
