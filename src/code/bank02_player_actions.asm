@@ -70,14 +70,14 @@ data_02_4120_EntityActions_Gex:
 
 call_02_41a0_PlayerAction_Spawn:
 ; On first frame (bit 5 of wD209 set): plays spawn SFX
-    ld   A, [wD209_Player_ActionState]                                    ;; 02:41a0 $fa $09 $d2
-    and  A, ACTION_STATE_IS_FIRST_FRAME                                        ;; 02:41a3 $e6 $20
-    jr   Z, .jr_02_41ac                                ;; 02:41a5 $28 $05
-    ld   C, SFX_GEX_SPAWN                                        ;; 02:41a7 $0e $11
-    call call_00_112f_QueueSFX                                  ;; 02:41a9 $cd $2f $11
+    ld   A, [wD209_Player_ActionState]
+    and  A, ACTION_STATE_IS_FIRST_FRAME
+    jr   Z, .jr_02_41ac
+    ld   C, SFX_GEX_SPAWN
+    call call_00_112f_QueueSFX
 .jr_02_41ac:
-    ret                                                ;; 02:41ac $c9
-    
+    ret
+
 call_02_41ad_PlayerAction_IntroWarp:
 ; The one-frame action Gex passes through as a level starts. Outside the Media
 ; Dimension hub (level id 0) it kicks off FlyPowerup_StartEntry, which flies the
@@ -85,11 +85,11 @@ call_02_41ad_PlayerAction_IntroWarp:
 ; skipped. It then calls Entity_RequestQueuedAction, which fires the action the
 ; data block parked in wD209 straight away instead of waiting for the animation to
 ; end - data_02_756d names PLAYER_ACTION_STAND - so this action lasts one frame
-    ld   A, [wD624_CurrentLevelId]                                    ;; 02:41ad $fa $24 $d6
-    and  A, A                                          ;; 02:41b0 $a7
-    call NZ, call_00_0634_FlyPowerup_StartEntry                              ;; 02:41b1 $c4 $34 $06
-    jp   call_02_70f1_Entity_RequestQueuedAction                                    ;; 02:41b4 $c3 $f1 $70
-    
+    ld   A, [wD624_CurrentLevelId]
+    and  A, A
+    call NZ, call_00_0634_FlyPowerup_StartEntry
+    jp   call_02_70f1_Entity_RequestQueuedAction
+
 call_02_41b7_PlayerAction_Stand:
 ; On first frame: sets B-lock flag (bit 6 of wD759), zeroes X speed and Y velocity, and loads the
 ; idle timer. The clamp against $32 below is dead code - Player_GetIdleTimerLength always
@@ -99,45 +99,45 @@ call_02_41b7_PlayerAction_Stand:
 ; TILE_TYPE_TEETER_RIGHT tile while facing right, means Gex is at an edge he must not walk off,
 ; so it requests PLAYER_ACTION_TEETER. Otherwise the idle timer counts down and
 ; PLAYER_ACTION_IDLE_ANIMATION starts when it expires
-    ld   A, [wD209_Player_ActionState]                                    ;; 02:41b7 $fa $09 $d2
-    and  A, ACTION_STATE_IS_FIRST_FRAME                                        ;; 02:41ba $e6 $20
-    jr   Z, .jr_02_41da                                ;; 02:41bc $28 $1c
-    ld   HL, wD759_ButtonBlockingFlags                                     ;; 02:41be $21 $59 $d7
-    set  BTN_BLOCK_B_UNTIL_RELEASE_BIT, [HL]           ;; 02:41c1 $cb $f6
-    xor  A, A                                          ;; 02:41c3 $af
-    ld   [wD75D_PlayerXSpeedPrev], A                                    ;; 02:41c4 $ea $5d $d7
-    ld   [wD760_PlayerYVelocity], A                                    ;; 02:41c7 $ea $60 $d7
-    xor  A, A                                          ;; 02:41ca $af
-    ld   [wD75E_PlayerXSpeed], A                                    ;; 02:41cb $ea $5e $d7
-    call call_02_4dd8_Player_GetIdleTimerLength                        ;; 02:41ce $cd $d8 $4d
-    cp   A, $32                                        ;; 02:41d1 $fe $32 ; always NC - see header
-    jr   NC, .jr_02_41d7                               ;; 02:41d3 $30 $02
-    ld   A, $32                                        ;; 02:41d5 $3e $32 ; unreachable
+    ld   A, [wD209_Player_ActionState]
+    and  A, ACTION_STATE_IS_FIRST_FRAME
+    jr   Z, .jr_02_41da
+    ld   HL, wD759_ButtonBlockingFlags
+    set  BTN_BLOCK_B_UNTIL_RELEASE_BIT, [HL]
+    xor  A, A
+    ld   [wD75D_PlayerXSpeedPrev], A
+    ld   [wD760_PlayerYVelocity], A
+    xor  A, A
+    ld   [wD75E_PlayerXSpeed], A
+    call call_02_4dd8_Player_GetIdleTimerLength
+    cp   A, $32                                        ; always NC - see header
+    jr   NC, .jr_02_41d7
+    ld   A, $32                                        ; unreachable
 .jr_02_41d7:
-    ld   [wD75B_IdleTimer], A                                    ;; 02:41d7 $ea $5b $d7
+    ld   [wD75B_IdleTimer], A
 .jr_02_41da:
-    ld   A, [wD767_FloorTileType]                                    ;; 02:41da $fa $67 $d7
-    cp   A, TILE_TYPE_TEETER_LEFT                     ;; 02:41dd $fe $08
-    jr   Z, .jr_02_41ee                                ;; 02:41df $28 $0d
-    cp   A, TILE_TYPE_TEETER_RIGHT                    ;; 02:41e1 $fe $09
-    jr   NZ, .jr_02_41fa                               ;; 02:41e3 $20 $15
-    ld   A, [wD20D_Player_FacingFlags]                                    ;; 02:41e5 $fa $0d $d2
-    cp   A, FACING_RIGHT                               ;; 02:41e8 $fe $00
-    jr   NZ, .jr_02_41fa                               ;; 02:41ea $20 $0e
-    jr   .jr_02_41f5                                   ;; 02:41ec $18 $07
+    ld   A, [wD767_FloorTileType]
+    cp   A, TILE_TYPE_TEETER_LEFT
+    jr   Z, .jr_02_41ee
+    cp   A, TILE_TYPE_TEETER_RIGHT
+    jr   NZ, .jr_02_41fa
+    ld   A, [wD20D_Player_FacingFlags]
+    cp   A, FACING_RIGHT
+    jr   NZ, .jr_02_41fa
+    jr   .jr_02_41f5
 .jr_02_41ee:
-    ld   A, [wD20D_Player_FacingFlags]                                    ;; 02:41ee $fa $0d $d2
-    cp   A, FACING_LEFT                                ;; 02:41f1 $fe $20
-    jr   NZ, .jr_02_41fa                               ;; 02:41f3 $20 $05
+    ld   A, [wD20D_Player_FacingFlags]
+    cp   A, FACING_LEFT
+    jr   NZ, .jr_02_41fa
 .jr_02_41f5:
-    ld   A, PLAYER_ACTION_TEETER                                        ;; 02:41f5 $3e $07
-    jp   call_02_4ccd_Player_RequestAction                                  ;; 02:41f7 $c3 $cd $4c
+    ld   A, PLAYER_ACTION_TEETER
+    jp   call_02_4ccd_Player_RequestAction
 .jr_02_41fa:
-    ld   HL, wD75B_IdleTimer                                     ;; 02:41fa $21 $5b $d7
-    dec  [HL]                                          ;; 02:41fd $35
-    ret  NZ                                            ;; 02:41fe $c0
-    ld   A, PLAYER_ACTION_IDLE_ANIMATION                                        ;; 02:41ff $3e $03
-    jp   call_02_4ccd_Player_RequestAction                                  ;; 02:4201 $c3 $cd $4c
+    ld   HL, wD75B_IdleTimer
+    dec  [HL]
+    ret  NZ
+    ld   A, PLAYER_ACTION_IDLE_ANIMATION
+    jp   call_02_4ccd_Player_RequestAction
 
 call_02_4204_Player_CheckWallPush:
 ; Decides whether Gex should switch to a pushing animation, and is called by every ground
@@ -149,81 +149,81 @@ call_02_4204_Player_CheckWallPush:
 ; wD585_CollisionFlags (he ran into a wall this frame) selects PLAYER_ACTION_STANDING_PUSH.
 ; Note the entity branch tests the d-pad twice and writes PLAYER_ACTION_STANDING_PUSH in
 ; between; the second test can never fail, so that intermediate write is dead
-    ld   A, [wD74E_Player_PushedStationaryPlatformLo]                                    ;; 02:4204 $fa $4e $d7
-    and  A, A                                          ;; 02:4207 $a7
-    jr   NZ, .jr_02_4215                               ;; 02:4208 $20 $0b
-    ld   HL, wD585_CollisionFlags                                     ;; 02:420a $21 $85 $d5
-    bit  BGCOLL_WALL_BIT, [HL]                                       ;; 02:420d $cb $76
-    jr   Z, .jr_02_4227                                ;; 02:420f $28 $16
-    ld   C, PLAYER_ACTION_STANDING_PUSH                                        ;; 02:4211 $0e $15
-    jr   .jr_02_4227                                   ;; 02:4213 $18 $12
+    ld   A, [wD74E_Player_PushedStationaryPlatformLo]
+    and  A, A
+    jr   NZ, .jr_02_4215
+    ld   HL, wD585_CollisionFlags
+    bit  BGCOLL_WALL_BIT, [HL]
+    jr   Z, .jr_02_4227
+    ld   C, PLAYER_ACTION_STANDING_PUSH
+    jr   .jr_02_4227
 .jr_02_4215:
-    ld   A, [wD75A_Player_EffectiveInputs]                                    ;; 02:4215 $fa $5a $d7
-    and  A, PADF_RIGHT | PADF_LEFT                                        ;; 02:4218 $e6 $30
-    jr   Z, .jr_02_4227                                ;; 02:421a $28 $0b
-    ld   C, PLAYER_ACTION_STANDING_PUSH                                        ;; 02:421c $0e $15
-    ld   A, [wD75A_Player_EffectiveInputs]                                    ;; 02:421e $fa $5a $d7
-    and  A, PADF_RIGHT | PADF_LEFT                                        ;; 02:4221 $e6 $30
-    jr   Z, .jr_02_4227                                ;; 02:4223 $28 $02
-    ld   C, PLAYER_ACTION_WALKING_PUSH                                        ;; 02:4225 $0e $16
+    ld   A, [wD75A_Player_EffectiveInputs]
+    and  A, PADF_RIGHT | PADF_LEFT
+    jr   Z, .jr_02_4227
+    ld   C, PLAYER_ACTION_STANDING_PUSH
+    ld   A, [wD75A_Player_EffectiveInputs]
+    and  A, PADF_RIGHT | PADF_LEFT
+    jr   Z, .jr_02_4227
+    ld   C, PLAYER_ACTION_WALKING_PUSH
 .jr_02_4227:
-    ld   A, C                                          ;; 02:4227 $79
-    jp   call_02_4ccd_Player_RequestAction                                  ;; 02:4228 $c3 $cd $4c
+    ld   A, C
+    jp   call_02_4ccd_Player_RequestAction
 
 call_02_422b_PlayerAction_IdleAnimation:
 ; No update logic - the action exists purely so that the animation script at
 ; data_02_757c (Gex tapping his foot, flicking his tongue) plays. Stand hands
 ; over to it once wD75B_IdleTimer runs out, and the input transition table
 ; sends any input straight back to Stand
-    ret                                                ;; 02:422b $c9
+    ret
 
 call_02_422c_PlayerAction_Walk:
 ; On first frame: drops X speed to PLAYER_XSPEED_WALK. Every frame it offers Walk as the
 ; fallback to Player_CheckWallPush, then checks the animation-ended flag: once the walk
 ; cycle has played all the way through, Gex accelerates into PLAYER_ACTION_RUN. So the
 ; walk is really a wind-up - hold a direction long enough for one full cycle and he runs
-    ld   A, [wD209_Player_ActionState]                                    ;; 02:422c $fa $09 $d2
-    and  A, ACTION_STATE_IS_FIRST_FRAME                                        ;; 02:422f $e6 $20
-    jr   Z, .jr_02_4238                                ;; 02:4231 $28 $05
-    ld   A, PLAYER_XSPEED_WALK                         ;; 02:4233 $3e $01
-    ld   [wD75E_PlayerXSpeed], A                                    ;; 02:4235 $ea $5e $d7
+    ld   A, [wD209_Player_ActionState]
+    and  A, ACTION_STATE_IS_FIRST_FRAME
+    jr   Z, .jr_02_4238
+    ld   A, PLAYER_XSPEED_WALK
+    ld   [wD75E_PlayerXSpeed], A
 .jr_02_4238:
-    ld   C, PLAYER_ACTION_WALK                         ;; 02:4238 $0e $04
-    call call_02_4204_Player_CheckWallPush                                  ;; 02:423a $cd $04 $42
-    ld   A, [wD20A_Player_SpriteFlags]                                    ;; 02:423d $fa $0a $d2
-    and  A, SPRITE_FLAG_ANIM_ENDED                          ;; 02:4240 $e6 $04
-    ld   A, PLAYER_ACTION_RUN                                        ;; 02:4242 $3e $05
-    call NZ, call_02_4ccd_Player_RequestAction                              ;; 02:4244 $c4 $cd $4c
-    ret                                                ;; 02:4247 $c9
+    ld   C, PLAYER_ACTION_WALK
+    call call_02_4204_Player_CheckWallPush
+    ld   A, [wD20A_Player_SpriteFlags]
+    and  A, SPRITE_FLAG_ANIM_ENDED
+    ld   A, PLAYER_ACTION_RUN
+    call NZ, call_02_4ccd_Player_RequestAction
+    ret
 
 call_02_4248_PlayerAction_Run:
 ; On first frame: raises X speed to PLAYER_XSPEED_RUN. Otherwise just offers Run as the
 ; fallback action to Player_CheckWallPush. There is no exit condition here - leaving the
 ; run is driven entirely by the input transition table entry for PLAYER_ACTION_RUN
-    ld   A, [wD209_Player_ActionState]                                    ;; 02:4248 $fa $09 $d2
-    and  A, ACTION_STATE_IS_FIRST_FRAME                                        ;; 02:424b $e6 $20
-    jr   Z, .jr_02_4254                                ;; 02:424d $28 $05
-    ld   A, PLAYER_XSPEED_RUN                          ;; 02:424f $3e $02
-    ld   [wD75E_PlayerXSpeed], A                                    ;; 02:4251 $ea $5e $d7
+    ld   A, [wD209_Player_ActionState]
+    and  A, ACTION_STATE_IS_FIRST_FRAME
+    jr   Z, .jr_02_4254
+    ld   A, PLAYER_XSPEED_RUN
+    ld   [wD75E_PlayerXSpeed], A
 .jr_02_4254:
-    ld   C, PLAYER_ACTION_RUN                          ;; 02:4254 $0e $05
-    call call_02_4204_Player_CheckWallPush                                  ;; 02:4256 $cd $04 $42
-    ret                                                ;; 02:4259 $c9
+    ld   C, PLAYER_ACTION_RUN
+    call call_02_4204_Player_CheckWallPush
+    ret
 
 call_02_425a_PlayerAction_SkidDecel:
-; Decelerates X speed from 2 to 0 over the animation duration using the 
+; Decelerates X speed from 2 to 0 over the animation duration using the
 ; sprite frame counter: speed = max(0, 2 − (frame+1)>>1)
-    ld   A, [wD207_Player_SpriteCounter]                                    ;; 02:425a $fa $07 $d2
-    inc  A                                             ;; 02:425d $3c
-    srl  A                                             ;; 02:425e $cb $3f
-    ld   C, A                                          ;; 02:4260 $4f
-    ld   A, PLAYER_XSPEED_RUN                          ;; 02:4261 $3e $02
-    sub  A, C                                          ;; 02:4263 $91
-    jr   NC, .jr_02_4267                               ;; 02:4264 $30 $01
-    xor  A, A                                          ;; 02:4266 $af
+    ld   A, [wD207_Player_SpriteCounter]
+    inc  A
+    srl  A
+    ld   C, A
+    ld   A, PLAYER_XSPEED_RUN
+    sub  A, C
+    jr   NC, .jr_02_4267
+    xor  A, A
 .jr_02_4267:
-    ld   [wD75E_PlayerXSpeed], A                                    ;; 02:4267 $ea $5e $d7
-    ret                                                ;; 02:426a $c9
+    ld   [wD75E_PlayerXSpeed], A
+    ret
 
 call_02_426b_PlayerAction_Teeter:
 ; Gex windmilling at the edge of a platform. Requested by Stand when the floor tile
@@ -241,9 +241,9 @@ call_02_4270_PlayerAction_Crouch:
 ; .transitions_Crouch returns him to Stand the moment the d-pad reads empty, and
 ; sends him to Jump or TailSpin from B or A. data_02_75ad is a single frame, so the
 ; crouch is a pose rather than an animation
-    xor  A, A                                          ;; 02:4270 $af
-    ld   [wD75E_PlayerXSpeed], A                                    ;; 02:4271 $ea $5e $d7
-    ret                                                ;; 02:4274 $c9
+    xor  A, A
+    ld   [wD75E_PlayerXSpeed], A
+    ret
 
 call_02_4275_PlayerAction_Jump:
 ; On the first frame it asks Player_GetJumpVelocity for the launch speed, offering
@@ -258,30 +258,30 @@ call_02_4275_PlayerAction_Jump:
 ; fresh press. Otherwise Player_SetLandingAction picks Stand, Walk or Run.
 ; A landing hard enough to matter never reaches here: Player_ApplyYVelocity itself
 ; requests the landing or PLAYER_ACTION_COLLAPSE from the fall distance
-    ld   A, [wD209_Player_ActionState]                                    ;; 02:4275 $fa $09 $d2
-    and  A, ACTION_STATE_IS_FIRST_FRAME                                        ;; 02:4278 $e6 $20
-    jr   Z, .jr_02_429a                                ;; 02:427a $28 $1e
-    ld   C, PLAYER_JUMP_VELOCITY                       ;; 02:427c $0e $2a
-    call call_02_4856_Player_GetJumpVelocity                                  ;; 02:427e $cd $56 $48
-    ld   [wD760_PlayerYVelocity], A                                    ;; 02:4281 $ea $60 $d7
-    ld   [wD762_PlayerInitialYVelocity], A                                    ;; 02:4284 $ea $62 $d7
-    call call_02_4a3a_Player_LockBPress                                  ;; 02:4287 $cd $3a $4a
-    ld   C, SFX_GEX_JUMP                                        ;; 02:428a $0e $0c
-    call call_00_112f_QueueSFX                                  ;; 02:428c $cd $2f $11
-    ld   A, [wD75E_PlayerXSpeed]                                    ;; 02:428f $fa $5e $d7
-    and  A, A                                          ;; 02:4292 $a7
-    jr   NZ, .jr_02_429a                               ;; 02:4293 $20 $05
-    ld   A, $01                                        ;; 02:4295 $3e $01
-    ld   [wD75E_PlayerXSpeed], A                                    ;; 02:4297 $ea $5e $d7
+    ld   A, [wD209_Player_ActionState]
+    and  A, ACTION_STATE_IS_FIRST_FRAME
+    jr   Z, .jr_02_429a
+    ld   C, PLAYER_JUMP_VELOCITY
+    call call_02_4856_Player_GetJumpVelocity
+    ld   [wD760_PlayerYVelocity], A
+    ld   [wD762_PlayerInitialYVelocity], A
+    call call_02_4a3a_Player_LockBPress
+    ld   C, SFX_GEX_JUMP
+    call call_00_112f_QueueSFX
+    ld   A, [wD75E_PlayerXSpeed]
+    and  A, A
+    jr   NZ, .jr_02_429a
+    ld   A, $01
+    ld   [wD75E_PlayerXSpeed], A
 .jr_02_429a:
-    ld   A, [wD762_PlayerInitialYVelocity]                                    ;; 02:429a $fa $62 $d7
-    and  A, A                                          ;; 02:429d $a7
-    ret  NZ                                            ;; 02:429e $c0
-    ld   A, [wD75A_Player_EffectiveInputs]                                    ;; 02:429f $fa $5a $d7
-    and  A, PADF_B                                        ;; 02:42a2 $e6 $02
-    ld   A, PLAYER_ACTION_DOUBLE_JUMP                                        ;; 02:42a4 $3e $0a
-    jp   NZ, call_02_4ccd_Player_RequestAction                              ;; 02:42a6 $c2 $cd $4c
-    jp   call_02_489a_Player_SetLandingAction                                    ;; 02:42a9 $c3 $9a $48
+    ld   A, [wD762_PlayerInitialYVelocity]
+    and  A, A
+    ret  NZ
+    ld   A, [wD75A_Player_EffectiveInputs]
+    and  A, PADF_B
+    ld   A, PLAYER_ACTION_DOUBLE_JUMP
+    jp   NZ, call_02_4ccd_Player_RequestAction
+    jp   call_02_489a_Player_SetLandingAction
 
 call_02_42ac_PlayerAction_DoubleJump:
 ; The same shape as Jump but with PLAYER_DOUBLE_JUMP_VELOCITY, which is why the
@@ -291,32 +291,32 @@ call_02_42ac_PlayerAction_DoubleJump:
 ; with B pressed, it jumps back to its own first-frame code at .jr_02_42b3 and
 ; launches again without ever leaving the action. So this handler, not a chain of
 ; requests, is what lets Gex bounce indefinitely by tapping B on each landing
-    ld   A, [wD209_Player_ActionState]                                    ;; 02:42ac $fa $09 $d2
-    and  A, ACTION_STATE_IS_FIRST_FRAME                                        ;; 02:42af $e6 $20
-    jr   Z, .jr_02_42d1                                ;; 02:42b1 $28 $1e
+    ld   A, [wD209_Player_ActionState]
+    and  A, ACTION_STATE_IS_FIRST_FRAME
+    jr   Z, .jr_02_42d1
 .jr_02_42b3:
-    ld   C, PLAYER_DOUBLE_JUMP_VELOCITY                ;; 02:42b3 $0e $36
-    call call_02_4856_Player_GetJumpVelocity                                  ;; 02:42b5 $cd $56 $48
-    ld   [wD760_PlayerYVelocity], A                                    ;; 02:42b8 $ea $60 $d7
-    ld   [wD762_PlayerInitialYVelocity], A                                    ;; 02:42bb $ea $62 $d7
-    call call_02_4a3a_Player_LockBPress                                  ;; 02:42be $cd $3a $4a
-    ld   C, SFX_GEX_DOUBLE_JUMP                                        ;; 02:42c1 $0e $0d
-    call call_00_112f_QueueSFX                                  ;; 02:42c3 $cd $2f $11
-    ld   A, [wD75E_PlayerXSpeed]                                    ;; 02:42c6 $fa $5e $d7
-    and  A, A                                          ;; 02:42c9 $a7
-    jr   NZ, .jr_02_42d1                               ;; 02:42ca $20 $05
-    ld   A, $01                                        ;; 02:42cc $3e $01
-    ld   [wD75E_PlayerXSpeed], A                                    ;; 02:42ce $ea $5e $d7
+    ld   C, PLAYER_DOUBLE_JUMP_VELOCITY
+    call call_02_4856_Player_GetJumpVelocity
+    ld   [wD760_PlayerYVelocity], A
+    ld   [wD762_PlayerInitialYVelocity], A
+    call call_02_4a3a_Player_LockBPress
+    ld   C, SFX_GEX_DOUBLE_JUMP
+    call call_00_112f_QueueSFX
+    ld   A, [wD75E_PlayerXSpeed]
+    and  A, A
+    jr   NZ, .jr_02_42d1
+    ld   A, $01
+    ld   [wD75E_PlayerXSpeed], A
 .jr_02_42d1:
-    ld   A, [wD762_PlayerInitialYVelocity]                                    ;; 02:42d1 $fa $62 $d7
-    and  A, A                                          ;; 02:42d4 $a7
-    ret  NZ                                            ;; 02:42d5 $c0
-    ld   A, [wD75A_Player_EffectiveInputs]                                    ;; 02:42d6 $fa $5a $d7
-    and  A, PADF_B                                        ;; 02:42d9 $e6 $02
-    jr   NZ, .jr_02_42b3                               ;; 02:42db $20 $d6
-    jp   call_02_489a_Player_SetLandingAction                                    ;; 02:42dd $c3 $9a $48
+    ld   A, [wD762_PlayerInitialYVelocity]
+    and  A, A
+    ret  NZ
+    ld   A, [wD75A_Player_EffectiveInputs]
+    and  A, PADF_B
+    jr   NZ, .jr_02_42b3
+    jp   call_02_489a_Player_SetLandingAction
 
-call_02_42e0_PlayerAction_None:                             ;; 02:42e0
+call_02_42e0_PlayerAction_None:
 ; A hole in the action table. Nothing in any bank ever requests PLAYER_ACTION_NONE,
 ; and everything about it is a dead end if something did: the handler is a bare ret,
 ; its input transition list at .transitions_None0B is empty, and its animation block
@@ -326,7 +326,7 @@ call_02_42e0_PlayerAction_None:                             ;; 02:42e0
     ret
 
 call_02_42e1_PlayerAction_KarateKick:
-; On first frame: sets wD74C_Player_KarateKickTimer = $30 (duration timer). 
+; On first frame: sets wD74C_Player_KarateKickTimer = $30 (duration timer).
 ; Each frame: decrements wD74C_Player_KarateKickTimer; when it reaches zero, requests Stand
     ld a, [wD209_Player_ActionState]
     and a,ACTION_STATE_IS_FIRST_FRAME
@@ -351,47 +351,47 @@ call_02_42f7_PlayerAction_TailSpin:
 ; When the animation ends it clears the attacking flag, re-locks B, and picks the next action
 ; from the ground state: airborne means PLAYER_ACTION_FREEFALL, on the ground it is Stand,
 ; Walk or Run depending on whether a direction is held and how fast he was already moving
-    ld   A, [wD209_Player_ActionState]                                    ;; 02:42f7 $fa $09 $d2
-    and  A, ACTION_STATE_IS_FIRST_FRAME                                        ;; 02:42fa $e6 $20
-    jr   Z, .jr_02_4313                                ;; 02:42fc $28 $15
-    ld   HL, wD759_ButtonBlockingFlags                                     ;; 02:42fe $21 $59 $d7
-    set  BTN_BLOCK_A_BIT, [HL]                         ;; 02:4301 $cb $c6
-    ld   A, $01                                        ;; 02:4303 $3e $01
-    ld   [wD76B_Player_IsAttacking], A                                    ;; 02:4305 $ea $6b $d7
-    ld   A, [wD75E_PlayerXSpeed]                                    ;; 02:4308 $fa $5e $d7
-    and  A, A                                          ;; 02:430b $a7
-    jr   NZ, .jr_02_4313                               ;; 02:430c $20 $05
-    ld   A, $01                                        ;; 02:430e $3e $01
-    ld   [wD75E_PlayerXSpeed], A                                    ;; 02:4310 $ea $5e $d7
+    ld   A, [wD209_Player_ActionState]
+    and  A, ACTION_STATE_IS_FIRST_FRAME
+    jr   Z, .jr_02_4313
+    ld   HL, wD759_ButtonBlockingFlags
+    set  BTN_BLOCK_A_BIT, [HL]
+    ld   A, $01
+    ld   [wD76B_Player_IsAttacking], A
+    ld   A, [wD75E_PlayerXSpeed]
+    and  A, A
+    jr   NZ, .jr_02_4313
+    ld   A, $01
+    ld   [wD75E_PlayerXSpeed], A
 .jr_02_4313:
-    ld   A, [wD764_TileTypeBehindGexsUpperBody]                                    ;; 02:4313 $fa $64 $d7
-    cpl                                                ;; 02:4316 $2f
-    ld   C, A                                          ;; 02:4317 $4f
-    cp   A, TILE_TYPE_INTERACTIVE_MIN_CPL              ;; 02:4318 $fe $40
-    call C, call_00_1f46_TileHit_OnPlayerAttack                               ;; 02:431a $dc $46 $1f
-    ld   A, [wD20A_Player_SpriteFlags]                                    ;; 02:431d $fa $0a $d2
-    and  A, SPRITE_FLAG_ANIM_ENDED                          ;; 02:4320 $e6 $04
-    ret  Z                                             ;; 02:4322 $c8
-    xor  A, A                                          ;; 02:4323 $af
-    ld   [wD76B_Player_IsAttacking], A                                    ;; 02:4324 $ea $6b $d7
-    ld   HL, wD759_ButtonBlockingFlags                                     ;; 02:4327 $21 $59 $d7
-    set  BTN_BLOCK_B_UNTIL_RELEASE_BIT, [HL]           ;; 02:432a $cb $f6
-    ld   C, PLAYER_ACTION_FREEFALL                                        ;; 02:432c $0e $17
-    ld   HL, wD585_CollisionFlags                                     ;; 02:432e $21 $85 $d5
-    bit  BGCOLL_NO_COLLISION_BIT, [HL]                 ;; 02:4331 $cb $7e ; set = grounded
-    jr   Z, .jr_02_4349                                ;; 02:4333 $28 $14
-    ld   C, PLAYER_ACTION_STAND                                        ;; 02:4335 $0e $02
-    ld   A, [wD75A_Player_EffectiveInputs]                                    ;; 02:4337 $fa $5a $d7
-    and  A, PADF_RIGHT | PADF_LEFT                                        ;; 02:433a $e6 $30
-    jr   Z, .jr_02_4349                                ;; 02:433c $28 $0b
-    ld   C, PLAYER_ACTION_RUN                                        ;; 02:433e $0e $05
-    ld   A, [wD75E_PlayerXSpeed]                                    ;; 02:4340 $fa $5e $d7
-    cp   A, $02                                        ;; 02:4343 $fe $02
-    jr   NC, .jr_02_4349                               ;; 02:4345 $30 $02
-    ld   C, PLAYER_ACTION_WALK                                        ;; 02:4347 $0e $04
+    ld   A, [wD764_TileTypeBehindGexsUpperBody]
+    cpl
+    ld   C, A
+    cp   A, TILE_TYPE_INTERACTIVE_MIN_CPL
+    call C, call_00_1f46_TileHit_OnPlayerAttack
+    ld   A, [wD20A_Player_SpriteFlags]
+    and  A, SPRITE_FLAG_ANIM_ENDED
+    ret  Z
+    xor  A, A
+    ld   [wD76B_Player_IsAttacking], A
+    ld   HL, wD759_ButtonBlockingFlags
+    set  BTN_BLOCK_B_UNTIL_RELEASE_BIT, [HL]
+    ld   C, PLAYER_ACTION_FREEFALL
+    ld   HL, wD585_CollisionFlags
+    bit  BGCOLL_NO_COLLISION_BIT, [HL]                 ; set = grounded
+    jr   Z, .jr_02_4349
+    ld   C, PLAYER_ACTION_STAND
+    ld   A, [wD75A_Player_EffectiveInputs]
+    and  A, PADF_RIGHT | PADF_LEFT
+    jr   Z, .jr_02_4349
+    ld   C, PLAYER_ACTION_RUN
+    ld   A, [wD75E_PlayerXSpeed]
+    cp   A, $02
+    jr   NC, .jr_02_4349
+    ld   C, PLAYER_ACTION_WALK
 .jr_02_4349:
-    ld   A, C                                          ;; 02:4349 $79
-    jp   call_02_4ccd_Player_RequestAction                                  ;; 02:434a $c3 $cd $4c
+    ld   A, C
+    jp   call_02_4ccd_Player_RequestAction
 
 call_02_434d_PlayerAction_EatFly:
 ; Gex swallowing a fly power-up. Holds him still and, on the first frame only, calls
@@ -420,18 +420,18 @@ call_02_435b_PlayerAction_TakeDamage:
     ld   [wD75E_PlayerXSpeed],a
     ld   a,PLAYER_DAMAGE_COOLDOWN_LENGTH
     ld   [wD750_Player_DamageCooldownTimer],a
-    ret  
+    ret
 
 call_02_4371_PlayerAction_Death:
 ; The first half of dying, requested by call_00_0696_Player_Die once health hits
 ; zero. It only holds Gex still and keeps him invulnerable; data_02_75e9 plays the
 ; collapse and then hands him to PLAYER_ACTION_DEATH_SET_UP_WARP, which does the
 ; actual work of fading out and asking for the respawn
-    xor  A, A                                          ;; 02:4371 $af
-    ld   [wD75E_PlayerXSpeed], A                                    ;; 02:4372 $ea $5e $d7
-    ld   A, PLAYER_DAMAGE_COOLDOWN_LENGTH              ;; 02:4375 $3e $77
-    ld   [wD750_Player_DamageCooldownTimer], A                                    ;; 02:4377 $ea $50 $d7
-    ret                                                ;; 02:437a $c9
+    xor  A, A
+    ld   [wD75E_PlayerXSpeed], A
+    ld   A, PLAYER_DAMAGE_COOLDOWN_LENGTH
+    ld   [wD750_Player_DamageCooldownTimer], A
+    ret
 
 call_02_437b_PlayerAction_DeathSetUpWarp:
 ; The second half of dying, reached from PLAYER_ACTION_DEATH when its animation
@@ -442,26 +442,26 @@ call_02_437b_PlayerAction_DeathSetUpWarp:
 ; When its own animation ends it points wD744_Player_SpawnAction at
 ; PLAYER_ACTION_SPAWN and raises WARP_DIED, which is what the main loop watches for
 ; to reload the level at the last checkpoint
-    ld   A, [wD209_Player_ActionState]                                    ;; 02:437b $fa $09 $d2
-    and  A, ACTION_STATE_IS_FIRST_FRAME                                        ;; 02:437e $e6 $20
-    jr   Z, .jr_02_438e                                ;; 02:4380 $28 $0c
-    xor  A, A                                          ;; 02:4382 $af
-    ld   [wD75E_PlayerXSpeed], A                                    ;; 02:4383 $ea $5e $d7
-    call call_00_0f5d_FadeToBlack                                  ;; 02:4386 $cd $5d $0f
-    ld   C, SFX_GEX_DEATH                                        ;; 02:4389 $0e $0f
-    call call_00_112f_QueueSFX                                  ;; 02:438b $cd $2f $11
+    ld   A, [wD209_Player_ActionState]
+    and  A, ACTION_STATE_IS_FIRST_FRAME
+    jr   Z, .jr_02_438e
+    xor  A, A
+    ld   [wD75E_PlayerXSpeed], A
+    call call_00_0f5d_FadeToBlack
+    ld   C, SFX_GEX_DEATH
+    call call_00_112f_QueueSFX
 .jr_02_438e:
-    ld   A, PLAYER_DAMAGE_COOLDOWN_LENGTH              ;; 02:438e $3e $77
-    ld   [wD750_Player_DamageCooldownTimer], A                                    ;; 02:4390 $ea $50 $d7
-    ld   A, [wD20A_Player_SpriteFlags]                                    ;; 02:4393 $fa $0a $d2
-    and  A, SPRITE_FLAG_ANIM_ENDED                          ;; 02:4396 $e6 $04
-    ret  Z                                             ;; 02:4398 $c8
-    ld   A, PLAYER_ACTION_SPAWN                                        ;; 02:4399 $3e $00
-    ld   [wD744_Player_SpawnAction], A                                    ;; 02:439b $ea $44 $d7
-    ld   A, [wD621_WarpFlags]                                    ;; 02:439e $fa $21 $d6
-    or   A, WARP_DIED                                  ;; 02:43a1 $f6 $02
-    ld   [wD621_WarpFlags], A                                    ;; 02:43a3 $ea $21 $d6
-    ret                                                ;; 02:43a6 $c9
+    ld   A, PLAYER_DAMAGE_COOLDOWN_LENGTH
+    ld   [wD750_Player_DamageCooldownTimer], A
+    ld   A, [wD20A_Player_SpriteFlags]
+    and  A, SPRITE_FLAG_ANIM_ENDED
+    ret  Z
+    ld   A, PLAYER_ACTION_SPAWN
+    ld   [wD744_Player_SpawnAction], A
+    ld   A, [wD621_WarpFlags]
+    or   A, WARP_DIED
+    ld   [wD621_WarpFlags], A
+    ret
 
 ; ------------------------------------------------------------------
 ; ENTER_TV AND ENTER_TV_ALT
@@ -481,21 +481,21 @@ call_02_437b_PlayerAction_DeathSetUpWarp:
 ; ------------------------------------------------------------------
 
 call_02_43a7_PlayerAction_EnterTV:
-    ld   A, [wD209_Player_ActionState]                                    ;; 02:43a7 $fa $09 $d2
-    and  A, ACTION_STATE_IS_FIRST_FRAME                                        ;; 02:43aa $e6 $20
-    jr   Z, .jr_02_43b3                                ;; 02:43ac $28 $05
-    ld   C, SFX_GEX_SPAWN                                        ;; 02:43ae $0e $11
-    call call_00_112f_QueueSFX                                  ;; 02:43b0 $cd $2f $11
+    ld   A, [wD209_Player_ActionState]
+    and  A, ACTION_STATE_IS_FIRST_FRAME
+    jr   Z, .jr_02_43b3
+    ld   C, SFX_GEX_SPAWN
+    call call_00_112f_QueueSFX
 .jr_02_43b3:
-    xor  A, A                                          ;; 02:43b3 $af
-    ld   [wD75E_PlayerXSpeed], A                                    ;; 02:43b4 $ea $5e $d7
-    ld   HL, wD20A_Player_SpriteFlags                                     ;; 02:43b7 $21 $0a $d2
-    bit  SPRITE_FLAG_ANIM_ENDED_BIT, [HL]                   ;; 02:43ba $cb $56
-    ret  Z                                             ;; 02:43bc $c8
-    ld   A, [wD621_WarpFlags]                                    ;; 02:43bd $fa $21 $d6
-    or   A, WARP_ENTERED_TV                            ;; 02:43c0 $f6 $04
-    ld   [wD621_WarpFlags], A                                    ;; 02:43c2 $ea $21 $d6
-    ret                                                ;; 02:43c5 $c9
+    xor  A, A
+    ld   [wD75E_PlayerXSpeed], A
+    ld   HL, wD20A_Player_SpriteFlags
+    bit  SPRITE_FLAG_ANIM_ENDED_BIT, [HL]
+    ret  Z
+    ld   A, [wD621_WarpFlags]
+    or   A, WARP_ENTERED_TV
+    ld   [wD621_WarpFlags], A
+    ret
 
 call_02_43c6_PlayerAction_EnterTVAlt:
 ; See the note above call_02_43a7_PlayerAction_EnterTV - same behaviour, different
@@ -521,15 +521,15 @@ call_02_43e5_PlayerAction_ExitTV:
 ; sound once and holds him still; data_02_7608 carries a pending PLAYER_ACTION_STAND
 ; so he drops into standing when the animation ends. Requested by the level loader
 ; in bank 0 and by the level-select menu in bank 1, never by anything in this file
-    ld   A, [wD209_Player_ActionState]                                    ;; 02:43e5 $fa $09 $d2
-    and  A, ACTION_STATE_IS_FIRST_FRAME                                        ;; 02:43e8 $e6 $20
-    jr   Z, .jr_02_43f1                                ;; 02:43ea $28 $05
-    ld   C, SFX_GEX_SPAWN                                        ;; 02:43ec $0e $11
-    call call_00_112f_QueueSFX                                  ;; 02:43ee $cd $2f $11
+    ld   A, [wD209_Player_ActionState]
+    and  A, ACTION_STATE_IS_FIRST_FRAME
+    jr   Z, .jr_02_43f1
+    ld   C, SFX_GEX_SPAWN
+    call call_00_112f_QueueSFX
 .jr_02_43f1:
-    xor  A, A                                          ;; 02:43f1 $af
-    ld   [wD75E_PlayerXSpeed], A                                    ;; 02:43f2 $ea $5e $d7
-    ret                                                ;; 02:43f5 $c9
+    xor  A, A
+    ld   [wD75E_PlayerXSpeed], A
+    ret
 
 call_02_43f6_PlayerAction_StandingPush:
 ; Gex leaning into a wall he cannot move. On the first frame it drops him to
@@ -550,14 +550,14 @@ call_02_4407_PlayerAction_WalkingPush:
 ; animation block the table pairs it with. This is the one Gex uses when he is
 ; actually shoving something along (the crates and hub television buttons named by
 ; wD74E_Player_PushedStationaryPlatformLo), so he walks rather than strains in place
-    ld   A, [wD209_Player_ActionState]                                    ;; 02:4407 $fa $09 $d2
-    and  A, ACTION_STATE_IS_FIRST_FRAME                                        ;; 02:440a $e6 $20
-    jr   Z, .jr_02_4413                                ;; 02:440c $28 $05
-    ld   A, PLAYER_XSPEED_WALK                         ;; 02:440e $3e $01
-    ld   [wD75E_PlayerXSpeed], A                                    ;; 02:4410 $ea $5e $d7
+    ld   A, [wD209_Player_ActionState]
+    and  A, ACTION_STATE_IS_FIRST_FRAME
+    jr   Z, .jr_02_4413
+    ld   A, PLAYER_XSPEED_WALK
+    ld   [wD75E_PlayerXSpeed], A
 .jr_02_4413:
-    ld   C, PLAYER_ACTION_STAND                        ;; 02:4413 $0e $02
-    jp   call_02_4204_Player_CheckWallPush                                  ;; 02:4415 $c3 $04 $42
+    ld   C, PLAYER_ACTION_STAND
+    jp   call_02_4204_Player_CheckWallPush
 
 call_02_4418_PlayerAction_Freefall:
 ; Gex falling without having jumped - walking off a ledge, letting go of a climb, a
@@ -567,26 +567,26 @@ call_02_4418_PlayerAction_Freefall:
 ; Player_ApplyYVelocity clears wD762 when he touches down, and he lands in Walk if a
 ; direction is held or Stand if not. Unlike Jump this offers no double jump, so
 ; walking off a ledge really is a commitment
-    ld   A, [wD209_Player_ActionState]                                    ;; 02:4418 $fa $09 $d2
-    and  A, ACTION_STATE_IS_FIRST_FRAME                                        ;; 02:441b $e6 $20
-    jr   Z, .jr_02_442f                                ;; 02:441d $28 $10
-    ld   A, $01                                        ;; 02:441f $3e $01
-    ld   [wD762_PlayerInitialYVelocity], A                                    ;; 02:4421 $ea $62 $d7
-    ld   A, [wD75E_PlayerXSpeed]                                    ;; 02:4424 $fa $5e $d7
-    and  A, A                                          ;; 02:4427 $a7
-    jr   NZ, .jr_02_442f                               ;; 02:4428 $20 $05
-    ld   A, $01                                        ;; 02:442a $3e $01
-    ld   [wD75E_PlayerXSpeed], A                                    ;; 02:442c $ea $5e $d7
+    ld   A, [wD209_Player_ActionState]
+    and  A, ACTION_STATE_IS_FIRST_FRAME
+    jr   Z, .jr_02_442f
+    ld   A, $01
+    ld   [wD762_PlayerInitialYVelocity], A
+    ld   A, [wD75E_PlayerXSpeed]
+    and  A, A
+    jr   NZ, .jr_02_442f
+    ld   A, $01
+    ld   [wD75E_PlayerXSpeed], A
 .jr_02_442f:
-    ld   A, [wD762_PlayerInitialYVelocity]                                    ;; 02:442f $fa $62 $d7
-    and  A, A                                          ;; 02:4432 $a7
-    ret  NZ                                            ;; 02:4433 $c0
-    ld   A, [wD75A_Player_EffectiveInputs]                                    ;; 02:4434 $fa $5a $d7
-    and  A, PADF_RIGHT | PADF_LEFT                                        ;; 02:4437 $e6 $30
-    ld   A, PLAYER_ACTION_WALK                                        ;; 02:4439 $3e $04
-    jp   NZ, call_02_4ccd_Player_RequestAction                              ;; 02:443b $c2 $cd $4c
-    ld   A, PLAYER_ACTION_STAND                                        ;; 02:443e $3e $02
-    jp   call_02_4ccd_Player_RequestAction                                  ;; 02:4440 $c3 $cd $4c
+    ld   A, [wD762_PlayerInitialYVelocity]
+    and  A, A
+    ret  NZ
+    ld   A, [wD75A_Player_EffectiveInputs]
+    and  A, PADF_RIGHT | PADF_LEFT
+    ld   A, PLAYER_ACTION_WALK
+    jp   NZ, call_02_4ccd_Player_RequestAction
+    ld   A, PLAYER_ACTION_STAND
+    jp   call_02_4ccd_Player_RequestAction
 
 call_02_4443_PlayerAction_StopImmediate:
 ; Stops Gex dead and lets data_02_7633 hand him straight back to Stand when its one
@@ -594,22 +594,22 @@ call_02_4443_PlayerAction_StopImmediate:
 ; that this one would at least recover if anything did
     xor  a
     ld   [wD75E_PlayerXSpeed],a
-    ret  
+    ret
 
 call_02_4448_PlayerAction_Collapse:
 ; Gex flattened. Requested from two places: Player_ApplyYVelocity when the fall
 ; distance reaches FALL_DISTANCE_HARD_LANDING, and COLLISION_TYPE_FALLING_HAZARD in
 ; bank 3 when something drops on his head. It plays the thud and pins him in place;
 ; data_02_7639 runs nine frames of him picking himself up and then hands him to Stand
-    ld   A, [wD209_Player_ActionState]                                    ;; 02:4448 $fa $09 $d2
-    and  A, ACTION_STATE_IS_FIRST_FRAME                                        ;; 02:444b $e6 $20
-    jr   Z, .jr_02_4454                                ;; 02:444d $28 $05
-    ld   C, SFX_GEX_COLLAPSE                                        ;; 02:444f $0e $0e
-    call call_00_112f_QueueSFX                                  ;; 02:4451 $cd $2f $11
+    ld   A, [wD209_Player_ActionState]
+    and  A, ACTION_STATE_IS_FIRST_FRAME
+    jr   Z, .jr_02_4454
+    ld   C, SFX_GEX_COLLAPSE
+    call call_00_112f_QueueSFX
 .jr_02_4454:
-    xor  A, A                                          ;; 02:4454 $af
-    ld   [wD75E_PlayerXSpeed], A                                    ;; 02:4455 $ea $5e $d7
-    ret                                                ;; 02:4458 $c9
+    xor  A, A
+    ld   [wD75E_PlayerXSpeed], A
+    ret
 
 call_02_4459_PlayerAction_EnterDoor:
 ; On the first frame it calls Player_SpawnOpeningDoorEntity, which drops the level's
@@ -634,7 +634,7 @@ call_02_4459_PlayerAction_EnterDoor:
     ld   a,PLAYER_ACTION_LEAVE_DOOR
     ld   [wD744_Player_SpawnAction],a
     call call_00_38f0_Entity_ClearAllSlots
-    ret  
+    ret
 
 call_02_447e_PlayerAction_LeaveDoor:
 ; Gex stepping out of the far side of a door. wD744_Player_SpawnAction is set to this
@@ -645,7 +645,7 @@ call_02_447e_PlayerAction_LeaveDoor:
 ; which is how the door Gex comes out of is already open behind him
     xor  a
     ld   [wD75E_PlayerXSpeed],a
-    ret  
+    ret
 
 call_02_4483_PlayerAction_HitBounce:
 ; The recoil from touching something that hurts. On the first frame it plays the hit sound,
@@ -686,34 +686,34 @@ call_02_44af_PlayerAction_Climb:
 ; setting wD746 to anything other than CLIMB_STATE_NOT_CLIMBING is also what switches off
 ; gravity and normal walking over in bank02_update_player.asm, so this handler owns Gex's
 ; movement completely until it hands back with a Player_RequestAction
-    ld   A, [wD209_Player_ActionState]                                    ;; 02:44af $fa $09 $d2
-    and  A, ACTION_STATE_IS_FIRST_FRAME                                        ;; 02:44b2 $e6 $20
-    jr   Z, .jr_02_44d6                                ;; 02:44b4 $28 $20
-    ld   HL, wD759_ButtonBlockingFlags                                     ;; 02:44b6 $21 $59 $d7
-    set  BTN_BLOCK_B_UNTIL_RELEASE_BIT, [HL]           ;; 02:44b9 $cb $f6
-    xor  A, A                                          ;; 02:44bb $af
-    ld   [wD747_Player_ClimbAnimCounter], A                                    ;; 02:44bc $ea $47 $d7
-    ld   [wD75E_PlayerXSpeed], A                                    ;; 02:44bf $ea $5e $d7
-    ld   [wD760_PlayerYVelocity], A                                    ;; 02:44c2 $ea $60 $d7
-    ld   [wD761_Player_FloorSnapVelocity], A                                    ;; 02:44c5 $ea $61 $d7
-    ld   A, [wD769_ClimbSurfaceTileType]                                    ;; 02:44c8 $fa $69 $d7
-    cp   A, TILE_TYPE_CLIMBABLE_BACKGROUND             ;; 02:44cb $fe $26
-    ld   A, CLIMB_STATE_BACKGROUND                     ;; 02:44cd $3e $00
-    jr   Z, .jr_02_44d3                                ;; 02:44cf $28 $02
-    ld   A, CLIMB_STATE_WALL                           ;; 02:44d1 $3e $02
+    ld   A, [wD209_Player_ActionState]
+    and  A, ACTION_STATE_IS_FIRST_FRAME
+    jr   Z, .jr_02_44d6
+    ld   HL, wD759_ButtonBlockingFlags
+    set  BTN_BLOCK_B_UNTIL_RELEASE_BIT, [HL]
+    xor  A, A
+    ld   [wD747_Player_ClimbAnimCounter], A
+    ld   [wD75E_PlayerXSpeed], A
+    ld   [wD760_PlayerYVelocity], A
+    ld   [wD761_Player_FloorSnapVelocity], A
+    ld   A, [wD769_ClimbSurfaceTileType]
+    cp   A, TILE_TYPE_CLIMBABLE_BACKGROUND
+    ld   A, CLIMB_STATE_BACKGROUND
+    jr   Z, .jr_02_44d3
+    ld   A, CLIMB_STATE_WALL
 .jr_02_44d3:
-    ld   [wD746_Player_ClimbingState], A                                    ;; 02:44d3 $ea $46 $d7
+    ld   [wD746_Player_ClimbingState], A
 .jr_02_44d6:
-    ld   HL, wD746_Player_ClimbingState                                     ;; 02:44d6 $21 $46 $d7
-    ld   L, [HL]                                       ;; 02:44d9 $6e
-    ld   H, $00                                        ;; 02:44da $26 $00
-    add  HL, HL                                        ;; 02:44dc $29
-    ld   DE, .data_02_44e5                             ;; 02:44dd $11 $e5 $44
-    add  HL, DE                                        ;; 02:44e0 $19
-    ld   A, [HL+]                                      ;; 02:44e1 $2a
-    ld   H, [HL]                                       ;; 02:44e2 $66
-    ld   L, A                                          ;; 02:44e3 $6f
-    jp   HL                                            ;; 02:44e4 $e9
+    ld   HL, wD746_Player_ClimbingState
+    ld   L, [HL]
+    ld   H, $00
+    add  HL, HL
+    ld   DE, .data_02_44e5
+    add  HL, DE
+    ld   A, [HL+]
+    ld   H, [HL]
+    ld   L, A
+    jp   HL
 .data_02_44e5:
 ; indexed by wD746_Player_ClimbingState - see CLIMB_STATE_* in constants.asm
     dw   .jp_02_44f9_PlayerClimbAction_Background          ; $00 CLIMB_STATE_BACKGROUND
@@ -726,7 +726,7 @@ call_02_44af_PlayerAction_Climb:
     dw   .jp_02_468f_PlayerClimbAction_WallBottom          ; $07 CLIMB_STATE_WALL_BOTTOM
     dw   .jp_02_46b3_PlayerClimbAction_WallTop             ; $08 CLIMB_STATE_WALL_TOP
     dw   .jp_02_46b8_PlayerClimbAction_Stop                ; $09 CLIMB_STATE_STOP
-    
+
 .jp_02_44f9_PlayerClimbAction_Background:
 ; Gex on a chain-link fence or similar climbable background, free to move in all
 ; eight directions.
@@ -740,53 +740,53 @@ call_02_44af_PlayerAction_Climb:
 ; animation ticker never runs, so writing wD208 here is the only thing drawing him.
 ; B drops him into a Freefall, A starts a tail spin, and if no direction is held the
 ; sprite work is skipped entirely so he simply hangs on the frame he was last on
-    call call_02_4777_PlayerBackgroundClimb_GetDirection                                  ;; 02:44f9 $cd $77 $47
-    cp   A, CLIMB_DIR_NONE                             ;; 02:44fc $fe $ff
-    jr   Z, .jr_02_4531                                ;; 02:44fe $28 $31
-    ld   [wD748_Player_ClimbDirectionIndex], A                                    ;; 02:4500 $ea $48 $d7
-    ld   E, A                                          ;; 02:4503 $5f
-    ld   D, $00                                        ;; 02:4504 $16 $00
-    ld   HL, .data_02_4557_BackgroundClimbSpriteFlagsByDirection ;; 02:4506 $21 $57 $45
-    add  HL, DE                                        ;; 02:4509 $19
-    ld   A, [HL]                                       ;; 02:450a $7e
-    and  A, FACING_LEFT                                ;; 02:450b $e6 $20
-    ld   [wD20D_Player_FacingFlags], A                                    ;; 02:450d $ea $0d $d2
-    ld   A, [HL]                                       ;; 02:4510 $7e
-    and  A, CLIMB_FLAG_ALT_FRAMES                      ;; 02:4511 $e6 $40
-    ld   [wD74B_Player_ClimbingFlags], A                                    ;; 02:4513 $ea $4b $d7
-    ld   HL, .data_02_454f_BackgroundClimbSpriteBaseByDirection ;; 02:4516 $21 $4f $45
-    add  HL, DE                                        ;; 02:4519 $19
-    ld   C, [HL]                                       ;; 02:451a $4e
-    ld   HL, wD747_Player_ClimbAnimCounter                                     ;; 02:451b $21 $47 $d7
-    inc  [HL]                                          ;; 02:451e $34
-    ld   A, [HL]                                       ;; 02:451f $7e
-    rrca                                               ;; 02:4520 $0f
-    rrca                                               ;; 02:4521 $0f
-    and  A, $07                                        ;; 02:4522 $e6 $07
-    add  A, C                                          ;; 02:4524 $81
-    ld   HL, wD208_Player_SpriteID                                     ;; 02:4525 $21 $08 $d2
-    cp   A, [HL]                                       ;; 02:4528 $be
-    jr   Z, .jr_02_4531                                ;; 02:4529 $28 $06
-    ld   [HL], A                                       ;; 02:452b $77
-    ld   HL, wD60F_GfxTransferFlags                                     ;; 02:452c $21 $0f $d6
-    set  GFX_XFER_PLAYER_GFX, [HL]                                       ;; 02:452f $cb $c6
+    call call_02_4777_PlayerBackgroundClimb_GetDirection
+    cp   A, CLIMB_DIR_NONE
+    jr   Z, .jr_02_4531
+    ld   [wD748_Player_ClimbDirectionIndex], A
+    ld   E, A
+    ld   D, $00
+    ld   HL, .data_02_4557_BackgroundClimbSpriteFlagsByDirection
+    add  HL, DE
+    ld   A, [HL]
+    and  A, FACING_LEFT
+    ld   [wD20D_Player_FacingFlags], A
+    ld   A, [HL]
+    and  A, CLIMB_FLAG_ALT_FRAMES
+    ld   [wD74B_Player_ClimbingFlags], A
+    ld   HL, .data_02_454f_BackgroundClimbSpriteBaseByDirection
+    add  HL, DE
+    ld   C, [HL]
+    ld   HL, wD747_Player_ClimbAnimCounter
+    inc  [HL]
+    ld   A, [HL]
+    rrca
+    rrca
+    and  A, $07
+    add  A, C
+    ld   HL, wD208_Player_SpriteID
+    cp   A, [HL]
+    jr   Z, .jr_02_4531
+    ld   [HL], A
+    ld   HL, wD60F_GfxTransferFlags
+    set  GFX_XFER_PLAYER_GFX, [HL]
 .jr_02_4531:
-    ld   A, [wD75A_Player_EffectiveInputs]                                    ;; 02:4531 $fa $5a $d7
-    and  A, PADF_B                                        ;; 02:4534 $e6 $02
-    jr   Z, .jr_02_453d                                ;; 02:4536 $28 $05
-    ld   A, PLAYER_ACTION_FREEFALL                                        ;; 02:4538 $3e $17
-    call call_02_4ccd_Player_RequestAction                                  ;; 02:453a $cd $cd $4c
+    ld   A, [wD75A_Player_EffectiveInputs]
+    and  A, PADF_B
+    jr   Z, .jr_02_453d
+    ld   A, PLAYER_ACTION_FREEFALL
+    call call_02_4ccd_Player_RequestAction
 .jr_02_453d:
-    ld   A, [wD75A_Player_EffectiveInputs]                                    ;; 02:453d $fa $5a $d7
-    and  A, PADF_A                                        ;; 02:4540 $e6 $01
-    jr   Z, .jr_02_454e                                ;; 02:4542 $28 $0a
-    ld   A, CLIMB_STATE_BACKGROUND_TAIL_SPIN           ;; 02:4544 $3e $01
-    ld   [wD746_Player_ClimbingState], A                                    ;; 02:4546 $ea $46 $d7
-    xor  A, A                                          ;; 02:4549 $af
-    ld   [wD747_Player_ClimbAnimCounter], A                                    ;; 02:454a $ea $47 $d7
-    ret                                                ;; 02:454d $c9
+    ld   A, [wD75A_Player_EffectiveInputs]
+    and  A, PADF_A
+    jr   Z, .jr_02_454e
+    ld   A, CLIMB_STATE_BACKGROUND_TAIL_SPIN
+    ld   [wD746_Player_ClimbingState], A
+    xor  A, A
+    ld   [wD747_Player_ClimbAnimCounter], A
+    ret
 .jr_02_454e:
-    ret                                                ;; 02:454e $c9
+    ret
 .data_02_454f_BackgroundClimbSpriteBaseByDirection:
 ; First sprite id of the eight-frame climb loop for each CLIMB_DIR_*. Only four
 ; distinct sets exist because opposite directions share one - up and down both use
@@ -822,8 +822,8 @@ call_02_44af_PlayerAction_Climb:
     ld   hl,wD747_Player_ClimbAnimCounter
     inc  [hl]
     ld   a,[hl]
-    rrca 
-    rrca 
+    rrca
+    rrca
     and  a,$07
     ld   c,a
     ld   hl,wD748_Player_ClimbDirectionIndex
@@ -852,7 +852,7 @@ call_02_44af_PlayerAction_Climb:
     ld   [wD746_Player_ClimbingState],a
     xor  a
     ld   [wD747_Player_ClimbAnimCounter],a
-    ret  
+    ret
 .data_02_45a8_ClimbTailSpinPhaseByDirection:
 ; Starting phase of the eight-frame spin, indexed by CLIMB_DIR_*. Each entry is
 ; (8 - direction) & 7, so adding it and masking to 3 bits rotates the sequence
@@ -897,8 +897,8 @@ call_02_44af_PlayerAction_Climb:
     ld   hl,wD747_Player_ClimbAnimCounter
     inc  [hl]
     ld   a,[hl]
-    rrca 
-    rrca 
+    rrca
+    rrca
     and  a,$07
     add  c
     ld   hl,wD208_Player_SpriteID
@@ -921,9 +921,9 @@ call_02_44af_PlayerAction_Climb:
     ld   [wD746_Player_ClimbingState],a
     xor  a
     ld   [wD747_Player_ClimbAnimCounter],a
-    ret  
+    ret
 .jr_02_460D:
-    ret  
+    ret
 ; The three wall-climb tables are eight entries wide, indexed by CLIMB_DIR_*, but
 ; call_02_47d5_PlayerWallClimb_GetDirection can only ever return CLIMB_DIR_UP ($00)
 ; or CLIMB_DIR_DOWN ($04). The other six rows are unreachable, and the shape they
@@ -959,8 +959,8 @@ call_02_44af_PlayerAction_Climb:
     ld   hl,wD747_Player_ClimbAnimCounter
     inc  [hl]
     ld   a,[hl]
-    rrca 
-    rrca 
+    rrca
+    rrca
     and  a,$07
     ld   hl,wD748_Player_ClimbDirectionIndex
     ld   l,[hl]
@@ -981,7 +981,7 @@ call_02_44af_PlayerAction_Climb:
     ld   [wD746_Player_ClimbingState],a
     xor  a
     ld   [wD747_Player_ClimbAnimCounter],a
-    ret  
+    ret
 .data_02_465f_WallTailSpinSpriteBaseByDirection:
 ; First of the eight spin frames, indexed by CLIMB_DIR_*. Only rows $00 and $04 are
 ; reachable and both give WALL_TAIL_SPIN_SPRITE_BASE; the $78 rows belong to the same
@@ -996,30 +996,30 @@ call_02_44af_PlayerAction_Climb:
 ; Stand, at which point normal gravity resumes and sets him on the floor.
 ; It clears CLIMB_FLAG_ALT_FRAMES every frame so the dismount is always drawn from
 ; the primary frame set regardless of which way he was climbing
-    ld   A, $00                                        ;; 02:4667 $3e $00
-    ld   [wD74B_Player_ClimbingFlags], A                                    ;; 02:4669 $ea $4b $d7
-    ld   HL, wD747_Player_ClimbAnimCounter                                     ;; 02:466c $21 $47 $d7
-    ld   A, [HL]                                       ;; 02:466f $7e
-    cp   A, $18                                        ;; 02:4670 $fe $18
-    jr   Z, .jr_02_4684                                ;; 02:4672 $28 $10
-    inc  [HL]                                          ;; 02:4674 $34
-    srl  A                                             ;; 02:4675 $cb $3f
-    srl  A                                             ;; 02:4677 $cb $3f
-    ld   L, A                                          ;; 02:4679 $6f
-    ld   H, $00                                        ;; 02:467a $26 $00
-    ld   DE, .data_02_4689_BackgroundDismountSprites   ;; 02:467c $11 $89 $46
-    add  HL, DE                                        ;; 02:467f $19
-    ld   A, [HL]                                       ;; 02:4680 $7e
-    jp   call_02_480f_Player_UpdateSpriteIfChanged                                    ;; 02:4681 $c3 $0f $48
+    ld   A, $00
+    ld   [wD74B_Player_ClimbingFlags], A
+    ld   HL, wD747_Player_ClimbAnimCounter
+    ld   A, [HL]
+    cp   A, $18
+    jr   Z, .jr_02_4684
+    inc  [HL]
+    srl  A
+    srl  A
+    ld   L, A
+    ld   H, $00
+    ld   DE, .data_02_4689_BackgroundDismountSprites
+    add  HL, DE
+    ld   A, [HL]
+    jp   call_02_480f_Player_UpdateSpriteIfChanged
 .jr_02_4684:
-    ld   A, PLAYER_ACTION_STAND                                        ;; 02:4684 $3e $02
-    jp   call_02_4ccd_Player_RequestAction                                  ;; 02:4686 $c3 $cd $4c
+    ld   A, PLAYER_ACTION_STAND
+    jp   call_02_4ccd_Player_RequestAction
 .data_02_4689_BackgroundDismountSprites:
 ; Indexed by wD747_Player_ClimbAnimCounter >> 2. Six entries for a counter that runs
 ; 0 to $17, so the table is exactly used up as the counter reaches $18
     db   $c2, $c3, $c4, $c5, $c6, $c7
 
-.jp_02_468f_PlayerClimbAction_WallBottom:  
+.jp_02_468f_PlayerClimbAction_WallBottom:
 ; The same thing at the foot of a wall, in a quarter of the frames - two sprites over
 ; eight frames rather than six over twenty-four. Reaching the bottom of a wall is
 ; meant to read as him simply letting go, where sliding off a fence gets a proper
@@ -1046,7 +1046,7 @@ call_02_44af_PlayerAction_Climb:
 ; Indexed by wD747_Player_ClimbAnimCounter >> 2, counter running 0 to $07
     db   $c8, $c9
 
-.jp_02_46b3_PlayerClimbAction_WallTop:  
+.jp_02_46b3_PlayerClimbAction_WallTop:
 ; Reaching the top of a wall. There is no pull-up animation - the bank 3 climb
 ; handler sets this state the frame the surface above him stops being climbable, and
 ; all it does is request PLAYER_ACTION_JUMP, which both clears the climbing state and
@@ -1054,7 +1054,7 @@ call_02_44af_PlayerAction_Climb:
     ld   a,PLAYER_ACTION_JUMP
     jp   call_02_4ccd_Player_RequestAction
 
-.jp_02_46b8_PlayerClimbAction_Stop:  
+.jp_02_46b8_PlayerClimbAction_Stop:
 ; Gex working his way round a corner of a climbable surface. Bank 3's climb handler
 ; puts him in this state when the tile he is holding onto is one of the four
 ; TILE_TYPE_CLIMB_STOP_ENTRY_* stoppers, and stores tile id minus $30 in
@@ -1208,39 +1208,39 @@ call_02_4777_PlayerBackgroundClimb_GetDirection:
 ; The bg_collision climb handler in bank 3 has already stripped any direction that
 ; would take him off the climbable surface out of wD75A, so the deltas here can be
 ; applied unconditionally - no bounds test of its own
-    ld   A, [wD75A_Player_EffectiveInputs]                                    ;; 02:4777 $fa $5a $d7
-    and  A, PADF_RIGHT | PADF_LEFT | PADF_UP | PADF_DOWN                                        ;; 02:477a $e6 $f0
-    jr   Z, .jr_02_478d                                ;; 02:477c $28 $0f
-    ld   HL, .data_02_47a5_BackgroundClimbDirectionTable ;; 02:477e $21 $a5 $47
-    ld   DE, CLIMB_DIR_RECORD_SIZE                     ;; 02:4781 $11 $06 $00
-    ld   B, $08                                        ;; 02:4784 $06 $08 ; all eight rows
+    ld   A, [wD75A_Player_EffectiveInputs]
+    and  A, PADF_RIGHT | PADF_LEFT | PADF_UP | PADF_DOWN
+    jr   Z, .jr_02_478d
+    ld   HL, .data_02_47a5_BackgroundClimbDirectionTable
+    ld   DE, CLIMB_DIR_RECORD_SIZE
+    ld   B, $08                                        ; all eight rows
 .jr_02_4786:
-    cp   A, [HL]                                       ;; 02:4786 $be
-    jr   Z, .jr_02_4790                                ;; 02:4787 $28 $07
-    add  HL, DE                                        ;; 02:4789 $19
-    dec  B                                             ;; 02:478a $05
-    jr   NZ, .jr_02_4786                               ;; 02:478b $20 $f9
+    cp   A, [HL]
+    jr   Z, .jr_02_4790
+    add  HL, DE
+    dec  B
+    jr   NZ, .jr_02_4786
 .jr_02_478d:
-    ld   A, CLIMB_DIR_NONE                             ;; 02:478d $3e $ff
-    ret                                                ;; 02:478f $c9
+    ld   A, CLIMB_DIR_NONE
+    ret
 .jr_02_4790:
-    inc  HL                                            ;; 02:4790 $23
-    ld   A, [HL+]                                      ;; 02:4791 $2a ; direction index
-    push AF                                            ;; 02:4792 $f5 ; held for the return value
-    ld   A, [HL+]                                      ;; 02:4793 $2a
-    ld   C, A                                          ;; 02:4794 $4f
-    ld   A, [HL+]                                      ;; 02:4795 $2a
-    ld   B, A                                          ;; 02:4796 $47 ; BC = X delta
-    push BC                                            ;; 02:4797 $c5
-    ld   A, [HL+]                                      ;; 02:4798 $2a
-    ld   C, A                                          ;; 02:4799 $4f
-    ld   A, [HL+]                                      ;; 02:479a $2a
-    ld   B, A                                          ;; 02:479b $47 ; BC = Y delta
-    call call_02_4c19_Player_AddToYPosition                                  ;; 02:479c $cd $19 $4c
-    pop  BC                                            ;; 02:479f $c1
-    call call_02_4c0a_Player_AddToXPosition                                  ;; 02:47a0 $cd $0a $4c
-    pop  AF                                            ;; 02:47a3 $f1
-    ret                                                ;; 02:47a4 $c9
+    inc  HL
+    ld   A, [HL+]                                      ; direction index
+    push AF                                            ; held for the return value
+    ld   A, [HL+]
+    ld   C, A
+    ld   A, [HL+]
+    ld   B, A                                          ; BC = X delta
+    push BC
+    ld   A, [HL+]
+    ld   C, A
+    ld   A, [HL+]
+    ld   B, A                                          ; BC = Y delta
+    call call_02_4c19_Player_AddToYPosition
+    pop  BC
+    call call_02_4c0a_Player_AddToXPosition
+    pop  AF
+    ret
 .data_02_47a5_BackgroundClimbDirectionTable:
 ; Eight CLIMB_DIR_RECORD_SIZE-byte rows, searched by exact match on the d-pad byte:
 ;   +0      the d-pad byte this row answers to
@@ -1296,7 +1296,7 @@ call_02_47d5_PlayerWallClimb_GetDirection:
     pop  bc
     call call_02_4c0a_Player_AddToXPosition
     pop  af
-    ret  
+    ret
 .data_02_4803_WallClimbDirectionTable:
 ; Same row format as .data_02_47a5_BackgroundClimbDirectionTable, and the same two
 ; rows out of it - so a wall climb is one pixel per frame, exactly like the fence
@@ -1309,13 +1309,13 @@ call_02_480f_Player_UpdateSpriteIfChanged:
 ; requesting the transfer every frame would waste the hblank budget on a redraw of
 ; the frame already there. The climb handlers each open-code this same test inline;
 ; only the three dismount states call the shared copy
-    ld   HL, wD208_Player_SpriteID                                     ;; 02:480f $21 $08 $d2
-    cp   A, [HL]                                       ;; 02:4812 $be
-    ret  Z                                             ;; 02:4813 $c8
-    ld   [HL], A                                       ;; 02:4814 $77
-    ld   HL, wD60F_GfxTransferFlags                                     ;; 02:4815 $21 $0f $d6
-    set  GFX_XFER_PLAYER_GFX, [HL]                                       ;; 02:4818 $cb $c6
-    ret                                                ;; 02:481a $c9
+    ld   HL, wD208_Player_SpriteID
+    cp   A, [HL]
+    ret  Z
+    ld   [HL], A
+    ld   HL, wD60F_GfxTransferFlags
+    set  GFX_XFER_PLAYER_GFX, [HL]
+    ret
 
 call_02_481b_PlayerAction_GoldRemoteWarp:
 ; Requested by the entity collision handler in bank 3 the moment Gex touches the
