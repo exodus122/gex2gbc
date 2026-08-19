@@ -1,248 +1,748 @@
-data_03_5446_SpriteCountTable:
-; Single byte ($18 = 24), likely a count or max value used by the sprite building system
-    db   $18                                           ;; 03:5446 ?
+; ==================================================================
+; ENTITY SPRITE SHAPES
+;
+; Not artwork - shapes. Everything in this file describes WHERE an entity's OAM
+; entries go and which tiles inside its tile page they use; the picture itself is
+; never here. An enemy animates by streaming a different page of tiles into VRAM
+; while drawing the same handful of rectangles every frame, which is why the
+; whole of a boss's animation costs nothing more than a couple of dozen bytes of
+; layout shared with every other enemy the same size.
+;
+; The file is reached only from the two frame-based sprite builders in
+; bank03_oam_build.asm - the SPRITE_FLAG_LAYOUT_BY_ACTION path uses
+; .data_03_608e_EntitySpriteLayoutPointerTable over there instead, and Gex has his
+; own builder entirely.
+;
+; THE META TABLE IS READ BACKWARDS. The builders load
+; data_03_5446_EntitySpriteMetaTable + 1, add entity id x 2, and then read with
+; `ld a, [hl-]` - so the byte they pick up first is the SECOND of the pair and the
+; one they test bit 7 of is the FIRST. The pair for entity N therefore starts at
+; $5446 + 2N, and $5446 is a record byte, not a stray value in front of the table.
+;
+;   +0  shape index, or a layout index - see below
+;   +1  tile id base, added to every tile number in the chosen layout
+;
+; BYTE +0 MEANS TWO DIFFERENT THINGS depending on how the entity is drawn, because
+; two different builders index this same table:
+;
+;   SPRITE_FLAG_STREAMS_OWN_GFX entities   a SPRITE_SHAPE_* index into the pointer
+;                                          table of data_03_5566_SpriteFrameTable_Main,
+;                                          or, with bit 7 set, into
+;                                          data_03_5a8a_SpriteFrameTable_Alt
+;   SPRITE_FLAG_LAYOUT_BY_ACTION entities  a base index into
+;                                          .data_03_608e_EntitySpriteLayoutPointerTable
+;                                          in bank03_oam_build.asm, with +1 added when
+;                                          the entity faces left. Byte +1 is unused for
+;                                          these - their tile base is the live
+;                                          ENTITY_FIELD_SPRITE_ID instead - and every
+;                                          one of them leaves it $00
+;
+; No entity mixes the two, so each row below belongs to exactly one of the readings.
+;
+; PICKING A SHAPE. For the shape path the pointer table is indexed by
+;
+;     shape index + (wD587_EntityGfxVramPage | (facing left ? 2 : 0))
+;
+; so every shape is four consecutive entries: page 0, page 1, page 0 mirrored,
+; page 1 mirrored. The two pages are the double-buffered entity tile pages at
+; $8200 and $8300 - the layouts differ only in whether their tile numbers start at
+; $10 or at $00, which with a tile base of $20 is exactly those two pages. Mirroring
+; is OAMF_XFLIP on every part plus a mirrored set of X offsets, so an off-centre
+; shape stays off-centre in the right direction.
+;
+; A LAYOUT BLOCK is a part count followed by that many four-byte parts. Sprites are
+; 8x16 (LCDC is set to $C7), so a part is 8 wide and 16 tall and tile numbers step
+; by 2 down a column and by 4 across, i.e. the tile page is stored column by column.
+; The builder adds the entity's screen position to the offsets, the meta table's
+; tile base to the tile, and wD335_Entity_OamAttr to the attributes.
+;
+; DEAD WEIGHT. Only seven shape indices are ever used - $08, $10, $18, $30, $40, $48
+; and $50 - out of the twenty-two groups the pointer table holds. Five groups are
+; byte-for-byte repeats of the group before them, one is an upside-down 32x32 and one
+; is a 24x32 with its rows emitted in the other order; none of those is reachable.
+; The alternate table is worse: bit 7 discards the page and facing bits, so its index
+; is always plain 0, and the two entities that use it both take entry 0. Its other
+; ten entries - a complete set of row and box shapes with tile numbers based at $00 -
+; cannot be reached at all.
+;
+; THE TWO BUILDERS ARE THE SAME CODE. From the point where they read
+; ENTITY_FIELD_FACING_FLAGS onwards, .jr_03_5fcb_Entity_BuildSprites_FacingBased and
+; the default path above it are 91 identical bytes. SPRITE_FLAG_STREAMS_OWN_GFX makes
+; no difference to how a sprite is drawn - it only decides whether the entity streams
+; its own tiles, which is settled elsewhere
+; ==================================================================
 
-data_03_5447_EntitySpriteMetaTable:
-; Paired 2-byte entries per entity type: byte 0 is a flags/index byte (bit 7 = use alternate 
-; frame table data_03_5a8a_SpriteFrameTable_Alt, else use data_03_5566_SpriteFrameTable_Main), 
-; byte 1 is an animation frame offset/index. 
-; One entry per entity type, used by the main sprite builder to select which frame data to use 
-; and which sub-table to index into
-    db   $00, $08, $00, $80, $66, $1a, $00, $08        ;; 03:5447 ????????
-    db   $20, $08, $20, $08, $20, $08, $00, $18        ;; 03:544f .???????
-    db   $20, $26, $00, $26, $00, $1e, $00, $18        ;; 03:5457 ????????
-    db   $20, $10, $20, $02, $00, $08, $00, $08        ;; 03:545f .???????
-    db   $20, $08, $00, $10, $20, $80, $2c, $0a        ;; 03:5467 ????????
-    db   $00, $02, $00, $30, $20, $1e, $00, $18        ;; 03:546f ????????
-    db   $20, $10, $20, $0a, $00, $26, $00, $26        ;; 03:5477 ????????
-    db   $00, $06, $00, $0e, $00, $02, $00, $04        ;; 03:547f ????????
-    db   $00, $04, $00, $04, $00, $04, $00, $0c        ;; 03:5487 ????????
-    db   $00, $04, $00, $18, $20, $0c, $00, $08        ;; 03:548f ????????
-    db   $00, $0e, $00, $10, $20, $1a, $00, $1a        ;; 03:5497 ????.???
-    db   $00, $1e, $00, $1e, $00, $02, $00, $0a        ;; 03:549f ????????
-    db   $00, $38, $00, $50, $20, $18, $20, $08        ;; 03:54a7 ????????
-    db   $20, $02, $00, $26, $00, $08, $00, $26        ;; 03:54af ????????
-    db   $00, $24, $00, $26, $00, $24, $00, $18        ;; 03:54b7 ????????
-    db   $20, $04, $00, $04, $00, $18, $20, $0a        ;; 03:54bf ????????
-    db   $00, $0a, $00, $0a, $00, $14, $00, $08        ;; 03:54c7 ????????
-    db   $00, $02, $00, $26, $00, $18, $20, $18        ;; 03:54cf ????????
-    db   $20, $00, $00, $18, $20, $28, $00, $08        ;; 03:54d7 ????????
-    db   $00, $08, $00, $18, $20, $0a, $00, $18        ;; 03:54df ????????
-    db   $20, $02, $00, $08, $00, $40, $20, $40        ;; 03:54e7 ????????
-    db   $20, $48, $20, $08, $00, $0e, $00, $08        ;; 03:54ef ????????
-    db   $00, $0e, $00, $04, $00, $04, $00, $2a        ;; 03:54f7 ????????
-    db   $00, $2c, $00, $1e, $00, $1e, $00, $1e        ;; 03:54ff ????????
-    db   $00, $1e, $00, $1e, $00, $1e, $00, $24        ;; 03:5507 ????????
-    db   $00, $24, $00, $24, $00, $24, $00, $24        ;; 03:550f ????????
-    db   $00, $24, $00, $0e, $00, $18, $20, $02        ;; 03:5517 ????????
-    db   $00, $06, $00, $18, $20, $00, $00, $00        ;; 03:551f ????????
-    db   $00, $10, $20, $00, $00, $18, $20, $0c        ;; 03:5527 ????????
-    db   $00, $08, $00, $0c, $00, $32, $00, $0a        ;; 03:552f ????????
-    db   $00, $18, $20, $0c, $00, $0a, $00, $0a        ;; 03:5537 ????????
-    db   $00, $26, $00, $26, $00, $26, $00, $10        ;; 03:553f ????????
-    db   $20, $08, $00, $08, $00, $12, $00, $12        ;; 03:5547 ????????
-    db   $00, $12, $00, $18, $20, $26, $00, $26        ;; 03:554f ????????
-    db   $00, $0a, $00, $0a, $00, $0a, $00, $1a        ;; 03:5557 ????????
-    db   $00, $18, $20, $18, $20, $1e, $00             ;; 03:555f ???????
+data_03_5446_EntitySpriteMetaTable:
+; Two bytes per entity id, 144 ids. The builders address this as
+; `data_03_5446_EntitySpriteMetaTable + 1 + entity id * 2` and read backwards, so the
+; two bytes of a row arrive in the order (+1, +0)
+    db   $18, $00                                         ; $00 ENTITY_GEX - drawn by the player builder, never read here
+    db   $08, $00                                         ; $01 ENTITY_COLLECTIBLE_SPAWN - embed, never read here
+    db   SPRITE_SHAPE_ALT | $00, $66                      ; $02 ENTITY_UNK_02 - alt table entry $00
+    db   $1a, $00                                         ; $03 ENTITY_TV_BUTTON - layout $1a/$1b by action
+    db   SPRITE_SHAPE_16x32, $20                          ; $04 ENTITY_RED_REMOTE - 16x32, centred
+    db   SPRITE_SHAPE_16x32, $20                          ; $05 ENTITY_SILVER_REMOTE - 16x32, centred
+    db   SPRITE_SHAPE_16x32, $20                          ; $06 ENTITY_GOLD_REMOTE - 16x32, centred
+    db   $08, $00                                         ; $07 ENTITY_ENEMY_DEFEATED - embed, never read here
+    db   SPRITE_SHAPE_32x32, $20                          ; $08 ENTITY_UNK_08 - 32x32, centred
+    db   $26, $00                                         ; $09 ENTITY_SCREAM_TV_FALLING_PLATFORM - layout $26/$27 by action
+    db   $26, $00                                         ; $0A ENTITY_SCREAM_TV_MOVING_PLATFORM - layout $26/$27 by action
+    db   $1e, $00                                         ; $0B ENTITY_SCREAM_TV_PUSH_BLOCK - layout $1e/$1f by action
+    db   SPRITE_SHAPE_32x32, $20                          ; $0C ENTITY_SCREAM_TV_PUMPKIN - 32x32, centred
+    db   SPRITE_SHAPE_24x32, $20                          ; $0D ENTITY_SCREAM_TV_FRANKIE - 24x32, centred
+    db   $02, $00                                         ; $0E ENTITY_SCREAM_TV_HEAD_GHOST - layout $02/$03 by action
+    db   $08, $00                                         ; $0F ENTITY_SCREAM_TV_HEAD_GHOST_HEAD - layout $08/$09 by action
+    db   SPRITE_SHAPE_16x32, $20                          ; $10 ENTITY_SCREAM_TV_FLOATING_SKULL - 16x32, centred
+    db   $08, $00                                         ; $11 ENTITY_SCREAM_TV_FLOATING_SKULL_PROJECTILE - layout $08/$09 by action
+    db   SPRITE_SHAPE_24x32, $20                          ; $12 ENTITY_SCREAM_TV_ZOMBIE - 24x32, centred
+    db   SPRITE_SHAPE_ALT | $00, $2c                      ; $13 ENTITY_SCREAM_TV_ZOMBIE_HEAD - alt table entry $00
+    db   $0a, $00                                         ; $14 ENTITY_SCREAM_TV_FALLING_AXE - layout $0a/$0b by action
+    db   $02, $00                                         ; $15 ENTITY_SCREAM_TV_LANTERN - layout $02/$03 by action
+    db   SPRITE_SHAPE_24x16, $20                          ; $16 ENTITY_SCREAM_TV_BAT - 24x16, centred
+    db   $1e, $00                                         ; $17 ENTITY_SCREAM_TV_ORANGE_MOVING_PLATFORM - layout $1e/$1f by action
+    db   SPRITE_SHAPE_32x32, $20                          ; $18 ENTITY_SCREAM_TV_DOOR_OPENING - 32x32, centred
+    db   SPRITE_SHAPE_24x32, $20                          ; $19 ENTITY_SCREAM_TV_GHOST - 24x32, centred
+    db   $0a, $00                                         ; $1A ENTITY_SCREAM_TV_CLIMB_WALL_SUN_ENEMY - layout $0a/$0b by action
+    db   $26, $00                                         ; $1B ENTITY_SCREAM_TV_VANISHING_PLATFORM - layout $26/$27 by action
+    db   $26, $00                                         ; $1C ENTITY_SCREAM_TV_MONA_LISA_ELEVATOR - layout $26/$27 by action
+    db   $06, $00                                         ; $1D ENTITY_TOON_TV_HARD_HEAD_AREA_HAZARD - layout $06/$07 by action
+    db   $0e, $00                                         ; $1E ENTITY_TOON_TV_STATIONARY_BEAR_TRAP - layout $0e/$0f by action
+    db   $02, $00                                         ; $1F ENTITY_TOON_TV_MOVING_BEAR_TRAP - layout $02/$03 by action
+    db   $04, $00                                         ; $20 ENTITY_TOON_TV_BUMBLEBEE - layout $04/$05 by action
+    db   $04, $00                                         ; $21 ENTITY_TOON_TV_BOWLING_BALL - layout $04/$05 by action
+    db   $04, $00                                         ; $22 ENTITY_TOON_TV_CACTUS - layout $04/$05 by action
+    db   $04, $00                                         ; $23 ENTITY_TOON_TV_DOMINO - layout $04/$05 by action
+    db   $0c, $00                                         ; $24 ENTITY_TOON_TV_SHARK - layout $0c/$0d by action
+    db   $04, $00                                         ; $25 ENTITY_TOON_TV_FLOWER - layout $04/$05 by action
+    db   SPRITE_SHAPE_32x32, $20                          ; $26 ENTITY_TOON_TV_HUNTER - 32x32, centred
+    db   $0c, $00                                         ; $27 ENTITY_TOON_TV_MUSHROOM - layout $0c/$0d by action
+    db   $08, $00                                         ; $28 ENTITY_TOON_TV_MUSHROOM_PROJECTILE - layout $08/$09 by action
+    db   $0e, $00                                         ; $29 ENTITY_TOON_TV_LIZARD - layout $0e/$0f by action
+    db   SPRITE_SHAPE_24x32, $20                          ; $2A ENTITY_TOON_TV_HAPPY_FACE - 24x32, centred
+    db   $1a, $00                                         ; $2B ENTITY_TOON_TV_VANISHING_BLOCK - layout $1a/$1b by action
+    db   $1a, $00                                         ; $2C ENTITY_TOON_TV_MOVING_BLOCK - layout $1a/$1b by action
+    db   $1e, $00                                         ; $2D ENTITY_TOON_TV_MOVING_LOG - layout $1e/$1f by action
+    db   $1e, $00                                         ; $2E ENTITY_TOON_TV_STATIONARY_LOG - layout $1e/$1f by action
+    db   $02, $00                                         ; $2F ENTITY_TOON_TV_FLOWER_HAMMER - layout $02/$03 by action
+    db   $0a, $00                                         ; $30 ENTITY_TOON_TV_HUNTER_BULLET - layout $0a/$0b by action
+    db   $38, $00                                         ; $31 ENTITY_TOON_TV_ROCKET - layout $38/$39 by action
+    db   SPRITE_SHAPE_32x32_BEHIND4, $20                  ; $32 ENTITY_PRE_HISTORY_FAST_DINOSAUR - 32x32, shifted 4px against the facing direction
+    db   SPRITE_SHAPE_32x32, $20                          ; $33 ENTITY_PRE_HISTORY_DRAGONFLY - 32x32, centred
+    db   SPRITE_SHAPE_16x32, $20                          ; $34 ENTITY_PRE_HISTORY_EGG - 16x32, centred
+    db   $02, $00                                         ; $35 ENTITY_UNK_35 - layout $02/$03 by action
+    db   $26, $00                                         ; $36 ENTITY_UNK_36 - layout $26/$27 by action
+    db   $08, $00                                         ; $37 ENTITY_PRE_HISTORY_FALLING_LAVA - layout $08/$09 by action
+    db   $26, $00                                         ; $38 ENTITY_PRE_HISTORY_LAVA_RAFT - layout $26/$27 by action
+    db   $24, $00                                         ; $39 ENTITY_PRE_HISTORY_MOVING_PLATFORM - layout $24/$25 by action
+    db   $26, $00                                         ; $3A ENTITY_UNK_3A - layout $26/$27 by action
+    db   $24, $00                                         ; $3B ENTITY_UNK_3B - layout $24/$25 by action
+    db   SPRITE_SHAPE_32x32, $20                          ; $3C ENTITY_PRE_HISTORY_PTEROSAUR - 32x32, centred
+    db   $04, $00                                         ; $3D ENTITY_UNK_3D - layout $04/$05 by action
+    db   $04, $00                                         ; $3E ENTITY_PRE_HISTORY_FALLING_BOULDER - layout $04/$05 by action
+    db   SPRITE_SHAPE_32x32, $20                          ; $3F ENTITY_UNK_3F - 32x32, centred
+    db   $0a, $00                                         ; $40 ENTITY_PRE_HISTORY_BEETLE_HORIZONTAL - layout $0a/$0b by action
+    db   $0a, $00                                         ; $41 ENTITY_PRE_HISTORY_BEETLE_VERTICAL - layout $0a/$0b by action
+    db   $0a, $00                                         ; $42 ENTITY_PRE_HISTORY_ANT - layout $0a/$0b by action
+    db   $14, $00                                         ; $43 ENTITY_PRE_HISTORY_FIRE_PLANT - layout $14/$15 by action
+    db   $08, $00                                         ; $44 ENTITY_PRE_HISTORY_FIRE_PLANT_PROJECTILES - layout $08/$09 by action
+    db   $02, $00                                         ; $45 ENTITY_PRE_HISTORY_GEYSER - layout $02/$03 by action
+    db   $26, $00                                         ; $46 ENTITY_UNK_46 - layout $26/$27 by action
+    db   SPRITE_SHAPE_32x32, $20                          ; $47 ENTITY_PRE_HISTORY_DINOSAUR - 32x32, centred
+    db   SPRITE_SHAPE_32x32, $20                          ; $48 ENTITY_PRE_HISTORY_TRICERATOPS - 32x32, centred
+    db   $00, $00                                         ; $49 ENTITY_PRE_HISTORY_TRICERATOPS_HORN - layout $00/$01 by action
+    db   SPRITE_SHAPE_32x32, $20                          ; $4A ENTITY_UNK_4A - 32x32, centred
+    db   $28, $00                                         ; $4B ENTITY_KUNG_FU_THEATER_HANGING_BLADE - layout $28/$29 by action
+    db   $08, $00                                         ; $4C ENTITY_KUNG_FU_THEATER_CANNON - invis, never read here
+    db   $08, $00                                         ; $4D ENTITY_KUNG_FU_THEATER_CANNON_PROJECTILE - layout $08/$09 by action
+    db   SPRITE_SHAPE_32x32, $20                          ; $4E ENTITY_KUNG_FU_THEATER_DRAGONFLY - 32x32, centred
+    db   $0a, $00                                         ; $4F ENTITY_KUNG_FU_THEATER_DRAGON_BODY_SEGMENT - layout $0a/$0b by action
+    db   SPRITE_SHAPE_32x32, $20                          ; $50 ENTITY_KUNG_FU_THEATER_DRAGON_HEAD - 32x32, centred
+    db   $02, $00                                         ; $51 ENTITY_UNK_51 - layout $02/$03 by action
+    db   $08, $00                                         ; $52 ENTITY_KUNG_FU_THEATER_DRAGON_PROJECTILE - layout $08/$09 by action
+    db   SPRITE_SHAPE_32x32_AHEAD8, $20                   ; $53 ENTITY_KUNG_FU_THEATER_WALKING_NINJA - 32x32, shifted 8px in the facing direction
+    db   SPRITE_SHAPE_32x32_AHEAD8, $20                   ; $54 ENTITY_KUNG_FU_THEATER_JUMPING_NINJA - 32x32, shifted 8px in the facing direction
+    db   SPRITE_SHAPE_32x32_AHEAD4, $20                   ; $55 ENTITY_KUNG_FU_THEATER_SAMURAI_BODY - 32x32, shifted 4px in the facing direction
+    db   $08, $00                                         ; $56 ENTITY_KUNG_FU_THEATER_SAMURAI_HEAD - layout $08/$09 by action
+    db   $0e, $00                                         ; $57 ENTITY_KUNG_FU_THEATER_LIZARD - layout $0e/$0f by action
+    db   $08, $00                                         ; $58 ENTITY_KUNG_FU_THEATER_NINJA_PROJECTILE - layout $08/$09 by action
+    db   $0e, $00                                         ; $59 ENTITY_KUNG_FU_THEATER_SPIKY_LOG - layout $0e/$0f by action
+    db   $04, $00                                         ; $5A ENTITY_KUNG_FU_THEATER_TALL_JAR - layout $04/$05 by action
+    db   $04, $00                                         ; $5B ENTITY_KUNG_FU_THEATER_JAR - layout $04/$05 by action
+    db   $2a, $00                                         ; $5C ENTITY_UNK_5C - layout $2a/$2b by action
+    db   $2c, $00                                         ; $5D ENTITY_UNK_5D - layout $2c/$2d by action
+    db   $1e, $00                                         ; $5E ENTITY_KUNG_FU_THEATER_VANISHING_PLATFORM - layout $1e/$1f by action
+    db   $1e, $00                                         ; $5F ENTITY_KUNG_FU_THEATER_MOVING_PLATFORM - layout $1e/$1f by action
+    db   $1e, $00                                         ; $60 ENTITY_UNK_60 - layout $1e/$1f by action
+    db   $1e, $00                                         ; $61 ENTITY_KUNG_FU_THEATER_MOVING_RAFT - layout $1e/$1f by action
+    db   $1e, $00                                         ; $62 ENTITY_KUNG_FU_THEATER_STATIONARY_RAFT - layout $1e/$1f by action
+    db   $1e, $00                                         ; $63 ENTITY_UNK_63 - invis, never read here
+    db   $24, $00                                         ; $64 ENTITY_UNK_64 - layout $24/$25 by action
+    db   $24, $00                                         ; $65 ENTITY_REZOPOLIS_SPECIAL_MOVING_PLATFORM - layout $24/$25 by action
+    db   $24, $00                                         ; $66 ENTITY_REZOPOLIS_MOVING_PLATFORM - layout $24/$25 by action
+    db   $24, $00                                         ; $67 ENTITY_REZOPOLIS_RED_PLATFORM - layout $24/$25 by action
+    db   $24, $00                                         ; $68 ENTITY_REZOPOLIS_ACTIVATED_RED_PLATFORM - layout $24/$25 by action
+    db   $24, $00                                         ; $69 ENTITY_REZOPOLIS_TAILSPIN_PLATFORM - layout $24/$25 by action
+    db   $0e, $00                                         ; $6A ENTITY_REZOPOLIS_TAILSPIN_GEAR - layout $0e/$0f by action
+    db   SPRITE_SHAPE_32x32, $20                          ; $6B ENTITY_UNK_6B - 32x32, centred
+    db   $02, $00                                         ; $6C ENTITY_UNK_6C - layout $02/$03 by action
+    db   $06, $00                                         ; $6D ENTITY_UNK_6D - layout $06/$07 by action
+    db   SPRITE_SHAPE_32x32, $20                          ; $6E ENTITY_REZOPOLIS_GREEN_MONSTER - 32x32, centred
+    db   $00, $00                                         ; $6F ENTITY_UNK_6F - layout $00/$01 by action
+    db   $00, $00                                         ; $70 ENTITY_UNK_70 - layout $00/$01 by action
+    db   SPRITE_SHAPE_24x32, $20                          ; $71 ENTITY_REZOPOLIS_PINCER - 24x32, centred
+    db   $00, $00                                         ; $72 ENTITY_REZOPOLIS_FLAMETHROWER - layout $00/$01 by action
+    db   SPRITE_SHAPE_32x32, $20                          ; $73 ENTITY_REZOPOLIS_UFO - 32x32, centred
+    db   $0c, $00                                         ; $74 ENTITY_REZOPOLIS_ANT - layout $0c/$0d by action
+    db   $08, $00                                         ; $75 ENTITY_REZOPOLIS_ANT_SPAWNER - invis, never read here
+    db   $0c, $00                                         ; $76 ENTITY_CIRCUIT_CENTRAL_ANT - layout $0c/$0d by action
+    db   $32, $00                                         ; $77 ENTITY_CIRCUIT_CENTRAL_CAPACITOR - layout $32/$33 by action
+    db   $0a, $00                                         ; $78 ENTITY_CIRCUIT_CENTRAL_POWER_UP - layout $0a/$0b by action
+    db   SPRITE_SHAPE_32x32, $20                          ; $79 ENTITY_UNK_79 - 32x32, centred
+    db   $0c, $00                                         ; $7A ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT - layout $0c/$0d by action
+    db   $0a, $00                                         ; $7B ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT_GEAR - layout $0a/$0b by action
+    db   $0a, $00                                         ; $7C ENTITY_CIRCUIT_CENTRAL_ELECTRIC_BALL - layout $0a/$0b by action
+    db   $26, $00                                         ; $7D ENTITY_CIRCUIT_CENTRAL_MOVING_PLATFORM - layout $26/$27 by action
+    db   $26, $00                                         ; $7E ENTITY_CIRCUIT_CENTRAL_POWERED_PLAFORM - layout $26/$27 by action
+    db   $26, $00                                         ; $7F ENTITY_CIRCUIT_CENTRAL_LOWERING_PLATFORM - layout $26/$27 by action
+    db   SPRITE_SHAPE_24x32, $20                          ; $80 ENTITY_CIRCUIT_CENTRAL_WALKER_ROBOT - 24x32, centred
+    db   $08, $00                                         ; $81 ENTITY_CIRCUIT_CENTRAL_POWERED_WALKWAY - invis, never read here
+    db   $08, $00                                         ; $82 ENTITY_CIRCUIT_CENTRAL_WALKWAY_ACTIVATOR - invis, never read here
+    db   $12, $00                                         ; $83 ENTITY_CHANNEL_Z_ARCED_GUN_PROJECTILE - layout $12/$13 by action
+    db   $12, $00                                         ; $84 ENTITY_CHANNEL_Z_ARCED_GUN_PROJECTILE2 - layout $12/$13 by action
+    db   $12, $00                                         ; $85 ENTITY_CHANNEL_Z_GUN_PROJECTILE - layout $12/$13 by action
+    db   SPRITE_SHAPE_32x32, $20                          ; $86 ENTITY_CHANNEL_Z_REZ - 32x32, centred
+    db   $26, $00                                         ; $87 ENTITY_CHANNEL_Z_UNUSED_PLATFORM_1 - layout $26/$27 by action
+    db   $26, $00                                         ; $88 ENTITY_CHANNEL_Z_UNUSED_PLATFORM_2 - layout $26/$27 by action
+    db   $0a, $00                                         ; $89 ENTITY_CHANNEL_Z_REZ_FOLLOWING_FIRE - layout $0a/$0b by action
+    db   $0a, $00                                         ; $8A ENTITY_CHANNEL_Z_GUN_PROJECTILE_EXPLOSION - layout $0a/$0b by action
+    db   $0a, $00                                         ; $8B ENTITY_FINAL_BATTLE_BUTTON_PROJECTILE - layout $0a/$0b by action
+    db   $1a, $00                                         ; $8C ENTITY_CHANNEL_Z_FINAL_BATTLE_BUTTON - layout $1a/$1b by action
+    db   SPRITE_SHAPE_32x32, $20                          ; $8D ENTITY_CHANNEL_Z_REZ_PORTAL - 32x32, centred
+    db   SPRITE_SHAPE_32x32, $20                          ; $8E ENTITY_UNK_8E - 32x32, centred
+    db   $1e, $00                                         ; $8F ENTITY_MEDIA_DIMENSION_MOVING_PLATFORM - layout $1e/$1f by action
 
 data_03_5566_SpriteFrameTable_Main:
-; Large table of 4-byte sprite descriptor records indexed by frame number. 
-; Each record: (signed Y offset, signed X offset, tile ID, attribute flags). 
-; Used for standard multi-tile entity sprite layouts. Entries are grouped into 
-; animation frames, with a pointer subtable at the start
-    db   $16, $56, $1f, $56, $28, $56, $31, $56        ;; 03:5566 ????????
-    db   $16, $56, $1f, $56, $28, $56, $31, $56        ;; 03:556e ????????
-    db   $3a, $56, $4b, $56, $5c, $56, $6d, $56        ;; 03:5576 ....????
-    db   $3a, $56, $4b, $56, $5c, $56, $6d, $56        ;; 03:557e ????????
-    db   $7e, $56, $97, $56, $b0, $56, $c9, $56        ;; 03:5586 ....????
-    db   $e2, $56, $fb, $56, $14, $57, $2d, $57        ;; 03:558e ????????
-    db   $46, $57, $67, $57, $88, $57, $a9, $57        ;; 03:5596 ....????
-    db   $ca, $57, $eb, $57, $0c, $58, $2d, $58        ;; 03:559e ????????
-    db   $4e, $58, $53, $58, $58, $58, $5d, $58        ;; 03:55a6 ????????
-    db   $4e, $58, $53, $58, $58, $58, $5d, $58        ;; 03:55ae ????????
-    db   $62, $58, $6b, $58, $74, $58, $7d, $58        ;; 03:55b6 ????????
-    db   $62, $58, $6b, $58, $74, $58, $7d, $58        ;; 03:55be ????????
-    db   $86, $58, $93, $58, $a0, $58, $ad, $58        ;; 03:55c6 ????????
-    db   $86, $58, $93, $58, $a0, $58, $ad, $58        ;; 03:55ce ????????
-    db   $ba, $58, $cb, $58, $dc, $58, $ed, $58        ;; 03:55d6 ????????
-    db   $ba, $58, $cb, $58, $dc, $58, $ed, $58        ;; 03:55de ????????
-    db   $fe, $58, $1f, $59, $40, $59, $61, $59        ;; 03:55e6 ????????
-    db   $fe, $58, $1f, $59, $40, $59, $61, $59        ;; 03:55ee ????????
-    db   $82, $59, $a3, $59, $c4, $59, $e5, $59        ;; 03:55f6 ????????
-    db   $82, $59, $a3, $59, $c4, $59, $e5, $59        ;; 03:55fe ????????
-    db   $06, $5a, $27, $5a, $48, $5a, $69, $5a        ;; 03:5606 ????????
-    db   $06, $5a, $27, $5a, $48, $5a, $69, $5a        ;; 03:560e ????????
-    db   $02, $f0, $fc, $10, $00, $00, $fc, $12        ;; 03:5616 ????????
-    db   $00, $02, $f0, $fc, $00, $00, $00, $fc        ;; 03:561e ????????
-    db   $02, $00, $02, $f0, $fc, $10, $20, $00        ;; 03:5626 ????????
-    db   $fc, $12, $20, $02, $f0, $fc, $00, $20        ;; 03:562e ????????
-    db   $00, $fc, $02, $20, $04, $f0, $f8, $10        ;; 03:5636 ????...?
-    db   $00, $f0, $00, $14, $00, $00, $f8, $12        ;; 03:563e ?..??..?
-    db   $00, $00, $00, $16, $00, $04, $f0, $f8        ;; 03:5646 ?..??...
-    db   $00, $00, $f0, $00, $04, $00, $00, $f8        ;; 03:564e ??..??..
-    db   $02, $00, $00, $00, $06, $00, $04, $f0        ;; 03:5656 ??..????
-    db   $00, $10, $20, $f0, $f8, $14, $20, $00        ;; 03:565e ????????
-    db   $00, $12, $20, $00, $f8, $16, $20, $04        ;; 03:5666 ????????
-    db   $f0, $00, $00, $20, $f0, $f8, $04, $20        ;; 03:566e ????????
-    db   $00, $00, $02, $20, $00, $f8, $06, $20        ;; 03:5676 ????????
-    db   $06, $f0, $f4, $10, $00, $f0, $fc, $14        ;; 03:567e ...??..?
-    db   $00, $f0, $04, $18, $00, $00, $f4, $12        ;; 03:5686 ?..??..?
-    db   $00, $00, $fc, $16, $00, $00, $04, $1a        ;; 03:568e ?..??..?
-    db   $00, $06, $f0, $f4, $00, $00, $f0, $fc        ;; 03:5696 ?...??..
-    db   $04, $00, $f0, $04, $08, $00, $00, $f4        ;; 03:569e ??..??..
-    db   $02, $00, $00, $fc, $06, $00, $00, $04        ;; 03:56a6 ??..??..
-    db   $0a, $00, $06, $f0, $04, $10, $20, $f0        ;; 03:56ae ????????
-    db   $fc, $14, $20, $f0, $f4, $18, $20, $00        ;; 03:56b6 ????????
-    db   $04, $12, $20, $00, $fc, $16, $20, $00        ;; 03:56be ????????
-    db   $f4, $1a, $20, $06, $f0, $04, $00, $20        ;; 03:56c6 ????????
-    db   $f0, $fc, $04, $20, $f0, $f4, $08, $20        ;; 03:56ce ????????
-    db   $00, $04, $02, $20, $00, $fc, $06, $20        ;; 03:56d6 ????????
-    db   $00, $f4, $0a, $20, $06, $00, $f4, $10        ;; 03:56de ????????
-    db   $00, $00, $fc, $14, $00, $00, $04, $18        ;; 03:56e6 ????????
-    db   $00, $f0, $f4, $12, $00, $f0, $fc, $16        ;; 03:56ee ????????
-    db   $00, $f0, $04, $1a, $00, $06, $00, $f4        ;; 03:56f6 ????????
-    db   $00, $00, $00, $fc, $04, $00, $00, $04        ;; 03:56fe ????????
-    db   $08, $00, $f0, $f4, $02, $00, $f0, $fc        ;; 03:5706 ????????
-    db   $06, $00, $f0, $04, $0a, $00, $06, $00        ;; 03:570e ????????
-    db   $04, $10, $20, $00, $fc, $14, $20, $00        ;; 03:5716 ????????
-    db   $f4, $18, $20, $f0, $04, $12, $20, $f0        ;; 03:571e ????????
-    db   $fc, $16, $20, $f0, $f4, $1a, $20, $06        ;; 03:5726 ????????
-    db   $00, $04, $00, $20, $00, $fc, $04, $20        ;; 03:572e ????????
-    db   $00, $f4, $08, $20, $f0, $04, $02, $20        ;; 03:5736 ????????
-    db   $f0, $fc, $06, $20, $f0, $f4, $0a, $20        ;; 03:573e ????????
-    db   $08, $f0, $f0, $10, $00, $f0, $f8, $14        ;; 03:5746 ...??..?
-    db   $00, $f0, $00, $18, $00, $f0, $08, $1c        ;; 03:574e ?..??..?
-    db   $00, $00, $f0, $12, $00, $00, $f8, $16        ;; 03:5756 ?..??..?
-    db   $00, $00, $00, $1a, $00, $00, $08, $1e        ;; 03:575e ?..??..?
-    db   $00, $08, $f0, $f0, $00, $00, $f0, $f8        ;; 03:5766 ?...??..
-    db   $04, $00, $f0, $00, $08, $00, $f0, $08        ;; 03:576e ??..??..
-    db   $0c, $00, $00, $f0, $02, $00, $00, $f8        ;; 03:5776 ??..??..
-    db   $06, $00, $00, $00, $0a, $00, $00, $08        ;; 03:577e ??..??..
-    db   $0e, $00, $08, $f0, $08, $10, $20, $f0        ;; 03:5786 ????????
-    db   $00, $14, $20, $f0, $f8, $18, $20, $f0        ;; 03:578e ????????
-    db   $f0, $1c, $20, $00, $08, $12, $20, $00        ;; 03:5796 ????????
-    db   $00, $16, $20, $00, $f8, $1a, $20, $00        ;; 03:579e ????????
-    db   $f0, $1e, $20, $08, $f0, $08, $00, $20        ;; 03:57a6 ????????
-    db   $f0, $00, $04, $20, $f0, $f8, $08, $20        ;; 03:57ae ????????
-    db   $f0, $f0, $0c, $20, $00, $08, $02, $20        ;; 03:57b6 ????????
-    db   $00, $00, $06, $20, $00, $f8, $0a, $20        ;; 03:57be ????????
-    db   $00, $f0, $0e, $20, $08, $00, $f0, $10        ;; 03:57c6 ????????
-    db   $40, $00, $f8, $14, $40, $00, $00, $18        ;; 03:57ce ????????
-    db   $40, $00, $08, $1c, $40, $f0, $f0, $12        ;; 03:57d6 ????????
-    db   $40, $f0, $f8, $16, $40, $f0, $00, $1a        ;; 03:57de ????????
-    db   $40, $f0, $08, $1e, $40, $08, $00, $f0        ;; 03:57e6 ????????
-    db   $00, $40, $00, $f8, $04, $40, $00, $00        ;; 03:57ee ????????
-    db   $08, $40, $00, $08, $0c, $40, $f0, $f0        ;; 03:57f6 ????????
-    db   $02, $40, $f0, $f8, $06, $40, $f0, $00        ;; 03:57fe ????????
-    db   $0a, $40, $f0, $08, $0e, $40, $08, $00        ;; 03:5806 ????????
-    db   $08, $10, $60, $00, $00, $14, $60, $00        ;; 03:580e ????????
-    db   $f8, $18, $60, $00, $f0, $1c, $60, $f0        ;; 03:5816 ????????
-    db   $08, $12, $60, $f0, $00, $16, $60, $f0        ;; 03:581e ????????
-    db   $f8, $1a, $60, $f0, $f0, $1e, $60, $08        ;; 03:5826 ????????
-    db   $00, $08, $00, $60, $00, $00, $04, $60        ;; 03:582e ????????
-    db   $00, $f8, $08, $60, $00, $f0, $0c, $60        ;; 03:5836 ????????
-    db   $f0, $08, $02, $60, $f0, $00, $06, $60        ;; 03:583e ????????
-    db   $f0, $f8, $0a, $60, $f0, $f0, $0e, $60        ;; 03:5846 ????????
-    db   $01, $00, $fc, $10, $00, $01, $00, $fc        ;; 03:584e ????????
-    db   $00, $00, $01, $00, $fc, $10, $20, $01        ;; 03:5856 ????????
-    db   $00, $fc, $00, $20, $02, $00, $f8, $10        ;; 03:585e ????????
-    db   $00, $00, $00, $14, $00, $02, $00, $f8        ;; 03:5866 ????????
-    db   $00, $00, $00, $00, $04, $00, $02, $00        ;; 03:586e ????????
-    db   $00, $10, $20, $00, $f8, $14, $20, $02        ;; 03:5876 ????????
-    db   $00, $00, $00, $20, $00, $f8, $04, $20        ;; 03:587e ????????
-    db   $03, $00, $f4, $10, $00, $00, $fc, $14        ;; 03:5886 ????????
-    db   $00, $00, $04, $18, $00, $03, $00, $f4        ;; 03:588e ????????
-    db   $00, $00, $00, $fc, $04, $00, $00, $04        ;; 03:5896 ????????
-    db   $08, $00, $03, $00, $04, $10, $20, $00        ;; 03:589e ????????
-    db   $fc, $14, $20, $00, $f4, $18, $20, $03        ;; 03:58a6 ????????
-    db   $00, $04, $00, $20, $00, $fc, $04, $20        ;; 03:58ae ????????
-    db   $00, $f4, $08, $20, $04, $00, $f0, $10        ;; 03:58b6 ????????
-    db   $00, $00, $f8, $14, $00, $00, $00, $18        ;; 03:58be ????????
-    db   $00, $00, $08, $1c, $00, $04, $00, $f0        ;; 03:58c6 ????????
-    db   $00, $00, $00, $f8, $04, $00, $00, $00        ;; 03:58ce ????????
-    db   $08, $00, $00, $08, $0c, $00, $04, $00        ;; 03:58d6 ????????
-    db   $08, $10, $20, $00, $00, $14, $20, $00        ;; 03:58de ????????
-    db   $f8, $18, $20, $00, $f0, $1c, $20, $04        ;; 03:58e6 ????????
-    db   $00, $08, $00, $20, $00, $00, $04, $20        ;; 03:58ee ????????
-    db   $00, $f8, $08, $20, $00, $f0, $0c, $20        ;; 03:58f6 ????????
-    db   $08, $f0, $f8, $10, $00, $f0, $00, $14        ;; 03:58fe ????????
-    db   $00, $f0, $08, $18, $00, $f0, $10, $1c        ;; 03:5906 ????????
-    db   $00, $00, $f8, $12, $00, $00, $00, $16        ;; 03:590e ????????
-    db   $00, $00, $08, $1a, $00, $00, $10, $1e        ;; 03:5916 ????????
-    db   $00, $08, $f0, $f8, $00, $00, $f0, $00        ;; 03:591e ????????
-    db   $04, $00, $f0, $08, $08, $00, $f0, $10        ;; 03:5926 ????????
-    db   $0c, $00, $00, $f8, $02, $00, $00, $00        ;; 03:592e ????????
-    db   $06, $00, $00, $08, $0a, $00, $00, $10        ;; 03:5936 ????????
-    db   $0e, $00, $08, $f0, $00, $10, $20, $f0        ;; 03:593e ????????
-    db   $f8, $14, $20, $f0, $f0, $18, $20, $f0        ;; 03:5946 ????????
-    db   $e8, $1c, $20, $00, $00, $12, $20, $00        ;; 03:594e ????????
-    db   $f8, $16, $20, $00, $f0, $1a, $20, $00        ;; 03:5956 ????????
-    db   $e8, $1e, $20, $08, $f0, $00, $00, $20        ;; 03:595e ????????
-    db   $f0, $f8, $04, $20, $f0, $f0, $08, $20        ;; 03:5966 ????????
-    db   $f0, $e8, $0c, $20, $00, $00, $02, $20        ;; 03:596e ????????
-    db   $00, $f8, $06, $20, $00, $f0, $0a, $20        ;; 03:5976 ????????
-    db   $00, $e8, $0e, $20, $08, $f0, $f4, $10        ;; 03:597e ????????
-    db   $00, $f0, $fc, $14, $00, $f0, $04, $18        ;; 03:5986 ????????
-    db   $00, $f0, $0c, $1c, $00, $00, $f4, $12        ;; 03:598e ????????
-    db   $00, $00, $fc, $16, $00, $00, $04, $1a        ;; 03:5996 ????????
-    db   $00, $00, $0c, $1e, $00, $08, $f0, $f4        ;; 03:599e ????????
-    db   $00, $00, $f0, $fc, $04, $00, $f0, $04        ;; 03:59a6 ????????
-    db   $08, $00, $f0, $0c, $0c, $00, $00, $f4        ;; 03:59ae ????????
-    db   $02, $00, $00, $fc, $06, $00, $00, $04        ;; 03:59b6 ????????
-    db   $0a, $00, $00, $0c, $0e, $00, $08, $f0        ;; 03:59be ????????
-    db   $04, $10, $20, $f0, $fc, $14, $20, $f0        ;; 03:59c6 ????????
-    db   $f4, $18, $20, $f0, $ec, $1c, $20, $00        ;; 03:59ce ????????
-    db   $04, $12, $20, $00, $fc, $16, $20, $00        ;; 03:59d6 ????????
-    db   $f4, $1a, $20, $00, $ec, $1e, $20, $08        ;; 03:59de ????????
-    db   $f0, $04, $00, $20, $f0, $fc, $04, $20        ;; 03:59e6 ????????
-    db   $f0, $f4, $08, $20, $f0, $ec, $0c, $20        ;; 03:59ee ????????
-    db   $00, $04, $02, $20, $00, $fc, $06, $20        ;; 03:59f6 ????????
-    db   $00, $f4, $0a, $20, $00, $ec, $0e, $20        ;; 03:59fe ????????
-    db   $08, $f0, $ec, $10, $00, $f0, $f4, $14        ;; 03:5a06 ????????
-    db   $00, $f0, $fc, $18, $00, $f0, $04, $1c        ;; 03:5a0e ????????
-    db   $00, $00, $ec, $12, $00, $00, $f4, $16        ;; 03:5a16 ????????
-    db   $00, $00, $fc, $1a, $00, $00, $04, $1e        ;; 03:5a1e ????????
-    db   $00, $08, $f0, $ec, $00, $00, $f0, $f4        ;; 03:5a26 ????????
-    db   $04, $00, $f0, $fc, $08, $00, $f0, $04        ;; 03:5a2e ????????
-    db   $0c, $00, $00, $ec, $02, $00, $00, $f4        ;; 03:5a36 ????????
-    db   $06, $00, $00, $fc, $0a, $00, $00, $04        ;; 03:5a3e ????????
-    db   $0e, $00, $08, $f0, $0c, $10, $20, $f0        ;; 03:5a46 ????????
-    db   $04, $14, $20, $f0, $fc, $18, $20, $f0        ;; 03:5a4e ????????
-    db   $f4, $1c, $20, $00, $0c, $12, $20, $00        ;; 03:5a56 ????????
-    db   $04, $16, $20, $00, $fc, $1a, $20, $00        ;; 03:5a5e ????????
-    db   $f4, $1e, $20, $08, $f0, $0c, $00, $20        ;; 03:5a66 ????????
-    db   $f0, $04, $04, $20, $f0, $fc, $08, $20        ;; 03:5a6e ????????
-    db   $f0, $f4, $0c, $20, $00, $0c, $02, $20        ;; 03:5a76 ????????
-    db   $00, $04, $06, $20, $00, $fc, $0a, $20        ;; 03:5a7e ????????
-    db   $00, $f4, $0e, $20                            ;; 03:5a86 ????
+; 88 pointers - twenty-two groups of four (page 0, page 1, page 0 mirrored,
+; page 1 mirrored). Only the seven groups marked below can be selected
+    ; $00  unreachable - 8x32, centred
+    dw   .box_8x32_page0, .box_8x32_page1, .box_8x32_page0_flipX, .box_8x32_page1_flipX
+    ; $04  unreachable - a repeat of the group above
+    dw   .box_8x32_page0, .box_8x32_page1, .box_8x32_page0_flipX, .box_8x32_page1_flipX
+    ; $08  SPRITE_SHAPE_16x32 - 16x32, centred
+    dw   .box_16x32_page0, .box_16x32_page1, .box_16x32_page0_flipX, .box_16x32_page1_flipX
+    ; $0c  unreachable - a repeat of the group above
+    dw   .box_16x32_page0, .box_16x32_page1, .box_16x32_page0_flipX, .box_16x32_page1_flipX
+    ; $10  SPRITE_SHAPE_24x32 - 24x32, centred
+    dw   .box_24x32_page0, .box_24x32_page1, .box_24x32_page0_flipX, .box_24x32_page1_flipX
+    ; $14  unreachable - 24x32, centred - same picture as $10, bottom row emitted first
+    dw   .box_24x32_rowswap_page0, .box_24x32_rowswap_page1, .box_24x32_rowswap_page0_flipX, .box_24x32_rowswap_page1_flipX
+    ; $18  SPRITE_SHAPE_32x32 - 32x32, centred
+    dw   .box_32x32_page0, .box_32x32_page1, .box_32x32_page0_flipX, .box_32x32_page1_flipX
+    ; $1c  unreachable - 32x32, centred, upside down
+    dw   .box_32x32_flipY_page0, .box_32x32_flipY_page1, .box_32x32_flipY_page0_flipX, .box_32x32_flipY_page1_flipX
+    ; $20  unreachable - 8x16, centred
+    dw   .box_8x16_page0, .box_8x16_page1, .box_8x16_page0_flipX, .box_8x16_page1_flipX
+    ; $24  unreachable - a repeat of the group above
+    dw   .box_8x16_page0, .box_8x16_page1, .box_8x16_page0_flipX, .box_8x16_page1_flipX
+    ; $28  unreachable - 16x16, centred
+    dw   .box_16x16_page0, .box_16x16_page1, .box_16x16_page0_flipX, .box_16x16_page1_flipX
+    ; $2c  unreachable - a repeat of the group above
+    dw   .box_16x16_page0, .box_16x16_page1, .box_16x16_page0_flipX, .box_16x16_page1_flipX
+    ; $30  SPRITE_SHAPE_24x16 - 24x16, centred
+    dw   .box_24x16_page0, .box_24x16_page1, .box_24x16_page0_flipX, .box_24x16_page1_flipX
+    ; $34  unreachable - a repeat of the group above
+    dw   .box_24x16_page0, .box_24x16_page1, .box_24x16_page0_flipX, .box_24x16_page1_flipX
+    ; $38  unreachable - 32x16, centred
+    dw   .box_32x16_page0, .box_32x16_page1, .box_32x16_page0_flipX, .box_32x16_page1_flipX
+    ; $3c  unreachable - a repeat of the group above
+    dw   .box_32x16_page0, .box_32x16_page1, .box_32x16_page0_flipX, .box_32x16_page1_flipX
+    ; $40  SPRITE_SHAPE_32x32_AHEAD8 - 32x32, shifted 8px in the facing direction
+    dw   .box_32x32_ahead8_page0, .box_32x32_ahead8_page1, .box_32x32_ahead8_page0_flipX, .box_32x32_ahead8_page1_flipX
+    ; $44  unreachable - a repeat of the group above
+    dw   .box_32x32_ahead8_page0, .box_32x32_ahead8_page1, .box_32x32_ahead8_page0_flipX, .box_32x32_ahead8_page1_flipX
+    ; $48  SPRITE_SHAPE_32x32_AHEAD4 - 32x32, shifted 4px in the facing direction
+    dw   .box_32x32_ahead4_page0, .box_32x32_ahead4_page1, .box_32x32_ahead4_page0_flipX, .box_32x32_ahead4_page1_flipX
+    ; $4c  unreachable - a repeat of the group above
+    dw   .box_32x32_ahead4_page0, .box_32x32_ahead4_page1, .box_32x32_ahead4_page0_flipX, .box_32x32_ahead4_page1_flipX
+    ; $50  SPRITE_SHAPE_32x32_BEHIND4 - 32x32, shifted 4px against the facing direction
+    dw   .box_32x32_behind4_page0, .box_32x32_behind4_page1, .box_32x32_behind4_page0_flipX, .box_32x32_behind4_page1_flipX
+    ; $54  unreachable - a repeat of the group above
+    dw   .box_32x32_behind4_page0, .box_32x32_behind4_page1, .box_32x32_behind4_page0_flipX, .box_32x32_behind4_page1_flipX
+
+; ------------------------------------------------------------------
+; THE LAYOUTS THEMSELVES
+;
+; Part count, then that many obj_part records. Read down one and the tile
+; numbering is plain: +4 per column across, +2 per row down, because in 8x16 mode
+; one part eats two tile slots and the tile page is stored column by column.
+; The _page1 copies are the same rectangle with every tile number $10 lower, and
+; the _flipX copies add OAMF_XFLIP and reverse the X offsets - reverse, not negate,
+; so a shape that leans one way leans the other way when the entity turns round
+; ------------------------------------------------------------------
+
+.box_8x32_page0:
+    db   2
+    obj_part  -16,   -4, $10, $00
+    obj_part    0,   -4, $12, $00
+.box_8x32_page1:
+    db   2
+    obj_part  -16,   -4, $00, $00
+    obj_part    0,   -4, $02, $00
+.box_8x32_page0_flipX:
+    db   2
+    obj_part  -16,   -4, $10, OAMF_XFLIP
+    obj_part    0,   -4, $12, OAMF_XFLIP
+.box_8x32_page1_flipX:
+    db   2
+    obj_part  -16,   -4, $00, OAMF_XFLIP
+    obj_part    0,   -4, $02, OAMF_XFLIP
+.box_16x32_page0:
+    db   4
+    obj_part  -16,   -8, $10, $00
+    obj_part  -16,    0, $14, $00
+    obj_part    0,   -8, $12, $00
+    obj_part    0,    0, $16, $00
+.box_16x32_page1:
+    db   4
+    obj_part  -16,   -8, $00, $00
+    obj_part  -16,    0, $04, $00
+    obj_part    0,   -8, $02, $00
+    obj_part    0,    0, $06, $00
+.box_16x32_page0_flipX:
+    db   4
+    obj_part  -16,    0, $10, OAMF_XFLIP
+    obj_part  -16,   -8, $14, OAMF_XFLIP
+    obj_part    0,    0, $12, OAMF_XFLIP
+    obj_part    0,   -8, $16, OAMF_XFLIP
+.box_16x32_page1_flipX:
+    db   4
+    obj_part  -16,    0, $00, OAMF_XFLIP
+    obj_part  -16,   -8, $04, OAMF_XFLIP
+    obj_part    0,    0, $02, OAMF_XFLIP
+    obj_part    0,   -8, $06, OAMF_XFLIP
+.box_24x32_page0:
+    db   6
+    obj_part  -16,  -12, $10, $00
+    obj_part  -16,   -4, $14, $00
+    obj_part  -16,    4, $18, $00
+    obj_part    0,  -12, $12, $00
+    obj_part    0,   -4, $16, $00
+    obj_part    0,    4, $1a, $00
+.box_24x32_page1:
+    db   6
+    obj_part  -16,  -12, $00, $00
+    obj_part  -16,   -4, $04, $00
+    obj_part  -16,    4, $08, $00
+    obj_part    0,  -12, $02, $00
+    obj_part    0,   -4, $06, $00
+    obj_part    0,    4, $0a, $00
+.box_24x32_page0_flipX:
+    db   6
+    obj_part  -16,    4, $10, OAMF_XFLIP
+    obj_part  -16,   -4, $14, OAMF_XFLIP
+    obj_part  -16,  -12, $18, OAMF_XFLIP
+    obj_part    0,    4, $12, OAMF_XFLIP
+    obj_part    0,   -4, $16, OAMF_XFLIP
+    obj_part    0,  -12, $1a, OAMF_XFLIP
+.box_24x32_page1_flipX:
+    db   6
+    obj_part  -16,    4, $00, OAMF_XFLIP
+    obj_part  -16,   -4, $04, OAMF_XFLIP
+    obj_part  -16,  -12, $08, OAMF_XFLIP
+    obj_part    0,    4, $02, OAMF_XFLIP
+    obj_part    0,   -4, $06, OAMF_XFLIP
+    obj_part    0,  -12, $0a, OAMF_XFLIP
+.box_24x32_rowswap_page0:
+    db   6
+    obj_part    0,  -12, $10, $00
+    obj_part    0,   -4, $14, $00
+    obj_part    0,    4, $18, $00
+    obj_part  -16,  -12, $12, $00
+    obj_part  -16,   -4, $16, $00
+    obj_part  -16,    4, $1a, $00
+.box_24x32_rowswap_page1:
+    db   6
+    obj_part    0,  -12, $00, $00
+    obj_part    0,   -4, $04, $00
+    obj_part    0,    4, $08, $00
+    obj_part  -16,  -12, $02, $00
+    obj_part  -16,   -4, $06, $00
+    obj_part  -16,    4, $0a, $00
+.box_24x32_rowswap_page0_flipX:
+    db   6
+    obj_part    0,    4, $10, OAMF_XFLIP
+    obj_part    0,   -4, $14, OAMF_XFLIP
+    obj_part    0,  -12, $18, OAMF_XFLIP
+    obj_part  -16,    4, $12, OAMF_XFLIP
+    obj_part  -16,   -4, $16, OAMF_XFLIP
+    obj_part  -16,  -12, $1a, OAMF_XFLIP
+.box_24x32_rowswap_page1_flipX:
+    db   6
+    obj_part    0,    4, $00, OAMF_XFLIP
+    obj_part    0,   -4, $04, OAMF_XFLIP
+    obj_part    0,  -12, $08, OAMF_XFLIP
+    obj_part  -16,    4, $02, OAMF_XFLIP
+    obj_part  -16,   -4, $06, OAMF_XFLIP
+    obj_part  -16,  -12, $0a, OAMF_XFLIP
+.box_32x32_page0:
+    db   8
+    obj_part  -16,  -16, $10, $00
+    obj_part  -16,   -8, $14, $00
+    obj_part  -16,    0, $18, $00
+    obj_part  -16,    8, $1c, $00
+    obj_part    0,  -16, $12, $00
+    obj_part    0,   -8, $16, $00
+    obj_part    0,    0, $1a, $00
+    obj_part    0,    8, $1e, $00
+.box_32x32_page1:
+    db   8
+    obj_part  -16,  -16, $00, $00
+    obj_part  -16,   -8, $04, $00
+    obj_part  -16,    0, $08, $00
+    obj_part  -16,    8, $0c, $00
+    obj_part    0,  -16, $02, $00
+    obj_part    0,   -8, $06, $00
+    obj_part    0,    0, $0a, $00
+    obj_part    0,    8, $0e, $00
+.box_32x32_page0_flipX:
+    db   8
+    obj_part  -16,    8, $10, OAMF_XFLIP
+    obj_part  -16,    0, $14, OAMF_XFLIP
+    obj_part  -16,   -8, $18, OAMF_XFLIP
+    obj_part  -16,  -16, $1c, OAMF_XFLIP
+    obj_part    0,    8, $12, OAMF_XFLIP
+    obj_part    0,    0, $16, OAMF_XFLIP
+    obj_part    0,   -8, $1a, OAMF_XFLIP
+    obj_part    0,  -16, $1e, OAMF_XFLIP
+.box_32x32_page1_flipX:
+    db   8
+    obj_part  -16,    8, $00, OAMF_XFLIP
+    obj_part  -16,    0, $04, OAMF_XFLIP
+    obj_part  -16,   -8, $08, OAMF_XFLIP
+    obj_part  -16,  -16, $0c, OAMF_XFLIP
+    obj_part    0,    8, $02, OAMF_XFLIP
+    obj_part    0,    0, $06, OAMF_XFLIP
+    obj_part    0,   -8, $0a, OAMF_XFLIP
+    obj_part    0,  -16, $0e, OAMF_XFLIP
+.box_32x32_flipY_page0:
+    db   8
+    obj_part    0,  -16, $10, OAMF_YFLIP
+    obj_part    0,   -8, $14, OAMF_YFLIP
+    obj_part    0,    0, $18, OAMF_YFLIP
+    obj_part    0,    8, $1c, OAMF_YFLIP
+    obj_part  -16,  -16, $12, OAMF_YFLIP
+    obj_part  -16,   -8, $16, OAMF_YFLIP
+    obj_part  -16,    0, $1a, OAMF_YFLIP
+    obj_part  -16,    8, $1e, OAMF_YFLIP
+.box_32x32_flipY_page1:
+    db   8
+    obj_part    0,  -16, $00, OAMF_YFLIP
+    obj_part    0,   -8, $04, OAMF_YFLIP
+    obj_part    0,    0, $08, OAMF_YFLIP
+    obj_part    0,    8, $0c, OAMF_YFLIP
+    obj_part  -16,  -16, $02, OAMF_YFLIP
+    obj_part  -16,   -8, $06, OAMF_YFLIP
+    obj_part  -16,    0, $0a, OAMF_YFLIP
+    obj_part  -16,    8, $0e, OAMF_YFLIP
+.box_32x32_flipY_page0_flipX:
+    db   8
+    obj_part    0,    8, $10, OAMF_XFLIP | OAMF_YFLIP
+    obj_part    0,    0, $14, OAMF_XFLIP | OAMF_YFLIP
+    obj_part    0,   -8, $18, OAMF_XFLIP | OAMF_YFLIP
+    obj_part    0,  -16, $1c, OAMF_XFLIP | OAMF_YFLIP
+    obj_part  -16,    8, $12, OAMF_XFLIP | OAMF_YFLIP
+    obj_part  -16,    0, $16, OAMF_XFLIP | OAMF_YFLIP
+    obj_part  -16,   -8, $1a, OAMF_XFLIP | OAMF_YFLIP
+    obj_part  -16,  -16, $1e, OAMF_XFLIP | OAMF_YFLIP
+.box_32x32_flipY_page1_flipX:
+    db   8
+    obj_part    0,    8, $00, OAMF_XFLIP | OAMF_YFLIP
+    obj_part    0,    0, $04, OAMF_XFLIP | OAMF_YFLIP
+    obj_part    0,   -8, $08, OAMF_XFLIP | OAMF_YFLIP
+    obj_part    0,  -16, $0c, OAMF_XFLIP | OAMF_YFLIP
+    obj_part  -16,    8, $02, OAMF_XFLIP | OAMF_YFLIP
+    obj_part  -16,    0, $06, OAMF_XFLIP | OAMF_YFLIP
+    obj_part  -16,   -8, $0a, OAMF_XFLIP | OAMF_YFLIP
+    obj_part  -16,  -16, $0e, OAMF_XFLIP | OAMF_YFLIP
+.box_8x16_page0:
+    db   1
+    obj_part    0,   -4, $10, $00
+.box_8x16_page1:
+    db   1
+    obj_part    0,   -4, $00, $00
+.box_8x16_page0_flipX:
+    db   1
+    obj_part    0,   -4, $10, OAMF_XFLIP
+.box_8x16_page1_flipX:
+    db   1
+    obj_part    0,   -4, $00, OAMF_XFLIP
+.box_16x16_page0:
+    db   2
+    obj_part    0,   -8, $10, $00
+    obj_part    0,    0, $14, $00
+.box_16x16_page1:
+    db   2
+    obj_part    0,   -8, $00, $00
+    obj_part    0,    0, $04, $00
+.box_16x16_page0_flipX:
+    db   2
+    obj_part    0,    0, $10, OAMF_XFLIP
+    obj_part    0,   -8, $14, OAMF_XFLIP
+.box_16x16_page1_flipX:
+    db   2
+    obj_part    0,    0, $00, OAMF_XFLIP
+    obj_part    0,   -8, $04, OAMF_XFLIP
+.box_24x16_page0:
+    db   3
+    obj_part    0,  -12, $10, $00
+    obj_part    0,   -4, $14, $00
+    obj_part    0,    4, $18, $00
+.box_24x16_page1:
+    db   3
+    obj_part    0,  -12, $00, $00
+    obj_part    0,   -4, $04, $00
+    obj_part    0,    4, $08, $00
+.box_24x16_page0_flipX:
+    db   3
+    obj_part    0,    4, $10, OAMF_XFLIP
+    obj_part    0,   -4, $14, OAMF_XFLIP
+    obj_part    0,  -12, $18, OAMF_XFLIP
+.box_24x16_page1_flipX:
+    db   3
+    obj_part    0,    4, $00, OAMF_XFLIP
+    obj_part    0,   -4, $04, OAMF_XFLIP
+    obj_part    0,  -12, $08, OAMF_XFLIP
+.box_32x16_page0:
+    db   4
+    obj_part    0,  -16, $10, $00
+    obj_part    0,   -8, $14, $00
+    obj_part    0,    0, $18, $00
+    obj_part    0,    8, $1c, $00
+.box_32x16_page1:
+    db   4
+    obj_part    0,  -16, $00, $00
+    obj_part    0,   -8, $04, $00
+    obj_part    0,    0, $08, $00
+    obj_part    0,    8, $0c, $00
+.box_32x16_page0_flipX:
+    db   4
+    obj_part    0,    8, $10, OAMF_XFLIP
+    obj_part    0,    0, $14, OAMF_XFLIP
+    obj_part    0,   -8, $18, OAMF_XFLIP
+    obj_part    0,  -16, $1c, OAMF_XFLIP
+.box_32x16_page1_flipX:
+    db   4
+    obj_part    0,    8, $00, OAMF_XFLIP
+    obj_part    0,    0, $04, OAMF_XFLIP
+    obj_part    0,   -8, $08, OAMF_XFLIP
+    obj_part    0,  -16, $0c, OAMF_XFLIP
+.box_32x32_ahead8_page0:
+    db   8
+    obj_part  -16,   -8, $10, $00
+    obj_part  -16,    0, $14, $00
+    obj_part  -16,    8, $18, $00
+    obj_part  -16,   16, $1c, $00
+    obj_part    0,   -8, $12, $00
+    obj_part    0,    0, $16, $00
+    obj_part    0,    8, $1a, $00
+    obj_part    0,   16, $1e, $00
+.box_32x32_ahead8_page1:
+    db   8
+    obj_part  -16,   -8, $00, $00
+    obj_part  -16,    0, $04, $00
+    obj_part  -16,    8, $08, $00
+    obj_part  -16,   16, $0c, $00
+    obj_part    0,   -8, $02, $00
+    obj_part    0,    0, $06, $00
+    obj_part    0,    8, $0a, $00
+    obj_part    0,   16, $0e, $00
+.box_32x32_ahead8_page0_flipX:
+    db   8
+    obj_part  -16,    0, $10, OAMF_XFLIP
+    obj_part  -16,   -8, $14, OAMF_XFLIP
+    obj_part  -16,  -16, $18, OAMF_XFLIP
+    obj_part  -16,  -24, $1c, OAMF_XFLIP
+    obj_part    0,    0, $12, OAMF_XFLIP
+    obj_part    0,   -8, $16, OAMF_XFLIP
+    obj_part    0,  -16, $1a, OAMF_XFLIP
+    obj_part    0,  -24, $1e, OAMF_XFLIP
+.box_32x32_ahead8_page1_flipX:
+    db   8
+    obj_part  -16,    0, $00, OAMF_XFLIP
+    obj_part  -16,   -8, $04, OAMF_XFLIP
+    obj_part  -16,  -16, $08, OAMF_XFLIP
+    obj_part  -16,  -24, $0c, OAMF_XFLIP
+    obj_part    0,    0, $02, OAMF_XFLIP
+    obj_part    0,   -8, $06, OAMF_XFLIP
+    obj_part    0,  -16, $0a, OAMF_XFLIP
+    obj_part    0,  -24, $0e, OAMF_XFLIP
+.box_32x32_ahead4_page0:
+    db   8
+    obj_part  -16,  -12, $10, $00
+    obj_part  -16,   -4, $14, $00
+    obj_part  -16,    4, $18, $00
+    obj_part  -16,   12, $1c, $00
+    obj_part    0,  -12, $12, $00
+    obj_part    0,   -4, $16, $00
+    obj_part    0,    4, $1a, $00
+    obj_part    0,   12, $1e, $00
+.box_32x32_ahead4_page1:
+    db   8
+    obj_part  -16,  -12, $00, $00
+    obj_part  -16,   -4, $04, $00
+    obj_part  -16,    4, $08, $00
+    obj_part  -16,   12, $0c, $00
+    obj_part    0,  -12, $02, $00
+    obj_part    0,   -4, $06, $00
+    obj_part    0,    4, $0a, $00
+    obj_part    0,   12, $0e, $00
+.box_32x32_ahead4_page0_flipX:
+    db   8
+    obj_part  -16,    4, $10, OAMF_XFLIP
+    obj_part  -16,   -4, $14, OAMF_XFLIP
+    obj_part  -16,  -12, $18, OAMF_XFLIP
+    obj_part  -16,  -20, $1c, OAMF_XFLIP
+    obj_part    0,    4, $12, OAMF_XFLIP
+    obj_part    0,   -4, $16, OAMF_XFLIP
+    obj_part    0,  -12, $1a, OAMF_XFLIP
+    obj_part    0,  -20, $1e, OAMF_XFLIP
+.box_32x32_ahead4_page1_flipX:
+    db   8
+    obj_part  -16,    4, $00, OAMF_XFLIP
+    obj_part  -16,   -4, $04, OAMF_XFLIP
+    obj_part  -16,  -12, $08, OAMF_XFLIP
+    obj_part  -16,  -20, $0c, OAMF_XFLIP
+    obj_part    0,    4, $02, OAMF_XFLIP
+    obj_part    0,   -4, $06, OAMF_XFLIP
+    obj_part    0,  -12, $0a, OAMF_XFLIP
+    obj_part    0,  -20, $0e, OAMF_XFLIP
+.box_32x32_behind4_page0:
+    db   8
+    obj_part  -16,  -20, $10, $00
+    obj_part  -16,  -12, $14, $00
+    obj_part  -16,   -4, $18, $00
+    obj_part  -16,    4, $1c, $00
+    obj_part    0,  -20, $12, $00
+    obj_part    0,  -12, $16, $00
+    obj_part    0,   -4, $1a, $00
+    obj_part    0,    4, $1e, $00
+.box_32x32_behind4_page1:
+    db   8
+    obj_part  -16,  -20, $00, $00
+    obj_part  -16,  -12, $04, $00
+    obj_part  -16,   -4, $08, $00
+    obj_part  -16,    4, $0c, $00
+    obj_part    0,  -20, $02, $00
+    obj_part    0,  -12, $06, $00
+    obj_part    0,   -4, $0a, $00
+    obj_part    0,    4, $0e, $00
+.box_32x32_behind4_page0_flipX:
+    db   8
+    obj_part  -16,   12, $10, OAMF_XFLIP
+    obj_part  -16,    4, $14, OAMF_XFLIP
+    obj_part  -16,   -4, $18, OAMF_XFLIP
+    obj_part  -16,  -12, $1c, OAMF_XFLIP
+    obj_part    0,   12, $12, OAMF_XFLIP
+    obj_part    0,    4, $16, OAMF_XFLIP
+    obj_part    0,   -4, $1a, OAMF_XFLIP
+    obj_part    0,  -12, $1e, OAMF_XFLIP
+.box_32x32_behind4_page1_flipX:
+    db   8
+    obj_part  -16,   12, $00, OAMF_XFLIP
+    obj_part  -16,    4, $04, OAMF_XFLIP
+    obj_part  -16,   -4, $08, OAMF_XFLIP
+    obj_part  -16,  -12, $0c, OAMF_XFLIP
+    obj_part    0,   12, $02, OAMF_XFLIP
+    obj_part    0,    4, $06, OAMF_XFLIP
+    obj_part    0,   -4, $0a, OAMF_XFLIP
+    obj_part    0,  -12, $0e, OAMF_XFLIP
 
 data_03_5a8a_SpriteFrameTable_Alt:
-; Alternate sprite frame table with same 4-byte record format as above, used for 
-; entities whose meta entry has bit 7 set. Appears to cover smaller or simpler sprite layouts
-    db   $a0, $5a, $a5, $5a, $ae, $5a, $bb, $5a        ;; 03:5a8a ????????
-    db   $cc, $5a, $d5, $5a, $e6, $5a, $ff, $5a        ;; 03:5a92 ????????
-    db   $20, $5b, $29, $5b, $3a, $5b, $01, $00        ;; 03:5a9a ????????
-    db   $fc, $00, $00, $02, $00, $f8, $00, $00        ;; 03:5aa2 ????????
-    db   $00, $00, $02, $00, $03, $00, $f4, $00        ;; 03:5aaa ????????
-    db   $00, $00, $fc, $02, $00, $00, $04, $04        ;; 03:5ab2 ????????
-    db   $00, $04, $00, $f0, $00, $00, $00, $f8        ;; 03:5aba ????????
-    db   $02, $00, $00, $00, $04, $00, $00, $08        ;; 03:5ac2 ????????
-    db   $06, $00, $02, $f0, $fc, $00, $00, $00        ;; 03:5aca ????????
-    db   $fc, $02, $00, $04, $f0, $f8, $00, $00        ;; 03:5ad2 ????????
-    db   $f0, $00, $04, $00, $00, $f8, $02, $00        ;; 03:5ada ????????
-    db   $00, $00, $06, $00, $06, $f0, $f4, $00        ;; 03:5ae2 ????????
-    db   $00, $f0, $fc, $04, $00, $f0, $04, $08        ;; 03:5aea ????????
-    db   $00, $00, $f4, $02, $00, $00, $fc, $06        ;; 03:5af2 ????????
-    db   $00, $00, $04, $0a, $00, $08, $f0, $f0        ;; 03:5afa ????????
-    db   $00, $00, $f0, $f8, $04, $00, $f0, $00        ;; 03:5b02 ????????
-    db   $08, $00, $f0, $08, $0c, $00, $00, $f0        ;; 03:5b0a ????????
-    db   $02, $00, $00, $f8, $06, $00, $00, $00        ;; 03:5b12 ????????
-    db   $0a, $00, $00, $08, $0e, $00, $02, $00        ;; 03:5b1a ????????
-    db   $f8, $00, $00, $00, $00, $00, $20, $04        ;; 03:5b22 ????????
-    db   $00, $f0, $00, $00, $00, $f8, $02, $00        ;; 03:5b2a ????????
-    db   $00, $00, $02, $20, $00, $08, $00, $20        ;; 03:5b32 ????????
-    db   $08, $00, $e0, $00, $00, $00, $e8, $02        ;; 03:5b3a ????????
-    db   $00, $00, $f0, $02, $00, $00, $f8, $02        ;; 03:5b42 ????????
-    db   $00, $00, $00, $02, $20, $00, $08, $02        ;; 03:5b4a ????????
-    db   $20, $00, $10, $02, $20, $00, $18, $00        ;; 03:5b52 ????????
-    db   $20                                           ;; 03:5b5a ?
+; The other frame table, chosen when bit 7 of a shape index is set. Because that
+; branch replaces the index with (value - $80) instead of adding the page and
+; facing bits, the four-entry grouping of the main table does not apply here and
+; every shape is a single entry. Both entities that reach it - ENTITY_UNK_02 and
+; ENTITY_SCREAM_TV_ZOMBIE_HEAD - carry $80, so only entry $00 is ever used;
+; entries $01-$0A are a full unused set of rows and boxes
+    dw   .row_8x16                                        ; $00
+    dw   .row_16x16                                       ; $01 - unreachable
+    dw   .row_24x16                                       ; $02 - unreachable
+    dw   .row_32x16                                       ; $03 - unreachable
+    dw   .box_8x32                                        ; $04 - unreachable
+    dw   .box_16x32                                       ; $05 - unreachable
+    dw   .box_24x32                                       ; $06 - unreachable
+    dw   .box_32x32                                       ; $07 - unreachable
+    dw   .pair_16x16                                      ; $08 - unreachable
+    dw   .pair_32x16                                      ; $09 - unreachable
+    dw   .pair_64x16                                      ; $0a - unreachable
+
+; The .pair_* three are the interesting ones and the reason this table exists at
+; all: they build a symmetric object out of one half of it, mirroring the same two
+; tiles about the entity's position. .pair_64x16 draws eight parts from two tiles
+;
+.row_8x16:
+    db   1
+    obj_part    0,   -4, $00, $00
+.row_16x16:
+    db   2
+    obj_part    0,   -8, $00, $00
+    obj_part    0,    0, $02, $00
+.row_24x16:
+    db   3
+    obj_part    0,  -12, $00, $00
+    obj_part    0,   -4, $02, $00
+    obj_part    0,    4, $04, $00
+.row_32x16:
+    db   4
+    obj_part    0,  -16, $00, $00
+    obj_part    0,   -8, $02, $00
+    obj_part    0,    0, $04, $00
+    obj_part    0,    8, $06, $00
+.box_8x32:
+    db   2
+    obj_part  -16,   -4, $00, $00
+    obj_part    0,   -4, $02, $00
+.box_16x32:
+    db   4
+    obj_part  -16,   -8, $00, $00
+    obj_part  -16,    0, $04, $00
+    obj_part    0,   -8, $02, $00
+    obj_part    0,    0, $06, $00
+.box_24x32:
+    db   6
+    obj_part  -16,  -12, $00, $00
+    obj_part  -16,   -4, $04, $00
+    obj_part  -16,    4, $08, $00
+    obj_part    0,  -12, $02, $00
+    obj_part    0,   -4, $06, $00
+    obj_part    0,    4, $0a, $00
+.box_32x32:
+    db   8
+    obj_part  -16,  -16, $00, $00
+    obj_part  -16,   -8, $04, $00
+    obj_part  -16,    0, $08, $00
+    obj_part  -16,    8, $0c, $00
+    obj_part    0,  -16, $02, $00
+    obj_part    0,   -8, $06, $00
+    obj_part    0,    0, $0a, $00
+    obj_part    0,    8, $0e, $00
+.pair_16x16:
+    db   2
+    obj_part    0,   -8, $00, $00
+    obj_part    0,    0, $00, OAMF_XFLIP
+.pair_32x16:
+    db   4
+    obj_part    0,  -16, $00, $00
+    obj_part    0,   -8, $02, $00
+    obj_part    0,    0, $02, OAMF_XFLIP
+    obj_part    0,    8, $00, OAMF_XFLIP
+.pair_64x16:
+    db   8
+    obj_part    0,  -32, $00, $00
+    obj_part    0,  -24, $02, $00
+    obj_part    0,  -16, $02, $00
+    obj_part    0,   -8, $02, $00
+    obj_part    0,    0, $02, OAMF_XFLIP
+    obj_part    0,    8, $02, OAMF_XFLIP
+    obj_part    0,   16, $02, OAMF_XFLIP
+    obj_part    0,   24, $00, OAMF_XFLIP

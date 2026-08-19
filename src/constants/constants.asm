@@ -954,6 +954,35 @@ DEF ENTITY_FIELD_SPRITE_FLAGS               EQU $0A
     DEF SPRITE_FLAG_ANIM_ENDED            EQU $04
     DEF SPRITE_FLAG_LOOP_LAST_FRAME       EQU $02
     DEF SPRITE_FLAG_EMBEDDED_SPRITE_DATA  EQU $01
+
+; ------------------------------------------------------------------
+; Sprite shape index - byte +0 of a row of data_03_5446_EntitySpriteMetaTable,
+; for the SPRITE_FLAG_STREAMS_OWN_GFX entities that read it as a shape.
+;
+; The value indexes the pointer table at the head of
+; data_03_5566_SpriteFrameTable_Main, and the builder adds
+; (wD587_EntityGfxVramPage | facing left ? 2 : 0) to it - so each shape occupies
+; four consecutive entries and every index here is a multiple of 4.
+;
+; The name is the size of the rectangle in pixels. Sprites are 8x16, so a 32x32
+; entity is four parts across by two down. AHEAD/BEHIND mark the three shapes
+; whose box is not centred on the entity's position, offset in or against the
+; direction it faces.
+;
+; Indices $00, $04, $0C, $14, $1C, $20, $24, $28, $2C, $34, $38, $3C, $44, $4C
+; and $54 exist in the table but no entity selects them
+; ------------------------------------------------------------------
+DEF SPRITE_SHAPE_16x32                      EQU $08
+DEF SPRITE_SHAPE_24x32                      EQU $10
+DEF SPRITE_SHAPE_32x32                      EQU $18
+DEF SPRITE_SHAPE_24x16                      EQU $30
+DEF SPRITE_SHAPE_32x32_AHEAD8               EQU $40
+DEF SPRITE_SHAPE_32x32_AHEAD4               EQU $48
+DEF SPRITE_SHAPE_32x32_BEHIND4              EQU $50
+; Bit 7 sends the lookup to data_03_5a8a_SpriteFrameTable_Alt instead, with the
+; page and facing bits discarded - so the index there is just (value - $80)
+DEF SPRITE_SHAPE_ALT                        EQU $80
+
 DEF ENTITY_FIELD_ANIM_SPEED                 EQU $0B ; reload for $06 - the animation's speed
 DEF ENTITY_FIELD_ANIM_FRAME_COUNT           EQU $0C ; total number of frames in the sequence
 DEF ENTITY_FIELD_FACING_FLAGS               EQU $0D ; OR'd into the OAM attribute byte; bit 5 = FACING_LEFT (X flip)

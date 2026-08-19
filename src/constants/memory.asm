@@ -316,7 +316,11 @@ wD586_PlayerGfxVramPage:
 ; the sprite builder in bank 3 uses it to pick the matching tile ids
     ds 1                                               ;; d586
 wD587_EntityGfxVramPage:
-; same idea for the shared entity tile pages $8200 / $8300
+; same idea for the shared entity tile pages $8200 / $8300. It is also read
+; straight out of bank03_sprite_frame_data.asm's shape lookup: the index into
+; data_03_5566_SpriteFrameTable_Main is the SPRITE_SHAPE_* value OR'd with this
+; and with the facing bit, so the two pages simply select between two copies of
+; the same layout whose tile numbers are $10 apart
     ds 1                                               ;; d587
 wD588_EntityGfxSrcAddrHi:
 ; high byte of the ROM address holding the entity tile page to stream in
@@ -1256,7 +1260,11 @@ wD739_Entity_OamWriteOffset:
 wD73A_Entity_TileIdBase:
 ; added to every tile number the current entity emits, so one shared sprite
 ; layout can be pointed at whichever VRAM page that entity's tiles were
-; streamed into. Set from data_03_5447_EntitySpriteMetaTable before drawing
+; streamed into. Where it comes from depends on the drawing path: the shape
+; paths take it from byte +1 of the entity's row of
+; data_03_5446_EntitySpriteMetaTable (always $20, the shared entity tile pages),
+; while the layout-by-action path takes it from the live
+; ENTITY_FIELD_SPRITE_ID instead
     ds 1                                               ;; d73a
 wD73B_VBlankFrameCounter:
 ; Free-running 8-bit frame clock. call_00_0a54_VBlank_Handler does "inc [HL]" on it

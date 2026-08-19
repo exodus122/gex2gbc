@@ -277,9 +277,18 @@ call_0b_5df8_MediaDimension_LoadActiveTVPalette:
     jp   call_00_07b0_MemCopy
 .media_dimension_tv_palettes:
     dw   .scream_tv_television_palette
-    db   $00, $00, $00, $00, $00, $00, $00, $00
-    db   $00, $00, $00, $00, $00, $00, $00, $00
-    db   $00, $00, $00, $00, $00, $00, $00, $00
+    db   $00, $00
+    db   $00, $00
+    db   $00, $00
+    db   $00, $00
+    db   $00, $00
+    db   $00, $00
+    db   $00, $00
+    db   $00, $00
+    db   $00, $00
+    db   $00, $00
+    db   $00, $00
+    db   $00, $00
     dw   .toon_tv_television_palette
     dw   .prehistory_channel_television_palette
     dw   .circuit_central_television_palette

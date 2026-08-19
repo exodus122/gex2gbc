@@ -30,11 +30,15 @@
 ; convention only, which is why the two zombie blocks below can carry a spare
 ; frame in front of it without anything noticing.
 ;
-; WHAT THE FRAME IDS MEAN depends on the entity, not on this file. The sprite
-; builder looks the entity id up in data_03_5447_EntitySpriteMetaTable to get a
-; tile base and a frame table, and the ids here are offsets within that. So the
-; same number means different artwork for different entities, and two entities
-; can share a block only when they share a sprite set - which several do.
+; WHAT THE FRAME IDS MEAN depends on the entity, not on this file, and for a good
+; many entities they are not frame numbers at all. For anything with
+; SPRITE_FLAG_STREAMS_OWN_GFX the id is the high byte of a ROM address, and writing
+; it queues that page of tiles into VRAM - the shape on screen never changes, only
+; the tiles under it, which is why a whole enemy animation costs no layout data.
+; For SPRITE_FLAG_LAYOUT_BY_ACTION entities the id lands in wD73A_Entity_TileIdBase
+; instead. Either way the layout comes from bank03_sprite_frame_data.asm via
+; data_03_5446_EntitySpriteMetaTable, so two entities can share a block here only
+; when they share a sprite set - which several do.
 ;
 ; HOW A BLOCK ENDS is declared here rather than decided by the ticker:
 ;

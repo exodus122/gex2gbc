@@ -421,8 +421,22 @@ call_03_5ebf_Entity_BuildSprites:
     set  SPRITE_FLAG_ON_SCREEN_BIT, A                       ;; 03:5f55 $cb $ef
     ld   [DE], A                                       ;; 03:5f57 $12
 .jr_03_5f58_Entity_WriteSpritesAndDispatch:
-; Shared tail used by multiple sprite paths: checks on-screen flag, writes N OAM entries from 
-; HL into wCC OAM buffer at wD739_Entity_OamWriteOffset offset (capped at $A0), each entry: (Y+B, X+C, tile+wD73A_Entity_TileIdBase, attr
+; Picks one of five drawing paths from the SPRITE_FLAG_* bits, tested in this order:
+; invisible, embedded sprite list, streams-own-gfx, layout-by-action, and finally the
+; shape path below as the default.
+;
+; The shape path (and its streams-own-gfx twin, which is the same 91 bytes again -
+; see the note there) draws the entity as a rectangle of 8x16 parts: entity id picks a
+; row of data_03_5446_EntitySpriteMetaTable, whose byte +0 is a SPRITE_SHAPE_* index
+; into data_03_5566_SpriteFrameTable_Main and whose byte +1 is the tile base. The
+; index has (wD587_EntityGfxVramPage | facing left ? 2 : 0) added, which is what picks
+; the mirrored variant and the right one of the two entity tile pages.
+;
+; The chosen layout is a part count followed by that many (dY, dX, tile, attr) parts,
+; each written into wCC00_ShadowOAM at wD739_Entity_OamWriteOffset as
+; (dY + B, dX + C, tile + wD73A_Entity_TileIdBase, attr | wD335_Entity_OamAttr).
+; The offset is capped at $A0, so an entity that would overflow OAM is silently and
+; partially dropped rather than corrupting anything past it
     ld   A, [DE]                                       ;; 03:5f58 $1a
     bit  SPRITE_FLAG_INVISIBLE_BIT, A                      ;; 03:5f59 $cb $5f
     jp   NZ, call_03_4c76_EntityCollision_Dispatch                                ;; 03:5f5b $c2 $76 $4c
@@ -447,7 +461,7 @@ call_03_5ebf_Entity_BuildSprites:
     ld   L, A                                          ;; 03:5f7d $6f
     ld   H, $00                                        ;; 03:5f7e $26 $00
     add  HL, HL                                        ;; 03:5f80 $29
-    ld   DE, data_03_5447_EntitySpriteMetaTable                              ;; 03:5f81 $11 $47 $54
+    ld   DE, data_03_5446_EntitySpriteMetaTable + 1     ;; 03:5f81 $11 $47 $54
     add  HL, DE                                        ;; 03:5f84 $19
     ld   A, [HL-]                                      ;; 03:5f85 $3a
     ld   [wD73A_Entity_TileIdBase], A                                    ;; 03:5f86 $ea $3a $d7
@@ -498,10 +512,17 @@ call_03_5ebf_Entity_BuildSprites:
     ld   [wD739_Entity_OamWriteOffset], A                                    ;; 03:5fc5 $ea $39 $d7
     jp   call_03_4c76_EntityCollision_Dispatch                                    ;; 03:5fc8 $c3 $76 $4c
 .jr_03_5fcb_Entity_BuildSprites_FacingBased:
-; Sprite path for entities with SPRITE_FLAG_STREAMS_OWN_GFX set. Reads FACING_FLAGS directly
-; (instead of SPRITE_FLAGS) for the palette/flip byte, swaps nibbles and ORs with wD587_EntityGfxVramPage,
-; then proceeds identically to the standard path: looks up sprite count and frame data 
-; from data_03_5447/data_03_5566/data_03_5a8a, writes OAM entries
+; Sprite path for entities with SPRITE_FLAG_STREAMS_OWN_GFX set - and a byte-for-byte
+; copy of the default path above it. From the `ld A, [DE]` that reads
+; ENTITY_FIELD_FACING_FLAGS to the final jump, the two routines are 91 identical bytes;
+; the only difference is that the default path arrives with DE on SPRITE_FLAGS and has
+; to `xor $07` its way to FACING_FLAGS, while this one loads FACING_FLAGS outright.
+;
+; So the flag changes nothing about how the entity is drawn. What it actually selects
+; is tile streaming - Entity_NotifyActionChanged and Entities_DrawAll test the same bit
+; to decide whether the entity's ENTITY_FIELD_SPRITE_ID names a ROM page to pull into
+; VRAM. That is the whole animation system for these entities: the shape stays put and
+; the tiles underneath it are replaced
     LOAD_OBJ_FIELD_TO_DE ENTITY_FIELD_FACING_FLAGS
     ld   A, [DE]                                       ;; 03:5fd3 $1a
     swap A                                             ;; 03:5fd4 $cb $37
@@ -515,7 +536,7 @@ call_03_5ebf_Entity_BuildSprites:
     ld   L, A                                          ;; 03:5fe0 $6f
     ld   H, $00                                        ;; 03:5fe1 $26 $00
     add  HL, HL                                        ;; 03:5fe3 $29
-    ld   DE, data_03_5447_EntitySpriteMetaTable                              ;; 03:5fe4 $11 $47 $54
+    ld   DE, data_03_5446_EntitySpriteMetaTable + 1     ;; 03:5fe4 $11 $47 $54
     add  HL, DE                                        ;; 03:5fe7 $19
     ld   A, [HL-]                                      ;; 03:5fe8 $3a
     ld   [wD73A_Entity_TileIdBase], A                                    ;; 03:5fe9 $ea $3a $d7
@@ -566,11 +587,17 @@ call_03_5ebf_Entity_BuildSprites:
     ld   [wD739_Entity_OamWriteOffset], A                                    ;; 03:6028 $ea $39 $d7
     jp   call_03_4c76_EntityCollision_Dispatch                                    ;; 03:602b $c3 $76 $4c
 .jp_03_602e_Entity_BuildSprites_ActionIndexed:
-; Sprite path for entities with SPRITE_FLAG_LAYOUT_BY_ACTION set. Reads SPRITE_ID directly, uses it
-; as a base index into data_03_5446 (adjusted by ACTION_ID direction), double-indexes 
-; through .data_03_608e pointer table to get a variable-length sprite layout block. 
-; Writes OAM entries from that block. Used for entities whose sprite layout changes 
-; based on current action rather than animation frame
+; Sprite path for entities with SPRITE_FLAG_LAYOUT_BY_ACTION set - the platforms, blocks
+; and other scenery. It reads the same data_03_5446_EntitySpriteMetaTable as the shape
+; path, but takes byte +0 as a base index into
+; .data_03_608e_EntitySpriteLayoutPointerTable rather than as a SPRITE_SHAPE_*, and adds
+; 1 when the entity faces left (the `sub A, $00` is only there to set Z). Byte +1 of the
+; row is ignored: the tile base comes from the live ENTITY_FIELD_SPRITE_ID, which is why
+; these entities write that field by hand from their action handlers instead of
+; animating.
+;
+; The layout blocks it lands on have exactly the format of the ones in
+; bank03_sprite_frame_data.asm - a part count then that many obj_part records
     push BC                                            ;; 03:602e $c5
     LOAD_OBJ_FIELD_TO_DE ENTITY_FIELD_SPRITE_ID
     ld   A, [DE]                                       ;; 03:6037 $1a
@@ -582,7 +609,7 @@ call_03_5ebf_Entity_BuildSprites:
     ld   L, A                                          ;; 03:6040 $6f
     ld   H, $00                                        ;; 03:6041 $26 $00
     add  HL, HL                                        ;; 03:6043 $29
-    ld   BC, data_03_5446_SpriteCountTable                              ;; 03:6044 $01 $46 $54
+    ld   BC, data_03_5446_EntitySpriteMetaTable         ;; 03:6044 $01 $46 $54
     add  HL, BC                                        ;; 03:6047 $09
     ld   A, E                                          ;; 03:6048 $7b
     xor  A, $0d                                        ;; 03:6049 $ee $0d
