@@ -149,8 +149,8 @@ MACRO block_coord_list_end
     db   BLOCK_COORD_LIST_END
 ENDM
 
-; One part of an entity sprite layout in bank03_sprite_shapes.asm and in
-; .data_03_608e_EntitySpriteLayoutPointerTable: a signed offset from the entity's
+; One part of an entity sprite layout in bank03_sprite_frame_data.asm and in
+; .data_03_608e_FixedSpriteShapeTable: a signed offset from the entity's
 ; screen position, a tile number relative to the entity's tile base, and attribute
 ; bits that get OR'd on top of wD335_Entity_OamAttr. Sprites are 8x16, so a part is
 ; 8 wide and 16 tall and tile numbers step by 2 down a column

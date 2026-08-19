@@ -923,7 +923,7 @@ DEF ENTITY_FIELD_ACTION_STATE_FLAGS         EQU $09
 ;              means the entity streams its own tile page, which is what
 ;              Entity_NotifyActionChanged and Entities_DrawAll check
 ;   bit 4 set  layout is chosen by ACTION_ID rather than by animation frame,
-;              via .data_03_608e_EntitySpriteLayoutPointerTable
+;              via .data_03_608e_FixedSpriteShapeTable
 ;   none set   the default path, indexed by SPRITE_COUNTER
 ;
 ; The rest are status rather than configuration. Note bits 2 and 6 are both
@@ -933,34 +933,34 @@ DEF ENTITY_FIELD_ACTION_STATE_FLAGS         EQU $09
 ; ------------------------------------------------------------------
 DEF ENTITY_FIELD_SPRITE_FLAGS               EQU $0A
     ; --- configuration: how this entity is drawn ---
-    DEF SPRITE_FLAG_STREAMS_OWN_GFX_BIT   EQU 7 ; streams its own tiles; attributes from FACING_FLAGS
-    DEF SPRITE_FLAG_LAYOUT_BY_ACTION_BIT  EQU 4 ; layout selected by action id, not animation frame
-    DEF SPRITE_FLAG_INVISIBLE_BIT         EQU 3 ; draws nothing; collision only
-    DEF SPRITE_FLAG_LOOP_LAST_FRAME_BIT   EQU 1 ; on wrap, restart at the last frame instead of the first
-    DEF SPRITE_FLAG_EMBEDDED_SPRITE_DATA_BIT     EQU 0 ; sprite records embedded in the entity's data block
+    DEF SPRITE_FLAG_STREAMS_OWN_GFX_BIT       EQU 7 ; streams its own tiles; attributes from FACING_FLAGS
+    DEF SPRITE_FLAG_FIXED_SHAPE_BIT           EQU 4 ; layout selected by action id, not animation frame
+    DEF SPRITE_FLAG_INVISIBLE_BIT             EQU 3 ; draws nothing; collision only
+    DEF SPRITE_FLAG_LOOP_LAST_FRAME_BIT       EQU 1 ; on wrap, restart at the last frame instead of the first
+    DEF SPRITE_FLAG_EMBEDDED_SPRITE_DATA_BIT  EQU 0 ; sprite records embedded in the entity's data block
 
     ; --- status: written by the engine, read by everyone else ---
-    DEF SPRITE_FLAG_ID_CHANGED_BIT        EQU 6 ; pulse: the sprite id changed, tiles need refetching
-    DEF SPRITE_FLAG_ON_SCREEN_BIT         EQU 5 ; on screen, in the strict OAM-visible sense
+    DEF SPRITE_FLAG_ID_CHANGED_BIT            EQU 6 ; pulse: the sprite id changed, tiles need refetching
+    DEF SPRITE_FLAG_ON_SCREEN_BIT             EQU 5 ; on screen, in the strict OAM-visible sense
     ; "the current action's animation just finished its last frame". Every
     ; action that ends by handing off to another one polls this
-    DEF SPRITE_FLAG_ANIM_ENDED_BIT        EQU 2 ; pulse: the animation just wrapped
+    DEF SPRITE_FLAG_ANIM_ENDED_BIT            EQU 2 ; pulse: the animation just wrapped
 
-    DEF SPRITE_FLAG_STREAMS_OWN_GFX       EQU $80
-    DEF SPRITE_FLAG_ID_CHANGED            EQU $40
-    DEF SPRITE_FLAG_ON_SCREEN             EQU $20
-    DEF SPRITE_FLAG_LAYOUT_BY_ACTION      EQU $10
-    DEF SPRITE_FLAG_INVISIBLE             EQU $08
-    DEF SPRITE_FLAG_ANIM_ENDED            EQU $04
-    DEF SPRITE_FLAG_LOOP_LAST_FRAME       EQU $02
-    DEF SPRITE_FLAG_EMBEDDED_SPRITE_DATA  EQU $01
+    DEF SPRITE_FLAG_STREAMS_OWN_GFX           EQU $80
+    DEF SPRITE_FLAG_ID_CHANGED                EQU $40
+    DEF SPRITE_FLAG_ON_SCREEN                 EQU $20
+    DEF SPRITE_FLAG_FIXED_SHAPE               EQU $10
+    DEF SPRITE_FLAG_INVISIBLE                 EQU $08
+    DEF SPRITE_FLAG_ANIM_ENDED                EQU $04
+    DEF SPRITE_FLAG_LOOP_LAST_FRAME           EQU $02
+    DEF SPRITE_FLAG_EMBEDDED_SPRITE_DATA      EQU $01
 
 ; ------------------------------------------------------------------
-; Sprite shape index - byte +0 of a row of data_03_5446_EntitySpriteMetaTable,
+; Sprite shape index - byte +0 of a row of data_03_5446_EntitySpriteDescriptors,
 ; for the SPRITE_FLAG_STREAMS_OWN_GFX entities that read it as a shape.
 ;
 ; The value indexes the pointer table at the head of
-; data_03_5566_SpriteFrameTable_Main, and the builder adds
+; data_03_5566_SpriteShapeTable_Main, and the builder adds
 ; (wD587_EntityGfxVramPage | facing left ? 2 : 0) to it - so each shape occupies
 ; four consecutive entries and every index here is a multiple of 4.
 ;
@@ -979,7 +979,7 @@ DEF SPRITE_SHAPE_24x16                      EQU $30
 DEF SPRITE_SHAPE_32x32_AHEAD8               EQU $40
 DEF SPRITE_SHAPE_32x32_AHEAD4               EQU $48
 DEF SPRITE_SHAPE_32x32_BEHIND4              EQU $50
-; Bit 7 sends the lookup to data_03_5a8a_SpriteFrameTable_Alt instead, with the
+; Bit 7 sends the lookup to data_03_5a8a_SpriteShapeTable_Alt instead, with the
 ; page and facing bits discarded - so the index there is just (value - $80)
 DEF SPRITE_SHAPE_ALT                        EQU $80
 

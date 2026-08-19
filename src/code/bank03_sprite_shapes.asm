@@ -9,12 +9,12 @@
 ; layout shared with every other enemy the same size.
 ;
 ; The file is reached only from the two frame-based sprite builders in
-; bank03_oam_build.asm - the SPRITE_FLAG_LAYOUT_BY_ACTION path uses
-; .data_03_608e_EntitySpriteLayoutPointerTable over there instead, and Gex has his
+; bank03_oam_build.asm - the SPRITE_FLAG_FIXED_SHAPE path uses
+; .data_03_608e_FixedSpriteShapeTable over there instead, and Gex has his
 ; own builder entirely.
 ;
 ; THE META TABLE IS READ BACKWARDS. The builders load
-; data_03_5446_EntitySpriteMetaTable + 1, add entity id x 2, and then read with
+; data_03_5446_EntitySpriteDescriptors + 1, add entity id x 2, and then read with
 ; `ld a, [hl-]` - so the byte they pick up first is the SECOND of the pair and the
 ; one they test bit 7 of is the FIRST. The pair for entity N therefore starts at
 ; $5446 + 2N, and $5446 is a record byte, not a stray value in front of the table.
@@ -26,11 +26,11 @@
 ; two different builders index this same table:
 ;
 ;   SPRITE_FLAG_STREAMS_OWN_GFX entities   a SPRITE_SHAPE_* index into the pointer
-;                                          table of data_03_5566_SpriteFrameTable_Main,
+;                                          table of data_03_5566_SpriteShapeTable_Main,
 ;                                          or, with bit 7 set, into
-;                                          data_03_5a8a_SpriteFrameTable_Alt
-;   SPRITE_FLAG_LAYOUT_BY_ACTION entities  a base index into
-;                                          .data_03_608e_EntitySpriteLayoutPointerTable
+;                                          data_03_5a8a_SpriteShapeTable_Alt
+;   SPRITE_FLAG_FIXED_SHAPE entities  a base index into
+;                                          .data_03_608e_FixedSpriteShapeTable
 ;                                          in bank03_oam_build.asm, with +1 added when
 ;                                          the entity faces left. Byte +1 is unused for
 ;                                          these - their tile base is the live
@@ -72,9 +72,10 @@
 ; its own tiles, which is settled elsewhere
 ; ==================================================================
 
-data_03_5446_EntitySpriteMetaTable:
-; Two bytes per entity id, 144 ids. The builders address this as
-; `data_03_5446_EntitySpriteMetaTable + 1 + entity id * 2` and read backwards, so the
+data_03_5446_EntitySpriteDescriptors:
+; One two-byte descriptor per entity id, 144 of them: which shape the entity is drawn
+; as, and which tiles go inside it. The builders address this as
+; `data_03_5446_EntitySpriteDescriptors + 1 + entity id * 2` and read backwards, so the
 ; two bytes of a row arrive in the order (+1, +0)
     db   $18, $00                                         ; $00 ENTITY_GEX - drawn by the player builder, never read here
     db   $08, $00                                         ; $01 ENTITY_COLLECTIBLE_SPAWN - embed, never read here
@@ -221,9 +222,10 @@ data_03_5446_EntitySpriteMetaTable:
     db   SPRITE_SHAPE_32x32, $20                          ; $8E ENTITY_UNK_8E - 32x32, centred
     db   $1e, $00                                         ; $8F ENTITY_MEDIA_DIMENSION_MOVING_PLATFORM - layout $1e/$1f by action
 
-data_03_5566_SpriteFrameTable_Main:
-; 88 pointers - twenty-two groups of four (page 0, page 1, page 0 mirrored,
-; page 1 mirrored). Only the seven groups marked below can be selected
+data_03_5566_SpriteShapeTable_Main:
+; The shapes a SPRITE_SHAPE_* index selects: 88 pointers in twenty-two groups of four
+; (page 0, page 1, page 0 mirrored, page 1 mirrored), then the shapes themselves.
+; Only the seven groups marked below can be selected
     ; $00  unreachable - 8x32, centred
     dw   .box_8x32_page0, .box_8x32_page1, .box_8x32_page0_flipX, .box_8x32_page1_flipX
     ; $04  unreachable - a repeat of the group above
@@ -657,8 +659,8 @@ data_03_5566_SpriteFrameTable_Main:
     obj_part    0,   -4, $0a, OAMF_XFLIP
     obj_part    0,  -12, $0e, OAMF_XFLIP
 
-data_03_5a8a_SpriteFrameTable_Alt:
-; The other frame table, chosen when bit 7 of a shape index is set. Because that
+data_03_5a8a_SpriteShapeTable_Alt:
+; The other shape table, chosen when bit 7 of a shape index is set. Because that
 ; branch replaces the index with (value - $80) instead of adding the page and
 ; facing bits, the four-entry grouping of the main table does not apply here and
 ; every shape is a single entry. Both entities that reach it - ENTITY_UNK_02 and

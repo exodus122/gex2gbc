@@ -427,8 +427,8 @@ call_03_5ebf_Entity_BuildSprites:
 ;
 ; The shape path (and its streams-own-gfx twin, which is the same 91 bytes again -
 ; see the note there) draws the entity as a rectangle of 8x16 parts: entity id picks a
-; row of data_03_5446_EntitySpriteMetaTable, whose byte +0 is a SPRITE_SHAPE_* index
-; into data_03_5566_SpriteFrameTable_Main and whose byte +1 is the tile base. The
+; row of data_03_5446_EntitySpriteDescriptors, whose byte +0 is a SPRITE_SHAPE_* index
+; into data_03_5566_SpriteShapeTable_Main and whose byte +1 is the tile base. The
 ; index has (wD587_EntityGfxVramPage | facing left ? 2 : 0) added, which is what picks
 ; the mirrored variant and the right one of the two entity tile pages.
 ;
@@ -444,8 +444,8 @@ call_03_5ebf_Entity_BuildSprites:
     jp   NZ, .jp_03_6451_Entity_BuildSprites_SpriteList                               ;; 03:5f60 $c2 $51 $64
     bit  SPRITE_FLAG_STREAMS_OWN_GFX_BIT, A                 ;; 03:5f63 $cb $7f
     jr   NZ, .jr_03_5fcb_Entity_BuildSprites_FacingBased                               ;; 03:5f65 $20 $64
-    bit  SPRITE_FLAG_LAYOUT_BY_ACTION_BIT, A                ;; 03:5f67 $cb $67
-    jp   NZ, .jp_03_602e_Entity_BuildSprites_ActionIndexed                               ;; 03:5f69 $c2 $2e $60
+    bit  SPRITE_FLAG_FIXED_SHAPE_BIT, A                ;; 03:5f67 $cb $67
+    jp   NZ, .jp_03_602e_Entity_BuildSprites_FixedShape                               ;; 03:5f69 $c2 $2e $60
     ld   A, E                                          ;; 03:5f6c $7b
     xor  A, $07                                        ;; 03:5f6d $ee $07
     ld   E, A                                          ;; 03:5f6f $5f
@@ -461,7 +461,7 @@ call_03_5ebf_Entity_BuildSprites:
     ld   L, A                                          ;; 03:5f7d $6f
     ld   H, $00                                        ;; 03:5f7e $26 $00
     add  HL, HL                                        ;; 03:5f80 $29
-    ld   DE, data_03_5446_EntitySpriteMetaTable + 1     ;; 03:5f81 $11 $47 $54
+    ld   DE, data_03_5446_EntitySpriteDescriptors + 1     ;; 03:5f81 $11 $47 $54
     add  HL, DE                                        ;; 03:5f84 $19
     ld   A, [HL-]                                      ;; 03:5f85 $3a
     ld   [wD73A_Entity_TileIdBase], A                                    ;; 03:5f86 $ea $3a $d7
@@ -470,11 +470,11 @@ call_03_5ebf_Entity_BuildSprites:
     jr   Z, .jr_03_5f96                                ;; 03:5f8c $28 $08
     ld   A, [HL]                                       ;; 03:5f8e $7e
     sub  A, $80                                        ;; 03:5f8f $d6 $80
-    ld   DE, data_03_5a8a_SpriteFrameTable_Alt                              ;; 03:5f91 $11 $8a $5a
+    ld   DE, data_03_5a8a_SpriteShapeTable_Alt                              ;; 03:5f91 $11 $8a $5a
     jr   .jr_03_5f9a                                   ;; 03:5f94 $18 $04
 .jr_03_5f96:
     add  A, [HL]                                       ;; 03:5f96 $86
-    ld   DE, data_03_5566_SpriteFrameTable_Main                              ;; 03:5f97 $11 $66 $55
+    ld   DE, data_03_5566_SpriteShapeTable_Main                              ;; 03:5f97 $11 $66 $55
 .jr_03_5f9a:
     call call_00_07b9_GetPointerFromTable                                  ;; 03:5f9a $cd $b9 $07
     ld   A, [wD739_Entity_OamWriteOffset]                                    ;; 03:5f9d $fa $39 $d7
@@ -536,7 +536,7 @@ call_03_5ebf_Entity_BuildSprites:
     ld   L, A                                          ;; 03:5fe0 $6f
     ld   H, $00                                        ;; 03:5fe1 $26 $00
     add  HL, HL                                        ;; 03:5fe3 $29
-    ld   DE, data_03_5446_EntitySpriteMetaTable + 1     ;; 03:5fe4 $11 $47 $54
+    ld   DE, data_03_5446_EntitySpriteDescriptors + 1     ;; 03:5fe4 $11 $47 $54
     add  HL, DE                                        ;; 03:5fe7 $19
     ld   A, [HL-]                                      ;; 03:5fe8 $3a
     ld   [wD73A_Entity_TileIdBase], A                                    ;; 03:5fe9 $ea $3a $d7
@@ -545,11 +545,11 @@ call_03_5ebf_Entity_BuildSprites:
     jr   Z, .jr_03_5ff9                                ;; 03:5fef $28 $08
     ld   A, [HL]                                       ;; 03:5ff1 $7e
     sub  A, $80                                        ;; 03:5ff2 $d6 $80
-    ld   DE, data_03_5a8a_SpriteFrameTable_Alt                              ;; 03:5ff4 $11 $8a $5a
+    ld   DE, data_03_5a8a_SpriteShapeTable_Alt                              ;; 03:5ff4 $11 $8a $5a
     jr   .jr_03_5ffd                                   ;; 03:5ff7 $18 $04
 .jr_03_5ff9:
     add  A, [HL]                                       ;; 03:5ff9 $86
-    ld   DE, data_03_5566_SpriteFrameTable_Main                              ;; 03:5ffa $11 $66 $55
+    ld   DE, data_03_5566_SpriteShapeTable_Main                              ;; 03:5ffa $11 $66 $55
 .jr_03_5ffd:
     call call_00_07b9_GetPointerFromTable                                  ;; 03:5ffd $cd $b9 $07
     ld   A, [wD739_Entity_OamWriteOffset]                                    ;; 03:6000 $fa $39 $d7
@@ -586,18 +586,26 @@ call_03_5ebf_Entity_BuildSprites:
     ld   A, E                                          ;; 03:6027 $7b
     ld   [wD739_Entity_OamWriteOffset], A                                    ;; 03:6028 $ea $39 $d7
     jp   call_03_4c76_EntityCollision_Dispatch                                    ;; 03:602b $c3 $76 $4c
-.jp_03_602e_Entity_BuildSprites_ActionIndexed:
-; Sprite path for entities with SPRITE_FLAG_LAYOUT_BY_ACTION set - the platforms, blocks
-; and other scenery. It reads the same data_03_5446_EntitySpriteMetaTable as the shape
-; path, but takes byte +0 as a base index into
-; .data_03_608e_EntitySpriteLayoutPointerTable rather than as a SPRITE_SHAPE_*, and adds
-; 1 when the entity faces left (the `sub A, $00` is only there to set Z). Byte +1 of the
-; row is ignored: the tile base comes from the live ENTITY_FIELD_SPRITE_ID, which is why
-; these entities write that field by hand from their action handlers instead of
-; animating.
+.jp_03_602e_Entity_BuildSprites_FixedShape:
+; Sprite path for entities with SPRITE_FLAG_FIXED_SHAPE set - the platforms,
+; blocks, buttons and projectiles.
 ;
-; The layout blocks it lands on have exactly the format of the ones in
-; bank03_sprite_shapes.asm - a part count then that many obj_part records
+; DESPITE THE FLAG'S NAME, THE ACTION DOES NOT PICK THE SHAPE. Follow the three
+; lookups below: ENTITY_FIELD_SPRITE_ID becomes wD73A_Entity_TileIdBase, then E is
+; walked to ENTITY_FIELD_ENTITY_ID to index data_03_5446_EntitySpriteDescriptors, then
+; to ENTITY_FIELD_FACING_FLAGS to add 1 (the `sub A, $00` is only there to set Z).
+; The action id is never read. So the shape is fixed per entity and facing for the
+; entity's whole life, and what an action changes is which tiles get drawn inside it.
+;
+; That inverts the usual reading of ENTITY_FIELD_SPRITE_ID for these entities: it is
+; not a frame number but the first tile of a group already resident in VRAM, which is
+; why their animation blocks in bank02_entity_animation_data.asm so often hold a
+; single frame at a tick of $FF and let the handler write the field by hand.
+;
+; Byte +1 of the meta row is unused here, and all 99 of these entities leave it $00.
+;
+; The shape blocks are the same format as the ones in bank03_sprite_frame_data.asm -
+; a part count then that many obj_part records
     push BC                                            ;; 03:602e $c5
     LOAD_OBJ_FIELD_TO_DE ENTITY_FIELD_SPRITE_ID
     ld   A, [DE]                                       ;; 03:6037 $1a
@@ -609,7 +617,7 @@ call_03_5ebf_Entity_BuildSprites:
     ld   L, A                                          ;; 03:6040 $6f
     ld   H, $00                                        ;; 03:6041 $26 $00
     add  HL, HL                                        ;; 03:6043 $29
-    ld   BC, data_03_5446_EntitySpriteMetaTable         ;; 03:6044 $01 $46 $54
+    ld   BC, data_03_5446_EntitySpriteDescriptors         ;; 03:6044 $01 $46 $54
     add  HL, BC                                        ;; 03:6047 $09
     ld   A, E                                          ;; 03:6048 $7b
     xor  A, $0d                                        ;; 03:6049 $ee $0d
@@ -623,7 +631,7 @@ call_03_5ebf_Entity_BuildSprites:
     ld   L, A                                          ;; 03:6054 $6f
     ld   H, $00                                        ;; 03:6055 $26 $00
     add  HL, HL                                        ;; 03:6057 $29
-    ld   DE, .data_03_608e_EntitySpriteLayoutPointerTable                             ;; 03:6058 $11 $8e $60
+    ld   DE, .data_03_608e_FixedSpriteShapeTable                             ;; 03:6058 $11 $8e $60
     add  HL, DE                                        ;; 03:605b $19
     ld   A, [HL+]                                      ;; 03:605c $2a
     ld   H, [HL]                                       ;; 03:605d $66
@@ -663,269 +671,460 @@ call_03_5ebf_Entity_BuildSprites:
     ld   A, E                                          ;; 03:6087 $7b
     ld   [wD739_Entity_OamWriteOffset], A                                    ;; 03:6088 $ea $39 $d7
     jp   call_03_4c76_EntityCollision_Dispatch                                    ;; 03:608b $c3 $76 $4c
-.data_03_608e_EntitySpriteLayoutPointerTable:
-; 58-entry pointer table, one entry per multi-tile entity sprite variant. Each pointer 
-; leads to a variable-length sprite record block (first byte = tile count, then N×4-byte 
-; records of signed Y offset, signed X offset, tile base, attribute). Covers all entity 
-; types and their directional/size variants
-    dw   .data_03_6102
-    dw   .data_03_610b
-    dw   .data_03_6114
-    dw   .data_03_6125
-    dw   .data_03_6136
-    dw   .data_03_614f
-    dw   .data_03_6168
-    dw   .data_03_6189
-    dw   .data_03_61aa
-    dw   .data_03_61af
-    dw   .data_03_61b4
-    dw   .data_03_61bd
-    dw   .data_03_61c6
-    dw   .data_03_61d3
-    dw   .data_03_61e0
-    dw   .data_03_61f1
-    dw   .data_03_6202
-    dw   .data_03_6207
-    dw   .data_03_620c
-    dw   .data_03_6215
-    dw   .data_03_621e
-    dw   .data_03_622b
-    dw   .data_03_6238
-    dw   .data_03_6249
-    dw   .data_03_625a
-    dw   .data_03_625f
-    dw   .data_03_6264
-    dw   .data_03_626d
-    dw   .data_03_6276
-    dw   .data_03_6283
-    dw   .data_03_6290
-    dw   .data_03_62a1
-    dw   .data_03_62b2
-    dw   .data_03_62b7
-    dw   .data_03_62bc
-    dw   .data_03_62c5
-    dw   .data_03_62ce
-    dw   .data_03_62db
-    dw   .data_03_62e8
-    dw   .data_03_62f9
-    dw   .data_03_630a
-    dw   .data_03_630a
-    dw   .data_03_632b
-    dw   .data_03_6338
-    dw   .data_03_6345
-    dw   .data_03_6356
-    dw   .data_03_6367
-    dw   .data_03_6367
-    dw   .data_03_6388
-    dw   .data_03_6391
-    dw   .data_03_639a
-    dw   .data_03_63ab
-    dw   .data_03_63bc
-    dw   .data_03_63d5
-    dw   .data_03_63ee
-    dw   .data_03_640f
-    dw   .data_03_6430
-    dw   .data_03_6430
-.data_03_6102:
-    db   $02, $f0, $fc, $00, $00, $00, $fc, $02
-    db   $00
-.data_03_610b:
-    db   $02, $f0, $fc, $00, $20, $00, $fc, $02
-    db   $20
-.data_03_6114:
-    db   $04, $f0, $f8, $00, $00, $f0, $00, $04
-    db   $00, $00, $f8, $02, $00, $00, $00, $06
-    db   $00
-.data_03_6125:
-    db   $04, $f0, $00, $00, $20, $f0, $f8, $04
-    db   $20, $00, $00, $02, $20, $00, $f8, $06
-    db   $20
-.data_03_6136:
-    db   $06, $f0, $f4, $00, $00, $f0, $fc, $04
-    db   $00, $f0, $04, $08, $00, $00, $f4, $02
-    db   $00, $00, $fc, $06, $00, $00, $04, $0a
-    db   $00
-.data_03_614f:
-    db   $06, $f0, $04, $00, $20, $f0, $fc, $04
-    db   $20, $f0, $f4, $08, $20, $00, $04, $02
-    db   $20, $00, $fc, $06, $20, $00, $f4, $0a
-    db   $20
-.data_03_6168:
-    db   $08, $f0, $f0, $00, $00, $f0, $f8, $04
-    db   $00, $f0, $00, $08, $00, $f0, $08, $0c
-    db   $00, $00, $f0, $02, $00, $00, $f8, $06
-    db   $00, $00, $00, $0a, $00, $00, $08, $0e
-    db   $00
-.data_03_6189:
-    db   $08, $f0, $08, $00, $20, $f0, $00, $04
-    db   $20, $f0, $f8, $08, $20, $f0, $f0, $0c
-    db   $20, $00, $08, $02, $20, $00, $00, $06
-    db   $20, $00, $f8, $0a, $20, $00, $f0, $0e
-    db   $20
-.data_03_61aa:
-    db   $01, $f8, $fc, $00, $00
-.data_03_61af:
-    db   $01, $f8, $fc, $00, $20
-.data_03_61b4:
-    db   $02, $f8, $f8, $00, $00, $f8, $00, $02
-    db   $00
-.data_03_61bd:
-    db   $02, $f8, $00, $00, $20, $f8, $f8, $02
-    db   $20
-.data_03_61c6:
-    db   $03, $f8, $f4, $00, $00, $f8, $fc, $02
-    db   $00, $f8, $04, $04, $00
-.data_03_61d3:
-    db   $03, $f8, $04, $00, $20, $f8, $fc, $02
-    db   $20, $f8, $f4, $04, $20
-.data_03_61e0:
-    db   $04, $f8, $f0, $00, $00, $f8, $f8, $02
-    db   $00, $f8, $00, $04, $00, $f8, $08, $06
-    db   $00
-.data_03_61f1:
-    db   $04, $f8, $08, $00, $20, $f8, $00, $02
-    db   $20, $f8, $f8, $04, $20, $f8, $f0, $06
-    db   $20
-.data_03_6202:
-    db   $01, $f8, $fc, $00, $00
-.data_03_6207:
-    db   $01, $f8, $fc, $00, $20
-.data_03_620c:
-    db   $02, $f8, $f8, $00, $00, $f8, $00, $00
-    db   $20
-.data_03_6215:
-    db   $02, $f8, $00, $00, $20, $f8, $f8, $00
-    db   $00
-.data_03_621e:
-    db   $03, $f8, $f4, $00, $00, $f8, $fc, $02
-    db   $00, $f8, $04, $00, $20
-.data_03_622b:
-    db   $03, $f8, $04, $00, $20, $f8, $fc, $02
-    db   $20, $f8, $f4, $00, $00
-.data_03_6238:
-    db   $04, $f8, $f0, $00, $00, $f8, $f8, $02
-    db   $00, $f8, $00, $02, $20, $f8, $08, $00
-    db   $20
-.data_03_6249:
-    db   $04, $f8, $08, $00, $20, $f8, $00, $02
-    db   $20, $f8, $f8, $02, $00, $f8, $f0, $00
-    db   $00
-.data_03_625a:
-    db   $01, $00, $fc, $00, $00
-.data_03_625f:
-    db   $01, $00, $fc, $00, $20
-.data_03_6264:
-    db   $02, $00, $f8, $00, $00, $00, $00, $02
-    db   $00
-.data_03_626d:
-    db   $02, $00, $00, $00, $20, $00, $f8, $02
-    db   $20
-.data_03_6276:
-    db   $03, $00, $f4, $00, $00, $00, $fc, $02
-    db   $00, $00, $04, $04, $00
-.data_03_6283:
-    db   $03, $00, $04, $00, $20, $00, $fc, $02
-    db   $20, $00, $f4, $04, $20
-.data_03_6290:
-    db   $04, $00, $f0, $00, $00, $00, $f8, $02
-    db   $00, $00, $00, $04, $00, $00, $08, $06
-    db   $00
-.data_03_62a1:
-    db   $04, $00, $08, $00, $20, $00, $00, $02
-    db   $20, $00, $f8, $04, $20, $00, $f0, $06
-    db   $20
-.data_03_62b2:
-    db   $01, $00, $fc, $00, $00
-.data_03_62b7:
-    db   $01, $00, $fc, $00, $20
-.data_03_62bc:
-    db   $02, $00, $f8, $00, $00, $00, $00, $00
-    db   $20
-.data_03_62c5:
-    db   $02, $00, $00, $00, $20, $00, $f8, $00
-    db   $00
-.data_03_62ce:
-    db   $03, $00, $f4, $00, $00, $00, $fc, $02
-    db   $00, $00, $04, $00, $20
-.data_03_62db:
-    db   $03, $00, $04, $00, $20, $00, $fc, $02
-    db   $20, $00, $f4, $00, $00
-.data_03_62e8:
-    db   $04, $00, $f0, $00, $00, $00, $f8, $02
-    db   $00, $00, $00, $02, $20, $00, $08, $00
-    db   $20
-.data_03_62f9:
-    db   $04, $00, $08, $00, $20, $00, $00, $02
-    db   $20, $00, $f8, $02, $00, $00, $f0, $00
-    db   $00
-.data_03_630a:
-    db   $08, $b8, $fc, $00, $00, $c8, $fc, $02
-    db   $00, $d8, $fc, $04, $00, $e8, $fc, $06
-    db   $00, $f8, $f0, $08, $00, $f8, $f8, $0a
-    db   $00, $f8, $00, $0c, $00, $f8, $08, $0e
-    db   $00
-.data_03_632b:
-    db   $03, $f8, $00, $00, $00, $f8, $08, $02
-    db   $00, $f8, $10, $04, $00
-.data_03_6338:
-    db   $03, $f8, $f8, $00, $20, $f8, $f0, $02
-    db   $20, $f8, $e8, $04, $20
-.data_03_6345:
-    db   $04, $00, $f8, $00, $00, $00, $00, $00
-    db   $00, $10, $f8, $02, $00, $10, $00, $02
-    db   $00
-.data_03_6356:
-    db   $04, $f0, $f8, $00, $40, $f0, $00, $00
-    db   $40, $e0, $f8, $02, $40, $e0, $00, $02
-    db   $40
-.data_03_6367:
-    db   $08, $00, $e0, $00, $00, $00, $e8, $02
-    db   $00, $00, $f0, $02, $00, $00, $f8, $02
-    db   $00, $00, $00, $02, $20, $00, $08, $02
-    db   $20, $00, $10, $02, $20, $00, $18, $00
-    db   $20
-.data_03_6388:
-    db   $02, $f0, $fc, $00, $00, $00, $fc, $02
-    db   $00
-.data_03_6391:
-    db   $02, $f0, $fc, $00, $20, $00, $fc, $02
-    db   $20
-.data_03_639a:
-    db   $04, $f0, $f8, $00, $00, $f0, $00, $00
-    db   $20, $00, $f8, $02, $00, $00, $00, $02
-    db   $20
-.data_03_63ab:
-    db   $04, $f0, $00, $00, $20, $f0, $f8, $00
-    db   $00, $00, $00, $02, $20, $00, $f8, $02
-    db   $00
-.data_03_63bc:
-    db   $06, $f0, $f4, $00, $00, $f0, $fc, $04
-    db   $00, $f0, $04, $00, $20, $00, $f4, $02
-    db   $00, $00, $fc, $06, $00, $00, $04, $02
-    db   $20
-.data_03_63d5:
-    db   $06, $f0, $04, $00, $20, $f0, $fc, $04
-    db   $20, $f0, $f4, $00, $00, $00, $04, $02
-    db   $20, $00, $fc, $06, $20, $00, $f4, $02
-    db   $00
-.data_03_63ee:
-    db   $08, $f0, $f0, $00, $00, $f0, $f8, $04
-    db   $00, $f0, $00, $04, $20, $f0, $08, $00
-    db   $20, $00, $f0, $02, $00, $00, $f8, $06
-    db   $00, $00, $00, $06, $20, $00, $08, $02
-    db   $20
-.data_03_640f:
-    db   $08, $f0, $08, $00, $20, $f0, $00, $04
-    db   $20, $f0, $f8, $04, $00, $f0, $f0, $00
-    db   $00, $00, $08, $02, $20, $00, $00, $06
-    db   $20, $00, $f8, $06, $00, $00, $f0, $02
-    db   $00
-.data_03_6430:
-    db   $08, $e0, $f8, $00, $00, $e0, $00, $04
-    db   $00, $f0, $f8, $02, $00, $f0, $00, $06
-    db   $00, $00, $f8, $08, $00, $00, $00, $0c
-    db   $00, $10, $f8, $0a, $00, $10, $00, $0e
-    db   $00
+.data_03_608e_FixedSpriteShapeTable:
+; The shape catalogue for everything drawn by the routine above - the platforms,
+; blocks, buttons, projectiles and other scenery. Format is exactly the same as the
+; shapes in bank03_sprite_frame_data.asm: a part count, then that many obj_part
+; records of (dY, dX, tile, attributes).
+;
+; Indexed by (byte +0 of the entity's data_03_5446_EntitySpriteDescriptors row) + 1
+; when it faces left, so entries come in right/left pairs and every base index below
+; is even. Note what does NOT select the shape: the action. An entity of this kind
+; keeps one shape for its whole life and changes what is drawn inside it by writing
+; ENTITY_FIELD_SPRITE_ID, which becomes wD73A_Entity_TileIdBase - so all the tile
+; numbers here are small offsets from wherever that points.
+;
+; Three things are worth reading off the list. First the anchors: a plain box
+; straddles the entity position, a "_below" row hangs underneath it, and a "_mirrored"
+; shape is built out of half its tiles by X-flipping them about the middle - which is
+; why the game can afford a 64-pixel-wide platform made of two tiles. Second, several
+; left entries are not mirrors at all, just the same parts listed in reverse order, so
+; they draw an identical picture. And third, ten of the twenty-nine pairs are never
+; selected by any entity
+
+    ; $00/$01  8x32 upright, straddling the position
+    ;           4 entities, e.g. ENTITY_PRE_HISTORY_TRICERATOPS_HORN
+    dw   .box_8x32_right
+    dw   .box_8x32_left
+    ; $02/$03  16x32 upright
+    ;           8 entities, e.g. ENTITY_SCREAM_TV_HEAD_GHOST
+    dw   .box_16x32_right
+    dw   .box_16x32_left
+    ; $04/$05  24x32 upright
+    ;           9 entities, e.g. ENTITY_TOON_TV_BUMBLEBEE
+    dw   .box_24x32_right
+    dw   .box_24x32_left
+    ; $06/$07  32x32 upright
+    ;           ENTITY_TOON_TV_HARD_HEAD_AREA_HAZARD, ENTITY_UNK_6D
+    dw   .box_32x32_right
+    dw   .box_32x32_left
+    ; $08/$09  8x16, vertically centred - the standard projectile
+    ;           9 entities, e.g. ENTITY_SCREAM_TV_HEAD_GHOST_HEAD
+    dw   .row_8x16_right
+    dw   .row_8x16_left
+    ; $0a/$0b  16x16, vertically centred
+    ;           13 entities, e.g. ENTITY_SCREAM_TV_FALLING_AXE
+    dw   .row_16x16_right
+    dw   .row_16x16_left
+    ; $0c/$0d  24x16, vertically centred
+    ;           5 entities, e.g. ENTITY_TOON_TV_SHARK
+    dw   .row_24x16_right
+    dw   .row_24x16_left
+    ; $0e/$0f  32x16, vertically centred
+    ;           5 entities, e.g. ENTITY_TOON_TV_STATIONARY_BEAR_TRAP
+    dw   .row_32x16_right
+    dw   .row_32x16_left
+    ; $10/$11  8x16 - one part has nothing to mirror, so identical bytes to $08
+    ;           never selected
+    dw   .row_8x16_mirrored_right
+    dw   .row_8x16_mirrored_left
+    ; $12/$13  16x16 from one tile, mirrored about the middle
+    ;           3 entities, e.g. ENTITY_CHANNEL_Z_ARCED_GUN_PROJECTILE
+    dw   .row_16x16_mirrored_right
+    dw   .row_16x16_mirrored_left
+    ; $14/$15  24x16 from two tiles
+    ;           ENTITY_PRE_HISTORY_FIRE_PLANT
+    dw   .row_24x16_mirrored_right
+    dw   .row_24x16_mirrored_left
+    ; $16/$17  32x16 from two tiles
+    ;           never selected
+    dw   .row_32x16_mirrored_right
+    dw   .row_32x16_mirrored_left
+    ; $18/$19  8x16, hanging below the position
+    ;           never selected
+    dw   .row_8x16_below_right
+    dw   .row_8x16_below_left
+    ; $1a/$1b  16x16, hanging below - the button and block shape
+    ;           4 entities, e.g. ENTITY_TV_BUTTON
+    dw   .row_16x16_below_right
+    dw   .row_16x16_below_left
+    ; $1c/$1d  24x16, hanging below
+    ;           never selected
+    dw   .row_24x16_below_right
+    dw   .row_24x16_below_left
+    ; $1e/$1f  32x16, hanging below - the plain platform shape
+    ;           10 entities, e.g. ENTITY_SCREAM_TV_PUSH_BLOCK
+    dw   .row_32x16_below_right
+    dw   .row_32x16_below_left
+    ; $20/$21  8x16 below - identical bytes to $18, nothing to mirror
+    ;           never selected
+    dw   .row_8x16_below_mirrored_right
+    dw   .row_8x16_below_mirrored_left
+    ; $22/$23  16x16 below from one tile
+    ;           never selected
+    dw   .row_16x16_below_mirrored_right
+    dw   .row_16x16_below_mirrored_left
+    ; $24/$25  24x16 below from two tiles
+    ;           8 entities, e.g. ENTITY_PRE_HISTORY_MOVING_PLATFORM
+    dw   .row_24x16_below_mirrored_right
+    dw   .row_24x16_below_mirrored_left
+    ; $26/$27  32x16 below from two tiles - the commonest platform shape in the game
+    ;           13 entities, e.g. ENTITY_SCREAM_TV_FALLING_PLATFORM
+    dw   .row_32x16_below_mirrored_right
+    dw   .row_32x16_below_mirrored_left
+    ; $28/$29  a four-part chain running $48 up from the position with a 32-wide blade across the bottom. Both entries are the same pointer, so it never mirrors
+    ;           ENTITY_KUNG_FU_THEATER_HANGING_BLADE
+    dw   .hanging_blade
+    dw   .hanging_blade
+    ; $2a/$2b  24x16 sitting entirely to one side of the position rather than centred on it
+    ;           ENTITY_UNK_5C
+    dw   .row_24x16_ahead_right
+    dw   .row_24x16_ahead_left
+    ; $2c/$2d  16x32 below the position, both columns the same tile. The "left" entry is
+    ;          not a mirror at all - it is the same box 32 pixels ABOVE the position with
+    ;          OAMF_YFLIP, so for this one entity facing means up or down
+    ;           ENTITY_UNK_5D
+    dw   .box_16x32_under
+    dw   .box_16x32_over
+    ; $2e/$2f  64x16 built from two tiles - three copies of the middle tile either side of the centre, with the end tile mirrored. Both entries are the same pointer
+    ;           never selected
+    dw   .row_64x16_below_mirrored
+    dw   .row_64x16_below_mirrored
+    ; $30/$31  identical bytes to $00
+    ;           never selected
+    dw   .box_8x32_copy_right
+    dw   .box_8x32_copy_left
+    ; $32/$33  16x32 from two tiles, mirrored
+    ;           ENTITY_CIRCUIT_CENTRAL_CAPACITOR
+    dw   .box_16x32_mirrored_right
+    dw   .box_16x32_mirrored_left
+    ; $34/$35  24x32 from four tiles
+    ;           never selected
+    dw   .box_24x32_mirrored_right
+    dw   .box_24x32_mirrored_left
+    ; $36/$37  32x32 from four tiles
+    ;           never selected
+    dw   .box_32x32_mirrored_right
+    dw   .box_32x32_mirrored_left
+    ; $38/$39  16x64, two 16x32 halves stacked. Both entries are the same pointer
+    ;           ENTITY_TOON_TV_ROCKET
+    dw   .box_16x64
+    dw   .box_16x64
+
+.box_8x32_right:
+    db   2
+    obj_part  -16,   -4, $00, $00
+    obj_part    0,   -4, $02, $00
+.box_8x32_left:
+    db   2
+    obj_part  -16,   -4, $00, OAMF_XFLIP
+    obj_part    0,   -4, $02, OAMF_XFLIP
+.box_16x32_right:
+    db   4
+    obj_part  -16,   -8, $00, $00
+    obj_part  -16,    0, $04, $00
+    obj_part    0,   -8, $02, $00
+    obj_part    0,    0, $06, $00
+.box_16x32_left:
+    db   4
+    obj_part  -16,    0, $00, OAMF_XFLIP
+    obj_part  -16,   -8, $04, OAMF_XFLIP
+    obj_part    0,    0, $02, OAMF_XFLIP
+    obj_part    0,   -8, $06, OAMF_XFLIP
+.box_24x32_right:
+    db   6
+    obj_part  -16,  -12, $00, $00
+    obj_part  -16,   -4, $04, $00
+    obj_part  -16,    4, $08, $00
+    obj_part    0,  -12, $02, $00
+    obj_part    0,   -4, $06, $00
+    obj_part    0,    4, $0a, $00
+.box_24x32_left:
+    db   6
+    obj_part  -16,    4, $00, OAMF_XFLIP
+    obj_part  -16,   -4, $04, OAMF_XFLIP
+    obj_part  -16,  -12, $08, OAMF_XFLIP
+    obj_part    0,    4, $02, OAMF_XFLIP
+    obj_part    0,   -4, $06, OAMF_XFLIP
+    obj_part    0,  -12, $0a, OAMF_XFLIP
+.box_32x32_right:
+    db   8
+    obj_part  -16,  -16, $00, $00
+    obj_part  -16,   -8, $04, $00
+    obj_part  -16,    0, $08, $00
+    obj_part  -16,    8, $0c, $00
+    obj_part    0,  -16, $02, $00
+    obj_part    0,   -8, $06, $00
+    obj_part    0,    0, $0a, $00
+    obj_part    0,    8, $0e, $00
+.box_32x32_left:
+    db   8
+    obj_part  -16,    8, $00, OAMF_XFLIP
+    obj_part  -16,    0, $04, OAMF_XFLIP
+    obj_part  -16,   -8, $08, OAMF_XFLIP
+    obj_part  -16,  -16, $0c, OAMF_XFLIP
+    obj_part    0,    8, $02, OAMF_XFLIP
+    obj_part    0,    0, $06, OAMF_XFLIP
+    obj_part    0,   -8, $0a, OAMF_XFLIP
+    obj_part    0,  -16, $0e, OAMF_XFLIP
+.row_8x16_right:
+    db   1
+    obj_part   -8,   -4, $00, $00
+.row_8x16_left:
+    db   1
+    obj_part   -8,   -4, $00, OAMF_XFLIP
+.row_16x16_right:
+    db   2
+    obj_part   -8,   -8, $00, $00
+    obj_part   -8,    0, $02, $00
+.row_16x16_left:
+    db   2
+    obj_part   -8,    0, $00, OAMF_XFLIP
+    obj_part   -8,   -8, $02, OAMF_XFLIP
+.row_24x16_right:
+    db   3
+    obj_part   -8,  -12, $00, $00
+    obj_part   -8,   -4, $02, $00
+    obj_part   -8,    4, $04, $00
+.row_24x16_left:
+    db   3
+    obj_part   -8,    4, $00, OAMF_XFLIP
+    obj_part   -8,   -4, $02, OAMF_XFLIP
+    obj_part   -8,  -12, $04, OAMF_XFLIP
+.row_32x16_right:
+    db   4
+    obj_part   -8,  -16, $00, $00
+    obj_part   -8,   -8, $02, $00
+    obj_part   -8,    0, $04, $00
+    obj_part   -8,    8, $06, $00
+.row_32x16_left:
+    db   4
+    obj_part   -8,    8, $00, OAMF_XFLIP
+    obj_part   -8,    0, $02, OAMF_XFLIP
+    obj_part   -8,   -8, $04, OAMF_XFLIP
+    obj_part   -8,  -16, $06, OAMF_XFLIP
+.row_8x16_mirrored_right:
+    db   1
+    obj_part   -8,   -4, $00, $00
+.row_8x16_mirrored_left:
+    db   1
+    obj_part   -8,   -4, $00, OAMF_XFLIP
+.row_16x16_mirrored_right:
+    db   2
+    obj_part   -8,   -8, $00, $00
+    obj_part   -8,    0, $00, OAMF_XFLIP
+.row_16x16_mirrored_left:
+    db   2
+    obj_part   -8,    0, $00, OAMF_XFLIP
+    obj_part   -8,   -8, $00, $00
+.row_24x16_mirrored_right:
+    db   3
+    obj_part   -8,  -12, $00, $00
+    obj_part   -8,   -4, $02, $00
+    obj_part   -8,    4, $00, OAMF_XFLIP
+.row_24x16_mirrored_left:
+    db   3
+    obj_part   -8,    4, $00, OAMF_XFLIP
+    obj_part   -8,   -4, $02, OAMF_XFLIP
+    obj_part   -8,  -12, $00, $00
+.row_32x16_mirrored_right:
+    db   4
+    obj_part   -8,  -16, $00, $00
+    obj_part   -8,   -8, $02, $00
+    obj_part   -8,    0, $02, OAMF_XFLIP
+    obj_part   -8,    8, $00, OAMF_XFLIP
+.row_32x16_mirrored_left:
+    db   4
+    obj_part   -8,    8, $00, OAMF_XFLIP
+    obj_part   -8,    0, $02, OAMF_XFLIP
+    obj_part   -8,   -8, $02, $00
+    obj_part   -8,  -16, $00, $00
+.row_8x16_below_right:
+    db   1
+    obj_part    0,   -4, $00, $00
+.row_8x16_below_left:
+    db   1
+    obj_part    0,   -4, $00, OAMF_XFLIP
+.row_16x16_below_right:
+    db   2
+    obj_part    0,   -8, $00, $00
+    obj_part    0,    0, $02, $00
+.row_16x16_below_left:
+    db   2
+    obj_part    0,    0, $00, OAMF_XFLIP
+    obj_part    0,   -8, $02, OAMF_XFLIP
+.row_24x16_below_right:
+    db   3
+    obj_part    0,  -12, $00, $00
+    obj_part    0,   -4, $02, $00
+    obj_part    0,    4, $04, $00
+.row_24x16_below_left:
+    db   3
+    obj_part    0,    4, $00, OAMF_XFLIP
+    obj_part    0,   -4, $02, OAMF_XFLIP
+    obj_part    0,  -12, $04, OAMF_XFLIP
+.row_32x16_below_right:
+    db   4
+    obj_part    0,  -16, $00, $00
+    obj_part    0,   -8, $02, $00
+    obj_part    0,    0, $04, $00
+    obj_part    0,    8, $06, $00
+.row_32x16_below_left:
+    db   4
+    obj_part    0,    8, $00, OAMF_XFLIP
+    obj_part    0,    0, $02, OAMF_XFLIP
+    obj_part    0,   -8, $04, OAMF_XFLIP
+    obj_part    0,  -16, $06, OAMF_XFLIP
+.row_8x16_below_mirrored_right:
+    db   1
+    obj_part    0,   -4, $00, $00
+.row_8x16_below_mirrored_left:
+    db   1
+    obj_part    0,   -4, $00, OAMF_XFLIP
+.row_16x16_below_mirrored_right:
+    db   2
+    obj_part    0,   -8, $00, $00
+    obj_part    0,    0, $00, OAMF_XFLIP
+.row_16x16_below_mirrored_left:
+    db   2
+    obj_part    0,    0, $00, OAMF_XFLIP
+    obj_part    0,   -8, $00, $00
+.row_24x16_below_mirrored_right:
+    db   3
+    obj_part    0,  -12, $00, $00
+    obj_part    0,   -4, $02, $00
+    obj_part    0,    4, $00, OAMF_XFLIP
+.row_24x16_below_mirrored_left:
+    db   3
+    obj_part    0,    4, $00, OAMF_XFLIP
+    obj_part    0,   -4, $02, OAMF_XFLIP
+    obj_part    0,  -12, $00, $00
+.row_32x16_below_mirrored_right:
+    db   4
+    obj_part    0,  -16, $00, $00
+    obj_part    0,   -8, $02, $00
+    obj_part    0,    0, $02, OAMF_XFLIP
+    obj_part    0,    8, $00, OAMF_XFLIP
+.row_32x16_below_mirrored_left:
+    db   4
+    obj_part    0,    8, $00, OAMF_XFLIP
+    obj_part    0,    0, $02, OAMF_XFLIP
+    obj_part    0,   -8, $02, $00
+    obj_part    0,  -16, $00, $00
+.hanging_blade:
+; ENTITY_KUNG_FU_THEATER_HANGING_BLADE, and the only shape in the table that is not a
+; rectangle: four parts of chain running 72 pixels up from the entity position, then a
+; 32-wide blade across the bottom
+    db   8
+    obj_part  -72,   -4, $00, $00
+    obj_part  -56,   -4, $02, $00
+    obj_part  -40,   -4, $04, $00
+    obj_part  -24,   -4, $06, $00
+    obj_part   -8,  -16, $08, $00
+    obj_part   -8,   -8, $0a, $00
+    obj_part   -8,    0, $0c, $00
+    obj_part   -8,    8, $0e, $00
+.row_24x16_ahead_right:
+    db   3
+    obj_part   -8,    0, $00, $00
+    obj_part   -8,    8, $02, $00
+    obj_part   -8,   16, $04, $00
+.row_24x16_ahead_left:
+    db   3
+    obj_part   -8,   -8, $00, OAMF_XFLIP
+    obj_part   -8,  -16, $02, OAMF_XFLIP
+    obj_part   -8,  -24, $04, OAMF_XFLIP
+.box_16x32_under:
+; Two columns of the same tile rather than a mirrored pair - this shape is symmetric
+; already, so there is nothing to flip
+    db   4
+    obj_part    0,   -8, $00, $00
+    obj_part    0,    0, $00, $00
+    obj_part   16,   -8, $02, $00
+    obj_part   16,    0, $02, $00
+.box_16x32_over:
+    db   4
+    obj_part  -16,   -8, $00, OAMF_YFLIP
+    obj_part  -16,    0, $00, OAMF_YFLIP
+    obj_part  -32,   -8, $02, OAMF_YFLIP
+    obj_part  -32,    0, $02, OAMF_YFLIP
+.row_64x16_below_mirrored:
+    db   8
+    obj_part    0,  -32, $00, $00
+    obj_part    0,  -24, $02, $00
+    obj_part    0,  -16, $02, $00
+    obj_part    0,   -8, $02, $00
+    obj_part    0,    0, $02, OAMF_XFLIP
+    obj_part    0,    8, $02, OAMF_XFLIP
+    obj_part    0,   16, $02, OAMF_XFLIP
+    obj_part    0,   24, $00, OAMF_XFLIP
+.box_8x32_copy_right:
+    db   2
+    obj_part  -16,   -4, $00, $00
+    obj_part    0,   -4, $02, $00
+.box_8x32_copy_left:
+    db   2
+    obj_part  -16,   -4, $00, OAMF_XFLIP
+    obj_part    0,   -4, $02, OAMF_XFLIP
+.box_16x32_mirrored_right:
+    db   4
+    obj_part  -16,   -8, $00, $00
+    obj_part  -16,    0, $00, OAMF_XFLIP
+    obj_part    0,   -8, $02, $00
+    obj_part    0,    0, $02, OAMF_XFLIP
+.box_16x32_mirrored_left:
+    db   4
+    obj_part  -16,    0, $00, OAMF_XFLIP
+    obj_part  -16,   -8, $00, $00
+    obj_part    0,    0, $02, OAMF_XFLIP
+    obj_part    0,   -8, $02, $00
+.box_24x32_mirrored_right:
+    db   6
+    obj_part  -16,  -12, $00, $00
+    obj_part  -16,   -4, $04, $00
+    obj_part  -16,    4, $00, OAMF_XFLIP
+    obj_part    0,  -12, $02, $00
+    obj_part    0,   -4, $06, $00
+    obj_part    0,    4, $02, OAMF_XFLIP
+.box_24x32_mirrored_left:
+    db   6
+    obj_part  -16,    4, $00, OAMF_XFLIP
+    obj_part  -16,   -4, $04, OAMF_XFLIP
+    obj_part  -16,  -12, $00, $00
+    obj_part    0,    4, $02, OAMF_XFLIP
+    obj_part    0,   -4, $06, OAMF_XFLIP
+    obj_part    0,  -12, $02, $00
+.box_32x32_mirrored_right:
+    db   8
+    obj_part  -16,  -16, $00, $00
+    obj_part  -16,   -8, $04, $00
+    obj_part  -16,    0, $04, OAMF_XFLIP
+    obj_part  -16,    8, $00, OAMF_XFLIP
+    obj_part    0,  -16, $02, $00
+    obj_part    0,   -8, $06, $00
+    obj_part    0,    0, $06, OAMF_XFLIP
+    obj_part    0,    8, $02, OAMF_XFLIP
+.box_32x32_mirrored_left:
+    db   8
+    obj_part  -16,    8, $00, OAMF_XFLIP
+    obj_part  -16,    0, $04, OAMF_XFLIP
+    obj_part  -16,   -8, $04, $00
+    obj_part  -16,  -16, $00, $00
+    obj_part    0,    8, $02, OAMF_XFLIP
+    obj_part    0,    0, $06, OAMF_XFLIP
+    obj_part    0,   -8, $06, $00
+    obj_part    0,  -16, $02, $00
+.box_16x64:
+    db   8
+    obj_part  -32,   -8, $00, $00
+    obj_part  -32,    0, $04, $00
+    obj_part  -16,   -8, $02, $00
+    obj_part  -16,    0, $06, $00
+    obj_part    0,   -8, $08, $00
+    obj_part    0,    0, $0c, $00
+    obj_part   16,   -8, $0a, $00
+    obj_part   16,    0, $0e, $00
+
 .jp_03_6451_Entity_BuildSprites_SpriteList:
 ; The generic draw for SPRITE_FLAG_EMBEDDED_SPRITE_DATA entities: copy the sprite list that a
 ; per-effect builder already filled in straight into shadow OAM.

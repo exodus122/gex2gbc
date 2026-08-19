@@ -35,9 +35,9 @@
 ; SPRITE_FLAG_STREAMS_OWN_GFX the id is the high byte of a ROM address, and writing
 ; it queues that page of tiles into VRAM - the shape on screen never changes, only
 ; the tiles under it, which is why a whole enemy animation costs no layout data.
-; For SPRITE_FLAG_LAYOUT_BY_ACTION entities the id lands in wD73A_Entity_TileIdBase
-; instead. Either way the layout comes from bank03_sprite_shapes.asm via
-; data_03_5446_EntitySpriteMetaTable, so two entities can share a block here only
+; For SPRITE_FLAG_FIXED_SHAPE entities the id lands in wD73A_Entity_TileIdBase
+; instead. Either way the layout comes from bank03_sprite_frame_data.asm via
+; data_03_5446_EntitySpriteDescriptors, so two entities can share a block here only
 ; when they share a sprite set - which several do.
 ;
 ; HOW A BLOCK ENDS is declared here rather than decided by the ticker:
@@ -625,12 +625,14 @@ data_02_791a:                                               ; ENTITY_UNK_8E acti
     db   $00
 
 ; ------------------------------------------------------------------
-; OBJECTS AND PLATFORMS - SPRITE_FLAG_LAYOUT_BY_ACTION
+; OBJECTS AND PLATFORMS - SPRITE_FLAG_FIXED_SHAPE
 ;
-; From here to $7CCD the entities set bit 4, so the OAM layout is chosen by the
-; entity's ACTION_ID through .data_03_608e_EntitySpriteLayoutPointerTable rather
-; than by the animation frame. An action is a shape here, not a pose - which is
-; how a platform can be one action wide and another action tall.
+; From here to $7CCD the entities set bit 4. The flag is named for what it looks
+; like it does, but .jp_03_602e_Entity_BuildSprites_FixedShape actually picks the
+; shape from the entity ID and its facing alone - see
+; .data_03_608e_FixedSpriteShapeTable. What the action changes is the TILE BASE:
+; for these entities ENTITY_FIELD_SPRITE_ID is not a frame number but the first
+; tile of the group to draw inside a shape that never moves.
 ;
 ; That makes the frame list secondary, and it shows: a tick of $FF is the single
 ; commonest header in this section. Those entities have no animation at all and
@@ -642,17 +644,17 @@ data_02_791a:                                               ; ENTITY_UNK_8E acti
 ; ------------------------------------------------------------------
 
 data_02_7920:                                               ; ENTITY_SCREAM_TV_HEAD_GHOST action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $0a, $08        ; 8 frames at 10 ticks, looping
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $0a, $08        ; 8 frames at 10 ticks, looping
     db   $20, $28, $20, $28, $20, $28, $20, $28
     db   $00
 
 data_02_792d:                                               ; ENTITY_SCREAM_TV_HEAD_GHOST action $01
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $2d, $01        ; one frame; ANIM_ENDED pulses every 45 ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $2d, $01        ; one frame; ANIM_ENDED pulses every 45 ticks
     db   $30
     db   $00
 
 data_02_7933:                                               ; ENTITY_SCREAM_TV_HEAD_GHOST_HEAD action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $2d, $01        ; one frame; ANIM_ENDED pulses every 45 ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $2d, $01        ; one frame; ANIM_ENDED pulses every 45 ticks
     db   $38
     db   $00
 
@@ -660,64 +662,64 @@ data_02_7933:                                               ; ENTITY_SCREAM_TV_H
 ; ENTITY_SCREAM_TV_FALLING_AXE action $01
 ; ENTITY_SCREAM_TV_FALLING_AXE action $03
 data_02_7939:
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $40
     db   $00
 
 data_02_793f:                                               ; ENTITY_SCREAM_TV_FALLING_AXE action $02
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $1e, $01        ; one frame; ANIM_ENDED pulses every 30 ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $1e, $01        ; one frame; ANIM_ENDED pulses every 30 ticks
     db   $40
     db   $00
 
 data_02_7945:                                               ; ENTITY_TV_BUTTON action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $28
     db   $00
 
 data_02_794b:                                               ; ENTITY_TV_BUTTON action $01
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $2c
     db   $00
 
 data_02_7951:                                               ; ENTITY_SCREAM_TV_LANTERN action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $50
     db   $00
 
 data_02_7957:                                               ; ENTITY_SCREAM_TV_LANTERN action $01
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $58
     db   $00
 
 data_02_795d:                                               ; ENTITY_SCREAM_TV_CLIMB_WALL_SUN_ENEMY action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $44
     db   $00
 
 data_02_7963:                                               ; ENTITY_SCREAM_TV_FALLING_PLATFORM action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $4c
     db   $00
 
 data_02_7969:                                               ; ENTITY_SCREAM_TV_MOVING_PLATFORM action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $48
     db   $00
 
 data_02_796f:                                               ; ENTITY_SCREAM_TV_PUSH_BLOCK action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $50
     db   $00
 
 data_02_7975:                                               ; ENTITY_SCREAM_TV_ORANGE_MOVING_PLATFORM action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $58
     db   $00
 
 ; ENTITY_SCREAM_TV_VANISHING_PLATFORM action $00
 ; ENTITY_SCREAM_TV_VANISHING_PLATFORM action $01
 data_02_797b:
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $48
     db   $00
 
@@ -727,148 +729,148 @@ data_02_7981:                                               ; ENTITY_SCREAM_TV_V
     db   $00
 
 data_02_7987:                                               ; ENTITY_SCREAM_TV_MONA_LISA_ELEVATOR action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $48
     db   $00
 
 data_02_798d:                                               ; ENTITY_TOON_TV_HARD_HEAD_AREA_HAZARD action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $20
     db   $00
 
 data_02_7993:                                               ; ENTITY_TOON_TV_HARD_HEAD_AREA_HAZARD action $01
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $20
     db   $00
 
 data_02_7999:                                               ; ENTITY_TOON_TV_HARD_HEAD_AREA_HAZARD action $02
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $30
     db   $00
 
 ; ENTITY_TOON_TV_BUMBLEBEE action $00
 ; ENTITY_TOON_TV_BUMBLEBEE action $01
 data_02_799f:
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $04, $02        ; 2 frames at 4 ticks, looping
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $04, $02        ; 2 frames at 4 ticks, looping
     db   $20, $30
     db   $00
 
 data_02_79a6:                                               ; ENTITY_TOON_TV_STATIONARY_BEAR_TRAP action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $2d, $01        ; one frame; ANIM_ENDED pulses every 45 ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $2d, $01        ; one frame; ANIM_ENDED pulses every 45 ticks
     db   $20
     db   $00
 
 data_02_79ac:                                               ; ENTITY_TOON_TV_STATIONARY_BEAR_TRAP action $01
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION | SPRITE_FLAG_LOOP_LAST_FRAME, $06, $02 ; 2 frames at 6 ticks, then holds the last
+    db   $00, SPRITE_FLAG_FIXED_SHAPE | SPRITE_FLAG_LOOP_LAST_FRAME, $06, $02 ; 2 frames at 6 ticks, then holds the last
     db   $28, $30
     db   $00
 
 data_02_79b3:                                               ; ENTITY_TOON_TV_MOVING_BEAR_TRAP action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $32, $01        ; one frame; ANIM_ENDED pulses every 50 ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $32, $01        ; one frame; ANIM_ENDED pulses every 50 ticks
     db   $20
     db   $00
 
 data_02_79b9:                                               ; ENTITY_TOON_TV_MOVING_BEAR_TRAP action $01
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION | SPRITE_FLAG_LOOP_LAST_FRAME, $06, $07 ; 7 frames at 6 ticks, then holds the last
+    db   $00, SPRITE_FLAG_FIXED_SHAPE | SPRITE_FLAG_LOOP_LAST_FRAME, $06, $07 ; 7 frames at 6 ticks, then holds the last
     db   $28, $28, $28, $28, $28, $30, $38
     db   $00
 
 data_02_79c5:                                               ; ENTITY_TOON_TV_BOWLING_BALL action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $06, $06        ; 6 frames at 6 ticks, looping
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $06, $06        ; 6 frames at 6 ticks, looping
     db   $44, $20, $2c, $38, $50, $50
     db   $00
 
 ; ENTITY_TOON_TV_HUNTER_BULLET action $00
 ; ENTITY_TOON_TV_HUNTER_BULLET action $01
 data_02_79d0:
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $58
     db   $00
 
 data_02_79d6:                                               ; ENTITY_TOON_TV_CACTUS action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $20
     db   $00
 
 data_02_79dc:                                               ; ENTITY_TOON_TV_CACTUS action $01
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $0a, $02        ; 2 frames at 10 ticks, looping
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $0a, $02        ; 2 frames at 10 ticks, looping
     db   $2c, $38
     db   $00
 
 data_02_79e3:                                               ; ENTITY_TOON_TV_CACTUS action $02
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $44
     db   $00
 
 data_02_79e9:                                               ; ENTITY_TOON_TV_DOMINO action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $40
     db   $00
 
 data_02_79ef:                                               ; ENTITY_TOON_TV_SHARK action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $0a, $02        ; 2 frames at 10 ticks, looping
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $0a, $02        ; 2 frames at 10 ticks, looping
     db   $40, $46
     db   $00
 
 data_02_79f6:                                               ; ENTITY_TOON_TV_FLOWER action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $20
     db   $00
 
 data_02_79fc:                                               ; ENTITY_TOON_TV_FLOWER action $01
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $2c
     db   $00
 
 data_02_7a02:                                               ; ENTITY_TOON_TV_FLOWER action $02
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $38
     db   $00
 
 data_02_7a08:                                               ; ENTITY_TOON_TV_FLOWER_HAMMER action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $0a, $01        ; one frame; ANIM_ENDED pulses every 10 ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $0a, $01        ; one frame; ANIM_ENDED pulses every 10 ticks
     db   $44
     db   $00
 
 data_02_7a0e:                                               ; ENTITY_TOON_TV_FLOWER_HAMMER action $01
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION | SPRITE_FLAG_LOOP_LAST_FRAME, $0c, $02 ; 2 frames at 12 ticks, then holds the last
+    db   $00, SPRITE_FLAG_FIXED_SHAPE | SPRITE_FLAG_LOOP_LAST_FRAME, $0c, $02 ; 2 frames at 12 ticks, then holds the last
     db   $4c, $54
     db   $00
 
 data_02_7a15:                                               ; ENTITY_TOON_TV_FLOWER_HAMMER action $02
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION | SPRITE_FLAG_LOOP_LAST_FRAME, $1e, $01 ; one frame; ANIM_ENDED pulses every 30 ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE | SPRITE_FLAG_LOOP_LAST_FRAME, $1e, $01 ; one frame; ANIM_ENDED pulses every 30 ticks
     db   $54
     db   $00
 
 data_02_7a1b:                                               ; ENTITY_TOON_TV_MUSHROOM action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $40
     db   $00
 
 data_02_7a21:                                               ; ENTITY_TOON_TV_MUSHROOM_PROJECTILE action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $08        ; 8 frames, but tick $ff means only the first is ever drawn
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $08        ; 8 frames, but tick $ff means only the first is ever drawn
     db   $40, $42, $44, $46, $48, $4a, $4c, $4e
     db   $00
 
 data_02_7a2e:                                               ; ENTITY_TOON_TV_MOVING_LOG action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $50
     db   $00
 
 data_02_7a34:                                               ; ENTITY_TOON_TV_STATIONARY_LOG action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $50
     db   $00
 
 data_02_7a3a:                                               ; ENTITY_TOON_TV_LIZARD action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $06, $06        ; 6 frames at 6 ticks, looping
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $06, $06        ; 6 frames at 6 ticks, looping
     db   $20, $28, $30, $38, $40, $48
     db   $00
 
 ; ENTITY_TOON_TV_VANISHING_BLOCK action $00
 ; ENTITY_TOON_TV_VANISHING_BLOCK action $01
 data_02_7a45:
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $40
     db   $00
 
@@ -880,12 +882,12 @@ data_02_7a4b:                                               ; ENTITY_TOON_TV_VAN
 ; ENTITY_TOON_TV_MOVING_BLOCK action $00
 ; ENTITY_TOON_TV_MOVING_BLOCK action $01
 data_02_7a51:
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $40
     db   $00
 
 data_02_7a57:                                               ; ENTITY_UNK_36 action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $08, $06        ; 6 frames at 8 ticks, looping
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $08, $06        ; 6 frames at 8 ticks, looping
     db   $40, $44, $48, $4c, $48, $44
     db   $00
 
@@ -895,52 +897,52 @@ data_02_7a62:                                               ; ENTITY_UNK_35 acti
     db   $00
 
 data_02_7a68:                                               ; ENTITY_UNK_35 action $01
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION | SPRITE_FLAG_LOOP_LAST_FRAME, $06, $06 ; 6 frames at 6 ticks, then holds the last
+    db   $00, SPRITE_FLAG_FIXED_SHAPE | SPRITE_FLAG_LOOP_LAST_FRAME, $06, $06 ; 6 frames at 6 ticks, then holds the last
     db   $20, $28, $30, $38, $40, $48
     db   $00
 
 data_02_7a73:                                               ; ENTITY_PRE_HISTORY_FALLING_LAVA action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $40
     db   $00
 
 data_02_7a79:                                               ; ENTITY_PRE_HISTORY_FALLING_LAVA action $01
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION | SPRITE_FLAG_LOOP_LAST_FRAME, $06, $06 ; 6 frames at 6 ticks, then holds the last
+    db   $00, SPRITE_FLAG_FIXED_SHAPE | SPRITE_FLAG_LOOP_LAST_FRAME, $06, $06 ; 6 frames at 6 ticks, then holds the last
     db   $40, $42, $44, $46, $48, $4a
     db   $00
 
 data_02_7a84:                                               ; ENTITY_PRE_HISTORY_LAVA_RAFT action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $58
     db   $00
 
 data_02_7a8a:                                               ; ENTITY_PRE_HISTORY_LAVA_RAFT action $01
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $60
     db   $00
 
 data_02_7a90:                                               ; ENTITY_PRE_HISTORY_MOVING_PLATFORM action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $50
     db   $00
 
 data_02_7a96:                                               ; ENTITY_UNK_3A action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $58
     db   $00
 
 data_02_7a9c:                                               ; ENTITY_UNK_3B action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $54
     db   $00
 
 data_02_7aa2:                                               ; ENTITY_UNK_46 action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $58
     db   $00
 
 data_02_7aa8:                                               ; ENTITY_UNK_3D action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $20
     db   $00
 
@@ -950,27 +952,27 @@ data_02_7aae:                                               ; ENTITY_PRE_HISTORY
     db   $00
 
 data_02_7ab4:                                               ; ENTITY_PRE_HISTORY_FALLING_BOULDER action $01
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $20
     db   $00
 
 data_02_7aba:                                               ; ENTITY_PRE_HISTORY_FALLING_BOULDER action $02
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION | SPRITE_FLAG_LOOP_LAST_FRAME, $02, $02 ; 2 frames at 2 ticks, then holds the last
+    db   $00, SPRITE_FLAG_FIXED_SHAPE | SPRITE_FLAG_LOOP_LAST_FRAME, $02, $02 ; 2 frames at 2 ticks, then holds the last
     db   $2c, $38
     db   $00
 
 data_02_7ac1:                                               ; ENTITY_PRE_HISTORY_BEETLE_HORIZONTAL action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $06, $02        ; 2 frames at 6 ticks, looping
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $06, $02        ; 2 frames at 6 ticks, looping
     db   $28, $2c
     db   $00
 
 data_02_7ac8:                                               ; ENTITY_PRE_HISTORY_BEETLE_VERTICAL action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $06, $02        ; 2 frames at 6 ticks, looping
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $06, $02        ; 2 frames at 6 ticks, looping
     db   $20, $24
     db   $00
 
 data_02_7acf:                                               ; ENTITY_PRE_HISTORY_ANT action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $06, $04        ; 4 frames at 6 ticks, looping
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $06, $04        ; 4 frames at 6 ticks, looping
     db   $30, $34, $38, $3c
     db   $00
 
@@ -980,42 +982,42 @@ data_02_7ad8:                                               ; ENTITY_PRE_HISTORY
     db   $00
 
 data_02_7ade:                                               ; ENTITY_PRE_HISTORY_GEYSER action $01
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION | SPRITE_FLAG_LOOP_LAST_FRAME, $06, $06 ; 6 frames at 6 ticks, then holds the last
+    db   $00, SPRITE_FLAG_FIXED_SHAPE | SPRITE_FLAG_LOOP_LAST_FRAME, $06, $06 ; 6 frames at 6 ticks, then holds the last
     db   $20, $28, $30, $38, $40, $48
     db   $00
 
 data_02_7ae9:                                               ; ENTITY_PRE_HISTORY_TRICERATOPS_HORN action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $50
     db   $00
 
 data_02_7aef:                                               ; ENTITY_PRE_HISTORY_FIRE_PLANT action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $08, $04        ; 4 frames at 8 ticks, looping
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $08, $04        ; 4 frames at 8 ticks, looping
     db   $40, $44, $48, $44
     db   $00
 
 data_02_7af8:                                               ; ENTITY_PRE_HISTORY_FIRE_PLANT action $01
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION | SPRITE_FLAG_LOOP_LAST_FRAME, $08, $04 ; 4 frames at 8 ticks, then holds the last
+    db   $00, SPRITE_FLAG_FIXED_SHAPE | SPRITE_FLAG_LOOP_LAST_FRAME, $08, $04 ; 4 frames at 8 ticks, then holds the last
     db   $40, $44, $48, $4c
     db   $00
 
 data_02_7b01:                                               ; ENTITY_PRE_HISTORY_FIRE_PLANT action $02
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $08, $02        ; 2 frames at 8 ticks, looping
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $08, $02        ; 2 frames at 8 ticks, looping
     db   $50, $54
     db   $00
 
 data_02_7b08:                                               ; ENTITY_PRE_HISTORY_FIRE_PLANT_PROJECTILES action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $04, $02        ; 2 frames at 4 ticks, looping
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $04, $02        ; 2 frames at 4 ticks, looping
     db   $58, $5a
     db   $00
 
 data_02_7b0f:                                               ; ENTITY_SCREAM_TV_FLOATING_SKULL_PROJECTILE action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $2c
     db   $00
 
 data_02_7b15:                                               ; ENTITY_KUNG_FU_THEATER_HANGING_BLADE action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $40
     db   $00
 
@@ -1027,35 +1029,35 @@ data_02_7b1b:                                               ; ENTITY_KUNG_FU_THE
 ; ENTITY_KUNG_FU_THEATER_CANNON_PROJECTILE action $00
 ; ENTITY_KUNG_FU_THEATER_CANNON_PROJECTILE action $01
 data_02_7b21:
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $48
     db   $00
 
 data_02_7b27:                                               ; ENTITY_KUNG_FU_THEATER_DRAGON_BODY_SEGMENT action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $50
     db   $00
 
 data_02_7b2d:                                               ; ENTITY_UNK_51 action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $78, $01        ; one frame; ANIM_ENDED pulses every 120 ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $78, $01        ; one frame; ANIM_ENDED pulses every 120 ticks
     db   $20
     db   $00
 data_02_7b33_Orphan:                                        ; unreachable - no action table points here
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $f0, $01        ; one frame; ANIM_ENDED pulses every 240 ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $f0, $01        ; one frame; ANIM_ENDED pulses every 240 ticks
     db   $28
     db   $00
 
 ; ENTITY_KUNG_FU_THEATER_DRAGON_PROJECTILE action $00
 ; ENTITY_KUNG_FU_THEATER_DRAGON_PROJECTILE action $01
 data_02_7b39:
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $06, $04        ; 4 frames at 6 ticks, looping
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $06, $04        ; 4 frames at 6 ticks, looping
     db   $58, $5a, $5c, $5a
     db   $00
 
 ; ENTITY_KUNG_FU_THEATER_VANISHING_PLATFORM action $00
 ; ENTITY_KUNG_FU_THEATER_VANISHING_PLATFORM action $01
 data_02_7b42:
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $50
     db   $00
 
@@ -1065,22 +1067,22 @@ data_02_7b48:                                               ; ENTITY_KUNG_FU_THE
     db   $00
 
 data_02_7b4e:                                               ; ENTITY_KUNG_FU_THEATER_MOVING_PLATFORM action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $50
     db   $00
 
 data_02_7b54:                                               ; ENTITY_UNK_60 action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $50
     db   $00
 
 data_02_7b5a:                                               ; ENTITY_KUNG_FU_THEATER_MOVING_RAFT action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $58
     db   $00
 
 data_02_7b60:                                               ; ENTITY_KUNG_FU_THEATER_STATIONARY_RAFT action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $58
     db   $00
 
@@ -1092,36 +1094,36 @@ data_02_7b66:                                               ; ENTITY_UNK_63 acti
 ; ENTITY_KUNG_FU_THEATER_SAMURAI_HEAD action $00
 ; ENTITY_KUNG_FU_THEATER_SAMURAI_HEAD action $01
 data_02_7b6c:
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $46
     db   $00
 
 data_02_7b72:                                               ; ENTITY_KUNG_FU_THEATER_SAMURAI_HEAD action $02
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $06, $03        ; 3 frames at 6 ticks, looping
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $06, $03        ; 3 frames at 6 ticks, looping
     db   $40, $42, $44
     db   $00
 
 data_02_7b7a:                                               ; ENTITY_KUNG_FU_THEATER_LIZARD action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $06, $06        ; 6 frames at 6 ticks, looping
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $06, $06        ; 6 frames at 6 ticks, looping
     db   $20, $28, $30, $38, $40, $48
     db   $00
 
 ; ENTITY_KUNG_FU_THEATER_NINJA_PROJECTILE action $00
 ; ENTITY_KUNG_FU_THEATER_NINJA_PROJECTILE action $01
 data_02_7b85:
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $06, $02        ; 2 frames at 6 ticks, looping
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $06, $02        ; 2 frames at 6 ticks, looping
     db   $4c, $4e
     db   $00
 
 data_02_7b8c:                                               ; ENTITY_KUNG_FU_THEATER_SPIKY_LOG action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $58
     db   $00
 
 ; ENTITY_KUNG_FU_THEATER_TALL_JAR action $00
 ; ENTITY_KUNG_FU_THEATER_JAR action $00
 data_02_7b92:
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $50
     db   $00
 
@@ -1130,24 +1132,24 @@ data_02_7b92:
 ; ENTITY_UNK_64 action $00
 ; ENTITY_REZOPOLIS_SPECIAL_MOVING_PLATFORM action $00
 data_02_7b98:
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $50
     db   $00
 
 data_02_7b9e:                                               ; ENTITY_REZOPOLIS_MOVING_PLATFORM action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $54
     db   $00
 
 ; ENTITY_REZOPOLIS_RED_PLATFORM action $00
 ; ENTITY_REZOPOLIS_ACTIVATED_RED_PLATFORM action $00
 data_02_7ba4:
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $58
     db   $00
 
 data_02_7baa:                                               ; ENTITY_REZOPOLIS_TAILSPIN_PLATFORM action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $40
     db   $00
 
@@ -1156,37 +1158,37 @@ data_02_7baa:                                               ; ENTITY_REZOPOLIS_T
 ; ENTITY_REZOPOLIS_FLAMETHROWER action $00
 ; ENTITY_REZOPOLIS_FLAMETHROWER action $01
 data_02_7bb0:
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $04, $08        ; 8 frames at 4 ticks, looping
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $04, $08        ; 8 frames at 4 ticks, looping
     db   $20, $24, $28, $2c, $30, $34, $38, $3c
     db   $00
 
 data_02_7bbd:                                               ; ENTITY_REZOPOLIS_TAILSPIN_GEAR action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $20
     db   $00
 
 data_02_7bc3:                                               ; ENTITY_REZOPOLIS_TAILSPIN_GEAR action $01
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $04, $04        ; 4 frames at 4 ticks, looping
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $04, $04        ; 4 frames at 4 ticks, looping
     db   $20, $28, $30, $38
     db   $00
 
 data_02_7bcc:                                               ; ENTITY_REZOPOLIS_TAILSPIN_GEAR action $02
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $03, $04        ; 4 frames at 3 ticks, looping
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $03, $04        ; 4 frames at 3 ticks, looping
     db   $20, $28, $30, $38
     db   $00
 
 data_02_7bd5:                                               ; ENTITY_REZOPOLIS_TAILSPIN_GEAR action $03
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $02, $04        ; 4 frames at 2 ticks, looping
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $02, $04        ; 4 frames at 2 ticks, looping
     db   $20, $28, $30, $38
     db   $00
 
 data_02_7bde:                                               ; ENTITY_REZOPOLIS_TAILSPIN_GEAR action $04
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $01, $04        ; 4 frames at 1 tick, looping
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $01, $04        ; 4 frames at 1 tick, looping
     db   $20, $28, $30, $38
     db   $00
 
 data_02_7be7:                                               ; ENTITY_REZOPOLIS_ANT action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $08, $04        ; 4 frames at 8 ticks, looping
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $08, $04        ; 4 frames at 8 ticks, looping
     db   $40, $46, $4c, $52
     db   $00
 
@@ -1194,74 +1196,74 @@ data_02_7be7:                                               ; ENTITY_REZOPOLIS_A
 ; ENTITY_UNK_70 action $00
 ; ENTITY_CIRCUIT_CENTRAL_ANT action $00
 data_02_7bf0:
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $08, $04        ; 4 frames at 8 ticks, looping
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $08, $04        ; 4 frames at 8 ticks, looping
     db   $20, $26, $2c, $32
     db   $00
 
 data_02_7bf9:                                               ; ENTITY_CIRCUIT_CENTRAL_CAPACITOR action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION | SPRITE_FLAG_LOOP_LAST_FRAME, $04, $03 ; 3 frames at 4 ticks, then holds the last
+    db   $00, SPRITE_FLAG_FIXED_SHAPE | SPRITE_FLAG_LOOP_LAST_FRAME, $04, $03 ; 3 frames at 4 ticks, then holds the last
     db   $44, $40, $44
     db   $00
 
 data_02_7c01:                                               ; ENTITY_CIRCUIT_CENTRAL_CAPACITOR action $01
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $48
     db   $00
 
 ; ENTITY_CIRCUIT_CENTRAL_POWER_UP action $00
 ; ENTITY_CIRCUIT_CENTRAL_POWER_UP action $01
 data_02_7c07:
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION | SPRITE_FLAG_LOOP_LAST_FRAME, $05, $04 ; 4 frames at 5 ticks, then holds the last
+    db   $00, SPRITE_FLAG_FIXED_SHAPE | SPRITE_FLAG_LOOP_LAST_FRAME, $05, $04 ; 4 frames at 5 ticks, then holds the last
     db   $40, $44, $48, $4c
     db   $00
 
 data_02_7c10:                                               ; ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $20
     db   $00
 
 data_02_7c16:                                               ; ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT action $01
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $04, $02        ; 2 frames at 4 ticks, looping
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $04, $02        ; 2 frames at 4 ticks, looping
     db   $26, $2c
     db   $00
 
 data_02_7c1d:                                               ; ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT_GEAR action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $06, $03        ; 3 frames at 6 ticks, looping
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $06, $03        ; 3 frames at 6 ticks, looping
     db   $32, $36, $3a
     db   $00
 
 data_02_7c25:                                               ; ENTITY_CIRCUIT_CENTRAL_ELECTRIC_BALL action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION | SPRITE_FLAG_INVISIBLE, $ff, $01 ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE | SPRITE_FLAG_INVISIBLE, $ff, $01 ; one frame, never ticks
     db   $40
     db   $00
 
 data_02_7c2b:                                               ; ENTITY_CIRCUIT_CENTRAL_ELECTRIC_BALL action $01
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $06, $04        ; 4 frames at 6 ticks, looping
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $06, $04        ; 4 frames at 6 ticks, looping
     db   $40, $44, $48, $4c
     db   $00
 
 data_02_7c34:                                               ; ENTITY_CIRCUIT_CENTRAL_POWERED_PLATFORM action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $58
     db   $00
 
 data_02_7c3a:                                               ; ENTITY_CIRCUIT_CENTRAL_POWERED_PLATFORM action $01
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $06, $03        ; 3 frames at 6 ticks, looping
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $06, $03        ; 3 frames at 6 ticks, looping
     db   $58, $54, $54
     db   $00
 
 data_02_7c42:                                               ; ENTITY_CIRCUIT_CENTRAL_MOVING_PLATFORM action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $50
     db   $00
 
 data_02_7c48:                                               ; ENTITY_CIRCUIT_CENTRAL_POWERED_PLATFORM action $02
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $03, $03        ; 3 frames at 3 ticks, looping
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $03, $03        ; 3 frames at 3 ticks, looping
     db   $58, $54, $54
     db   $00
 
 data_02_7c50:                                               ; ENTITY_CIRCUIT_CENTRAL_LOWERING_PLATFORM action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $5c
     db   $00
 
@@ -1279,7 +1281,7 @@ data_02_7c5c:                                               ; ENTITY_CIRCUIT_CEN
 ; ENTITY_CHANNEL_Z_ARCED_GUN_PROJECTILE2 action $00
 ; ENTITY_CHANNEL_Z_GUN_PROJECTILE action $00
 data_02_7c62:
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION | SPRITE_FLAG_INVISIBLE, $ff, $01 ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE | SPRITE_FLAG_INVISIBLE, $ff, $01 ; one frame, never ticks
     db   $40
     db   $00
 
@@ -1289,7 +1291,7 @@ data_02_7c62:
 ; ENTITY_CHANNEL_Z_ARCED_GUN_PROJECTILE2 action $03
 ; ENTITY_CHANNEL_Z_GUN_PROJECTILE action $01
 data_02_7c68:
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $04, $02        ; 2 frames at 4 ticks, looping
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $04, $02        ; 2 frames at 4 ticks, looping
     db   $40, $42
     db   $00
 
@@ -1301,56 +1303,56 @@ data_02_7c6f:                                               ; ENTITY_REZOPOLIS_A
 ; ENTITY_CHANNEL_Z_UNUSED_PLATFORM_1 action $00
 ; ENTITY_CHANNEL_Z_UNUSED_PLATFORM_2 action $00
 data_02_7c75:
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $5c
     db   $00
 
 data_02_7c7b:                                               ; ENTITY_TOON_TV_ROCKET action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $40
     db   $00
 
 data_02_7c81:                                               ; ENTITY_TOON_TV_ROCKET action $01
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $04, $14        ; 20 frames at 4 ticks, looping
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $04, $14        ; 20 frames at 4 ticks, looping
     db   $40, $50, $40, $50, $50, $40, $40, $50
     db   $40, $50, $40, $40, $50, $50, $50, $40
     db   $40, $50, $50, $40
     db   $00
 
 data_02_7c9a:                                               ; ENTITY_TOON_TV_ROCKET action $02
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $03, $02        ; 2 frames at 3 ticks, looping
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $03, $02        ; 2 frames at 3 ticks, looping
     db   $40, $50
     db   $00
 
 data_02_7ca1:                                               ; ENTITY_CHANNEL_Z_REZ_FOLLOWING_FIRE action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $04, $04        ; 4 frames at 4 ticks, looping
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $04, $04        ; 4 frames at 4 ticks, looping
     db   $50, $54, $58, $54
     db   $00
 
 data_02_7caa:                                               ; ENTITY_CHANNEL_Z_GUN_PROJECTILE_EXPLOSION action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $04, $07        ; 7 frames at 4 ticks, looping
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $04, $07        ; 7 frames at 4 ticks, looping
     db   $44, $44, $48, $48, $48, $48, $4c
     db   $00
 
 ; ENTITY_FINAL_BATTLE_BUTTON_PROJECTILE action $00
 ; ENTITY_FINAL_BATTLE_BUTTON_PROJECTILE action $01
 data_02_7cb6:
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $40
     db   $00
 
 data_02_7cbc:                                               ; ENTITY_CHANNEL_Z_FINAL_BATTLE_BUTTON action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $50
     db   $00
 
 data_02_7cc2:                                               ; ENTITY_CHANNEL_Z_FINAL_BATTLE_BUTTON action $01
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $54
     db   $00
 
 data_02_7cc8:                                               ; ENTITY_MEDIA_DIMENSION_MOVING_PLATFORM action $00
-    db   $00, SPRITE_FLAG_LAYOUT_BY_ACTION, $ff, $01        ; one frame, never ticks
+    db   $00, SPRITE_FLAG_FIXED_SHAPE, $ff, $01        ; one frame, never ticks
     db   $40
     db   $00
 
