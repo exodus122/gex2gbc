@@ -1525,7 +1525,7 @@ wD764_TileTypeBehindGexsUpperBody:
 ; the tile at his own row
     ds 1                                               ;; d764
 wD765_TileTypeBehindGexsLowerBody:
-; one tile row down. Was previously named identically to wD764
+; one tile row down
     ds 1                                               ;; d765
 wD766_TileTypeBehindGexsFace: ; also set to 22 in front of doors?
     ds 1                                               ;; d766

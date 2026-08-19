@@ -874,9 +874,6 @@ call_02_538b_EntityAction_Pumpkin_Crouch:
 ; Action $00. Squash-and-stretch wind-up: hold still until the 5-frame squash
 ; animation (data_02_76b5) wraps, then set an upward Y velocity and hand over to
 ; the hop. Nothing here moves the pumpkin - the launch is one write to YVEL.
-;
-; NOTE the label used to read call_02_5373, which is the address of the push
-; block above; the routine has always started at $538b
     call call_00_3843_Entity_CheckAnimationEnded
     ret  Z
     ld   C, $28

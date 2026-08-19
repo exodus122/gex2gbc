@@ -17,7 +17,6 @@ INCLUDE "code/bank02_update_entities.asm"
 SECTION "bank03", ROMX[$4000], BANK[$03]
 INCLUDE "code/bank03_bg_collision.asm"
 INCLUDE "code/bank03_entity_collision.asm"
-INCLUDE "code/bank03_sprite_shapes.asm"
 INCLUDE "code/bank03_oam_build.asm"
 INCLUDE "code/bank03_hud_tiles.asm"
 INCLUDE "code/bank03_bgmap_write.asm"
