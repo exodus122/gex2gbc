@@ -1362,6 +1362,30 @@ DEF  CLIMB_STATE_STOP                         EQU $09
 DEF  CLIMB_STATE_NOT_CLIMBING                 EQU $FF
 
 ; ------------------------------------------------------------------
+; wD748_Player_ClimbDirectionIndex - which way he is climbing this frame.
+; call_02_4777_PlayerBackgroundClimb_GetDirection turns the held d-pad into one of
+; these and returns CLIMB_DIR_NONE if nothing is held; every per-direction table in
+; the climb handlers is indexed by it. It is a compass starting at up and going
+; clockwise, so index XOR $04 is the opposite direction.
+; Wall climbing only ever produces CLIMB_DIR_UP or CLIMB_DIR_DOWN, but its tables
+; are still eight entries wide - the other six rows are left over from a version
+; that let him move sideways on a wall
+; ------------------------------------------------------------------
+DEF  CLIMB_DIR_UP                             EQU $00
+DEF  CLIMB_DIR_UP_RIGHT                       EQU $01
+DEF  CLIMB_DIR_RIGHT                          EQU $02
+DEF  CLIMB_DIR_DOWN_RIGHT                     EQU $03
+DEF  CLIMB_DIR_DOWN                           EQU $04
+DEF  CLIMB_DIR_DOWN_LEFT                      EQU $05
+DEF  CLIMB_DIR_LEFT                           EQU $06
+DEF  CLIMB_DIR_UP_LEFT                        EQU $07
+DEF  CLIMB_DIR_NONE                           EQU $FF
+
+; A row of the two climb direction tables: d-pad byte, CLIMB_DIR_* index,
+; signed 16-bit X delta, signed 16-bit Y delta
+DEF  CLIMB_DIR_RECORD_SIZE                    EQU 6
+
+; ------------------------------------------------------------------
 ; Background collision (bank03_bg_collision.asm)
 ;
 ; wC800_CurrentCollisionData is a grid of tile type ids kept in step with the visible
@@ -1440,6 +1464,8 @@ DEF  PLAYER_DAMAGE_COOLDOWN_LENGTH            EQU $77
 DEF  PLAYER_IDLE_TIMER_LENGTH                 EQU $7D ; frames of standing still before the idle animation
 DEF  PLAYER_KARATE_KICK_LENGTH                EQU $30
 DEF  CLIMB_TAIL_SPIN_LENGTH                   EQU $20 ; frames before dropping back to the plain climb state
+DEF  CLIMB_TAIL_SPIN_SPRITE_BASE              EQU $58 ; first of the 8 spin frames used on a background climb
+DEF  WALL_TAIL_SPIN_SPRITE_BASE               EQU $70 ; the same, for a wall climb
 
 ; ------------------------------------------------------------------
 ; Background collision tile types (wD764/wD765/wD766/wD767).

@@ -1318,20 +1318,26 @@ wD746_Player_ClimbingState:
 ; and the climb handler moves Gex directly
     ds 1                                               ;; d746
 wD747_Player_ClimbAnimCounter:
-; frame counter within the current climb sub-state. The climb handlers derive
-; the sprite frame from (counter >> 2) & 7, and the dismount/tail-spin states
-; use it as their own countdown
+; frame counter within the current climb sub-state, and zeroed on every change of
+; sub-state. The climbing and tail-spin states take the sprite frame from
+; (counter >> 2) & 7; the dismount states use it as a countdown, shifting it by
+; 2 (background/wall bottom) or by 1 (the corner transition) to index their sprite
+; lists and comparing it against a fixed length to know when they are done
     ds 1                                               ;; d747
 wD748_Player_ClimbDirectionIndex:
-; index of the matched record in the climb movement tables (.data_02_47a5 for
-; background climbs, .data_02_4803 for walls). Selects facing, sprite base and
-; the per-frame X/Y delta
+; which way Gex is climbing this frame, as a CLIMB_DIR_* compass index - see
+; constants.asm. Written by the two direction routines in
+; bank02_player_actions.asm from the held d-pad, and used to index every
+; per-direction table in the climb handlers for facing, frame set and sprite base.
+; Left alone (so it keeps the previous frame's value) when no direction is held
     ds 1                                               ;; d748
 wD749_Player_ClimbingDirection:
-; 0 = up
-; 2 = right
-; 4 = down
-; 6 = left
+; Which corner Gex is rounding, NOT a movement direction - unrelated to wD748.
+; call_03_4ac4_BgCollision_ClimbingHandler writes tile type minus
+; TILE_TYPE_CLIMB_STOP_ENTRY_FIRST here, so the value is 0-3 and is chosen by which
+; of the four stopper tiles the level places. .jp_02_46b8_PlayerClimbAction_Stop
+; pairs it with the current facing to pick the step deltas and the wall state to
+; come out in; only 2 and 3 have real table rows
     ds 1                                               ;; d749
 wD74A_Player_InWaterOrLava:
 ; $80 = Gex is not touching liquid, $00 = he is (the flag is built by xor $80,
@@ -1342,7 +1348,11 @@ wD74A_Player_InWaterOrLava:
 
 wD74B_Player_ClimbingFlags:
 ; bit 6 (CLIMB_FLAG_ALT_FRAMES) selects the rotated climb sprite frame set in
-; call_03_5ca8_Entity_BuildPlayerSprites. Cleared whenever a new action is queued
+; call_03_5ca8_Entity_BuildPlayerSprites. Cleared whenever a new action is queued.
+; Together with FACING_LEFT in wD20D this is what lets eight climb directions be
+; drawn from four sets of artwork - see
+; .data_02_4557_BackgroundClimbSpriteFlagsByDirection. The dismount states clear it
+; every frame so the drop-off is always drawn from the primary set
     ds 1                                               ;; d74b
 
 wD74C_Player_KarateKickTimer: ; gets canceled if done into a wall

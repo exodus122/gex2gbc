@@ -10,7 +10,7 @@ data_02_4000_EntityActionJumpTable:
 ;
 ; The comment on each line is the entity id, which is also this line's index -
 ; ENTITY_* ids are positions in this table, not values stored anywhere else
-    dw   data_02_4120                                               ; $00 ENTITY_GEX
+    dw   data_02_4120_EntityActions_Gex                              ; $00 ENTITY_GEX
     dw   data_02_4ddb_EntityActions_CollectibleSpawn                ; $01 ENTITY_COLLECTIBLE_SPAWN
     dw   data_02_4dff_EntityActions_Unk02                           ; $02 ENTITY_UNK_02
     dw   data_02_4ddf_EntityActions_TVButton                        ; $03 ENTITY_TV_BUTTON
