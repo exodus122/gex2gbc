@@ -597,7 +597,7 @@ call_03_5ebf_Entity_BuildSprites:
 ; animating.
 ;
 ; The layout blocks it lands on have exactly the format of the ones in
-; bank03_sprite_frame_data.asm - a part count then that many obj_part records
+; bank03_sprite_shapes.asm - a part count then that many obj_part records
     push BC                                            ;; 03:602e $c5
     LOAD_OBJ_FIELD_TO_DE ENTITY_FIELD_SPRITE_ID
     ld   A, [DE]                                       ;; 03:6037 $1a

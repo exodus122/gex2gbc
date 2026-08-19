@@ -36,7 +36,7 @@
 ; it queues that page of tiles into VRAM - the shape on screen never changes, only
 ; the tiles under it, which is why a whole enemy animation costs no layout data.
 ; For SPRITE_FLAG_LAYOUT_BY_ACTION entities the id lands in wD73A_Entity_TileIdBase
-; instead. Either way the layout comes from bank03_sprite_frame_data.asm via
+; instead. Either way the layout comes from bank03_sprite_shapes.asm via
 ; data_03_5446_EntitySpriteMetaTable, so two entities can share a block here only
 ; when they share a sprite set - which several do.
 ;

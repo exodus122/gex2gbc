@@ -398,7 +398,7 @@ call_02_6fda_Entity_TickAction:
 ; next is declared by the action data rather than decided here:
 ;   ACTION_STATE_ADVANCE_ON_END  hand over to the pending action and stop. Only Gex's
 ;                                animation blocks ever set this - see the file header in
-;                                bank02_entity_animation_data.asm
+;                                bank02_entity_action_data.asm
 ;   SPRITE_FLAG_LOOP_LAST_FRAME  restart ON the final frame, so the animation plays once
 ;                                and then sits on its last pose
 ;   otherwise                    restart at frame 0
@@ -921,4 +921,4 @@ data_02_743c_EntityGfxAndPaletteTable:
     db   $32, $04, $32, $06, $32, $03, $37, $05        ;; 02:754c ????????
     db   $39, $04, $00, $07, $00, $07, $35, $05        ;; 02:7554 ????????
 
-INCLUDE "code/bank02_entity_animation_data.asm"
+INCLUDE "code/bank02_entity_action_data.asm"

@@ -17,7 +17,7 @@
 ; call_00_10bd_JumpHL, so HL holds the function's own address on entry - which a
 ; couple of routines here accidentally depend on.
 ;
-; The action data block is the animation, in bank02_entity_animation_data.asm.
+; The action data block is the animation, in bank02_entity_action_data.asm.
 ; Entity_SetAction copies its 4-byte header into the instance
 ; (ACTION_STATE flags, SPRITE_FLAGS, frame tick, frame count) and points
 ; ANIM_FRAME_LIST_PTR at the list of frame ids that follows. Two rows pointing at

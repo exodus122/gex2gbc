@@ -317,7 +317,7 @@ wD586_PlayerGfxVramPage:
     ds 1                                               ;; d586
 wD587_EntityGfxVramPage:
 ; same idea for the shared entity tile pages $8200 / $8300. It is also read
-; straight out of bank03_sprite_frame_data.asm's shape lookup: the index into
+; straight out of bank03_sprite_shapes.asm's shape lookup: the index into
 ; data_03_5566_SpriteFrameTable_Main is the SPRITE_SHAPE_* value OR'd with this
 ; and with the facing bit, so the two pages simply select between two copies of
 ; the same layout whose tile numbers are $10 apart
