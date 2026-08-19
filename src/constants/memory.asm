@@ -370,6 +370,17 @@ wD5A1_BgMap_ScrollXLo:
 wD5A2_BgMap_ScrollYLo:
     ds 1                                               ;; d5a2
 
+; Three Circuit Central conveyor belts, addressed as a 1-based array: an entity
+; carries the belt number in MISC_TIMER_2 and indexes from wD5A3.
+;
+; Nothing here is a position or a speed - a slot is simply energised or not, and
+; three separate systems read it:
+;   .jr_03_5129_CollisionHandler_PoweredWalkway   writes $06 when Gex touches the
+;       walkway with his power-up running. That is the only producer
+;   bank03_animated_tiles.asm                     swaps the belt tiles for blank
+;       ones while the slot is empty, which is the entire visual difference
+;   call_02_6a3c_EntityAction_WalkwayActivator_Update  turns its collision box on
+;       and off to match
 wD5A3_ConveyorState1:
     ds 1                                               ;; d5a3
 wD5A4_ConveyorState2:
@@ -478,7 +489,21 @@ wD615_Cannon_FacingDirection:
 ; separate things the player does to two different objects
     ds 1                                               ;; d615
 wD616_FinalBattleButtonFlags:
-; channel z final battle. bit 7 set = a button was just slammed down
+; The whole state of the Channel Z final battle, in one byte with two fields.
+;
+;   bits 0-6  how many more button slams Rez needs before he dies. Rez writes $0A
+;             here himself on his first frame, so the fight length is set by the
+;             boss rather than by level data
+;   bit 7     one-shot "a slam just landed" pulse
+;
+; The producer and consumer never touch each other:
+; call_02_6d5d_EntityAction_FinalBattleButtonProjectile_Fall raises bit 7 when the
+; thing a button dropped reaches the arena floor, and
+; call_02_6ca7_Rez_CheckButtonSlam consumes it and takes one off the count. At
+; zero Rez drops the exit portal and bursts.
+;
+; call_02_6d80_EntityAction_FinalBattleButton_Ready also reads the low bits, so
+; once the count is zero the buttons stop responding
     ds 1                                               ;; d616
 wD617_TailSpinChargeCounter:
 ; Rezopolis machinery power, 0 to $40. One producer and two consumers, all in
@@ -1333,6 +1358,14 @@ wD74F_Player_PushedMovingPlatformLo: ; stores lo address of moving platform enti
 ; Player Timers
 wD750_Player_DamageCooldownTimer:
     ds 1                                               ;; d750
+; 16-bit countdown for the Circuit Central power-up, and the channel's equivalent
+; of the Rezopolis tail spin charge - two entities refuse to do anything at all
+; while it is zero:
+;   call_02_696f_EntityAction_CircuitCentralPoweredPlatform_Idle  will not start
+;   .jr_03_5129_CollisionHandler_PoweredWalkway                   will not energise
+;       a conveyor slot
+; Both test the pair for non-zero rather than for any particular value, so it is
+; purely "is the power on right now"
 wD751_Player_CircuitPowerUpTimerLo:
     ds 1                                               ;; d751
 wD752_Player_CircuitPowerUpTimerHi:

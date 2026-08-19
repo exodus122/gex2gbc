@@ -353,27 +353,27 @@ data_02_50ef_EntityActions_RezopolisAntSpawner:                     ;; ENTITY_RE
 data_02_50f3_EntityActions_CircuitCentralAnt:                       ;; ENTITY_CIRCUIT_CENTRAL_ANT
     dw   call_02_66db_EntityAction_CircuitCentralAnt_Update, data_02_7bf0
 data_02_50f7_EntityActions_CircuitCentralCapacitor:                 ;; ENTITY_CIRCUIT_CENTRAL_CAPACITOR
-    dw   call_02_66e3_EntityAction_Capacitor_unk0, data_02_7bf9   ; action $00
-    dw   call_02_66f1_EntityAction_Capacitor_unk1, data_02_7c01   ; action $01
+    dw   call_02_66e3_EntityAction_Capacitor_Charge, data_02_7bf9   ; action $00
+    dw   call_02_66f1_EntityAction_Capacitor_Hop, data_02_7c01   ; action $01
 data_02_50ff_EntityActions_CircuitCentralPowerUp:                   ;; ENTITY_CIRCUIT_CENTRAL_POWER_UP
-    dw   call_02_66fd_EntityAction_PowerUp_unk0, data_02_7c07   ; action $00
-    dw   call_02_6710_EntityAction_PowerUp_unk1, data_02_7c07   ; action $01
+    dw   call_02_66fd_EntityAction_PowerUp_Upright, data_02_7c07   ; action $00
+    dw   call_02_6710_EntityAction_PowerUp_Flipped, data_02_7c07   ; action $01
 data_02_5107_EntityActions_Unk79:                                   ;; ENTITY_UNK_79
     dw   call_02_6723_EntityAction_Unk79_Update, data_02_7790
 data_02_510b_EntityActions_CircuitCentralLittleRobot:               ;; ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT
-    dw   call_02_6724_EntityAction_LittleRobot_unk0, data_02_7c10   ; action $00
-    dw   call_02_676c_EntityAction_LittleRobot_unk1, data_02_7c16   ; action $01
+    dw   call_02_6724_EntityAction_LittleRobot_Walk, data_02_7c10   ; action $00
+    dw   call_02_676c_EntityAction_LittleRobot_Turn, data_02_7c16   ; action $01
 data_02_5113_EntityActions_CircuitCentralLittleRobotGear:           ;; ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT_GEAR
     dw   call_02_6775_EntityAction_LittleRobotGear_Update, data_02_7c1d
 data_02_5117_EntityActions_CircuitCentralElectricBall:              ;; ENTITY_CIRCUIT_CENTRAL_ELECTRIC_BALL
-    dw   call_02_6786_EntityAction_ElectricBall_unk0, data_02_7c25   ; action $00
-    dw   call_02_679e_EntityAction_ElectricBall_unk1, data_02_7c2b   ; action $01
+    dw   call_02_6786_EntityAction_ElectricBall_WaitForCue, data_02_7c25   ; action $00
+    dw   call_02_679e_EntityAction_ElectricBall_FollowPath, data_02_7c2b   ; action $01
 data_02_511f_EntityActions_CircuitCentralMovingPlatform:            ;; ENTITY_CIRCUIT_CENTRAL_MOVING_PLATFORM
     dw   call_02_68c0_EntityAction_CircuitCentralMovingPlatform_Update, data_02_7c42
 data_02_5123_EntityActions_CircuitCentralPoweredPlatform:           ;; ENTITY_CIRCUIT_CENTRAL_POWERED_PLATFORM
-    dw   call_02_696f_EntityAction_CircuitCentralPoweredPlatform_unk0, data_02_7c34   ; action $00
-    dw   call_02_6993_EntityAction_CircuitCentralPoweredPlatform_unk1, data_02_7c3a   ; action $01
-    dw   call_02_69c4_EntityAction_CircuitCentralPoweredPlatform_unk2, data_02_7c48   ; action $02
+    dw   call_02_696f_EntityAction_CircuitCentralPoweredPlatform_Idle, data_02_7c34   ; action $00
+    dw   call_02_6993_EntityAction_CircuitCentralPoweredPlatform_Run, data_02_7c3a   ; action $01
+    dw   call_02_69c4_EntityAction_CircuitCentralPoweredPlatform_PauseAtEnd, data_02_7c48   ; action $02
 data_02_512f_EntityActions_CircuitCentralLoweringPlatform:          ;; ENTITY_CIRCUIT_CENTRAL_LOWERING_PLATFORM
     dw   call_02_69d7_EntityAction_CircuitCentralLoweringPlatform_Update, data_02_7c50
 data_02_5133_EntityActions_CircuitCentralWalkerRobot:               ;; ENTITY_CIRCUIT_CENTRAL_WALKER_ROBOT
@@ -384,28 +384,28 @@ data_02_513b_EntityActions_CircuitCentralWalkwayActivator:          ;; ENTITY_CI
     dw   call_02_6a3c_EntityAction_WalkwayActivator_Update, data_02_7c5c
 
 data_02_513f_EntityActions_ChannelZArcedGunProjectile:              ;; ENTITY_CHANNEL_Z_ARCED_GUN_PROJECTILE
-    dw   call_02_6a8b_EntityAction_ArcedGunProjectile_unk0, data_02_7c62   ; action $00
-    dw   call_02_6aac_EntityAction_ArcedGunProjectile_unk1, data_02_7c68   ; action $01
+    dw   call_02_6a8b_EntityAction_ArcedGunProjectile_WaitForCue, data_02_7c62   ; action $00
+    dw   call_02_6aac_EntityAction_ArcedGunProjectile_Arc, data_02_7c68   ; action $01
 data_02_5147_EntityActions_ChannelZArcedGunProjectile2:             ;; ENTITY_CHANNEL_Z_ARCED_GUN_PROJECTILE2
-    dw   call_02_6ad3_EntityAction_ArcedGunProjectile2_unk0, data_02_7c62   ; action $00
-    dw   call_02_6af9_EntityAction_ArcedGunProjectile2_unk1, data_02_7c68   ; action $01
-    dw   call_02_6b30_EntityAction_ArcedGunProjectile2_unk2, data_02_7c68   ; action $02
-    dw   call_02_6b43_EntityAction_ArcedGunProjectile2_unk3, data_02_7c68   ; action $03
+    dw   call_02_6ad3_EntityAction_ArcedGunProjectile2_WaitForCue, data_02_7c62   ; action $00
+    dw   call_02_6af9_EntityAction_ArcedGunProjectile2_Arc, data_02_7c68   ; action $01
+    dw   call_02_6b30_EntityAction_ArcedGunProjectile2_Hover, data_02_7c68   ; action $02
+    dw   call_02_6b43_EntityAction_ArcedGunProjectile2_Drop, data_02_7c68   ; action $03
 data_02_5157_EntityActions_ChannelZGunProjectile:                   ;; ENTITY_CHANNEL_Z_GUN_PROJECTILE
-    dw   call_02_6b6a_EntityAction_GunProjectile_unk0, data_02_7c62   ; action $00
-    dw   call_02_6b81_EntityAction_GunProjectile_unk1, data_02_7c68   ; action $01
+    dw   call_02_6b6a_EntityAction_GunProjectile_WaitForCue, data_02_7c62   ; action $00
+    dw   call_02_6b81_EntityAction_GunProjectile_Fly, data_02_7c68   ; action $01
 data_02_515f_EntityActions_ChannelZRez:                             ;; ENTITY_CHANNEL_Z_REZ
-    dw   call_02_6c18_EntityAction_Rez_unk0,  data_02_78a8   ; action $00
-    dw   call_02_6c41_EntityAction_Rez_unk1,  data_02_78b5   ; action $01
-    dw   call_02_6c4a_EntityAction_Rez_unk2,  data_02_78d7   ; action $02
-    dw   call_02_6c42_EntityAction_Rez_unk3,  data_02_78e4   ; action $03
-    dw   call_02_6c82_EntityAction_Rez_unk4,  data_02_78c2   ; action $04
-    dw   call_02_6c99_EntityAction_Rez_unk5,  data_02_78f1   ; action $05
-    dw   call_02_6c99_EntityAction_Rez_unk5,  data_02_78f1   ; action $06
-    dw   call_02_6c99_EntityAction_Rez_unk5,  data_02_78f1   ; action $07
-    dw   call_02_6c99_EntityAction_Rez_unk5,  data_02_78f1   ; action $08
-    dw   call_02_6c9d_EntityAction_Rez_unk9,  data_02_78fc   ; action $09
-    dw   call_02_6ca6_EntityAction_Rez_unk10, data_02_790b   ; action $0A
+    dw   call_02_6c18_EntityAction_Rez_Intro,  data_02_78a8   ; action $00
+    dw   call_02_6c41_EntityAction_Rez_Unused1,  data_02_78b5   ; action $01
+    dw   call_02_6c4a_EntityAction_Rez_Chase,  data_02_78d7   ; action $02
+    dw   call_02_6c42_EntityAction_Rez_Recover,  data_02_78e4   ; action $03
+    dw   call_02_6c82_EntityAction_Rez_Hit,  data_02_78c2   ; action $04
+    dw   call_02_6c99_EntityAction_Rez_Untouchable,  data_02_78f1   ; action $05
+    dw   call_02_6c99_EntityAction_Rez_Untouchable,  data_02_78f1   ; action $06
+    dw   call_02_6c99_EntityAction_Rez_Untouchable,  data_02_78f1   ; action $07
+    dw   call_02_6c99_EntityAction_Rez_Untouchable,  data_02_78f1   ; action $08
+    dw   call_02_6c9d_EntityAction_Rez_ButtonHit,  data_02_78fc   ; action $09
+    dw   call_02_6ca6_EntityAction_Rez_Unused10, data_02_790b   ; action $0A
 data_02_518b_EntityActions_ChannelZUnusedPlatform1:                 ;; ENTITY_CHANNEL_Z_UNUSED_PLATFORM_1
     dw   call_02_6d11_EntityAction_ChannelZUnusedPlatform1_Update, data_02_7c75
 data_02_518f_EntityActions_ChannelZUnusedPlatform2:                 ;; ENTITY_CHANNEL_Z_UNUSED_PLATFORM_2
@@ -415,11 +415,11 @@ data_02_5193_EntityActions_ChannelZRezFollowingFire:                ;; ENTITY_CH
 data_02_5197_EntityActions_ChannelZGunProjectileExplosion:          ;; ENTITY_CHANNEL_Z_GUN_PROJECTILE_EXPLOSION
     dw   call_02_6d24_EntityAction_GunProjectileExplosion_Update, data_02_7caa
 data_02_519b_EntityActions_FinalBattleButtonProjectile:             ;; ENTITY_FINAL_BATTLE_BUTTON_PROJECTILE
-    dw   call_02_6d5d_EntityAction_FinalBattleButtonProjectile_unk0, data_02_7cb6   ; action $00
-    dw   call_02_6d7f_EntityAction_FinalBattleButtonProjectile_unk1, data_02_7cb6   ; action $01
+    dw   call_02_6d5d_EntityAction_FinalBattleButtonProjectile_Fall, data_02_7cb6   ; action $00
+    dw   call_02_6d7f_EntityAction_FinalBattleButtonProjectile_Unused, data_02_7cb6   ; action $01
 data_02_51a3_EntityActions_ChannelZFinalBattleButton:               ;; ENTITY_CHANNEL_Z_FINAL_BATTLE_BUTTON
-    dw   call_02_6d80_EntityAction_FinalBattleButton_unk0, data_02_7cbc   ; action $00
-    dw   call_02_6db8_EntityAction_FinalBattleButton_unk1, data_02_7cc2   ; action $01
+    dw   call_02_6d80_EntityAction_FinalBattleButton_Ready, data_02_7cbc   ; action $00
+    dw   call_02_6db8_EntityAction_FinalBattleButton_Pressed, data_02_7cc2   ; action $01
 data_02_51ab_EntityActions_ChannelZRezPortal:                       ;; ENTITY_CHANNEL_Z_REZ_PORTAL
     dw   call_02_6de3_EntityAction_RezPortal_Update, data_02_7894
 data_02_51af_EntityActions_Unk8E:                                   ;; ENTITY_UNK_8E
@@ -4600,14 +4600,41 @@ call_02_66bb_EntityAction_Ant_Update:
 
 ; ==================================================================
 ; CIRCUIT CENTRAL
+;
+; Entity ids $76 (ENTITY_CIRCUIT_CENTRAL_ANT) through $82
+; (ENTITY_CIRCUIT_CENTRAL_WALKWAY_ACTIVATOR). Action tables data_02_50f3 ..
+; data_02_513b.
+;
+; Two ideas run through this channel that appear nowhere else in the file:
+;
+; SCRIPTED PATHS. Two entities move by replaying a list of steps out of ROM
+; instead of by patrolling between bounds, and they do it in different formats:
+;
+;   ELECTRIC BALL     2-byte records (direction nibble, duration). Moves in whole
+;                     pixels, and the $FF terminator DESPAWNS it
+;   MOVING PLATFORM   3-byte records (duration, X velocity, Y velocity). Feeds the
+;                     normal subpixel integrator, and the $FF terminator LOOPS the
+;                     path from the start
+;
+; Both pick their path with a spawn parameter that indexes a small pointer table,
+; so one entity type covers every route in the level.
+;
+; THE POWER-UP TIMER. wD751/wD752_Player_CircuitPowerUpTimer is the channel's
+; equivalent of Rezopolis's tail spin charge: the powered platform will not start
+; without it, and the powered walkway's collision handler will not energise a
+; conveyor without it
 ; ==================================================================
 
 call_02_66db_EntityAction_CircuitCentralAnt_Update:
+; The plain walker at speed $0C - the same routine as the Rezopolis ant minus its
+; mouse-hole check
     ld   c,$0C
     call call_00_32e1_Entity_NudgeXVelocityTowardC
     jp   call_00_36f7_Entity_MoveXByFacingMomentum_BoundsChecked
 
-call_02_66e3_EntityAction_Capacitor_unk0:
+call_02_66e3_EntityAction_Capacitor_Charge:
+; The pumpkin's two-action hop again: build up through the animation, then launch.
+; data_02_7bf9 loops its last frame, so the charge visibly pulses
     call call_00_3843_Entity_CheckAnimationEnded
     ret  z
     ld   c,$30
@@ -4615,22 +4642,26 @@ call_02_66e3_EntityAction_Capacitor_unk0:
     ld   a,$01
     jp   call_02_7102_Entity_SetAction
 
-call_02_66f1_EntityAction_Capacitor_unk1:
+call_02_66f1_EntityAction_Capacitor_Hop:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
     call call_00_3154_Entity_ClampYToMaxYBound
     ld   a,$00
     call nc,call_02_7102_Entity_SetAction
     ret
 
-call_02_66fd_EntityAction_PowerUp_unk0:
+call_02_66fd_EntityAction_PowerUp_Upright:
+; Two actions that share one animation block and differ only in the OAM attribute
+; they leave behind: $00 upright, $60 flipped in both axes. Each hands to the
+; other when the animation wraps, so the pick-up tumbles end over end out of four
+; frames of artwork
     call call_00_3843_Entity_CheckAnimationEnded
     ret  z
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
-    ld   [hl],$60
+    ld   [hl],$60                                      ; OAM X flip + Y flip
     ld   a,$01
     jp   call_02_7102_Entity_SetAction
 
-call_02_6710_EntityAction_PowerUp_unk1:
+call_02_6710_EntityAction_PowerUp_Flipped:
     call call_00_3843_Entity_CheckAnimationEnded
     ret  z
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
@@ -4641,7 +4672,15 @@ call_02_6710_EntityAction_PowerUp_unk1:
 call_02_6723_EntityAction_Unk79_Update:
     ret
 
-call_02_6724_EntityAction_LittleRobot_unk0:
+call_02_6724_EntityAction_LittleRobot_Walk:
+; Action $00, and a third variation on the carried-child pattern after the
+; triceratops horn and the samurai head. The gear is spawned on the first frame
+; and then pinned to the robot's exact position and facing every frame - no offset
+; at all, so the two sprites are drawn on top of each other and only the gear's
+; separate collision box makes it worth being an entity.
+;
+; The turn is animated: Entity_MoveXByFacingMomentum_BoundsChecked returns NZ on
+; the frame the robot reaches a bound, and that switches to action $01
     call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_6736
     ld   c,SPAWN_CHILD_ENTITY_LITTLE_ROBOT_GEAR
@@ -4651,72 +4690,97 @@ call_02_6724_EntityAction_LittleRobot_unk0:
     call call_00_32e1_Entity_NudgeXVelocityTowardC
     call call_00_36f7_Entity_MoveXByFacingMomentum_BoundsChecked
     ld   a,$01
-    call nz,call_02_7102_Entity_SetAction
+    call nz,call_02_7102_Entity_SetAction              ; just turned around
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_X
     ld   e,[hl]
     inc  l
-    ld   d,[hl]
-    xor  a,$03
+    ld   d,[hl]                                        ; DE = my X
+    xor  a,$03                                         ; $0E -> $0D FACING_FLAGS
     ld   l,a
-    ld   c,[hl]
-    ld   a,$20
+    ld   c,[hl]                                        ; C = my facing
+    ld   a,ENTITY_SLOT_FIRST_NPC
 .jr_02_6754:
     ld   l,a
     ld   a,[hl]
-    cp   a,$7B
+    cp   a,$7B                                         ; ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT_GEAR
     jr   z,.jr_02_6760
     ld   a,l
-    add  a,$20
+    add  a,ENTITY_SLOT_SIZE
     jr   nz,.jr_02_6754
-    ret
+    ret                                                ; no gear - carry on regardless
 .jr_02_6760:
     ld   a,l
     or   a,$0E
     ld   l,a
     ld   [hl],e
     inc  l
-    ld   [hl],d
+    ld   [hl],d                                        ; gear X = my X
     xor  a,$03
     ld   l,a
-    ld   [hl],c
+    ld   [hl],c                                        ; gear facing = my facing
     ret
 
-call_02_676c_EntityAction_LittleRobot_unk1:
+call_02_676c_EntityAction_LittleRobot_Turn:
+; Action $01. Plays the turn animation, then straight back to walking
     call call_00_3843_Entity_CheckAnimationEnded
     ld   a,$00
     jp   nz,call_02_7102_Entity_SetAction
     ret
 
 call_02_6775_EntityAction_LittleRobotGear_Update:
+; The gear does not move itself at all - the robot positions it. Its only job is
+; to notice when its robot is gone and take itself out of the slot, which is the
+; mirror image of the samurai body checking for its head
     ld   h,$D2
-    ld   a,$20
+    ld   a,ENTITY_SLOT_FIRST_NPC
 .jr_02_6779:
     ld   l,a
     ld   a,[hl]
-    cp   a,$7A
+    cp   a,$7A                                         ; ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT
     ret  z
     ld   a,l
-    add  a,$20
+    add  a,ENTITY_SLOT_SIZE
     jr   nz,.jr_02_6779
-    jp   call_00_3910_Entity_ClearSlot
+    jp   call_00_3910_Entity_ClearSlot                 ; robot destroyed - follow it
 
-call_02_6786_EntityAction_ElectricBall_unk0:
+; ------------------------------------------------------------------
+; ELECTRIC BALL - flies a route scripted in ROM rather than patrolling. Three
+; fields carry the playback state:
+;
+;   MISC_TIMER_2  which route, chosen by the spawn record. Indexes the ten-entry
+;                 pointer table .data_02_683c
+;   MISC_PARAM    how far along that route it is
+;   MISC_FLAGS    the current direction, in its HIGH NIBBLE
+;   MISC_TIMER_1  frames left on the current step
+;
+; The direction nibble is a d-pad bitmask - bit 0 right, bit 1 left, bit 2 up,
+; bit 3 down - and .data_02_67ce turns it into a velocity, with right beating left
+; and down beating up when both are set
+; ------------------------------------------------------------------
+
+call_02_6786_EntityAction_ElectricBall_WaitForCue:
+; Action $00. Holds still (data_02_7c25 has SPRITE_FLAG_INVISIBLE) until the frame
+; counter matches MISC_PARAM_HI, then rewinds the route to step 0 and starts it
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_PARAM_HI
     ld   a,[wD73B_VBlankFrameCounter]
-    cp   [hl]
+    cp   [hl]                                          ; my phase in the 256-frame cycle
     ret  nz
-    dec  l
-    ld   [hl],$00
-    call call_02_680e_ElectricBall_Sub
+    dec  l                                             ; $1A MISC_PARAM
+    ld   [hl],$00                                      ; back to the start of the route
+    call call_02_680e_ElectricBall_NextPathStep
     ld   a,$01
     jp   call_02_7102_Entity_SetAction
 
-call_02_679e_EntityAction_ElectricBall_unk1:
+call_02_679e_EntityAction_ElectricBall_FollowPath:
+; Action $01. Move by whatever the current direction says, and pull the next step
+; when the step timer runs out. Note this moves in WHOLE PIXELS through
+; Entity_MoveX / Entity_MoveY rather than through the velocity fields, so the ball
+; does not accelerate and is not affected by the patrol driver at all
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     ld   a,[hl]
     rrca
     rrca
-    and  a,$3C
+    and  a,$3C                                         ; high nibble * 4 = record offset
     ld   e,a
     ld   d,$00
     ld   hl,.data_02_67ce
@@ -4725,18 +4789,22 @@ call_02_679e_EntityAction_ElectricBall_unk1:
     inc  hl
     ld   b,[hl]
     inc  hl
-    push bc
+    push bc                                            ; BC = dX
     ld   c,[hl]
     inc  hl
-    ld   b,[hl]
+    ld   b,[hl]                                        ; BC = dY
     call call_00_37d8_Entity_MoveY
     pop  bc
     call call_00_37c9_Entity_MoveX
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_1
     dec  [hl]
-    call z,call_02_680e_ElectricBall_Sub
+    call z,call_02_680e_ElectricBall_NextPathStep
     ret
 .data_02_67ce:
+; 16 records of (signed 16-bit dX, signed 16-bit dY), indexed by the direction
+; nibble read as bit 0 right, bit 1 left, bit 2 up, bit 3 down. Everything moves 2
+; pixels a frame; record 0 is the standstill, and conflicting bits resolve to
+; right and to down
     db   $00, $00, $00
     db   $00, $02, $00, $00, $00, $fe, $ff, $00
     db   $00, $02, $00, $00, $00, $00, $00, $fe
@@ -4747,11 +4815,14 @@ call_02_679e_EntityAction_ElectricBall_unk1:
     db   $00, $02, $00, $02, $00, $fe, $ff, $02
     db   $00, $02, $00, $02, $00
 
-call_02_680e_ElectricBall_Sub:
+call_02_680e_ElectricBall_NextPathStep:
+; Reads one 2-byte record - (direction nibble, duration) - from the route selected
+; by MISC_TIMER_2 and advances the step counter. A direction byte of $FF is the
+; end of the route, and the ball frees its slot rather than looping
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_PARAM
-    ld   c,[hl]
-    inc  [hl]
-    dec  l
+    ld   c,[hl]                                        ; C = step index
+    inc  [hl]                                          ; and advance it
+    dec  l                                             ; $19 MISC_TIMER_2 = route id
     ld   l,[hl]
     ld   h,$00
     add  hl,hl
@@ -4759,21 +4830,23 @@ call_02_680e_ElectricBall_Sub:
     add  hl,de
     ld   e,[hl]
     inc  hl
-    ld   d,[hl]
+    ld   d,[hl]                                        ; DE = start of that route
     ld   l,c
     ld   h,$00
-    add  hl,hl
+    add  hl,hl                                         ; step * 2
     add  hl,de
     LOAD_OBJ_FIELD_TO_DE ENTITY_FIELD_MISC_FLAGS
     ldi  a,[hl]
     cp   a,$ff
-    jp   z,call_00_3910_Entity_ClearSlot
-    ld   [de],a
-    inc  e
+    jp   z,call_00_3910_Entity_ClearSlot               ; route finished
+    ld   [de],a                                        ; MISC_FLAGS = direction
+    inc  e                                             ; $18 MISC_TIMER_1
     ld   a,[hl]
-    ld   [de],a
+    ld   [de],a                                        ; = how long to hold it
     ret
 .data_02_683c:
+; Ten route pointers, then the routes themselves - each a run of (direction,
+; duration) pairs ending in $FF
     db   $50, $68, $57, $68, $5e
     db   $68, $65, $68, $70, $68, $83, $68, $8a
     db   $68, $8d, $68, $98, $68, $9f, $68, $10
@@ -4793,18 +4866,30 @@ call_02_680e_ElectricBall_Sub:
     db   $10, $40, $90, $10, $10, $5c, $ff
 
 call_02_68c0_EntityAction_CircuitCentralMovingPlatform_Update:
+; The other scripted-path entity, and the more capable of the two: instead of
+; moving in whole pixels it writes X and Y VELOCITIES and lets
+; Entity_ApplyVelocityXY_SubpixelBoth integrate them, so it can travel at
+; fractional speeds and it carries the player the way any platform does.
+;
+;   MISC_TIMER_2  which route, from the four-entry table .data_02_6915
+;   MISC_PARAM    step index within it
+;   MISC_PARAM_HI frames left on this step - counted down here, not by the engine
+;
+; A $FF duration LOOPS the route rather than despawning, which is what makes these
+; platforms run their circuit forever
     call call_00_34ea_Entity_IsFirstFrameOfAction
-    call nz,.jr_02_68D6
+    call nz,.jr_02_68D6                                ; load the first step
     call call_00_3559_Entity_ApplyVelocityXY_SubpixelBoth
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_PARAM_HI
     dec  [hl]
-    call z,.jr_02_68D6
+    call z,.jr_02_68D6                                 ; step expired - fetch the next
     ret
 .jr_02_68D6:
+; Fetch one 3-byte record: (duration, X velocity, Y velocity)
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_PARAM
-    ld   c,[hl]
+    ld   c,[hl]                                        ; C = step index
     inc  [hl]
-    dec  l
+    dec  l                                             ; $19 MISC_TIMER_2 = route id
     ld   l,[hl]
     ld   h,$00
     add  hl,hl
@@ -4812,32 +4897,34 @@ call_02_68c0_EntityAction_CircuitCentralMovingPlatform_Update:
     add  hl,de
     ld   e,[hl]
     inc  hl
-    ld   d,[hl]
+    ld   d,[hl]                                        ; DE = start of that route
     ld   b,$00
     ld   l,c
     ld   h,b
     add  hl,hl
-    add  hl,bc
+    add  hl,bc                                         ; step * 3
     add  hl,de
     LOAD_OBJ_FIELD_TO_DE ENTITY_FIELD_MISC_PARAM_HI
     ldi  a,[hl]
     cp   a,$ff
-    jr   z,.jr_02_6909
-    ld   [de],a
-    inc  e
+    jr   z,.jr_02_6909                                 ; end of route - wrap round
+    ld   [de],a                                        ; $1B = duration
+    inc  e                                             ; $1C X_VELOCITY
 .jr_02_6902:
     ldi  a,[hl]
     ld   [de],a
     inc  e
-    inc  e
+    inc  e                                             ; skip $1D, land on $1E
     ld   a,[hl]
-    ld   [de],a
+    ld   [de],a                                        ; $1E Y_VELOCITY
     ret
 .jr_02_6909:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_PARAM
-    ld   [hl],$00
+    ld   [hl],$00                                      ; rewind and take step 0
     jr   .jr_02_68D6
 .data_02_6915:
+; Four route pointers, then the routes - runs of (duration, X velocity, Y velocity)
+; triples, each ending in a $FF duration that sends playback back to the start
     db   $1d, $69, $2a, $69
     db   $43, $69, $5c, $69, $e0, $10, $f0, $a0
     db   $10, $10, $a0, $f0, $f0, $e0, $f0, $10
@@ -4851,77 +4938,90 @@ call_02_68c0_EntityAction_CircuitCentralMovingPlatform_Update:
     db   $f0, $e0, $f0, $f0, $e0, $10, $10, $e0
     db   $f0, $10, $e0, $10, $10, $ff
 
-call_02_696f_EntityAction_CircuitCentralPoweredPlatform_unk0:
+; ------------------------------------------------------------------
+; POWERED PLATFORM - the Toon TV moving block's round-trip machine again
+; (call_02_5b47_EntityAction_ToonTVMovingBlock_Run), with the switch replaced by
+; the Circuit Central power-up: it needs Gex aboard AND his power-up timer
+; running before it will move, and it recognises a completed lap the same way, by
+; comparing the live direction bits 7/6 against the starting copy in bits 5/4
+; ------------------------------------------------------------------
+
+call_02_696f_EntityAction_CircuitCentralPoweredPlatform_Idle:
     call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_697B
     ld   a,l
-    xor  a,$10
+    xor  a,$10                                         ; $09 -> $19 MISC_TIMER_2
     ld   l,a
     ldd  a,[hl]
-    dec  l
-    ld   [hl],a
+    dec  l                                             ; -> $17 MISC_FLAGS
+    ld   [hl],a                                        ; patrol config from the spawn record
 .jr_02_697B:
     call call_00_34f5_Entity_IsPlayerStandingOnSelf
     bit  0,b
-    ret  z
+    ret  z                                             ; nobody aboard
     ld   a,[wD751_Player_CircuitPowerUpTimerLo]
     ld   e,a
     ld   a,[wD752_Player_CircuitPowerUpTimerHi]
     or   e
-    ret  z
-    set  2,[hl]
-    set  0,[hl]
+    ret  z                                             ; no power
+    set  2,[hl]                                        ; armed
+    set  0,[hl]                                        ; running
     ld   a,$01
     jp   call_02_7102_Entity_SetAction
 
-call_02_6993_EntityAction_CircuitCentralPoweredPlatform_unk1:
+call_02_6993_EntityAction_CircuitCentralPoweredPlatform_Run:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     bit  MISC_FLAGS_BIT_3,[hl]
-    jr   z,.jr_02_69BE
+    jr   z,.jr_02_69BE                                 ; never stops - just run
     bit  MISC_FLAGS_BIT_0,[hl]
-    jr   nz,.jr_02_69BE
+    jr   nz,.jr_02_69BE                                ; mid-leg
     ld   a,[hl]
     and  a,$c0
-    ld   c,a
+    ld   c,a                                           ; C = current direction, bits 7/6
     ld   a,[hl]
     rlca
     rlca
-    and  a,$c0
+    and  a,$c0                                         ; start direction, bits 5/4 -> 7/6
     sub  c
-    jr   nz,.jr_02_69B6
-    res  MISC_FLAGS_BIT_2,[hl]
+    jr   nz,.jr_02_69B6                                ; far end - pause and come back
+    res  MISC_FLAGS_BIT_2,[hl]                         ; home again - disarm
     ld   a,$00
     jp   call_02_7102_Entity_SetAction
 .jr_02_69B6:
     inc  l
-    ld   [hl],$B4
+    ld   [hl],$B4                                      ; three seconds at the far end
     ld   a,$02
     jp   call_02_7102_Entity_SetAction
 .jr_02_69BE:
     call call_00_3559_Entity_ApplyVelocityXY_SubpixelBoth
     jp   call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip
 
-call_02_69c4_EntityAction_CircuitCentralPoweredPlatform_unk2:
+call_02_69c4_EntityAction_CircuitCentralPoweredPlatform_PauseAtEnd:
     call call_00_3817_Entity_DecrementMiscTimer
     ret  nz
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
-    set  MISC_FLAGS_BIT_0,[hl]
+    set  MISC_FLAGS_BIT_0,[hl]                         ; let the patrol driver move it again
     ld   a,$01
     jp   call_02_7102_Entity_SetAction
 
 call_02_69d7_EntityAction_CircuitCentralLoweringPlatform_Update:
+; Instruction for instruction the Rezopolis red platform
+; (call_02_64ae_EntityAction_RedPlatform_Update), with two differences: the travel
+; is $20 steps rather than $0D, and it does not force FACING_FLAGS. Same three
+; states in MISC_FLAGS bits 0 and 1, same one-pixel-per-four-frames rate, same
+; "a pause always reverses the direction" trick
     call call_00_34f5_Entity_IsPlayerStandingOnSelf
     bit  1,[hl]
-    jr   nz,.jr_02_69FE
+    jr   nz,.jr_02_69FE                                ; paused
     bit  MISC_FLAGS_BIT_0,[hl]
-    jr   z,.jr_02_6A0B
+    jr   z,.jr_02_6A0B                                 ; at rest
     inc  l
     dec  [hl]
     ret  nz
     ld   [hl],$04
     inc  l
     ld   a,[hl]
-    cp   a,$20
+    cp   a,$20                                         ; fully lowered
     jr   z,.jr_02_69F4
     inc  [hl]
     ld   bc,$0001
@@ -4978,24 +5078,50 @@ call_02_69d7_EntityAction_CircuitCentralLoweringPlatform_Update:
     jp   call_00_37d8_Entity_MoveY
 
 call_02_6a33_EntityAction_WalkerRobot_Update:
+; The plain walker at speed $18
     ld   c,$18
     call call_00_32e1_Entity_NudgeXVelocityTowardC
     jp   call_00_36f7_Entity_MoveXByFacingMomentum_BoundsChecked
 
+; ------------------------------------------------------------------
+; THE POWERED WALKWAYS - a conveyor is three things working together, and none of
+; them is the conveyor itself:
+;
+;   the WALKWAY entity ($81) does nothing at all in its action. Its collision
+;     handler (.jr_03_5129) is what matters: touching it while the power-up timer
+;     is running writes $06 into one of the three wD5A3_ConveyorState slots
+;   the ANIMATED TILE code in bank03_animated_tiles.asm reads those slots and
+;     swaps the belt tiles for blank ones when the slot is empty, which is the
+;     only reason a running belt looks different from a stopped one
+;   the ACTIVATOR entity ($82) reads the same slot and turns itself solid or
+;     intangible to match
+;
+; MISC_TIMER_2 is the 1-based conveyor number, and both the walkway and its
+; activator carry the same one so they refer to the same slot
+; ------------------------------------------------------------------
+
 call_02_6a3b_EntityAction_PoweredWalkway_Update:
+; No behaviour - see the note above; everything happens in its collision handler
     ret
 
 call_02_6a3c_EntityAction_WalkwayActivator_Update:
+; Two jobs. First, existence: its collision width becomes $10 while its conveyor
+; slot is energised and 0 while it is not, so the entity is only tangible on a
+; running belt.
+;
+; Second, and unusually, it TRACKS THE PLAYER - while Gex is inside the
+; activator's X span it copies his world X onto itself every frame. So it is not
+; something to stand on that moves; it is a box that follows him along the belt
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_2
     ld   l,[hl]
-    dec  l
+    dec  l                                             ; conveyor number, 1-based
     ld   h,$00
     ld   de,wD5A3_ConveyorState1
     add  hl,de
     ld   c,$00
     ld   a,[hl]
     and  a
-    jr   z,.jr_02_6A54
+    jr   z,.jr_02_6A54                                 ; belt stopped - no collision
     ld   c,$10
 .jr_02_6A54:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_COLLISION_WIDTH
@@ -5007,7 +5133,7 @@ call_02_6a3c_EntityAction_WalkwayActivator_Update:
     add  hl,hl
     add  hl,hl
     add  hl,hl
-    ld   c,h
+    ld   c,h                                           ; player block column
     ld   a,[wD300_CurrentEntityAddrLo]
     rrca
     rrca
@@ -5018,24 +5144,47 @@ call_02_6a3c_EntityAction_WalkwayActivator_Update:
     add  hl,de
     ldi  a,[hl]
     cp   c
-    ret  c
+    ret  c                                             ; player past the right end
     ld   a,c
     cp   [hl]
-    ret  c
+    ret  c                                             ; player before the left end
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_X
     ld   a,[wD20E_Player_XPositionLo]
     ldi  [hl],a
     ld   a,[wD20F_Player_XPositionHi]
-    ld   [hl],a
+    ld   [hl],a                                        ; sit exactly on him
     ret
 
-call_02_6a8b_EntityAction_ArcedGunProjectile_unk0:
+; ==================================================================
+; CHANNEL Z
+;
+; Entity ids $83 (ENTITY_CHANNEL_Z_ARCED_GUN_PROJECTILE) through $8F
+; (ENTITY_MEDIA_DIMENSION_MOVING_PLATFORM). Action tables data_02_513f ..
+; data_02_51b3.
+;
+; THE GUNS. Three entity types share one small library of helpers below. There is
+; no gun entity - each of these IS the shot, sitting invisible at the muzzle until
+; its turn in a shared 64-frame cycle comes round, firing, and rebuilding itself
+; at the muzzle afterwards. Bit 0 of MISC_PARAM says which way the gun points, and
+; it flips three things at once: the initial nudge off the muzzle, whether gravity
+; is taken from call_00_30af (falls) or call_00_30da (rises), and which end of the
+; bounding box counts as the end of the shot.
+;
+; THE FINAL BATTLE. Rez, the two buttons, the things the buttons drop and the fire
+; that trails him are five entities coordinated through one WRAM byte,
+; wD616_FinalBattleButtonFlags. See the note above
+; call_02_6c18_EntityAction_Rez_Intro
+; ==================================================================
+
+call_02_6a8b_EntityAction_ArcedGunProjectile_WaitForCue:
+; Action $00. Every gun in the room shares a 64-frame clock and each holds its own
+; slot in it in MISC_TIMER_2, so a bank of guns fires in sequence
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_2
     ld   a,[wD73B_VBlankFrameCounter]
     and  a,$3F
     cp   [hl]
     ret  nz
-    call call_02_6bcd_GunProjectile_Sub3
+    call call_02_6bcd_GunProjectile_Fire
     ld   c,$02
     call call_00_3350_Entity_SetXVelocity
     ld   c,$30
@@ -5043,28 +5192,35 @@ call_02_6a8b_EntityAction_ArcedGunProjectile_unk0:
     ld   a,$01
     jp   call_02_7102_Entity_SetAction
 
-call_02_6aac_EntityAction_ArcedGunProjectile_unk1:
+call_02_6aac_EntityAction_ArcedGunProjectile_Arc:
+; Action $01. Flies forward at a constant speed while gravity bends it, and blows
+; up either when it reaches the far end of its span (carry clear from the clamp)
+; or when the collision handler has flagged a hit.
+;
+; The two halves are mirror images. MISC_PARAM bit 0 clear is a ceiling-mounted
+; gun: it uses the INVERTED gravity helper, so the shot curves upward and stops at
+; the top of the span. Bit 0 set is floor-mounted and behaves normally
     call call_00_3442_Entity_MoveXByFacingSpeed
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_PARAM
     bit  0,[hl]
     jr   nz,.jr_02_6AC4
     call call_00_30da_Entity_ApplyGravityMoveY_WithFloorCollision
-    jp   nc,call_02_6c03_GunProjectile_Sub
-    jp   call_02_6bf8_GunProjectile_Sub2
+    jp   nc,call_02_6c03_GunProjectile_Explode         ; reached the ceiling
+    jp   call_02_6bf8_GunProjectile_ExplodeIfHit
 .jr_02_6AC4:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
-    ld   bc,hFFF1
+    ld   bc,hFFF1                                      ; -$0F: floor a little high
     call call_00_316e_Entity_ClampYToMaxYBound_Offset
-    jp   nc,call_02_6c03_GunProjectile_Sub
-    jp   call_02_6bf8_GunProjectile_Sub2
+    jp   nc,call_02_6c03_GunProjectile_Explode         ; reached the floor
+    jp   call_02_6bf8_GunProjectile_ExplodeIfHit
 
-call_02_6ad3_EntityAction_ArcedGunProjectile2_unk0:
+call_02_6ad3_EntityAction_ArcedGunProjectile2_WaitForCue:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_2
     ld   a,[wD73B_VBlankFrameCounter]
     and  a,$3F
     cp   [hl]
     ret  nz
-    call call_02_6bcd_GunProjectile_Sub3
+    call call_02_6bcd_GunProjectile_Fire
     ld   c,$02
     call call_00_3350_Entity_SetXVelocity
     ld   c,$30
@@ -5074,16 +5230,16 @@ call_02_6ad3_EntityAction_ArcedGunProjectile2_unk0:
     ld   a,$01
     jp   call_02_7102_Entity_SetAction
 
-call_02_6af9_EntityAction_ArcedGunProjectile2_unk1:
+call_02_6af9_EntityAction_ArcedGunProjectile2_Arc:
     call call_00_3442_Entity_MoveXByFacingSpeed
     call call_00_3817_Entity_DecrementMiscTimer
-    jp   z,call_02_6c03_GunProjectile_Sub
+    jp   z,call_02_6c03_GunProjectile_Explode
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_PARAM
     bit  0,[hl]
     jr   nz,.jr_02_6B17
     call call_00_30da_Entity_ApplyGravityMoveY_WithFloorCollision
-    jp   nc,call_02_6c03_GunProjectile_Sub
-    jp   call_02_6bf8_GunProjectile_Sub2
+    jp   nc,call_02_6c03_GunProjectile_Explode
+    jp   call_02_6bf8_GunProjectile_ExplodeIfHit
 .jr_02_6B17:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
     call call_00_3345_Entity_CheckIfYVelocityIsZero
@@ -5092,46 +5248,55 @@ call_02_6af9_EntityAction_ArcedGunProjectile2_unk1:
     jp   nz,call_02_7102_Entity_SetAction
     ld   bc,hFFF1
     call call_00_316e_Entity_ClampYToMaxYBound_Offset
-    jp   nc,call_02_6c03_GunProjectile_Sub
-    jp   call_02_6bf8_GunProjectile_Sub2
+    jp   nc,call_02_6c03_GunProjectile_Explode
+    jp   call_02_6bf8_GunProjectile_ExplodeIfHit
 
-call_02_6b30_EntityAction_ArcedGunProjectile2_unk2:
+call_02_6b30_EntityAction_ArcedGunProjectile2_Hover:
+; Action $02, and what makes this variant different from the plain arced shot: at
+; the top of its arc gravity STOPS. It sails on level while the fuse burns, and
+; drops out of the sky the moment Gex passes within 8 pixels underneath - or when
+; the fuse runs out, whichever comes first
     call call_00_3442_Entity_MoveXByFacingSpeed
     call call_00_3817_Entity_DecrementMiscTimer
-    jr   z,.jr_02_6B3E
+    jr   z,.jr_02_6B3E                                 ; fuse expired
     ld   c,$08
     call call_00_3859_Entity_CheckPlayerXProximity
-    ret  nc
+    ret  nc                                            ; he is not underneath yet
 .jr_02_6B3E:
     ld   a,$03
     jp   call_02_7102_Entity_SetAction
 
-call_02_6b43_EntityAction_ArcedGunProjectile2_unk3:
+call_02_6b43_EntityAction_ArcedGunProjectile2_Drop:
     call call_00_3442_Entity_MoveXByFacingSpeed
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_PARAM
     bit  0,[hl]
     jr   nz,.jr_02_6B5B
     call call_00_30da_Entity_ApplyGravityMoveY_WithFloorCollision
-    jp   nc,call_02_6c03_GunProjectile_Sub
-    jp   call_02_6bf8_GunProjectile_Sub2
+    jp   nc,call_02_6c03_GunProjectile_Explode
+    jp   call_02_6bf8_GunProjectile_ExplodeIfHit
 .jr_02_6B5B:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
     ld   bc,hFFF1
     call call_00_316e_Entity_ClampYToMaxYBound_Offset
-    jp   nc,call_02_6c03_GunProjectile_Sub
-    jp   call_02_6bf8_GunProjectile_Sub2
+    jp   nc,call_02_6c03_GunProjectile_Explode
+    jp   call_02_6bf8_GunProjectile_ExplodeIfHit
 
-call_02_6b6a_EntityAction_GunProjectile_unk0:
+call_02_6b6a_EntityAction_GunProjectile_WaitForCue:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_2
     ld   a,[wD73B_VBlankFrameCounter]
     and  a,$3F
     cp   [hl]
     ret  nz
-    call call_02_6bcd_GunProjectile_Sub3
+    call call_02_6bcd_GunProjectile_Fire
     ld   a,$01
     jp   call_02_7102_Entity_SetAction
 
-call_02_6b81_EntityAction_GunProjectile_unk1:
+call_02_6b81_EntityAction_GunProjectile_Fly:
+; Action $01. The straight shot: no gravity, just a Y velocity ramped towards
+; $30 (up) or $D0 (down) depending on which way the gun points, and it explodes
+; when its own block row reaches the matching end of its bounding box. Compared
+; per BLOCK rather than per pixel, so the shot has to land exactly on that row -
+; which it does, because the velocity is a whole number of pixels by then
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_PARAM
     ld   c,[hl]
     xor  a,$0A
@@ -5156,7 +5321,7 @@ call_02_6b81_EntityAction_GunProjectile_unk1:
     add  hl,de
     ld   a,[hl]
     cp   b
-    jr   z,call_02_6c03_GunProjectile_Sub
+    jr   z,call_02_6c03_GunProjectile_Explode
     ld   c,$D0
     jr   .jr_02_6bc4
 .jr_02_6baf:
@@ -5171,51 +5336,85 @@ call_02_6b81_EntityAction_GunProjectile_unk1:
     add  hl,de
     ld   a,[hl]
     cp   b
-    jr   z,call_02_6c03_GunProjectile_Sub
+    jr   z,call_02_6c03_GunProjectile_Explode
     ld   c,$30
 .jr_02_6bc4:
     call call_00_3316_Entity_NudgeYVelocityTowardC_Signed
     call call_00_3597_Entity_ApplyVelocityXY_Subpixel_NoPlayerPush
-    jp   call_02_6bf8_GunProjectile_Sub2
+    jp   call_02_6bf8_GunProjectile_ExplodeIfHit
 
-call_02_6bcd_GunProjectile_Sub3:
+call_02_6bcd_GunProjectile_Fire:
+; Shared by all three gun types on the frame they go off: make a noise, become
+; dangerous, wipe the velocity block, and step $10 pixels clear of the muzzle in
+; whichever direction MISC_PARAM bit 0 says.
+;
+; Note the fourth store is `ld [hl],a`, not `ldi` - so L stops at $1F, and the
+; `xor $05` that follows reaches $1A MISC_PARAM. With four `ldi`s it would have
+; run into the next entity slot
     ld   c,SFX_GUN_PROJECTILE
     call call_00_112f_QueueSFX
     ld   c,COLLISION_TYPE_GUN_PROJECTILE
     call call_00_3825_Entity_SetCollisionType
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_X_VELOCITY
     xor  a
-    ldi  [hl],a
-    ldi  [hl],a
-    ldi  [hl],a
-    ld   [hl],a
+    ldi  [hl],a                                        ; $1C X_VELOCITY
+    ldi  [hl],a                                        ; $1D X_SUBPIXEL
+    ldi  [hl],a                                        ; $1E Y_VELOCITY
+    ld   [hl],a                                        ; $1F Y_SUBPIXEL - no inc
     ld   a,l
-    xor  a,$05
+    xor  a,$05                                         ; $1F -> $1A MISC_PARAM
     ld   l,a
     bit  0,[hl]
     jr   nz,.jr_02_6BF2
     ld   bc,$0010
-    jp   call_00_37d8_Entity_MoveY
+    jp   call_00_37d8_Entity_MoveY                     ; muzzle below: step down
 .jr_02_6BF2:
-    ld   bc,hFFF0
-    jp   call_00_37d8_Entity_MoveY
+    ld   bc,hFFF0                                      ; -$10
+    jp   call_00_37d8_Entity_MoveY                     ; muzzle above: step up
 
-call_02_6bf8_GunProjectile_Sub2:
+call_02_6bf8_GunProjectile_ExplodeIfHit:
+; MISC_FLAGS bit 7 is the collision handler's "this shot hit something" flag.
+; Falls straight through into the explode path when it is set
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     bit  MISC_FLAGS_BIT_7,[hl]
     ret  z
-call_02_6c03_GunProjectile_Sub:
+call_02_6c03_GunProjectile_Explode:
+; Hands over to a separate ENTITY_CHANNEL_Z_GUN_PROJECTILE_EXPLOSION entity and
+; frees this slot, so the burst outlives the shot
     ld   c,SFX_REZ_PROJECTILE
     call call_00_112f_QueueSFX
     ld   c,SPAWN_CHILD_ENTITY_GUN_PROJECTILE_EXPLOSION
     FARCALL call_0a_7b9a_EntitySpawn_SpawnChildEntity
     jp   call_00_3910_Entity_ClearSlot
 
-call_02_6c18_EntityAction_Rez_unk0:
+; ------------------------------------------------------------------
+; REZ - the final boss, and the only fight in the game with two halves.
+;
+; wD616_FinalBattleButtonFlags carries both of them in one byte: the low seven
+; bits are the number of BUTTON SLAMS still needed, which Rez himself sets to $0A
+; on his first frame, and bit 7 is a one-shot "a slam just landed" pulse raised by
+; call_02_6d5d_EntityAction_FinalBattleButtonProjectile_Fall.
+;
+;   actions $00-$04   Rez chases Gex and can be attacked directly. Each hit costs
+;                     him a point of MISC_PARAM_HI, which
+;                     call_00_3251_Entity_UpdateFacingMomentumAndMoveX reads as his
+;                     top speed - so he gets slower as the fight goes on, down to a
+;                     floor of $18
+;   actions $05-$08   .jr_03_516d_CollisionHandler_Rez ignores him entirely. The
+;                     only way to hurt him now is the two buttons, and every slam
+;                     takes one off the counter. At zero he drops the portal out
+;                     and bursts
+;
+; Which half the fight starts in is decided by geometry: the intro action sends
+; him straight to $08 if he spawns beyond block column $73, and to the chase
+; otherwise
+; ------------------------------------------------------------------
+
+call_02_6c18_EntityAction_Rez_Intro:
     call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_6C38
     ld   a,$0A
-    ld   [wD616_FinalBattleButtonFlags],a
+    ld   [wD616_FinalBattleButtonFlags],a              ; ten button slams to beat him
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_X
     ldi  a,[hl]
     ld   h,[hl]
@@ -5223,105 +5422,130 @@ call_02_6c18_EntityAction_Rez_unk0:
     add  hl,hl
     add  hl,hl
     add  hl,hl
-    ld   a,h
+    ld   a,h                                           ; my block column
     cp   a,$73
     ld   a,$08
-    jp   nc,call_02_7102_Entity_SetAction
+    jp   nc,call_02_7102_Entity_SetAction              ; far side of the arena: button phase
 .jr_02_6C38:
     call call_00_3843_Entity_CheckAnimationEnded
     ld   a,$02
-    jp   nz,call_02_7102_Entity_SetAction
+    jp   nz,call_02_7102_Entity_SetAction              ; otherwise: chase phase
     ret
 
-call_02_6c41_EntityAction_Rez_unk1:
+call_02_6c41_EntityAction_Rez_Unused1:
+; Action $01. Nothing selects it
     ret
 
-call_02_6c42_EntityAction_Rez_unk3:
+call_02_6c42_EntityAction_Rez_Recover:
+; Action $03. Plays the get-up animation and then FALLS THROUGH into the chase
+; below, so Rez is already moving again during the recovery rather than standing
+; still through it
     call call_00_3843_Entity_CheckAnimationEnded
     ld   a,$02
     call nz,call_02_7102_Entity_SetAction
-call_02_6c4a_EntityAction_Rez_unk2:
+call_02_6c4a_EntityAction_Rez_Chase:
+; Action $02. Homes in on Gex on both axes, but at very different rates: X uses
+; the momentum path, so he accelerates smoothly up to the top speed in
+; MISC_PARAM_HI, while Y creeps one pixel every FOURTH frame towards 8 pixels
+; above the player. The vertical tracking is deliberately slow enough to jump over
     ld   a,[wD73B_VBlankFrameCounter]
     and  a,$03
-    jr   nz,.jr_02_6C7C
+    jr   nz,.jr_02_6C7C                                ; vertical step only 1 frame in 4
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_Y
     ld   e,[hl]
     inc  l
-    ld   d,[hl]
+    ld   d,[hl]                                        ; DE = my Y
     ld   a,[wD210_Player_YPositionLo]
     sub  a,$08
     ld   l,a
     ld   a,[wD211_Player_YPositionHi]
     sbc  a,$00
-    ld   h,a
-    ld   bc,$0001
+    ld   h,a                                           ; HL = target Y (8 above Gex)
+    ld   bc,$0001                                      ; assume: move down
     ld   a,e
     sub  l
     ld   e,a
     ld   a,d
     sbc  h
-    ld   d,a
-    jr   c,.jr_02_6C79
+    ld   d,a                                           ; DE = my Y - target
+    jr   c,.jr_02_6C79                                 ; above the target - move down
     or   e
-    jr   z,.jr_02_6C7C
-    ld   bc,$FFFF
+    jr   z,.jr_02_6C7C                                 ; exactly on it - hold
+    ld   bc,$FFFF                                      ; below it - move up
 .jr_02_6C79:
     call call_00_37d8_Entity_MoveY
 .jr_02_6C7C:
     call call_00_36bd_Entity_FaceTowardsPlayer
     jp   call_00_3251_Entity_UpdateFacingMomentumAndMoveX
 
-call_02_6c82_EntityAction_Rez_unk4:
+call_02_6c82_EntityAction_Rez_Hit:
+; Action $04. The reaction to a direct attack, and where the fight is actually
+; being scored in its first half: each hit shaves one off MISC_PARAM_HI, which is
+; Rez's top chase speed, with $18 as the floor. He is never killed this way - it
+; only ever wears him down
     call call_00_3843_Entity_CheckAnimationEnded
     ret  z
     ld   a,$03
     call call_02_7102_Entity_SetAction
-    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_PARAM_HI
+    LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_PARAM_HI    ; top speed
     ld   a,[hl]
     cp   a,$19
-    ret  c
+    ret  c                                             ; already as slow as he gets
     dec  [hl]
     ret
 
-call_02_6c99_EntityAction_Rez_unk5:
-    call call_02_6Ca7_Rez_Unk5Sub
+call_02_6c99_EntityAction_Rez_Untouchable:
+; Actions $05, $06, $07 and $08 - four identical rows sharing this routine and one
+; animation. The collision handler ignores Rez completely in this range, so all he
+; does is watch for a button slam
+    call call_02_6ca7_Rez_CheckButtonSlam
     ret
 
-call_02_6c9d_EntityAction_Rez_unk9:
+call_02_6c9d_EntityAction_Rez_ButtonHit:
+; Action $09. The flinch after a slam lands; when it finishes he goes back to $08
+; and waits for the next one
     call call_00_3843_Entity_CheckAnimationEnded
     ld   a,$08
     jp   nz,call_02_7102_Entity_SetAction
     ret
 
-call_02_6ca6_EntityAction_Rez_unk10:
+call_02_6ca6_EntityAction_Rez_Unused10:
+; Action $0A. The collision handler has a case for it, but no code ever selects it
     ret
 
-call_02_6Ca7_Rez_Unk5Sub:
+call_02_6ca7_Rez_CheckButtonSlam:
+; Consumes the pulse in bit 7 and takes one off the slam counter. The `dec [hl]`
+; is what decides the fight: non-zero leaves him flinching, zero ends it - the
+; portal is dropped where he stands and he bursts
     ld   hl,wD616_FinalBattleButtonFlags
     bit  7,[hl]
-    ret  z
-    res  7,[hl]
-    dec  [hl]
+    ret  z                                             ; no slam this frame
+    res  7,[hl]                                        ; consume the pulse
+    dec  [hl]                                          ; one slam off the count
     ld   a,$09
-    jp   nz,call_02_7102_Entity_SetAction
+    jp   nz,call_02_7102_Entity_SetAction              ; more to go - flinch
     ld   c,SPAWN_CHILD_ENTITY_REZ_PORTAL
     FARCALL call_0a_7b9a_EntitySpawn_SpawnChildEntity
     ld   c,SFX_REZ_PROJECTILE
     call call_00_112f_QueueSFX
-    jp   call_00_3985_Entity_ParticleBurstInit
+    jp   call_00_3985_Entity_ParticleBurstInit         ; beaten
 
 call_02_6cca_EntityAction_RezFollowingFire_Update:
+; A trail of flame with no movement code of its own - it looks up Rez ($86) every
+; frame and plants itself $09 pixels behind him (the side chosen by his facing) and
+; $18 below. The same carried-child idea as the triceratops horn, except here the
+; child does the carrying
     ld   h,$D2
-    ld   a,$20
+    ld   a,ENTITY_SLOT_FIRST_NPC
 .jr_02_6CCE:
     ld   l,a
     ld   a,[hl]
-    cp   a,$86
+    cp   a,$86                                         ; ENTITY_CHANNEL_Z_REZ
     jr   z,.jr_02_6CDA
     ld   a,l
-    add  a,$20
+    add  a,ENTITY_SLOT_SIZE
     jr   nz,.jr_02_6CCE
-    ret
+    ret                                                ; no Rez - stay put
 .jr_02_6CDA:
     ld   a,l
     or   a,$0D
@@ -5368,6 +5592,8 @@ call_02_6cca_EntityAction_RezFollowingFire_Update:
     ret
 
 call_02_6d11_EntityAction_ChannelZUnusedPlatform1_Update:
+; The ordinary ungated patrolling platform. Its neighbour below is a bare `ret`.
+; Neither id appears in entity_list_channel_z.asm
     call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_6D1D
     ld   a,l
@@ -5384,6 +5610,10 @@ call_02_6d23_EntityAction_ChannelZUnusedPlatform2_Update:
     ret
 
 call_02_6d24_EntityAction_GunProjectileExplosion_Update:
+; Plays once and frees its slot. What it does per frame is unusual: rather than
+; drawing seven distinct frames it draws a handful of frames and REORIENTS them,
+; reading the current animation index to pick an OAM flip and a visible/blank
+; choice out of .data_02_6d4f. The blank entries are what make the burst flicker
     call call_00_3843_Entity_CheckAnimationEnded
     jp   nz,call_00_3910_Entity_ClearSlot
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_ANIM_FRAME_INDEX
@@ -5396,19 +5626,28 @@ call_02_6d24_EntityAction_GunProjectileExplosion_Update:
     inc  hl
     ld   d,[hl]
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
-    ld   [hl],e
-    xor  a,$07
+    ld   [hl],e                                        ; OAM flip for this frame
+    xor  a,$07                                         ; $0D -> $0A SPRITE_FLAGS
     ld   l,a
     ld   a,[hl]
-    res  3,a
-    or   d
+    res  SPRITE_FLAG_INVISIBLE_BIT,a
+    or   d                                             ; $08 = blank this frame
     ld   [hl],a
     ret
 .data_02_6d4f:
+; Per animation frame: (FACING_FLAGS, SPRITE_FLAG_INVISIBLE). $20 is an X flip and
+; $08 blanks the frame outright
     db   $00, $00, $20, $00, $00, $00, $00, $08
     db   $20, $00, $00, $08, $00, $00
 
-call_02_6d5d_EntityAction_FinalBattleButtonProjectile_unk0:
+call_02_6d5d_EntityAction_FinalBattleButtonProjectile_Fall:
+; What a button actually drops on Rez. It appears $98 above the button and $4C to
+; one side (see .data_0a_7c92_EntityChildSpawnData), falls under gravity, and the
+; moment it reaches block row $7D it raises the slam pulse and removes itself.
+;
+; That row is a fixed map coordinate, so the "hit" is not a collision test at all -
+; the arena floor is where Rez has to be, and the projectile simply reaching it
+; counts
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_WORLD_Y
     ldi  a,[hl]
@@ -5417,70 +5656,81 @@ call_02_6d5d_EntityAction_FinalBattleButtonProjectile_unk0:
     add  hl,hl
     add  hl,hl
     add  hl,hl
-    ld   a,h
+    ld   a,h                                           ; my block row
     cp   a,$7D
-    ret  c
+    ret  c                                             ; still falling
     ld   hl,wD616_FinalBattleButtonFlags
-    set  7,[hl]
+    set  7,[hl]                                        ; one slam, for Rez to consume
     ld   c,SFX_FINAL_BATTLE_BUTTON
     call call_00_112f_QueueSFX
     jp   call_00_3931_Entity_DeactivateSelf
 
-call_02_6d7f_EntityAction_FinalBattleButtonProjectile_unk1:
+call_02_6d7f_EntityAction_FinalBattleButtonProjectile_Unused:
     ret
 
-call_02_6d80_EntityAction_FinalBattleButton_unk0:
+call_02_6d80_EntityAction_FinalBattleButton_Ready:
+; Action $00. Gex standing on the button fires it - but only while slams are still
+; needed, so once Rez is beaten the buttons go dead. MISC_TIMER_2 tells the two
+; buttons apart and picks which of the two child records to use, which is what
+; sends their projectiles down opposite sides of the arena
     call call_00_34f5_Entity_IsPlayerStandingOnSelf
     bit  0,b
     ret  z
     ld   a,[wD616_FinalBattleButtonFlags]
-    and  a,$7F
+    and  a,$7F                                         ; slams still required?
     ret  z
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_TIMER_2
     ld   a,[hl]
-    cp   a,$01
+    cp   a,$01                                         ; which button am I?
     ld   c,SPAWN_CHILD_ENTITY_FINAL_BATTLE_BUTTON_PROJECTILE_1
     jr   z,.jr_02_6D9D
     ld   c,SPAWN_CHILD_ENTITY_FINAL_BATTLE_BUTTON_PROJECTILE_2
 .jr_02_6D9D:
     FARCALL call_0a_7b9a_EntitySpawn_SpawnChildEntity
     ld   bc,$0005
-    call call_00_37d8_Entity_MoveY
+    call call_00_37d8_Entity_MoveY                     ; sink into the floor
     ld   c,SFX_REZ_BUTTON
     call call_00_112f_QueueSFX
     ld   a,$01
     jp   call_02_7102_Entity_SetAction
 
-call_02_6db8_EntityAction_FinalBattleButton_unk1:
+call_02_6db8_EntityAction_FinalBattleButton_Pressed:
+; Action $01, and this is what makes the pair of buttons a puzzle rather than one
+; button pressed twice: a pressed button will not rise again until the OTHER
+; ENTITY_CHANNEL_Z_FINAL_BATTLE_BUTTON is also in action $01. So Gex has to run
+; between the two, and the pair reset together
     ld   h,$D2
-    ld   a,$20
+    ld   a,ENTITY_SLOT_FIRST_NPC
 .jr_02_6DBC:
     ld   l,a
     ld   a,[hl]
-    cp   a,$8C
+    cp   a,$8C                                         ; ENTITY_CHANNEL_Z_FINAL_BATTLE_BUTTON
     jr   nz,.jr_02_6DC8
     ld   a,[wD300_CurrentEntityAddrLo]
     cp   l
-    jr   nz,.jr_02_6DCE
+    jr   nz,.jr_02_6DCE                                ; found the OTHER one
 .jr_02_6DC8:
     ld   a,l
-    add  a,$20
+    add  a,ENTITY_SLOT_SIZE
     jr   nz,.jr_02_6DBC
     ret
 .jr_02_6DCE:
     ld   a,l
-    or   a,$01
+    or   a,$01                                         ; its ACTION_ID
     ld   l,a
     ld   a,[hl]
     and  a,$1F
     cp   a,$01
-    ret  nz
+    ret  nz                                            ; partner still up - stay down
     ld   bc,$FFFB
-    call call_00_37d8_Entity_MoveY
+    call call_00_37d8_Entity_MoveY                     ; rise back out of the floor
     ld   a,$00
     jp   call_02_7102_Entity_SetAction
 
 call_02_6de3_EntityAction_RezPortal_Update:
+; Dropped where Rez dies. When its animation finishes it ends the level: it clears
+; the exit-button index and asks the player for PLAYER_ACTION_ENTER_TV_ALT, the
+; same action a level's exit pad uses
     call call_00_3843_Entity_CheckAnimationEnded
     ret  z
     xor  a
@@ -5492,23 +5742,28 @@ call_02_6df0_EntityAction_Unk8E_Update:
     ret
 
 call_02_6df1_EntityAction_MediaDimensionMovingPlatform_Update:
+; The last entity in the table, and the only one that gates itself on overall game
+; PROGRESS rather than on anything in the room: MISC_PARAM is a required mission
+; remote count, and the platform stays frozen until wD64F_MissionRemoteTotal
+; reaches it. $FF means ungated. That is how the hub opens up as the game is
+; completed
     call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   Z, .jr_02_6dfd
     ld   A, L
-    xor  A, $10
+    xor  A, $10                                        ; $09 -> $19 MISC_TIMER_2
     ld   L, A
     ld   A, [HL-]
-    dec  L
-    ld   [HL], A
+    dec  L                                             ; -> $17 MISC_FLAGS
+    ld   [HL], A                                       ; patrol config from the spawn record
 .jr_02_6dfd:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_PARAM
     ld   A, [HL]
     cp   A, $ff
-    jr   Z, .jr_02_6e11
+    jr   Z, .jr_02_6e11                                ; ungated
     ld   A, [wD64F_MissionRemoteTotal]
     and  A, $7f
     cp   A, [HL]
-    ret  C
+    ret  C                                             ; not enough remotes yet
 .jr_02_6e11:
     call call_00_3559_Entity_ApplyVelocityXY_SubpixelBoth
     jp   call_00_318d_Entity_PlatformPatrol_WithBoundsAndFlip
