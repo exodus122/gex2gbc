@@ -143,7 +143,7 @@ call_00_0150_Init:
     call call_00_0f32_SetLCDC                                  ;; 00:01e7 $cd $32 $0f
     ld   A, $21                                        ;; 00:01ea $3e $21
     ld   [wD788_CurrentAudioBank], A                                    ;; 00:01ec $ea $88 $d7
-    FARCALL call_21_4000                              
+    FARCALL call_21_4000_Audio_Init                              
     ld   A, $ff                                        ;; 00:01fa $3e $ff
     ld   [wD78A_MusicId], A                                    ;; 00:01fc $ea $8a $d7
     ei                                                 ;; 00:01ff $fb
@@ -1400,7 +1400,7 @@ call_00_0a54_VBlank_Handler:
     rrca                                               ;; 00:0a91 $0f
     and  A, $01                                        ;; 00:0a92 $e6 $01
     ld   [MBC1SRamBank], A                                    ;; 00:0a94 $ea $01 $40
-    call call_22_410c                                  ;; 00:0a97 $cd $0c $41
+    call call_22_410c_Audio_Update                                  ;; 00:0a97 $cd $0c $41
     ; The only write to wD73B_VBlankFrameCounter in the ROM. Because it is here and
     ; not in a game loop, it advances even while play is suspended
     ld   HL, wD73B_VBlankFrameCounter                                     ;; 00:0a9a $21 $3b $d7
@@ -2562,7 +2562,7 @@ call_00_113e_PlaySFX:
     jr   Z, .jr_00_115f                                ;; 00:1155 $28 $08
     push AF                                            ;; 00:1157 $f5
     push BC                                            ;; 00:1158 $c5
-    call call_22_4047                                  ;; 00:1159 $cd $47 $40
+    call call_22_4047_Audio_PlaySfx                                  ;; 00:1159 $cd $47 $40
     pop  BC                                            ;; 00:115c $c1
     pop  AF                                            ;; 00:115d $f1
     inc  A                                             ;; 00:115e $3c
@@ -2708,7 +2708,7 @@ call_00_120c_SetupMusic:
     push AF                                            ;; 00:122d $f5
     push BC                                            ;; 00:122e $c5
     bit  0, C                                          ;; 00:122f $cb $41
-    call NZ, call_22_4092                              ;; 00:1231 $c4 $92 $40
+    call NZ, call_22_4092_Audio_PlayMusic                              ;; 00:1231 $c4 $92 $40
     pop  BC                                            ;; 00:1234 $c1
     pop  AF                                            ;; 00:1235 $f1
     inc  A                                             ;; 00:1236 $3c

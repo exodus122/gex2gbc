@@ -1858,82 +1858,114 @@ wDADB_FadeStepCounter:
 ; DADD through DFAD might be be unused memory?
     ds 1233
 
-; The rest of wram is used for audio-related purposes
+; ------------------------------------------------------------------
+; SOUND DRIVER STATE
+;
+; Everything the driver in banks $21-$24 owns. Music and sfx are two parallel sets
+; of four channels with identical layout - pointers, per-channel countdowns and an
+; active mask - and where they collide the sfx takes the hardware channel while the
+; music's registers are parked in the save area at the bottom of this block
+; ------------------------------------------------------------------
 wDFAE_AudioBankDataPointer: ; always 60 (as in 0x4460, which is where the audio data begins in all 4 audio banks)
     ds 1                                               ;; dfae
 wDFAF_AudioBankDataPointer: ; always 44 (as in 0x4460, which is where the audio data begins in all 4 audio banks)
     ds 1                                               ;; dfaf
 
-wDFB0:
+wDFB0_Audio_MusicChannelPtrs:
+; four 2-byte sequence pointers, one per hardware channel
     ds 8                                               ;; dfb0
 
-wDFB8:
+wDFB8_Audio_ChannelIndex:
+; 0-3, the channel Audio_Update is currently working on
     ds 1                                               ;; dfb8
 
-wDFB9:
+wDFB9_Audio_MusicTimerCh1:
+; frames left on this channel's current note. The four counters are contiguous
+; so Audio_Update can walk them with BC
     ds 1                                               ;; dfb9
 
-wDFBA:
+wDFBA_Audio_MusicTimerCh2:
     ds 1                                               ;; dfba
 
-wDFBB:
+wDFBB_Audio_MusicTimerCh3:
     ds 1                                               ;; dfbb
 
-wDFBC:
+wDFBC_Audio_MusicTimerCh4:
     ds 1                                               ;; dfbc
 
-wDFBD:
+wDFBD_Audio_FreqLo:
+; the 11-bit note frequency being assembled, before it reaches the registers
     ds 1                                               ;; dfbd
 
-wDFBE:
+wDFBE_Audio_FreqHi:
     ds 1                                               ;; dfbe
 
-wDFBF:
+wDFBF_Audio_NoteTableOffset:
+; note number doubled - the byte offset into data_21_43ce_NoteFrequencies
     ds 1                                               ;; dfbf
 
-wDFC0:
+wDFC0_Audio_ChannelIndexFromMask:
+; wDFC1 minus 1, used to index data_21_43c6_ChannelFreqLoReg
     ds 1                                               ;; dfc0
 
-wDFC1:
+wDFC1_Audio_CurrentChannelBit:
+; $01, $02, $04 or $08 - the channel as a bit rather than an index
     ds 1                                               ;; dfc1
 
-wDFC2:
+wDFC2_Audio_MusicChannelsActive:
+; one bit per channel the music is currently playing on
     ds 1                                               ;; dfc2
 
-wDFC3:
+wDFC3_Audio_SfxChannelPtrs:
+; the sfx set's four sequence pointers, laid out like wDFB0
     ds 8                                               ;; dfc3
 
-wDFCB:
+wDFCB_Audio_SfxTimerCh1:
+; the sfx set's four countdowns, laid out like wDFB9
     ds 1                                               ;; dfcb
 
-wDFCC:
+wDFCC_Audio_SfxTimerCh2:
     ds 1                                               ;; dfcc
 
-wDFCD:
+wDFCD_Audio_SfxTimerCh3:
     ds 1                                               ;; dfcd
 
-wDFCE:
+wDFCE_Audio_SfxTimerCh4:
     ds 1                                               ;; dfce
 
-wDFCF:
+wDFCF_Audio_SfxChannelsActive:
+; one bit per channel a sound effect has taken. A channel set here and in
+; wDFC2 is one where the music is still running but inaudible
     ds 1                                               ;; dfcf
 
-wDFD0:
+wDFD0_Audio_RequestedTrackId:
+; the id passed to Audio_PlaySfx or Audio_PlayMusic
     ds 1                                               ;; dfd0
 
-wDFD1:
+wDFD1_Audio_RequestKind:
+; AUDIO_REQUEST_SFX or AUDIO_REQUEST_MUSIC - selects which set of channel
+; arrays the start-up path writes
     ds 1                                               ;; dfd1
 
-wDFD2:
+wDFD2_Audio_SavedMusicRegs:
+; AUDIO_SAVED_REGS_PER_CHANNEL bytes per channel. Filled when a sound effect
+; takes a channel and replayed when it ends, so the music resumes mid-note
+; rather than restarting. data_21_439e_ChannelSaveRegs says which registers
     ds 20                                              ;; dfd2
 
-wDFE6:
+wDFE6_Audio_SavedWaveRam:
+; the wave channel needs its 16 bytes of pattern saved too
     ds 16                                              ;; dfe6
 
-wDFF6:
+wDFF6_Audio_ChannelFreqShadow:
+; the frequency each channel would be playing, kept up to date even while a
+; sound effect owns the channel - which is how the music comes back in the
+; right place instead of where it left off
     ds 8                                               ;; dff6
 
-wDFFE:
+wDFFE_Audio_CurrentChannel:
+; channel index used by Audio_RunSequence, separate from wDFB8 because the
+; interpreter can be entered from track start-up as well as from the tick
     ds 2                                               ;; dffe
 
 SECTION "hram", HRAM[$ff80]

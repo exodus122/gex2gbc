@@ -171,6 +171,36 @@ DEF WARP_FLAG_ENTERED_DOOR       EQU $08
 DEF WARP_FLAG_TIME_UP            EQU $10 ; bonus level countdown expired
 
 ; Music
+; ------------------------------------------------------------------
+; Sound sequence opcodes - the byte stream call_21_4199_Audio_RunSequence walks.
+; Banks $21-$24 each hold an identical copy of the driver, so these apply to all
+; four.
+;
+; A byte below AUDIO_CMD_REG_AND is a note, and is always followed by a duration
+; byte. Everything at AUDIO_CMD_REG_AND and above is a command; the three register
+; forms carry one data byte and the rest are self-contained
+; ------------------------------------------------------------------
+DEF AUDIO_NOTE_REST                        EQU $00 ; silence the channel for the duration
+DEF AUDIO_NOTE_SUSTAIN                     EQU $49 ; retrigger without changing pitch
+DEF AUDIO_NOTE_LAST                        EQU $48 ; highest index into the frequency table
+
+; reg = reg AND data, for registers $FF10-$FF2F. Opcode is $90 + register low byte
+DEF AUDIO_CMD_REG_AND                      EQU $A0
+; reg = reg OR data. Opcode is $B0 + register low byte
+DEF AUDIO_CMD_REG_OR                       EQU $C0
+; reg = data. Opcode is $D0 + register low byte
+DEF AUDIO_CMD_REG_SET                      EQU $E0
+DEF AUDIO_CMD_LOAD_WAVE                    EQU $FD ; next 16 bytes go to wave RAM
+DEF AUDIO_CMD_LOOP                         EQU $FE ; word follows: bytes to jump BACK
+DEF AUDIO_CMD_END                          EQU $FF ; release the channel
+
+; wDFD1_Audio_RequestKind
+DEF AUDIO_REQUEST_SFX                      EQU $01
+DEF AUDIO_REQUEST_MUSIC                    EQU $02
+
+DEF AUDIO_CHANNEL_COUNT                    EQU 4
+DEF AUDIO_SAVED_REGS_PER_CHANNEL           EQU 5
+
 DEF MUSIC_KUNG_FU_THEATER                 EQU $00
 DEF MUSIC_CIRCUIT_CENTRAL                 EQU $01
 DEF MUSIC_PREHISTORY_CHANNEL              EQU $02
