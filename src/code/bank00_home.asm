@@ -1467,15 +1467,18 @@ call_00_0ac1_VBlank_UpdateVRAM:
     res  0, [HL]                                       ;; 00:0af4 $cb $86
     bit  0, A                                          ;; 00:0af6 $cb $47
     jp   NZ, call_00_1779_BlockPatch_WriteAttributes                                ;; 00:0af8 $c2 $79 $17
+    ; The secondary tileset's own animation. Unlike the map tile animation further down
+    ; this one paces itself: wD732_TilesetAnim_DelayCounter counts vblanks and only
+    ; every wD731_TilesetAnim_DelayReload of them plays a frame
     ld   A, [wD72F_TilesetAnim_FrameCount]                                    ;; 00:0afb $fa $2f $d7
     and  A, A                                          ;; 00:0afe $a7
-    jr   Z, .jr_00_0b0c                                ;; 00:0aff $28 $0b
+    jr   Z, .jr_00_0b0c                                ;; 00:0aff $28 $0b ; tileset has no animation
     ld   HL, wD731_TilesetAnim_DelayReload                                     ;; 00:0b01 $21 $31 $d7
-    ld   A, [HL+]                                      ;; 00:0b04 $2a
+    ld   A, [HL+]                                      ;; 00:0b04 $2a ; A = reload, HL = counter
     dec  [HL]                                          ;; 00:0b05 $35
     jr   NZ, .jr_00_0b0c                               ;; 00:0b06 $20 $04
     ld   [HL], A                                       ;; 00:0b08 $77
-    jp   .jp_00_0b24                                   ;; 00:0b09 $c3 $24 $0b
+    jp   .jp_00_0b24_TilesetAnim_PlayFrame                                   ;; 00:0b09 $c3 $24 $0b
 .jr_00_0b0c:
     ld   A, [wD60E_HUDDirtyFlags]                                    ;; 00:0b0c $fa $0e $d6
     bit  3, A                                          ;; 00:0b0f $cb $5f
@@ -1485,8 +1488,37 @@ call_00_0ac1_VBlank_UpdateVRAM:
     jp   NZ, call_03_6d13_HUD_LoadLivesDigits                              ;; 00:0b19 $c2 $13 $6d
     bit  2, A                                          ;; 00:0b1c $cb $57
     jp   NZ, call_03_6ceb_HUD_LoadTimerDigits                                ;; 00:0b1e $c2 $eb $6c
-    jp   call_03_7253_AnimatedTile_Update                                    ;; 00:0b21 $c3 $53 $72
-.jp_00_0b24:
+    jp   call_03_7253_MapTileAnim_Update                                    ;; 00:0b21 $c3 $53 $72
+.jp_00_0b24_TilesetAnim_PlayFrame:
+; Plays one frame of the SECONDARY TILESET's animation - the second and rarer of the
+; game's two tile animation systems. The other one, the per-level water and lava cycle
+; in bank03_animated_tiles.asm, is reached at the bottom of this routine instead; the
+; header there sets the two side by side.
+;
+; What makes this one different is that it belongs to the artwork rather than to the
+; room. call_00_1922_BgMap_LoadSecondaryTileset fills wD72F_TilesetAnim_FrameCount
+; onward straight out of the tileset it just loaded, so swapping tilesets swaps the
+; animation with it, and a tileset with no animation leaves the count at zero and is
+; skipped for nothing.
+;
+; The frame data lives in the tileset's own ROM bank, so the first thing here is to
+; bank it in - wD72E_TilesetAnim_Bank is a private copy of the value the loader keeps
+; in wD726_SecondaryTilesetBank, held separately because this runs from vblank and
+; cannot rely on whatever the main loop left mapped.
+;
+; Two ways to run, chosen by bit 0 of wD738_TilesetAnim_Flags:
+;
+;   clear  loop. wD730_TilesetAnim_FrameIndex advances and wraps against the frame
+;          count, so the tileset cycles for as long as it stays loaded
+;   set    play once. It waits for the tileset's own HDMA to finish, then clears the
+;          frame count so this never runs again and draws wD730 once. The index was
+;          seeded at load time from the frame table, so what this really does is swap
+;          one alternate page of tiles in and stop
+;
+; Either way the chosen index selects a four-byte (destination, source) pair from the
+; table at wD736_TilesetAnim_FrameTablePtrLo and wD733_TilesetAnim_RowsPerFrame tiles
+; are copied. Note the destination read from wD734_TilesetAnim_DestAddrLo just below is
+; overwritten by the table entry before it is ever used
     ld   A, [wD72E_TilesetAnim_Bank]                                    ;; 00:0b24 $fa $2e $d7
     ld   [MBC1RomBank], A                                    ;; 00:0b27 $ea $01 $20
     swap A                                             ;; 00:0b2a $cb $37
@@ -1495,12 +1527,12 @@ call_00_0ac1_VBlank_UpdateVRAM:
     ld   [MBC1SRamBank], A                                    ;; 00:0b2f $ea $01 $40
     ld   A, [wD738_TilesetAnim_Flags]                                    ;; 00:0b32 $fa $38 $d7
     and  A, $01                                        ;; 00:0b35 $e6 $01
-    jr   Z, .jr_00_0b48                                ;; 00:0b37 $28 $0f
+    jr   Z, .jr_00_0b48                                ;; 00:0b37 $28 $0f ; looping
     ld   HL, wD60F_GfxTransferFlags                                     ;; 00:0b39 $21 $0f $d6
     bit  2, [HL]                                       ;; 00:0b3c $cb $56
-    ret  NZ                                            ;; 00:0b3e $c0
+    ret  NZ                                            ;; 00:0b3e $c0 ; tileset still streaming in
     xor  A, A                                          ;; 00:0b3f $af
-    ld   [wD72F_TilesetAnim_FrameCount], A                                    ;; 00:0b40 $ea $2f $d7
+    ld   [wD72F_TilesetAnim_FrameCount], A                                    ;; 00:0b40 $ea $2f $d7 ; fire once only
     ld   HL, wD730_TilesetAnim_FrameIndex                                     ;; 00:0b43 $21 $30 $d7
     jr   .jr_00_0b51                                   ;; 00:0b46 $18 $09
 .jr_00_0b48:
@@ -2065,7 +2097,7 @@ call_00_0f01_ResetVideoState:
     ld   [wD60F_GfxTransferFlags], A                                    ;; 00:0f0d $ea $0f $d6
     ld   [wD77B_BlockPatch_VramWritePending], A                                    ;; 00:0f10 $ea $7b $d7
     ld   [wD72F_TilesetAnim_FrameCount], A                                    ;; 00:0f13 $ea $2f $d7
-    ld   [wD611_AnimatedTileId], A                                    ;; 00:0f16 $ea $11 $d6
+    ld   [wD611_MapTileAnim_StepCount], A                                    ;; 00:0f16 $ea $11 $d6
     ld   [wD6E2_GfxStream_ChunksRemaining], A                                    ;; 00:0f19 $ea $e2 $d6
     ld   [wDAD9_FadeMode], A                                    ;; 00:0f1c $ea $d9 $da
     ld   [wD71E_EntityGfxQueueCount], A                                    ;; 00:0f1f $ea $1e $d7

@@ -165,3 +165,17 @@ ENDM
 MACRO hud_sprite ; X, tile, attributes
     db   \1, \2, \3
 ENDM
+
+; One step of a level's map tile animation schedule - see
+; call_03_7253_MapTileAnim_Update. The vblank handler runs exactly one of these per
+; frame and then moves on to the next, so a schedule is a round robin of VRAM writes
+; rather than a list of animation frames.
+;   tiles      how many 16-byte tiles to copy
+;   condition  0 for an unconditional step, or MAP_TILE_ANIM_IF_CONVEYOR | n to skip
+;              the step and blank the tiles while conveyor n is stopped
+MACRO map_tile_anim_step ; tiles, condition, vram destination, tile data
+    db   \1, \2
+    dw   \3
+    dw   \4
+    db   $00, $00
+ENDM

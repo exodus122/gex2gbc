@@ -459,9 +459,23 @@ wD610_MediaDimension_TVScreenId:
 ; Used as a page index into bank $14 and copied to VRAM $8600
     ds 1                                               ;; d610
 
-wD611_AnimatedTileId:
+; ------------------------------------------------------------------
+; Map tile animation - the level's own cycling tiles (water, lava, the Circuit
+; Central conveyors). Set up by call_03_723c_MapTileAnim_Init when a level loads
+; and stepped by call_03_7253_MapTileAnim_Update once per vblank.
+;
+; Not to be confused with the secondary tileset's animation at
+; wD72E_TilesetAnim_Bank onward, which belongs to the artwork rather than to the
+; level and paces itself with its own delay counter
+; ------------------------------------------------------------------
+wD611_MapTileAnim_StepCount:
+; length of the level's schedule, and the system's enable flag - zero means this
+; level has no animated tiles and MapTileAnim_Update returns immediately
     ds 1                                               ;; d611
-wD612_AnimatedTime_FrameCounter:
+wD612_MapTileAnim_StepIndex:
+; which step of the schedule runs next, advanced every vblank and wrapped against
+; the count above. Because the schedule interleaves several groups of tiles, this
+; is a position in a round robin rather than an animation frame number
     ds 1                                               ;; d612
 
 wD613_Dragon_SegmentsRemaining:
@@ -1219,8 +1233,13 @@ wD72E_TilesetAnim_Bank:
     ds 1                                               ;; d72e
 
 ; ------------------------------------------------------------------
-; Secondary tileset animation player. Loaded alongside the secondary tileset;
-; ticked from call_00_0ac1_VBlank_UpdateVRAM.
+; Secondary tileset animation player - the second of the game's two tile
+; animation systems. This one belongs to the loaded secondary tileset, so it is
+; filled in by call_00_1922_BgMap_LoadSecondaryTileset and swaps out whenever the
+; tileset does; .jp_00_0b24_TilesetAnim_PlayFrame plays it from vblank.
+;
+; The level's own water and lava cycle is the other one - wD611 above,
+; bank03_animated_tiles.asm - and the header on that file compares the two
 ; ------------------------------------------------------------------
 wD72F_TilesetAnim_FrameCount:
 ; number of animation frames; 0 = this tileset has no animation

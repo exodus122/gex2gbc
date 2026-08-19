@@ -1314,6 +1314,21 @@ DEF VRAM_COLLECTIBLE_SPRITES                          EQU $87e0
 DEF VRAM_TILESET_ADDR_2                               EQU $8800
 DEF VRAM_TILESET_ADDR_1                               EQU $9000
 
+; ------------------------------------------------------------------
+; Map tile animation - the per-level water, lava and machinery cycles driven by
+; call_03_7253_MapTileAnim_Update. Each schedule step names one of these VRAM
+; addresses as its destination; the group numbering is per world and means nothing
+; across worlds. Addresses in $9xxx are VRAM bank 1
+; ------------------------------------------------------------------
+
+; Byte +1 of a map_tile_anim_step. Bit 7 makes the step conditional and the low bits
+; then name a conveyor, 1 to 3, matching wD5A3_ConveyorState1 upward. A conditional
+; step is skipped entirely while a secondary tileset is loaded, and writes
+; data_03_7bfd_MapTileAnim_BlankTile in place of its artwork while that conveyor is
+; stopped
+DEF MAP_TILE_ANIM_ALWAYS                              EQU $00
+DEF MAP_TILE_ANIM_IF_CONVEYOR                         EQU $80
+
 DEF VRAM_ANIMATED_TILE_TOON_TV_GROUP_1                EQU $8b30
 DEF VRAM_ANIMATED_TILE_TOON_TV_GROUP_2                EQU $8a50
 DEF VRAM_ANIMATED_TILE_TOON_TV_GROUP_3                EQU $8c40
