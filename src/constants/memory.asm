@@ -381,7 +381,7 @@ wD5A2_BgMap_ScrollYLo:
 ; three separate systems read it:
 ;   .jr_03_5129_CollisionHandler_PoweredWalkway   writes $06 when Gex touches the
 ;       walkway with his power-up running. That is the only producer
-;   bank03_animated_tiles.asm                     swaps the belt tiles for blank
+;   bank03_map_tile_anim.asm                     swaps the belt tiles for blank
 ;       ones while the slot is empty, which is the entire visual difference
 ;   call_02_6a3c_EntityAction_WalkwayActivator_Update  turns its collision box on
 ;       and off to match
@@ -1141,7 +1141,7 @@ wD6F9_BgMap_LoadingFlags:
     ds 1                                               ;; d6f9
 ; Where the next pending tilemap strip goes. Scrolling vertically writes a horizontal
 ; row, scrolling horizontally writes a vertical column - see
-; call_03_6f5e_BgMap_WriteRowForVerticalScroll and its column twin.
+; call_03_6f5e_VRAM_WriteBgMapRowForVerticalScroll and its column twin.
 wD6FA_BgMap_RowWritePosLo:
 ; 16-bit. The row writer masks the low byte with $E0 to snap to the start of a
 ; tilemap row, and ORs the high byte with $98 / $C0 to reach VRAM and the shadow map
@@ -1239,7 +1239,7 @@ wD72E_TilesetAnim_Bank:
 ; tileset does; .jp_00_0b24_TilesetAnim_PlayFrame plays it from vblank.
 ;
 ; The level's own water and lava cycle is the other one - wD611 above,
-; bank03_animated_tiles.asm - and the header on that file compares the two
+; bank03_map_tile_anim.asm - and the header on that file compares the two
 ; ------------------------------------------------------------------
 wD72F_TilesetAnim_FrameCount:
 ; number of animation frames; 0 = this tileset has no animation

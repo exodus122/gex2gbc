@@ -181,29 +181,29 @@ data_03_72ab_MapTileAnim_ScheduleByLevel:
 ; over twelve vblanks - five and a bit tiles per frame on average
     db   $0c
     
-    map_tile_anim_step $04, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_TOON_TV_GROUP_1, .data_03_747d
+    map_tile_anim_step $04, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_TOON_TV_1, .data_03_747d_ToonTV_Group1_Frame1
     
-    map_tile_anim_step $02, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_TOON_TV_GROUP_2, .data_03_757d
+    map_tile_anim_step $02, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_TOON_TV_2, .data_03_757d_ToonTV_Group2_Frame1
     
-    map_tile_anim_step $04, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_TOON_TV_GROUP_3, .data_03_75fd
+    map_tile_anim_step $04, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_TOON_TV_3, .data_03_75fd_ToonTV_Group3_Frame1
     
-    map_tile_anim_step $04, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_TOON_TV_GROUP_1, .data_03_74bd
+    map_tile_anim_step $04, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_TOON_TV_1, .data_03_74bd_ToonTV_Group1_Frame2
     
-    map_tile_anim_step $02, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_TOON_TV_GROUP_2, .data_03_759d
+    map_tile_anim_step $02, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_TOON_TV_2, .data_03_759d_ToonTV_Group2_Frame2
     
-    map_tile_anim_step $04, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_TOON_TV_GROUP_3, .data_03_763d
+    map_tile_anim_step $04, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_TOON_TV_3, .data_03_763d_ToonTV_Group3_Frame2
     
-    map_tile_anim_step $04, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_TOON_TV_GROUP_1, .data_03_74fd
+    map_tile_anim_step $04, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_TOON_TV_1, .data_03_74fd_ToonTV_Group1_Frame3
     
-    map_tile_anim_step $02, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_TOON_TV_GROUP_2, .data_03_75bd
+    map_tile_anim_step $02, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_TOON_TV_2, .data_03_75bd_ToonTV_Group2_Frame3
     
-    map_tile_anim_step $04, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_TOON_TV_GROUP_3, .data_03_767d
+    map_tile_anim_step $04, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_TOON_TV_3, .data_03_767d_ToonTV_Group3_Frame3
     
-    map_tile_anim_step $04, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_TOON_TV_GROUP_1, .data_03_753d
+    map_tile_anim_step $04, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_TOON_TV_1, .data_03_753d_ToonTV_Group1_Frame4
     
-    map_tile_anim_step $02, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_TOON_TV_GROUP_2, .data_03_75dd
+    map_tile_anim_step $02, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_TOON_TV_2, .data_03_75dd_ToonTV_Group2_Frame4
     
-    map_tile_anim_step $04, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_TOON_TV_GROUP_3, .data_03_76bd
+    map_tile_anim_step $04, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_TOON_TV_3, .data_03_76bd_ToonTV_Group3_Frame4
 .data_03_734a_MapTileAnim_Schedule_ScreamTV:
 ; Four groups over fourteen steps, and the only schedule that is not an even rotation.
 ; The order is 1 2 3 4 2 3 4 1 2 3 4 2 3 4, so groups 2, 3 and 4 take four turns each
@@ -211,33 +211,33 @@ data_03_72ab_MapTileAnim_ScheduleByLevel:
 ; or fourth, and animates at half the speed of the rest
     db   $0e
     
-    map_tile_anim_step $02, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_1, .data_03_787d
+    map_tile_anim_step $02, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_SCREAM_TV_1, .data_03_787d_ScreamTV_Group1_Frame1
     
-    map_tile_anim_step $06, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_2, .data_03_76fd
+    map_tile_anim_step $06, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_SCREAM_TV_2, .data_03_76fd_ScreamTV_Group2_Frame1
     
-    map_tile_anim_step $04, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_3, .data_03_78bd
+    map_tile_anim_step $04, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_SCREAM_TV_3, .data_03_78bd_ScreamTV_Group3_Frame1
     
-    map_tile_anim_step $04, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_4, .data_03_78fd
+    map_tile_anim_step $04, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_SCREAM_TV_4, .data_03_78fd_ScreamTV_Group4_Frame1
     
-    map_tile_anim_step $06, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_2, .data_03_775d
+    map_tile_anim_step $06, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_SCREAM_TV_2, .data_03_775d_ScreamTV_Group2_Frame2
     
-    map_tile_anim_step $04, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_3, .data_03_793d
+    map_tile_anim_step $04, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_SCREAM_TV_3, .data_03_793d_ScreamTV_Group3_Frame2
     
-    map_tile_anim_step $04, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_4, .data_03_797d
+    map_tile_anim_step $04, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_SCREAM_TV_4, .data_03_797d_ScreamTV_Group4_Frame2
     
-    map_tile_anim_step $02, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_1, .data_03_789d
+    map_tile_anim_step $02, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_SCREAM_TV_1, .data_03_789d_ScreamTV_Group1_Frame2
     
-    map_tile_anim_step $06, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_2, .data_03_77bd
+    map_tile_anim_step $06, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_SCREAM_TV_2, .data_03_77bd_ScreamTV_Group2_Frame3
     
-    map_tile_anim_step $04, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_3, .data_03_79bd
+    map_tile_anim_step $04, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_SCREAM_TV_3, .data_03_79bd_ScreamTV_Group3_Frame3
     
-    map_tile_anim_step $04, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_4, .data_03_79fd
+    map_tile_anim_step $04, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_SCREAM_TV_4, .data_03_79fd_ScreamTV_Group4_Frame3
     
-    map_tile_anim_step $06, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_2, .data_03_781d
+    map_tile_anim_step $06, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_SCREAM_TV_2, .data_03_781d_ScreamTV_Group2_Frame4
     
-    map_tile_anim_step $04, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_3, .data_03_7a3d
+    map_tile_anim_step $04, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_SCREAM_TV_3, .data_03_7a3d_ScreamTV_Group3_Frame4
     
-    map_tile_anim_step $04, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_SCREAM_TV_GROUP_4, .data_03_7a7d
+    map_tile_anim_step $04, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_SCREAM_TV_4, .data_03_7a7d_ScreamTV_Group4_Frame4
 .data_03_73bb_MapTileAnim_Schedule_CircuitCentral:
 ; The conveyor belts, and the only schedule with conditional steps. Three groups of two
 ; tiles, and each group's condition names the conveyor of the same number - group 1
@@ -245,128 +245,128 @@ data_03_72ab_MapTileAnim_ScheduleByLevel:
 ; independently while sharing one schedule
     db   $0c
     
-    map_tile_anim_step $02, MAP_TILE_ANIM_IF_CONVEYOR | 1,   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_1, .data_03_7b7d
+    map_tile_anim_step $02, MAP_TILE_ANIM_IF_CONVEYOR | 1,   VRAM_MAP_TILE_ANIM_CIRCUIT_CENTRAL_1, .data_03_7b7d_CircuitCentral_Frame1
     
-    map_tile_anim_step $02, MAP_TILE_ANIM_IF_CONVEYOR | 2,   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_2, .data_03_7b7d
+    map_tile_anim_step $02, MAP_TILE_ANIM_IF_CONVEYOR | 2,   VRAM_MAP_TILE_ANIM_CIRCUIT_CENTRAL_2, .data_03_7b7d_CircuitCentral_Frame1
     
-    map_tile_anim_step $02, MAP_TILE_ANIM_IF_CONVEYOR | 3,   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_3, .data_03_7b7d
+    map_tile_anim_step $02, MAP_TILE_ANIM_IF_CONVEYOR | 3,   VRAM_MAP_TILE_ANIM_CIRCUIT_CENTRAL_3, .data_03_7b7d_CircuitCentral_Frame1
     
-    map_tile_anim_step $02, MAP_TILE_ANIM_IF_CONVEYOR | 1,   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_1, .data_03_7b9d
+    map_tile_anim_step $02, MAP_TILE_ANIM_IF_CONVEYOR | 1,   VRAM_MAP_TILE_ANIM_CIRCUIT_CENTRAL_1, .data_03_7b9d_CircuitCentral_Frame2
     
-    map_tile_anim_step $02, MAP_TILE_ANIM_IF_CONVEYOR | 2,   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_2, .data_03_7b9d
+    map_tile_anim_step $02, MAP_TILE_ANIM_IF_CONVEYOR | 2,   VRAM_MAP_TILE_ANIM_CIRCUIT_CENTRAL_2, .data_03_7b9d_CircuitCentral_Frame2
     
-    map_tile_anim_step $02, MAP_TILE_ANIM_IF_CONVEYOR | 3,   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_3, .data_03_7b9d
+    map_tile_anim_step $02, MAP_TILE_ANIM_IF_CONVEYOR | 3,   VRAM_MAP_TILE_ANIM_CIRCUIT_CENTRAL_3, .data_03_7b9d_CircuitCentral_Frame2
     
-    map_tile_anim_step $02, MAP_TILE_ANIM_IF_CONVEYOR | 1,   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_1, .data_03_7bbd
+    map_tile_anim_step $02, MAP_TILE_ANIM_IF_CONVEYOR | 1,   VRAM_MAP_TILE_ANIM_CIRCUIT_CENTRAL_1, .data_03_7bbd_CircuitCentral_Frame3
     
-    map_tile_anim_step $02, MAP_TILE_ANIM_IF_CONVEYOR | 2,   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_2, .data_03_7bbd
+    map_tile_anim_step $02, MAP_TILE_ANIM_IF_CONVEYOR | 2,   VRAM_MAP_TILE_ANIM_CIRCUIT_CENTRAL_2, .data_03_7bbd_CircuitCentral_Frame3
     
-    map_tile_anim_step $02, MAP_TILE_ANIM_IF_CONVEYOR | 3,   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_3, .data_03_7bbd
+    map_tile_anim_step $02, MAP_TILE_ANIM_IF_CONVEYOR | 3,   VRAM_MAP_TILE_ANIM_CIRCUIT_CENTRAL_3, .data_03_7bbd_CircuitCentral_Frame3
     
-    map_tile_anim_step $02, MAP_TILE_ANIM_IF_CONVEYOR | 1,   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_1, .data_03_7bdd
+    map_tile_anim_step $02, MAP_TILE_ANIM_IF_CONVEYOR | 1,   VRAM_MAP_TILE_ANIM_CIRCUIT_CENTRAL_1, .data_03_7bdd_CircuitCentral_Frame4
     
-    map_tile_anim_step $02, MAP_TILE_ANIM_IF_CONVEYOR | 2,   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_2, .data_03_7bdd
+    map_tile_anim_step $02, MAP_TILE_ANIM_IF_CONVEYOR | 2,   VRAM_MAP_TILE_ANIM_CIRCUIT_CENTRAL_2, .data_03_7bdd_CircuitCentral_Frame4
     
-    map_tile_anim_step $02, MAP_TILE_ANIM_IF_CONVEYOR | 3,   VRAM_ANIMATED_TILE_CIRCUIT_CENTRAL_GROUP_3, .data_03_7bdd
+    map_tile_anim_step $02, MAP_TILE_ANIM_IF_CONVEYOR | 3,   VRAM_MAP_TILE_ANIM_CIRCUIT_CENTRAL_3, .data_03_7bdd_CircuitCentral_Frame4
 .data_03_741c_MapTileAnim_Schedule_Rezopolis:
 ; Rezopolis. Three groups again - two tiles, one tile, one tile - but the four frames
 ; of group 1 are only two distinct pages used twice, so the twelve steps cost eight
 ; pages of artwork rather than twelve
     db   $0c                                              ; 12 steps, then back to the top
-    map_tile_anim_step $02, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_1, .data_03_7abd
-    map_tile_anim_step $01, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_2, .data_03_7afd
-    map_tile_anim_step $01, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_3, .data_03_7b3d
-    map_tile_anim_step $02, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_1, .data_03_7add
-    map_tile_anim_step $01, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_2, .data_03_7b0d
-    map_tile_anim_step $01, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_3, .data_03_7b4d
-    map_tile_anim_step $02, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_1, .data_03_7abd
-    map_tile_anim_step $01, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_2, .data_03_7b1d
-    map_tile_anim_step $01, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_3, .data_03_7b5d
-    map_tile_anim_step $02, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_1, .data_03_7add
-    map_tile_anim_step $01, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_2, .data_03_7b2d
-    map_tile_anim_step $01, MAP_TILE_ANIM_ALWAYS,            VRAM_ANIMATED_TILE_REZOPOLIS_GROUP_3, .data_03_7b6d
+    map_tile_anim_step $02, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_REZOPOLIS_1, .data_03_7abd_Rezopolis_Group1_Frame1
+    map_tile_anim_step $01, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_REZOPOLIS_2, .data_03_7afd_Rezopolis_Group2_Frame1
+    map_tile_anim_step $01, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_REZOPOLIS_3, .data_03_7b3d_Rezopolis_Group3_Frame1
+    map_tile_anim_step $02, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_REZOPOLIS_1, .data_03_7add_Rezopolis_Group1_Frame2
+    map_tile_anim_step $01, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_REZOPOLIS_2, .data_03_7b0d_Rezopolis_Group2_Frame2
+    map_tile_anim_step $01, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_REZOPOLIS_3, .data_03_7b4d_Rezopolis_Group3_Frame2
+    map_tile_anim_step $02, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_REZOPOLIS_1, .data_03_7abd_Rezopolis_Group1_Frame1
+    map_tile_anim_step $01, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_REZOPOLIS_2, .data_03_7b1d_Rezopolis_Group2_Frame3
+    map_tile_anim_step $01, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_REZOPOLIS_3, .data_03_7b5d_Rezopolis_Group3_Frame3
+    map_tile_anim_step $02, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_REZOPOLIS_1, .data_03_7add_Rezopolis_Group1_Frame2
+    map_tile_anim_step $01, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_REZOPOLIS_2, .data_03_7b2d_Rezopolis_Group2_Frame4
+    map_tile_anim_step $01, MAP_TILE_ANIM_ALWAYS,            VRAM_MAP_TILE_ANIM_REZOPOLIS_3, .data_03_7b6d_Rezopolis_Group3_Frame4
 
-.data_03_747d:
-    INCBIN ".gfx/animated_tiles/toon_tv/image_003_747d.bin"
-.data_03_74bd:
-    INCBIN ".gfx/animated_tiles/toon_tv/image_003_74bd.bin"
-.data_03_74fd:
-    INCBIN ".gfx/animated_tiles/toon_tv/image_003_74fd.bin"
-.data_03_753d:
-    INCBIN ".gfx/animated_tiles/toon_tv/image_003_753d.bin"
-.data_03_757d:
-    INCBIN ".gfx/animated_tiles/toon_tv/image_003_757d.bin"
-.data_03_759d:
-    INCBIN ".gfx/animated_tiles/toon_tv/image_003_759d.bin"
-.data_03_75bd:
-    INCBIN ".gfx/animated_tiles/toon_tv/image_003_75bd.bin"
-.data_03_75dd:
-    INCBIN ".gfx/animated_tiles/toon_tv/image_003_75dd.bin"
-.data_03_75fd:
-    INCBIN ".gfx/animated_tiles/toon_tv/image_003_75fd.bin"
-.data_03_763d:
-    INCBIN ".gfx/animated_tiles/toon_tv/image_003_763d.bin"
-.data_03_767d:
-    INCBIN ".gfx/animated_tiles/toon_tv/image_003_767d.bin"
-.data_03_76bd:
-    INCBIN ".gfx/animated_tiles/toon_tv/image_003_76bd.bin"
-.data_03_76fd:
-    INCBIN ".gfx/animated_tiles/scream_tv/image_003_76fd.bin"
-.data_03_775d:
-    INCBIN ".gfx/animated_tiles/scream_tv/image_003_775d.bin"
-.data_03_77bd:
-    INCBIN ".gfx/animated_tiles/scream_tv/image_003_77bd.bin"
-.data_03_781d:
-    INCBIN ".gfx/animated_tiles/scream_tv/image_003_781d.bin"
-.data_03_787d:
-    INCBIN ".gfx/animated_tiles/scream_tv/image_003_787d.bin"
-.data_03_789d:
-    INCBIN ".gfx/animated_tiles/scream_tv/image_003_789d.bin"
-.data_03_78bd:
-    INCBIN ".gfx/animated_tiles/scream_tv/image_003_78bd.bin"
-.data_03_78fd:
-    INCBIN ".gfx/animated_tiles/scream_tv/image_003_78fd.bin"
-.data_03_793d:
-    INCBIN ".gfx/animated_tiles/scream_tv/image_003_793d.bin"
-.data_03_797d:
-    INCBIN ".gfx/animated_tiles/scream_tv/image_003_797d.bin"
-.data_03_79bd:
-    INCBIN ".gfx/animated_tiles/scream_tv/image_003_79bd.bin"
-.data_03_79fd:
-    INCBIN ".gfx/animated_tiles/scream_tv/image_003_79fd.bin"
-.data_03_7a3d:
-    INCBIN ".gfx/animated_tiles/scream_tv/image_003_7a3d.bin"
-.data_03_7a7d:
-    INCBIN ".gfx/animated_tiles/scream_tv/image_003_7a7d.bin"
-.data_03_7abd:
-    INCBIN ".gfx/animated_tiles/rezopolis/image_003_7abd.bin"
-.data_03_7add:
-    INCBIN ".gfx/animated_tiles/rezopolis/image_003_7add.bin"
-.data_03_7afd:
-    INCBIN ".gfx/animated_tiles/rezopolis/image_003_7afd.bin"
-.data_03_7b0d:
-    INCBIN ".gfx/animated_tiles/rezopolis/image_003_7b0d.bin"
-.data_03_7b1d:
-    INCBIN ".gfx/animated_tiles/rezopolis/image_003_7b1d.bin"
-.data_03_7b2d:
-    INCBIN ".gfx/animated_tiles/rezopolis/image_003_7b2d.bin"
-.data_03_7b3d:
-    INCBIN ".gfx/animated_tiles/rezopolis/image_003_7b3d.bin"
-.data_03_7b4d:
-    INCBIN ".gfx/animated_tiles/rezopolis/image_003_7b4d.bin"
-.data_03_7b5d:
-    INCBIN ".gfx/animated_tiles/rezopolis/image_003_7b5d.bin"
-.data_03_7b6d:
-    INCBIN ".gfx/animated_tiles/rezopolis/image_003_7b6d.bin"
-.data_03_7b7d:
-    INCBIN ".gfx/animated_tiles/circuit_central/image_003_7b7d.bin"
-.data_03_7b9d:
-    INCBIN ".gfx/animated_tiles/circuit_central/image_003_7b9d.bin"
-.data_03_7bbd:
-    INCBIN ".gfx/animated_tiles/circuit_central/image_003_7bbd.bin"
-.data_03_7bdd:
-    INCBIN ".gfx/animated_tiles/circuit_central/image_003_7bdd.bin"
+.data_03_747d_ToonTV_Group1_Frame1:
+    INCBIN ".gfx/map_tile_anim/toon_tv/image_003_747d.bin"
+.data_03_74bd_ToonTV_Group1_Frame2:
+    INCBIN ".gfx/map_tile_anim/toon_tv/image_003_74bd.bin"
+.data_03_74fd_ToonTV_Group1_Frame3:
+    INCBIN ".gfx/map_tile_anim/toon_tv/image_003_74fd.bin"
+.data_03_753d_ToonTV_Group1_Frame4:
+    INCBIN ".gfx/map_tile_anim/toon_tv/image_003_753d.bin"
+.data_03_757d_ToonTV_Group2_Frame1:
+    INCBIN ".gfx/map_tile_anim/toon_tv/image_003_757d.bin"
+.data_03_759d_ToonTV_Group2_Frame2:
+    INCBIN ".gfx/map_tile_anim/toon_tv/image_003_759d.bin"
+.data_03_75bd_ToonTV_Group2_Frame3:
+    INCBIN ".gfx/map_tile_anim/toon_tv/image_003_75bd.bin"
+.data_03_75dd_ToonTV_Group2_Frame4:
+    INCBIN ".gfx/map_tile_anim/toon_tv/image_003_75dd.bin"
+.data_03_75fd_ToonTV_Group3_Frame1:
+    INCBIN ".gfx/map_tile_anim/toon_tv/image_003_75fd.bin"
+.data_03_763d_ToonTV_Group3_Frame2:
+    INCBIN ".gfx/map_tile_anim/toon_tv/image_003_763d.bin"
+.data_03_767d_ToonTV_Group3_Frame3:
+    INCBIN ".gfx/map_tile_anim/toon_tv/image_003_767d.bin"
+.data_03_76bd_ToonTV_Group3_Frame4:
+    INCBIN ".gfx/map_tile_anim/toon_tv/image_003_76bd.bin"
+.data_03_76fd_ScreamTV_Group2_Frame1:
+    INCBIN ".gfx/map_tile_anim/scream_tv/image_003_76fd.bin"
+.data_03_775d_ScreamTV_Group2_Frame2:
+    INCBIN ".gfx/map_tile_anim/scream_tv/image_003_775d.bin"
+.data_03_77bd_ScreamTV_Group2_Frame3:
+    INCBIN ".gfx/map_tile_anim/scream_tv/image_003_77bd.bin"
+.data_03_781d_ScreamTV_Group2_Frame4:
+    INCBIN ".gfx/map_tile_anim/scream_tv/image_003_781d.bin"
+.data_03_787d_ScreamTV_Group1_Frame1:
+    INCBIN ".gfx/map_tile_anim/scream_tv/image_003_787d.bin"
+.data_03_789d_ScreamTV_Group1_Frame2:
+    INCBIN ".gfx/map_tile_anim/scream_tv/image_003_789d.bin"
+.data_03_78bd_ScreamTV_Group3_Frame1:
+    INCBIN ".gfx/map_tile_anim/scream_tv/image_003_78bd.bin"
+.data_03_78fd_ScreamTV_Group4_Frame1:
+    INCBIN ".gfx/map_tile_anim/scream_tv/image_003_78fd.bin"
+.data_03_793d_ScreamTV_Group3_Frame2:
+    INCBIN ".gfx/map_tile_anim/scream_tv/image_003_793d.bin"
+.data_03_797d_ScreamTV_Group4_Frame2:
+    INCBIN ".gfx/map_tile_anim/scream_tv/image_003_797d.bin"
+.data_03_79bd_ScreamTV_Group3_Frame3:
+    INCBIN ".gfx/map_tile_anim/scream_tv/image_003_79bd.bin"
+.data_03_79fd_ScreamTV_Group4_Frame3:
+    INCBIN ".gfx/map_tile_anim/scream_tv/image_003_79fd.bin"
+.data_03_7a3d_ScreamTV_Group3_Frame4:
+    INCBIN ".gfx/map_tile_anim/scream_tv/image_003_7a3d.bin"
+.data_03_7a7d_ScreamTV_Group4_Frame4:
+    INCBIN ".gfx/map_tile_anim/scream_tv/image_003_7a7d.bin"
+.data_03_7abd_Rezopolis_Group1_Frame1:
+    INCBIN ".gfx/map_tile_anim/rezopolis/image_003_7abd.bin"
+.data_03_7add_Rezopolis_Group1_Frame2:
+    INCBIN ".gfx/map_tile_anim/rezopolis/image_003_7add.bin"
+.data_03_7afd_Rezopolis_Group2_Frame1:
+    INCBIN ".gfx/map_tile_anim/rezopolis/image_003_7afd.bin"
+.data_03_7b0d_Rezopolis_Group2_Frame2:
+    INCBIN ".gfx/map_tile_anim/rezopolis/image_003_7b0d.bin"
+.data_03_7b1d_Rezopolis_Group2_Frame3:
+    INCBIN ".gfx/map_tile_anim/rezopolis/image_003_7b1d.bin"
+.data_03_7b2d_Rezopolis_Group2_Frame4:
+    INCBIN ".gfx/map_tile_anim/rezopolis/image_003_7b2d.bin"
+.data_03_7b3d_Rezopolis_Group3_Frame1:
+    INCBIN ".gfx/map_tile_anim/rezopolis/image_003_7b3d.bin"
+.data_03_7b4d_Rezopolis_Group3_Frame2:
+    INCBIN ".gfx/map_tile_anim/rezopolis/image_003_7b4d.bin"
+.data_03_7b5d_Rezopolis_Group3_Frame3:
+    INCBIN ".gfx/map_tile_anim/rezopolis/image_003_7b5d.bin"
+.data_03_7b6d_Rezopolis_Group3_Frame4:
+    INCBIN ".gfx/map_tile_anim/rezopolis/image_003_7b6d.bin"
+.data_03_7b7d_CircuitCentral_Frame1:
+    INCBIN ".gfx/map_tile_anim/circuit_central/image_003_7b7d.bin"
+.data_03_7b9d_CircuitCentral_Frame2:
+    INCBIN ".gfx/map_tile_anim/circuit_central/image_003_7b9d.bin"
+.data_03_7bbd_CircuitCentral_Frame3:
+    INCBIN ".gfx/map_tile_anim/circuit_central/image_003_7bbd.bin"
+.data_03_7bdd_CircuitCentral_Frame4:
+    INCBIN ".gfx/map_tile_anim/circuit_central/image_003_7bdd.bin"
 
 data_03_7bfd_MapTileAnim_BlankTile:
 ; used as a substitute tile when a conditional animated tile slot is inactive (e.g. conveyor belt is off in Circuit Central)
-    INCBIN ".gfx/animated_tiles/circuit_central/image_003_7bfd.bin"
+    INCBIN ".gfx/map_tile_anim/circuit_central/image_003_7bfd.bin"

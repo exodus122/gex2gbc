@@ -5228,7 +5228,7 @@ call_02_6a33_EntityAction_WalkerRobot_Update:
 ;   the WALKWAY entity ($81) does nothing at all in its action. Its collision
 ;     handler (.jr_03_5129) is what matters: touching it while the power-up timer
 ;     is running writes $06 into one of the three wD5A3_ConveyorState slots
-;   the ANIMATED TILE code in bank03_animated_tiles.asm reads those slots and
+;   the ANIMATED TILE code in bank03_map_tile_anim.asm reads those slots and
 ;     swaps the belt tiles for blank ones when the slot is empty, which is the
 ;     only reason a running belt looks different from a stopped one
 ;   the ACTIVATOR entity ($82) reads the same slot and turns itself solid or

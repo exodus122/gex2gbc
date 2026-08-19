@@ -21,7 +21,7 @@ INCLUDE "code/bank03_oam_build.asm"
 INCLUDE "code/bank03_particle_sprites.asm"
 INCLUDE "code/bank03_hud_tiles.asm"
 INCLUDE "code/bank03_vram_write.asm"
-INCLUDE "code/bank03_animated_tiles.asm"
+INCLUDE "code/bank03_map_tile_anim.asm"
 
 SECTION "bank04", ROMX[$4000], BANK[$04]
     INCBIN ".gfx/entity_sprites/image_004_4000.bin"

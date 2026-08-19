@@ -1492,7 +1492,7 @@ call_00_0ac1_VBlank_UpdateVRAM:
 .jp_00_0b24_TilesetAnim_PlayFrame:
 ; Plays one frame of the SECONDARY TILESET's animation - the second and rarer of the
 ; game's two tile animation systems. The other one, the per-level water and lava cycle
-; in bank03_animated_tiles.asm, is reached at the bottom of this routine instead; the
+; in bank03_map_tile_anim.asm, is reached at the bottom of this routine instead; the
 ; header there sets the two side by side.
 ;
 ; What makes this one different is that it belongs to the artwork rather than to the

@@ -4,7 +4,7 @@ call_00_1264_BgMap_LoadFull:
 ; Calls call_00_0f38_FadeOutAndClearVRAM, then call_00_1419_BgMap_LoadTileset. Resets secondary tileset index to $FF,
 ; clears wD77B_BlockPatch_VramWritePending/wD77D_BlockPatch_StepsRemaining. Then loops 22 ($16) times: 
 ; sets wD6F9_BgMap_LoadingFlags=$01 (dirty flag), calls LoadBgMapDirtyRegions 
-; and BgMap_WriteRowForVerticalScroll, advances wD6EF (Y map position) by 8 each iteration — so
+; and VRAM_WriteBgMapRowForVerticalScroll, advances wD6EF (Y map position) by 8 each iteration — so
 ; it walks DOWN the map, drawing one horizontal row per pass, until the whole visible area is
 ; filled. Clears dirty flag, loads HUD tiles, updates map window
     call call_00_0ede_SelectWramBank1                                  ;; 00:1264 $cd $de $0e
@@ -36,7 +36,7 @@ call_00_1264_BgMap_LoadFull:
     ld   A, MAP_SCROLL_DOWN                                        ;; 00:12a3 $3e $01
     ld   [wD6F9_BgMap_LoadingFlags], A                                    ;; 00:12a5 $ea $f9 $d6
     call call_00_1455_BgMap_LoadDirtyRegions                                  ;; 00:12a8 $cd $55 $14
-    FARCALL call_03_6f5e_BgMap_WriteRowForVerticalScroll 
+    FARCALL call_03_6f5e_VRAM_WriteBgMapRowForVerticalScroll 
     ld   HL, wD6EF_BgMap_ScrollY                                     ;; 00:12b6 $21 $ef $d6
     ld   A, [HL]                                       ;; 00:12b9 $7e
     add  A, $08                                        ;; 00:12ba $c6 $08
