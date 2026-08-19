@@ -36,7 +36,7 @@ call_00_1264_BgMap_LoadFull:
     ld   A, MAP_SCROLL_DOWN
     ld   [wD6F9_BgMap_LoadingFlags], A
     call call_00_1455_BgMap_LoadDirtyRegions
-    FARCALL call_03_6f5e_BgMap_WriteRowForVerticalScroll
+    FARCALL call_03_6f5e_VRAM_WriteBgMapRowForVerticalScroll
     ld   HL, wD6EF_BgMap_ScrollY
     ld   A, [HL]
     add  A, $08

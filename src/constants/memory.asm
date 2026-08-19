@@ -1127,7 +1127,7 @@ wD6F9_BgMap_LoadingFlags:
     ds 1                                               ;; d6f9
 ; Where the next pending tilemap strip goes. Scrolling vertically writes a horizontal
 ; row, scrolling horizontally writes a vertical column - see
-; call_03_6f5e_BgMap_WriteRowForVerticalScroll and its column twin.
+; call_03_6f5e_VRAM_WriteBgMapRowForVerticalScroll and its column twin.
 wD6FA_BgMap_RowWritePosLo:
 ; 16-bit. The row writer masks the low byte with $E0 to snap to the start of a
 ; tilemap row, and ORs the high byte with $98 / $C0 to reach VRAM and the shadow map
