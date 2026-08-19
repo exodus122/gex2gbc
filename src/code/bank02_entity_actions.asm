@@ -4801,19 +4801,30 @@ call_02_679e_EntityAction_ElectricBall_FollowPath:
     call z,call_02_680e_ElectricBall_NextPathStep
     ret
 .data_02_67ce:
-; 16 records of (signed 16-bit dX, signed 16-bit dY), indexed by the direction
-; nibble read as bit 0 right, bit 1 left, bit 2 up, bit 3 down. Everything moves 2
-; pixels a frame; record 0 is the standstill, and conflicting bits resolve to
-; right and to down
-    db   $00, $00, $00
-    db   $00, $02, $00, $00, $00, $fe, $ff, $00
-    db   $00, $02, $00, $00, $00, $00, $00, $fe
-    db   $ff, $02, $00, $fe, $ff, $fe, $ff, $fe
-    db   $ff, $02, $00, $fe, $ff, $00, $00, $02
-    db   $00, $02, $00, $02, $00, $fe, $ff, $02
-    db   $00, $02, $00, $02, $00, $00, $00, $02
-    db   $00, $02, $00, $02, $00, $fe, $ff, $02
-    db   $00, $02, $00, $02, $00
+; The direction nibble expanded into movement: 16 records of (signed 16-bit dX,
+; signed 16-bit dY), indexed by the nibble directly. Everything travels 2 pixels a
+; frame, record 0 is the standstill, and the four low bits are
+; BALL_PATH_RIGHT / _LEFT / _UP / _DOWN in that order.
+;
+; Note the table is fully populated even though the routes only ever use five of
+; the sixteen entries, and that conflicting bits do not cancel - right wins over
+; left, down wins over up. That is why indices $0C-$0F duplicate $08-$0B
+    db   $00, $00, $00, $00                            ; $0  -        still
+    db   $02, $00, $00, $00                            ; $1  R        right
+    db   $fe, $ff, $00, $00                            ; $2  L        left
+    db   $02, $00, $00, $00                            ; $3  L+R      right
+    db   $00, $00, $fe, $ff                            ; $4  U        up
+    db   $02, $00, $fe, $ff                            ; $5  R+U      right + up
+    db   $fe, $ff, $fe, $ff                            ; $6  L+U      left  + up
+    db   $02, $00, $fe, $ff                            ; $7  L+R+U    right + up
+    db   $00, $00, $02, $00                            ; $8  D        down
+    db   $02, $00, $02, $00                            ; $9  R+D      right + down
+    db   $fe, $ff, $02, $00                            ; $A  L+D      left  + down
+    db   $02, $00, $02, $00                            ; $B  L+R+D    right + down
+    db   $00, $00, $02, $00                            ; $C  U+D      down
+    db   $02, $00, $02, $00                            ; $D  R+U+D    right + down
+    db   $fe, $ff, $02, $00                            ; $E  L+U+D    left  + down
+    db   $02, $00, $02, $00                            ; $F  L+R+U+D  right + down
 
 call_02_680e_ElectricBall_NextPathStep:
 ; Reads one 2-byte record - (direction nibble, duration) - from the route selected
@@ -4845,25 +4856,114 @@ call_02_680e_ElectricBall_NextPathStep:
     ld   [de],a                                        ; = how long to hold it
     ret
 .data_02_683c:
-; Ten route pointers, then the routes themselves - each a run of (direction,
-; duration) pairs ending in $FF
-    db   $50, $68, $57, $68, $5e
-    db   $68, $65, $68, $70, $68, $83, $68, $8a
-    db   $68, $8d, $68, $98, $68, $9f, $68, $10
-    db   $2e, $90, $10, $10, $3c, $ff, $10, $3e
-    db   $90, $20, $10, $5c, $ff, $10, $5e, $90
-    db   $10, $10, $2c, $ff, $10, $4e, $90, $10
-    db   $10, $70, $90, $20, $10, $5c, $ff, $10
-    db   $5e, $90, $10, $10, $40, $90, $10, $10
-    db   $50, $50, $10, $10, $40, $50, $10, $10
-    db   $0c, $ff, $10, $ee, $10, $f0, $10, $8c
-    db   $ff, $10, $6a, $ff, $10, $3e, $90, $10
-    db   $10, $2c, $50, $10, $10, $20, $ff, $10
-    db   $2e, $90, $10, $10, $1c, $ff, $10, $6e
-    db   $90, $20, $10, $4c, $50, $20, $10, $54
-    db   $90, $10, $10, $4c, $50, $10, $10, $30
-    db   $50, $20, $10, $f0, $10, $54, $90, $10
-    db   $10, $40, $90, $10, $10, $5c, $ff
+; Ten routes, selected by the ball's MISC_TIMER_2 spawn parameter. Each is a run of
+; (direction, frames) pairs terminated by BALL_PATH_END; see the BALL_PATH_*
+; constants for the direction bits.
+;
+; Every route runs left to right, and none of them uses BALL_PATH_LEFT at all - the
+; balls only ever cross the screen one way. Where a route needs to travel further
+; than 255 frames in a straight line it just repeats the step, which is why route 5
+; and route 9 have runs of consecutive RIGHTs
+    dw   .data_02_6850_Route0
+    dw   .data_02_6857_Route1
+    dw   .data_02_685e_Route2
+    dw   .data_02_6865_Route3
+    dw   .data_02_6870_Route4
+    dw   .data_02_6883_Route5
+    dw   .data_02_688a_Route6
+    dw   .data_02_688d_Route7
+    dw   .data_02_6898_Route8
+    dw   .data_02_689f_Route9
+
+.data_02_6850_Route0:
+; Straight, one dip, straight
+    db   BALL_PATH_RIGHT,               $2e
+    db   BALL_PATH_RIGHT|BALL_PATH_DOWN,$10
+    db   BALL_PATH_RIGHT,               $3c
+    db   BALL_PATH_END
+
+.data_02_6857_Route1:
+; The same shape with a longer run in and a deeper dip
+    db   BALL_PATH_RIGHT,               $3e
+    db   BALL_PATH_RIGHT|BALL_PATH_DOWN,$20
+    db   BALL_PATH_RIGHT,               $5c
+    db   BALL_PATH_END
+
+.data_02_685e_Route2:
+    db   BALL_PATH_RIGHT,               $5e
+    db   BALL_PATH_RIGHT|BALL_PATH_DOWN,$10
+    db   BALL_PATH_RIGHT,               $2c
+    db   BALL_PATH_END
+
+.data_02_6865_Route3:
+; Two descending steps
+    db   BALL_PATH_RIGHT,               $4e
+    db   BALL_PATH_RIGHT|BALL_PATH_DOWN,$10
+    db   BALL_PATH_RIGHT,               $70
+    db   BALL_PATH_RIGHT|BALL_PATH_DOWN,$20
+    db   BALL_PATH_RIGHT,               $5c
+    db   BALL_PATH_END
+
+.data_02_6870_Route4:
+; Down two steps and back up two - a shallow valley
+    db   BALL_PATH_RIGHT,               $5e
+    db   BALL_PATH_RIGHT|BALL_PATH_DOWN,$10
+    db   BALL_PATH_RIGHT,               $40
+    db   BALL_PATH_RIGHT|BALL_PATH_DOWN,$10
+    db   BALL_PATH_RIGHT,               $50
+    db   BALL_PATH_RIGHT|BALL_PATH_UP,  $10
+    db   BALL_PATH_RIGHT,               $40
+    db   BALL_PATH_RIGHT|BALL_PATH_UP,  $10
+    db   BALL_PATH_RIGHT,               $0c
+    db   BALL_PATH_END
+
+.data_02_6883_Route5:
+; Dead level all the way across. Split into three steps only because a single
+; duration byte cannot hold $2CE frames
+    db   BALL_PATH_RIGHT,               $ee
+    db   BALL_PATH_RIGHT,               $f0
+    db   BALL_PATH_RIGHT,               $8c
+    db   BALL_PATH_END
+
+.data_02_688a_Route6:
+; The shortest route: one level dash
+    db   BALL_PATH_RIGHT,               $6a
+    db   BALL_PATH_END
+
+.data_02_688d_Route7:
+; Down one step, back up one
+    db   BALL_PATH_RIGHT,               $3e
+    db   BALL_PATH_RIGHT|BALL_PATH_DOWN,$10
+    db   BALL_PATH_RIGHT,               $2c
+    db   BALL_PATH_RIGHT|BALL_PATH_UP,  $10
+    db   BALL_PATH_RIGHT,               $20
+    db   BALL_PATH_END
+
+.data_02_6898_Route8:
+    db   BALL_PATH_RIGHT,               $2e
+    db   BALL_PATH_RIGHT|BALL_PATH_DOWN,$10
+    db   BALL_PATH_RIGHT,               $1c
+    db   BALL_PATH_END
+
+.data_02_689f_Route9:
+; The long one - sixteen steps weaving down and up across the whole room
+    db   BALL_PATH_RIGHT,               $6e
+    db   BALL_PATH_RIGHT|BALL_PATH_DOWN,$20
+    db   BALL_PATH_RIGHT,               $4c
+    db   BALL_PATH_RIGHT|BALL_PATH_UP,  $20
+    db   BALL_PATH_RIGHT,               $54
+    db   BALL_PATH_RIGHT|BALL_PATH_DOWN,$10
+    db   BALL_PATH_RIGHT,               $4c
+    db   BALL_PATH_RIGHT|BALL_PATH_UP,  $10
+    db   BALL_PATH_RIGHT,               $30
+    db   BALL_PATH_RIGHT|BALL_PATH_UP,  $20
+    db   BALL_PATH_RIGHT,               $f0
+    db   BALL_PATH_RIGHT,               $54
+    db   BALL_PATH_RIGHT|BALL_PATH_DOWN,$10
+    db   BALL_PATH_RIGHT,               $40
+    db   BALL_PATH_RIGHT|BALL_PATH_DOWN,$10
+    db   BALL_PATH_RIGHT,               $5c
+    db   BALL_PATH_END
 
 call_02_68c0_EntityAction_CircuitCentralMovingPlatform_Update:
 ; The other scripted-path entity, and the more capable of the two: instead of
@@ -4923,20 +5023,61 @@ call_02_68c0_EntityAction_CircuitCentralMovingPlatform_Update:
     ld   [hl],$00                                      ; rewind and take step 0
     jr   .jr_02_68D6
 .data_02_6915:
-; Four route pointers, then the routes - runs of (duration, X velocity, Y velocity)
-; triples, each ending in a $FF duration that sends playback back to the start
-    db   $1d, $69, $2a, $69
-    db   $43, $69, $5c, $69, $e0, $10, $f0, $a0
-    db   $10, $10, $a0, $f0, $f0, $e0, $f0, $10
-    db   $ff, $80, $f0, $00, $80, $f0, $00, $80
-    db   $f0, $00, $80, $f0, $00, $80, $10, $00
-    db   $80, $10, $00, $80, $10, $00, $80, $10
-    db   $00, $ff, $e0, $f0, $00, $e0, $f0, $00
-    db   $20, $f0, $00, $80, $10, $f0, $80, $10
-    db   $f0, $e0, $10, $00, $80, $00, $10, $80
-    db   $00, $10, $ff, $e0, $f0, $f0, $e0, $10
-    db   $f0, $e0, $f0, $f0, $e0, $10, $10, $e0
-    db   $f0, $10, $e0, $10, $10, $ff
+; Four routes, selected by the platform's MISC_TIMER_2 spawn parameter. Each is a
+; run of (frames, X velocity, Y velocity) triples terminated by PLATFORM_PATH_LOOP,
+; which rewinds to step 0 rather than despawning - these platforms circle forever.
+;
+; The velocities go straight into the entity's velocity fields, so $10 is one pixel
+; a frame right or down and $F0 one pixel a frame left or up. Every route's steps
+; sum to zero on both axes, which they have to: a route that did not close would
+; walk the platform off its own track a little further on every lap
+    dw   .data_02_691d_Route0
+    dw   .data_02_692a_Route1
+    dw   .data_02_6943_Route2
+    dw   .data_02_695c_Route3
+
+.data_02_691d_Route0:
+; A diamond: 224 up-right, 160 down-right, 160 up-left, 224 down-left
+    db   $e0, $10, $f0                                 ; 224f  right + up
+    db   $a0, $10, $10                                 ; 160f  right + down
+    db   $a0, $f0, $f0                                 ; 160f  left  + up
+    db   $e0, $f0, $10                                 ; 224f  left  + down
+    db   PLATFORM_PATH_LOOP
+
+.data_02_692a_Route1:
+; Straight back and forth, 512 pixels each way. Split into four steps per leg only
+; because a duration byte tops out at 255
+    db   $80, $f0, $00                                 ; 128f  left
+    db   $80, $f0, $00                                 ; 128f  left
+    db   $80, $f0, $00                                 ; 128f  left
+    db   $80, $f0, $00                                 ; 128f  left
+    db   $80, $10, $00                                 ; 128f  right
+    db   $80, $10, $00                                 ; 128f  right
+    db   $80, $10, $00                                 ; 128f  right
+    db   $80, $10, $00                                 ; 128f  right
+    db   PLATFORM_PATH_LOOP
+
+.data_02_6943_Route2:
+; Out to the left, up and back along the top, then straight down to the start
+    db   $e0, $f0, $00                                 ; 224f  left
+    db   $e0, $f0, $00                                 ; 224f  left
+    db   $20, $f0, $00                                 ;  32f  left
+    db   $80, $10, $f0                                 ; 128f  right + up
+    db   $80, $10, $f0                                 ; 128f  right + up
+    db   $e0, $10, $00                                 ; 224f  right
+    db   $80, $00, $10                                 ; 128f  down
+    db   $80, $00, $10                                 ; 128f  down
+    db   PLATFORM_PATH_LOOP
+
+.data_02_695c_Route3:
+; A zig-zag: three diagonal legs climbing, three descending, all 224 frames
+    db   $e0, $f0, $f0                                 ; 224f  left  + up
+    db   $e0, $10, $f0                                 ; 224f  right + up
+    db   $e0, $f0, $f0                                 ; 224f  left  + up
+    db   $e0, $10, $10                                 ; 224f  right + down
+    db   $e0, $f0, $10                                 ; 224f  left  + down
+    db   $e0, $10, $10                                 ; 224f  right + down
+    db   PLATFORM_PATH_LOOP
 
 ; ------------------------------------------------------------------
 ; POWERED PLATFORM - the Toon TV moving block's round-trip machine again

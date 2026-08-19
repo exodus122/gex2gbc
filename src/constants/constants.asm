@@ -1181,6 +1181,37 @@ DEF PARTICLE_PATTERN_JAR_BURST              EQU 5
 ; skull, the Pre-History fire plant and the boulder's collision type all reach it
 DEF PARTICLE_PATTERN_MULTI_PROJECTILE       EQU 6
 
+; ==================================================================
+; SCRIPTED ENTITY PATHS - bank02_entity_actions.asm
+;
+; Two Circuit Central entities move by replaying a list of steps out of ROM rather
+; than by patrolling between bounds. Each picks its route with a spawn parameter
+; that indexes a small pointer table, so one entity type covers every route in the
+; level, and each route ends in a $FF byte.
+; ==================================================================
+
+; ------------------------------------------------------------------
+; ELECTRIC BALL, .data_02_683c. Steps are (direction, frames) pairs.
+;
+; Only the HIGH NIBBLE of the direction byte is used -
+; call_02_679e_EntityAction_ElectricBall_FollowPath rotates it down and indexes
+; .data_02_67ce with it. Everything moves 2 pixels a frame, opposing bits resolve
+; to RIGHT and to DOWN, and no bits at all is a standstill
+; ------------------------------------------------------------------
+DEF BALL_PATH_RIGHT                         EQU $10
+DEF BALL_PATH_LEFT                          EQU $20
+DEF BALL_PATH_UP                            EQU $40
+DEF BALL_PATH_DOWN                          EQU $80
+DEF BALL_PATH_END                           EQU $FF ; frees the entity's slot
+
+; ------------------------------------------------------------------
+; CIRCUIT CENTRAL MOVING PLATFORM, .data_02_6915. Steps are (frames, X velocity,
+; Y velocity) triples written straight into the entity's velocity fields, so they
+; are signed and pass through the subpixel integrator - $10 is one pixel a frame
+; right or down, $F0 one pixel a frame left or up
+; ------------------------------------------------------------------
+DEF PLATFORM_PATH_LOOP                      EQU $FF ; restarts the route from step 0
+
 ; Player vs Entity interaction events
 DEF PLAYER_TOUCHED_ENTITY   EQU $00
 DEF PLAYER_ATTACKED_ENTITY  EQU $01
