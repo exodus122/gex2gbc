@@ -753,155 +753,157 @@ data_22_4460_TrackPointerTables:
 
 audio_22_44fe:         ; music $00 MUSIC_KUNG_FU_THEATER
     INCBIN "data/audio/bank_22/audio_22_44fe.bin"
-audio_22_49d4:         ; music $01 MUSIC_CIRCUIT_CENTRAL
-    INCBIN "data/audio/bank_22/audio_22_49d4.bin"
-audio_22_4c64:         ; music $02 MUSIC_PREHISTORY_CHANNEL
-    INCBIN "data/audio/bank_22/audio_22_4c64.bin"
-audio_22_4f95:         ; music $03 MUSIC_REZOPOLIS
-    INCBIN "data/audio/bank_22/audio_22_4f95.bin"
-audio_22_4fa9:         ; music $04 MUSIC_UNK_04
-    INCBIN "data/audio/bank_22/audio_22_4fa9.bin"
-audio_22_510d:         ; music $05 MUSIC_SCREAM_TV
-    INCBIN "data/audio/bank_22/audio_22_510d.bin"
-audio_22_5899:         ; music $06 MUSIC_TOON_TV
-    INCBIN "data/audio/bank_22/audio_22_5899.bin"
-audio_22_5a96:         ; music $07 MUSIC_MEDIA_DIMENSION / music $08
-    INCBIN "data/audio/bank_22/audio_22_5a96.bin"
-audio_22_5bbe:         ; music $09
-    INCBIN "data/audio/bank_22/audio_22_5bbe.bin"
-audio_22_5e90:         ; music $0A
-    INCBIN "data/audio/bank_22/audio_22_5e90.bin"
-audio_22_60e7:         ; music $0B
-    INCBIN "data/audio/bank_22/audio_22_60e7.bin"
-audio_22_6131:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_22/audio_22_6131.bin"
-audio_22_6143:         ; sfx $00 / sfx $01 / sfx $02 / sfx $03 / sfx $04 / sfx $05 / sfx $06 / sfx $07 / sfx $08 / sfx $09 / sfx $0A / sfx $0B / sfx $0C / sfx $0D / sfx $0E / sfx $0F / sfx $10 / sfx $11 / sfx $12 / sfx $13 / sfx $14 / sfx $15 / sfx $16 / sfx $17 / sfx $18 / sfx $19 / sfx $1A / sfx $1B / sfx $1C / sfx $1D / sfx $1E / sfx $1F / sfx $20 / sfx $21 / sfx $22 / sfx $23 / sfx $24 / sfx $25 / sfx $26 / sfx $27 / sfx $28 / sfx $29 / sfx $2A / sfx $2B / sfx $2C / sfx $2D / sfx $2E / sfx $2F / sfx $30 / sfx $31 / sfx $32 / sfx $33 / sfx $34 / sfx $35 / sfx $36 / sfx $37 / sfx $38 / sfx $39 / sfx $3A / sfx $3B / sfx $3C / sfx $3D / sfx $3E / sfx $3F / sfx $40 / sfx $41
-    INCBIN "data/audio/bank_22/audio_22_6143.bin"
-audio_22_6e05:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_6e05.bin"
-audio_22_6e2d:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_6e2d.bin"
-audio_22_6e6d:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_6e6d.bin"
-audio_22_6ed3:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_6ed3.bin"
-audio_22_6edf:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_6edf.bin"
-audio_22_6f19:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_6f19.bin"
-audio_22_6f25:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_6f25.bin"
-audio_22_6f31:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_6f31.bin"
-audio_22_6f45:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_6f45.bin"
-audio_22_6f57:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_6f57.bin"
-audio_22_6f77:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_6f77.bin"
-audio_22_6f9f:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_6f9f.bin"
-audio_22_6ffb:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_6ffb.bin"
-audio_22_7011:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_7011.bin"
-audio_22_7067:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_7067.bin"
-audio_22_70b1:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_70b1.bin"
-audio_22_725d:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_725d.bin"
-audio_22_727f:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_727f.bin"
-audio_22_72d3:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_72d3.bin"
-audio_22_72ff:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_72ff.bin"
-audio_22_732b:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_732b.bin"
-audio_22_733d:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_733d.bin"
-audio_22_7353:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_7353.bin"
-audio_22_7363:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_7363.bin"
-audio_22_736f:         ; no table entry points here - continuation of the block above
+audio_22_49d6:         ; music $01 MUSIC_CIRCUIT_CENTRAL
+    INCBIN "data/audio/bank_22/audio_22_49d6.bin"
+audio_22_4c68:         ; music $02 MUSIC_PREHISTORY_CHANNEL
+    INCBIN "data/audio/bank_22/audio_22_4c68.bin"
+audio_22_4f9b:         ; music $03 MUSIC_REZOPOLIS
+    INCBIN "data/audio/bank_21/audio_21_49e9.bin"
+audio_22_4fb1:         ; music $04 MUSIC_UNK_04
+    INCBIN "data/audio/bank_22/audio_22_4fb1.bin"
+audio_22_5117:         ; music $05 MUSIC_SCREAM_TV
+    INCBIN "data/audio/bank_22/audio_22_5117.bin"
+audio_22_58a5:         ; music $06 MUSIC_TOON_TV
+    INCBIN "data/audio/bank_22/audio_22_58a5.bin"
+audio_22_5aa4:         ; music $07 MUSIC_MEDIA_DIMENSION
+    INCBIN "data/audio/bank_22/audio_22_5aa4.bin"
+audio_22_5aa6:         ; music $08
+    INCBIN "data/audio/bank_22/audio_22_5aa6.bin"
+audio_22_5bd0:         ; music $09
+    INCBIN "data/audio/bank_22/audio_22_5bd0.bin"
+audio_22_5ea4:         ; music $0A
+    INCBIN "data/audio/bank_22/audio_22_5ea4.bin"
+audio_22_60fd:         ; music $0B
+    INCBIN "data/audio/bank_22/audio_22_60fd.bin"
+audio_22_6149:         ; sfx $00 SFX_EMPTY
+    INCBIN "data/audio/bank_21/audio_21_6def.bin"
+audio_22_615d:         ; sfx $01 SFX_01
+    INCBIN "data/audio/bank_21/audio_21_6e03.bin"
+audio_22_617b:         ; sfx $02 SFX_TV_SMASH
+    INCBIN "data/audio/bank_21/audio_21_6e21.bin"
+audio_22_61a5:         ; sfx $03 SFX_SILVER_REMOTE
+    INCBIN "data/audio/bank_21/audio_21_6e4b.bin"
+audio_22_61e7:         ; sfx $04 SFX_GOLD_REMOTE
+    INCBIN "data/audio/bank_21/audio_21_6e8d.bin"
+audio_22_624f:         ; sfx $05 SFX_05
+    INCBIN "data/audio/bank_21/audio_21_6ef5.bin"
+audio_22_625d:         ; sfx $06 SFX_COLLECTIBLE
+    INCBIN "data/audio/bank_21/audio_21_6f03.bin"
+audio_22_6299:         ; sfx $07 SFX_07
+    INCBIN "data/audio/bank_21/audio_21_6ef5.bin"
+audio_22_62a7:         ; sfx $08 SFX_08
+    INCBIN "data/audio/bank_21/audio_21_6ef5.bin"
+audio_22_62b5:         ; sfx $09 SFX_09
+    INCBIN "data/audio/bank_21/audio_21_6f5b.bin"
+audio_22_62cb:         ; sfx $0A SFX_0A
+    INCBIN "data/audio/bank_21/audio_21_6f71.bin"
+audio_22_62df:         ; sfx $0B SFX_0B
+    INCBIN "data/audio/bank_21/audio_21_6f85.bin"
+audio_22_6301:         ; sfx $0C SFX_GEX_JUMP
+    INCBIN "data/audio/bank_21/audio_21_6fa7.bin"
+audio_22_632b:         ; sfx $0D SFX_GEX_DOUBLE_JUMP
+    INCBIN "data/audio/bank_21/audio_21_6fd1.bin"
+audio_22_6389:         ; sfx $0E SFX_GEX_COLLAPSE
+    INCBIN "data/audio/bank_21/audio_21_702f.bin"
+audio_22_63a1:         ; sfx $0F SFX_GEX_DEATH
+    INCBIN "data/audio/bank_21/audio_21_7047.bin"
+audio_22_63f9:         ; sfx $10 SFX_GEX_HURT
+    INCBIN "data/audio/bank_21/audio_21_709f.bin"
+audio_22_6445:         ; sfx $11 SFX_GEX_SPAWN
+    INCBIN "data/audio/bank_21/audio_21_70eb.bin"
+audio_22_65f3:         ; sfx $12 SFX_GEX_HIT_BOUNCE
+    INCBIN "data/audio/bank_21/audio_21_7299.bin"
+audio_22_6617:         ; sfx $13 SFX_13
+    INCBIN "data/audio/bank_21/audio_21_72bd.bin"
+audio_22_666d:         ; sfx $14 SFX_MENU_UNK_1
+    INCBIN "data/audio/bank_21/audio_21_7313.bin"
+audio_22_669b:         ; sfx $15 SFX_MENU_UNK_2
+    INCBIN "data/audio/bank_21/audio_21_7341.bin"
+audio_22_66c9:         ; sfx $16 SFX_16
     INCBIN "data/audio/bank_21/audio_21_736f.bin"
-audio_22_7383:         ; no table entry points here - continuation of the block above
+audio_22_66dd:         ; sfx $17 SFX_ENEMY_DEFEATED
     INCBIN "data/audio/bank_21/audio_21_7383.bin"
-audio_22_7397:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_7397.bin"
-audio_22_739f:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_739f.bin"
-audio_22_73b3:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_73b3.bin"
-audio_22_73e5:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_73e5.bin"
-audio_22_73f3:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_73f3.bin"
-audio_22_7435:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_7435.bin"
-audio_22_7443:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_7443.bin"
-audio_22_747d:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_747d.bin"
-audio_22_748b:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_748b.bin"
-audio_22_74a1:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_74a1.bin"
-audio_22_74a7:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_74a7.bin"
-audio_22_74cd:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_74cd.bin"
-audio_22_74dd:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_74dd.bin"
-audio_22_74e3:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_74e3.bin"
-audio_22_74f1:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_74f1.bin"
-audio_22_7501:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_7501.bin"
-audio_22_753f:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_753f.bin"
-audio_22_7565:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_7565.bin"
-audio_22_7575:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_7575.bin"
-audio_22_75bb:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_75bb.bin"
-audio_22_75e5:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_75e5.bin"
-audio_22_75f9:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_75f9.bin"
-audio_22_760d:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_760d.bin"
-audio_22_7617:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_7617.bin"
-audio_22_7649:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_7649.bin"
-audio_22_7671:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_7671.bin"
-audio_22_76a3:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_76a3.bin"
-audio_22_76b9:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_76b9.bin"
-audio_22_76e5:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_76e5.bin"
-audio_22_76f3:         ; no table entry points here - continuation of the block above
+audio_22_66f5:         ; sfx $18 SFX_18
+    INCBIN "data/audio/bank_21/audio_21_739b.bin"
+audio_22_6707:         ; sfx $19 SFX_HARD_HEAD_AREA_HAZARD
+    INCBIN "data/audio/bank_21/audio_21_6ef5.bin"
+audio_22_6715:         ; sfx $1A SFX_FALLING_HAZARD
+    INCBIN "data/audio/bank_21/audio_21_73bb.bin"
+audio_22_672b:         ; sfx $1B SFX_1B
+    INCBIN "data/audio/bank_21/audio_21_73d1.bin"
+audio_22_6741:         ; sfx $1C SFX_FLOWER_HAMMER
+    INCBIN "data/audio/bank_21/audio_21_73e7.bin"
+audio_22_674b:         ; sfx $1D SFX_BUMBLEBEE
+    INCBIN "data/audio/bank_21/audio_21_73bb.bin"
+audio_22_6761:         ; sfx $1E SFX_ROCKET
+    INCBIN "data/audio/bank_21/audio_21_7407.bin"
+audio_22_6795:         ; sfx $1F SFX_1F
+    INCBIN "data/audio/bank_21/audio_21_743b.bin"
+audio_22_67a5:         ; sfx $20 SFX_HUNTER
+    INCBIN "data/audio/bank_21/audio_21_744b.bin"
+audio_22_67e9:         ; sfx $21 SFX_21
+    INCBIN "data/audio/bank_21/audio_21_743b.bin"
+audio_22_67f9:         ; sfx $22 SFX_22
+    INCBIN "data/audio/bank_21/audio_21_749f.bin"
+audio_22_6835:         ; sfx $23 SFX_23
+    INCBIN "data/audio/bank_21/audio_21_74db.bin"
+audio_22_6845:         ; sfx $24 SFX_ENEMY_BOUNCE
+    INCBIN "data/audio/bank_21/audio_21_74eb.bin"
+audio_22_685d:         ; sfx $25 SFX_25
+    INCBIN "data/audio/bank_21/audio_21_7503.bin"
+audio_22_6865:         ; sfx $26 SFX_26
+    INCBIN "data/audio/bank_21/audio_21_750b.bin"
+audio_22_688d:         ; sfx $27 SFX_FALLING_PLATFORM
+    INCBIN "data/audio/bank_21/audio_21_7533.bin"
+audio_22_689f:         ; sfx $28 SFX_28
+    INCBIN "data/audio/bank_21/audio_21_7503.bin"
+audio_22_68a7:         ; sfx $29 SFX_29
+    INCBIN "data/audio/bank_21/audio_21_754d.bin"
+audio_22_68b7:         ; sfx $2A SFX_GEX_JUMP_UNK
+    INCBIN "data/audio/bank_21/audio_21_755d.bin"
+audio_22_68c9:         ; sfx $2B SFX_POWERED_WALKWAY
+    INCBIN "data/audio/bank_21/audio_21_756f.bin"
+audio_22_6909:         ; sfx $2C SFX_CANNON_ROTATE
+    INCBIN "data/audio/bank_21/audio_21_750b.bin"
+audio_22_6931:         ; sfx $2D SFX_JAR
+    INCBIN "data/audio/bank_21/audio_21_75d7.bin"
+audio_22_6943:         ; sfx $2E SFX_2E
+    INCBIN "data/audio/bank_21/audio_21_75e9.bin"
+audio_22_698b:         ; sfx $2F SFX_DRAGON
+    INCBIN "data/audio/bank_21/audio_21_7631.bin"
+audio_22_69b7:         ; sfx $30 SFX_CANNON
+    INCBIN "data/audio/bank_21/audio_21_73bb.bin"
+audio_22_69cd:         ; sfx $31 SFX_FALLING_BOULDER
+    INCBIN "data/audio/bank_21/audio_21_7673.bin"
+audio_22_69e3:         ; sfx $32 SFX_32
+    INCBIN "data/audio/bank_21/audio_21_7689.bin"
+audio_22_69ef:         ; sfx $33 SFX_PTEROSAUR
+    INCBIN "data/audio/bank_21/audio_21_7407.bin"
+audio_22_6a23:         ; sfx $34 SFX_MULTI_PROJECTILE
+    INCBIN "data/audio/bank_21/audio_21_6fa7.bin"
+audio_22_6a4d:         ; sfx $35 SFX_GEAR
     INCBIN "data/audio/bank_21/audio_21_76f3.bin"
-audio_22_771d:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_771d.bin"
-audio_22_772b:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_772b.bin"
-audio_22_7781:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_7781.bin"
-audio_22_7795:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_7795.bin"
-audio_22_77a9:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_77a9.bin"
-audio_22_77ab:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_77ab.bin"
-audio_22_77ad:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_77ad.bin"
-audio_22_77af:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_21/audio_21_77af.bin"
+audio_22_6a81:         ; sfx $36 SFX_GUN_PROJECTILE
+    INCBIN "data/audio/bank_21/audio_21_7727.bin"
+audio_22_6a99:         ; sfx $37 SFX_REZ_PROJECTILE
+    INCBIN "data/audio/bank_21/audio_21_773f.bin"
+audio_22_6ac7:         ; sfx $38 SFX_FINAL_BATTLE_BUTTON
+    INCBIN "data/audio/bank_21/audio_21_776d.bin"
+audio_22_6ad7:         ; sfx $39 SFX_REZ_BUTTON
+    INCBIN "data/audio/bank_21/audio_21_7631.bin"
+audio_22_6b03:         ; sfx $3A
+    INCBIN "data/audio/bank_21/audio_21_743b.bin"
+audio_22_6b13:         ; sfx $3B
+    INCBIN "data/audio/bank_21/audio_21_77b9.bin"
+audio_22_6b6b:         ; sfx $3C
+    INCBIN "data/audio/bank_21/audio_21_73bb.bin"
+audio_22_6b81:         ; sfx $3D
+    INCBIN "data/audio/bank_21/audio_21_7827.bin"
+audio_22_6b97:         ; sfx $3E
+    INCBIN "data/audio/bank_21/audio_21_783d.bin"
+audio_22_6b9b:         ; sfx $3F
+    INCBIN "data/audio/bank_21/audio_21_7841.bin"
+audio_22_6b9f:         ; sfx $40
+    INCBIN "data/audio/bank_21/audio_21_7845.bin"
+audio_22_6ba3:         ; sfx $41
+    INCBIN "data/audio/bank_21/audio_21_7849.bin"

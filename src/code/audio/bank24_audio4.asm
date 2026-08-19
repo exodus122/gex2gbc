@@ -751,133 +751,133 @@ data_24_4460_TrackPointerTables:
 
 audio_24_44e6:         ; music $00 MUSIC_KUNG_FU_THEATER
     INCBIN "data/audio/bank_24/audio_24_44e6.bin"
-audio_24_44fe:         ; music $01 MUSIC_CIRCUIT_CENTRAL
-    INCBIN "data/audio/bank_24/audio_24_44fe.bin"
-audio_24_4520:         ; music $02 MUSIC_PREHISTORY_CHANNEL
-    INCBIN "data/audio/bank_24/audio_24_4520.bin"
-audio_24_453e:         ; music $03 MUSIC_REZOPOLIS
-    INCBIN "data/audio/bank_24/audio_24_453e.bin"
-audio_24_4584:         ; music $04 MUSIC_UNK_04
-    INCBIN "data/audio/bank_24/audio_24_4584.bin"
-audio_24_45f0:         ; music $05 MUSIC_SCREAM_TV
-    INCBIN "data/audio/bank_24/audio_24_45f0.bin"
-audio_24_4602:         ; music $06 MUSIC_TOON_TV
-    INCBIN "data/audio/bank_24/audio_24_4602.bin"
-audio_24_4642:         ; music $07 MUSIC_MEDIA_DIMENSION
-    INCBIN "data/audio/bank_24/audio_24_4642.bin"
-audio_24_4654:         ; music $08
-    INCBIN "data/audio/bank_24/audio_24_4654.bin"
-audio_24_4666:         ; music $09
-    INCBIN "data/audio/bank_24/audio_24_4666.bin"
-audio_24_4680:         ; music $0A
-    INCBIN "data/audio/bank_24/audio_24_4680.bin"
-audio_24_4698:         ; music $0B
-    INCBIN "data/audio/bank_24/audio_24_4698.bin"
-audio_24_46b6:         ; music $0C
-    INCBIN "data/audio/bank_24/audio_24_46b6.bin"
-audio_24_46e4:         ; music $0D
-    INCBIN "data/audio/bank_24/audio_24_46e4.bin"
-audio_24_4746:         ; music $0E
-    INCBIN "data/audio/bank_24/audio_24_4746.bin"
-audio_24_478e:         ; music $0F
-    INCBIN "data/audio/bank_24/audio_24_478e.bin"
-audio_24_47ea:         ; music $10
-    INCBIN "data/audio/bank_24/audio_24_47ea.bin"
-audio_24_483a:         ; music $11
-    INCBIN "data/audio/bank_24/audio_24_483a.bin"
-audio_24_49ec:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_24/audio_24_49ec.bin"
-audio_24_4a04:         ; music $12 / music $13
-    INCBIN "data/audio/bank_24/audio_24_4a04.bin"
-audio_24_4a64:         ; music $14
-    INCBIN "data/audio/bank_24/audio_24_4a64.bin"
-audio_24_4a96:         ; music $15
-    INCBIN "data/audio/bank_24/audio_24_4a96.bin"
-audio_24_4ac8:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_24/audio_24_4ac8.bin"
-audio_24_4ae0:         ; music $16
-    INCBIN "data/audio/bank_24/audio_24_4ae0.bin"
-audio_24_4afc:         ; music $17
-    INCBIN "data/audio/bank_24/audio_24_4afc.bin"
-audio_24_4b12:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_24/audio_24_4b12.bin"
-audio_24_4b24:         ; music $18
-    INCBIN "data/audio/bank_24/audio_24_4b24.bin"
-audio_24_4b3e:         ; music $19
-    INCBIN "data/audio/bank_24/audio_24_4b3e.bin"
+audio_24_4500:         ; music $01 MUSIC_CIRCUIT_CENTRAL
+    INCBIN "data/audio/bank_24/audio_24_4500.bin"
+audio_24_4524:         ; music $02 MUSIC_PREHISTORY_CHANNEL
+    INCBIN "data/audio/bank_24/audio_24_4524.bin"
+audio_24_4544:         ; music $03 MUSIC_REZOPOLIS
+    INCBIN "data/audio/bank_24/audio_24_4544.bin"
+audio_24_458c:         ; music $04 MUSIC_UNK_04
+    INCBIN "data/audio/bank_24/audio_24_458c.bin"
+audio_24_45fa:         ; music $05 MUSIC_SCREAM_TV
+    INCBIN "data/audio/bank_24/audio_24_45fa.bin"
+audio_24_460e:         ; music $06 MUSIC_TOON_TV
+    INCBIN "data/audio/bank_24/audio_24_460e.bin"
+audio_24_4650:         ; music $07 MUSIC_MEDIA_DIMENSION
+    INCBIN "data/audio/bank_24/audio_24_45fa.bin"
+audio_24_4664:         ; music $08
+    INCBIN "data/audio/bank_24/audio_24_45fa.bin"
+audio_24_4678:         ; music $09
+    INCBIN "data/audio/bank_24/audio_24_4678.bin"
+audio_24_4694:         ; music $0A
+    INCBIN "data/audio/bank_24/audio_24_4694.bin"
+audio_24_46ae:         ; music $0B
+    INCBIN "data/audio/bank_24/audio_24_4524.bin"
+audio_24_46ce:         ; music $0C
+    INCBIN "data/audio/bank_24/audio_24_46ce.bin"
+audio_24_46fe:         ; music $0D
+    INCBIN "data/audio/bank_24/audio_24_46fe.bin"
+audio_24_4762:         ; music $0E
+    INCBIN "data/audio/bank_24/audio_24_4762.bin"
+audio_24_47ac:         ; music $0F
+    INCBIN "data/audio/bank_24/audio_24_47ac.bin"
+audio_24_480a:         ; music $10
+    INCBIN "data/audio/bank_24/audio_24_480a.bin"
+audio_24_485c:         ; music $11
+    INCBIN "data/audio/bank_24/audio_24_485c.bin"
+audio_24_4a10:         ; music $12
+    INCBIN "data/audio/bank_24/audio_24_4a10.bin"
+audio_24_4a2a:         ; music $13
+    INCBIN "data/audio/bank_24/audio_24_4a2a.bin"
+audio_24_4a8c:         ; music $14
+    INCBIN "data/audio/bank_24/audio_24_4a8c.bin"
+audio_24_4ac0:         ; music $15
+    INCBIN "data/audio/bank_24/audio_24_4ac0.bin"
+audio_24_4af4:         ; music $16
+    INCBIN "data/audio/bank_24/audio_24_4af4.bin"
+audio_24_4b0e:         ; music $17
+    INCBIN "data/audio/bank_24/audio_24_4b0e.bin"
+audio_24_4b2c:         ; music $18
+    INCBIN "data/audio/bank_24/audio_24_4b2c.bin"
+audio_24_4b44:         ; music $19
+    INCBIN "data/audio/bank_24/audio_24_45fa.bin"
 audio_24_4b58:         ; music $1A
     INCBIN "data/audio/bank_24/audio_24_4b58.bin"
-audio_24_4b66:         ; music $1B
-    INCBIN "data/audio/bank_24/audio_24_4b66.bin"
-audio_24_4b80:         ; music $1C / music $1D / music $1E
-    INCBIN "data/audio/bank_24/audio_24_4b80.bin"
-audio_24_4bde:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_24/audio_24_4bde.bin"
-audio_24_4bf6:         ; music $1F / music $20
-    INCBIN "data/audio/bank_24/audio_24_4bf6.bin"
-audio_24_4c3e:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_24/audio_24_4c3e.bin"
-audio_24_4c56:         ; music $21 / music $22
-    INCBIN "data/audio/bank_24/audio_24_4c56.bin"
-audio_24_4c9e:         ; music $23
-    INCBIN "data/audio/bank_24/audio_24_4c9e.bin"
-audio_24_4ce6:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_24/audio_24_4ce6.bin"
-audio_24_4d02:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_24/audio_24_4d02.bin"
-audio_24_4d10:         ; music $24
-    INCBIN "data/audio/bank_24/audio_24_4d10.bin"
-audio_24_4d3c:         ; music $25 / music $26 / music $27
-    INCBIN "data/audio/bank_24/audio_24_4d3c.bin"
-audio_24_4da2:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_24/audio_24_4da2.bin"
-audio_24_4dc4:         ; music $28
-    INCBIN "data/audio/bank_24/audio_24_4dc4.bin"
-audio_24_4e0c:         ; music $29
-    INCBIN "data/audio/bank_24/audio_24_4e0c.bin"
-audio_24_4e24:         ; music $2A
-    INCBIN "data/audio/bank_24/audio_24_4e24.bin"
-audio_24_4e68:         ; music $2B
-    INCBIN "data/audio/bank_24/audio_24_4e68.bin"
-audio_24_4e94:         ; music $2C
-    INCBIN "data/audio/bank_24/audio_24_4e94.bin"
-audio_24_4eea:         ; music $2D
-    INCBIN "data/audio/bank_24/audio_24_4eea.bin"
-audio_24_4f00:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_24/audio_24_4f00.bin"
-audio_24_4f18:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_24/audio_24_4f18.bin"
-audio_24_4f32:         ; music $2E
-    INCBIN "data/audio/bank_24/audio_24_4f32.bin"
-audio_24_4f4a:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_24/audio_24_4f4a.bin"
-audio_24_4f56:         ; music $2F
-    INCBIN "data/audio/bank_24/audio_24_4f56.bin"
-audio_24_4f74:         ; music $30 / music $31
-    INCBIN "data/audio/bank_24/audio_24_4f74.bin"
-audio_24_4fa2:         ; music $32
-    INCBIN "data/audio/bank_24/audio_24_4fa2.bin"
-audio_24_4fba:         ; music $33
-    INCBIN "data/audio/bank_24/audio_24_4fba.bin"
-audio_24_4fd6:         ; music $34
-    INCBIN "data/audio/bank_24/audio_24_4fd6.bin"
-audio_24_5008:         ; music $35
-    INCBIN "data/audio/bank_24/audio_24_5008.bin"
+audio_24_4b74:         ; music $1B
+    INCBIN "data/audio/bank_24/audio_24_4b74.bin"
+audio_24_4b90:         ; music $1C
+    INCBIN "data/audio/bank_24/audio_24_4b90.bin"
+audio_24_4ba0:         ; music $1D
+    INCBIN "data/audio/bank_24/audio_24_4b58.bin"
+audio_24_4bbc:         ; music $1E
+    INCBIN "data/audio/bank_24/audio_24_4bbc.bin"
+audio_24_4c1c:         ; music $1F
+    INCBIN "data/audio/bank_24/audio_24_4c1c.bin"
+audio_24_4c36:         ; music $20
+    INCBIN "data/audio/bank_24/audio_24_4762.bin"
+audio_24_4c80:         ; music $21
+    INCBIN "data/audio/bank_24/audio_24_4a10.bin"
+audio_24_4c9a:         ; music $22
+    INCBIN "data/audio/bank_24/audio_24_4762.bin"
+audio_24_4ce4:         ; music $23
+    INCBIN "data/audio/bank_24/audio_24_4762.bin"
+audio_24_4d2e:         ; music $24
+    INCBIN "data/audio/bank_24/audio_24_4d2e.bin"
+audio_24_4d4c:         ; music $25
+    INCBIN "data/audio/bank_24/audio_24_4d4c.bin"
+audio_24_4d5c:         ; music $26
+    INCBIN "data/audio/bank_24/audio_24_4d5c.bin"
+audio_24_4d8a:         ; music $27
+    INCBIN "data/audio/bank_24/audio_24_4d8a.bin"
+audio_24_4df2:         ; music $28
+    INCBIN "data/audio/bank_24/audio_24_4df2.bin"
+audio_24_4e16:         ; music $29
+    INCBIN "data/audio/bank_24/audio_24_4762.bin"
+audio_24_4e60:         ; music $2A
+    INCBIN "data/audio/bank_24/audio_24_4a10.bin"
+audio_24_4e7a:         ; music $2B
+    INCBIN "data/audio/bank_24/audio_24_4e7a.bin"
+audio_24_4ec0:         ; music $2C
+    INCBIN "data/audio/bank_24/audio_24_4d5c.bin"
+audio_24_4eee:         ; music $2D
+    INCBIN "data/audio/bank_24/audio_24_4eee.bin"
+audio_24_4f46:         ; music $2E
+    INCBIN "data/audio/bank_24/audio_24_4f46.bin"
+audio_24_4f5e:         ; music $2F
+    INCBIN "data/audio/bank_24/audio_24_4a10.bin"
+audio_24_4f78:         ; music $30
+    INCBIN "data/audio/bank_24/audio_24_4b58.bin"
+audio_24_4f94:         ; music $31
+    INCBIN "data/audio/bank_24/audio_24_4f94.bin"
+audio_24_4fae:         ; music $32
+    INCBIN "data/audio/bank_24/audio_24_4fae.bin"
+audio_24_4fbc:         ; music $33
+    INCBIN "data/audio/bank_24/audio_24_4fbc.bin"
+audio_24_4fdc:         ; music $34
+    INCBIN "data/audio/bank_24/audio_24_46ce.bin"
+audio_24_500c:         ; music $35
+    INCBIN "data/audio/bank_24/audio_24_4a10.bin"
 audio_24_5026:         ; music $36
     INCBIN "data/audio/bank_24/audio_24_5026.bin"
-audio_24_503e:         ; music $37
-    INCBIN "data/audio/bank_24/audio_24_503e.bin"
-audio_24_5056:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_24/audio_24_5056.bin"
-audio_24_506e:         ; music $38
-    INCBIN "data/audio/bank_24/audio_24_506e.bin"
-audio_24_5088:         ; music $39
-    INCBIN "data/audio/bank_24/audio_24_5088.bin"
-audio_24_50a2:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_24/audio_24_50a2.bin"
-audio_24_50a4:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_24/audio_24_50a4.bin"
-audio_24_50a6:         ; no table entry points here - continuation of the block above
-    INCBIN "data/audio/bank_24/audio_24_50a6.bin"
-audio_24_50a8:         ; music $3A / music $3B / music $3C / music $3D / music $3E / music $3F / music $40 / music $41
-    INCBIN "data/audio/bank_24/audio_24_50a8.bin"
+audio_24_5044:         ; music $37
+    INCBIN "data/audio/bank_24/audio_24_5044.bin"
+audio_24_5078:         ; music $38
+    INCBIN "data/audio/bank_24/audio_24_4fbc.bin"
+audio_24_5098:         ; music $39
+    INCBIN "data/audio/bank_24/audio_24_4a10.bin"
+audio_24_50b2:         ; music $3A
+    INCBIN "data/audio/bank_24/audio_24_4c1c.bin"
+audio_24_50cc:         ; music $3B
+    INCBIN "data/audio/bank_24/audio_24_4a10.bin"
+audio_24_50e6:         ; music $3C
+    INCBIN "data/audio/bank_24/audio_24_4b58.bin"
+audio_24_5102:         ; music $3D
+    INCBIN "data/audio/bank_24/audio_24_5102.bin"
+audio_24_511e:         ; music $3E
+    INCBIN "data/audio/bank_21/audio_21_783d.bin"
+audio_24_5122:         ; music $3F
+    INCBIN "data/audio/bank_21/audio_21_7841.bin"
+audio_24_5126:         ; music $40
+    INCBIN "data/audio/bank_21/audio_21_7845.bin"
+audio_24_512a:         ; music $41
+    INCBIN "data/audio/bank_21/audio_21_7849.bin"
