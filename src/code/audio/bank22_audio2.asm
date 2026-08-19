@@ -34,9 +34,16 @@
 ;
 ; THE TRACK TABLES at data_22_4460_TrackPointerTables are two lists of self-relative
 ; words. The first word of the block is the offset to the sfx list; the music list
-; starts immediately after it. This bank holds 12 music tracks and 66
-; sound effects, and every bank that has an sfx list has the same 66 of them - the
-; same effect id gives a different rendition depending on which bank is mapped in
+; starts immediately after it.
+;
+; A SONG IS FOUR TRACKS, one per hardware channel, at four consecutive ids - which is
+; why the ids come in groups whose headers read $01, $02, $03, $04.
+; call_00_120c_SetupMusic in bank 0 starts all four in one go. So the 12 music ids
+; here are 3 songs, and .data_00_1244_MusicList says which are which.
+;
+; The 66 sfx are one track each and are the same 66 effects in every bank that has
+; them - the same effect id gives a different rendition depending on which bank is
+; mapped in
 ; ==================================================================
 
 SECTION "bank22", ROMX[$4000], BANK[$22]
@@ -166,11 +173,14 @@ jr_22_40a4_Audio_StartTrack:
 ; list, and the id selects a self-relative word from it - so a track pointer is stored
 ; as a distance rather than an address and the whole block is position independent.
 ;
-; The first byte of a track is its channel count, and the mask of channels it claims is
-; built from that by shifting a 1 in that many times - a track always takes channels 1
-; to N rather than choosing them. That mask is OR'd into whichever active-channel mask
-; this request kind owns, and the request kind also selects which set of pointer and
-; timer arrays gets written.
+; The first byte of a track is the hardware channel it wants, 1 to 4. The shift loop that
+; follows turns that into a single-bit mask - the carry set by `scf` is rolled in on the
+; first pass and zeroes on the rest, so channel N gives bit N-1, never a range. That bit
+; is OR'd into whichever active-channel mask this request kind owns, and the request kind
+; also selects which set of pointer and timer arrays gets written.
+;
+; A track therefore plays exactly one channel. Music gets four of them going at once by
+; starting four tracks - see .data_00_1244_MusicList.
 ;
 ; The channel byte that follows then indexes those arrays, the sequence pointer is
 ; stored, and Audio_RunSequence is called once to prime the first note - its return
@@ -751,159 +761,159 @@ data_22_4460_TrackPointerTables:
     db   $DB, $23, $E9, $23, $F9, $23, $37, $24, $5D, $24, $6D, $24, $B3, $24, $DD, $24, $F1, $24, $05, $25, $0F, $25, $41, $25, $69, $25, $9B
     db   $25, $B1, $25, $DD, $25, $EB, $25, $15, $26, $23, $26, $79, $26, $8D, $26, $A1, $26, $A3, $26, $A5, $26, $A7, $26
 
-audio_22_44fe:         ; music $00 MUSIC_KUNG_FU_THEATER
+audio_22_44fe:         ; MUSIC_SCREAM_TV ch1
     INCBIN "data/audio/bank_22/audio_22_44fe.bin"
-audio_22_49d6:         ; music $01 MUSIC_CIRCUIT_CENTRAL
+audio_22_49d6:         ; MUSIC_SCREAM_TV ch2
     INCBIN "data/audio/bank_22/audio_22_49d6.bin"
-audio_22_4c68:         ; music $02 MUSIC_PREHISTORY_CHANNEL
+audio_22_4c68:         ; MUSIC_SCREAM_TV ch3
     INCBIN "data/audio/bank_22/audio_22_4c68.bin"
-audio_22_4f9b:         ; music $03 MUSIC_REZOPOLIS
+audio_22_4f9b:         ; MUSIC_SCREAM_TV ch4
     INCBIN "data/audio/bank_21/audio_21_49e9.bin"
-audio_22_4fb1:         ; music $04 MUSIC_UNK_04
+audio_22_4fb1:         ; MUSIC_UNK_04 ch1
     INCBIN "data/audio/bank_22/audio_22_4fb1.bin"
-audio_22_5117:         ; music $05 MUSIC_SCREAM_TV
+audio_22_5117:         ; MUSIC_UNK_04 ch2
     INCBIN "data/audio/bank_22/audio_22_5117.bin"
-audio_22_58a5:         ; music $06 MUSIC_TOON_TV
+audio_22_58a5:         ; MUSIC_UNK_04 ch3
     INCBIN "data/audio/bank_22/audio_22_58a5.bin"
-audio_22_5aa4:         ; music $07 MUSIC_MEDIA_DIMENSION
+audio_22_5aa4:         ; MUSIC_UNK_04 ch4
     INCBIN "data/audio/bank_22/audio_22_5aa4.bin"
-audio_22_5aa6:         ; music $08
+audio_22_5aa6:         ; MUSIC_REZOPOLIS ch1
     INCBIN "data/audio/bank_22/audio_22_5aa6.bin"
-audio_22_5bd0:         ; music $09
+audio_22_5bd0:         ; MUSIC_REZOPOLIS ch2
     INCBIN "data/audio/bank_22/audio_22_5bd0.bin"
-audio_22_5ea4:         ; music $0A
+audio_22_5ea4:         ; MUSIC_REZOPOLIS ch3
     INCBIN "data/audio/bank_22/audio_22_5ea4.bin"
-audio_22_60fd:         ; music $0B
+audio_22_60fd:         ; MUSIC_REZOPOLIS ch4
     INCBIN "data/audio/bank_22/audio_22_60fd.bin"
-audio_22_6149:         ; sfx $00 SFX_EMPTY
+audio_22_6149:         ; SFX_EMPTY (sfx $00)
     INCBIN "data/audio/bank_21/audio_21_6def.bin"
-audio_22_615d:         ; sfx $01 SFX_01
+audio_22_615d:         ; SFX_01 (sfx $01)
     INCBIN "data/audio/bank_21/audio_21_6e03.bin"
-audio_22_617b:         ; sfx $02 SFX_TV_SMASH
+audio_22_617b:         ; SFX_TV_SMASH (sfx $02)
     INCBIN "data/audio/bank_21/audio_21_6e21.bin"
-audio_22_61a5:         ; sfx $03 SFX_SILVER_REMOTE
+audio_22_61a5:         ; SFX_SILVER_REMOTE (sfx $03)
     INCBIN "data/audio/bank_21/audio_21_6e4b.bin"
-audio_22_61e7:         ; sfx $04 SFX_GOLD_REMOTE
+audio_22_61e7:         ; SFX_GOLD_REMOTE (sfx $04)
     INCBIN "data/audio/bank_21/audio_21_6e8d.bin"
-audio_22_624f:         ; sfx $05 SFX_05
+audio_22_624f:         ; SFX_05 (sfx $05)
     INCBIN "data/audio/bank_21/audio_21_6ef5.bin"
-audio_22_625d:         ; sfx $06 SFX_COLLECTIBLE
+audio_22_625d:         ; SFX_COLLECTIBLE (sfx $06)
     INCBIN "data/audio/bank_21/audio_21_6f03.bin"
-audio_22_6299:         ; sfx $07 SFX_07
+audio_22_6299:         ; SFX_07 (sfx $07)
     INCBIN "data/audio/bank_21/audio_21_6ef5.bin"
-audio_22_62a7:         ; sfx $08 SFX_08
+audio_22_62a7:         ; SFX_08 (sfx $08)
     INCBIN "data/audio/bank_21/audio_21_6ef5.bin"
-audio_22_62b5:         ; sfx $09 SFX_09
+audio_22_62b5:         ; SFX_09 (sfx $09)
     INCBIN "data/audio/bank_21/audio_21_6f5b.bin"
-audio_22_62cb:         ; sfx $0A SFX_0A
+audio_22_62cb:         ; SFX_0A (sfx $0A)
     INCBIN "data/audio/bank_21/audio_21_6f71.bin"
-audio_22_62df:         ; sfx $0B SFX_0B
+audio_22_62df:         ; SFX_0B (sfx $0B)
     INCBIN "data/audio/bank_21/audio_21_6f85.bin"
-audio_22_6301:         ; sfx $0C SFX_GEX_JUMP
+audio_22_6301:         ; SFX_GEX_JUMP (sfx $0C)
     INCBIN "data/audio/bank_21/audio_21_6fa7.bin"
-audio_22_632b:         ; sfx $0D SFX_GEX_DOUBLE_JUMP
+audio_22_632b:         ; SFX_GEX_DOUBLE_JUMP (sfx $0D)
     INCBIN "data/audio/bank_21/audio_21_6fd1.bin"
-audio_22_6389:         ; sfx $0E SFX_GEX_COLLAPSE
+audio_22_6389:         ; SFX_GEX_COLLAPSE (sfx $0E)
     INCBIN "data/audio/bank_21/audio_21_702f.bin"
-audio_22_63a1:         ; sfx $0F SFX_GEX_DEATH
+audio_22_63a1:         ; SFX_GEX_DEATH (sfx $0F)
     INCBIN "data/audio/bank_21/audio_21_7047.bin"
-audio_22_63f9:         ; sfx $10 SFX_GEX_HURT
+audio_22_63f9:         ; SFX_GEX_HURT (sfx $10)
     INCBIN "data/audio/bank_21/audio_21_709f.bin"
-audio_22_6445:         ; sfx $11 SFX_GEX_SPAWN
+audio_22_6445:         ; SFX_GEX_SPAWN (sfx $11)
     INCBIN "data/audio/bank_21/audio_21_70eb.bin"
-audio_22_65f3:         ; sfx $12 SFX_GEX_HIT_BOUNCE
+audio_22_65f3:         ; SFX_GEX_HIT_BOUNCE (sfx $12)
     INCBIN "data/audio/bank_21/audio_21_7299.bin"
-audio_22_6617:         ; sfx $13 SFX_13
+audio_22_6617:         ; SFX_13 (sfx $13)
     INCBIN "data/audio/bank_21/audio_21_72bd.bin"
-audio_22_666d:         ; sfx $14 SFX_MENU_UNK_1
+audio_22_666d:         ; SFX_MENU_UNK_1 (sfx $14)
     INCBIN "data/audio/bank_21/audio_21_7313.bin"
-audio_22_669b:         ; sfx $15 SFX_MENU_UNK_2
+audio_22_669b:         ; SFX_MENU_UNK_2 (sfx $15)
     INCBIN "data/audio/bank_21/audio_21_7341.bin"
-audio_22_66c9:         ; sfx $16 SFX_16
+audio_22_66c9:         ; SFX_16 (sfx $16)
     INCBIN "data/audio/bank_21/audio_21_736f.bin"
-audio_22_66dd:         ; sfx $17 SFX_ENEMY_DEFEATED
+audio_22_66dd:         ; SFX_ENEMY_DEFEATED (sfx $17)
     INCBIN "data/audio/bank_21/audio_21_7383.bin"
-audio_22_66f5:         ; sfx $18 SFX_18
+audio_22_66f5:         ; SFX_18 (sfx $18)
     INCBIN "data/audio/bank_21/audio_21_739b.bin"
-audio_22_6707:         ; sfx $19 SFX_HARD_HEAD_AREA_HAZARD
+audio_22_6707:         ; SFX_HARD_HEAD_AREA_HAZARD (sfx $19)
     INCBIN "data/audio/bank_21/audio_21_6ef5.bin"
-audio_22_6715:         ; sfx $1A SFX_FALLING_HAZARD
+audio_22_6715:         ; SFX_FALLING_HAZARD (sfx $1A)
     INCBIN "data/audio/bank_21/audio_21_73bb.bin"
-audio_22_672b:         ; sfx $1B SFX_1B
+audio_22_672b:         ; SFX_1B (sfx $1B)
     INCBIN "data/audio/bank_21/audio_21_73d1.bin"
-audio_22_6741:         ; sfx $1C SFX_FLOWER_HAMMER
+audio_22_6741:         ; driver sfx id $1C - no .data_00_116c_SFXChannelTable row reaches it
     INCBIN "data/audio/bank_21/audio_21_73e7.bin"
-audio_22_674b:         ; sfx $1D SFX_BUMBLEBEE
+audio_22_674b:         ; SFX_FLOWER_HAMMER (sfx $1C)
     INCBIN "data/audio/bank_21/audio_21_73bb.bin"
-audio_22_6761:         ; sfx $1E SFX_ROCKET
+audio_22_6761:         ; SFX_BUMBLEBEE (sfx $1D)
     INCBIN "data/audio/bank_21/audio_21_7407.bin"
-audio_22_6795:         ; sfx $1F SFX_1F
+audio_22_6795:         ; SFX_ROCKET (sfx $1E)
     INCBIN "data/audio/bank_21/audio_21_743b.bin"
-audio_22_67a5:         ; sfx $20 SFX_HUNTER
+audio_22_67a5:         ; SFX_1F (sfx $1F)
     INCBIN "data/audio/bank_21/audio_21_744b.bin"
-audio_22_67e9:         ; sfx $21 SFX_21
+audio_22_67e9:         ; SFX_HUNTER (sfx $20)
     INCBIN "data/audio/bank_21/audio_21_743b.bin"
-audio_22_67f9:         ; sfx $22 SFX_22
+audio_22_67f9:         ; SFX_21 (sfx $21)
     INCBIN "data/audio/bank_21/audio_21_749f.bin"
-audio_22_6835:         ; sfx $23 SFX_23
+audio_22_6835:         ; SFX_22 (sfx $22)
     INCBIN "data/audio/bank_21/audio_21_74db.bin"
-audio_22_6845:         ; sfx $24 SFX_ENEMY_BOUNCE
+audio_22_6845:         ; SFX_23 (sfx $23)
     INCBIN "data/audio/bank_21/audio_21_74eb.bin"
-audio_22_685d:         ; sfx $25 SFX_25
+audio_22_685d:         ; driver sfx id $25 - no .data_00_116c_SFXChannelTable row reaches it
     INCBIN "data/audio/bank_21/audio_21_7503.bin"
-audio_22_6865:         ; sfx $26 SFX_26
+audio_22_6865:         ; SFX_ENEMY_BOUNCE (sfx $24)
     INCBIN "data/audio/bank_21/audio_21_750b.bin"
-audio_22_688d:         ; sfx $27 SFX_FALLING_PLATFORM
+audio_22_688d:         ; SFX_25 (sfx $25)
     INCBIN "data/audio/bank_21/audio_21_7533.bin"
-audio_22_689f:         ; sfx $28 SFX_28
+audio_22_689f:         ; driver sfx id $28 - no .data_00_116c_SFXChannelTable row reaches it
     INCBIN "data/audio/bank_21/audio_21_7503.bin"
-audio_22_68a7:         ; sfx $29 SFX_29
+audio_22_68a7:         ; SFX_26 (sfx $26)
     INCBIN "data/audio/bank_21/audio_21_754d.bin"
-audio_22_68b7:         ; sfx $2A SFX_GEX_JUMP_UNK
+audio_22_68b7:         ; SFX_FALLING_PLATFORM (sfx $27)
     INCBIN "data/audio/bank_21/audio_21_755d.bin"
-audio_22_68c9:         ; sfx $2B SFX_POWERED_WALKWAY
+audio_22_68c9:         ; SFX_28 (sfx $28)
     INCBIN "data/audio/bank_21/audio_21_756f.bin"
-audio_22_6909:         ; sfx $2C SFX_CANNON_ROTATE
+audio_22_6909:         ; SFX_29 (sfx $29)
     INCBIN "data/audio/bank_21/audio_21_750b.bin"
-audio_22_6931:         ; sfx $2D SFX_JAR
+audio_22_6931:         ; SFX_GEX_JUMP_UNK (sfx $2A)
     INCBIN "data/audio/bank_21/audio_21_75d7.bin"
-audio_22_6943:         ; sfx $2E SFX_2E
+audio_22_6943:         ; SFX_POWERED_WALKWAY (sfx $2B)
     INCBIN "data/audio/bank_21/audio_21_75e9.bin"
-audio_22_698b:         ; sfx $2F SFX_DRAGON
+audio_22_698b:         ; SFX_CANNON_ROTATE (sfx $2C)
     INCBIN "data/audio/bank_21/audio_21_7631.bin"
-audio_22_69b7:         ; sfx $30 SFX_CANNON
+audio_22_69b7:         ; SFX_JAR (sfx $2D)
     INCBIN "data/audio/bank_21/audio_21_73bb.bin"
-audio_22_69cd:         ; sfx $31 SFX_FALLING_BOULDER
+audio_22_69cd:         ; SFX_2E (sfx $2E)
     INCBIN "data/audio/bank_21/audio_21_7673.bin"
-audio_22_69e3:         ; sfx $32 SFX_32
+audio_22_69e3:         ; driver sfx id $32 - no .data_00_116c_SFXChannelTable row reaches it
     INCBIN "data/audio/bank_21/audio_21_7689.bin"
-audio_22_69ef:         ; sfx $33 SFX_PTEROSAUR
+audio_22_69ef:         ; SFX_DRAGON (sfx $2F)
     INCBIN "data/audio/bank_21/audio_21_7407.bin"
-audio_22_6a23:         ; sfx $34 SFX_MULTI_PROJECTILE
+audio_22_6a23:         ; SFX_CANNON (sfx $30)
     INCBIN "data/audio/bank_21/audio_21_6fa7.bin"
-audio_22_6a4d:         ; sfx $35 SFX_GEAR
+audio_22_6a4d:         ; SFX_FALLING_BOULDER (sfx $31)
     INCBIN "data/audio/bank_21/audio_21_76f3.bin"
-audio_22_6a81:         ; sfx $36 SFX_GUN_PROJECTILE
+audio_22_6a81:         ; SFX_32 (sfx $32)
     INCBIN "data/audio/bank_21/audio_21_7727.bin"
-audio_22_6a99:         ; sfx $37 SFX_REZ_PROJECTILE
+audio_22_6a99:         ; SFX_PTEROSAUR (sfx $33)
     INCBIN "data/audio/bank_21/audio_21_773f.bin"
-audio_22_6ac7:         ; sfx $38 SFX_FINAL_BATTLE_BUTTON
+audio_22_6ac7:         ; SFX_MULTI_PROJECTILE (sfx $34)
     INCBIN "data/audio/bank_21/audio_21_776d.bin"
-audio_22_6ad7:         ; sfx $39 SFX_REZ_BUTTON
+audio_22_6ad7:         ; SFX_GEAR (sfx $35)
     INCBIN "data/audio/bank_21/audio_21_7631.bin"
-audio_22_6b03:         ; sfx $3A
+audio_22_6b03:         ; SFX_GUN_PROJECTILE (sfx $36)
     INCBIN "data/audio/bank_21/audio_21_743b.bin"
-audio_22_6b13:         ; sfx $3B
+audio_22_6b13:         ; SFX_REZ_PROJECTILE (sfx $37)
     INCBIN "data/audio/bank_21/audio_21_77b9.bin"
-audio_22_6b6b:         ; sfx $3C
+audio_22_6b6b:         ; SFX_FINAL_BATTLE_BUTTON (sfx $38)
     INCBIN "data/audio/bank_21/audio_21_73bb.bin"
-audio_22_6b81:         ; sfx $3D
+audio_22_6b81:         ; SFX_REZ_BUTTON (sfx $39)
     INCBIN "data/audio/bank_21/audio_21_7827.bin"
-audio_22_6b97:         ; sfx $3E
+audio_22_6b97:         ; driver sfx id $3E - no .data_00_116c_SFXChannelTable row reaches it
     INCBIN "data/audio/bank_21/audio_21_783d.bin"
-audio_22_6b9b:         ; sfx $3F
+audio_22_6b9b:         ; driver sfx id $3F - no .data_00_116c_SFXChannelTable row reaches it
     INCBIN "data/audio/bank_21/audio_21_7841.bin"
-audio_22_6b9f:         ; sfx $40
+audio_22_6b9f:         ; driver sfx id $40 - no .data_00_116c_SFXChannelTable row reaches it
     INCBIN "data/audio/bank_21/audio_21_7845.bin"
-audio_22_6ba3:         ; sfx $41
+audio_22_6ba3:         ; driver sfx id $41 - no .data_00_116c_SFXChannelTable row reaches it
     INCBIN "data/audio/bank_21/audio_21_7849.bin"

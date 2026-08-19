@@ -1702,10 +1702,27 @@ wD787_BlockPatch_StepTimerReload:
     ds 1                                               ;; d787
 
 wD788_CurrentAudioBank:
+; Which of banks $21-$24 holds the sound driver and track data right now. Only ONE is
+; mapped at a time - the parallel music and sfx channel sets both live in that one
+; bank, they are not one bank each.
+;
+; call_00_120c_SetupMusic writes it from the chosen song's .data_00_1244_MusicList
+; record, so the bank follows the music and sound effects come along for the ride. That
+; is the point: the same SFX_* id is a different rendition in each bank. Only $21, $22
+; and $23 ever appear here; $24 is unreachable.
+;
+; The vblank handler maps this in, calls Audio_Update, and maps wD59C_CurrentROMBank
+; back, so from the main code's point of view the bank never changed
     ds 1                                               ;; d788
 wD789_QueuedSFX:
+; One-deep sfx queue, holding an SFX_* id or SFX_NONE when empty.
+; call_00_112f_QueueSFX only fills it when empty, so a second effect requested in the
+; same frame is dropped; call_00_1138_PlayQueuedSFX drains it
     ds 1                                               ;; d789
-wD78A_MusicId: ; multiplied by 4 and used as index into .data_00_1244_MusicList
+wD78A_MusicId:
+; The MUSIC_* id currently playing, or $FF at boot. call_00_120c_SetupMusic compares
+; against it and returns early on a match, so re-requesting the current song does not
+; restart it. Multiplied by 4 to index .data_00_1244_MusicList
     ds 1                                               ;; d78a
 
 wD78B_BlockPatch_SlotTable:

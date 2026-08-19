@@ -141,9 +141,13 @@ call_00_0150_Init:
     ldh  [rIE], A                                      ;; 00:01e3 $e0 $ff
     ld   A, $c7                                        ;; 00:01e5 $3e $c7
     call call_00_0f32_SetLCDC                                  ;; 00:01e7 $cd $32 $0f
+    ; Bank $21 is the audio bank until the first song change picks another. Audio_Init
+    ; is identical in all four banks, so which one runs it does not matter - but it
+    ; points the driver's table pointer at its OWN bank, which is why this has to be
+    ; set to the same bank the FARCALL enters
     ld   A, $21                                        ;; 00:01ea $3e $21
     ld   [wD788_CurrentAudioBank], A                                    ;; 00:01ec $ea $88 $d7
-    FARCALL call_21_4000_Audio_Init                              
+    FARCALL call_21_4000_Audio_Init
     ld   A, $ff                                        ;; 00:01fa $3e $ff
     ld   [wD78A_MusicId], A                                    ;; 00:01fc $ea $8a $d7
     ei                                                 ;; 00:01ff $fb
@@ -1394,6 +1398,11 @@ call_00_0a54_VBlank_Handler:
     ld   A, [wD5A2_BgMap_ScrollYLo]                                    ;; 00:0a81 $fa $a2 $d5
     ldh  [rSCY], A                                     ;; 00:0a84 $e0 $42
     call call_00_0f80_VBlank_UpdatePalettes                                  ;; 00:0a86 $cd $80 $0f
+    ; Audio runs from vblank, so the audio bank has to be mapped in and then put back
+    ; before the interrupt returns - the interrupted code has no idea this happened.
+    ; This bypasses call_00_1089_SwitchBank / call_00_10a3_RestoreBank and touches the
+    ; MBC registers directly, restoring from wD59C_CurrentROMBank rather than popping
+    ; the bank stack, so an interrupt landing mid-SwitchBank cannot corrupt it
     ld   A, [wD788_CurrentAudioBank]                                    ;; 00:0a89 $fa $88 $d7
     ld   [MBC1RomBank], A                                    ;; 00:0a8c $ea $01 $20
     swap A                                             ;; 00:0a8f $cb $37
@@ -2522,7 +2531,7 @@ call_00_1129_CheckInputB:
     ret                                                ;; 00:112e $c9
 
 call_00_112f_QueueSFX:
-; Queues sfx C for the next call_00_1138_PlayQueuedSFX - but only if the slot is
+; Queues SFX_* id C for the next call_00_1138_PlayQueuedSFX - but only if the slot is
 ; currently SFX_NONE. A sound already waiting is NOT replaced, so when two effects
 ; are requested in the same frame the second is silently dropped rather than
 ; overriding the first
@@ -2540,10 +2549,17 @@ call_00_1138_PlayQueuedSFX:
     cp   A, SFX_NONE                                        ;; 00:113b $fe $ff
     ret  Z                                             ;; 00:113d $c8
 call_00_113e_PlaySFX:
-; Plays sfx A. .data_00_116c_SFXChannelTable_SFXChannelTable holds a (channel mask, sound id) pair per
-; sfx; for each set bit of the mask it calls the audio driver's play routine in
-; wD788_CurrentAudioBank with an incrementing channel index, then clears
-; wD789_QueuedSFX back to SFX_NONE
+; Plays SFX_* id A.
+;
+; The game's sfx ids are not the driver's. .data_00_116c_SFXChannelTable translates:
+; each row is (count mask, first driver sfx id), and for every set bit of the mask this
+; calls Audio_PlaySfx once with the driver id incremented each time. Every row in the
+; table uses mask $01, so in practice it is one driver track per effect and the loop
+; runs its four passes to fire once.
+;
+; The call lands in whichever bank wD788_CurrentAudioBank names, which is the bank the
+; current music came from - so the same SFX_* id sounds different depending on what is
+; playing. Finishes by clearing wD789_QueuedSFX back to SFX_NONE
     ld   L, A                                          ;; 00:113e $6f
     ld   H, $00                                        ;; 00:113f $26 $00
     add  HL, HL                                        ;; 00:1141 $29
@@ -2574,6 +2590,17 @@ call_00_113e_PlaySFX:
     ld   [wD789_QueuedSFX], A                                    ;; 00:1166 $ea $89 $d7
     jp   call_00_10a3_RestoreBank                                  ;; 00:1169 $c3 $a3 $10
 .data_00_116c_SFXChannelTable:
+; SFX_* id -> driver sfx id, two bytes per row, 58 rows covering SFX_EMPTY through
+; SFX_REZ_BUTTON.
+;
+; First byte is a count mask: one bit per driver track to start, so $01 means one and
+; $03 would mean two at consecutive ids. Every row here is $01. Second byte is the
+; driver id to start at.
+;
+; The mapping is nearly the identity but not quite - it skips driver ids $1C, $25, $28
+; and $32, so from SFX_FLOWER_HAMMER onwards the game id and the driver id diverge by a
+; growing offset. Those four, plus driver ids $3E-$41 past the end of the table, are
+; the eight sound effects present in every audio bank that nothing can play
     db   $01, $00
     db   $01, $01
     db   $01, $02
@@ -2634,7 +2661,10 @@ call_00_113e_PlaySFX:
     db   $01, $3d
 
 call_00_11e0_PlayMusicBasedOnLevel:
-    ld   HL, wD624_CurrentLevelId                                     ;; 00:11e0 $21 $24 $d6
+; Looks up the current map's song in .data_00_11ed_LevelMusic and hands it to
+; call_00_120c_SetupMusic, which no-ops if that song is already playing - so this is
+; safe to call on every room load, not just level changes
+    ld   HL, wD624_CurrentLevelId                                   ;; 00:11e0 $21 $24 $d6
     ld   L, [HL]                                       ;; 00:11e3 $6e
     ld   H, $00                                        ;; 00:11e4 $26 $00
     ld   DE, .data_00_11ed_LevelMusic                                     ;; 00:11e6 $11 $ed $11
@@ -2679,10 +2709,17 @@ call_00_120c_SetupMusic:
 ; Starts music track A, or returns immediately if it is already the one playing
 ; (wD78A_MusicId). Syncs to vblank first so the swap does not land mid-frame.
 ;
-; Each .data_00_1244_MusicList record is 4 bytes - audio bank, song id, channel mask,
-; pad - and the driver's start routine is called once per set bit of the mask with an
-; incrementing channel index. Ends by playing sfx $00 through
-; call_00_113e_PlaySFX, which is what silences whatever was on the sfx channel
+; A song is FOUR driver tracks, one per hardware channel, stored at four consecutive
+; ids. The .data_00_1244_MusicList record supplies the audio bank and the first of the
+; four; the count mask is $0F, so the loop below runs four times and calls
+; Audio_PlayMusic with the id incremented each pass. Four calls, four channels, one
+; song.
+;
+; The record's bank byte is what sets wD788_CurrentAudioBank, and it stays set until
+; the next song change - which is how sound effects find a bank of their own.
+;
+; Ends by playing SFX_EMPTY through call_00_113e_PlaySFX, which is what silences
+; whatever the sfx side was holding
     push AF                                            ;; 00:120c $f5
     call call_00_0ab4_WaitForInterrupt                                  ;; 00:120d $cd $b4 $0a
     pop  AF                                            ;; 00:1210 $f1
@@ -2719,7 +2756,21 @@ call_00_120c_SetupMusic:
     ld   A, $00                                        ;; 00:123f $3e $00
     jp   call_00_113e_PlaySFX                                  ;; 00:1241 $c3 $3e $11
 .data_00_1244_MusicList:
-; this is the list of music [first byte is bank number]
+; The eight songs, indexed by MUSIC_*. Four bytes per record: audio bank, first driver
+; track id, count mask, pad.
+;
+;   MUSIC_KUNG_FU_THEATER      bank $21  driver ids $04-$07
+;   MUSIC_CIRCUIT_CENTRAL      bank $21  driver ids $00-$03
+;   MUSIC_PREHISTORY_CHANNEL   bank $21  driver ids $08-$0B
+;   MUSIC_REZOPOLIS            bank $22  driver ids $08-$0B
+;   MUSIC_UNK_04               bank $22  driver ids $04-$07
+;   MUSIC_SCREAM_TV            bank $22  driver ids $00-$03
+;   MUSIC_TOON_TV              bank $23  driver ids $04-$07
+;   MUSIC_MEDIA_DIMENSION      bank $23  driver ids $00-$03
+;
+; Three songs live in bank $21, three in $22, two in $23 - which accounts for all 12,
+; 12 and 8 music tracks those banks hold. Bank $24 is never named here, so nothing in
+; the ROM can select it and its 66 tracks are unreachable
     db   BANK_21, $04, $0f, $00
     db   BANK_21, $00, $0f, $00        ;; 00:1244 ????????
     db   BANK_21, $08, $0f, $00

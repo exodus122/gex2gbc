@@ -34,8 +34,13 @@
 ;
 ; THE TRACK TABLES at data_24_4460_TrackPointerTables are two lists of self-relative
 ; words. The first word of the block is the offset to the sfx list; the music list
-; starts immediately after it. This bank is the odd one out: its sfx
-; list is empty and all 66 of its entries are reached through Audio_PlayMusic
+; starts immediately after it.
+;
+; This bank is the odd one out. Its sfx list is empty, so all 66 of its entries sit
+; in the music list - but their headers are single-channel, the shape a sound effect
+; has rather than a song. Nothing reaches them either way: .data_00_1244_MusicList in
+; bank 0 only ever names banks $21, $22 and $23, so wD788_CurrentAudioBank never
+; holds $24 and this whole block is unreachable
 ; ==================================================================
 
 SECTION "bank24", ROMX[$4000], BANK[$24]
@@ -165,11 +170,14 @@ jr_24_40a4_Audio_StartTrack:
 ; list, and the id selects a self-relative word from it - so a track pointer is stored
 ; as a distance rather than an address and the whole block is position independent.
 ;
-; The first byte of a track is its channel count, and the mask of channels it claims is
-; built from that by shifting a 1 in that many times - a track always takes channels 1
-; to N rather than choosing them. That mask is OR'd into whichever active-channel mask
-; this request kind owns, and the request kind also selects which set of pointer and
-; timer arrays gets written.
+; The first byte of a track is the hardware channel it wants, 1 to 4. The shift loop that
+; follows turns that into a single-bit mask - the carry set by `scf` is rolled in on the
+; first pass and zeroes on the rest, so channel N gives bit N-1, never a range. That bit
+; is OR'd into whichever active-channel mask this request kind owns, and the request kind
+; also selects which set of pointer and timer arrays gets written.
+;
+; A track therefore plays exactly one channel. Music gets four of them going at once by
+; starting four tracks - see .data_00_1244_MusicList.
 ;
 ; The channel byte that follows then indexes those arrays, the sequence pointer is
 ; stored, and Audio_RunSequence is called once to prime the first note - its return
@@ -749,135 +757,135 @@ data_24_4460_TrackPointerTables:
     db   $62, $09, $AA, $09, $C2, $09, $06, $0A, $32, $0A, $88, $0A, $9E, $0A, $B6, $0A, $D0, $0A, $E8, $0A, $F4, $0A, $12, $0B, $40, $0B, $58, $0B
     db   $74, $0B, $A6, $0B, $C4, $0B, $DC, $0B, $F4, $0B, $0C, $0C, $26, $0C, $40, $0C, $42, $0C, $44, $0C, $46, $0C
 
-audio_24_44e6:         ; music $00 MUSIC_KUNG_FU_THEATER
+audio_24_44e6:         ; music id $00 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_44e6.bin"
-audio_24_4500:         ; music $01 MUSIC_CIRCUIT_CENTRAL
+audio_24_4500:         ; music id $01 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4500.bin"
-audio_24_4524:         ; music $02 MUSIC_PREHISTORY_CHANNEL
+audio_24_4524:         ; music id $02 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4524.bin"
-audio_24_4544:         ; music $03 MUSIC_REZOPOLIS
+audio_24_4544:         ; music id $03 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4544.bin"
-audio_24_458c:         ; music $04 MUSIC_UNK_04
+audio_24_458c:         ; music id $04 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_458c.bin"
-audio_24_45fa:         ; music $05 MUSIC_SCREAM_TV
+audio_24_45fa:         ; music id $05 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_45fa.bin"
-audio_24_460e:         ; music $06 MUSIC_TOON_TV
+audio_24_460e:         ; music id $06 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_460e.bin"
-audio_24_4650:         ; music $07 MUSIC_MEDIA_DIMENSION
+audio_24_4650:         ; music id $07 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_45fa.bin"
-audio_24_4664:         ; music $08
+audio_24_4664:         ; music id $08 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_45fa.bin"
-audio_24_4678:         ; music $09
+audio_24_4678:         ; music id $09 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4678.bin"
-audio_24_4694:         ; music $0A
+audio_24_4694:         ; music id $0A - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4694.bin"
-audio_24_46ae:         ; music $0B
+audio_24_46ae:         ; music id $0B - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4524.bin"
-audio_24_46ce:         ; music $0C
+audio_24_46ce:         ; music id $0C - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_46ce.bin"
-audio_24_46fe:         ; music $0D
+audio_24_46fe:         ; music id $0D - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_46fe.bin"
-audio_24_4762:         ; music $0E
+audio_24_4762:         ; music id $0E - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4762.bin"
-audio_24_47ac:         ; music $0F
+audio_24_47ac:         ; music id $0F - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_47ac.bin"
-audio_24_480a:         ; music $10
+audio_24_480a:         ; music id $10 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_480a.bin"
-audio_24_485c:         ; music $11
+audio_24_485c:         ; music id $11 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_485c.bin"
-audio_24_4a10:         ; music $12
+audio_24_4a10:         ; music id $12 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4a10.bin"
-audio_24_4a2a:         ; music $13
+audio_24_4a2a:         ; music id $13 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4a2a.bin"
-audio_24_4a8c:         ; music $14
+audio_24_4a8c:         ; music id $14 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4a8c.bin"
-audio_24_4ac0:         ; music $15
+audio_24_4ac0:         ; music id $15 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4ac0.bin"
-audio_24_4af4:         ; music $16
+audio_24_4af4:         ; music id $16 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4af4.bin"
-audio_24_4b0e:         ; music $17
+audio_24_4b0e:         ; music id $17 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4b0e.bin"
-audio_24_4b2c:         ; music $18
+audio_24_4b2c:         ; music id $18 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4b2c.bin"
-audio_24_4b44:         ; music $19
+audio_24_4b44:         ; music id $19 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_45fa.bin"
-audio_24_4b58:         ; music $1A
+audio_24_4b58:         ; music id $1A - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4b58.bin"
-audio_24_4b74:         ; music $1B
+audio_24_4b74:         ; music id $1B - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4b74.bin"
-audio_24_4b90:         ; music $1C
+audio_24_4b90:         ; music id $1C - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4b90.bin"
-audio_24_4ba0:         ; music $1D
+audio_24_4ba0:         ; music id $1D - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4b58.bin"
-audio_24_4bbc:         ; music $1E
+audio_24_4bbc:         ; music id $1E - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4bbc.bin"
-audio_24_4c1c:         ; music $1F
+audio_24_4c1c:         ; music id $1F - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4c1c.bin"
-audio_24_4c36:         ; music $20
+audio_24_4c36:         ; music id $20 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4762.bin"
-audio_24_4c80:         ; music $21
+audio_24_4c80:         ; music id $21 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4a10.bin"
-audio_24_4c9a:         ; music $22
+audio_24_4c9a:         ; music id $22 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4762.bin"
-audio_24_4ce4:         ; music $23
+audio_24_4ce4:         ; music id $23 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4762.bin"
-audio_24_4d2e:         ; music $24
+audio_24_4d2e:         ; music id $24 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4d2e.bin"
-audio_24_4d4c:         ; music $25
+audio_24_4d4c:         ; music id $25 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4d4c.bin"
-audio_24_4d5c:         ; music $26
+audio_24_4d5c:         ; music id $26 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4d5c.bin"
-audio_24_4d8a:         ; music $27
+audio_24_4d8a:         ; music id $27 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4d8a.bin"
-audio_24_4df2:         ; music $28
+audio_24_4df2:         ; music id $28 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4df2.bin"
-audio_24_4e16:         ; music $29
+audio_24_4e16:         ; music id $29 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4762.bin"
-audio_24_4e60:         ; music $2A
+audio_24_4e60:         ; music id $2A - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4a10.bin"
-audio_24_4e7a:         ; music $2B
+audio_24_4e7a:         ; music id $2B - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4e7a.bin"
-audio_24_4ec0:         ; music $2C
+audio_24_4ec0:         ; music id $2C - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4d5c.bin"
-audio_24_4eee:         ; music $2D
+audio_24_4eee:         ; music id $2D - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4eee.bin"
-audio_24_4f46:         ; music $2E
+audio_24_4f46:         ; music id $2E - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4f46.bin"
-audio_24_4f5e:         ; music $2F
+audio_24_4f5e:         ; music id $2F - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4a10.bin"
-audio_24_4f78:         ; music $30
+audio_24_4f78:         ; music id $30 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4b58.bin"
-audio_24_4f94:         ; music $31
+audio_24_4f94:         ; music id $31 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4f94.bin"
-audio_24_4fae:         ; music $32
+audio_24_4fae:         ; music id $32 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4fae.bin"
-audio_24_4fbc:         ; music $33
+audio_24_4fbc:         ; music id $33 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4fbc.bin"
-audio_24_4fdc:         ; music $34
+audio_24_4fdc:         ; music id $34 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_46ce.bin"
-audio_24_500c:         ; music $35
+audio_24_500c:         ; music id $35 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4a10.bin"
-audio_24_5026:         ; music $36
+audio_24_5026:         ; music id $36 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_5026.bin"
-audio_24_5044:         ; music $37
+audio_24_5044:         ; music id $37 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_5044.bin"
-audio_24_5078:         ; music $38
+audio_24_5078:         ; music id $38 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4fbc.bin"
-audio_24_5098:         ; music $39
+audio_24_5098:         ; music id $39 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4a10.bin"
-audio_24_50b2:         ; music $3A
+audio_24_50b2:         ; music id $3A - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4c1c.bin"
-audio_24_50cc:         ; music $3B
+audio_24_50cc:         ; music id $3B - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4a10.bin"
-audio_24_50e6:         ; music $3C
+audio_24_50e6:         ; music id $3C - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_4b58.bin"
-audio_24_5102:         ; music $3D
+audio_24_5102:         ; music id $3D - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_24/audio_24_5102.bin"
-audio_24_511e:         ; music $3E
+audio_24_511e:         ; music id $3E - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_21/audio_21_783d.bin"
-audio_24_5122:         ; music $3F
+audio_24_5122:         ; music id $3F - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_21/audio_21_7841.bin"
-audio_24_5126:         ; music $40
+audio_24_5126:         ; music id $40 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_21/audio_21_7845.bin"
-audio_24_512a:         ; music $41
+audio_24_512a:         ; music id $41 - unreachable, nothing selects this bank
     INCBIN "data/audio/bank_21/audio_21_7849.bin"
