@@ -750,35 +750,50 @@ data_03_5a8a_SpriteShapeTable_Alt:
 
 
 call_03_5b5b_HUD_BuildSprites:
-; Builds the OAM entries for the player HUD/status display (health hearts etc.) into wCC80_ShadowOAM_HudSprites. 
-; Selects one of 5 different 3-byte data layouts depending on game state: level 0 uses .data_03_5beb, 
-; other levels use .data_03_5bd3, demo mode uses a specific layout, and if a special condition 
-; (wD623_CollectibleMode set, wD770_LevelTimer_SecondsBCD/wD771_LevelTimer_FrameCounter in range) uses .data_03_5c1b (a "low health" or special display variant). 
-; Writes 8 four-byte OAM entries to wCC80_ShadowOAM_HudSprites. Each table record is three
-; bytes - X, TILE, ATTRIBUTES - and the Y byte comes from C, shared by all eight.
+; Fills the eight sprites of wCC80_ShadowOAM_HudSprites - the status row along the
+; bottom of the screen - from one of five fixed layouts.
 ;
-; That shared Y is wD688_FlyAnimationPosition, so the whole HUD row slides vertically with
-; the fly popup: call_00_05c7_FlyPowerup_Update walking that byte between $88 and $A0 is
-; what animates the status bar on and off screen. In levels other than the hub C is forced
-; to $88 instead, which parks the row at its resting height.
+; NONE OF THE LAYOUTS CONTAIN A NUMBER. Every table below is static: fixed X, fixed
+; tile id, fixed attributes. What changes when you gain a life or pick something up is
+; the PIXEL DATA behind those tile ids, rewritten into VRAM by the loaders in
+; bank03_hud_tiles.asm when a bit of wD60E_HUDDirtyFlags says so. So the row is eight
+; permanent windows onto VRAM, and the tile numbers below double as names for what each
+; window shows - VRAM_DIGIT_HUNDREDS is $8748, i.e. tile $74, and so on.
 ;
-; If wD687_FlyAnimationState bit 7 is set, jumps to .jp_03_5c33_HUD_BuildSprites_HealthBased
-; (health-based tile select path)
+; The Y byte is not in the tables either: all eight take it from C, which is
+; wD688_FlyAnimationPosition. call_00_05c7_FlyPowerup_Update walking that byte between
+; $88 and $A0 is the whole of the slide-on/slide-off animation. Outside the hub the
+; slide is skipped for three of the layouts by forcing C to $88, the resting height.
+;
+; Which layout runs, in the order the code tests:
+;
+;   hub (level 0)         .data_03_5beb_HudRow_MediaDimension, sliding
+;   demo mode             .data_03_5bd3_HudRow_DemoBanner, parked
+;   collectible mode      .data_03_5c03_HudRow_Timer, parked - or
+;                         .data_03_5c1b_HudRow_TimerBlink for 15 frames of each of the
+;                         last ten seconds, which is how the clock flashes
+;   fly popup showing     .data_03_5bbb_HudRow_LivesAndCollectibles, sliding
+;   otherwise             .jp_03_5c33_HUD_BuildSprites_Health, sliding
+;
+; The last two are the same row of hardware sprites showing two different things, and
+; wD687_FlyAnimationState bit 7 is the switch. A level entered with the fly popup up
+; ($41) shows the lives and collectible counters, then FlyPowerup_Update flips it to
+; $81 and the hearts take over
     ld   A, [wD688_FlyAnimationPosition]                                    ;; 03:5b5b $fa $88 $d6
     ld   C, A                                          ;; 03:5b5e $4f
-    ld   DE, .data_03_5beb                             ;; 03:5b5f $11 $eb $5b
+    ld   DE, .data_03_5beb_HudRow_MediaDimension                             ;; 03:5b5f $11 $eb $5b
     ld   A, [wD624_CurrentLevelId]                                    ;; 03:5b62 $fa $24 $d6
     and  A, A                                          ;; 03:5b65 $a7
     jr   Z, .jr_03_5ba7                                ;; 03:5b66 $28 $3f
     ld   C, $88                                        ;; 03:5b68 $0e $88
-    ld   DE, .data_03_5bd3                             ;; 03:5b6a $11 $d3 $5b
+    ld   DE, .data_03_5bd3_HudRow_DemoBanner                             ;; 03:5b6a $11 $d3 $5b
     ld   A, [wD61E_DemoModeEnabled]                                    ;; 03:5b6d $fa $1e $d6
     and  A, A                                          ;; 03:5b70 $a7
     jr   NZ, .jr_03_5ba7                               ;; 03:5b71 $20 $34
     ld   A, [wD623_CollectibleMode]                                    ;; 03:5b73 $fa $23 $d6
     and  A, A                                          ;; 03:5b76 $a7
     jr   Z, .jr_03_5b98                                ;; 03:5b77 $28 $1f
-    ld   DE, .data_03_5c03                             ;; 03:5b79 $11 $03 $5c
+    ld   DE, .data_03_5c03_HudRow_Timer                             ;; 03:5b79 $11 $03 $5c
     ld   A, [wD76F_LevelTimer_Minutes]                                    ;; 03:5b7c $fa $6f $d7
     and  A, A                                          ;; 03:5b7f $a7
     jr   NZ, .jr_03_5ba7                               ;; 03:5b80 $20 $25
@@ -790,15 +805,15 @@ call_03_5b5b_HUD_BuildSprites:
     ld   A, [wD771_LevelTimer_FrameCounter]                                    ;; 03:5b8c $fa $71 $d7
     cp   A, $0f                                        ;; 03:5b8f $fe $0f
     jr   NC, .jr_03_5ba7                               ;; 03:5b91 $30 $14
-    ld   DE, .data_03_5c1b                             ;; 03:5b93 $11 $1b $5c
+    ld   DE, .data_03_5c1b_HudRow_TimerBlink                             ;; 03:5b93 $11 $1b $5c
     jr   .jr_03_5ba7                                   ;; 03:5b96 $18 $0f
 .jr_03_5b98:
     ld   A, [wD687_FlyAnimationState]                                    ;; 03:5b98 $fa $87 $d6
     and  A, $80                                        ;; 03:5b9b $e6 $80
-    jp   NZ, .jp_03_5c33_HUD_BuildSprites_HealthBased                               ;; 03:5b9d $c2 $33 $5c
+    jp   NZ, .jp_03_5c33_HUD_BuildSprites_Health                               ;; 03:5b9d $c2 $33 $5c
     ld   A, [wD688_FlyAnimationPosition]                                    ;; 03:5ba0 $fa $88 $d6
     ld   C, A                                          ;; 03:5ba3 $4f
-    ld   DE, .data_03_5bbb                             ;; 03:5ba4 $11 $bb $5b
+    ld   DE, .data_03_5bbb_HudRow_LivesAndCollectibles                             ;; 03:5ba4 $11 $bb $5b
 .jr_03_5ba7:
     ld   HL, wCC80_ShadowOAM_HudSprites                                     ;; 03:5ba7 $21 $80 $cc
     ld   B, $08                                        ;; 03:5baa $06 $08
@@ -817,32 +832,92 @@ call_03_5b5b_HUD_BuildSprites:
     dec  B                                             ;; 03:5bb7 $05
     jr   NZ, .jr_03_5bac                               ;; 03:5bb8 $20 $f2
     ret                                                ;; 03:5bba $c9
-.data_03_5bbb:
-    db   $32, $70, $10, $3a, $72, $10, $43, $74        ;; 03:5bbb ........
-    db   $10, $49, $76, $10, $4f, $78, $10, $67        ;; 03:5bc3 ........
-    db   $7e, $11, $70, $7a, $10, $76, $7c, $10        ;; 03:5bcb ........
-.data_03_5bd3:
-    db   $38, $68, $10, $40, $6a, $10, $48, $6c        ;; 03:5bd3 ????????
-    db   $10, $50, $6e, $10, $58, $70, $10, $60        ;; 03:5bdb ????????
-    db   $72, $10, $68, $74, $10, $70, $76, $10        ;; 03:5be3 ????????
-.data_03_5beb:
-    db   $38, $60, $10, $40, $62, $10, $48, $64        ;; 03:5beb ........
-    db   $10, $50, $66, $10, $58, $68, $10, $60        ;; 03:5bf3 ........
-    db   $6a, $10, $68, $6c, $10, $70, $6e, $10        ;; 03:5bfb ........
-.data_03_5c03:
-    db   $18, $74, $10, $20, $68, $10, $28, $76        ;; 03:5c03 ????????
-    db   $10, $30, $78, $10, $80, $7e, $11, $88        ;; 03:5c0b ????????
-    db   $7a, $10, $90, $7c, $10, $00, $70, $10        ;; 03:5c13 ????????
-.data_03_5c1b:
-    db   $00, $74, $10, $00, $68, $10, $00, $76        ;; 03:5c1b ????????
-    db   $10, $00, $78, $10, $80, $7e, $11, $88        ;; 03:5c23 ????????
-    db   $7a, $10, $90, $7c, $10, $00, $70, $10        ;; 03:5c2b ????????
-.jp_03_5c33_HUD_BuildSprites_HealthBased:
-; Alternate HUD builder path: uses wD741 (player health) as an index into a lookup table 
-; (health × 16 + $58) to select which tile pair to use, then writes 8 OAM entries with 
-; those tiles at fixed palette $CC using wD688_FlyAnimationPosition
+; All five rows use OAMF_PAL1 (DMG palette 1) and CGB OBJ palette 0, except the
+; collectible icon, which takes CGB palette 1 because its artwork is per-level and
+; loaded with its own palette by call_03_6941_HUD_LoadCollectibleSprites
+
+.data_03_5bbb_HudRow_LivesAndCollectibles:
+; The normal in-level row, shown while the fly popup is up. Two 8x16 sprites of fixed
+; art, then the three lives digits at a 6-pixel pitch so the glyphs tuck together,
+; then the collectible icon and its two digits
+    hud_sprite $32, $70, OAMF_PAL1                     ; fixed art, tiles $70-$73
+    hud_sprite $3a, $72, OAMF_PAL1
+    hud_sprite $43, $74, OAMF_PAL1                     ; VRAM_DIGIT_HUNDREDS - lives
+    hud_sprite $49, $76, OAMF_PAL1                     ; VRAM_DIGIT_TENS
+    hud_sprite $4f, $78, OAMF_PAL1                     ; VRAM_DIGIT_ONES
+    hud_sprite $67, $7e, OAMF_PAL1 | 1                 ; VRAM_COLLECTIBLE_SPRITES
+    hud_sprite $70, $7a, OAMF_PAL1                     ; VRAM_DIGIT_COLLECTIBLE_TENS
+    hud_sprite $76, $7c, OAMF_PAL1                     ; VRAM_DIGIT_COLLECTIBLE_ONES
+
+.data_03_5bd3_HudRow_DemoBanner:
+; Demo mode only. Eight sprites at an even 8-pixel pitch covering tiles $68-$77, which
+; is exactly the 16 tiles call_03_66ae_HUD_LoadTiles copies to
+; VRAM_HUD_DEMO_MODE_OR_TIMER - so this row is one 64x16 banner and nothing else
+    hud_sprite $38, $68, OAMF_PAL1
+    hud_sprite $40, $6a, OAMF_PAL1
+    hud_sprite $48, $6c, OAMF_PAL1
+    hud_sprite $50, $6e, OAMF_PAL1
+    hud_sprite $58, $70, OAMF_PAL1
+    hud_sprite $60, $72, OAMF_PAL1
+    hud_sprite $68, $74, OAMF_PAL1
+    hud_sprite $70, $76, OAMF_PAL1
+
+.data_03_5beb_HudRow_MediaDimension:
+; The hub. Same 64x16 banner shape as the demo row, one tile page lower - tiles
+; $60-$6F, the front of the image loaded to VRAM_HUD_TILES. The hub has no lives or
+; collectible counters to show
+    hud_sprite $38, $60, OAMF_PAL1
+    hud_sprite $40, $62, OAMF_PAL1
+    hud_sprite $48, $64, OAMF_PAL1
+    hud_sprite $50, $66, OAMF_PAL1
+    hud_sprite $58, $68, OAMF_PAL1
+    hud_sprite $60, $6a, OAMF_PAL1
+    hud_sprite $68, $6c, OAMF_PAL1
+    hud_sprite $70, $6e, OAMF_PAL1
+
+.data_03_5c03_HudRow_Timer:
+; Collectible (timed) mode. The three digit windows are reused for the clock with the
+; colon between them - tile $68 is VRAM_HUD_DEMO_MODE_OR_TIMER, the slot the demo
+; banner would occupy, which is why a demo can never be timed. The collectible icon and
+; counter move right to make room, and the lives icon is parked at X 0, off the left
+; edge of the screen
+    hud_sprite $18, $74, OAMF_PAL1                     ; minutes
+    hud_sprite $20, $68, OAMF_PAL1                     ; colon
+    hud_sprite $28, $76, OAMF_PAL1                     ; seconds, tens
+    hud_sprite $30, $78, OAMF_PAL1                     ; seconds, ones
+    hud_sprite $80, $7e, OAMF_PAL1 | 1                 ; collectible icon
+    hud_sprite $88, $7a, OAMF_PAL1
+    hud_sprite $90, $7c, OAMF_PAL1
+    hud_sprite $00, $70, OAMF_PAL1                     ; hidden
+
+.data_03_5c1b_HudRow_TimerBlink:
+; The row above with the clock hidden. Selected while the timer reads under ten
+; seconds and wD771_LevelTimer_FrameCounter is below $0F, so the four clock sprites
+; vanish for part of every second and the collectible counter carries on unblinking
+    hud_sprite $00, $74, OAMF_PAL1                     ; hidden
+    hud_sprite $00, $68, OAMF_PAL1                     ; hidden
+    hud_sprite $00, $76, OAMF_PAL1                     ; hidden
+    hud_sprite $00, $78, OAMF_PAL1                     ; hidden
+    hud_sprite $80, $7e, OAMF_PAL1 | 1
+    hud_sprite $88, $7a, OAMF_PAL1
+    hud_sprite $90, $7c, OAMF_PAL1
+    hud_sprite $00, $70, OAMF_PAL1                     ; hidden
+.jp_03_5c33_HUD_BuildSprites_Health:
+; The health row - four hearts, each two 8x16 sprites wide, so the same eight hardware
+; sprites as every other layout.
+;
+; Rather than draw one heart at a time and count, it keeps a whole prebuilt row per
+; health value and indexes it with `swap A` - health x 16 - so a heart row is 16 bytes
+; and there are five of them for health $00 to $04. That is why the records here are
+; two bytes and not three: the attribute is the same for all of them and is written as
+; a literal further down.
+;
+; There is no bound on the index. wD741_Player_Health never exceeds $04
+; (call_00_06b7_Player_ResetHealth is the only thing that raises it, and it writes a
+; literal $04), but a value of $05 would read the 16 bytes at $5CA8, which are the
+; first instructions of call_03_5ca8_Entity_BuildPlayerSprites
     ld   A, [wD741_Player_Health]                                    ;; 03:5c33 $fa $41 $d7
-    swap A                                             ;; 03:5c36 $cb $37
+    swap A                                             ;; 03:5c36 $cb $37 ; health * 16
     add  A, $58                                        ;; 03:5c38 $c6 $58
     ld   E, A                                          ;; 03:5c3a $5f
     ld   A, $00                                        ;; 03:5c3b $3e $00
@@ -861,30 +936,69 @@ call_03_5b5b_HUD_BuildSprites:
     ld   A, [DE]                                       ;; 03:5c4e $1a
     ld   [HL+], A                                      ;; 03:5c4f $22
     inc  DE                                            ;; 03:5c50 $13
-    ld   A, $10                                        ;; 03:5c51 $3e $10
+    ld   A, OAMF_PAL1                                  ;; 03:5c51 $3e $10
     ld   [HL+], A                                      ;; 03:5c53 $22
     dec  B                                             ;; 03:5c54 $05
     jr   NZ, .jr_03_5c49                               ;; 03:5c55 $20 $f2
     ret                                                ;; 03:5c57 $c9
-    db   $2c, $6c, $34, $6e, $44, $6c, $4c, $6e        ;; 03:5c58 ????????
-    db   $5c, $6c, $64, $6e, $74, $6c, $7c, $6e        ;; 03:5c60 ????????
-    db   $2c, $68, $34, $6a, $44, $6c, $4c, $6e        ;; 03:5c68 ........
-    db   $5c, $6c, $64, $6e, $74, $6c, $7c, $6e        ;; 03:5c70 ........
-    db   $2c, $68, $34, $6a, $44, $68, $4c, $6a        ;; 03:5c78 ........
-    db   $5c, $6c, $64, $6e, $74, $6c, $7c, $6e        ;; 03:5c80 ........
-    db   $2c, $68, $34, $6a, $44, $68, $4c, $6a        ;; 03:5c88 ........
-    db   $5c, $68, $64, $6a, $74, $6c, $7c, $6e        ;; 03:5c90 ........
-    db   $2c, $68, $34, $6a, $44, $68, $4c, $6a        ;; 03:5c98 ........
-    db   $5c, $68, $64, $6a, $74, $68, $7c, $6a        ;; 03:5ca0 ........
+
+.data_03_5c58_HudHeartsByHealth:
+; Five prebuilt heart rows, indexed by wD741_Player_Health. Each row is eight
+; (X, tile) pairs - four hearts at X $2c, $44, $5c, $74, each built from a left half
+; and a right half eight pixels along.
+;
+; Only two pieces of artwork are involved: tiles $68/$6a are the left and right halves
+; of a full heart and $6c/$6e the halves of an empty one. Reading down the rows, one
+; more heart fills each time, which is the whole animation
+    db   $2c, $6c, $34, $6e                            ; health $00 - all four empty
+    db   $44, $6c, $4c, $6e
+    db   $5c, $6c, $64, $6e
+    db   $74, $6c, $7c, $6e
+    db   $2c, $68, $34, $6a                            ; health $01 - one full
+    db   $44, $6c, $4c, $6e
+    db   $5c, $6c, $64, $6e
+    db   $74, $6c, $7c, $6e
+    db   $2c, $68, $34, $6a                            ; health $02
+    db   $44, $68, $4c, $6a
+    db   $5c, $6c, $64, $6e
+    db   $74, $6c, $7c, $6e
+    db   $2c, $68, $34, $6a                            ; health $03
+    db   $44, $68, $4c, $6a
+    db   $5c, $68, $64, $6a
+    db   $74, $6c, $7c, $6e
+    db   $2c, $68, $34, $6a                            ; health $04 - full
+    db   $44, $68, $4c, $6a
+    db   $5c, $68, $64, $6a
+    db   $74, $68, $7c, $6a
 
 call_03_5ca8_Entity_BuildPlayerSprites:
-; Main Gex sprite builder. Reads wD586_PlayerGfxVramPage (base sprite state index), adjusts by +2 if facing 
-; left (bit 5 of wD20D), +4 if climbing (bit 6 of wD74B_Player_ClimbingFlags). Uses this to index .data_03_5d6f 
-; via call_00_07b9_GetPointerFromTable to get the frame pointer. Computes player screen X/Y from world position 
-; minus map scroll origin (wD6ED/wD6EF) plus offsets ($08/$10), stores into wD212/wD213. 
-; Checks action ID for $11 (special state), invincibility flags (wD755_FlyPowerup2_TimerLo/wD753_FlyPowerup1_TimerLo/wD751_Player_CircuitPowerUpTimerLo), 
-; and wD73B_VBlankFrameCounter bit 3 — if any special condition is active, substitutes .data_03_5e7f 
-; (invincible/stunned sprite). Writes up to 8 OAM entries into wCC00_ShadowOAM, each as (Y+B, X+C, tile+wD73A_Entity_TileIdBase, attr
+; Gex's own sprite builder, separate from the entity one and simpler, because he is
+; always the same 32x32 rectangle. It picks one of the eight entries of
+; .data_03_5d6f_PlayerSpriteShapeTable from wD586_PlayerGfxVramPage plus 2 for facing
+; left and 4 for CLIMB_FLAG_ALT_FRAMES, works out his screen position as world minus
+; scroll plus the OAM bias ($08 across, $10 down), and copies eight OAM entries into
+; the front of wCC00_ShadowOAM - the region entities are forbidden from touching.
+;
+; Two things make him flicker, and both swap the shape for
+; .data_03_5e7f_PlayerShapeHidden with BC cleared, which parks all eight sprites off
+; screen for that frame:
+;
+;   wD750_Player_DamageCooldownTimer    bit 3, so he strobes every 8 frames after a hit
+;   a power-up shield is running        wD751/wD753/wD755, strobed on bit 3 of the
+;                                       global frame counter - but only on a DMG.
+;                                       wD59E_OnGBCFlag skips the test entirely,
+;                                       because on a Colour Game Boy the shield shows
+;                                       as a cycling palette instead
+;
+; PLAYER_ACTION_DEATH_SET_UP_WARP is checked first and jumps PAST both tests, so during
+; the death warp Gex is drawn solidly rather than flickering - which is the point of
+; call_00_0f5d_FadeToBlack using a mask that leaves OBP1 alone. The world darkens
+; around him and he stays lit.
+;
+; Each part's attribute byte is OR'd with wD74A_Player_InWaterOrLava on the way out.
+; That byte is $80 - OAMF_PRI - while he is NOT in liquid and $00 while he is, so he
+; normally renders behind solid background pixels and comes to the front on the frames
+; he is in water or lava
     ld   A, [wD586_PlayerGfxVramPage]                                    ;; 03:5ca8 $fa $86 $d5
     ld   HL, wD20D_Player_FacingFlags                                     ;; 03:5cab $21 $0d $d2
     bit  5, [HL]                                       ;; 03:5cae $cb $6e
@@ -896,7 +1010,7 @@ call_03_5ca8_Entity_BuildPlayerSprites:
     jr   Z, .jr_03_5cbd                                ;; 03:5cb9 $28 $02
     add  A, $04                                        ;; 03:5cbb $c6 $04
 .jr_03_5cbd:
-    ld   DE, .data_03_5d6f_GexSpriteFramePointerTable                             ;; 03:5cbd $11 $6f $5d
+    ld   DE, .data_03_5d6f_PlayerSpriteShapeTable                             ;; 03:5cbd $11 $6f $5d
     call call_00_07b9_GetPointerFromTable                                  ;; 03:5cc0 $cd $b9 $07
     ld   A, [wD6ED_BgMap_ScrollX]                                    ;; 03:5cc3 $fa $ed $d6
     ld   C, A                                          ;; 03:5cc6 $4f
@@ -934,7 +1048,7 @@ call_03_5ca8_Entity_BuildPlayerSprites:
     and  A, $08                                        ;; 03:5d07 $e6 $08
     jr   Z, .jr_03_5d11                                ;; 03:5d09 $28 $06
 .jr_03_5d0b:
-    ld   HL, .data_03_5e7f_SpriteData_Invincible                             ;; 03:5d0b $21 $7f $5e
+    ld   HL, .data_03_5e7f_PlayerShapeHidden                             ;; 03:5d0b $21 $7f $5e
     ld   BC, $00                                       ;; 03:5d0e $01 $00 $00
 .jr_03_5d11:
     ld   DE, wCC00_ShadowOAM                                     ;; 03:5d11 $11 $00 $cc
@@ -999,59 +1113,141 @@ call_03_5ca8_Entity_BuildPlayerSprites:
     ld   A, $02                                        ;; 03:5d6b $3e $02
     ld   [DE], A                                       ;; 03:5d6d $12
     ret                                                ;; 03:5d6e $c9
-.data_03_5d6f_GexSpriteFramePointerTable:
-; 8 pointer pairs (16 entries) pointing into the large Gex-specific sprite layout data blocks 
-; that follow. Indexed by a combined state value (facing × 4 + climbing/action modifier). 
-; Each pointer leads to a block of 4-byte sprite records
-    db   $7f, $5d, $9f, $5d, $bf, $5d, $df, $5d        ;; 03:5d6f ........
-    db   $ff, $5d, $1f, $5e, $3f, $5e, $5f, $5e        ;; 03:5d77 ????....
-    db   $f0, $f0, $10, $10, $f0, $f8, $14, $10        ;; 03:5d7f ...?...?
-    db   $f0, $00, $18, $10, $f0, $08, $1c, $10        ;; 03:5d87 ...?...?
-    db   $00, $f0, $12, $10, $00, $f8, $16, $10        ;; 03:5d8f ...?...?
-    db   $00, $00, $1a, $10, $00, $08, $1e, $10        ;; 03:5d97 ...?...?
-    db   $f0, $f0, $00, $10, $f0, $f8, $04, $10        ;; 03:5d9f ...?...?
-    db   $f0, $00, $08, $10, $f0, $08, $0c, $10        ;; 03:5da7 ...?...?
-    db   $00, $f0, $02, $10, $00, $f8, $06, $10        ;; 03:5daf ...?...?
-    db   $00, $00, $0a, $10, $00, $08, $0e, $10        ;; 03:5db7 ...?...?
-    db   $f0, $08, $10, $30, $f0, $00, $14, $30        ;; 03:5dbf ...?...?
-    db   $f0, $f8, $18, $30, $f0, $f0, $1c, $30        ;; 03:5dc7 ...?...?
-    db   $00, $08, $12, $30, $00, $00, $16, $30        ;; 03:5dcf ...?...?
-    db   $00, $f8, $1a, $30, $00, $f0, $1e, $30        ;; 03:5dd7 ...?...?
-    db   $f0, $08, $00, $30, $f0, $00, $04, $30        ;; 03:5ddf ...?...?
-    db   $f0, $f8, $08, $30, $f0, $f0, $0c, $30        ;; 03:5de7 ...?...?
-    db   $00, $08, $02, $30, $00, $00, $06, $30        ;; 03:5def ...?...?
-    db   $00, $f8, $0a, $30, $00, $f0, $0e, $30        ;; 03:5df7 ...?...?
-    db   $00, $f0, $10, $50, $00, $f8, $14, $50        ;; 03:5dff ????????
-    db   $00, $00, $18, $50, $00, $08, $1c, $50        ;; 03:5e07 ????????
-    db   $f0, $f0, $12, $50, $f0, $f8, $16, $50        ;; 03:5e0f ????????
-    db   $f0, $00, $1a, $50, $f0, $08, $1e, $50        ;; 03:5e17 ????????
-    db   $00, $f0, $00, $50, $00, $f8, $04, $50        ;; 03:5e1f ????????
-    db   $00, $00, $08, $50, $00, $08, $0c, $50        ;; 03:5e27 ????????
-    db   $f0, $f0, $02, $50, $f0, $f8, $06, $50        ;; 03:5e2f ????????
-    db   $f0, $00, $0a, $50, $f0, $08, $0e, $50        ;; 03:5e37 ????????
-    db   $00, $08, $10, $70, $00, $00, $14, $70        ;; 03:5e3f ...?...?
-    db   $00, $f8, $18, $70, $00, $f0, $1c, $70        ;; 03:5e47 ...?...?
-    db   $f0, $08, $12, $70, $f0, $00, $16, $70        ;; 03:5e4f ...?...?
-    db   $f0, $f8, $1a, $70, $f0, $f0, $1e, $70        ;; 03:5e57 ...?...?
-    db   $00, $08, $00, $70, $00, $00, $04, $70        ;; 03:5e5f ...?...?
-    db   $00, $f8, $08, $70, $00, $f0, $0c, $70        ;; 03:5e67 ...?...?
-    db   $f0, $08, $02, $70, $f0, $00, $06, $70        ;; 03:5e6f ...?...?
-    db   $f0, $f8, $0a, $70, $f0, $f0, $0e, $70        ;; 03:5e77 ...?...?
-.data_03_5e7f_SpriteData_Invincible:
-; 8 identical 4-byte records all pointing to tile $7E (a flashing/invincibility sprite), 
-; used to replace normal sprite output while player is invincible/stunned
-    db   $00, $00, $7e, $10, $00, $00, $7e, $10        ;; 03:5e7f ...?...?
-    db   $00, $00, $7e, $10, $00, $00, $7e, $10        ;; 03:5e87 ...?...?
-    db   $00, $00, $7e, $10, $00, $00, $7e, $10        ;; 03:5e8f ...?...?
-    db   $00, $00, $7e, $10, $00, $00, $7e, $10        ;; 03:5e97 ...?...?
+.data_03_5d6f_PlayerSpriteShapeTable:
+; Gex is always the same shape: four columns of 8x16 sprites by two rows, 32x32
+; pixels, centred on his position. All eight entries here are that one rectangle - what
+; differs is which tile page it reads and which way it is flipped.
+;
+; call_03_5ca8_Entity_BuildPlayerSprites builds the index as
+;
+;     wD586_PlayerGfxVramPage + 2 (facing left) + 4 (CLIMB_FLAG_ALT_FRAMES)
+;
+; so bit 0 swaps between the two double-buffered player tile pages at $8000 and $8100
+; - the layouts differ only in whether their tile numbers start at $10 or $00 - bit 1
+; is OAMF_XFLIP with the columns reversed, and bit 2 is OAMF_YFLIP with the rows
+; swapped. Setting both gives a 180 degree rotation, which is exactly what
+; .data_02_4557_BackgroundClimbSpriteFlagsByDirection asks for when Gex climbs
+; downwards on a chain-link fence.
+;
+; Every part carries OAMF_PAL1 as well, because Gex's tiles live in the palette the
+; HUD does not use
+    dw   .player_shape_page0
+    dw   .player_shape_page1
+    dw   .player_shape_page0_flipX
+    dw   .player_shape_page1_flipX
+    dw   .player_shape_page0_flipY
+    dw   .player_shape_page1_flipY
+    dw   .player_shape_page0_flipXY
+    dw   .player_shape_page1_flipXY
+
+.player_shape_page0:                                ; $00 - facing right
+    obj_part  -16,  -16, $10, OAMF_PAL1
+    obj_part  -16,   -8, $14, OAMF_PAL1
+    obj_part  -16,    0, $18, OAMF_PAL1
+    obj_part  -16,    8, $1c, OAMF_PAL1
+    obj_part    0,  -16, $12, OAMF_PAL1
+    obj_part    0,   -8, $16, OAMF_PAL1
+    obj_part    0,    0, $1a, OAMF_PAL1
+    obj_part    0,    8, $1e, OAMF_PAL1
+.player_shape_page1:                                ; $01 - facing right, other tile page
+    obj_part  -16,  -16, $00, OAMF_PAL1
+    obj_part  -16,   -8, $04, OAMF_PAL1
+    obj_part  -16,    0, $08, OAMF_PAL1
+    obj_part  -16,    8, $0c, OAMF_PAL1
+    obj_part    0,  -16, $02, OAMF_PAL1
+    obj_part    0,   -8, $06, OAMF_PAL1
+    obj_part    0,    0, $0a, OAMF_PAL1
+    obj_part    0,    8, $0e, OAMF_PAL1
+.player_shape_page0_flipX:                          ; $02 - facing left
+    obj_part  -16,    8, $10, OAMF_PAL1 | OAMF_XFLIP
+    obj_part  -16,    0, $14, OAMF_PAL1 | OAMF_XFLIP
+    obj_part  -16,   -8, $18, OAMF_PAL1 | OAMF_XFLIP
+    obj_part  -16,  -16, $1c, OAMF_PAL1 | OAMF_XFLIP
+    obj_part    0,    8, $12, OAMF_PAL1 | OAMF_XFLIP
+    obj_part    0,    0, $16, OAMF_PAL1 | OAMF_XFLIP
+    obj_part    0,   -8, $1a, OAMF_PAL1 | OAMF_XFLIP
+    obj_part    0,  -16, $1e, OAMF_PAL1 | OAMF_XFLIP
+.player_shape_page1_flipX:                          ; $03 - facing left, other tile page
+    obj_part  -16,    8, $00, OAMF_PAL1 | OAMF_XFLIP
+    obj_part  -16,    0, $04, OAMF_PAL1 | OAMF_XFLIP
+    obj_part  -16,   -8, $08, OAMF_PAL1 | OAMF_XFLIP
+    obj_part  -16,  -16, $0c, OAMF_PAL1 | OAMF_XFLIP
+    obj_part    0,    8, $02, OAMF_PAL1 | OAMF_XFLIP
+    obj_part    0,    0, $06, OAMF_PAL1 | OAMF_XFLIP
+    obj_part    0,   -8, $0a, OAMF_PAL1 | OAMF_XFLIP
+    obj_part    0,  -16, $0e, OAMF_PAL1 | OAMF_XFLIP
+.player_shape_page0_flipY:                          ; $04 - climbing down - upside down
+    obj_part    0,  -16, $10, OAMF_PAL1 | OAMF_YFLIP
+    obj_part    0,   -8, $14, OAMF_PAL1 | OAMF_YFLIP
+    obj_part    0,    0, $18, OAMF_PAL1 | OAMF_YFLIP
+    obj_part    0,    8, $1c, OAMF_PAL1 | OAMF_YFLIP
+    obj_part  -16,  -16, $12, OAMF_PAL1 | OAMF_YFLIP
+    obj_part  -16,   -8, $16, OAMF_PAL1 | OAMF_YFLIP
+    obj_part  -16,    0, $1a, OAMF_PAL1 | OAMF_YFLIP
+    obj_part  -16,    8, $1e, OAMF_PAL1 | OAMF_YFLIP
+.player_shape_page1_flipY:                          ; $05 - climbing down, other tile page
+    obj_part    0,  -16, $00, OAMF_PAL1 | OAMF_YFLIP
+    obj_part    0,   -8, $04, OAMF_PAL1 | OAMF_YFLIP
+    obj_part    0,    0, $08, OAMF_PAL1 | OAMF_YFLIP
+    obj_part    0,    8, $0c, OAMF_PAL1 | OAMF_YFLIP
+    obj_part  -16,  -16, $02, OAMF_PAL1 | OAMF_YFLIP
+    obj_part  -16,   -8, $06, OAMF_PAL1 | OAMF_YFLIP
+    obj_part  -16,    0, $0a, OAMF_PAL1 | OAMF_YFLIP
+    obj_part  -16,    8, $0e, OAMF_PAL1 | OAMF_YFLIP
+.player_shape_page0_flipXY:                         ; $06 - climbing down and facing left - a 180 degree turn
+    obj_part    0,    8, $10, OAMF_PAL1 | OAMF_XFLIP | OAMF_YFLIP
+    obj_part    0,    0, $14, OAMF_PAL1 | OAMF_XFLIP | OAMF_YFLIP
+    obj_part    0,   -8, $18, OAMF_PAL1 | OAMF_XFLIP | OAMF_YFLIP
+    obj_part    0,  -16, $1c, OAMF_PAL1 | OAMF_XFLIP | OAMF_YFLIP
+    obj_part  -16,    8, $12, OAMF_PAL1 | OAMF_XFLIP | OAMF_YFLIP
+    obj_part  -16,    0, $16, OAMF_PAL1 | OAMF_XFLIP | OAMF_YFLIP
+    obj_part  -16,   -8, $1a, OAMF_PAL1 | OAMF_XFLIP | OAMF_YFLIP
+    obj_part  -16,  -16, $1e, OAMF_PAL1 | OAMF_XFLIP | OAMF_YFLIP
+.player_shape_page1_flipXY:                         ; $07 - the same, other tile page
+    obj_part    0,    8, $00, OAMF_PAL1 | OAMF_XFLIP | OAMF_YFLIP
+    obj_part    0,    0, $04, OAMF_PAL1 | OAMF_XFLIP | OAMF_YFLIP
+    obj_part    0,   -8, $08, OAMF_PAL1 | OAMF_XFLIP | OAMF_YFLIP
+    obj_part    0,  -16, $0c, OAMF_PAL1 | OAMF_XFLIP | OAMF_YFLIP
+    obj_part  -16,    8, $02, OAMF_PAL1 | OAMF_XFLIP | OAMF_YFLIP
+    obj_part  -16,    0, $06, OAMF_PAL1 | OAMF_XFLIP | OAMF_YFLIP
+    obj_part  -16,   -8, $0a, OAMF_PAL1 | OAMF_XFLIP | OAMF_YFLIP
+    obj_part  -16,  -16, $0e, OAMF_PAL1 | OAMF_XFLIP | OAMF_YFLIP
+.data_03_5e7f_PlayerShapeHidden:
+; The ninth player shape, and the one that draws nothing. Substituted for the eight
+; above on the frames Gex should not be visible - the invincibility and damage
+; flicker, and the whole of PLAYER_ACTION_DEATH_SET_UP_WARP.
+;
+; It is not a blank tile. Every part sits at offset (0, 0) and the caller pairs it with
+; BC = 0, so all eight sprites are written to OAM at Y = 0, which the hardware treats
+; as off the top of the screen. Tile $7e is never fetched and the value is arbitrary.
+;
+; Keeping the flicker as a shape rather than a branch is what lets the main copy loop
+; below stay one loop with no test in it
+    obj_part    0,    0, $7e, OAMF_PAL1
+    obj_part    0,    0, $7e, OAMF_PAL1
+    obj_part    0,    0, $7e, OAMF_PAL1
+    obj_part    0,    0, $7e, OAMF_PAL1
+    obj_part    0,    0, $7e, OAMF_PAL1
+    obj_part    0,    0, $7e, OAMF_PAL1
+    obj_part    0,    0, $7e, OAMF_PAL1
+    obj_part    0,    0, $7e, OAMF_PAL1
+
 .data_03_5e9f_FlyParticleOffsetTable:
-; 16 pairs of signed (Y, X) offsets for the fly/firefly particle effect that orbits above 
-; Gex when he has the fly power-up. Forms a circular path sampled via a counter
-    db   $00, $fe, $fe, $fc, $fc, $fe, $fc, $00        ;; 03:5e9f ????????
-    db   $fa, $02, $fc, $04, $fe, $02, $00, $04        ;; 03:5ea7 ????????
-    db   $00, $02, $fe, $00, $fe, $fe, $fc, $fc        ;; 03:5eaf ????????
-    db   $fa, $fa, $fc, $f8, $fe, $fa, $00, $fc        ;; 03:5eb7 ????????
-    
+; The path of the single fly that circles above Gex while he is carrying a power-up.
+; Sixteen signed (Y, X) offsets from wD76D_FlyPowerup_AnchorY / wD76C_FlyPowerup_AnchorX,
+; stepped every other frame by (wD76E_FlyPowerup_OrbitPhase >> 1) AND $0F, so one lap
+; takes 32 frames.
+;
+; Y stays between 0 and -6 while X runs from +4 out to -8, so the "orbit" is a flat
+; sixteen-step loop about twelve pixels wide and six tall rather than a circle - and it
+; is deliberately uneven, doubling back on itself, which is what makes the fly read as
+; buzzing rather than sweeping
+    db    0, -2,  -2, -4,  -4, -2,  -4,  0
+    db   -6,  2,  -4,  4,  -2,  2,   0,  4
+    db    0,  2,  -2,  0,  -2, -2,  -4, -4
+    db   -6, -6,  -4, -8,  -2, -6,   0, -4
+
+
 call_03_5ebf_Entity_BuildSprites:
 ; Draws one entity, and decides on the way whether it should still exist.
 ;

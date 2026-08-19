@@ -1443,8 +1443,12 @@ DEF  BGCOLL_WALL_PROBE_ROWS                   EQU 4   ; tile rows sampled ahead 
 DEF  BGCOLL_FLOOR_SEARCH_ROWS                 EQU 5   ; pixel rows scanned down for floor
 DEF  PLAYER_FEET_OFFSET                       EQU $10 ; from his origin down to his feet
 
-; wD74B_Player_ClimbingFlags. Bit 6 shifts the sprite builder to the alternate
-; (rotated) climb frame set - see call_03_5ca8_Entity_BuildPlayerSprites
+; wD74B_Player_ClimbingFlags. Bit 6 adds 4 to the index into
+; .data_03_5d6f_PlayerSpriteShapeTable, and the four shapes it reaches are the first
+; four with OAMF_YFLIP and the two sprite rows swapped - so this bit means, exactly,
+; "draw Gex upside down". Paired with FACING_LEFT it becomes a 180 degree turn, which
+; is what .data_02_4557_BackgroundClimbSpriteFlagsByDirection asks for on the four
+; downward climb directions
 DEF  CLIMB_FLAG_ALT_FRAMES                    EQU $40
 DEF  CLIMB_FLAG_ALT_FRAMES_BIT                EQU 6
 

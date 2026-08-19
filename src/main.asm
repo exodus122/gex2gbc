@@ -184,7 +184,7 @@ channel_z_secondary_tilesets:
     INCBIN "gfx/secondary_tilesets/channel_z/palette_ids/image_00e_17_palette_ids.bin"
     INCBIN "gfx/secondary_tilesets/empty_animation_data.bin"
 lava_secondary_tilesets:
-    INCBIN ".gfx/secondary_tilesets/image_00e_18.bin"
+    INCBIN ".gfx/secondary_tilesets/prehistory_channel/image_00e_18.bin"
 
 SECTION "bank0f", ROMX[$4000], BANK[$0f]
 scream_tv_secondary_tilesets:

@@ -157,3 +157,11 @@ ENDM
 MACRO obj_part ; dY, dX, tile, attributes
     db   \1, \2, \3, \4
 ENDM
+
+; One sprite of the eight-sprite HUD row built by call_03_5b5b_HUD_BuildSprites.
+; There is no Y here - all eight share one Y, taken from wD688_FlyAnimationPosition
+; so the whole row slides on and off screen together. An X of 0 parks the sprite
+; off the left edge, which is how the row hides entries it does not need
+MACRO hud_sprite ; X, tile, attributes
+    db   \1, \2, \3
+ENDM
