@@ -1,3 +1,118 @@
+call_03_6efd_VRAM_Copy32Bytes:
+; Unrolled copy of exactly 32 bytes from HL to DE - the first 16 here, then falling into
+; call_03_6f2d_VRAM_Copy16Bytes for the rest.
+;
+; 32 bytes is TWO 8x8 tiles. A GB 2bpp tile is 16 bytes total - two bytes per row, eight
+; rows - and that does not change on GBC, which adds a second VRAM bank for attributes
+; rather than doubling tile size.
+;
+; Note the join: this half ends on `inc DE` rather than `inc E`, so the pair carries correctly
+; across a page boundary between the two tiles
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  DE
+call_03_6f2d_VRAM_Copy16Bytes:
+; Unrolled copy of exactly 16 bytes - one 8x8 2bpp tile - from HL to DE. The fundamental
+; tile-write primitive, used throughout the HUD system.
+;
+; Fifteen `inc E` and then a final `inc DE`, so D is held fixed across the tile but does
+; carry on the last byte, leaving DE pointing at the next tile even across a page boundary.
+; leaving DE pointing at the next tile even across a page boundary
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  E
+    ld   A, [HL+]
+    ld   [DE], A
+    inc  DE
+    ret
+
 call_03_6f5e_VRAM_WriteBgMapRowForVerticalScroll:
 ; Writes one horizontal ROW of 31 tilemap entries. The loop does `inc L / inc E`, walking
 ; CONSECUTIVE tilemap addresses, and the start is masked with $E0 to snap to the beginning
