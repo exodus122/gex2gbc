@@ -396,11 +396,17 @@ call_02_6fda_Entity_TickAction:
 ;
 ; When SPRITE_COUNTER reaches SPRITE_COUNTER_MAX the sequence has run out, and what happens
 ; next is declared by the action data rather than decided here:
-;   ACTION_STATE_ADVANCE_ON_END  hand over to the pending action and stop
-;   SPRITE_FLAG_LOOP_LAST_FRAME       restart at the final frame, so the tail oscillates
+;   ACTION_STATE_ADVANCE_ON_END  hand over to the pending action and stop. Only Gex's
+;                                animation blocks ever set this - see the file header in
+;                                bank02_entity_animation_data.asm
+;   SPRITE_FLAG_LOOP_LAST_FRAME  restart ON the final frame, so the animation plays once
+;                                and then sits on its last pose
 ;   otherwise                    restart at frame 0
 ; Either way SPRITE_FLAG_ANIM_ENDED is pulsed so the action function can notice the wrap on this
-; one frame - that is the flag every hand-off in bank02_player_actions.asm polls.
+; one frame - that is the flag every hand-off in bank02_player_actions.asm polls. Note it is
+; pulsed on EVERY wrap, not just the first, so a looping block re-raises it once per cycle and
+; a one-frame block becomes a metronome ticking every ANIM_SPEED frames - which is exactly what
+; a good number of entities use theirs for.
 ;
 ; Finally the new frame's sprite id is fetched through SPRITE_IDS_PTR into SPRITE_ID,
 ; SPRITE_FLAG_ID_CHANGED is raised, and it falls through into

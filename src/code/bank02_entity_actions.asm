@@ -45,7 +45,7 @@ data_02_4df7_EntityActions_GoldRemote:                              ;; ENTITY_GO
     dw   call_02_5297_EntityAction_GoldRemote_Gbc, data_02_769d   ; action $01
 data_02_4dff_EntityActions_Unk02:                                   ;; ENTITY_UNK_02
     dw   call_02_52aa_EntityAction_Unk02_Update, data_02_768a
-data_02_4e03_EntityActions_ParticleBurst:                           ;; ENTITY_PARTICLE_BURST
+data_02_4e03_EntityActions_ParticleBurst:                           ;; ENTITY_ENEMY_DEFEATED
     dw   call_02_52ab_EntityAction_ParticleBurst_Update, data_02_7cd4
 data_02_4e07_EntityActions_Unk08:                                   ;; ENTITY_UNK_08
     dw   call_02_52e7_EntityAction_Unk08_Update, data_02_76b5
