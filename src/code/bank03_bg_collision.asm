@@ -406,6 +406,28 @@ call_03_4ac4_BgCollision_ClimbingHandler:
 ;     himself over into CLIMB_STATE_WALL_TOP. Keeping it, but on a tile in the
 ;     TILE_TYPE_CLIMB_STOP_ENTRY_* range, is a stopper: the tile id doubles as the
 ;     direction, and he transitions into CLIMB_STATE_STOP
+;
+; THERE ARE THREE WAYS OUT, and only one of them touches the input:
+;
+;   pressed nothing the script handles   returns at once, input untouched. The
+;                                        movement code in bank 2 then acts on that
+;                                        press with no collision check behind it
+;   handled input, no matching entry     .jr_03_4afa_SuppressDpad strips every d-pad
+;   or a probe says no                   bit, leaving only A/B/Select/Start
+;   handled input, entry matched, clear  returns having changed nothing; bank 2 moves
+;
+; The middle case is why a diagonal is either a first-class direction or nothing at
+; all. The background script spells out all eight combinations, but the match is an
+; exact `cp`, so pressing three directions at once matches no entry and freezes the
+; d-pad for the frame.
+;
+; THE ALT WALL STATES DISAGREE WITH BANK 2 ABOUT WHICH AXIS THEY USE.
+; .data_03_4bc6_ClimbScript_AltWall handles left and right, while
+; .data_02_44e5 sends CLIMB_STATE_ALT_WALL to the same handler as CLIMB_STATE_WALL,
+; whose call_02_47d5_PlayerWallClimb_GetDirection masks the pad down to up and down.
+; So in those two states each axis is served by exactly one half of the system: up and
+; down move Gex but take the first exit above and are never collision-checked, while
+; left and right are checked here and then ignored by the movement code
     ld   HL, wD585_CollisionFlags
     set  7, [HL]
     ld   A, [wD746_Player_ClimbingState]
@@ -524,51 +546,45 @@ call_03_4ac4_BgCollision_ClimbingHandler:
     dw   .data_03_4bc6_ClimbScript_AltWall             ;                       facing left
     dw   .data_03_4bc6_ClimbScript_AltWall             ; CLIMB_STATE_ALT_WALL_TAIL_SPIN, right
     dw   .data_03_4bc6_ClimbScript_AltWall             ;                                 left
-; A climb script is a four-byte header - the d-pad bits it responds to, how many
-; entries follow, and the entry stride as a word - then the entries. Each entry is an
-; exact input pattern followed by two (X, Y) probe offsets, the far one first and the
-; near one second. Offsets are signed, so $F7 is -9 and $EF is -17
+; THE SCRIPTS. A header naming the d-pad bits the script answers for and how many
+; entries follow, then the entries themselves - see the climb_script and
+; climb_script_entry macros. Probe offsets are signed pixels from Gex's position.
+;
+; The far probes are a tile away on the axis of travel and the near probes a single
+; pixel, which is the whole difference between them: the far one asks what he is
+; climbing into and the near one asks what he is still holding on to. Reading down the
+; four scripts, the near probe is also what identifies the surface - it stays on the
+; axis of travel for a background climb, sits nine pixels to one side on a wall, and
+; nine pixels up for the ALT states
 .data_03_4b7e_ClimbScript_Background:
 ; Climbing a background surface. Responds to all four directions including the
 ; diagonals, which is why this one has eight entries where the wall scripts have two
-    db   PADF_DOWN | PADF_UP | PADF_LEFT | PADF_RIGHT   ; inputs handled
-    db   $08                                            ; entries
-    dw   $0005                                          ; bytes per entry
-    ;    input       far        near
-    db   $40,  $00, $ef,  $00, $ff                      ; up
-    db   $80,  $00, $10,  $00, $01                      ; down
-    db   $20,  $f7, $00,  $ff, $00                      ; left
-    db   $10,  $09, $00,  $01, $00                      ; right
-    db   $60,  $f7, $ef,  $ff, $ff                      ; up + left
-    db   $a0,  $f7, $10,  $ff, $01                      ; down + left
-    db   $50,  $09, $ef,  $01, $ff                      ; up + right
-    db   $90,  $09, $10,  $01, $01                      ; down + right
+    climb_script PADF_DOWN | PADF_UP | PADF_LEFT | PADF_RIGHT, 8
+    climb_script_entry PADF_UP,                   0,  -17,    0,   -1
+    climb_script_entry PADF_DOWN,                 0,   16,    0,    1
+    climb_script_entry PADF_LEFT,                -9,    0,   -1,    0
+    climb_script_entry PADF_RIGHT,                9,    0,    1,    0
+    climb_script_entry PADF_UP | PADF_LEFT,      -9,  -17,   -1,   -1
+    climb_script_entry PADF_DOWN | PADF_LEFT,    -9,   16,   -1,    1
+    climb_script_entry PADF_UP | PADF_RIGHT,      9,  -17,    1,   -1
+    climb_script_entry PADF_DOWN | PADF_RIGHT,    9,   16,    1,    1
 .data_03_4baa_ClimbScript_WallFacingRight:
 ; On a wall to his right: up and down only. The near probe sits +9 to the right, on
 ; the wall he is holding
-    db   PADF_DOWN | PADF_UP
-    db   $02
-    dw   $0005
-    ;    input       far        near
-    db   $40,  $00, $ef,  $09, $ff                      ; up
-    db   $80,  $00, $10,  $09, $01                      ; down
+    climb_script PADF_DOWN | PADF_UP, 2
+    climb_script_entry PADF_UP,                   0,  -17,    9,   -1
+    climb_script_entry PADF_DOWN,                 0,   16,    9,    1
 .data_03_4bb8_ClimbScript_WallFacingLeft:
 ; Mirror of the above - the near probe is -9, on the wall to his left
-    db   PADF_DOWN | PADF_UP
-    db   $02
-    dw   $0005
-    ;    input       far        near
-    db   $40,  $00, $ef,  $f7, $ff                      ; up
-    db   $80,  $00, $10,  $f7, $01                      ; down
+    climb_script PADF_DOWN | PADF_UP, 2
+    climb_script_entry PADF_UP,                   0,  -17,   -9,   -1
+    climb_script_entry PADF_DOWN,                 0,   16,   -9,    1
 .data_03_4bc6_ClimbScript_AltWall:
 ; The ALT wall states, which move sideways instead: left and right only, both probes
 ; nine pixels up
-    db   PADF_LEFT | PADF_RIGHT
-    db   $02
-    dw   $0005
-    ;    input       far        near
-    db   $20,  $f7, $f7,  $ff, $f7                      ; left
-    db   $10,  $09, $f7,  $01, $f7                      ; right
+    climb_script PADF_LEFT | PADF_RIGHT, 2
+    climb_script_entry PADF_LEFT,                -9,   -9,   -1,   -9
+    climb_script_entry PADF_RIGHT,                9,   -9,    1,   -9
 
 call_03_4bd4_BgCollision_IsPixelSolid:
 ; Is one single pixel solid? B and C are Y and X offsets from the player; A comes back

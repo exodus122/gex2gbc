@@ -1512,6 +1512,10 @@ DEF  PLAYER_DAMAGE_COOLDOWN_LENGTH            EQU $77
 DEF  PLAYER_IDLE_TIMER_LENGTH                 EQU $7D ; frames of standing still before the idle animation
 DEF  PLAYER_KARATE_KICK_LENGTH                EQU $30
 DEF  CLIMB_TAIL_SPIN_LENGTH                   EQU $20 ; frames before dropping back to the plain climb state
+
+; Stride of one entry of a climb script in bank03_bg_collision.asm. The scripts store
+; it as a word in their own header, and all four use the same value
+DEF  CLIMB_SCRIPT_ENTRY_SIZE                  EQU 5
 DEF  CLIMB_TAIL_SPIN_SPRITE_BASE              EQU $58 ; first of the 8 spin frames used on a background climb
 DEF  WALL_TAIL_SPIN_SPRITE_BASE               EQU $70 ; the same, for a wall climb
 

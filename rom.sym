@@ -2912,7 +2912,6 @@
 21:439e data_21_439e
 21:43c6 data_21_43c6
 21:43ce data_21_43ce
-21:4460 audio_bank21.bin
 21:4460 data_21_4460
 21:44fe audio_21_44fe
 21:4742 audio_21_4742
@@ -3044,7 +3043,6 @@
 22:439e data_22_439e
 22:43c6 data_22_43c6
 22:43ce data_22_43ce
-22:4460 audio_bank22.bin
 22:4460 data_22_4460
 22:44fe audio_22_44fe
 22:49d4 audio_22_49d4
@@ -3175,7 +3173,6 @@
 23:439e data_23_439e
 23:43c6 data_23_43c6
 23:43ce data_23_43ce
-23:4460 audio_bank23.bin
 23:4460 data_23_4460
 23:44f6 audio_23_44f6
 23:47e0 audio_23_47e0
@@ -3303,7 +3300,6 @@
 24:439e data_24_439e
 24:43c6 data_24_43c6
 24:43ce data_24_43ce
-24:4460 audio_bank24.bin
 24:4460 data_24_4460
 24:44e6 audio_24_44e6
 24:44fe audio_24_44fe

@@ -179,3 +179,33 @@ MACRO map_tile_anim_step ; tiles, condition, vram destination, tile data
     dw   \4
     db   $00, $00
 ENDM
+
+; Header of a climb script - see call_03_4ac4_BgCollision_ClimbingHandler. The mask is
+; the set of d-pad bits this script has an answer for; a press outside it makes the
+; handler return without touching the input, and a press inside it that matches no
+; entry gets the whole d-pad stripped from wD75A_Player_EffectiveInputs
+MACRO climb_script ; d-pad mask, number of entries
+    db   \1
+    db   \2
+    dw   CLIMB_SCRIPT_ENTRY_SIZE
+ENDM
+
+; One entry of a climb script: an exact d-pad pattern, then two probe offsets from
+; Gex's position. The FAR probe is the square he would move into, tested for
+; TILECOLL_CLIMB_BLOCKED; the NEAR probe is the surface he is holding, tested for
+; TILECOLL_CLIMB_BACKING
+MACRO climb_script_entry ; input, far X, far Y, near X, near Y
+    db   \1, \2, \3, \4, \5
+ENDM
+
+; One entry of .data_02_726c_EntityGfxDescriptors - a description of where an entity
+; type's tiles live and where they go. call_02_722c_EntityGfxQueue_StartNextTransfer
+; copies it straight into wD71F_GfxCopy_SrcBank onward and lets the vblank handler
+; perform the copy, so the field order here IS that WRAM block's layout
+MACRO entity_gfx_descriptor ; source bank, source address, VRAM destination, bytes
+    db   \1
+    dw   \2
+    dw   \3
+    dw   \4
+    db   $00
+ENDM
