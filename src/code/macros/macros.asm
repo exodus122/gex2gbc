@@ -1,3 +1,107 @@
+; ==================================================================
+; Banking and video primitives - bank00_home.asm
+; ==================================================================
+
+; Point the MBC at the ROM bank in A. The cart is wired so that bit 5 of the ROM
+; bank number also has to select the SRAM bank, which is what the swap/rrca/and
+; does: it slides that bit down to bit 0 and writes it to MBC1SRamBank so the two
+; stay in step. (That upper-bits trick is why a 1MB cart works despite the header
+; saying MBC5.)
+;
+; This is the bare register write with no bookkeeping. Code that has to come back
+; to the bank it was in goes through call_00_1089_SwitchBank /
+; call_00_10a3_RestoreBank instead, which push and pop the bank stack around it.
+; Interrupt handlers use this form deliberately, so that an interrupt landing
+; mid-SwitchBank cannot corrupt that stack. Clobbers A
+MACRO SET_MBC_BANK
+    ld   [MBC1RomBank], a
+    swap a
+    rrca
+    and  a, $01
+    ld   [MBC1SRamBank], a
+ENDM
+
+; Select VRAM bank \1. GBC only - every caller checks wD59E_OnGBCFlag first,
+; since rVBK does not exist on DMG. Clobbers A
+MACRO SELECT_VRAM_BANK ; 0 or 1
+    ld   a, \1
+    ldh  [rVBK], a
+ENDM
+
+; Arm the LCD_ISR_VRAM_STREAM handler living in wCCA0_LcdIsrCode: overwrite its
+; leading reti with a push af, and point its source pointer at the last byte of
+; wD100_TilesToLoadBuffer, which it walks backwards four bytes per hblank. The
+; caller still has to fill in wCCA7_LcdIsr_DestPageHi and clear its request bit.
+;
+; Only valid inside call_00_0c11_VBlank_ArmVramStreamIsr - .data_00_0c54_PushAfOpcode
+; is a local label in that scope. Clobbers A and HL
+MACRO ARM_VRAM_STREAM_ISR
+    ld   a, [.data_00_0c54_PushAfOpcode]
+    ld   [wCCA0_LcdIsrCode], a
+    ld   hl, wCCA5_LcdIsr_SrcAddrHi
+    ld   a, HIGH(wD100_TilesToLoadBuffer + GFX_PAGE_SIZE - 1)
+    ld   [hl-], a
+    ld   [hl], LOW(wD100_TilesToLoadBuffer + GFX_PAGE_SIZE - 1)
+ENDM
+
+; The same six instructions with the $D1 load hoisted above the `ld hl`. Identical
+; effect, different encoding, so the two orderings cannot share one macro
+MACRO ARM_VRAM_STREAM_ISR_ALT
+    ld   a, [.data_00_0c54_PushAfOpcode]
+    ld   [wCCA0_LcdIsrCode], a
+    ld   a, HIGH(wD100_TilesToLoadBuffer + GFX_PAGE_SIZE - 1)
+    ld   hl, wCCA5_LcdIsr_SrcAddrHi
+    ld   [hl-], a
+    ld   [hl], LOW(wD100_TilesToLoadBuffer + GFX_PAGE_SIZE - 1)
+ENDM
+
+; ==================================================================
+; bank00_home.asm data tables
+; ==================================================================
+
+; One entry of .data_00_0bdc_LcdIsrTable. The length is computed from the two
+; labels rather than written out, because the vblank hook always begins at the
+; first byte after the handler template that call_00_0bb9_InstallLcdIsr copies
+; into wCCA0_LcdIsrCode - which is exactly how the installer finds the hook
+MACRO lcd_isr_entry ; handler template, vblank hook
+    db   \2 - \1
+    dw   \1
+ENDM
+
+; One record of an attract-mode demo input script: hold these buttons for this
+; many frames. call_02_4939_Player_UpdateMain replays them into wD620_DemoInputs
+MACRO demo_input ; frames, PADF_* bits
+    db   \1, \2
+ENDM
+
+MACRO demo_input_end
+    db   DEMO_INPUT_END
+ENDM
+
+; Header of a graphics stream script - see call_00_0d84_VBlank_RunGfxStream.
+; Exactly one chunk is copied per frame, so the chunk count doubles as the number
+; of frames the script takes to finish
+MACRO gfx_stream_header ; chunk count, tiles per chunk, source bank
+    db   \1, \2, \3
+ENDM
+
+MACRO gfx_stream_chunk ; source address, VRAM destination
+    dw   \1, \2
+ENDM
+
+; One row of .data_00_116c_SFXChannelTable. The row index is the game's SFX_* id;
+; the row itself says which driver track to start, in whichever bank
+; wD788_CurrentAudioBank currently names
+MACRO sfx_entry ; count mask, first driver sfx id
+    db   \1, \2
+ENDM
+
+; One record of .data_00_1244_MusicList, indexed by MUSIC_*. A song is four driver
+; tracks at consecutive ids, one per hardware channel
+MACRO music_record ; audio bank, first driver track id, count mask
+    db   \1, \2, \3, $00
+ENDM
+
 ; Calls a function in a different bank
 MACRO FARCALL
     ld   [wD59D_ReturnBank], a

@@ -216,7 +216,7 @@ call_02_4939_Player_UpdateMain:
 ; The per-frame player update - see the file header for the ordering and why it matters.
 ;
 ; Input comes from one of two places. In demo mode the pad is replayed from a run-length
-; encoded stream at wD61B_DemoInputsPointer: each record is (frame count, input byte), and
+; encoded stream at wD61B_DemoInputsPtrLo: each record is (frame count, input byte), and
 ; a count of $FF ends the demo and drops back to the title screen. Otherwise it is just the
 ; live pad from wD59F_RawInputs. Either way it is filtered through
 ; wD759_ButtonBlockingFlags and the result written to wD75A_Player_EffectiveInputs.
@@ -237,7 +237,7 @@ call_02_4939_Player_UpdateMain:
     ld   HL, wD61F_Demo_FramesUntilNextInput
     dec  [HL]
     jr   NZ, .jr_02_495c
-    ld   HL, wD61B_DemoInputsPointer
+    ld   HL, wD61B_DemoInputsPtrLo
     ld   E, [HL]
     inc  HL
     ld   D, [HL]

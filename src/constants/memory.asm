@@ -385,11 +385,14 @@ wD5A2_BgMap_ScrollYLo:
 ;       ones while the slot is empty, which is the entire visual difference
 ;   call_02_6a3c_EntityAction_WalkwayActivator_Update  turns its collision box on
 ;       and off to match
-wD5A3_ConveyorState1:
+; Each slot is a countdown, not a flag: the powered walkway writes $06 and the outer
+; game loop ages all CONVEYOR_COUNT of them by one once every 256 vblanks, so a belt
+; stays energised for roughly six of those ticks after Gex last touched it
+wD5A3_ConveyorPowerTimer1:
     ds 1                                               ;; d5a3
-wD5A4_ConveyorState2:
+wD5A4_ConveyorPowerTimer2:
     ds 1                                               ;; d5a4
-wD5A5_ConveyorState3:
+wD5A5_ConveyorPowerTimer3:
     ds 1                                               ;; d5a5
 
 ; ------------------------------------------------------------------
@@ -558,11 +561,12 @@ wD61A_MenuTimeoutHi:
 ; high byte of the same counter; the pair expiring is what returns
 ; MENU_RESULT_TIMED_OUT, which on the title screen is what starts the attract demo
     ds 1                                               ;; d61a
-wD61B_DemoInputsPointer:
-; pointer to current demo mode inputs
+; Read cursor into the running demo script. Seeded from
+; data_00_0771_DemoInputScriptPointers when the demo starts and advanced two bytes at
+; a time by call_02_4939_Player_UpdateMain as each record is consumed
+wD61B_DemoInputsPtrLo:
     ds 1                                               ;; d61b
-wD61C_DemoInputsPointer:
-; pointer to current demo mode inputs
+wD61C_DemoInputsPtrHi:
     ds 1                                               ;; d61c
 wD61D_AttractDemoIndex:
 ; Which of the four attract-mode demos to play, 0-3. Indexes both
@@ -576,6 +580,10 @@ wD61D_AttractDemoIndex:
 ; ever used to pick anything
     ds 1                                               ;; d61d
 wD61E_DemoModeEnabled:
+; Nonzero while an attract demo is playing. It carries a third state as well:
+; call_02_4939_Player_UpdateMain stores DEMO_INPUT_END here when the script runs out,
+; and the outer game loop treats that value as "the demo finished by itself" rather
+; than "a button was pressed" - both return to the title, but only via different tests
     ds 1                                               ;; d61e
 wD61F_Demo_FramesUntilNextInput:
 ; Frames left to hold the button state currently in wD620_DemoInputs. The demo
@@ -591,18 +599,23 @@ wD620_DemoInputs:
     ds 1                                               ;; d620
 
 wD621_WarpFlags:
-; bit 7 (80) =
-; bit 6 (40) =
-; bit 5 (20) =
-; bit 4 (10) = time up in a bonus/collectible level
-; bit 3 (08) = entered door
-; bit 2 (04) = entered tv / collected gold remote
-; bit 1 (02) = died
-; bit 0 (01) =
+; Why the level is being left. The outer game loop tests these in priority order at
+; 00:0433 and they are the only way anything outside bank00_home can end a level.
+; Bits 0 and 5-7 are unused.
+;
+;   WARP_TIME_UP      (10) bonus level countdown expired
+;   WARP_ENTERED_DOOR (08) walked into a door - the map changes, the level does not
+;   WARP_ENTERED_TV   (04) entered a tv, or collected a gold remote
+;   WARP_DIED         (02) the death animation finished
+;
+; The setter clears its own bit rather than the loop doing it, which is why
+; call_01_42bd_HandleTVWarp and call_0b_4051_MapSpawns_Apply both `and $ff ^ ...`
     ds 1                                               ;; d621
 
-wD622_InterruptFlag:
-; gets set when an interrupt occurs. used when waiting for an interrupt
+wD622_VBlankDoneFlag:
+; Set to 1 by the vblank handler and cleared by call_00_0ab4_WaitForInterrupt, which
+; halts until it comes back. Nothing else reads it, so it is a frame handshake rather
+; than a general interrupt flag
     ds 1                                               ;; d622
 
 wD623_CollectibleMode:
@@ -781,7 +794,9 @@ wD685_PasswordUnkButton:
 ; key that sits where GO would be on the read-only password screen
     ds 1                                               ;; d685
 
-wD686: ; unused except set to 0?
+wD686_Unused:
+; Written once, at 00:0354 during level setup, and never read anywhere in the ROM.
+; Most likely a field that outlived whatever used to consume it
     ds 1                                               ;; d686
 
 wD687_FlyAnimationState:
@@ -1211,7 +1226,10 @@ wD726_SecondaryTilesetBank:
     ds 1                                               ;; d726
 wD727_SecondaryTileset_SrcAddrLo: ; always 0
     ds 1                                               ;; d727
-wD728_SecondaryTilesetAddr: ; this determines which secondary tilset to load (and is loading)
+wD728_SecondaryTileset_SrcAddrHi:
+; High byte of the source address, i.e. the page inside wD726_SecondaryTilesetBank
+; that the next transfer reads from. The streamer increments it as it walks the
+; tileset page by page, so mid-load it names the page still to come, not the start
     ds 1                                               ;; d728
 wD729_SecondaryTileset_DestAddrLo:
     ds 1                                               ;; d729
@@ -1464,7 +1482,7 @@ wD75A_Player_EffectiveInputs:
 ; It diverges from the pad in four ways:
 ;
 ;   1. SOURCE. In demo mode it comes from the run-length encoded stream at
-;      wD61B_DemoInputsPointer instead of the pad, which is how attract mode drives
+;      wD61B_DemoInputsPtrLo instead of the pad, which is how attract mode drives
 ;      Gex through code that has no idea a demo is playing.
 ;   2. BUTTON BLOCKING. A and B are passed through wD759_ButtonBlockingFlags, which
 ;      clears a blocked button until the player physically lets go. That is why the

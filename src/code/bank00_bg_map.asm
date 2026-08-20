@@ -1368,7 +1368,7 @@ call_00_1922_BgMap_LoadSecondaryTileset:
     ld   DE, .data_LevelSecondaryTilesetBankTable
     add  HL, DE
     add  A, [HL]
-    ld   [wD728_SecondaryTilesetAddr], A
+    ld   [wD728_SecondaryTileset_SrcAddrHi], A
     inc  HL
     ld   A, [HL]
     ld   [wD726_SecondaryTilesetBank], A

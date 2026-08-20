@@ -118,13 +118,13 @@ call_03_7253_MapTileAnim_Update:
     cp   A, $00
     ret  NZ
     res  7, C
-    ld   A, [wD5A3_ConveyorState1]
+    ld   A, [wD5A3_ConveyorPowerTimer1]
     dec  C
     jr   Z, .jr_03_729e
-    ld   A, [wD5A4_ConveyorState2]
+    ld   A, [wD5A4_ConveyorPowerTimer2]
     dec  C
     jr   Z, .jr_03_729e
-    ld   A, [wD5A5_ConveyorState3]
+    ld   A, [wD5A5_ConveyorPowerTimer3]
 .jr_03_729e:
     and  A, A
     jr   NZ, .jr_03_72a4
@@ -241,7 +241,7 @@ data_03_72ab_MapTileAnim_ScheduleByLevel:
 .data_03_73bb_MapTileAnim_Schedule_CircuitCentral:
 ; The conveyor belts, and the only schedule with conditional steps. Three groups of two
 ; tiles, and each group's condition names the conveyor of the same number - group 1
-; follows wD5A3_ConveyorState1 and so on - so the three belts start and stop
+; follows wD5A3_ConveyorPowerTimer1 and so on - so the three belts start and stop
 ; independently while sharing one schedule
     db   $0c
 

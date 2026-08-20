@@ -575,7 +575,7 @@ call_02_5253_EntityAction_RedRemote_Dmg:
 ; Remote_TriggerPaletteSwap maps this remote's entity-list index to a TV screen id
 ; and raises GFX_XFER_MEDIA_DIMENSION_TV. It does nothing outside the hub
     call call_00_34ea_Entity_IsFirstFrameOfAction
-    call NZ, call_00_3bf4_Remote_TriggerPaletteSwap
+    call NZ, call_00_3bf4_MediaDimension_RequestTVScreenGfx
     ld   HL, wD60F_GfxTransferFlags
     bit  GFX_XFER_MEDIA_DIMENSION_TV, [HL]
     call Z, call_00_0634_FlyPowerup_StartEntry         ; screen is up - bring the fly in
@@ -5254,7 +5254,7 @@ call_02_6a3c_EntityAction_WalkwayActivator_Update:
     ld   l,[hl]
     dec  l                                             ; conveyor number, 1-based
     ld   h,$00
-    ld   de,wD5A3_ConveyorState1
+    ld   de,wD5A3_ConveyorPowerTimer1
     add  hl,de
     ld   c,$00
     ld   a,[hl]

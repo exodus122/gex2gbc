@@ -395,7 +395,7 @@ call_02_42f7_PlayerAction_TailSpin:
 
 call_02_434d_PlayerAction_EatFly:
 ; Gex swallowing a fly power-up. Holds him still and, on the first frame only, calls
-; call_00_0647_Player_SetUpOrEatFlyPowerup with A = 0 to apply the power-up itself.
+; call_00_0647_Player_SwapFlyPowerup with A = 0 to apply the power-up itself.
 ; The action ends when its animation runs out and the transition table sends him back to Stand
     xor  a
     ld   [wD75E_PlayerXSpeed],a
@@ -403,10 +403,10 @@ call_02_434d_PlayerAction_EatFly:
     and  a,ACTION_STATE_IS_FIRST_FRAME
     ret  z
     xor  a
-    jp   call_00_0647_Player_SetUpOrEatFlyPowerup
+    jp   call_00_0647_Player_SwapFlyPowerup
 
 call_02_435b_PlayerAction_TakeDamage:
-; Gex flinching. It does not take the hit - call_00_06bf_DealDamageToPlayer has
+; Gex flinching. It does not take the hit - call_00_06bf_Player_TakeDamage has
 ; already done that before requesting this - it just plays the hurt sound, holds him
 ; still, and reloads the invincibility timer every frame so the whole flinch is
 ; covered rather than only its first frame. data_02_75df returns him to Stand
@@ -659,7 +659,7 @@ call_02_4483_PlayerAction_HitBounce:
     jr   z,.jr_02_44A5
     ld   c,SFX_GEX_HIT_BOUNCE
     call call_00_112f_QueueSFX
-    call call_00_06bf_DealDamageToPlayer
+    call call_00_06bf_Player_TakeDamage
     ld   a,PLAYER_HIT_BOUNCE_VELOCITY
     ld   [wD760_PlayerYVelocity],a
     ld   [wD762_PlayerInitialYVelocity],a

@@ -375,7 +375,7 @@ data_00_20eb_TileHitScript_FlyTV2_3:
     blockpatch_cells $9f,1
 call_00_20fa_HitFlyTV_Type2:
     ld   a,$02
-    jp   call_00_0647_Player_SetUpOrEatFlyPowerup
+    jp   call_00_0647_Player_SwapFlyPowerup
 
 data_00_20ff_TileHitScript_FlyTV_Health1:
     blockpatch_header call_00_2117_HitFlyTV_RestoreHealth, 1, 0, 0, 0, 1, 1
@@ -389,7 +389,7 @@ data_00_210b_TileHitScript_FlyTV_Health2:
     blockpatch_cells $ea,1
 call_00_2117_HitFlyTV_RestoreHealth:
     ld   a,$03
-    jp   call_00_0647_Player_SetUpOrEatFlyPowerup
+    jp   call_00_0647_Player_SwapFlyPowerup
 
 data_00_211c_TileHitScript_FlyTV1_1:
     blockpatch_header call_00_2134_HitFlyTV_Type1, 1, 0, 0, 0, 1, 1
@@ -403,7 +403,7 @@ data_00_2128_TileHitScript_FlyTV1_2:
     blockpatch_cells $ea,1
 call_00_2134_HitFlyTV_Type1:
     ld   a,$01
-    jp   call_00_0647_Player_SetUpOrEatFlyPowerup
+    jp   call_00_0647_Player_SwapFlyPowerup
 
 data_00_2139_TileHitScript_FlyTV_Life1:
     blockpatch_header call_00_2151_HitFlyTV_ExtraLife, 1, 0, 0, 0, 1, 1
@@ -417,7 +417,7 @@ data_00_2145_TileHitScript_FlyTV_Life2:
     blockpatch_cells $ea,1
 call_00_2151_HitFlyTV_ExtraLife:
     ld   a,$04
-    jp   call_00_0647_Player_SetUpOrEatFlyPowerup
+    jp   call_00_0647_Player_SwapFlyPowerup
 
 data_00_2156_TileHitScript_CountedBreakable_LowerTile:
 ; A destructible 1x2 object that counts toward a per-level quota. 3 steps at 60

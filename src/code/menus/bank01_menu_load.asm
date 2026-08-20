@@ -469,7 +469,7 @@ call_01_4297_MenuLoad_MissionSelect:
     ret                                                ;; 01:42bc $c9
 
 call_01_42bd_HandleTVWarp:
-; Runs everything that happens when WARP_FLAG_ENTERED_TV is set - which covers both
+; Runs everything that happens when WARP_ENTERED_TV is set - which covers both
 ; halves of a TV transition, entering a level from the hub and finishing one at its
 ; exit TV. In the second case: award the remote, show whatever screen that earns,
 ; then put the player back in the hub.
@@ -489,7 +489,7 @@ call_01_42bd_HandleTVWarp:
 ; (remote progress id * 3) + wD647_ExitTVButtonIndex - the same three-exits-per-level
 ; layout every normal level uses
     ld   A, [wD621_WarpFlags]                                    ;; 01:42bd $fa $21 $d6
-    and  A, $ff ^ WARP_FLAG_ENTERED_TV                 ;; 01:42c0 $e6 $fb
+    and  A, $ff ^ WARP_ENTERED_TV                 ;; 01:42c0 $e6 $fb
     ld   [wD621_WarpFlags], A                                    ;; 01:42c2 $ea $21 $d6
     ld   A, [wD624_CurrentLevelId]                                    ;; 01:42c5 $fa $24 $d6
     and  A, A                                          ;; 01:42c8 $a7
@@ -498,10 +498,10 @@ call_01_42bd_HandleTVWarp:
     and  A, A                                          ;; 01:42ce $a7
     jr   Z, .jr_01_42e7                                ;; 01:42cf $28 $16
     ld   A, [wD621_WarpFlags]                                    ;; 01:42d1 $fa $21 $d6
-    and  A, WARP_FLAG_TIME_UP                          ;; 01:42d4 $e6 $10
+    and  A, WARP_TIME_UP                          ;; 01:42d4 $e6 $10
     jr   Z, .jr_01_4319                                ;; 01:42d6 $28 $41
     ld   A, [wD621_WarpFlags]                                    ;; 01:42d8 $fa $21 $d6
-    and  A, $ff ^ WARP_FLAG_TIME_UP                    ;; 01:42db $e6 $ef
+    and  A, $ff ^ WARP_TIME_UP                    ;; 01:42db $e6 $ef
     ld   [wD621_WarpFlags], A                                    ;; 01:42dd $ea $21 $d6
     ld   A, MENU_TYPE_TIME_UP                                        ;; 01:42e0 $3e $1b
     call call_01_4000_MenuLoad                                  ;; 01:42e2 $cd $00 $40
@@ -701,7 +701,7 @@ call_01_43e6_Menu_OnSelectionChanged:
 ;   .jp_01_446e  do nothing - most screens
 ;
 ; The two streaming entries reach into tables in bank00 whose names
-; (data_00_0dd9_GfxStreamScriptTable_Rezopolis / _ChannelZ) look like level names but
+; (data_00_0dd9_GfxStreamScriptTable_TitleOptions / _ChannelZ) look like level names but
 ; are really the title-options and audio-options highlight graphics
     ld   HL, wD6DE_MenuType                                     ;; 01:43e6 $21 $de $d6
     ld   L, [HL]                                       ;; 01:43e9 $6e
@@ -771,7 +771,7 @@ call_01_43e6_Menu_OnSelectionChanged:
     ld   L, [HL]                                       ;; 01:444f $6e
     ld   H, $00                                        ;; 01:4450 $26 $00
     add  HL, HL                                        ;; 01:4452 $29
-    ld   DE, data_00_0dd9_GfxStreamScriptTable_Rezopolis                                      ;; 01:4453 $11 $d9 $0d
+    ld   DE, data_00_0dd9_GfxStreamScriptTable_TitleOptions                                      ;; 01:4453 $11 $d9 $0d
     add  HL, DE                                        ;; 01:4456 $19
     ld   A, [HL+]                                      ;; 01:4457 $2a
     ld   H, [HL]                                       ;; 01:4458 $66
@@ -782,7 +782,7 @@ call_01_43e6_Menu_OnSelectionChanged:
     ld   l,[hl]
     ld   h,$00
     add  hl,hl
-    ld   de,data_00_0e13_GfxStreamScriptTable_ChannelZ
+    ld   de,data_00_0e13_GfxStreamScriptTable_AudioOptions
     add  hl,de
     ldi  a,[hl]
     ld   h,[hl]

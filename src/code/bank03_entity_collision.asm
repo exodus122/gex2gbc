@@ -158,7 +158,7 @@ call_03_4c76_EntityCollision_Dispatch:
     ret  nc
     call call_00_3931_Entity_DeactivateSelf
     ld   a,$04
-    jp   call_00_0647_Player_SetUpOrEatFlyPowerup
+    jp   call_00_0647_Player_SwapFlyPowerup
 .jr_03_4d3f_CollisionHandler_SilverRemote:
 ; Overlap check; sets bit 4 of wD64C_CurrentLevel_HiddenRemoteFlags (silver remote collected
 ; flag), plays SFX_SILVER_REMOTE, frees the entity slot, then marks the list entry
@@ -350,7 +350,7 @@ call_03_4c76_EntityCollision_Dispatch:
     ld   A, L
     cp   A, $f4
     ret  C
-    call call_00_075b_Player_CanBeDamaged
+    call call_00_075b_Player_IsInvincible
     ret  NZ
     call call_03_52be_Entity_DamagePlayerIfVulnerable
     ld   A, $77
@@ -767,7 +767,7 @@ call_03_4c76_EntityCollision_Dispatch:
     ret
 .jr_03_5129_CollisionHandler_PoweredWalkway:
 ; Overlap check; if wD751_Player_CircuitPowerUpTimerLo/wD752_Player_CircuitPowerUpTimerHi are non-zero (walkway is powered), reads TIMER_2 as an index
-; into wD5A3_ConveyorState1 conveyor state table, writes $06 to that slot; if the previous value was 0,
+; into wD5A3_ConveyorPowerTimer1 conveyor state table, writes $06 to that slot; if the previous value was 0,
 ; plays SFX $2B (activation sound)
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
@@ -779,7 +779,7 @@ call_03_4c76_EntityCollision_Dispatch:
     ld   l,[hl]
     dec  l
     ld   h,$00
-    ld   de,wD5A3_ConveyorState1
+    ld   de,wD5A3_ConveyorPowerTimer1
     add  hl,de
     ld   a,[hl]
     ld   [hl],$06
@@ -1091,8 +1091,8 @@ call_03_519b_Entity_CheckPlayerInteraction:
 call_03_52be_Entity_DamagePlayerIfVulnerable:
 ; Calls Player_CanBeDamaged; if Z (player is vulnerable), calls DealDamageToPlayer.
 ; Simple two-instruction wrapper used by every damaging handler
-    call call_00_075b_Player_CanBeDamaged
-    call Z, call_00_06bf_DealDamageToPlayer
+    call call_00_075b_Player_IsInvincible
+    call Z, call_00_06bf_Player_TakeDamage
     ret
 
 call_03_52c5_CollisionHandler_StationaryPlatform:

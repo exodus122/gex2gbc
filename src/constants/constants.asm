@@ -154,21 +154,17 @@ DEF MENU_OPTION_CONFIRM_QUIT     EQU $60 ; "OKAY" on either quit confirmation. T
                                          ; sends the player to the Media Dimension; from the
                                          ; hub there is nowhere left to go, so it restarts at
                                          ; the title
-DEF MENU_OPTION_RESUME_PLAY      EQU $80 ; "RESUME PLAY" on the totals screen. Returned to the
-                                         ; caller, which does nothing special with it - it
-                                         ; exists so that the row is selectable at all
+DEF MENU_OPTION_RESUME_PLAY      EQU $80 ; "RESUME PLAY" on the totals screen. When the screen
+                                         ; was opened with SELECT it exists only so the row is
+                                         ; selectable at all, but the same row on
+                                         ; MENU_TYPE_GAME_OVER_TOTALS is the continue option -
+                                         ; see 00:0460 in bank00_home.asm
 DEF MENU_OPTION_AUDIO_OPTIONS    EQU $90
 
 ; Extra values call_01_4000_MenuLoad can return that are not option codes
 DEF MENU_RESULT_DISMISSED        EQU $00 ; backed out with A/SELECT/START
 DEF MENU_RESULT_PASSWORD_GO      EQU $30 ; the password keyboard's GO key was pressed
 DEF MENU_RESULT_TIMED_OUT        EQU $70 ; the menu's timer expired without any input
-
-; Bits of wD621_WarpFlags - why the level is being left
-DEF WARP_FLAG_DIED               EQU $02
-DEF WARP_FLAG_ENTERED_TV         EQU $04 ; also set by collecting a gold remote
-DEF WARP_FLAG_ENTERED_DOOR       EQU $08
-DEF WARP_FLAG_TIME_UP            EQU $10 ; bonus level countdown expired
 
 ; Music
 ; ------------------------------------------------------------------
@@ -322,8 +318,14 @@ DEF MAP_SCROLL_DOWN              EQU $01 ;
 ; Each id is a byte offset into .data_00_0bdc_LcdIsrTable (3 bytes per entry).
 DEF LCD_ISR_NONE                 EQU $00 ; handler is just a reti
 DEF LCD_ISR_VRAM_STREAM          EQU $03 ; copies wD100_TilesToLoadBuffer to a VRAM page, 4 bytes per hblank
-DEF LCD_ISR_RASTER_EFFECT        EQU $06 ; hud window split at scanline $5F + horizontal wobble band
+DEF LCD_ISR_RASTER_EFFECT        EQU $06 ; hud window split at RASTER_SPLIT_SCANLINE + horizontal wobble band
+DEF RASTER_SPLIT_SCANLINE        EQU $5F ; where LCD_ISR_RASTER_EFFECT swaps in wD6E1_RasterSplit_LCDCValue
 DEF LCD_ISR_INSTALLED            EQU $80 ; bit 7 of wCCFD_LcdIsrId
+DEF LCD_ISR_INSTALLED_BIT        EQU 7   ; the same, for `bit` / `set`
+DEF LCD_ISR_ID_MASK              EQU $7F ; the id with that bit stripped off
+
+; wD738_TilesetAnim_Flags
+DEF TILESET_ANIM_PLAY_ONCE       EQU $01 ; swap one page of tiles in and stop, instead of looping
 
 ; Opcodes the LCD STAT handler patches into itself (see .data_00_0c54_PushAfOpcode
 ; and data_00_0d83_RetiOpcode)
@@ -356,6 +358,11 @@ DEF REMOTE_HIDDEN_MASK           EQU $18 ; silver remote (08) + gold remote (10)
 DEF REMOTE_BONUS_MASK            EQU $20 ; collectible-quota mission completed
 DEF REMOTE_TOTAL_COUNT_MASK      EQU $7F ; low bits of wD64F/wD650/wD651
 DEF REMOTE_TOTAL_CHANGED         EQU $80 ; bit 7 of the same
+DEF REMOTE_TOTAL_CHANGED_BIT     EQU 7   ; the same, for `bit` / `set`
+; The same two hidden-remote bits as bit numbers, for `bit` / `set` on
+; wD64C_CurrentLevel_HiddenRemoteFlags
+DEF REMOTE_SILVER_BIT            EQU 3
+DEF REMOTE_GOLD_BIT              EQU 4
 
 ; wDAD9_FadeMode (DMG only)
 DEF FADE_MODE_NONE               EQU $00
@@ -363,7 +370,150 @@ DEF FADE_MODE_IN                 EQU $01 ; fade back to wDAD1_LevelBGP / OBP0 / 
 DEF FADE_MODE_TO_WHITE           EQU $02 ; fade all selected registers to $00
 DEF FADE_MODE_TO_BLACK           EQU $03 ; fade all selected registers to $FF
 
+; Fade masks passed to jr_00_0f69_Fade_SetMaskAndStart and stored in
+; wDAD7_FadeMaskLo / wDAD8_FadeMaskHi. Only three bits of the sixteen mean
+; anything: bit 0 of the low byte selects BGP, and bits 0 and 1 of the high byte
+; select OBP0 and OBP1
+DEF FADE_MASK_BGP                EQU $0001
+DEF FADE_MASK_OBP0               EQU $0100
+DEF FADE_MASK_OBP1               EQU $0200
+DEF FADE_MASK_ALL                EQU $FFFF ; every register; the unused bits are set too
+DEF FADE_MASK_KEEP_OBP1          EQU $FDFF ; death fade - Gex stays lit while the world darkens
+
+; The three palette registers, in the order call_00_104a_Fade_StepPaletteRegister
+; indexes them off wDACE_CurrentBGP / wDAD4_TargetBGP
+DEF FADE_REG_BGP                 EQU $00
+DEF FADE_REG_OBP0                EQU $01
+DEF FADE_REG_OBP1                EQU $02
+DEF FADE_REG_COUNT               EQU $03
+DEF FADE_STEP_DELAY_FRAMES       EQU $04 ; frames between one shade and the next
+
+; Bytes in one CGB palette ram: 8 palettes x 4 colours x 2 bytes
+DEF CGB_PALETTE_RAM_SIZE         EQU $40
+
+; ==================================================================
+; bank00_home.asm - boot, the outer game loop, and the shared video,
+; banking, input and sfx helpers
+; ==================================================================
+
+; The A register the boot ROM hands to the cartridge entry point. $11 means a CGB
+; started us, which is what call_00_0150_Init records in wD59E_OnGBCFlag
+DEF BOOT_A_CGB                   EQU $11
+
+; rLY value Init spins for before switching the LCD off: one line past the last
+; visible scanline, i.e. the first line of vblank
+DEF LY_VBLANK_START              EQU SCRN_Y + 1
+
+; rSVBK. $D000-$DFFF holds game state, so WRAM bank 1 must always be the mapped one
+DEF WRAM_BANK_GAME_STATE         EQU $01
+
+; The LCDC value the game runs with: window tilemap at $9C00 (the hud strip, which
+; LCD_ISR_RASTER_EFFECT switches on mid-frame rather than LCDCF_WINON doing it
+; here), background tilemap at $9800 out of the $8800 tile block, 8x16 sprites
+DEF LCDC_GAMEPLAY                EQU LCDCF_ON | LCDCF_WIN9C00 | LCDCF_WINOFF | LCDCF_BLK21 | LCDCF_BG9800 | LCDCF_OBJ16 | LCDCF_OBJON | LCDCF_BGON
+
+; Sizes of the fixed VRAM copies bank00_home performs
+DEF TILE_SIZE_BYTES              EQU $10   ; one 8x8 2bpp tile
+DEF GFX_PAGE_ROWS                EQU $10   ; tiles in one streamed page
+DEF GFX_PAGE_SIZE                EQU $100  ; the same page in bytes
+DEF SECONDARY_TILESET_SIZE       EQU $240  ; bytes copied to VRAM_TILESET_ADDR_1
+DEF FULLSCREEN_IMAGE_BLOCK0_SIZE EQU $F00  ; tile data copied to _VRAM
+DEF FULLSCREEN_IMAGE_BLOCK1_SIZE EQU $780  ; tile data copied to _VRAM+$1000
+DEF SHADOW_OAM_SIZE              EQU $A0   ; 40 sprites x 4 bytes at wCC00_ShadowOAM
+DEF OAM_DMA_WAIT_LOOPS           EQU $28   ; busy-wait in call_00_0ef7_OamDmaRoutine
+
+; call_00_08b1_MediaDimension_CopyTVAttributes writes this many attribute bytes
+; per hub tv, and the attributes sit this far past the start of the tv's image
+DEF TV_ATTR_BLOCK_WIDTH          EQU $06
+DEF TV_ATTR_BLOCK_HEIGHT         EQU $05
+DEF TV_ATTR_OFFSET_IN_IMAGE      EQU $240
+
+; Player state written once per continue / per life
+DEF PLAYER_STARTING_LIVES        EQU 5
+DEF PLAYER_MAX_HEALTH            EQU 4
+DEF PLAYER_MAX_LIVES             EQU $FF ; call_00_068a_Player_ExtraLifeFly clamps here
+
+; Channel Z boss
+DEF DRAGON_SEGMENT_COUNT         EQU $0A
+
+; The Circuit Central powered walkways, wD5A3_ConveyorPowerTimer1 onwards. The
+; outer game loop ages all three once every 256 vblanks
+DEF CONVEYOR_COUNT               EQU $03
+
+; Bonus-level countdown - call_00_0547_LevelTimer_Init and _Tick. The seconds are
+; kept in BCD and stepped with `sub 1 / daa`, which is why the underflow value is
+; $99 rather than $FF
+DEF FRAMES_PER_SECOND             EQU 60
+DEF LEVEL_TIMER_START_MINUTES     EQU $03
+DEF LEVEL_TIMER_SECONDS_WRAP      EQU $59
+DEF LEVEL_TIMER_SECONDS_UNDERFLOW EQU $99
+
+; .data_00_074a_CollectibleMilestoneThresholds. Once the milestone index reaches
+; the last entry it stops advancing, so from then on every multiple of
+; COLLECTIBLE_EXTRA_LIFE_STEP is what pays out
+DEF COLLECTIBLE_MILESTONE_1      EQU 30
+DEF COLLECTIBLE_MILESTONE_2      EQU 40
+DEF COLLECTIBLE_EXTRA_LIFE_STEP  EQU 50
+
+; wD687_FlyAnimationState - the hud row that slides in when Gex eats a fly.
+; The low two bits are which way it is sliding right now, the high two bits are
+; which of its two visits this is, and the state is always one of the four
+; combinations $41, $42, $81 and $82
+DEF FLY_ANIM_SLIDING_IN          EQU %00000001
+DEF FLY_ANIM_SLIDING_OUT         EQU %00000010
+DEF FLY_ANIM_FIRST_VISIT         EQU %01000000
+DEF FLY_ANIM_SECOND_VISIT        EQU %10000000
+
+; wD688_FlyAnimationPosition - the Y all eight hud sprites share, so moving it
+; slides the whole row on and off the bottom of the screen
+DEF FLY_ANIM_Y_ONSCREEN          EQU $88
+DEF FLY_ANIM_Y_OFFSCREEN         EQU $A0
+
+; wD689_FlyAnimationTimer - how long the row is held once it has slid in. $FF is
+; not "forever"; it is just a long count, decremented every frame like the other
+DEF FLY_ANIM_HOLD_HUB            EQU $05
+DEF FLY_ANIM_HOLD_LEVEL          EQU $FF
+
+; wD753_FlyPowerup1_Timer / wD755_FlyPowerup2_Timer, in frames (30 seconds)
+DEF FLY_POWERUP_DURATION         EQU $0708
+
+; The fly power-up ids stored in wD742_Player_CurrentFly. Swapping one out is what
+; makes it take effect - see call_00_0647_Player_SwapFlyPowerup
+DEF FLY_POWERUP_NONE             EQU $00
+DEF FLY_POWERUP_SHIELD_1         EQU $01 ; arms wD753_FlyPowerup1_Timer
+DEF FLY_POWERUP_SHIELD_2         EQU $02 ; arms wD755_FlyPowerup2_Timer
+DEF FLY_POWERUP_HEALTH           EQU $03
+DEF FLY_POWERUP_EXTRA_LIFE       EQU $04
+
+; wD610_MediaDimension_TVScreenId when no hub tv screen is loaded
+DEF TV_SCREEN_NONE               EQU $FF
+
+; Count masks. One bit per consecutive driver track to start, walked low bit
+; first over four passes by call_00_113e_PlaySFX and call_00_120c_SetupMusic
+DEF SFX_ONE_TRACK                EQU %0001
+DEF MUSIC_FOUR_TRACKS            EQU %1111
+
+; Terminator of an attract-mode demo input script, in the frame-count position
+DEF DEMO_INPUT_END               EQU $FF
+DEF DEMO_COUNT                   EQU 4 ; entries in data_00_076d_DemoLevelIds
+; The demo index the round-robin at 00:0276 always ends up storing, whatever it just
+; computed - entry 2 of data_00_076d_DemoLevelIds
+DEF DEMO_INDEX_FORCED            EQU 2
+
+; ROM banks the home code maps in directly rather than through a data table
+DEF BANK_PLAYER_GFX_BASE         EQU BANK_04 ; + (wD208_Player_SpriteID >> 6)
+DEF BANK_TV_ATTRIBUTES           EQU BANK_13
+DEF BANK_TV_SCREENS              EQU BANK_14
+DEF BANK_AUDIO_DEFAULT           EQU BANK_21 ; until the first song change picks another
+
+; A sprite / screen id is split into a (bank, page) pair: the low bits pick a
+; 256-byte page inside the $4000 window, the rest picks the bank
+DEF GFX_PAGE_INDEX_MASK          EQU $3F
+DEF ROMX_PAGE_BASE               EQU $40 ; HIGH($4000)
+
 ; Entities
+
+
 DEF ENTITY_GEX                              EQU $00
 DEF ENTITY_COLLECTIBLE_SPAWN                EQU $01
 DEF ENTITY_UNK_02                           EQU $02 ; not in level ENTITY lists. may be unused
@@ -1426,7 +1576,7 @@ DEF VRAM_TILESET_ADDR_1                               EQU $9000
 ; ------------------------------------------------------------------
 
 ; Byte +1 of a map_tile_anim_step. Bit 7 makes the step conditional and the low bits
-; then name a conveyor, 1 to 3, matching wD5A3_ConveyorState1 upward. A conditional
+; then name a conveyor, 1 to 3, matching wD5A3_ConveyorPowerTimer1 upward. A conditional
 ; step is skipped entirely while a secondary tileset is loaded, and writes
 ; data_03_7bfd_MapTileAnim_BlankTile in place of its artwork while that conveyor is
 ; stopped

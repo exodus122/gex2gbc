@@ -25,7 +25,7 @@ call_0b_4efe_Player_SetSpawnPosition:
 ; Positions the player for the map about to be loaded, then scrolls the camera to
 ; match. Picks one of three sources, in priority order:
 ;
-;   1. WARP_FLAG_ENTERED_DOOR set - the player walked into a door. The flag is
+;   1. WARP_ENTERED_DOOR set - the player walked into a door. The flag is
 ;      cleared, the player's current position is converted back to a block, and that
 ;      block is looked up in this level's door list to find where the door leads.
 ;      Note the X conversion subtracts DOOR_MATCH_X_BIAS first while Y does not, so
@@ -43,10 +43,10 @@ call_0b_4efe_Player_SetSpawnPosition:
 ; which is what makes the camera follow rather than tearing on the first frame
     ld   HL, wD621_WarpFlags
     ld   A, [HL]
-    and  A, WARP_FLAG_ENTERED_DOOR
+    and  A, WARP_ENTERED_DOOR
     jr   Z, .jr_0b_4f70_NotADoor
     ld   A, [HL]
-    and  A, $ff ^ WARP_FLAG_ENTERED_DOOR
+    and  A, $ff ^ WARP_ENTERED_DOOR
     ld   [HL], A
     ld   HL, wD20E_Player_XPositionLo
     ld   A, [HL+]
