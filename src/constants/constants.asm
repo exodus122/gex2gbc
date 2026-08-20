@@ -552,6 +552,14 @@ DEF PASSWORD_KEY_EXIT            EQU $49
 DEF PASSWORD_KEY_GO              EQU $4A
 DEF PASSWORD_KEY_UNKNOWN         EQU $4B
 
+; Cell indices into the flat grid at wD667_PasswordExitButton, which is what
+; MENUCMD_SUB_PASSWORD_CHAR_TEXT takes as its argument. The 28 letter boxes sit
+; between the three fixed keys
+DEF PASSWORD_CELL_EXIT                      EQU $00
+DEF PASSWORD_CELL_FIRST_BOX                 EQU $01
+DEF PASSWORD_CELL_GO                        EQU $1D
+DEF PASSWORD_CELL_UNKNOWN                   EQU $1E
+
 ; The password keyboard is a fixed 6 x 5 grid
 DEF PASSWORD_GRID_COLUMNS        EQU $06
 DEF PASSWORD_GRID_ROWS           EQU $05
@@ -660,6 +668,15 @@ DEF SPRITE_TILE_STEP                        EQU 2   ; 8x16 sprites consume tiles
 DEF MENU_CURSOR_NONE                        EQU $FF ; this screen has no cursor
 DEF MENU_CURSOR_PASSWORD                    EQU $12 ; password keyboard highlight - takes its
                                                     ; tile from the cell underneath and blinks
+
+; A cursor sprite id is the image index the script asked for plus this base, which
+; is what makes it line up with entries $10-$12 of data_01_5aa9_SpriteScriptTable -
+; the three that point at wD6B9_MenuCursor_OamSlot rather than at a ROM script,
+; because the cursor's sprite block is assembled in WRAM every frame
+DEF MENU_CURSOR_ID_BASE                     EQU $10
+DEF MENU_SPRITE_GROUP_CURSOR                EQU $10 ; $10-$12 - see above
+DEF MENU_CURSOR_BLINK_BIT                   EQU $10 ; bit of wD6D6_Menu_BlinkCounter that
+                                                    ; flips the password highlight's palette
 
 ; ------------------------------------------------------------------
 ; Menu script commands (bank01_menus.asm, call_01_44e6_MenuScript_RunCommand)
@@ -775,6 +792,63 @@ DEF MENU_SPLASH_FRAMES                      EQU $B4 ; 180 frames, MENU_TYPE_TITL
 
 DEF MENU_OPTION_SLOT_NONE                   EQU $0F ; in wD69D_MenuCmd_OptionSlot: row $F,
                                                     ; which no cursor can reach
+
+; The password keyboard is one 6 x 5 grid of command ids, so the cell at
+; (row, column) is drawn by MENUCMD_PASSWORD_CELL_BASE + row * PASSWORD_GRID_COLUMNS
+; + column. Ids $2C-$48 belong to data_01_592d_MenuScript_PasswordCells; the last
+; cell, $49, is left to whichever screen chained it, because its key face differs
+; per screen (GO when typing, the blank key when only viewing)
+DEF MENUCMD_PASSWORD_CELL_BASE              EQU $2C
+
+; A sprite-hide delay of $FF in effect means "until the player presses something":
+; call_01_4d25_Menu_TickHideSprites forces the countdown to 1 on any input
+DEF MENU_HIDE_ON_INPUT                      EQU $FF
+
+; Raster wobble - the ripple over the highlighted row. call_01_43e6_Menu_OnSelectionChanged
+; sets the window to the selected row's 8 scanlines, counting DOWN from the base
+; line, and the LCD interrupt does the rest
+DEF MENU_WOBBLE_ROW_HEIGHT                  EQU $08 ; scanlines per option row
+DEF MENU_WOBBLE_BASE_PAUSE                  EQU $4E ; row 0's last scanline, the pause menus
+DEF MENU_WOBBLE_BASE_TOTALS                 EQU $16 ; row 0's last scanline, the totals screens
+DEF MENU_WOBBLE_OFF                         EQU $FF ; in wD6EB_RasterWobble_StartLine
+
+; LCDC values installed from data_01_5654_MenuTypeLcdcAndPalette once a screen's
+; script has finished drawing
+DEF MENU_LCDC_WINDOW                        EQU $D7 ; BG + OBJ + window on, unsigned tile data
+DEF MENU_LCDC_NO_WINDOW                     EQU $C7 ; the same with the window off
+
+; The Media Dimension TV picture staged by call_01_466b_MenuCmd_StageTVScreen. The
+; artwork is raw tile data in a graphics bank, so its size lives here rather than
+; in a header on the data
+DEF MENU_TV_SCREEN_BANK                     EQU $13
+DEF MENU_TV_SCREEN_WIDTH                    EQU 6
+DEF MENU_TV_SCREEN_HEIGHT                   EQU 5
+
+; The level's collectible icon staged by call_01_49d7_MenuCmd_StageCollectibleIcon.
+; Its tilemap ids sit immediately after the graphics in ROM
+DEF MENU_COLLECTIBLE_ICON_TILE              EQU $92 ; first VRAM tile it is staged at
+DEF MENU_COLLECTIBLE_ICON_WIDTH             EQU 3
+DEF MENU_COLLECTIBLE_ICON_HEIGHT            EQU 2
+DEF MENU_COLLECTIBLE_TILEMAP_BYTES          EQU $18 ; 3 x 2 tile ids, copied to wDAAB
+DEF MENU_COLLECTIBLE_MILESTONE_1            EQU $1E ; 30 - the value a passed milestone shows
+DEF MENU_COLLECTIBLE_MILESTONE_2            EQU $28 ; 40 - see MENU_COUNTER_COLLECTIBLES_*
+
+; A full CGB palette set - 8 palettes of 4 colours - copied to wDA4B_DynamicPalette
+DEF MENU_PALETTE_BYTES                      EQU $80
+
+; Tiles of the marker sprite call_01_473a_MenuCmd_SetMissionText puts beside a
+; mission line, staged from data_01_7583_Image_MissionRemoteMarkers at tile $E8.
+; DMG has no palettes, so there the artwork itself has to carry the colour
+DEF MENU_MISSION_MARKER_COLLECTED           EQU $EC ; collected, CGB
+DEF MENU_MISSION_MARKER_COLLECTED_DMG       EQU $E8 ; collected, DMG, ordinary mission
+DEF MENU_MISSION_MARKER_BONUS_DMG           EQU $F0 ; collected, DMG, bonus level (gold)
+DEF MENU_MISSION_MARKER_UNCOLLECTED         EQU $F4 ; not collected, either machine
+DEF MENU_MISSION_MARKER_PAL_NORMAL          EQU $03 ; CGB palette for a red remote marker
+DEF MENU_MISSION_MARKER_PAL_BONUS           EQU $05 ; ... and for a gold one
+
+; The remote icons are three 3x4 tile images (red, silver, gold) followed by unlit
+; copies of the same three, so an icon's dark twin is always this far along
+DEF MENU_REMOTE_ICON_UNLIT_OFFSET           EQU $24
 
 DEF MENU_REMOTE_ICON_COUNT                  EQU 6   ; icons a totals page can show, one per
                                                     ; bit of wD629_RemoteProgressFlags

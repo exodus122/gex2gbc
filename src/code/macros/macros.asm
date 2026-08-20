@@ -209,3 +209,86 @@ MACRO entity_gfx_descriptor ; source bank, source address, VRAM destination, byt
     dw   \4
     db   $00
 ENDM
+
+; ==================================================================
+; Menus - bank01_menus.asm
+;
+; Every non-gameplay screen in the game is described by three tables and a
+; script; the macros below are those four shapes written out. Nothing here
+; generates code, so a screen can be read (and moved) without touching
+; call_01_4000_MenuLoad
+; ==================================================================
+
+; One menu type's record in data_01_5574_MenuTypeRecords. Copied to
+; wD68A_Menu_ScriptPtr onward when the menu opens, so the field order here IS that
+; WRAM block's layout. The cursor is positioned as base + step * selected index,
+; separately per axis, which is why menus never scroll
+MACRO menu_type_record ; script, MENU_FLAG_*, option count, cursor base X, base Y, step X, step Y
+    dw   \1
+    db   \2, \3, \4, \5, \6, \7
+ENDM
+
+; One 8-byte descriptor in data_01_5324_MenuCmd_Descriptors, selected by a menu
+; script's command id. The id fixes the shape and where it lands; the script's
+; parameter block then says what goes in it. Only the first six bytes are copied
+; (to wD692_Text_BlockWidthTiles onward) - the last two are padding
+MACRO menu_cmd_descriptor ; width tiles, height tiles, dest tile X, dest tile Y, first tile id, CGB attributes
+    db   \1, \2, \3, \4, \5, \6
+    db   $00, $00
+ENDM
+
+; One menu script command whose source pointer really is a string in ROM. The
+; seven bytes after the command id are copied over wD698_Text_PenX onward
+MACRO menu_cmd_text ; command id, pen X, pen Y, MENU_FONT_*, string, option slot, MENUCMD_* flags
+    db   \1
+    db   \2, \3, \4
+    dw   \5
+    db   \6, \7
+ENDM
+
+; One menu script command whose source pointer is not a pointer at all: the high
+; byte is a MENUCMD_SUB_* id, so the block runs a handler out of
+; .data_01_4633_MenuCmd_SubHandlers, and the low byte is that handler's single
+; argument. Argument 4 is a font id only when the handler ends up drawing text -
+; the staging handlers read the same byte as a destination tile id, and
+; MENUCMD_SUB_REMOTE_ICONS reads it as a sprite-hide delay in frames
+MACRO menu_cmd_sub ; command id, pen X, pen Y, font/tile id/delay, handler argument, MENUCMD_SUB_*, option slot, MENUCMD_* flags
+    db   \1
+    db   \2, \3, \4
+    db   \5, \6
+    db   \7, \8
+ENDM
+
+MACRO menu_script_end
+    db   MENUSCRIPT_END
+ENDM
+
+; Header of a sprite script for call_01_4dc8_Menu_BuildSpriteBlock - the shadow OAM
+; slot the first sprite lands in. call_01_4d3b_Menu_EraseSpriteGroup walks the same
+; script to blank the sprites again, so a group is drawn and erased by one layout
+MACRO menu_sprite_script ; first OAM slot
+    db   \1
+ENDM
+
+; One rectangle of 8x16 sprites in a sprite script. Y and X are relative to the
+; visible screen ($10 and $08 are added back on). An ODD tile byte is not a tile id:
+; the rest of it indexes wD5AA_Sprite_TileIdTable, which is how the remote icons
+; switch between lit and unlit without a second copy of the layout
+MACRO menu_sprite ; Y, X, tile, attributes, width in 8px columns, height in 8px rows
+    db   \1, \2, \3, \4, \5, \6
+ENDM
+
+MACRO menu_sprite_end
+    db   SPRITE_SCRIPT_END
+ENDM
+
+; One entry of .data_01_4fef_Password_BitMap - where a single bit of the packed
+; payload ends up in the letter grid. The masks are stored as words but only their
+; low bytes are ever read
+MACRO password_bit ; source address, source mask, destination address, destination mask
+    dw   \1, \2, \3, \4
+ENDM
+
+MACRO password_bit_end
+    dw   $0000
+ENDM

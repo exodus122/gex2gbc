@@ -1,37 +1,53 @@
-data_01_5ccf:
+; ==================================================================
+; MENU AND MAP TEXT - included into bank $01 by bank01_menus.asm
+;
+; Strings for the menu text renderer (call_01_4a8f_Text_Render). A string is a run
+; of plain ASCII codes in which bit 7 marks the LAST byte of a line - that is what
+; END_TEXT or's on - and a $00 byte after a line end finishes the string. There is
+; no separate line terminator and no length byte, so a one-line string is just its
+; characters with END_TEXT folded into the last one.
+;
+; Two groups live here. The fixed menu strings come first, then the per-map text
+; blocks: four pointers each, being the level's name followed by its three mission
+; descriptions, reached through MAPDATA_TEXT_BLOCK_PTR. A block whose entries point
+; at bare END_TEXT bytes belongs to an unused map slot - the pointers exist so the
+; table stays regular, but there is nothing to draw.
+; ==================================================================
+
+data_01_5ccf_Text_Start:
     db   "START", END_TEXT
-data_01_5cd5:
+data_01_5cd5_Text_Sound:
     db   "SOUND", END_TEXT
-data_01_5cdb:
+data_01_5cdb_Text_Password:
     db   "PASSWORD", END_TEXT
-data_01_5ce4:
+data_01_5ce4_Text_Paused:
     db   "PAUSED", END_TEXT
-data_01_5ceb:
+data_01_5ceb_Text_Resume:
     db   "RESUME", END_TEXT
-data_01_5cf2:
+data_01_5cf2_Text_Quit:
     db   "QUIT", END_TEXT
-data_01_5cf7:
+data_01_5cf7_Text_Exit:
     db   "EXIT", END_TEXT
-data_01_5cfc:
+data_01_5cfc_Text_QuitGame:
     db   "QUIT GAME", END_TEXT
-data_01_5d06:
+data_01_5d06_Text_ExitToMap:
     db   "EXIT TO MAP", END_TEXT
-data_01_5d12:
+data_01_5d12_Text_NoWay:
     db   "NO WAY!", END_TEXT
-data_01_5d1a:
+data_01_5d1a_Text_Okay:
     db   "OKAY", END_TEXT
 data_01_5d1f_Text_TimeUp:
     db   "TIME UP!", END_TEXT
-data_01_5d28:
+data_01_5d28_Text_GameOver:
     db   "GAME OVER", END_TEXT
-data_01_5d32:
+data_01_5d32_Text_ResumePlay:
     db   "RESUME PLAY", END_TEXT
-data_01_5d3e:
+data_01_5d3e_Text_SeePassword:
     db   "SEE PASSWORD", END_TEXT
 
-data_01_5d4b:
+data_01_5d4b_Text_GameStats:
     db   "GAME STATS", END_TEXT
-data_01_5d56:
+data_01_5d56_Text_Entering:
     db   "ENTERING...", END_TEXT
 data_01_5d62_Text_LivesX:
     db   "X", END_TEXT
@@ -43,27 +59,27 @@ data_01_5d7c_Text_Hidden:
     db   "HIDDEN", END_TEXT
 data_01_5d83_Text_PressBToContinue:
     db   "PRESS B TO CONTINUE", END_TEXT
-data_01_5d97:
+data_01_5d97_Text_0Of3RedRemotes:
     db   "0 OF 3 RED REMOTES FOUND", END_TEXT
-data_01_5db0:
+data_01_5db0_Text_1Of3RedRemotes:
     db   "1 OF 3 RED REMOTES FOUND", END_TEXT
-data_01_5dc9:
+data_01_5dc9_Text_2Of3RedRemotes:
     db   "2 OF 3 RED REMOTES FOUND", END_TEXT
-data_01_5de2:
+data_01_5de2_Text_3Of3RedRemotes:
     db   "3 OF 3 RED REMOTES FOUND", END_TEXT
-data_01_5dfb:
+data_01_5dfb_Text_0Of2RedRemotes:
     db   "0 OF 2 RED REMOTES FOUND", END_TEXT
-data_01_5e14:
+data_01_5e14_Text_1Of2RedRemotes:
     db   "1 OF 2 RED REMOTES FOUND", END_TEXT
-data_01_5e2d:
+data_01_5e2d_Text_2Of2RedRemotes:
     db   "2 OF 2 RED REMOTES FOUND", END_TEXT
-data_01_5e46:
+data_01_5e46_Text_0Of1RedRemotes:
     db   "0 OF 1 RED REMOTES FOUND", END_TEXT
-data_01_5e5f:
+data_01_5e5f_Text_1Of1RedRemotes:
     db   "1 OF 1 RED REMOTES FOUND", END_TEXT
-data_01_5e78:
+data_01_5e78_Text_0Of1GoldRemotes:
     db   "0 OF 1 GOLD REMOTES FOUND", END_TEXT
-data_01_5e92:
+data_01_5e92_Text_1Of1GoldRemotes:
     db   "1 OF 1 GOLD REMOTES FOUND", END_TEXT
 data_01_5eac_Text_ChooseAHint:
     db   "CHOOSE A HINT THEN PRESS B TO CONTINUE", END_TEXT
@@ -71,41 +87,47 @@ data_01_5ed3_Text_PressBToContinueShort:
     db   "PRESS B TO CONTINUE", END_TEXT
 
 data_01_5ee7_TVNameTable:
-    dw   data_01_5efd
-    dw   data_01_5f08
-    dw   data_01_5f18
-    dw   data_01_5f28
-    dw   data_01_5f38
-    dw   data_01_5f42
-    dw   data_01_5f51
-    dw   data_01_5f5b
-    dw   data_01_5f63
-    dw   data_01_5f71
-    dw   data_01_5f80
+; The channel names shown above the mission list, indexed by the map's
+; MAPDATA_TV_PALETTE_ID - the same index that picks the TV picture in
+; data_01_5cb9_TVScreenImageTable, so the name and the artwork cannot disagree
+    dw   data_01_5efd_Text_TVGameStats
+    dw   data_01_5f08_Text_TVCircuitCentral
+    dw   data_01_5f18_Text_TVKungFuTheatre
+    dw   data_01_5f28_Text_TVPrehistChannel
+    dw   data_01_5f38_Text_TVRezopolis
+    dw   data_01_5f42_Text_TVRocketChannel
+    dw   data_01_5f51_Text_TVScreamTV
+    dw   data_01_5f5b_Text_TVToonTV
+    dw   data_01_5f63_Text_TVBonusBonanza
+    dw   data_01_5f71_Text_TVSecretStation
+    dw   data_01_5f80_Text_TVBossTV
 
-data_01_5efd:
+data_01_5efd_Text_TVGameStats:
     db   "GAME STATS", END_TEXT
-data_01_5f08:
+data_01_5f08_Text_TVCircuitCentral:
     db   "CIRCUIT CENTRAL", END_TEXT
-data_01_5f18:
+data_01_5f18_Text_TVKungFuTheatre:
     db   "KUNG-FU THEATRE", END_TEXT
-data_01_5f28:
+data_01_5f28_Text_TVPrehistChannel:
     db   "PREHIST CHANNEL", END_TEXT
-data_01_5f38:
+data_01_5f38_Text_TVRezopolis:
     db   "REZOPOLIS", END_TEXT
-data_01_5f42:
+data_01_5f42_Text_TVRocketChannel:
     db   "ROCKET CHANNEL", END_TEXT
-data_01_5f51:
+data_01_5f51_Text_TVScreamTV:
     db   "SCREAM TV", END_TEXT
-data_01_5f5b:
+data_01_5f5b_Text_TVToonTV:
     db   "TOON TV", END_TEXT
-data_01_5f63:
+data_01_5f63_Text_TVBonusBonanza:
     db   "BONUS BONANZA", END_TEXT
-data_01_5f71:
+data_01_5f71_Text_TVSecretStation:
     db   "SECRET STATION", END_TEXT
-data_01_5f80:
+data_01_5f80_Text_TVBossTV:
     db   "BOSS TV", END_TEXT
 
+; ------------------------------------------------------------------
+; Per-map text blocks: level name, then missions 0, 1 and 2
+; ------------------------------------------------------------------
 data_01_5f88:
     dw   .data_01_5f90
     dw   .data_01_5fa4
