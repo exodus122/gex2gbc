@@ -412,7 +412,7 @@ call_00_0150_Init:
     ld   A, [wD751_Player_CircuitPowerUpTimerLo]                                    ;; 00:04c1 $fa $51 $d7
     cp   A, $01                                        ;; 00:04c4 $fe $01
     jr   NZ, .jr_00_04cd                               ;; 00:04c6 $20 $05
-    ld   C, SFX_MENU_UNK_2                                        ;; 00:04c8 $0e $15
+    ld   C, SFX_GEX_POWERUP_EXPIRED                                        ;; 00:04c8 $0e $15
     call call_00_112f_QueueSFX                                  ;; 00:04ca $cd $2f $11
 .jr_00_04cd:
     ld   HL, wD751_Player_CircuitPowerUpTimerLo                                     ;; 00:04cd $21 $51 $d7
@@ -422,7 +422,7 @@ call_00_0150_Init:
     ld   A, [wD73B_VBlankFrameCounter]                                    ;; 00:04d4 $fa $3b $d7
     and  A, $7f                                        ;; 00:04d7 $e6 $7f
     jr   NZ, .jr_00_04e0                               ;; 00:04d9 $20 $05
-    ld   C, SFX_MENU_UNK_1                                        ;; 00:04db $0e $14
+    ld   C, SFX_GEX_POWERUP_ACTIVE                                        ;; 00:04db $0e $14
     call call_00_112f_QueueSFX                                  ;; 00:04dd $cd $2f $11
 .jr_00_04e0:
     FARCALL call_02_6eba_Entities_UpdateAll

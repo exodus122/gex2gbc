@@ -791,8 +791,8 @@ data_22_4460_TrackPointerTables:
     dw   audio_22_6445_Sfx_GexSpawn - @              ; SFX_GEX_SPAWN (sfx $11)
     dw   audio_22_65f3_Sfx_GexHitBounce - @          ; SFX_GEX_HIT_BOUNCE (sfx $12)
     dw   audio_22_6617_Sfx_13 - @                    ; SFX_13 (sfx $13)
-    dw   audio_22_666d_Sfx_MenuUnk1 - @              ; SFX_MENU_UNK_1 (sfx $14)
-    dw   audio_22_669b_Sfx_MenuUnk2 - @              ; SFX_MENU_UNK_2 (sfx $15)
+    dw   audio_22_666d_Sfx_GexPowerupActive - @  ; SFX_GEX_POWERUP_ACTIVE (sfx $14)
+    dw   audio_22_669b_Sfx_GexPowerupExpired - @ ; SFX_GEX_POWERUP_EXPIRED (sfx $15)
     dw   audio_22_66c9_Sfx_16 - @                    ; SFX_16 (sfx $16)
     dw   audio_22_66dd_Sfx_EnemyDefeated - @         ; SFX_ENEMY_DEFEATED (sfx $17)
     dw   audio_22_66f5_Sfx_18 - @                    ; SFX_18 (sfx $18)
@@ -809,14 +809,14 @@ data_22_4460_TrackPointerTables:
     dw   audio_22_6835_Sfx_22 - @                    ; SFX_22 (sfx $22)
     dw   audio_22_6845_Sfx_23 - @                    ; SFX_23 (sfx $23)
     dw   audio_22_685d_Sfx_Unused25 - @              ; driver sfx id $25 - no .data_00_116c_SFXChannelTable row reaches it
-    dw   audio_22_6865_Sfx_EnemyBounce - @           ; SFX_ENEMY_BOUNCE (sfx $24)
+    dw   audio_22_6865_Sfx_EnemyJump - @             ; SFX_ENEMY_JUMP (sfx $24)
     dw   audio_22_688d_Sfx_25 - @                    ; SFX_25 (sfx $25)
     dw   audio_22_689f_Sfx_Unused28 - @              ; driver sfx id $28 - no .data_00_116c_SFXChannelTable row reaches it
     dw   audio_22_68a7_Sfx_26 - @                    ; SFX_26 (sfx $26)
     dw   audio_22_68b7_Sfx_FallingPlatform - @       ; SFX_FALLING_PLATFORM (sfx $27)
     dw   audio_22_68c9_Sfx_28 - @                    ; SFX_28 (sfx $28)
-    dw   audio_22_6909_Sfx_29 - @                    ; SFX_29 (sfx $29)
-    dw   audio_22_6931_Sfx_GexJumpUnk - @            ; SFX_GEX_JUMP_UNK (sfx $2A)
+    dw   audio_22_6909_Sfx_AltEnemyJump - @          ; SFX_ALT_ENEMY_JUMP (sfx $29)
+    dw   audio_22_6931_Sfx_GexPoweredJump - @        ; SFX_GEX_POWERED_JUMP (sfx $2A)
     dw   audio_22_6943_Sfx_PoweredWalkway - @        ; SFX_POWERED_WALKWAY (sfx $2B)
     dw   audio_22_698b_Sfx_CannonRotate - @          ; SFX_CANNON_ROTATE (sfx $2C)
     dw   audio_22_69b7_Sfx_Jar - @                   ; SFX_JAR (sfx $2D)
@@ -830,8 +830,8 @@ data_22_4460_TrackPointerTables:
     dw   audio_22_6ac7_Sfx_MultiProjectile - @       ; SFX_MULTI_PROJECTILE (sfx $34)
     dw   audio_22_6ad7_Sfx_Gear - @                  ; SFX_GEAR (sfx $35)
     dw   audio_22_6b03_Sfx_GunProjectile - @         ; SFX_GUN_PROJECTILE (sfx $36)
-    dw   audio_22_6b13_Sfx_RezProjectile - @         ; SFX_REZ_PROJECTILE (sfx $37)
-    dw   audio_22_6b6b_Sfx_FinalBattleButton - @     ; SFX_FINAL_BATTLE_BUTTON (sfx $38)
+    dw   audio_22_6b13_Sfx_Explosion - @             ; SFX_EXPLOSION (sfx $37)
+    dw   audio_22_6b6b_Sfx_RezHurt - @               ; SFX_REZ_HURT (sfx $38)
     dw   audio_22_6b81_Sfx_RezButton - @             ; SFX_REZ_BUTTON (sfx $39)
     dw   audio_22_6b97_Sfx_Unused3E - @              ; driver sfx id $3E - no .data_00_116c_SFXChannelTable row reaches it
     dw   audio_22_6b9b_Sfx_Unused3F - @              ; driver sfx id $3F - no .data_00_116c_SFXChannelTable row reaches it
@@ -902,10 +902,10 @@ audio_22_65f3_Sfx_GexHitBounce:
     INCBIN "data/audio/sfx/sfx_gex_hit_bounce.bin"  ; SFX_GEX_HIT_BOUNCE (sfx $12)
 audio_22_6617_Sfx_13:
     INCBIN "data/audio/sfx/sfx_13.bin"              ; SFX_13 (sfx $13)
-audio_22_666d_Sfx_MenuUnk1:
-    INCBIN "data/audio/sfx/sfx_menu_unk_1.bin"      ; SFX_MENU_UNK_1 (sfx $14)
-audio_22_669b_Sfx_MenuUnk2:
-    INCBIN "data/audio/sfx/sfx_menu_unk_2.bin"      ; SFX_MENU_UNK_2 (sfx $15)
+audio_22_666d_Sfx_GexPowerupActive:
+    INCBIN "data/audio/sfx/sfx_gex_powerup_active.bin"  ; SFX_GEX_POWERUP_ACTIVE (sfx $14)
+audio_22_669b_Sfx_GexPowerupExpired:
+    INCBIN "data/audio/sfx/sfx_gex_powerup_expired.bin" ; SFX_GEX_POWERUP_EXPIRED (sfx $15)
 audio_22_66c9_Sfx_16:
     INCBIN "data/audio/sfx/sfx_16.bin"              ; SFX_16 (sfx $16)
 audio_22_66dd_Sfx_EnemyDefeated:
@@ -925,11 +925,11 @@ audio_22_674b_Sfx_FlowerHammer:
 audio_22_6761_Sfx_Bumblebee:
     INCBIN "data/audio/sfx/sfx_bumblebee.bin"       ; SFX_BUMBLEBEE (sfx $1D)
 audio_22_6795_Sfx_Rocket:
-    INCBIN "data/audio/sfx/sfx_rocket.bin"          ; SFX_ROCKET (sfx $1E)
+    INCBIN "data/audio/sfx/sfx_shoot.bin"           ; SFX_ROCKET (sfx $1E)
 audio_22_67a5_Sfx_1f:
     INCBIN "data/audio/sfx/sfx_1f.bin"              ; SFX_1F (sfx $1F)
 audio_22_67e9_Sfx_Hunter:
-    INCBIN "data/audio/sfx/sfx_rocket.bin"          ; SFX_HUNTER (sfx $20)
+    INCBIN "data/audio/sfx/sfx_shoot.bin"           ; SFX_HUNTER (sfx $20)
 audio_22_67f9_Sfx_21:
     INCBIN "data/audio/sfx/sfx_21.bin"              ; SFX_21 (sfx $21)
 audio_22_6835_Sfx_22:
@@ -938,8 +938,8 @@ audio_22_6845_Sfx_23:
     INCBIN "data/audio/sfx/sfx_23.bin"              ; SFX_23 (sfx $23)
 audio_22_685d_Sfx_Unused25:
     INCBIN "data/audio/sfx/sfx_unused_25.bin"       ; driver sfx id $25 - no .data_00_116c_SFXChannelTable row reaches it
-audio_22_6865_Sfx_EnemyBounce:
-    INCBIN "data/audio/sfx/sfx_enemy_bounce.bin"    ; SFX_ENEMY_BOUNCE (sfx $24)
+audio_22_6865_Sfx_EnemyJump:
+    INCBIN "data/audio/sfx/sfx_enemy_jump.bin"      ; SFX_ENEMY_JUMP (sfx $24)
 audio_22_688d_Sfx_25:
     INCBIN "data/audio/sfx/sfx_25.bin"              ; SFX_25 (sfx $25)
 audio_22_689f_Sfx_Unused28:
@@ -950,10 +950,10 @@ audio_22_68b7_Sfx_FallingPlatform:
     INCBIN "data/audio/sfx/sfx_falling_platform.bin" ; SFX_FALLING_PLATFORM (sfx $27)
 audio_22_68c9_Sfx_28:
     INCBIN "data/audio/sfx/sfx_28.bin"              ; SFX_28 (sfx $28)
-audio_22_6909_Sfx_29:
-    INCBIN "data/audio/sfx/sfx_enemy_bounce.bin"    ; SFX_29 (sfx $29)
-audio_22_6931_Sfx_GexJumpUnk:
-    INCBIN "data/audio/sfx/sfx_gex_jump_unk.bin"    ; SFX_GEX_JUMP_UNK (sfx $2A)
+audio_22_6909_Sfx_AltEnemyJump:
+    INCBIN "data/audio/sfx/sfx_enemy_jump.bin"      ; SFX_ALT_ENEMY_JUMP (sfx $29)
+audio_22_6931_Sfx_GexPoweredJump:
+    INCBIN "data/audio/sfx/sfx_gex_powered_jump.bin"; SFX_GEX_POWERED_JUMP (sfx $2A)
 audio_22_6943_Sfx_PoweredWalkway:
     INCBIN "data/audio/sfx/sfx_powered_walkway.bin" ; SFX_POWERED_WALKWAY (sfx $2B)
 audio_22_698b_Sfx_CannonRotate:
@@ -979,11 +979,11 @@ audio_22_6ac7_Sfx_MultiProjectile:
 audio_22_6ad7_Sfx_Gear:
     INCBIN "data/audio/sfx/sfx_cannon_rotate.bin"   ; SFX_GEAR (sfx $35)
 audio_22_6b03_Sfx_GunProjectile:
-    INCBIN "data/audio/sfx/sfx_rocket.bin"          ; SFX_GUN_PROJECTILE (sfx $36)
-audio_22_6b13_Sfx_RezProjectile:
-    INCBIN "data/audio/sfx/sfx_rez_projectile.bin"  ; SFX_REZ_PROJECTILE (sfx $37)
-audio_22_6b6b_Sfx_FinalBattleButton:
-    INCBIN "data/audio/sfx/sfx_falling_hazard.bin"  ; SFX_FINAL_BATTLE_BUTTON (sfx $38)
+    INCBIN "data/audio/sfx/sfx_shoot.bin"           ; SFX_GUN_PROJECTILE (sfx $36)
+audio_22_6b13_Sfx_Explosion:
+    INCBIN "data/audio/sfx/sfx_explosion.bin"       ; SFX_EXPLOSION (sfx $37)
+audio_22_6b6b_Sfx_RezHurt:
+    INCBIN "data/audio/sfx/sfx_falling_hazard.bin"  ; SFX_REZ_HURT (sfx $38)
 audio_22_6b81_Sfx_RezButton:
     INCBIN "data/audio/sfx/sfx_rez_button.bin"      ; SFX_REZ_BUTTON (sfx $39)
 audio_22_6b97_Sfx_Unused3E:

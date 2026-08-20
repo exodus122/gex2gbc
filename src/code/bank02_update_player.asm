@@ -60,7 +60,7 @@ call_02_4856_Player_GetJumpVelocity:
     ld   A, [HL+]
     or   A, [HL]
     jr   Z, .jr_02_486e
-    ld   C, SFX_GEX_JUMP_UNK
+    ld   C, SFX_GEX_POWERED_JUMP
     call call_00_112f_QueueSFX
     ld   A, PLAYER_SPRING_VELOCITY_LOW
     ret
@@ -69,7 +69,7 @@ call_02_4856_Player_GetJumpVelocity:
     ld   A, [HL+]
     or   A, [HL]
     jr   Z, .jr_02_486e
-    ld   C, SFX_GEX_JUMP_UNK
+    ld   C, SFX_GEX_POWERED_JUMP
     call call_00_112f_QueueSFX
     ld   A, PLAYER_SPRING_VELOCITY_HIGH
     ret

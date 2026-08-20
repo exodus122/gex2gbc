@@ -231,8 +231,8 @@ DEF SFX_GEX_HURT                           EQU $10
 DEF SFX_GEX_SPAWN                          EQU $11
 DEF SFX_GEX_HIT_BOUNCE                     EQU $12
 DEF SFX_13                                 EQU $13 ; unused?
-DEF SFX_MENU_UNK_1                         EQU $14
-DEF SFX_MENU_UNK_2                         EQU $15
+DEF SFX_GEX_POWERUP_ACTIVE          EQU $14
+DEF SFX_GEX_POWERUP_EXPIRED            EQU $15
 DEF SFX_16                                 EQU $16 ; unused?
 DEF SFX_ENEMY_DEFEATED                     EQU $17
 DEF SFX_18                                 EQU $18 ; unused?
@@ -248,14 +248,14 @@ DEF SFX_21                                 EQU $21 ; unused?
 DEF SFX_22                                 EQU $22 ; used: the counted-breakable tile scripts
                                                    ; play it via BLOCKPATCH_STEP_SFX
 DEF SFX_23                                 EQU $23 ; unused?
-DEF SFX_ENEMY_BOUNCE                       EQU $24
+DEF SFX_ENEMY_JUMP                         EQU $24
 DEF SFX_25                                 EQU $25 ; used: the two-block breakable tile scripts
 DEF SFX_26                                 EQU $26 ; used: .script_0D, and the wide slot switch
                                                    ; plays it via BLOCKPATCH_STEP_SFX
-DEF SFX_FALLING_PLATFORM                   EQU $27
+DEF SFX_FALLING_PLATFORM                   EQU $27 ; only used in scream tv?
 DEF SFX_28                                 EQU $28 ; unused?
-DEF SFX_29                                 EQU $29 ; unused?
-DEF SFX_GEX_JUMP_UNK                       EQU $2A ; unknown, but related to gex jumping
+DEF SFX_ALT_ENEMY_JUMP                     EQU $29 ; unused?
+DEF SFX_GEX_POWERED_JUMP                   EQU $2A ; in circuit central
 DEF SFX_POWERED_WALKWAY                    EQU $2B
 DEF SFX_CANNON_ROTATE                      EQU $2C ; used in the rotating cannon tile scripts
 DEF SFX_JAR                                EQU $2D
@@ -268,8 +268,8 @@ DEF SFX_PTEROSAUR                          EQU $33
 DEF SFX_MULTI_PROJECTILE                   EQU $34
 DEF SFX_GEAR                               EQU $35
 DEF SFX_GUN_PROJECTILE                     EQU $36
-DEF SFX_REZ_PROJECTILE                     EQU $37
-DEF SFX_FINAL_BATTLE_BUTTON                EQU $38
+DEF SFX_EXPLOSION                          EQU $37
+DEF SFX_REZ_HURT                           EQU $38
 DEF SFX_REZ_BUTTON                         EQU $39
 DEF SFX_NONE                               EQU $FF ; no sfx queued
 

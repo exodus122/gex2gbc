@@ -889,7 +889,7 @@ call_02_5399_EntityAction_Pumpkin_Hop:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
     call call_00_3154_Entity_ClampYToMaxYBound
     ret  C
-    ld   C, SFX_ENEMY_BOUNCE
+    ld   C, SFX_ENEMY_JUMP
     call call_00_112f_QueueSFX
     ld   A, $00
     jp   call_02_7102_Entity_SetAction
@@ -2004,7 +2004,7 @@ call_02_58fa_EntityAction_Cactus_Leap:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
     call call_00_3154_Entity_ClampYToMaxYBound
     ret  C
-    ld   C, SFX_ENEMY_BOUNCE
+    ld   C, SFX_ENEMY_JUMP
     call call_00_112f_QueueSFX
     ld   A, $00
     jp   call_02_7102_Entity_SetAction
@@ -2311,7 +2311,7 @@ call_02_5a9a_EntityAction_HappyFace_Hop:
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
     call call_00_3154_Entity_ClampYToMaxYBound
     ret  C
-    ld   C, SFX_ENEMY_BOUNCE
+    ld   C, SFX_ENEMY_JUMP
     call call_00_112f_QueueSFX
     ld   A, $00
     jp   call_02_7102_Entity_SetAction
@@ -5519,7 +5519,7 @@ call_02_6bf8_GunProjectile_ExplodeIfHit:
 call_02_6c03_GunProjectile_Explode:
 ; Hands over to a separate ENTITY_CHANNEL_Z_GUN_PROJECTILE_EXPLOSION entity and
 ; frees this slot, so the burst outlives the shot
-    ld   c,SFX_REZ_PROJECTILE
+    ld   c,SFX_EXPLOSION
     call call_00_112f_QueueSFX
     ld   c,SPAWN_CHILD_ENTITY_GUN_PROJECTILE_EXPLOSION
     FARCALL call_0a_7b9a_EntitySpawn_SpawnChildEntity
@@ -5664,7 +5664,7 @@ call_02_6ca7_Rez_CheckButtonSlam:
     jp   nz,call_02_7102_Entity_SetAction              ; more to go - flinch
     ld   c,SPAWN_CHILD_ENTITY_REZ_PORTAL
     FARCALL call_0a_7b9a_EntitySpawn_SpawnChildEntity
-    ld   c,SFX_REZ_PROJECTILE
+    ld   c,SFX_EXPLOSION
     call call_00_112f_QueueSFX
     jp   call_00_3985_Entity_ParticleBurstInit         ; beaten
 
@@ -5799,7 +5799,7 @@ call_02_6d5d_EntityAction_FinalBattleButtonProjectile_Fall:
     ret  c                                             ; still falling
     ld   hl,wD616_FinalBattleButtonFlags
     set  7,[hl]                                        ; one slam, for Rez to consume
-    ld   c,SFX_FINAL_BATTLE_BUTTON
+    ld   c,SFX_REZ_HURT
     call call_00_112f_QueueSFX
     jp   call_00_3931_Entity_DeactivateSelf
 
