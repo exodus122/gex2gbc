@@ -92,6 +92,34 @@ MAX_LABEL = 48                             # keep Windows paths comfortably shor
 BANK_PLAYER_GFX_BASE = 0x04
 GFX_PAGE_INDEX_MASK = 0x3F
 
+# PLAYER_ACTION_CLIMB does not animate through its animation block - data_02_766d
+# sets the frame timer to $FF, so the ticker never runs and every one of
+# call_02_44af_PlayerAction_Climb's sub-states writes wD208_Player_SpriteID itself.
+# The frames it reaches are therefore invisible to the action tables, and half of
+# them (all of bank $05, plus $97-$9E and $C2-$D0) look unreferenced without this.
+#
+#   short label            the table, for the comment                            addr  n  stride  +off  span
+PLAYER_CLIMB_SPRITE_TABLES = (
+    ("climb_background",   ".data_02_454f_BackgroundClimbSpriteBaseByDirection", 0x454F, 8, 1, 0, 8),
+    ("climb_wall",         ".data_02_461e_WallClimbSpriteBaseByDirection",       0x461E, 8, 1, 0, 8),
+    ("climb_wall_spin",    ".data_02_465f_WallTailSpinSpriteBaseByDirection",    0x465F, 8, 1, 0, 8),
+    ("climb_background_drop", ".data_02_4689_BackgroundDismountSprites",         0x4689, 6, 1, 0, 1),
+    ("climb_wall_drop",    ".data_02_46b1_WallDismountSprites",                  0x46B1, 2, 1, 0, 1),
+    ("climb_corner",       ".data_02_472e_ClimbStopSprites",                     0x472E, 9, 1, 0, 1),
+    ("climb_corner_exit",  ".data_02_4757_ClimbStopExitState byte +3",           0x4757, 8, 4, 3, 1),
+)
+
+# .jp_02_455f_PlayerClimbAction_BackgroundTailSpin adds its base as an immediate
+# rather than reading a table, so it comes from constants.asm instead.
+PLAYER_CLIMB_SPRITE_CONSTANTS = (
+    ("climb_background_spin", "CLIMB_TAIL_SPIN_SPRITE_BASE", 8),
+)
+
+# A $00 in those tables is filler, not frame $00: the unreachable rows of
+# .data_02_465f and the four unfinished rows of .data_02_4757 are zeroed, and
+# crediting the climb with frame $00 would only smear it across Gex's walk cycle.
+CLIMB_FILLER_ID = 0x00
+
 # How far real data extends in each bank. Past this the bank is padding that rgblink
 # supplies, and main.asm INCBINs nothing - matching the sections as they stand today.
 BANK_DATA_END = {
@@ -138,16 +166,17 @@ def load_names(path):
     except OSError:
         return {}, {}
 
-    entities, actions = {}, {}
-    pattern = re.compile(r"^DEF\s+(ENTITY_[A-Z0-9_]+|PLAYER_ACTION_[A-Z0-9_]+)\s+EQU\s+\$([0-9A-Fa-f]+)",
-                         re.MULTILINE)
+    entities, actions, defs = {}, {}, {}
+    pattern = re.compile(r"^DEF\s+([A-Z0-9_]+)\s+EQU\s+\$([0-9A-Fa-f]+)", re.MULTILINE)
     for name, value in pattern.findall(text):
         value = int(value, 16)
+        defs.setdefault(name, value)
         if name.startswith("ENTITY_"):
             entities.setdefault(value, name)
-        elif name != "PLAYER_ACTION_MASK" and value < NUM_PLAYER_ACTIONS:
+        elif (name.startswith("PLAYER_ACTION_") and name != "PLAYER_ACTION_MASK"
+              and value < NUM_PLAYER_ACTIONS):
             actions.setdefault(value, name)
-    return entities, actions
+    return entities, actions, defs
 
 
 def slug(name, strip_prefix):
@@ -156,24 +185,29 @@ def slug(name, strip_prefix):
     return name.lower().strip("_") or "unnamed"
 
 
-def label_and_note(ids, names, prefix, generic):
+def label_and_note(owners, generic):
     """A short file label plus the full list for the comment above the INCBIN.
 
-    Sharing is common - three remotes on one page range, seven Channel Z
-    projectiles on one descriptor - so the label names the first owner or two and
-    counts the rest rather than growing a 90-character filename.
+    `owners` is an iterable of (sort key, short label, full name). Sharing is
+    common - three remotes on one page range, seven Channel Z projectiles on one
+    descriptor - so the label names the first owner or two and counts the rest
+    rather than growing a 90-character filename.
     """
-    ids = sorted(ids)
-    if not ids:
+    owners = sorted(set(owners))
+    if not owners:
         return "unused", generic
-    full = [names.get(i, f"{prefix.lower()}{i:02x}") for i in ids]
     for shown in (2, 1):
-        label = "_".join(slug(n, prefix) for n in full[:shown])
-        if len(full) > shown:
-            label += f"_and_{len(full) - shown}_more"
+        label = "_".join(o[1] for o in owners[:shown])
+        if len(owners) > shown:
+            label += f"_and_{len(owners) - shown}_more"
         if len(label) <= MAX_LABEL:
             break
-    return label, ", ".join(full)
+    return label, ", ".join(o[2] for o in owners)
+
+
+def entity_owners(ids, names):
+    return [(i, slug(names.get(i, f"entity_{i:02x}"), "ENTITY_"),
+             names.get(i, f"entity ${i:02x}")) for i in ids]
 
 
 # =============================================================================
@@ -326,17 +360,54 @@ def runs_by_owner(owner_of_page, first_page, last_page):
     return out
 
 
-def split_player(rom, tables, action_names):
-    """Banks $04-$07, cut on the frame lists of data_02_4120_EntityActions_Gex."""
+def climb_sprite_owners(rom, defs, action_names):
+    """page -> owners, for the frames PLAYER_ACTION_CLIMB writes to wD208 by hand.
+
+    Each source contributes either a single frame id or a base plus the eight-frame
+    loop the climb counter walks - `counter >> 2 & 7` added to the base, so a base of
+    $40 owns $40 to $47.
+    """
+    climb = next((a for a, n in action_names.items() if n == "PLAYER_ACTION_CLIMB"), 0x1D)
+    owners = defaultdict(set)
+
+    sources = [(label, note, [rom.byte(BANK_ENTITY_CODE, addr + stride * i + off)
+                              for i in range(count)], span)
+               for label, note, addr, count, stride, off, span in PLAYER_CLIMB_SPRITE_TABLES]
+    for label, const, span in PLAYER_CLIMB_SPRITE_CONSTANTS:
+        if const in defs:
+            sources.append((label, f"{const} (${defs[const]:02x})", [defs[const]], span))
+
+    for order, (label, note, bases, span) in enumerate(sources):
+        owner = ((climb, order + 1), label,
+                 f"{action_names.get(climb, 'PLAYER_ACTION_CLIMB')} via {note}")
+        for base in bases:
+            if base == CLIMB_FILLER_ID:
+                continue
+            for step in range(span):
+                owners[(base + step) & 0xFF].add(owner)
+    return owners
+
+
+def split_player(rom, tables, action_names, defs):
+    """Banks $04-$07, cut on the frame lists of data_02_4120_EntityActions_Gex,
+    plus the ids PLAYER_ACTION_CLIMB writes for itself."""
     owners = defaultdict(set)
     for action, frames in tables[0]:
+        owner = ((action, 0), slug(action_names.get(action, f"action_{action:02x}"),
+                                   "PLAYER_ACTION_"),
+                 action_names.get(action, f"player action ${action:02x}"))
         for frame in frames:
-            owners[frame].add(action)
+            owners[frame].add(owner)
+    for page, extra in climb_sprite_owners(rom, defs, action_names).items():
+        # data_02_766d, the climb action's animation block, holds one frame at a
+        # timer of $FF - a seed, not an animation. Where a climb table also claims
+        # the page, the table is the real owner and naming both would only give us
+        # image_player_climb_climb_background_*.
+        owners[page] = {o for o in owners[page] if o[1] != "climb"} | extra
 
     chunks = []
     for start, end, actions in runs_by_owner(owners, 0x00, 0xFF):
-        label, note = label_and_note(actions, action_names, "PLAYER_ACTION_",
-                                     "no player action names these frames")
+        label, note = label_and_note(actions, "no player action names these frames")
 
         # A run of frame ids can cross a bank boundary - the low six bits of the id
         # are the page and the top two the bank - so cut it at every multiple of $40.
@@ -381,7 +452,7 @@ def split_streamed(rom, tables, entity_names):
             if stop <= addr:
                 continue
 
-            label, note = label_and_note(entities, entity_names, "ENTITY_",
+            label, note = label_and_note(entity_owners(sorted(entities), entity_names),
                                          "no entity streams these pages")
             # Streamed enemies are drawn from data_03_5566_SpriteShapeTable_Main,
             # every one of whose columns is 4 tiles tall - so a page is always
@@ -417,7 +488,7 @@ def split_queued(rom, entity_names, rows_by_entity):
     chunks = []
     for (bank, src, size), gfx_ids in sorted(ranges.items()):
         entities = sorted(e for g in gfx_ids for e in users.get(g, []))
-        label, note = label_and_note(entities, entity_names, "ENTITY_",
+        label, note = label_and_note(entity_owners(entities, entity_names),
                                      "no entity selects this graphics id")
         label = "gfx_%s_%s" % ("_".join(f"{g:02x}" for g in sorted(gfx_ids)), label)
 
@@ -593,12 +664,12 @@ def main():
     args = ap.parse_args()
 
     rom = Rom(args.rom)
-    entity_names, action_names = load_names(CONSTANTS_PATH)
+    entity_names, action_names, defs = load_names(CONSTANTS_PATH)
     tables = read_action_tables(rom)
     rows_by_entity = fixed_shape_rows(rom)
 
     groups = {
-        "player": split_player(rom, tables, action_names),
+        "player": split_player(rom, tables, action_names, defs),
         "streamed": split_streamed(rom, tables, entity_names),
         "queued": split_queued(rom, entity_names, rows_by_entity),
     }

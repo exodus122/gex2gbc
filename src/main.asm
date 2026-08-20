@@ -37,8 +37,8 @@ SECTION "bank04", ROMX[$4000], BANK[$04]
     INCBIN ".gfx/entity_sprites/player/image_player_walk_none_004_4000.bin"
     ; $4100  28x4 tiles - PLAYER_ACTION_WALK
     INCBIN ".gfx/entity_sprites/player/image_player_walk_004_4100.bin"
-    ; $4800  4x4 tiles - no player action names these frames
-    INCBIN ".gfx/entity_sprites/player/image_player_unused_004_4800.bin"
+    ; $4800  4x4 tiles - PLAYER_ACTION_CLIMB via .data_02_472e_ClimbStopSprites
+    INCBIN ".gfx/entity_sprites/player/image_player_climb_corner_004_4800.bin"
     ; $4900  4x4 tiles - PLAYER_ACTION_IDLE_ANIMATION, PLAYER_ACTION_EAT_FLY
     INCBIN ".gfx/entity_sprites/player/image_player_idle_animation_eat_fly_004_4900.bin"
     ; $4a00  32x4 tiles - PLAYER_ACTION_RUN
@@ -77,10 +77,22 @@ SECTION "bank04", ROMX[$4000], BANK[$04]
     INCBIN ".gfx/entity_sprites/player/image_player_unused_004_7d00.bin"
 
 SECTION "bank05", ROMX[$4000], BANK[$05]
-    ; $4000  4x4 tiles - PLAYER_ACTION_CLIMB, PLAYER_ACTION_RIDING_ROCKET
-    INCBIN ".gfx/entity_sprites/player/image_player_climb_riding_rocket_005_4000.bin"
-    ; $4100  252x4 tiles - no player action names these frames
-    INCBIN ".gfx/entity_sprites/player/image_player_unused_005_4100.bin"
+    ; $4000  4x4 tiles - PLAYER_ACTION_CLIMB via .data_02_454f_BackgroundClimbSpriteBaseByDirection, PLAYER_ACTION_RIDING_ROCKET
+    INCBIN ".gfx/entity_sprites/player/image_player_climb_background_riding_rocket_005_4000.bin"
+    ; $4100  92x4 tiles - PLAYER_ACTION_CLIMB via .data_02_454f_BackgroundClimbSpriteBaseByDirection
+    INCBIN ".gfx/entity_sprites/player/image_player_climb_background_005_4100.bin"
+    ; $5800  32x4 tiles - PLAYER_ACTION_CLIMB via CLIMB_TAIL_SPIN_SPRITE_BASE ($58)
+    INCBIN ".gfx/entity_sprites/player/image_player_climb_background_spin_005_5800.bin"
+    ; $6000  4x4 tiles - PLAYER_ACTION_CLIMB via .data_02_461e_WallClimbSpriteBaseByDirection, PLAYER_ACTION_CLIMB via .data_02_4757_ClimbStopExitState byte +3
+    INCBIN ".gfx/entity_sprites/player/image_player_climb_wall_climb_corner_exit_005_6000.bin"
+    ; $6100  28x4 tiles - PLAYER_ACTION_CLIMB via .data_02_461e_WallClimbSpriteBaseByDirection
+    INCBIN ".gfx/entity_sprites/player/image_player_climb_wall_005_6100.bin"
+    ; $6800  4x4 tiles - PLAYER_ACTION_CLIMB via .data_02_461e_WallClimbSpriteBaseByDirection, PLAYER_ACTION_CLIMB via .data_02_4757_ClimbStopExitState byte +3
+    INCBIN ".gfx/entity_sprites/player/image_player_climb_wall_climb_corner_exit_005_6800.bin"
+    ; $6900  28x4 tiles - PLAYER_ACTION_CLIMB via .data_02_461e_WallClimbSpriteBaseByDirection
+    INCBIN ".gfx/entity_sprites/player/image_player_climb_wall_005_6900.bin"
+    ; $7000  64x4 tiles - PLAYER_ACTION_CLIMB via .data_02_465f_WallTailSpinSpriteBaseByDirection
+    INCBIN ".gfx/entity_sprites/player/image_player_climb_wall_spin_005_7000.bin"
 
 SECTION "bank06", ROMX[$4000], BANK[$06]
     ; $4000  16x4 tiles - no player action names these frames
@@ -99,8 +111,8 @@ SECTION "bank06", ROMX[$4000], BANK[$06]
     INCBIN ".gfx/entity_sprites/player/image_player_jump_hit_bounce_006_5300.bin"
     ; $5600  4x4 tiles - PLAYER_ACTION_DEATH
     INCBIN ".gfx/entity_sprites/player/image_player_death_006_5600.bin"
-    ; $5700  32x4 tiles - no player action names these frames
-    INCBIN ".gfx/entity_sprites/player/image_player_unused_006_5700.bin"
+    ; $5700  32x4 tiles - PLAYER_ACTION_CLIMB via .data_02_454f_BackgroundClimbSpriteBaseByDirection
+    INCBIN ".gfx/entity_sprites/player/image_player_climb_background_006_5700.bin"
     ; $5f00  48x4 tiles - PLAYER_ACTION_SPAWN, PLAYER_ACTION_GOLD_REMOTE_WARP
     INCBIN ".gfx/entity_sprites/player/image_player_spawn_gold_remote_warp_006_5f00.bin"
     ; $6b00  4x4 tiles - PLAYER_ACTION_DEATH_SET_UP_WARP
@@ -117,8 +129,12 @@ SECTION "bank06", ROMX[$4000], BANK[$06]
 SECTION "bank07", ROMX[$4000], BANK[$07]
     ; $4000  8x4 tiles - PLAYER_ACTION_LEAVE_DOOR
     INCBIN ".gfx/entity_sprites/player/image_player_leave_door_007_4000.bin"
-    ; $4200  60x4 tiles - no player action names these frames
-    INCBIN ".gfx/entity_sprites/player/image_player_unused_007_4200.bin"
+    ; $4200  24x4 tiles - PLAYER_ACTION_CLIMB via .data_02_4689_BackgroundDismountSprites
+    INCBIN ".gfx/entity_sprites/player/image_player_climb_background_drop_007_4200.bin"
+    ; $4800  8x4 tiles - PLAYER_ACTION_CLIMB via .data_02_46b1_WallDismountSprites
+    INCBIN ".gfx/entity_sprites/player/image_player_climb_wall_drop_007_4800.bin"
+    ; $4a00  28x4 tiles - PLAYER_ACTION_CLIMB via .data_02_472e_ClimbStopSprites
+    INCBIN ".gfx/entity_sprites/player/image_player_climb_corner_007_4a00.bin"
     ; $5100  28x4 tiles - PLAYER_ACTION_EXIT_TV
     INCBIN ".gfx/entity_sprites/player/image_player_exit_tv_007_5100.bin"
     ; $5800  32x4 tiles - no player action names these frames
