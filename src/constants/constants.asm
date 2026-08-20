@@ -231,8 +231,8 @@ DEF SFX_GEX_HURT                           EQU $10
 DEF SFX_GEX_SPAWN                          EQU $11
 DEF SFX_GEX_HIT_BOUNCE                     EQU $12
 DEF SFX_13                                 EQU $13 ; unused?
-DEF SFX_GEX_POWERUP_ACTIVE          EQU $14
-DEF SFX_GEX_POWERUP_EXPIRED            EQU $15
+DEF SFX_GEX_POWERUP_ACTIVE                 EQU $14
+DEF SFX_GEX_POWERUP_EXPIRED                EQU $15
 DEF SFX_16                                 EQU $16 ; unused?
 DEF SFX_ENEMY_DEFEATED                     EQU $17
 DEF SFX_18                                 EQU $18 ; unused?
@@ -1516,6 +1516,16 @@ DEF  BTN_BLOCK_B_WHILE_RISING                 EQU $80
 ; data_02_4d15_ActionInputTransitionTable
 DEF  ACTION_INPUT_ANY                         EQU $FE ; matches any nonzero input
 DEF  ACTION_INPUT_END                         EQU $FF ; end of list
+
+; Per-action bits in .data_02_4cf5_ActionTransitionFlagsTable, read by
+; call_02_4ccd_Player_RequestAction. INSTANT is checked on the INCOMING request and
+; LOCKED on the action already holding the queue, so the two are never tested against
+; the same byte in one call
+DEF  ACTION_TRANSITION_INSTANT_BIT            EQU 0
+DEF  ACTION_TRANSITION_LOCKED_BIT             EQU 1
+
+DEF  ACTION_TRANSITION_INSTANT                EQU $01 ; request always wins
+DEF  ACTION_TRANSITION_LOCKED                 EQU $02 ; once queued, nothing can replace it
 
 ; ------------------------------------------------------------------
 ; Player physics. Y velocity is a signed byte, positive = upward

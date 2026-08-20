@@ -880,7 +880,7 @@ call_02_4ccd_Player_RequestAction:
     ld   H, $00
     ld   DE, .data_02_4cf5_ActionTransitionFlagsTable
     add  HL, DE
-    bit  0, [HL]
+    bit  ACTION_TRANSITION_INSTANT_BIT, [HL]
     jr   NZ, .jr_02_4cf1
     ld   HL, wD745_Player_QueuedAction
     bit  7, [HL]
@@ -891,51 +891,49 @@ call_02_4ccd_Player_RequestAction:
     ld   H, $00
     ld   DE, .data_02_4cf5_ActionTransitionFlagsTable
     add  HL, DE
-    bit  1, [HL]
+    bit  ACTION_TRANSITION_LOCKED_BIT, [HL]
     ret  NZ
 .jr_02_4cf1:
     ld   [wD745_Player_QueuedAction], A
     ret
 .data_02_4cf5_ActionTransitionFlagsTable:
-; One byte per action id.
-;   bit 0 ($01) = instant - this request always wins
-;   bit 1 ($02) = locked  - once queued, nothing else can replace it
+; One ACTION_TRANSITION_* byte per action id.
 ; Only six actions are flagged at all. PLAYER_ACTION_TAKE_DAMAGE ($0F) and
 ; PLAYER_ACTION_EXIT_TV ($14) are instant but interruptible; the four death and tv-entry
 ; actions ($10-$13) are instant and locked, so once Gex starts dying or warping out nothing
 ; the player does can pull him back out of it
-    db   $00    ; $00 PLAYER_ACTION_SPAWN
-    db   $00    ; $01 PLAYER_ACTION_INTRO_WARP
-    db   $00    ; $02 PLAYER_ACTION_STAND
-    db   $00    ; $03 PLAYER_ACTION_IDLE_ANIMATION
-    db   $00    ; $04 PLAYER_ACTION_WALK
-    db   $00    ; $05 PLAYER_ACTION_RUN
-    db   $00    ; $06 PLAYER_ACTION_SKID
-    db   $00    ; $07 PLAYER_ACTION_TEETER
-    db   $00    ; $08 PLAYER_ACTION_CROUCH
-    db   $00    ; $09 PLAYER_ACTION_JUMP
-    db   $00    ; $0A PLAYER_ACTION_DOUBLE_JUMP
-    db   $00    ; $0B PLAYER_ACTION_NONE
-    db   $00    ; $0C PLAYER_ACTION_KARATE_KICK
-    db   $00    ; $0D PLAYER_ACTION_TAIL_SPIN
-    db   $00    ; $0E PLAYER_ACTION_EAT_FLY
-    db   $01    ; $0F PLAYER_ACTION_TAKE_DAMAGE
-    db   $03    ; $10 PLAYER_ACTION_DEATH
-    db   $03    ; $11 PLAYER_ACTION_DEATH_SET_UP_WARP
-    db   $03    ; $12 PLAYER_ACTION_ENTER_TV
-    db   $03    ; $13 PLAYER_ACTION_ENTER_TV_ALT
-    db   $01    ; $14 PLAYER_ACTION_EXIT_TV
-    db   $00    ; $15 PLAYER_ACTION_STANDING_PUSH
-    db   $00    ; $16 PLAYER_ACTION_WALKING_PUSH
-    db   $00    ; $17 PLAYER_ACTION_FREEFALL
-    db   $00    ; $18 PLAYER_ACTION_STOP_IMMEDIATE
-    db   $00    ; $19 PLAYER_ACTION_COLLAPSE
-    db   $00    ; $1A PLAYER_ACTION_ENTER_DOOR
-    db   $00    ; $1B PLAYER_ACTION_LEAVE_DOOR
-    db   $00    ; $1C PLAYER_ACTION_HIT_BOUNCE
-    db   $00    ; $1D PLAYER_ACTION_CLIMB
-    db   $00    ; $1E PLAYER_ACTION_GOLD_REMOTE_WARP
-    db   $00    ; $1F PLAYER_ACTION_RIDING_ROCKET
+    db   0                                                   ; $00 PLAYER_ACTION_SPAWN
+    db   0                                                   ; $01 PLAYER_ACTION_INTRO_WARP
+    db   0                                                   ; $02 PLAYER_ACTION_STAND
+    db   0                                                   ; $03 PLAYER_ACTION_IDLE_ANIMATION
+    db   0                                                   ; $04 PLAYER_ACTION_WALK
+    db   0                                                   ; $05 PLAYER_ACTION_RUN
+    db   0                                                   ; $06 PLAYER_ACTION_SKID
+    db   0                                                   ; $07 PLAYER_ACTION_TEETER
+    db   0                                                   ; $08 PLAYER_ACTION_CROUCH
+    db   0                                                   ; $09 PLAYER_ACTION_JUMP
+    db   0                                                   ; $0A PLAYER_ACTION_DOUBLE_JUMP
+    db   0                                                   ; $0B PLAYER_ACTION_NONE
+    db   0                                                   ; $0C PLAYER_ACTION_KARATE_KICK
+    db   0                                                   ; $0D PLAYER_ACTION_TAIL_SPIN
+    db   0                                                   ; $0E PLAYER_ACTION_EAT_FLY
+    db   ACTION_TRANSITION_INSTANT                           ; $0F PLAYER_ACTION_TAKE_DAMAGE
+    db   ACTION_TRANSITION_INSTANT | ACTION_TRANSITION_LOCKED; $10 PLAYER_ACTION_DEATH
+    db   ACTION_TRANSITION_INSTANT | ACTION_TRANSITION_LOCKED; $11 PLAYER_ACTION_DEATH_SET_UP_WARP
+    db   ACTION_TRANSITION_INSTANT | ACTION_TRANSITION_LOCKED; $12 PLAYER_ACTION_ENTER_TV
+    db   ACTION_TRANSITION_INSTANT | ACTION_TRANSITION_LOCKED; $13 PLAYER_ACTION_ENTER_TV_ALT
+    db   ACTION_TRANSITION_INSTANT                           ; $14 PLAYER_ACTION_EXIT_TV
+    db   0                                                   ; $15 PLAYER_ACTION_STANDING_PUSH
+    db   0                                                   ; $16 PLAYER_ACTION_WALKING_PUSH
+    db   0                                                   ; $17 PLAYER_ACTION_FREEFALL
+    db   0                                                   ; $18 PLAYER_ACTION_STOP_IMMEDIATE
+    db   0                                                   ; $19 PLAYER_ACTION_COLLAPSE
+    db   0                                                   ; $1A PLAYER_ACTION_ENTER_DOOR
+    db   0                                                   ; $1B PLAYER_ACTION_LEAVE_DOOR
+    db   0                                                   ; $1C PLAYER_ACTION_HIT_BOUNCE
+    db   0                                                   ; $1D PLAYER_ACTION_CLIMB
+    db   0                                                   ; $1E PLAYER_ACTION_GOLD_REMOTE_WARP
+    db   0                                                   ; $1F PLAYER_ACTION_RIDING_ROCKET
 
 data_02_4d15_ActionInputTransitionTable:
 ; This is Gex's control scheme, as data. One pointer per action id; each list is pairs of

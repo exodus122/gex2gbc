@@ -124,27 +124,46 @@ data_0a_75fc:
 ; row below is one byte short and every later row appears shifted by one
     db   $00
 data_0a_75fd_EntityAttributeTable:
-; The per-entity-type template applied to a slot when it spawns. 8 bytes per entity id:
+; The per-entity-type template applied to a slot when it spawns. 144 records, 8 bytes per
+; entity id:
 ;
 ;   +0  spawn parameter mask (see below)
 ;   +1  ENTITY_FIELD_COLLISION_WIDTH
 ;   +2  ENTITY_FIELD_COLLISION_HEIGHT
 ;   +3  ENTITY_FIELD_COLLISION_TYPE
 ;   +4  graphics set id, queued through call_02_7211_EntityGfxQueue_Enqueue ($00 = none)
-;   +5  GBC palette id
-;   +6  unused
-;   +7  unused
+;   +5  GBC palette id, loaded through call_0b_5f57_Entity_LoadGBCPalette
+;   +6  never read
+;   +7  never read
 ;
-; Bytes +4/+5 are the same pair as data_02_743c_EntityGfxAndPaletteTable - that table is
-; consulted when entities are already live, this one when they spawn.
+; TWO READERS, AT TWO DIFFERENT BASES. The spawn-parameter pass indexes from
+; data_0a_75fc and takes byte +0. The attribute copy that follows it indexes from
+; data_0a_75fd - one byte higher - and walks +1 through +5 in order: three bytes straight
+; into the slot's collision fields, then the graphics id, then the palette. Nothing ever
+; reads past +5, and bytes +6 and +7 are $00 in all 144 records.
 ;
-; The mask is the interesting field. A level's entity list carries three free parameter
+; Bytes +4/+5 are the same pair as data_02_743c_EntityGfxAndPaletteTable, which serves
+; entities that are already live where this one serves them at spawn. The two agree on
+; all 144 entity ids, so neither can be edited on its own.
+;
+; THE MASK is the interesting field. A level's entity list carries three free parameter
 ; bytes per entry (ENTITY_SPAWN_PARAMETER*_OFFSET), and the mask decides which of the eight
 ; entity fields $18..$1F they land in - bit 7 for $18 through bit 0 for $1F. Any field whose
-; bit is clear is zeroed instead. That is how one spawn record format configures a moving
-; platform's velocity and a timer-driven hazard's countdown without either knowing about the
-; other. See SPAWN_PARAM_TO_* in constants.asm; $70 - route the three parameters to
-; TIMER_2 / MISC_PARAM / UNK_1B ($19/$1A/$1B) - is by far the most common value.
+; bit is clear is zeroed instead, and the parameter cursor only advances on a set bit, so
+; the mask's population count is also how many of the three bytes the type consumes. That is
+; how one spawn record format configures a moving platform's velocity and a timer-driven
+; hazard's countdown without either knowing about the other.
+;
+; Eight mask values occur, spelled with SPAWN_PARAM_TO_* from constants.asm:
+;
+;   $00  101 types  no parameters - the three bytes in the entity list are ignored
+;   $70   18 types  TIMER_2 | MISC_PARAM | MISC_PARAM_HI - all three general-purpose slots
+;   $40   13 types  TIMER_2
+;   $60    4 types  TIMER_2 | MISC_PARAM
+;   $50    3 types  TIMER_2 | MISC_PARAM_HI
+;   $10    2 types  MISC_PARAM_HI
+;   $28    1 type   MISC_PARAM | XVEL
+;   $88    1 type   MISC_TIMER | XVEL
 ;
 ; ENTITY_TV_BUTTON and ENTITY_RED_REMOTE both use $70, and those three bytes are
 ; exactly what call_00_3899_Entity_CheckRemoteTotalsUnlock reads back as the

@@ -50,9 +50,37 @@
 ; In all three cases SPRITE_FLAG_ANIM_ENDED is pulsed for one frame, and that
 ; pulse is what every hand-off in bank02_player_actions.asm and every
 ; call_00_3843_Entity_CheckAnimationEnded in bank02_entity_actions.asm is
-; watching for. A one-frame block is therefore not a still image but a metronome:
-; it re-pulses ANIM_ENDED every +2 ticks, and a good number of entities use one
-; purely as a timer.
+; watching for. A one-frame block at a real speed is therefore not a still image
+; but a metronome: it re-pulses ANIM_ENDED every +2 ticks, and a good number of
+; entities use one purely as a timer.
+;
+; A FROZEN BLOCK IS THE OPPOSITE, and it is the largest single category here - 87
+; of the 232 blocks set byte +2 to $FF. Entity_TickAction clears ANIM_ENDED and
+; then returns on the $FF test, before it can reach any of the wrap handling, so
+; a frozen block holds its first frame forever AND never pulses ANIM_ENDED at all.
+; Entity_CheckAnimationEnded can therefore never succeed on a frozen action, which
+; is why no frozen entity's handler waits on one.
+;
+; Nothing outside Entity_TickAction writes ENTITY_FIELD_ANIM_FRAME_INDEX or
+; ENTITY_FIELD_SPRITE_ID - the only other reference to the index in the whole ROM
+; is call_00_3839_Entity_GetSpriteCounter, which reads it. So there is no back door
+; that steps a frozen block by hand: any frame after the first is unreachable. 86 of
+; the 87 declare a single frame and are honest stills; the exception is
+; data_02_7a21, which declares eight and can only ever show the first, the same kind
+; of leftover as the trimmed zombie walks above. Only 26 one-frame blocks actually
+; tick, so most of the file's one-frame blocks are stills rather than metronomes.
+;
+; Thirteen entity types are frozen in EVERY action they have - ENTITY_TV_BUTTON,
+; ENTITY_SCREAM_TV_LANTERN, ENTITY_KUNG_FU_THEATER_JAR and the rest of the props and
+; projectiles. They still change pose when their action changes, because SetAction
+; reloads byte +4 into SPRITE_ID; what they never do is animate within an action.
+;
+; BLOCKS ARE SHARED FREELY. 31 of them are named by more than one (entity, action)
+; pair, covering 81 pairs between them, and 16 are shared across different entity
+; types rather than between actions of one type - the two ninjas share all three of
+; their blocks, the tall jar and the short jar share theirs, and five separate
+; dinosaur-shaped ids share data_02_7790. Editing one block therefore changes every
+; entity that points at it.
 ;
 ; ONLY GEX USES THE HAND-OVER. Exactly eleven of the 229 blocks have a nonzero
 ; byte +0, and all eleven are his; every entity block is $00 there. Nothing
