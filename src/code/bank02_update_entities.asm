@@ -778,8 +778,8 @@ call_02_715a_MapWindow_Update:
 
 call_02_7164_MapScroll_CheckVertical:
 ; Reads wD6EF (Y position in map, 16-bit), right-shifts 3 to get tile row, compares against previously
-; stored row in wD6F3_BgMap_PrevRow; if changed, sets bit 0 (scroll down) or bit 1 (scroll up) in
-; wD6F9_BgMap_LoadingFlags scroll-request flags
+; stored row in wD6F3_BgMap_PrevRow; if the camera moved up sets MAP_SCROLL_UP, if it moved
+; down sets MAP_SCROLL_DOWN, in the wD6F9_BgMap_LoadingFlags scroll-request flags
     ld   HL, wD6EF_BgMap_ScrollY
     ld   A, [HL+]
     ld   D, [HL]
@@ -806,18 +806,18 @@ call_02_7164_MapScroll_CheckVertical:
     ret  Z
     ld   HL, wD6F9_BgMap_LoadingFlags
     ld   A, [HL]
-    or   A, MAP_SCROLL_DOWN
+    or   A, MAP_SCROLL_UP
     ld   [HL], A
     ret
 .jr_02_718e:
     ld   HL, wD6F9_BgMap_LoadingFlags
     ld   A, [HL]
-    or   A, MAP_SCROLL_UP
+    or   A, MAP_SCROLL_DOWN
     ld   [HL], A
     ret
 
 call_02_7196_MapScroll_CheckHorizontal:
-; Same logic as above for wD6ED (X position in map); sets bit 2 (scroll right) or bit 3 (scroll left)
+; Same logic as above for wD6ED (X position in map); sets MAP_SCROLL_LEFT or MAP_SCROLL_RIGHT
 ; in wD6F9_BgMap_LoadingFlags
     ld   HL, wD6ED_BgMap_ScrollX
     ld   A, [HL+]
@@ -845,13 +845,13 @@ call_02_7196_MapScroll_CheckHorizontal:
     ret  Z
     ld   HL, wD6F9_BgMap_LoadingFlags
     ld   A, [HL]
-    or   A, MAP_SCROLL_RIGHT
+    or   A, MAP_SCROLL_LEFT
     ld   [HL], A
     ret
 .jr_02_71c0:
     ld   HL, wD6F9_BgMap_LoadingFlags
     ld   A, [HL]
-    or   A, MAP_SCROLL_LEFT
+    or   A, MAP_SCROLL_RIGHT
     ld   [HL], A
     ret
 

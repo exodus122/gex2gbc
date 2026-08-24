@@ -117,7 +117,7 @@ call_03_6f5e_VRAM_WriteBgMapRowForVerticalScroll:
 ; Writes one horizontal ROW of 31 tilemap entries. The loop does `inc L / inc E`, walking
 ; CONSECUTIVE tilemap addresses, and the start is masked with $E0 to snap to the beginning
 ; of a row; a column would instead step by $20, which is what the other routine here does.
-; Called on MAP_SCROLL_DOWN | MAP_SCROLL_UP, since scrolling vertically is exactly when a
+; Called on MAP_SCROLL_UP | MAP_SCROLL_DOWN, since scrolling vertically is exactly when a
 ; new row comes into view.
 ;
 ; Reads wD6FA_BgMap_RowWritePosLo
@@ -415,7 +415,7 @@ call_03_6f5e_VRAM_WriteBgMapRowForVerticalScroll:
 call_03_708d_VRAM_WriteBgMapColumnForHorizontalScroll:
 ; Writes one vertical COLUMN of 32 tilemap entries - the mirror of the routine above. Each
 ; step does `add A,$20`, the tilemap row stride, so it walks down a column; the start is
-; masked with $1F to pick the column index. Called on MAP_SCROLL_RIGHT | MAP_SCROLL_LEFT.
+; masked with $1F to pick the column index. Called on MAP_SCROLL_LEFT | MAP_SCROLL_RIGHT.
 ;
 ; Reads wD6FC_BgMap_ColumnWritePos to compute the $9800 address, uses the same $CF indirect attribute
 ; read pattern for GBC bank 1 attributes (32 tiles across 4 VRAM rows with inc D/inc H to cross

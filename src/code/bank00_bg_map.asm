@@ -3,7 +3,7 @@ call_00_1264_BgMap_LoadFull:
 ; blockset+collision, tileset; tileset offset; alt blockset mask) and stores them to wD6F5–wD700_BgMap_TilesetBankOffset.
 ; Calls call_00_0f38_FadeOutAndClearVRAM, then call_00_1419_BgMap_LoadTileset. Resets secondary tileset index to $FF,
 ; clears wD77B_BlockPatch_VramWritePending/wD77D_BlockPatch_StepsRemaining. Then loops 22 ($16) times:
-; sets wD6F9_BgMap_LoadingFlags=$01 (dirty flag), calls LoadBgMapDirtyRegions
+; sets wD6F9_BgMap_LoadingFlags=MAP_SCROLL_UP, calls LoadBgMapDirtyRegions
 ; and VRAM_WriteBgMapRowForVerticalScroll, advances wD6EF (Y map position) by 8 each iteration — so
 ; it walks DOWN the map, drawing one horizontal row per pass, until the whole visible area is
 ; filled. Clears dirty flag, loads HUD tiles, updates map window
@@ -33,7 +33,7 @@ call_00_1264_BgMap_LoadFull:
     ld   A, $16
 .jr_00_12a2:
     push AF
-    ld   A, MAP_SCROLL_DOWN
+    ld   A, MAP_SCROLL_UP
     ld   [wD6F9_BgMap_LoadingFlags], A
     call call_00_1455_BgMap_LoadDirtyRegions
     FARCALL call_03_6f5e_VRAM_WriteBgMapRowForVerticalScroll
@@ -307,10 +307,10 @@ call_00_1455_BgMap_LoadDirtyRegions:
     bit  MAP_PENDING_VRAM_TRANSFER, [HL]
     jr   NZ, call_00_1455_BgMap_LoadDirtyRegions
     ld   A, [wD6F9_BgMap_LoadingFlags]
-    and  A, MAP_SCROLL_DOWN | MAP_SCROLL_UP
+    and  A, MAP_SCROLL_UP | MAP_SCROLL_DOWN
     call NZ, call_00_1472_BgMap_LoadRowForVerticalScroll
     ld   A, [wD6F9_BgMap_LoadingFlags]
-    and  A, MAP_SCROLL_RIGHT | MAP_SCROLL_LEFT
+    and  A, MAP_SCROLL_LEFT | MAP_SCROLL_RIGHT
     call NZ, call_00_157a_BgMap_LoadColumnForHorizontalScroll
     ld   HL, wD6F9_BgMap_LoadingFlags
     set  MAP_PENDING_VRAM_TRANSFER, [HL]
@@ -320,7 +320,8 @@ call_00_1472_BgMap_LoadRowForVerticalScroll:
 ; Loads one horizontal row of 6 metatiles into the BG tilemap for vertical camera scrolling.
 ; Scrolling vertically exposes a new horizontal ROW; the column twin below handles horizontal
 ; scrolling, which exposes a vertical COLUMN.
-; Determines whether to load the top or bottom edge row based on wD6F9_BgMap_LoadingFlags bit 1.
+; MAP_SCROLL_DOWN loads the bottom edge row (camera Y + $90), otherwise the top edge row
+; (camera Y - 1).
 ; Computes map data addresses from current X/Y scroll positions (wD6ED/wD6EF).
 ; Reads 6 metatile IDs from the map bank (wD6F5) into wD702_BgMap_TempScratchRowMetaTileIDs–wD70C
 ; (every other byte), reads corresponding alt blockset flags from the secondary bank (wD6F6) into
@@ -338,7 +339,7 @@ call_00_1472_BgMap_LoadRowForVerticalScroll:
     ld   B, A                                          ; after this point BC is equal to [wD6EF_BgMap_ScrollY]
     ld   HL, $90                                       ; HL = $90
     ld   A, [wD6F9_BgMap_LoadingFlags]
-    and  A, MAP_SCROLL_UP
+    and  A, MAP_SCROLL_DOWN
     jr   NZ, .jr_00_1486
     ld   HL, $ffff
 .jr_00_1486:
@@ -529,7 +530,8 @@ call_00_1472_BgMap_LoadRowForVerticalScroll:
 
 call_00_157a_BgMap_LoadColumnForHorizontalScroll:
 ; Loads one vertical column of 6 metatiles for horizontal camera scrolling. Mirrors the
-; structure of LoadVerticalBgStrip: determines left or right edge column from wD6F9_BgMap_LoadingFlags bit 3,
+; structure of LoadVerticalBgStrip: MAP_SCROLL_RIGHT loads the right edge column (camera X + $A0),
+; otherwise the left edge column (camera X - 1);
 ; reads 6 metatile IDs (stepping $80 bytes = one map row apart) from the map bank and alt blockset
 ; bank into wD70E_BgMap_TempScratchColumnMetaTileIDs–wD71C. Calls call_00_18e4_BgMap_ApplyBlockPatchesToColumn for secondary tileset resolution. Expands each metatile
 ; into 8 tile IDs and writes to VRAM column-wise, advancing HL by $20 (one tilemap row) per pair,
@@ -542,7 +544,7 @@ call_00_157a_BgMap_LoadColumnForHorizontalScroll:
     ld   D, A
     ld   HL, $a0
     ld   A, [wD6F9_BgMap_LoadingFlags]
-    and  A, MAP_SCROLL_LEFT
+    and  A, MAP_SCROLL_RIGHT
     jr   NZ, .jr_00_158e
     ld   HL, rIE
 .jr_00_158e:

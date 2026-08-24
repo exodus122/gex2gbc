@@ -306,12 +306,13 @@ DEF MAP_BOSS_TV_CHANNEL_Z                         EQU $1E
 ; totals menu's page counter, runs to LEVEL_COUNT
 DEF LEVEL_COUNT                                   EQU $1E
 
-; wD6F9_BgMap_LoadingFlags
-DEF MAP_PENDING_VRAM_TRANSFER    EQU 7   ;
-DEF MAP_SCROLL_LEFT              EQU $08 ;
-DEF MAP_SCROLL_RIGHT             EQU $04 ;
-DEF MAP_SCROLL_UP                EQU $02 ;
-DEF MAP_SCROLL_DOWN              EQU $01 ;
+; wD6F9_BgMap_LoadingFlags. Each scroll bit names the direction the camera moved,
+; and therefore which edge of the screen has to be redrawn
+DEF MAP_PENDING_VRAM_TRANSFER    EQU 7   ; bit 7 - a strip is built and waiting on vblank
+DEF MAP_SCROLL_UP                EQU $01 ; loads the row at camera Y - 1
+DEF MAP_SCROLL_DOWN              EQU $02 ; loads the row at camera Y + $90
+DEF MAP_SCROLL_LEFT              EQU $04 ; loads the column at camera X - 1
+DEF MAP_SCROLL_RIGHT             EQU $08 ; loads the column at camera X + $A0
 
 ; LCD STAT interrupt handler ids, passed to call_00_0bae_RequestLcdIsr /
 ; call_00_0bb9_InstallLcdIsr and stored in the low 7 bits of wCCFD_LcdIsrId.
