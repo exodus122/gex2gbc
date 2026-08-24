@@ -1,8 +1,9 @@
 ; ==================================================================
-; PLAYER SPAWN POSITIONS
+; MAP SPAWN POSITIONS
 ;
-; Where the player is put down when a map is (re)loaded. Called once, from
-; bank00_home.asm, right before the blockmap is drawn and the entities are spawned.
+; Where the player is put down when a map is (re)loaded - the entry step of a map
+; load rather than anything the player does. Called once, from bank00_home.asm,
+; right before the blockmap is drawn and the entities are spawned.
 ;
 ; Everything in this bank is in BLOCK coordinates - the same grid the blockmap is
 ; laid out in, 128 x 128 blocks per level (a $4000 byte blockmap indexed
@@ -21,7 +22,7 @@
 ; times instead of once.
 ; ==================================================================
 
-call_0b_4efe_Player_SetSpawnPosition:
+call_0b_4efe_Map_SetSpawnPosition:
 ; Positions the player for the map about to be loaded, then scrolls the camera to
 ; match. Picks one of three sources, in priority order:
 ;

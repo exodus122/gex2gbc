@@ -751,7 +751,7 @@ DEF MAPDATA_TEXT_MISSION_BASE               EQU $02 ; mission N is at text block
 ; 128 x 128 blocks per level. One block is SPAWN_UNITS_PER_BLOCK units of player
 ; world position, so a table entry becomes a position with block * $20 + an offset.
 ; The offset differs per spawn source, which is the only thing separating the three
-; otherwise identical conversions in call_0b_4efe_Player_SetSpawnPosition
+; otherwise identical conversions in call_0b_4efe_Map_SetSpawnPosition
 ; ------------------------------------------------------------------
 DEF SPAWN_UNITS_PER_BLOCK                   EQU $20
 DEF SPAWN_LIST_END                          EQU $FF ; ends a door list

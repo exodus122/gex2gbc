@@ -440,7 +440,7 @@ call_00_0150_Init:
     ld   [wD610_MediaDimension_TVScreenId], A                                    ;; 00:03f1 $ea $10 $d6
     ld   A, $01                                        ;; 00:03f4 $3e $01
     ld   [wD743_Player_UpdateFlag], A                                    ;; 00:03f6 $ea $43 $d7
-    FARCALL call_0b_4efe_Player_SetSpawnPosition
+    FARCALL call_0b_4efe_Map_SetSpawnPosition
     call call_00_1264_BgMap_LoadFull                                  ;; 00:0404 $cd $64 $12
     FARCALL call_02_6e17_Entities_InitAndSpawnAll
     call call_00_0521_Screen_PresentAndFadeIn                                  ;; 00:0412 $cd $21 $05

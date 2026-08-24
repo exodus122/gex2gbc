@@ -547,7 +547,7 @@ wD618_CheckpointSpawnId:
 ; call_00_208c_Checkpoint_WriteSpawnId when a checkpoint TV block is smashed - the
 ; block's coordinates are looked up in .data_00_20b6_CheckpointBlockCoordTable, which
 ; is what turns a particular block in a particular level into a checkpoint id.
-; Read only by call_0b_4efe_Player_SetSpawnPosition
+; Read only by call_0b_4efe_Map_SetSpawnPosition
     ds 1                                               ;; d618
 
 wD619_MenuTimeoutLo:
