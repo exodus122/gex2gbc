@@ -105,10 +105,10 @@ call_02_41b7_PlayerAction_Stand:
     ld   HL, wD759_ButtonBlockingFlags
     set  BTN_BLOCK_B_UNTIL_RELEASE_BIT, [HL]
     xor  A, A
-    ld   [wD75D_PlayerXSpeedPrev], A
+    ld   [wD75D_Player_XSpeedCurrent], A
     ld   [wD760_PlayerYVelocity], A
     xor  A, A
-    ld   [wD75E_PlayerXSpeed], A
+    ld   [wD75E_Player_XSpeedTarget], A
     call call_02_4dd8_Player_GetIdleTimerLength
     cp   A, $32                                        ; always NC - see header
     jr   NC, .jr_02_41d7
@@ -186,7 +186,7 @@ call_02_422c_PlayerAction_Walk:
     and  A, ACTION_STATE_IS_FIRST_FRAME
     jr   Z, .jr_02_4238
     ld   A, PLAYER_XSPEED_WALK
-    ld   [wD75E_PlayerXSpeed], A
+    ld   [wD75E_Player_XSpeedTarget], A
 .jr_02_4238:
     ld   C, PLAYER_ACTION_WALK
     call call_02_4204_Player_CheckWallPush
@@ -204,7 +204,7 @@ call_02_4248_PlayerAction_Run:
     and  A, ACTION_STATE_IS_FIRST_FRAME
     jr   Z, .jr_02_4254
     ld   A, PLAYER_XSPEED_RUN
-    ld   [wD75E_PlayerXSpeed], A
+    ld   [wD75E_Player_XSpeedTarget], A
 .jr_02_4254:
     ld   C, PLAYER_ACTION_RUN
     call call_02_4204_Player_CheckWallPush
@@ -222,7 +222,7 @@ call_02_425a_PlayerAction_SkidDecel:
     jr   NC, .jr_02_4267
     xor  A, A
 .jr_02_4267:
-    ld   [wD75E_PlayerXSpeed], A
+    ld   [wD75E_Player_XSpeedTarget], A
     ret
 
 call_02_426b_PlayerAction_Teeter:
@@ -233,7 +233,7 @@ call_02_426b_PlayerAction_Teeter:
 ; barrier - and since that list has no entry for an empty d-pad, letting go of the
 ; controls leaves him wobbling there indefinitely
     xor a
-    ld [wD75E_PlayerXSpeed], a
+    ld [wD75E_Player_XSpeedTarget], a
     ret
 
 call_02_4270_PlayerAction_Crouch:
@@ -242,7 +242,7 @@ call_02_4270_PlayerAction_Crouch:
 ; sends him to Jump or TailSpin from B or A. data_02_75ad is a single frame, so the
 ; crouch is a pose rather than an animation
     xor  A, A
-    ld   [wD75E_PlayerXSpeed], A
+    ld   [wD75E_Player_XSpeedTarget], A
     ret
 
 call_02_4275_PlayerAction_Jump:
@@ -268,11 +268,11 @@ call_02_4275_PlayerAction_Jump:
     call call_02_4a3a_Player_LockBPress
     ld   C, SFX_GEX_JUMP
     call call_00_112f_QueueSFX
-    ld   A, [wD75E_PlayerXSpeed]
+    ld   A, [wD75E_Player_XSpeedTarget]
     and  A, A
     jr   NZ, .jr_02_429a
     ld   A, $01
-    ld   [wD75E_PlayerXSpeed], A
+    ld   [wD75E_Player_XSpeedTarget], A
 .jr_02_429a:
     ld   A, [wD762_PlayerInitialYVelocity]
     and  A, A
@@ -302,11 +302,11 @@ call_02_42ac_PlayerAction_DoubleJump:
     call call_02_4a3a_Player_LockBPress
     ld   C, SFX_GEX_DOUBLE_JUMP
     call call_00_112f_QueueSFX
-    ld   A, [wD75E_PlayerXSpeed]
+    ld   A, [wD75E_Player_XSpeedTarget]
     and  A, A
     jr   NZ, .jr_02_42d1
     ld   A, $01
-    ld   [wD75E_PlayerXSpeed], A
+    ld   [wD75E_Player_XSpeedTarget], A
 .jr_02_42d1:
     ld   A, [wD762_PlayerInitialYVelocity]
     and  A, A
@@ -358,11 +358,11 @@ call_02_42f7_PlayerAction_TailSpin:
     set  BTN_BLOCK_A_BIT, [HL]
     ld   A, $01
     ld   [wD76B_Player_IsAttacking], A
-    ld   A, [wD75E_PlayerXSpeed]
+    ld   A, [wD75E_Player_XSpeedTarget]
     and  A, A
     jr   NZ, .jr_02_4313
     ld   A, $01
-    ld   [wD75E_PlayerXSpeed], A
+    ld   [wD75E_Player_XSpeedTarget], A
 .jr_02_4313:
     ld   A, [wD764_TileTypeBehindGexsUpperBody]
     cpl
@@ -385,7 +385,7 @@ call_02_42f7_PlayerAction_TailSpin:
     and  A, PADF_RIGHT | PADF_LEFT
     jr   Z, .jr_02_4349
     ld   C, PLAYER_ACTION_RUN
-    ld   A, [wD75E_PlayerXSpeed]
+    ld   A, [wD75E_Player_XSpeedTarget]
     cp   A, $02
     jr   NC, .jr_02_4349
     ld   C, PLAYER_ACTION_WALK
@@ -398,7 +398,7 @@ call_02_434d_PlayerAction_EatFly:
 ; call_00_0647_Player_SwapFlyPowerup with A = 0 to apply the power-up itself.
 ; The action ends when its animation runs out and the transition table sends him back to Stand
     xor  a
-    ld   [wD75E_PlayerXSpeed],a
+    ld   [wD75E_Player_XSpeedTarget],a
     ld   a,[wD209_Player_ActionState]
     and  a,ACTION_STATE_IS_FIRST_FRAME
     ret  z
@@ -417,7 +417,7 @@ call_02_435b_PlayerAction_TakeDamage:
     call call_00_112f_QueueSFX
 .jr_02_4367:
     xor  a
-    ld   [wD75E_PlayerXSpeed],a
+    ld   [wD75E_Player_XSpeedTarget],a
     ld   a,PLAYER_DAMAGE_COOLDOWN_LENGTH
     ld   [wD750_Player_DamageCooldownTimer],a
     ret
@@ -428,7 +428,7 @@ call_02_4371_PlayerAction_Death:
 ; collapse and then hands him to PLAYER_ACTION_DEATH_SET_UP_WARP, which does the
 ; actual work of fading out and asking for the respawn
     xor  A, A
-    ld   [wD75E_PlayerXSpeed], A
+    ld   [wD75E_Player_XSpeedTarget], A
     ld   A, PLAYER_DAMAGE_COOLDOWN_LENGTH
     ld   [wD750_Player_DamageCooldownTimer], A
     ret
@@ -446,7 +446,7 @@ call_02_437b_PlayerAction_DeathSetUpWarp:
     and  A, ACTION_STATE_IS_FIRST_FRAME
     jr   Z, .jr_02_438e
     xor  A, A
-    ld   [wD75E_PlayerXSpeed], A
+    ld   [wD75E_Player_XSpeedTarget], A
     call call_00_0f5d_FadeToBlack
     ld   C, SFX_GEX_DEATH
     call call_00_112f_QueueSFX
@@ -488,7 +488,7 @@ call_02_43a7_PlayerAction_EnterTV:
     call call_00_112f_QueueSFX
 .jr_02_43b3:
     xor  A, A
-    ld   [wD75E_PlayerXSpeed], A
+    ld   [wD75E_Player_XSpeedTarget], A
     ld   HL, wD20A_Player_SpriteFlags
     bit  SPRITE_FLAG_ANIM_ENDED_BIT, [HL]
     ret  Z
@@ -507,7 +507,7 @@ call_02_43c6_PlayerAction_EnterTVAlt:
     call call_00_112f_QueueSFX
 .jr_02_43D2:
     xor  a
-    ld   [wD75E_PlayerXSpeed],a
+    ld   [wD75E_Player_XSpeedTarget],a
     ld   a,[wD20A_Player_SpriteFlags]
     and  a,SPRITE_FLAG_ANIM_ENDED
     ret  z
@@ -528,7 +528,7 @@ call_02_43e5_PlayerAction_ExitTV:
     call call_00_112f_QueueSFX
 .jr_02_43f1:
     xor  A, A
-    ld   [wD75E_PlayerXSpeed], A
+    ld   [wD75E_Player_XSpeedTarget], A
     ret
 
 call_02_43f6_PlayerAction_StandingPush:
@@ -540,7 +540,7 @@ call_02_43f6_PlayerAction_StandingPush:
     and  a,ACTION_STATE_IS_FIRST_FRAME
     jr   z,.jr_02_4402
     ld   a,PLAYER_XSPEED_WALK
-    ld   [wD75E_PlayerXSpeed],a
+    ld   [wD75E_Player_XSpeedTarget],a
 .jr_02_4402:
     ld   c,PLAYER_ACTION_STAND
     jp   call_02_4204_Player_CheckWallPush
@@ -554,7 +554,7 @@ call_02_4407_PlayerAction_WalkingPush:
     and  A, ACTION_STATE_IS_FIRST_FRAME
     jr   Z, .jr_02_4413
     ld   A, PLAYER_XSPEED_WALK
-    ld   [wD75E_PlayerXSpeed], A
+    ld   [wD75E_Player_XSpeedTarget], A
 .jr_02_4413:
     ld   C, PLAYER_ACTION_STAND
     jp   call_02_4204_Player_CheckWallPush
@@ -572,11 +572,11 @@ call_02_4418_PlayerAction_Freefall:
     jr   Z, .jr_02_442f
     ld   A, $01
     ld   [wD762_PlayerInitialYVelocity], A
-    ld   A, [wD75E_PlayerXSpeed]
+    ld   A, [wD75E_Player_XSpeedTarget]
     and  A, A
     jr   NZ, .jr_02_442f
     ld   A, $01
-    ld   [wD75E_PlayerXSpeed], A
+    ld   [wD75E_Player_XSpeedTarget], A
 .jr_02_442f:
     ld   A, [wD762_PlayerInitialYVelocity]
     and  A, A
@@ -593,7 +593,7 @@ call_02_4443_PlayerAction_StopImmediate:
 ; frame is up. Like PLAYER_ACTION_NONE nothing requests it - the only difference is
 ; that this one would at least recover if anything did
     xor  a
-    ld   [wD75E_PlayerXSpeed],a
+    ld   [wD75E_Player_XSpeedTarget],a
     ret
 
 call_02_4448_PlayerAction_Collapse:
@@ -608,7 +608,7 @@ call_02_4448_PlayerAction_Collapse:
     call call_00_112f_QueueSFX
 .jr_02_4454:
     xor  A, A
-    ld   [wD75E_PlayerXSpeed], A
+    ld   [wD75E_Player_XSpeedTarget], A
     ret
 
 call_02_4459_PlayerAction_EnterDoor:
@@ -625,7 +625,7 @@ call_02_4459_PlayerAction_EnterDoor:
     call call_02_48b7_Player_SpawnOpeningDoorEntity
 .jr_02_4465:
     xor  a
-    ld   [wD75E_PlayerXSpeed],a
+    ld   [wD75E_Player_XSpeedTarget],a
     call call_02_4894_Player_CheckWarpReady
     ret  z
     ld   a,[wD621_WarpFlags]
@@ -644,7 +644,7 @@ call_02_447e_PlayerAction_LeaveDoor:
 ; it repopulates the room, and spawns the matching open-door entity when it matches -
 ; which is how the door Gex comes out of is already open behind him
     xor  a
-    ld   [wD75E_PlayerXSpeed],a
+    ld   [wD75E_Player_XSpeedTarget],a
     ret
 
 call_02_4483_PlayerAction_HitBounce:
@@ -663,11 +663,11 @@ call_02_4483_PlayerAction_HitBounce:
     ld   a,PLAYER_HIT_BOUNCE_VELOCITY
     ld   [wD760_PlayerYVelocity],a
     ld   [wD762_PlayerInitialYVelocity],a
-    ld   a,[wD75E_PlayerXSpeed]
+    ld   a,[wD75E_Player_XSpeedTarget]
     and  a
     jr   nz,.jr_02_44A5
     ld   a,$01
-    ld   [wD75E_PlayerXSpeed],a
+    ld   [wD75E_Player_XSpeedTarget],a
 .jr_02_44A5:
     ld   a,[wD762_PlayerInitialYVelocity]
     and  a
@@ -693,7 +693,7 @@ call_02_44af_PlayerAction_Climb:
     set  BTN_BLOCK_B_UNTIL_RELEASE_BIT, [HL]
     xor  A, A
     ld   [wD747_Player_ClimbAnimCounter], A
-    ld   [wD75E_PlayerXSpeed], A
+    ld   [wD75E_Player_XSpeedTarget], A
     ld   [wD760_PlayerYVelocity], A
     ld   [wD761_Player_FloorSnapVelocity], A
     ld   A, [wD769_ClimbSurfaceTileType]
@@ -1344,7 +1344,7 @@ call_02_4828_PlayerAction_RidingRocket:
 ; H, so `cp $55` is the test "has he climbed above world Y $0AA0 yet". Once he has,
 ; the action becomes a plain jump and normal physics take over again
     xor  a
-    ld   [wD75E_PlayerXSpeed],a
+    ld   [wD75E_Player_XSpeedTarget],a
     ld   h,HIGH(wD220_OtherLoadedEntities)
     ld   a,$20
 .jr_02_4830:

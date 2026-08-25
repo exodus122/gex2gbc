@@ -181,7 +181,7 @@ call_03_4915_BgCollision_SidescrollerHandler:
     xor  A, A
     ld   [wD75C_PlayerXDeltaExtra], A
     xor  A, A
-    ld   [wD75D_PlayerXSpeedPrev], A
+    ld   [wD75D_Player_XSpeedCurrent], A
     ld   HL, wD585_CollisionFlags
     set  BGCOLL_WALL_BIT, [HL]
 .jr_03_49bd_SlopeCheck:
@@ -371,7 +371,7 @@ call_03_4ab3_BgCollision_GetPredictedXDelta:
 ; against where he is going rather than where he is. A zero result also sets Z, and
 ; the callers use that to skip the wall and slope passes entirely - not moving
 ; sideways means there is nothing to hit
-    ld   A, [wD75D_PlayerXSpeedPrev]
+    ld   A, [wD75D_Player_XSpeedCurrent]
     ld   HL, wD20D_Player_FacingFlags
     bit  FACING_LEFT_BIT, [HL]
     jr   Z, .jr_03_4abf_AddCarry                                ; jump if not facing left

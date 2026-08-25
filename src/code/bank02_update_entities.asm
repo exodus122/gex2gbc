@@ -175,8 +175,8 @@ call_02_6e17_Entities_InitAndSpawnAll:
     ld   [wD621_WarpFlags], A
     xor  A, A
     ld   [wD74C_Player_KarateKickTimer], A
-    ld   [wD75D_PlayerXSpeedPrev], A
-    ld   [wD75E_PlayerXSpeed], A
+    ld   [wD75D_Player_XSpeedCurrent], A
+    ld   [wD75E_Player_XSpeedTarget], A
     ld   [wD75C_PlayerXDeltaExtra], A
     ld   [wD760_PlayerYVelocity], A
     ld   [wD761_Player_FloorSnapVelocity], A

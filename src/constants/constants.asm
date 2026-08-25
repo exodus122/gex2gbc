@@ -1144,6 +1144,7 @@ DEF BLOCKPATCH_STEP_SFX_BIT                   EQU 5
 ; ==================================================================
 DEF ENTITY_FIELD_ENTITY_ID                  EQU $00 ; ENTITY_ID_NONE ($FF) = free slot
 DEF ENTITY_FIELD_ACTION_ID                  EQU $01 ; masked to 5 bits; indexes the entity's action table
+DEF ENTITY_ACTION_MASK                      EQU $1F ; the 5 bits of $01 that are the action id
 DEF ENTITY_FIELD_ACTION_FUNC                EQU $02 ; word - per-frame update function
 DEF ENTITY_FIELD_ANIM_FRAME_LIST_PTR        EQU $04 ; word - list of frame ids, 4 bytes into the action data block
 DEF ENTITY_FIELD_ANIM_FRAME_TIMER           EQU $06 ; counts down to the next frame; $FF freezes the animation entirely
@@ -1506,6 +1507,12 @@ DEF ENTITY_INTERACT_NONE    EQU $00
 DEF ENTITY_INTERACT_TOUCH   EQU $01
 DEF ENTITY_INTERACT_ATTACK  EQU $02
 DEF ENTITY_INTERACT_STOMP   EQU $04
+; The same three as bit numbers, for `bit` in
+; call_03_519b_Entity_CheckPlayerInteraction. Only ATTACK and STOMP are ever
+; tested - ENTITY_INTERACT_TOUCH is documentation, no code reads bit 0
+DEF ENTITY_INTERACT_TOUCH_BIT   EQU 0
+DEF ENTITY_INTERACT_ATTACK_BIT  EQU 1
+DEF ENTITY_INTERACT_STOMP_BIT   EQU 2
 
 DEF PLAYER_ACTION_MASK                       EQU $1F
 

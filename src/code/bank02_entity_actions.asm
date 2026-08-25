@@ -1650,7 +1650,7 @@ call_02_56dc_EntityAction_HardHeadAreaHazard_Aim:
     ld   A, [wD6EF_BgMap_ScrollY+1]
     sbc  A, $00
     ld   [HL], A                                       ; hover $18 above the top of the view
-    ld   A, [wD75D_PlayerXSpeedPrev]
+    ld   A, [wD75D_Player_XSpeedCurrent]
     add  A, A                                          ; speed * 2 ...
     ld   HL, wD20D_Player_FacingFlags
     bit  5, [HL]

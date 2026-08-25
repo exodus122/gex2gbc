@@ -1349,6 +1349,13 @@ wD741_Player_Health:
 wD742_Player_CurrentFly:
     ds 1                                               ;; d742
 wD743_Player_UpdateFlag:
+; Non-zero while Gex exists as a live, drawn character. Set to 1 by the per-life
+; setup inside call_00_0150_Init (00:03F4), and read as a gate by everything that
+; has no business running before he exists:
+;   call_02_6eba_Entities_UpdateAll        skips the whole player pass
+;   call_03_4c76_EntityCollision_Dispatch  refuses to test any entity against him
+;   the collectible pass in bank03_oam_build.asm draws the grid either way, but
+;       only collects from it while this is set
     ds 1                                               ;; d743
 wD744_Player_SpawnAction:
     ds 1                                               ;; d744
@@ -1506,16 +1513,30 @@ wD75C_PlayerXDeltaExtra:
 ; shoving him this frame - moving platforms and powered walkways in bank 2,
 ; slope correction in bank 3 - and zeroed again on a wall hit
     ds 1                                               ;; d75c
-wD75D_PlayerXSpeedPrev:
-; (0 = still, 1 = walk, 2 = run)
+wD75D_Player_XSpeedCurrent:
+; Gex's walking speed THIS frame, in whole pixels (0 = still, 1 = walk, 2 = run).
+; This is the one that actually moves him - call_02_4a77_Player_ApplyXMovement
+; adds it (negated when facing left) to wD75C_PlayerXDeltaExtra to get the frame's
+; displacement.
 ;
-; call_02_56dc_EntityAction_HardHeadAreaHazard_Aim reads it as an index rather than
-; a speed: 0/1/2 select how far ahead of Gex the falling hazard aims, so the three
-; values here are the three lead distances in .data_02_575e
+; call_02_4a45_Player_UpdateFacing ramps it one step per frame toward
+; wD75E_Player_XSpeedTarget, and resets it to zero on a turn or when the d-pad is
+; released, so Gex always accelerates from a standstill rather than snapping to
+; full speed. It was previously named wD75D_PlayerXSpeedPrev, which had the
+; relationship with wD75E backwards.
+;
+; Two other readers treat it as something other than a speed:
+;   call_03_52c5_CollisionHandler_StationaryPlatform / MovingPlatform use it as
+;       "how far he could step this frame" when deciding whether he is pushing a
+;       platform he is standing next to
+;   call_02_56dc_EntityAction_HardHeadAreaHazard_Aim uses it as an index: 0/1/2
+;       select how far ahead of Gex the falling hazard aims, so the three values
+;       here are the three lead distances in .data_02_575e
     ds 1                                               ;; d75d
-wD75E_PlayerXSpeed:
-; how fast gex runs (1 = walk, 2 = run)
-; can freeze to change how fast you run, but doesn't make you move by itself
+wD75E_Player_XSpeedTarget:
+; The speed the CURRENT ACTION wants (1 = walk, 2 = run). Nothing moves by this
+; directly - it is only the target wD75D_Player_XSpeedCurrent ramps toward, so
+; freezing it changes how fast Gex ends up running but does not move him
     ds 1                                               ;; d75e
 wD75F_BgCollision_WallProbeLookahead:
 ; how far above his head the wall probe in call_03_4915_BgCollision_SidescrollerHandler

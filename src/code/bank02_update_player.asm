@@ -94,7 +94,7 @@ call_02_489a_Player_SetLandingAction:
     and  A, PADF_RIGHT | PADF_LEFT
     jr   Z, .jr_02_48b3
     ld   C, PLAYER_ACTION_RUN
-    ld   A, [wD75E_PlayerXSpeed]
+    ld   A, [wD75E_Player_XSpeedTarget]
     cp   A, $02
     jr   NC, .jr_02_48b3
     ld   C, PLAYER_ACTION_WALK
@@ -385,8 +385,8 @@ call_02_4a3a_Player_LockBPress:
 
 call_02_4a45_Player_UpdateFacing:
 ; Turns held directions into a facing, and ramps Gex up to speed.
-; wD75E_PlayerXSpeed is the target speed the current action wants (walk or run);
-; wD75D_PlayerXSpeedPrev is the speed actually in use, and this is what nudges it one step
+; wD75E_Player_XSpeedTarget is the target speed the current action wants (walk or run);
+; wD75D_Player_XSpeedCurrent is the speed actually in use, and this is what nudges it one step
 ; per frame toward the target. Turning around, or letting go of the d-pad entirely, resets
 ; it to zero - so Gex always accelerates from a standstill after a direction change rather
 ; than snapping to full speed. Does nothing while climbing
@@ -408,24 +408,24 @@ call_02_4a45_Player_UpdateFacing:
     jr   Z, .jr_02_4a67
 .jr_02_4a62:
     xor  A, A
-    ld   [wD75D_PlayerXSpeedPrev], A
+    ld   [wD75D_Player_XSpeedCurrent], A
     ret
 .jr_02_4a67:
-    ld   A, [wD75D_PlayerXSpeedPrev]
-    ld   HL, wD75E_PlayerXSpeed
+    ld   A, [wD75D_Player_XSpeedCurrent]
+    ld   HL, wD75E_Player_XSpeedTarget
     cp   A, [HL]
     jr   C, .jr_02_4a72
     ld   A, [HL]
     dec  A
 .jr_02_4a72:
     inc  A
-    ld   [wD75D_PlayerXSpeedPrev], A
+    ld   [wD75D_Player_XSpeedCurrent], A
     ret
 
 call_02_4a77_Player_ApplyXMovement:
 ; The horizontal move for the frame, and the most involved routine in the file.
 ;
-; The delta is Gex's own speed (wD75D_PlayerXSpeedPrev, negated if facing left) plus
+; The delta is Gex's own speed (wD75D_Player_XSpeedCurrent, negated if facing left) plus
 ; wD75C_PlayerXDeltaExtra, which is whatever the world is doing to him - a moving platform
 ; carrying him, a powered walkway, or a slope correction from bank 3. Zero total means
 ; nothing to do.
@@ -443,7 +443,7 @@ call_02_4a77_Player_ApplyXMovement:
     ld   A, [wD746_Player_ClimbingState]
     cp   A, CLIMB_STATE_NOT_CLIMBING
     ret  NZ
-    ld   A, [wD75D_PlayerXSpeedPrev]
+    ld   A, [wD75D_Player_XSpeedCurrent]
     ld   HL, wD20D_Player_FacingFlags
     bit  FACING_LEFT_BIT, [HL]
     jr   Z, .jr_02_4a89
