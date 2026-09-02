@@ -984,7 +984,10 @@ DEF MENU_TV_SCREEN_HEIGHT                   EQU 5
 DEF MENU_COLLECTIBLE_ICON_TILE              EQU $92 ; first VRAM tile it is staged at
 DEF MENU_COLLECTIBLE_ICON_WIDTH             EQU 3
 DEF MENU_COLLECTIBLE_ICON_HEIGHT            EQU 2
-DEF MENU_COLLECTIBLE_TILEMAP_BYTES          EQU $18 ; 3 x 2 tile ids, copied to wDAAB
+DEF MENU_COLLECTIBLE_PALETTE_BYTES          EQU $18 ; three CGB palettes, copied to wDAAB
+                                                    ; - 96 bytes into wDA4B_DynamicPalette,
+                                                    ; so they patch palettes 12-14 of the
+                                                    ; MENU_PALETTE_BYTES set already there
 DEF MENU_COLLECTIBLE_MILESTONE_1            EQU $1E ; 30 - the value a passed milestone shows
 DEF MENU_COLLECTIBLE_MILESTONE_2            EQU $28 ; 40 - see MENU_COUNTER_COLLECTIBLES_*
 

@@ -126,9 +126,33 @@ data_01_5f80_Text_TVBossTV:
     db   "BOSS TV", END_TEXT
 
 ; ------------------------------------------------------------------
-; Per-map text blocks: level name, then missions 0, 1 and 2
+; PER-MAP TEXT BLOCKS
+;
+; One block per map, reached through that map's MAPDATA_TEXT_BLOCK_PTR in
+; code/bank00_map_init_data.asm - so the order below is map id order, not level
+; order, and the two are not the same: a level's three maps are scattered through
+; the list.
+;
+; A block is four pointers and nothing else:
+;
+;   +0  the level name, shown on the mission select and totals screens
+;   +2  mission 0
+;   +4  mission 1
+;   +6  mission 2
+;
+; Every block has all four pointers whether or not the map has three missions. A
+; map with fewer points its spare slots at a bare END_TEXT byte, and the eight
+; MAP_UNUSED_* slots point all four at one - which is why those blocks are eight
+; bytes of pointers into four consecutive $80s. The mission select screen never
+; asks for a mission the map does not have, so the empty strings are only there to
+; keep the shape regular.
+;
+; The missions read as instructions ("JUMP TO THE TEETERING ROCK") because that is
+; exactly what they are: data_01_49a7_MissionStatusText picks the "n of m remotes"
+; line separately, and these say what to do to earn one
 ; ------------------------------------------------------------------
-data_01_5f88:
+data_01_5f88_MapText_MediaDimension:
+; $00 MAP_MEDIA_DIMENSION
     dw   .data_01_5f90
     dw   .data_01_5fa4
     dw   .data_01_5fa5
@@ -143,7 +167,8 @@ data_01_5f88:
 .data_01_5fa6:
     db   END_TEXT
 
-data_01_5fa7:
+data_01_5fa7_MapText_ToonTvOutOfToon:
+; $01 MAP_TOON_TV_OUT_OF_TOON
     dw   .data_01_5faf
     dw   .data_01_5fbb
     dw   .data_01_5fd6
@@ -158,7 +183,8 @@ data_01_5fa7:
 .data_01_5feb:
     db   "WHACK FIVE PURPLE MUSHROOMS", END_TEXT
 
-data_01_6007:
+data_01_6007_MapText_ScreamTvSmellraiser:
+; $02 MAP_SCREAM_TV_SMELLRAISER
     dw   .data_01_600f
     dw   .data_01_601b
     dw   .data_01_6037
@@ -173,7 +199,8 @@ data_01_6007:
 .data_01_6050:
     db   "RIDE THE HAUNTED ELEVATOR", END_TEXT
 
-data_01_606a:
+data_01_606a_MapText_ScreamTvFrankensteinfeld:
+; $03 MAP_SCREAM_TV_FRANKENSTEINFELD
     dw   .data_01_6072
     dw   .data_01_6083
     dw   .data_01_6098
@@ -188,7 +215,8 @@ data_01_606a:
 .data_01_60ab:
     db   "STICK ACROSS THE TOWER OF DOOM", END_TEXT
 
-data_01_60ca:
+data_01_60ca_MapText_CircuitCentralWwwdotcomcom:
+; $04 MAP_CIRCUIT_CENTRAL_WWWDOTCOMCOM
     dw   .data_01_60d2
     dw   .data_01_60e1
     dw   .data_01_60ff
@@ -203,7 +231,8 @@ data_01_60ca:
 .data_01_611a:
     db   END_TEXT
 
-data_01_611b:
+data_01_611b_MapText_KungFuTheaterMaoTseTongue:
+; $05 MAP_KUNG_FU_THEATER_MAO_TSE_TONGUE
     dw   .data_01_6123
     dw   .data_01_6132
     dw   .data_01_614b
@@ -218,7 +247,8 @@ data_01_611b:
 .data_01_615e:
     db   END_TEXT
 
-data_01_615f:
+data_01_615f_MapText_Unused06:
+; $06 MAP_UNUSED_06
     dw   .data_01_6167, .data_01_6168, .data_01_6169, .data_01_616a
 
 .data_01_6167:
@@ -230,7 +260,8 @@ data_01_615f:
 .data_01_616a:
     db   END_TEXT
 
-data_01_616b:
+data_01_616b_MapText_PreHistoryChannelPangaea90210:
+; $07 MAP_PRE_HISTORY_CHANNEL_PANGAEA_90210
     dw   .data_01_6173, .data_01_6181, .data_01_6199, .data_01_61ab
 .data_01_6173:
     db   "PANGAEA 90210", END_TEXT
@@ -241,7 +272,8 @@ data_01_616b:
 .data_01_61ab:
     db   END_TEXT
 
-data_01_61ac:    
+data_01_61ac_MapText_ToonTvFineTooning:
+; $08 MAP_TOON_TV_FINE_TOONING
     dw   .data_01_61b4, .data_01_61c1, .data_01_61d0, .data_01_61e1
     
 .data_01_61b4:
@@ -253,7 +285,8 @@ data_01_61ac:
 .data_01_61e1:
     db   END_TEXT
 
-data_01_61e2:    
+data_01_61e2_MapText_PreHistoryChannelThisOldCave:
+; $09 MAP_PRE_HISTORY_CHANNEL_THIS_OLD_CAVE
     dw   .data_01_61ea, .data_01_61f8, .data_01_620f, .data_01_6224
     
 .data_01_61ea:
@@ -265,7 +298,8 @@ data_01_61e2:
 .data_01_6224:
     db   "BOUNCE UP OVER THE CHASM", END_TEXT
 
-data_01_623d:    
+data_01_623d_MapText_CircuitCentralHoneyIShrunkTheGecko:
+; $0a MAP_CIRCUIT_CENTRAL_HONEY_I_SHRUNK_THE_GECKO
     dw   .data_01_6245, .data_01_625e, .data_01_6270, .data_01_6283
     
 .data_01_6245:
@@ -277,7 +311,8 @@ data_01_623d:
 .data_01_6283:
     db   "CHARGE THE A.C.T. STEPS", END_TEXT
 
-data_01_629b:    
+data_01_629b_MapText_ScreamTvPoltergex:
+; $0b MAP_SCREAM_TV_POLTERGEX
     dw   .data_01_62a3, .data_01_62ad, .data_01_62c4, .data_01_62e0
     
 .data_01_62a3:
@@ -289,7 +324,8 @@ data_01_629b:
 .data_01_62e0:
     db   "SMASH EIGHT BLOOD COOLERS", END_TEXT
 
-data_01_62fa:    
+data_01_62fa_MapText_Unused0c:
+; $0c MAP_UNUSED_0C
     dw   .data_01_6302, .data_01_6303, .data_01_6304, .data_01_6305
     
 .data_01_6302:
@@ -301,7 +337,8 @@ data_01_62fa:
 .data_01_6305:
     db   END_TEXT
 
-data_01_6306:    
+data_01_6306_MapText_KungFuTheaterSamuraiNightFever:
+; $0d MAP_KUNG_FU_THEATER_SAMURAI_NIGHT_FEVER
     dw   .data_01_630e, .data_01_6322, .data_01_633c, .data_01_6358
     
 .data_01_630e:
@@ -313,7 +350,8 @@ data_01_6306:
 .data_01_6358:
     db   "CLIMB THE TOWERING TEMPLE", END_TEXT
 
-data_01_6372:    
+data_01_6372_MapText_RezopolisNoWeddingsAndAFuneral:
+; $0e MAP_REZOPOLIS_NO_WEDDINGS_AND_A_FUNERAL
     dw   .data_01_637a, .data_01_6394, .data_01_63b2, .data_01_63b3
     
 .data_01_637a:
@@ -325,7 +363,8 @@ data_01_6372:
 .data_01_63b3:
     db   END_TEXT
 
-data_01_63b4:    
+data_01_63b4_MapText_Unused0f:
+; $0f MAP_UNUSED_0F
     dw   .data_01_63bc, .data_01_63bd, .data_01_63be, .data_01_63bf
 
 .data_01_63bc:    
@@ -337,7 +376,8 @@ data_01_63b4:
 .data_01_63bf:
     db   END_TEXT
 
-data_01_63c0:    
+data_01_63c0_MapText_ScreamTvThursdayThe12th:
+; $10 MAP_SCREAM_TV_THURSDAY_THE_12TH
     dw   .data_01_63c8, .data_01_63da, .data_01_63fb, .data_01_63fc
 
 .data_01_63c8:
@@ -349,7 +389,8 @@ data_01_63c0:
 .data_01_63fc:
     db   END_TEXT
 
-data_01_63fd:    
+data_01_63fd_MapText_Unused11:
+; $11 MAP_UNUSED_11
     dw   .data_01_6405, .data_01_6406, .data_01_6407, .data_01_6408
     
 .data_01_6405:
@@ -361,7 +402,8 @@ data_01_63fd:
 .data_01_6408:
     db   END_TEXT
 
-data_01_6409:    
+data_01_6409_MapText_Unused12:
+; $12 MAP_UNUSED_12
     dw   .data_01_6411, .data_01_6412, .data_01_6413, .data_01_6414
     
 .data_01_6411:
@@ -373,7 +415,8 @@ data_01_6409:
 .data_01_6414:
     db   END_TEXT
 
-data_01_6415:    
+data_01_6415_MapText_Unused13:
+; $13 MAP_UNUSED_13
     dw   .data_01_641d, .data_01_641e, .data_01_641f, .data_01_6420
     
 .data_01_641d:
@@ -385,7 +428,8 @@ data_01_6415:
 .data_01_6420:
     db   END_TEXT
 
-data_01_6421:    
+data_01_6421_MapText_Unused14:
+; $14 MAP_UNUSED_14
     dw   .data_01_6429, .data_01_642a, .data_01_642b, .data_01_642c
     
 .data_01_6429:
@@ -397,7 +441,8 @@ data_01_6421:
 .data_01_642c:
     db   END_TEXT
 
-data_01_642d:    
+data_01_642d_MapText_KungFuTheaterLizardInAChinaShop:
+; $15 MAP_KUNG_FU_THEATER_LIZARD_IN_A_CHINA_SHOP
     dw   .data_01_6435, .data_01_644c, .data_01_646d, .data_01_646e
     
 .data_01_6435:
@@ -409,7 +454,8 @@ data_01_642d:
 .data_01_646e:
     db   END_TEXT
 
-data_01_646f:    
+data_01_646f_MapText_RezopolisBuggedOut:
+; $16 MAP_REZOPOLIS_BUGGED_OUT
     dw   .data_01_6477, .data_01_6482, .data_01_64a3, .data_01_64a4
     
 .data_01_6477:
@@ -421,7 +467,8 @@ data_01_646f:
 .data_01_64a4:
     db   END_TEXT
 
-data_01_64a5:    
+data_01_64a5_MapText_CircuitCentralChipsAndDips:
+; $17 MAP_CIRCUIT_CENTRAL_CHIPS_AND_DIPS
     dw   .data_01_64ad, .data_01_64bc, .data_01_64dd, .data_01_64de
     
 .data_01_64ad:
@@ -433,7 +480,8 @@ data_01_64a5:
 .data_01_64de:
     db   END_TEXT
 
-data_01_64df:    
+data_01_64df_MapText_PreHistoryChannelLavaDabbaDoo:
+; $18 MAP_PRE_HISTORY_CHANNEL_LAVA_DABBA_DOO
     dw   .data_01_64e7, .data_01_64f5, .data_01_6510, .data_01_6511
     
 .data_01_64e7:
@@ -445,7 +493,8 @@ data_01_64df:
 .data_01_6511:
     db   END_TEXT
 
-data_01_6512:    
+data_01_6512_MapText_ScreamTvTexasChainsawManicure:
+; $19 MAP_SCREAM_TV_TEXAS_CHAINSAW_MANICURE
     dw   .data_01_651a, .data_01_6532, .data_01_654e, .data_01_654f
     
 .data_01_651a:
@@ -457,7 +506,8 @@ data_01_6512:
 .data_01_654f:
     db   END_TEXT
 
-data_01_6550:    
+data_01_6550_MapText_RezopolisMazedAndConfused:
+; $1a MAP_REZOPOLIS_MAZED_AND_CONFUSED
     dw   .data_01_6558, .data_01_656b, .data_01_6580, .data_01_65a6
     
 .data_01_6558:
@@ -469,7 +519,8 @@ data_01_6550:
 .data_01_65a6:
     db   END_TEXT
 
-data_01_65a7:    
+data_01_65a7_MapText_Unused1b:
+; $1b MAP_UNUSED_1B
     dw   .data_01_65af, .data_01_65b0, .data_01_65b1, .data_01_65b2
     
 .data_01_65af:
@@ -481,7 +532,8 @@ data_01_65a7:
 .data_01_65b2:
     db   END_TEXT
 
-data_01_65b3:    
+data_01_65b3_MapText_Unused1c:
+; $1c MAP_UNUSED_1C
     dw   .data_01_65bb, .data_01_65bc, .data_01_65bd, .data_01_65be
     
 .data_01_65bb:
@@ -493,7 +545,8 @@ data_01_65b3:
 .data_01_65be:
     db   END_TEXT
 
-data_01_65bf:    
+data_01_65bf_MapText_Unused1d:
+; $1d MAP_UNUSED_1D
     dw   .data_01_65c7, .data_01_65c8, .data_01_65c9, .data_01_65ca
     
 .data_01_65c7:
@@ -505,7 +558,8 @@ data_01_65bf:
 .data_01_65ca:
     db   END_TEXT
 
-data_01_65cb:    
+data_01_65cb_MapText_BossTvChannelZ:
+; $1e MAP_BOSS_TV_CHANNEL_Z
     dw   .data_01_65d3, .data_01_65dd, .data_01_65fc, .data_01_65fd,
     
 .data_01_65d3:

@@ -141,9 +141,18 @@ data_01_7bcc_Image_Hand:
 
 data_01_7c0f_CollectibleIconTable:
 ; One entry per level id, pointing at that level's collectible artwork - the fruit,
-; bug or whatever the TV channel uses. Each blob is 3x2 tiles of graphics, then 24
-; bytes of tilemap ids, then a 128-byte CGB palette set, all of which
-; call_01_49d7_MenuCmd_StageCollectibleIcon copies in one pass.
+; bug or whatever the TV channel uses. Each blob is two pieces back to back, copied
+; separately by call_01_49d7_MenuCmd_StageCollectibleIcon:
+;
+;   $60 bytes  MENU_COLLECTIBLE_ICON_WIDTH x MENU_COLLECTIBLE_ICON_HEIGHT tiles of
+;              2bpp graphics -> wC000_BgMapTileIds, at tile MENU_COLLECTIBLE_ICON_TILE
+;   $18 bytes  MENU_COLLECTIBLE_PALETTE_BYTES of CGB colour -> wDAAB
+;
+; The second piece is THREE PALETTES, not tile ids - twelve BGR555 words. It lands 96
+; bytes into the MENU_PALETTE_BYTES set at wDA4B_DynamicPalette, which the same
+; routine has just filled from .data_01_4a0f_PauseMenuPalette, so it replaces palettes
+; 12, 13 and 14 of that set and leaves the rest of the pause-screen colours alone.
+; That is how one static pause screen shows six different channels' collectibles.
 ;
 ; Levels on the same channel share a blob, so the table is 31 pointers to six images
     dw   .data_01_7c4d_ToonTV              ; MAP_MEDIA_DIMENSION
@@ -178,37 +187,52 @@ data_01_7c0f_CollectibleIconTable:
     dw   .data_01_7c4d_ToonTV              ; MAP_UNUSED_1D
     dw   .data_01_7c4d_ToonTV              ; MAP_BOSS_TV_CHANNEL_Z
 .data_01_7c4d_ToonTV:
-; Toon TV - 3x2 tiles of graphics, then MENU_COLLECTIBLE_TILEMAP_BYTES of tile ids,
-; then MENU_PALETTE_BYTES of CGB palettes
+; Toon TV - $60 bytes of 3x2 tile graphics, then MENU_COLLECTIBLE_PALETTE_BYTES
+; of CGB colour. The second file is named for what it holds; the record has no
+; tilemap and no full palette set of its own
     INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_toon_tv.bin"
     INCBIN "gfx/misc_sprites/collectibles/palettes/palette_toon_tv_collectibles.bin"
 .data_01_7cc5_ScreamTV:
-; Scream TV - 3x2 tiles of graphics, then MENU_COLLECTIBLE_TILEMAP_BYTES of tile ids,
-; then MENU_PALETTE_BYTES of CGB palettes
+; Scream TV - $60 bytes of 3x2 tile graphics, then MENU_COLLECTIBLE_PALETTE_BYTES
+; of CGB colour. The second file is named for what it holds; the record has no
+; tilemap and no full palette set of its own
     INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_scream_tv.bin"
     INCBIN "gfx/misc_sprites/collectibles/palettes/palette_scream_tv_collectibles.bin"
 .data_01_7d3d_CircuitCentral:
-; Circuit Central - 3x2 tiles of graphics, then MENU_COLLECTIBLE_TILEMAP_BYTES of tile ids,
-; then MENU_PALETTE_BYTES of CGB palettes
+; Circuit Central - $60 bytes of 3x2 tile graphics, then MENU_COLLECTIBLE_PALETTE_BYTES
+; of CGB colour. The second file is named for what it holds; the record has no
+; tilemap and no full palette set of its own
     INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_circuit_central.bin"
     INCBIN "gfx/misc_sprites/collectibles/palettes/palette_circuit_central_collectibles.bin"
 .data_01_7db5_KungFuTheater:
-; Kung-Fu Theatre - 3x2 tiles of graphics, then MENU_COLLECTIBLE_TILEMAP_BYTES of tile ids,
-; then MENU_PALETTE_BYTES of CGB palettes
+; Kung-Fu Theatre - $60 bytes of 3x2 tile graphics, then MENU_COLLECTIBLE_PALETTE_BYTES
+; of CGB colour. The second file is named for what it holds; the record has no
+; tilemap and no full palette set of its own
     INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_kung_fu_theater.bin"
     INCBIN "gfx/misc_sprites/collectibles/palettes/palette_kung_fu_theater_collectibles.bin"
 .data_01_7e2d_PrehistoryChannel:
-; Prehistory Channel - 3x2 tiles of graphics, then MENU_COLLECTIBLE_TILEMAP_BYTES of tile ids,
-; then MENU_PALETTE_BYTES of CGB palettes
+; Prehistory Channel - $60 bytes of 3x2 tile graphics, then MENU_COLLECTIBLE_PALETTE_BYTES
+; of CGB colour. The second file is named for what it holds; the record has no
+; tilemap and no full palette set of its own
     INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_prehistory_channel.bin"
     INCBIN "gfx/misc_sprites/collectibles/palettes/palette_prehistory_channel_collectibles.bin"
 .data_01_7ea5_Rezopolis:
-; Rezopolis - 3x2 tiles of graphics, then MENU_COLLECTIBLE_TILEMAP_BYTES of tile ids,
-; then MENU_PALETTE_BYTES of CGB palettes
+; Rezopolis - $60 bytes of 3x2 tile graphics, then MENU_COLLECTIBLE_PALETTE_BYTES
+; of CGB colour. The second file is named for what it holds; the record has no
+; tilemap and no full palette set of its own
     INCBIN ".gfx/misc_sprites/collectibles/image_collectibles_rezopolis.bin"
     INCBIN "gfx/misc_sprites/collectibles/palettes/palette_rezopolis_collectibles.bin"
 
-; the below bytes are an incomplete portion of palette_rezopolis_collectibles.bin
-    db   $00, $b4, $01, $7f, $3f, $00, $00, $6f                             ;; 01:7f08 ????????
+; UNREACHABLE. Twenty-one bytes of leftover, then the bank runs out at $7f32 and the
+; remaining $ce bytes are $00.
+;
+; They are palette_rezopolis_collectibles.bin again from its FOURTH byte on - the same
+; blob the record above ends with, shifted three bytes and cut short by the end of the
+; bank. data_01_7c0f_CollectibleIconTable's last entry points at $7ea5 and the reader
+; takes exactly $60 + MENU_COLLECTIBLE_PALETTE_BYTES bytes from there, which ends at
+; $7f1d - precisely where this starts. So nothing ever reads a byte of it, and it is
+; here because the build that made the ROM emitted the blob twice, not because
+; anything wants a misaligned copy
+    db   $00, $b4, $01, $7f, $3f, $00, $00, $6f
     db   $00, $bf, $04, $ff, $31, $00, $00, $00
     db   $00, $9c, $02, $7f, $03

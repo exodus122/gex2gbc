@@ -876,11 +876,18 @@ call_01_4969_MenuCmd_SetMissionStatusText:
 
 call_01_49d7_MenuCmd_StageCollectibleIcon:
 ; Stages the current level's collectible icon - the fruit/bug/whatever that level
-; uses - as a 3x2 tile block starting at tile id $92.
+; uses - as a 3x2 tile block starting at MENU_COLLECTIBLE_ICON_TILE.
 ;
-; The graphics come from data_01_7c0f_CollectibleIconTable indexed by level id, and
-; the 24 bytes immediately after them in ROM are the icon's tilemap ids, copied on
-; to wDAAB_MenuBgMapTileIds. The 128-byte blob loaded first is the CGB palette set
+; Two copies out of ROM, in this order. First the whole MENU_PALETTE_BYTES pause-screen
+; palette set goes to wDA4B_DynamicPalette. Then the level's blob is fetched from
+; data_01_7c0f_CollectibleIconTable: its graphics are staged into
+; wC000_BgMapTileIds, and the MENU_COLLECTIBLE_PALETTE_BYTES that follow them are
+; copied to wDAAB - which is 96 bytes INTO the set just written, so this second copy
+; patches palettes 12, 13 and 14 of it rather than going anywhere new.
+;
+; Those trailing bytes are three CGB palettes, despite the wDAAB_MenuBgMapTileIds
+; label and the old MENU_COLLECTIBLE_TILEMAP_BYTES name - the .bin files, which are
+; called palette_*_collectibles.bin, had it right
     ld   hl,.data_01_4a0f_PauseMenuPalette
     ld   de,wDA4B_DynamicPalette
     ld   bc,MENU_PALETTE_BYTES
@@ -900,7 +907,7 @@ call_01_49d7_MenuCmd_StageCollectibleIcon:
     ld   de,wC000_BgMapTileIds
     call call_00_07b0_MemCopy                          ; HL now sits on the tilemap ids that follow
     ld   de,wDAAB_MenuBgMapTileIds
-    ld   bc,MENU_COLLECTIBLE_TILEMAP_BYTES
+    ld   bc,MENU_COLLECTIBLE_PALETTE_BYTES
     jp   call_00_07b0_MemCopy
 .data_01_4a0f_PauseMenuPalette:
 ; MENU_PALETTE_BYTES of CGB background palettes. Named for the screen it dresses -

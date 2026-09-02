@@ -1841,6 +1841,11 @@ wDA7B_MediaDimensionTVPalette:
     ds 48                                              ;; da7b
 
 wDAAB_MenuBgMapTileIds:
+; MISNAMED - no tile ids ever reach here. This is the last 32 bytes of the
+; MENU_PALETTE_BYTES block that starts at wDA4B_DynamicPalette, and its only writer is
+; call_01_49d7_MenuCmd_StageCollectibleIcon, which drops
+; MENU_COLLECTIBLE_PALETTE_BYTES of CGB colour on it to give the collectible icon its
+; own palettes. The label is kept so the disassembly's symbol file stays stable
     ds 32                                              ;; daab
 
 ; ------------------------------------------------------------------
