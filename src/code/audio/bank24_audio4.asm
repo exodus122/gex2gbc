@@ -16,7 +16,7 @@
 ;
 ;                    music                              sfx
 ;   pointers         wDFB0_Audio_MusicChannelPtrs       wDFC3_Audio_SfxChannelPtrs
-;   timers           wDFB9_Audio_MusicTimerCh1 ...      wDFCB_Audio_SfxTimerCh1 ...
+;   timers           wDFB9_Audio_MusicNoteTimerCh1 ...      wDFCB_Audio_SfxNoteTimerCh1 ...
 ;   active mask      wDFC2_Audio_MusicChannelsActive    wDFCF_Audio_SfxChannelsActive
 ;
 ; Where both want the same hardware channel the sfx wins, and the music's registers
@@ -41,34 +41,41 @@
 ; has rather than a song. Nothing reaches them either way: .data_00_1244_MusicList in
 ; bank 0 only ever names banks $21, $22 and $23, so wD788_CurrentAudioBank never
 ; holds $24 and this whole block is unreachable
+;
+; GEX 3 USES A DIFFERENT DRIVER ENTIRELY - see gex3's code/audio/bank04_audio1.asm. Its
+; two audio banks also hold identical code, but there is one set of four channels rather
+; than two, notes carry an instrument number that arms a volume envelope, a pitch slide
+; and an arpeggio, and songs are built from reusable patterns instead of one flat stream
+; per channel. The AUDIO_* constants and the Audio_* routine names line up where the two
+; drivers do the same job
 ; ==================================================================
 
 SECTION "bank24", ROMX[$4000], BANK[$24]
 
 call_24_4000_Audio_Init:
-; Boot-time reset. Points wDFAE_AudioBankDataPointer at this bank's track tables,
+; Boot-time reset. Points wDFAE_Audio_TrackTablesPtrLo at this bank's track tables,
 ; clears every channel mask, both sets of duration counters and rNR51, then wipes the
 ; 20-byte music register save area and the 16-byte wave RAM save area. It does not
 ; touch rNR52, so the APU is left however the caller had it
     ld   HL, data_24_4460_TrackPointerTables                              ;; 24:4000 $21 $60 $44
     ld   A, L                                          ;; 24:4003 $7d
-    ld   [wDFAE_AudioBankDataPointer], A                                    ;; 24:4004 $ea $ae $df
+    ld   [wDFAE_Audio_TrackTablesPtrLo], A                                    ;; 24:4004 $ea $ae $df
     ld   A, H                                          ;; 24:4007 $7c
-    ld   [wDFAF_AudioBankDataPointer], A                                    ;; 24:4008 $ea $af $df
+    ld   [wDFAF_Audio_TrackTablesPtrHi], A                                    ;; 24:4008 $ea $af $df
     xor  A, A                                          ;; 24:400b $af
     ld   [wDFC2_Audio_MusicChannelsActive], A                                    ;; 24:400c $ea $c2 $df
     ld   [wDFC1_Audio_CurrentChannelBit], A                                    ;; 24:400f $ea $c1 $df
     ldh  [rNR51], A                                    ;; 24:4012 $e0 $25
     ld   [wDFB8_Audio_ChannelIndex], A                                    ;; 24:4014 $ea $b8 $df
-    ld   [wDFB9_Audio_MusicTimerCh1], A                                    ;; 24:4017 $ea $b9 $df
-    ld   [wDFBA_Audio_MusicTimerCh2], A                                    ;; 24:401a $ea $ba $df
-    ld   [wDFBB_Audio_MusicTimerCh3], A                                    ;; 24:401d $ea $bb $df
-    ld   [wDFBC_Audio_MusicTimerCh4], A                                    ;; 24:4020 $ea $bc $df
+    ld   [wDFB9_Audio_MusicNoteTimerCh1], A                                    ;; 24:4017 $ea $b9 $df
+    ld   [wDFBA_Audio_MusicNoteTimerCh2], A                                    ;; 24:401a $ea $ba $df
+    ld   [wDFBB_Audio_MusicNoteTimerCh3], A                                    ;; 24:401d $ea $bb $df
+    ld   [wDFBC_Audio_MusicNoteTimerCh4], A                                    ;; 24:4020 $ea $bc $df
     ld   [wDFCF_Audio_SfxChannelsActive], A                                    ;; 24:4023 $ea $cf $df
-    ld   [wDFCB_Audio_SfxTimerCh1], A                                    ;; 24:4026 $ea $cb $df
-    ld   [wDFCC_Audio_SfxTimerCh2], A                                    ;; 24:4029 $ea $cc $df
-    ld   [wDFCD_Audio_SfxTimerCh3], A                                    ;; 24:402c $ea $cd $df
-    ld   [wDFCE_Audio_SfxTimerCh4], A                                    ;; 24:402f $ea $ce $df
+    ld   [wDFCB_Audio_SfxNoteTimerCh1], A                                    ;; 24:4026 $ea $cb $df
+    ld   [wDFCC_Audio_SfxNoteTimerCh2], A                                    ;; 24:4029 $ea $cc $df
+    ld   [wDFCD_Audio_SfxNoteTimerCh3], A                                    ;; 24:402c $ea $cd $df
+    ld   [wDFCE_Audio_SfxNoteTimerCh4], A                                    ;; 24:402f $ea $ce $df
     ld   HL, wDFD2_Audio_SavedMusicRegs                                     ;; 24:4032 $21 $d2 $df
     ld   C, $14                                        ;; 24:4035 $0e $14
     xor  A, A                                          ;; 24:4037 $af
@@ -136,9 +143,9 @@ call_24_4047_Audio_PlaySfx:
     ld   [HL+], A                                      ;; 24:407c $22
     jr   .jr_24_4071                                   ;; 24:407d $18 $f2
 .jr_24_407f:
-    ld   A, [wDFAE_AudioBankDataPointer]                                    ;; 24:407f $fa $ae $df
+    ld   A, [wDFAE_Audio_TrackTablesPtrLo]                                    ;; 24:407f $fa $ae $df
     ld   E, A                                          ;; 24:4082 $5f
-    ld   A, [wDFAF_AudioBankDataPointer]                                    ;; 24:4083 $fa $af $df
+    ld   A, [wDFAF_Audio_TrackTablesPtrHi]                                    ;; 24:4083 $fa $af $df
     ld   D, A                                          ;; 24:4086 $57
     ld   A, [DE]                                       ;; 24:4087 $1a
     add  A, E                                          ;; 24:4088 $83
@@ -158,9 +165,9 @@ call_24_4092_Audio_PlayMusic:
     ld   [wDFD0_Audio_RequestedTrackId], A                                    ;; 24:4092 $ea $d0 $df
     ld   A, $02                                        ;; 24:4095 $3e $02
     ld   [wDFD1_Audio_RequestKind], A                                    ;; 24:4097 $ea $d1 $df
-    ld   A, [wDFAE_AudioBankDataPointer]                                    ;; 24:409a $fa $ae $df
+    ld   A, [wDFAE_Audio_TrackTablesPtrLo]                                    ;; 24:409a $fa $ae $df
     ld   E, A                                          ;; 24:409d $5f
-    ld   A, [wDFAF_AudioBankDataPointer]                                    ;; 24:409e $fa $af $df
+    ld   A, [wDFAF_Audio_TrackTablesPtrHi]                                    ;; 24:409e $fa $af $df
     ld   D, A                                          ;; 24:40a1 $57
     inc  DE                                            ;; 24:40a2 $13
     inc  DE                                            ;; 24:40a3 $13
@@ -204,7 +211,7 @@ jr_24_40a4_Audio_StartTrack:
     ld   D, A                                          ;; 24:40bb $57
     ld   E, L                                          ;; 24:40bc $5d
     ld   A, [DE]                                       ;; 24:40bd $1a
-    ld   [wDFFE_Audio_CurrentChannel], A                                    ;; 24:40be $ea $fe $df
+    ld   [wDFFE_Audio_SequenceChannelIndex], A                                    ;; 24:40be $ea $fe $df
     ld   L, A                                          ;; 24:40c1 $6f
     xor  A, A                                          ;; 24:40c2 $af
     scf                                                ;; 24:40c3 $37
@@ -221,14 +228,14 @@ jr_24_40a4_Audio_StartTrack:
     or   A, L                                          ;; 24:40d7 $b5
     ld   [wDFCF_Audio_SfxChannelsActive], A                                    ;; 24:40d8 $ea $cf $df
     ld   HL, wDFC3_Audio_SfxChannelPtrs                                     ;; 24:40db $21 $c3 $df
-    ld   BC, wDFCB_Audio_SfxTimerCh1                                     ;; 24:40de $01 $cb $df
+    ld   BC, wDFCB_Audio_SfxNoteTimerCh1                                     ;; 24:40de $01 $cb $df
     jr   .jr_24_40f0                                   ;; 24:40e1 $18 $0d
 .jr_24_40e3:
     ld   A, [wDFC2_Audio_MusicChannelsActive]                                    ;; 24:40e3 $fa $c2 $df
     or   A, L                                          ;; 24:40e6 $b5
     ld   [wDFC2_Audio_MusicChannelsActive], A                                    ;; 24:40e7 $ea $c2 $df
     ld   HL, wDFB0_Audio_MusicChannelPtrs                                     ;; 24:40ea $21 $b0 $df
-    ld   BC, wDFB9_Audio_MusicTimerCh1                                     ;; 24:40ed $01 $b9 $df
+    ld   BC, wDFB9_Audio_MusicNoteTimerCh1                                     ;; 24:40ed $01 $b9 $df
 .jr_24_40f0:
     ld   A, [DE]                                       ;; 24:40f0 $1a
     dec  A                                             ;; 24:40f1 $3d
@@ -268,7 +275,7 @@ call_24_410c_Audio_Update:
 ; wDFC1_Audio_CurrentChannelBit is shifted left once per iteration and
 ; wDFB8_Audio_ChannelIndex counts 0 to 3; both are read by the interpreter, which is
 ; why they live in WRAM rather than in registers
-    ld   BC, wDFB9_Audio_MusicTimerCh1                                     ;; 24:410c $01 $b9 $df
+    ld   BC, wDFB9_Audio_MusicNoteTimerCh1                                     ;; 24:410c $01 $b9 $df
     ld   HL, wDFB0_Audio_MusicChannelPtrs                                     ;; 24:410f $21 $b0 $df
     ld   A, $01                                        ;; 24:4112 $3e $01
     ld   [wDFC1_Audio_CurrentChannelBit], A                                    ;; 24:4114 $ea $c1 $df
@@ -287,7 +294,7 @@ call_24_410c_Audio_Update:
     dec  A                                             ;; 24:412d $3d
     jr   NZ, .jr_24_4139                               ;; 24:412e $20 $09
     ld   A, [wDFB8_Audio_ChannelIndex]                                    ;; 24:4130 $fa $b8 $df
-    ld   [wDFFE_Audio_CurrentChannel], A                                    ;; 24:4133 $ea $fe $df
+    ld   [wDFFE_Audio_SequenceChannelIndex], A                                    ;; 24:4133 $ea $fe $df
     call call_24_4199_Audio_RunSequence                                  ;; 24:4136 $cd $99 $41
 .jr_24_4139:
     pop  BC                                            ;; 24:4139 $c1
@@ -303,7 +310,7 @@ call_24_410c_Audio_Update:
     ld   [wDFB8_Audio_ChannelIndex], A                                    ;; 24:414a $ea $b8 $df
     cp   A, $04                                        ;; 24:414d $fe $04
     jp   NZ, .jp_24_4121                               ;; 24:414f $c2 $21 $41
-    ld   BC, wDFCB_Audio_SfxTimerCh1                                     ;; 24:4152 $01 $cb $df
+    ld   BC, wDFCB_Audio_SfxNoteTimerCh1                                     ;; 24:4152 $01 $cb $df
     ld   HL, wDFC3_Audio_SfxChannelPtrs                                     ;; 24:4155 $21 $c3 $df
     ld   A, $01                                        ;; 24:4158 $3e $01
     ld   [wDFC1_Audio_CurrentChannelBit], A                                    ;; 24:415a $ea $c1 $df
@@ -322,7 +329,7 @@ call_24_410c_Audio_Update:
     dec  A                                             ;; 24:4173 $3d
     jr   NZ, .jr_24_417f                               ;; 24:4174 $20 $09
     ld   A, [wDFB8_Audio_ChannelIndex]                                    ;; 24:4176 $fa $b8 $df
-    ld   [wDFFE_Audio_CurrentChannel], A                                    ;; 24:4179 $ea $fe $df
+    ld   [wDFFE_Audio_SequenceChannelIndex], A                                    ;; 24:4179 $ea $fe $df
     call call_24_4199_Audio_RunSequence                                  ;; 24:417c $cd $99 $41
 .jr_24_417f:
     pop  BC                                            ;; 24:417f $c1
@@ -411,16 +418,16 @@ call_24_4199_Audio_RunSequence:
     push BC                                            ;; 24:41d4 $c5
     ld   B, $ff                                        ;; 24:41d5 $06 $ff
     ld   DE, wDFD2_Audio_SavedMusicRegs                                     ;; 24:41d7 $11 $d2 $df
-    ld   A, [wDFFE_Audio_CurrentChannel]                                    ;; 24:41da $fa $fe $df
+    ld   A, [wDFFE_Audio_SequenceChannelIndex]                                    ;; 24:41da $fa $fe $df
     sla  A                                             ;; 24:41dd $cb $27
     sla  A                                             ;; 24:41df $cb $27
     add  A, E                                          ;; 24:41e1 $83
     ld   E, A                                          ;; 24:41e2 $5f
-    ld   A, [wDFFE_Audio_CurrentChannel]                                    ;; 24:41e3 $fa $fe $df
+    ld   A, [wDFFE_Audio_SequenceChannelIndex]                                    ;; 24:41e3 $fa $fe $df
     add  A, E                                          ;; 24:41e6 $83
     ld   E, A                                          ;; 24:41e7 $5f
     ld   HL, data_24_439e_ChannelSaveRegs                              ;; 24:41e8 $21 $9e $43
-    ld   A, [wDFFE_Audio_CurrentChannel]                                    ;; 24:41eb $fa $fe $df
+    ld   A, [wDFFE_Audio_SequenceChannelIndex]                                    ;; 24:41eb $fa $fe $df
     sla  A                                             ;; 24:41ee $cb $27
     ld   C, A                                          ;; 24:41f0 $4f
     sla  A                                             ;; 24:41f1 $cb $27
@@ -455,7 +462,7 @@ call_24_4199_Audio_RunSequence:
     jr   NZ, .jr_24_4215                               ;; 24:4219 $20 $fa
 .jr_24_421b:
     ld   HL, wDFF6_Audio_ChannelFreqShadow                                     ;; 24:421b $21 $f6 $df
-    ld   A, [wDFFE_Audio_CurrentChannel]                                    ;; 24:421e $fa $fe $df
+    ld   A, [wDFFE_Audio_SequenceChannelIndex]                                    ;; 24:421e $fa $fe $df
     sla  A                                             ;; 24:4221 $cb $27
     add  A, L                                          ;; 24:4223 $85
     ld   L, A                                          ;; 24:4224 $6f
@@ -609,7 +616,7 @@ call_24_4199_Audio_RunSequence:
     ld   A, [DE]                                       ;; 24:430c $1a
     ld   [wDFBE_Audio_FreqHi], A                                    ;; 24:430d $ea $be $df
     ld   DE, wDFF6_Audio_ChannelFreqShadow                                     ;; 24:4310 $11 $f6 $df
-    ld   A, [wDFFE_Audio_CurrentChannel]                                    ;; 24:4313 $fa $fe $df
+    ld   A, [wDFFE_Audio_SequenceChannelIndex]                                    ;; 24:4313 $fa $fe $df
     sla  A                                             ;; 24:4316 $cb $27
     add  A, E                                          ;; 24:4318 $83
     ld   E, A                                          ;; 24:4319 $5f

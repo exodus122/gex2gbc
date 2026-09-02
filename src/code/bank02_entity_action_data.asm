@@ -70,10 +70,15 @@
 ; of leftover as the trimmed zombie walks above. Only 26 one-frame blocks actually
 ; tick, so most of the file's one-frame blocks are stills rather than metronomes.
 ;
-; Thirteen entity types are frozen in EVERY action they have - ENTITY_TV_BUTTON,
-; ENTITY_SCREAM_TV_LANTERN, ENTITY_KUNG_FU_THEATER_JAR and the rest of the props and
-; projectiles. They still change pose when their action changes, because SetAction
-; reloads byte +4 into SPRITE_ID; what they never do is animate within an action.
+; 59 of the 143 entity types with a table are frozen in EVERY action they have, but
+; most of those have only one action to be frozen in. Thirteen have more than one -
+; ENTITY_TV_BUTTON, ENTITY_SCREAM_TV_LANTERN, ENTITY_KUNG_FU_THEATER_JAR and
+; ENTITY_KUNG_FU_THEATER_TALL_JAR, ENTITY_TOON_TV_FLOWER, ENTITY_TOON_TV_MOVING_BLOCK,
+; ENTITY_TOON_TV_HARD_HEAD_AREA_HAZARD, ENTITY_PRE_HISTORY_LAVA_RAFT,
+; ENTITY_CHANNEL_Z_FINAL_BATTLE_BUTTON and the four projectiles - and those are the
+; interesting ones. They still change pose when their action changes, because
+; SetAction reloads byte +4 into SPRITE_ID; what they never do is animate within an
+; action.
 ;
 ; BLOCKS ARE SHARED FREELY. 31 of them are named by more than one (entity, action)
 ; pair, covering 81 pairs between them, and 16 are shared across different entity
@@ -82,8 +87,9 @@
 ; dinosaur-shaped ids share data_02_7790. Editing one block therefore changes every
 ; entity that points at it.
 ;
-; ONLY GEX USES THE HAND-OVER. Exactly eleven of the 229 blocks have a nonzero
-; byte +0, and all eleven are his; every entity block is $00 there. Nothing
+; ONLY GEX USES THE HAND-OVER. Exactly eleven of the 232 blocks have a nonzero
+; byte +0, and all eleven are his; every one of the 198 blocks an entity table
+; points at is $00 there. Nothing
 ; anywhere writes ENTITY_FIELD_ACTION_STATE_FLAGS after Entity_SetAction has, so
 ; ACTION_STATE_HAS_PENDING and ACTION_STATE_ADVANCE_ON_END can only ever fire for
 ; the player. Enemies change action by calling Entity_SetAction from their own
@@ -98,6 +104,52 @@
 ; Two more blocks, $76E5 and $76EE - the two zombie walks - carry a fourth frame
 ; in front of their terminator while declaring a count of three. That is the same
 ; kind of trim, made by editing the count and leaving the byte where it was
+;
+; ------------------------------------------------------------------
+; Notes for anyone reading this next to gex3's bank02_entity_animation_data.asm
+; ------------------------------------------------------------------
+; The two files do the same job and are laid out the same way - one run of blocks
+; in action-table order, Gex first, no code, every block reached only through the
+; second word of an action row. The differences are all in the header:
+;
+;   header size   this one is four bytes; gex3's is five. gex3 adds a ROM bank byte
+;                 at +0 and splits this file's byte +0 in two, giving the pending
+;                 action a byte of its own and the state flags another. The
+;                 SPRITE_FLAGS byte at +1 here has no direct gex3 counterpart -
+;                 most of what it selects, gex3 decides elsewhere
+;   terminator    every block here ends with a $00 that no code reads. gex3 has
+;                 none; its blocks butt straight up against each other, which is
+;                 why its two cut blocks have no label in the ROM at all where the
+;                 three here do
+;   who hands on  the big one. Here, eleven blocks have a hand-over and all eleven
+;                 are Gex's - an enemy that wants to change action calls
+;                 Entity_SetAction from its own handler. In gex3, 103 blocks carry
+;                 one and 88 of those belong to entities, which lets a gex3 action
+;                 row be pure animation: its function is EntityAction_None and the
+;                 whole behaviour is the pending-action byte. Sequences that need
+;                 code here - a chest opening, a boss vanishing and reappearing -
+;                 are table-driven there
+;   where the     this file decides per block, with SPRITE_FLAG_STREAMS_OWN_GFX:
+;   tiles are     set, the frame id is the high byte of a ROM address and writing
+;                 it queues that page; clear, it is a frame number for
+;                 bank03_sprite_frame_data.asm. gex3 always names the bank at +0 and
+;                 always streams, so it has no equivalent of the five drawing paths
+;                 this file's SPRITE_FLAGS byte picks between
+;   requesting    a block change here raises the graphics transfer immediately,
+;   the tiles     from Entity_NotifyActionChanged. gex3 sets a "the id changed" bit
+;                 and lets a per-frame sweep find it
+;   gex3-only     an action can send its tiles to the second VRAM bank, and an
+;                 action can be marked intangible without changing the entity's
+;                 collision type. Neither has a counterpart here
+;   size          232 blocks against gex3's 314, and most of the difference is Gex:
+;                 31 blocks for 32 actions here against 55 for gex3's 60, each of
+;                 which gex3 claims twice for the side-scrolling and top-down halves
+;                 of its player table
+;   frozen        87 of 232 here against 105 of 314 there - the same third of the
+;                 file either way, and 59 of 143 entity types against 42 of 113
+;   leftovers     both files carry cut animation. Three unreachable blocks and two
+;                 over-long zombie walks here; two unreachable blocks and four
+;                 over-long cycles there
 ; ==================================================================
 
 ; ------------------------------------------------------------------

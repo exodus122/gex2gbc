@@ -1922,9 +1922,16 @@ wDADB_FadeStepCounter:
 ; active mask - and where they collide the sfx takes the hardware channel while the
 ; music's registers are parked in the save area at the bottom of this block
 ; ------------------------------------------------------------------
-wDFAE_AudioBankDataPointer: ; always 60 (as in 0x4460, which is where the audio data begins in all 4 audio banks)
+wDFAE_Audio_TrackTablesPtrLo:
+; Where the currently mapped audio bank's data_21_4460_TrackPointerTables sits.
+; Audio_Init writes it, and it is always $4460 because all four banks put their track
+; tables at the same offset - so the indirection buys nothing, but it is what
+; Audio_PlaySfx and Audio_PlayMusic actually read.
+;
+; gex3's driver has no equivalent: its two banks name their own tables directly, which
+; is exactly why three bytes of its code differ between the banks
     ds 1                                               ;; dfae
-wDFAF_AudioBankDataPointer: ; always 44 (as in 0x4460, which is where the audio data begins in all 4 audio banks)
+wDFAF_Audio_TrackTablesPtrHi:
     ds 1                                               ;; dfaf
 
 wDFB0_Audio_MusicChannelPtrs:
@@ -1935,18 +1942,19 @@ wDFB8_Audio_ChannelIndex:
 ; 0-3, the channel Audio_Update is currently working on
     ds 1                                               ;; dfb8
 
-wDFB9_Audio_MusicTimerCh1:
+wDFB9_Audio_MusicNoteTimerCh1:
 ; frames left on this channel's current note. The four counters are contiguous
-; so Audio_Update can walk them with BC
+; so Audio_Update can walk them with BC. gex3 keeps the same thing per channel in
+; AUDIO_CH_NOTE_TIMER
     ds 1                                               ;; dfb9
 
-wDFBA_Audio_MusicTimerCh2:
+wDFBA_Audio_MusicNoteTimerCh2:
     ds 1                                               ;; dfba
 
-wDFBB_Audio_MusicTimerCh3:
+wDFBB_Audio_MusicNoteTimerCh3:
     ds 1                                               ;; dfbb
 
-wDFBC_Audio_MusicTimerCh4:
+wDFBC_Audio_MusicNoteTimerCh4:
     ds 1                                               ;; dfbc
 
 wDFBD_Audio_FreqLo:
@@ -1976,17 +1984,17 @@ wDFC3_Audio_SfxChannelPtrs:
 ; the sfx set's four sequence pointers, laid out like wDFB0
     ds 8                                               ;; dfc3
 
-wDFCB_Audio_SfxTimerCh1:
+wDFCB_Audio_SfxNoteTimerCh1:
 ; the sfx set's four countdowns, laid out like wDFB9
     ds 1                                               ;; dfcb
 
-wDFCC_Audio_SfxTimerCh2:
+wDFCC_Audio_SfxNoteTimerCh2:
     ds 1                                               ;; dfcc
 
-wDFCD_Audio_SfxTimerCh3:
+wDFCD_Audio_SfxNoteTimerCh3:
     ds 1                                               ;; dfcd
 
-wDFCE_Audio_SfxTimerCh4:
+wDFCE_Audio_SfxNoteTimerCh4:
     ds 1                                               ;; dfce
 
 wDFCF_Audio_SfxChannelsActive:
@@ -2019,9 +2027,9 @@ wDFF6_Audio_ChannelFreqShadow:
 ; right place instead of where it left off
     ds 8                                               ;; dff6
 
-wDFFE_Audio_CurrentChannel:
-; channel index used by Audio_RunSequence, separate from wDFB8 because the
-; interpreter can be entered from track start-up as well as from the tick
+wDFFE_Audio_SequenceChannelIndex:
+; channel index used by Audio_RunSequence, separate from wDFB8_Audio_ChannelIndex
+; because the interpreter can be entered from track start-up as well as from the tick
     ds 2                                               ;; dffe
 
 SECTION "hram", HRAM[$ff80]
