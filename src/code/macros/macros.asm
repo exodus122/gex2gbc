@@ -396,3 +396,79 @@ ENDM
 MACRO password_bit_end
     dw   $0000
 ENDM
+
+; ------------------------------------------------------------------
+; SOUND DRIVER DATA - banks $21-$24
+;
+; One track per file under data/audio/, INCLUDEd where the driver's
+; data_21_4460_TrackPointerTables points. A track is a channel byte followed by the
+; byte stream call_21_4199_Audio_RunSequence walks - see the AUDIO_CMD_* and
+; AUDIO_NOTE_* constants.
+;
+; gex3 has an equivalent macro set in its own macros.asm; audio_note, audio_rest and
+; audio_end mean the same thing in both, and audio_loop is gex3's audio_goto written as
+; a backward distance instead of an address
+; ------------------------------------------------------------------
+
+; First byte of every track: which hardware channel it plays on. A track drives exactly
+; one channel, so a song is four tracks at four consecutive driver ids
+MACRO audio_channel ; 1 = pulse A, 2 = pulse B, 3 = wave, 4 = noise
+    db   \1
+ENDM
+
+; A pitch from data_21_43ce_NoteFrequencies, held for a number of frames. $01 is C2 and
+; the table climbs a semitone at a time to AUDIO_NOTE_LAST, B7
+MACRO audio_note ; note index $01-$48, frames
+    db   \1, \2
+ENDM
+
+; Silences the channel for the duration instead of playing anything
+MACRO audio_rest ; frames
+    db   AUDIO_NOTE_REST, \1
+ENDM
+
+; Retriggers the channel without touching its pitch - the note the sequence is holding
+; starts again at whatever envelope the last audio_reg_set gave it
+MACRO audio_sustain ; frames
+    db   AUDIO_NOTE_SUSTAIN, \1
+ENDM
+
+; reg = value. This is how a track picks its duty, envelope and sweep: there are no
+; instruments in this driver, so every sound is register writes in front of its notes
+MACRO audio_reg_set ; rNRxy, value
+    db   AUDIO_CMD_REG_SET + LOW(\1) - LOW(rNR10), \2
+ENDM
+
+; reg = reg AND value. The shipped tracks never use it
+MACRO audio_reg_and ; rNRxy, value
+    db   AUDIO_CMD_REG_AND + LOW(\1) - LOW(rNR10), \2
+ENDM
+
+; reg = reg OR value. The shipped tracks never use it
+MACRO audio_reg_or ; rNRxy, value
+    db   AUDIO_CMD_REG_OR + LOW(\1) - LOW(rNR10), \2
+ENDM
+
+; Copies sixteen bytes straight into wave RAM, so a wave-channel track can carry its own
+; waveform. gex3 has no equivalent - it loads one pattern at boot and never changes it
+MACRO audio_load_wave ; 16 wave RAM bytes
+    db   AUDIO_CMD_LOAD_WAVE
+    REPT _NARG
+        db   \1
+        SHIFT
+    ENDR
+ENDM
+
+; Jumps backwards and carries on from there. The stream stores the distance rather than
+; the address, which is what lets one track blob be assembled into four banks at four
+; different addresses
+MACRO audio_loop ; label earlier in this track
+    db   AUDIO_CMD_LOOP
+    dw   (@ + 1) - (\1)
+ENDM
+
+; Releases the channel. For a sound effect this is also where the music's registers go
+; back and the song becomes audible again
+MACRO audio_end
+    db   AUDIO_CMD_END
+ENDM

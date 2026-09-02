@@ -41,7 +41,11 @@
 ; has rather than a song. Nothing reaches them either way: .data_00_1244_MusicList in
 ; bank 0 only ever names banks $21, $22 and $23, so wD788_CurrentAudioBank never
 ; holds $24 and this whole block is unreachable
-;
+;;
+; THE TRACK DATA ITSELF lives one file per track under data/audio/, written with the
+; audio_* macros in code/macros/macros.asm - see any of them for the sequence format in
+; practice. A track blob stores its only jump as a backward distance, which is what lets
+; the shared sound effects be assembled into all four banks unchanged
 ; GEX 3 USES A DIFFERENT DRIVER ENTIRELY - see gex3's code/audio/bank04_audio1.asm. Its
 ; two audio banks also hold identical code, but there is one set of four channels rather
 ; than two, notes carry an instrument number that arms a volume envelope, a pitch slide
@@ -723,29 +727,23 @@ data_24_43c6_ChannelFreqLoReg:
 
 data_24_43ce_NoteFrequencies:
 ; The pitch table: 73 little-endian 11-bit values, indexed by note number doubled.
-; Entry 0 is silence and the rest climb to $07DF, the highest frequency the hardware
-; will take. A sequence's note byte is an index into this - AUDIO_NOTE_LAST is the
-; last real entry, and AUDIO_NOTE_SUSTAIN sits one past the end as a marker rather
-; than a pitch
-    db   $00, $00, $2c, $00, $9c, $00, $06, $01        ;; 24:43ce ????????
-    db   $6b, $01, $c9, $01, $23, $02, $77, $02        ;; 24:43d6 ????????
-    db   $c6, $02, $12, $03, $56, $03, $9b, $03        ;; 24:43de ????????
-    db   $da, $03, $16, $04, $4e, $04, $83, $04        ;; 24:43e6 ????????
-    db   $b5, $04, $e5, $04, $11, $05, $3b, $05        ;; 24:43ee ????????
-    db   $63, $05, $89, $05, $ac, $05, $ce, $05        ;; 24:43f6 ????????
-    db   $ed, $05, $0a, $06, $27, $06, $42, $06        ;; 24:43fe ????????
-    db   $5b, $06, $72, $06, $89, $06, $9e, $06        ;; 24:4406 ????????
-    db   $b2, $06, $c4, $06, $d6, $06, $e7, $06        ;; 24:440e ????????
-    db   $f7, $06, $06, $07, $14, $07, $21, $07        ;; 24:4416 ????????
-    db   $2d, $07, $39, $07, $44, $07, $4f, $07        ;; 24:441e ????????
-    db   $59, $07, $62, $07, $6b, $07, $73, $07        ;; 24:4426 ????????
-    db   $7b, $07, $83, $07, $8a, $07, $90, $07        ;; 24:442e ????????
-    db   $97, $07, $9d, $07, $a2, $07, $a7, $07        ;; 24:4436 ????????
-    db   $ac, $07, $b1, $07, $b6, $07, $ba, $07        ;; 24:443e ????????
-    db   $be, $07, $c1, $07, $c4, $07, $c8, $07        ;; 24:4446 ????????
-    db   $cb, $07, $ce, $07, $d1, $07, $d4, $07        ;; 24:444e ????????
-    db   $d6, $07, $d9, $07, $db, $07, $dd, $07        ;; 24:4456 ????????
-    db   $df, $07                                      ;; 24:445e ??
+; Entry $00 is silence - AUDIO_NOTE_REST - and the 72 that follow are six even octaves,
+; C2 up to B7, one semitone apart. AUDIO_NOTE_LAST is that last B7 and AUDIO_NOTE_SUSTAIN
+; sits one past the end as a marker rather than a pitch.
+;
+; Frequency is 131072 / (2048 - value) Hz, so the numbers climb towards $07FF and the
+; steps between them get smaller as the pitch rises.
+;
+; gex3 splits the same idea into two byte tables - data_04_47bb_NoteFrequenciesLo and
+; data_04_481b_NoteFrequenciesHi - and starts them a semitone higher, at C#2
+
+    dw   $0000                                                                                     ; AUDIO_NOTE_REST
+    dw   $002c, $009c, $0106, $016b, $01c9, $0223, $0277, $02c6, $0312, $0356, $039b, $03da        ; C2-B2
+    dw   $0416, $044e, $0483, $04b5, $04e5, $0511, $053b, $0563, $0589, $05ac, $05ce, $05ed        ; C3-B3
+    dw   $060a, $0627, $0642, $065b, $0672, $0689, $069e, $06b2, $06c4, $06d6, $06e7, $06f7        ; C4-B4
+    dw   $0706, $0714, $0721, $072d, $0739, $0744, $074f, $0759, $0762, $076b, $0773, $077b        ; C5-B5
+    dw   $0783, $078a, $0790, $0797, $079d, $07a2, $07a7, $07ac, $07b1, $07b6, $07ba, $07be        ; C6-B6
+    dw   $07c1, $07c4, $07c8, $07cb, $07ce, $07d1, $07d4, $07d6, $07d9, $07db, $07dd, $07df        ; C7-B7
 
 data_24_4460_TrackPointerTables:
 ; Where every track in this bank starts. Two lists of self-relative words - each entry
@@ -831,134 +829,134 @@ data_24_4460_TrackPointerTables:
 .sfx_list:
 
 audio_24_44e6_Unused_00:
-    INCBIN "data/audio/unused/unused_24_00.bin"     ; entry $00 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_00.asm"               ; entry $00 - unreachable, nothing selects bank $24
 audio_24_4500_Unused_01:
-    INCBIN "data/audio/unused/unused_24_01.bin"     ; entry $01 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_01.asm"               ; entry $01 - unreachable, nothing selects bank $24
 audio_24_4524_Unused_02:
-    INCBIN "data/audio/unused/unused_24_02.bin"     ; entry $02 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_02.asm"               ; entry $02 - unreachable, nothing selects bank $24
 audio_24_4544_Unused_03:
-    INCBIN "data/audio/unused/unused_24_03.bin"     ; entry $03 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_03.asm"               ; entry $03 - unreachable, nothing selects bank $24
 audio_24_458c_Unused_04:
-    INCBIN "data/audio/unused/unused_24_04.bin"     ; entry $04 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_04.asm"               ; entry $04 - unreachable, nothing selects bank $24
 audio_24_45fa_Unused_05:
-    INCBIN "data/audio/unused/unused_24_05.bin"     ; entry $05 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_05.asm"               ; entry $05 - unreachable, nothing selects bank $24
 audio_24_460e_Unused_06:
-    INCBIN "data/audio/unused/unused_24_06.bin"     ; entry $06 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_06.asm"               ; entry $06 - unreachable, nothing selects bank $24
 audio_24_4650_Unused_07:
-    INCBIN "data/audio/unused/unused_24_05.bin"     ; entry $07 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_05.asm"               ; entry $07 - unreachable, nothing selects bank $24
 audio_24_4664_Unused_08:
-    INCBIN "data/audio/unused/unused_24_05.bin"     ; entry $08 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_05.asm"               ; entry $08 - unreachable, nothing selects bank $24
 audio_24_4678_Unused_09:
-    INCBIN "data/audio/unused/unused_24_09.bin"     ; entry $09 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_09.asm"               ; entry $09 - unreachable, nothing selects bank $24
 audio_24_4694_Unused_0A:
-    INCBIN "data/audio/unused/unused_24_0a.bin"     ; entry $0A - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_0a.asm"               ; entry $0A - unreachable, nothing selects bank $24
 audio_24_46ae_Unused_0B:
-    INCBIN "data/audio/unused/unused_24_02.bin"     ; entry $0B - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_02.asm"               ; entry $0B - unreachable, nothing selects bank $24
 audio_24_46ce_Unused_0C:
-    INCBIN "data/audio/unused/unused_24_0c.bin"     ; entry $0C - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_0c.asm"               ; entry $0C - unreachable, nothing selects bank $24
 audio_24_46fe_Unused_0D:
-    INCBIN "data/audio/unused/unused_24_0d.bin"     ; entry $0D - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_0d.asm"               ; entry $0D - unreachable, nothing selects bank $24
 audio_24_4762_Unused_0E:
-    INCBIN "data/audio/unused/unused_24_0e.bin"     ; entry $0E - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_0e.asm"               ; entry $0E - unreachable, nothing selects bank $24
 audio_24_47ac_Unused_0F:
-    INCBIN "data/audio/unused/unused_24_0f.bin"     ; entry $0F - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_0f.asm"               ; entry $0F - unreachable, nothing selects bank $24
 audio_24_480a_Unused_10:
-    INCBIN "data/audio/unused/unused_24_10.bin"     ; entry $10 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_10.asm"               ; entry $10 - unreachable, nothing selects bank $24
 audio_24_485c_Unused_11:
-    INCBIN "data/audio/unused/unused_24_11.bin"     ; entry $11 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_11.asm"               ; entry $11 - unreachable, nothing selects bank $24
 audio_24_4a10_Unused_12:
-    INCBIN "data/audio/unused/unused_24_12.bin"     ; entry $12 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_12.asm"               ; entry $12 - unreachable, nothing selects bank $24
 audio_24_4a2a_Unused_13:
-    INCBIN "data/audio/unused/unused_24_13.bin"     ; entry $13 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_13.asm"               ; entry $13 - unreachable, nothing selects bank $24
 audio_24_4a8c_Unused_14:
-    INCBIN "data/audio/unused/unused_24_14.bin"     ; entry $14 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_14.asm"               ; entry $14 - unreachable, nothing selects bank $24
 audio_24_4ac0_Unused_15:
-    INCBIN "data/audio/unused/unused_24_15.bin"     ; entry $15 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_15.asm"               ; entry $15 - unreachable, nothing selects bank $24
 audio_24_4af4_Unused_16:
-    INCBIN "data/audio/unused/unused_24_16.bin"     ; entry $16 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_16.asm"               ; entry $16 - unreachable, nothing selects bank $24
 audio_24_4b0e_Unused_17:
-    INCBIN "data/audio/unused/unused_24_17.bin"     ; entry $17 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_17.asm"               ; entry $17 - unreachable, nothing selects bank $24
 audio_24_4b2c_Unused_18:
-    INCBIN "data/audio/unused/unused_24_18.bin"     ; entry $18 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_18.asm"               ; entry $18 - unreachable, nothing selects bank $24
 audio_24_4b44_Unused_19:
-    INCBIN "data/audio/unused/unused_24_05.bin"     ; entry $19 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_05.asm"               ; entry $19 - unreachable, nothing selects bank $24
 audio_24_4b58_Unused_1A:
-    INCBIN "data/audio/unused/unused_24_1a.bin"     ; entry $1A - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_1a.asm"               ; entry $1A - unreachable, nothing selects bank $24
 audio_24_4b74_Unused_1B:
-    INCBIN "data/audio/unused/unused_24_1b.bin"     ; entry $1B - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_1b.asm"               ; entry $1B - unreachable, nothing selects bank $24
 audio_24_4b90_Unused_1C:
-    INCBIN "data/audio/unused/unused_24_1c.bin"     ; entry $1C - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_1c.asm"               ; entry $1C - unreachable, nothing selects bank $24
 audio_24_4ba0_Unused_1D:
-    INCBIN "data/audio/unused/unused_24_1a.bin"     ; entry $1D - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_1a.asm"               ; entry $1D - unreachable, nothing selects bank $24
 audio_24_4bbc_Unused_1E:
-    INCBIN "data/audio/unused/unused_24_1e.bin"     ; entry $1E - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_1e.asm"               ; entry $1E - unreachable, nothing selects bank $24
 audio_24_4c1c_Unused_1F:
-    INCBIN "data/audio/unused/unused_24_1f.bin"     ; entry $1F - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_1f.asm"               ; entry $1F - unreachable, nothing selects bank $24
 audio_24_4c36_Unused_20:
-    INCBIN "data/audio/unused/unused_24_0e.bin"     ; entry $20 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_0e.asm"               ; entry $20 - unreachable, nothing selects bank $24
 audio_24_4c80_Unused_21:
-    INCBIN "data/audio/unused/unused_24_12.bin"     ; entry $21 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_12.asm"               ; entry $21 - unreachable, nothing selects bank $24
 audio_24_4c9a_Unused_22:
-    INCBIN "data/audio/unused/unused_24_0e.bin"     ; entry $22 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_0e.asm"               ; entry $22 - unreachable, nothing selects bank $24
 audio_24_4ce4_Unused_23:
-    INCBIN "data/audio/unused/unused_24_0e.bin"     ; entry $23 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_0e.asm"               ; entry $23 - unreachable, nothing selects bank $24
 audio_24_4d2e_Unused_24:
-    INCBIN "data/audio/unused/unused_24_24.bin"     ; entry $24 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_24.asm"               ; entry $24 - unreachable, nothing selects bank $24
 audio_24_4d4c_Unused_25:
-    INCBIN "data/audio/unused/unused_24_25.bin"     ; entry $25 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_25.asm"               ; entry $25 - unreachable, nothing selects bank $24
 audio_24_4d5c_Unused_26:
-    INCBIN "data/audio/unused/unused_24_26.bin"     ; entry $26 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_26.asm"               ; entry $26 - unreachable, nothing selects bank $24
 audio_24_4d8a_Unused_27:
-    INCBIN "data/audio/unused/unused_24_27.bin"     ; entry $27 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_27.asm"               ; entry $27 - unreachable, nothing selects bank $24
 audio_24_4df2_Unused_28:
-    INCBIN "data/audio/unused/unused_24_28.bin"     ; entry $28 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_28.asm"               ; entry $28 - unreachable, nothing selects bank $24
 audio_24_4e16_Unused_29:
-    INCBIN "data/audio/unused/unused_24_0e.bin"     ; entry $29 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_0e.asm"               ; entry $29 - unreachable, nothing selects bank $24
 audio_24_4e60_Unused_2A:
-    INCBIN "data/audio/unused/unused_24_12.bin"     ; entry $2A - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_12.asm"               ; entry $2A - unreachable, nothing selects bank $24
 audio_24_4e7a_Unused_2B:
-    INCBIN "data/audio/unused/unused_24_2b.bin"     ; entry $2B - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_2b.asm"               ; entry $2B - unreachable, nothing selects bank $24
 audio_24_4ec0_Unused_2C:
-    INCBIN "data/audio/unused/unused_24_26.bin"     ; entry $2C - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_26.asm"               ; entry $2C - unreachable, nothing selects bank $24
 audio_24_4eee_Unused_2D:
-    INCBIN "data/audio/unused/unused_24_2d.bin"     ; entry $2D - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_2d.asm"               ; entry $2D - unreachable, nothing selects bank $24
 audio_24_4f46_Unused_2E:
-    INCBIN "data/audio/unused/unused_24_2e.bin"     ; entry $2E - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_2e.asm"               ; entry $2E - unreachable, nothing selects bank $24
 audio_24_4f5e_Unused_2F:
-    INCBIN "data/audio/unused/unused_24_12.bin"     ; entry $2F - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_12.asm"               ; entry $2F - unreachable, nothing selects bank $24
 audio_24_4f78_Unused_30:
-    INCBIN "data/audio/unused/unused_24_1a.bin"     ; entry $30 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_1a.asm"               ; entry $30 - unreachable, nothing selects bank $24
 audio_24_4f94_Unused_31:
-    INCBIN "data/audio/unused/unused_24_31.bin"     ; entry $31 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_31.asm"               ; entry $31 - unreachable, nothing selects bank $24
 audio_24_4fae_Unused_32:
-    INCBIN "data/audio/unused/unused_24_32.bin"     ; entry $32 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_32.asm"               ; entry $32 - unreachable, nothing selects bank $24
 audio_24_4fbc_Unused_33:
-    INCBIN "data/audio/unused/unused_24_33.bin"     ; entry $33 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_33.asm"               ; entry $33 - unreachable, nothing selects bank $24
 audio_24_4fdc_Unused_34:
-    INCBIN "data/audio/unused/unused_24_0c.bin"     ; entry $34 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_0c.asm"               ; entry $34 - unreachable, nothing selects bank $24
 audio_24_500c_Unused_35:
-    INCBIN "data/audio/unused/unused_24_12.bin"     ; entry $35 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_12.asm"               ; entry $35 - unreachable, nothing selects bank $24
 audio_24_5026_Unused_36:
-    INCBIN "data/audio/unused/unused_24_36.bin"     ; entry $36 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_36.asm"               ; entry $36 - unreachable, nothing selects bank $24
 audio_24_5044_Unused_37:
-    INCBIN "data/audio/unused/unused_24_37.bin"     ; entry $37 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_37.asm"               ; entry $37 - unreachable, nothing selects bank $24
 audio_24_5078_Unused_38:
-    INCBIN "data/audio/unused/unused_24_33.bin"     ; entry $38 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_33.asm"               ; entry $38 - unreachable, nothing selects bank $24
 audio_24_5098_Unused_39:
-    INCBIN "data/audio/unused/unused_24_12.bin"     ; entry $39 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_12.asm"               ; entry $39 - unreachable, nothing selects bank $24
 audio_24_50b2_Unused_3A:
-    INCBIN "data/audio/unused/unused_24_1f.bin"     ; entry $3A - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_1f.asm"               ; entry $3A - unreachable, nothing selects bank $24
 audio_24_50cc_Unused_3B:
-    INCBIN "data/audio/unused/unused_24_12.bin"     ; entry $3B - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_12.asm"               ; entry $3B - unreachable, nothing selects bank $24
 audio_24_50e6_Unused_3C:
-    INCBIN "data/audio/unused/unused_24_1a.bin"     ; entry $3C - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_1a.asm"               ; entry $3C - unreachable, nothing selects bank $24
 audio_24_5102_Unused_3D:
-    INCBIN "data/audio/unused/unused_24_3d.bin"     ; entry $3D - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_3d.asm"               ; entry $3D - unreachable, nothing selects bank $24
 audio_24_511e_Unused_3E:
-    INCBIN "data/audio/unused/unused_24_3e.bin"     ; entry $3E - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_3e.asm"               ; entry $3E - unreachable, nothing selects bank $24
 audio_24_5122_Unused_3F:
-    INCBIN "data/audio/unused/unused_24_3f.bin"     ; entry $3F - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_3f.asm"               ; entry $3F - unreachable, nothing selects bank $24
 audio_24_5126_Unused_40:
-    INCBIN "data/audio/unused/unused_24_40.bin"     ; entry $40 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_40.asm"               ; entry $40 - unreachable, nothing selects bank $24
 audio_24_512a_Unused_41:
-    INCBIN "data/audio/unused/unused_24_41.bin"     ; entry $41 - unreachable, nothing selects bank $24
+    INCLUDE "data/audio/unused/unused_24_41.asm"               ; entry $41 - unreachable, nothing selects bank $24

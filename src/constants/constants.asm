@@ -176,9 +176,13 @@ DEF MENU_RESULT_TIMED_OUT        EQU $70 ; the menu's timer expired without any 
 ; byte. Everything at AUDIO_CMD_REG_AND and above is a command; the three register
 ; forms carry one data byte and the rest are self-contained
 ; ------------------------------------------------------------------
+; A note byte indexes data_21_43ce_NoteFrequencies. $01 is C2 and the table climbs a
+; semitone at a time through six octaves to AUDIO_NOTE_LAST, B7 - so note $01 + 12n is
+; C(2+n). On the noise channel the index is not a pitch: the driver sends only its high
+; bits to rNR44, and what is audible is whatever rNR43 was last set to
 DEF AUDIO_NOTE_REST                        EQU $00 ; silence the channel for the duration
 DEF AUDIO_NOTE_SUSTAIN                     EQU $49 ; retrigger without changing pitch
-DEF AUDIO_NOTE_LAST                        EQU $48 ; highest index into the frequency table
+DEF AUDIO_NOTE_LAST                        EQU $48 ; highest index into the frequency table - B7
 
 ; reg = reg AND data, for registers $FF10-$FF2F. Opcode is $90 + register low byte
 DEF AUDIO_CMD_REG_AND                      EQU $A0

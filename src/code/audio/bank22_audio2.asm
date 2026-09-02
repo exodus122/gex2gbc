@@ -44,7 +44,11 @@
 ; The 66 sfx are one track each and are the same 66 effects in every bank that has
 ; them - the same effect id gives a different rendition depending on which bank is
 ; mapped in
-;
+;;
+; THE TRACK DATA ITSELF lives one file per track under data/audio/, written with the
+; audio_* macros in code/macros/macros.asm - see any of them for the sequence format in
+; practice. A track blob stores its only jump as a backward distance, which is what lets
+; the shared sound effects be assembled into all four banks unchanged
 ; GEX 3 USES A DIFFERENT DRIVER ENTIRELY - see gex3's code/audio/bank04_audio1.asm. Its
 ; two audio banks also hold identical code, but there is one set of four channels rather
 ; than two, notes carry an instrument number that arms a volume envelope, a pitch slide
@@ -726,29 +730,23 @@ data_22_43c6_ChannelFreqLoReg:
 
 data_22_43ce_NoteFrequencies:
 ; The pitch table: 73 little-endian 11-bit values, indexed by note number doubled.
-; Entry 0 is silence and the rest climb to $07DF, the highest frequency the hardware
-; will take. A sequence's note byte is an index into this - AUDIO_NOTE_LAST is the
-; last real entry, and AUDIO_NOTE_SUSTAIN sits one past the end as a marker rather
-; than a pitch
-    db   $00, $00, $2c, $00, $9c, $00, $06, $01        ;; 22:43ce ????????
-    db   $6b, $01, $c9, $01, $23, $02, $77, $02        ;; 22:43d6 ????????
-    db   $c6, $02, $12, $03, $56, $03, $9b, $03        ;; 22:43de ????????
-    db   $da, $03, $16, $04, $4e, $04, $83, $04        ;; 22:43e6 ????????
-    db   $b5, $04, $e5, $04, $11, $05, $3b, $05        ;; 22:43ee ????????
-    db   $63, $05, $89, $05, $ac, $05, $ce, $05        ;; 22:43f6 ????????
-    db   $ed, $05, $0a, $06, $27, $06, $42, $06        ;; 22:43fe ????????
-    db   $5b, $06, $72, $06, $89, $06, $9e, $06        ;; 22:4406 ????????
-    db   $b2, $06, $c4, $06, $d6, $06, $e7, $06        ;; 22:440e ????????
-    db   $f7, $06, $06, $07, $14, $07, $21, $07        ;; 22:4416 ????????
-    db   $2d, $07, $39, $07, $44, $07, $4f, $07        ;; 22:441e ????????
-    db   $59, $07, $62, $07, $6b, $07, $73, $07        ;; 22:4426 ????????
-    db   $7b, $07, $83, $07, $8a, $07, $90, $07        ;; 22:442e ????????
-    db   $97, $07, $9d, $07, $a2, $07, $a7, $07        ;; 22:4436 ????????
-    db   $ac, $07, $b1, $07, $b6, $07, $ba, $07        ;; 22:443e ????????
-    db   $be, $07, $c1, $07, $c4, $07, $c8, $07        ;; 22:4446 ????????
-    db   $cb, $07, $ce, $07, $d1, $07, $d4, $07        ;; 22:444e ????????
-    db   $d6, $07, $d9, $07, $db, $07, $dd, $07        ;; 22:4456 ????????
-    db   $df, $07                                      ;; 22:445e ??
+; Entry $00 is silence - AUDIO_NOTE_REST - and the 72 that follow are six even octaves,
+; C2 up to B7, one semitone apart. AUDIO_NOTE_LAST is that last B7 and AUDIO_NOTE_SUSTAIN
+; sits one past the end as a marker rather than a pitch.
+;
+; Frequency is 131072 / (2048 - value) Hz, so the numbers climb towards $07FF and the
+; steps between them get smaller as the pitch rises.
+;
+; gex3 splits the same idea into two byte tables - data_04_47bb_NoteFrequenciesLo and
+; data_04_481b_NoteFrequenciesHi - and starts them a semitone higher, at C#2
+
+    dw   $0000                                                                                     ; AUDIO_NOTE_REST
+    dw   $002c, $009c, $0106, $016b, $01c9, $0223, $0277, $02c6, $0312, $0356, $039b, $03da        ; C2-B2
+    dw   $0416, $044e, $0483, $04b5, $04e5, $0511, $053b, $0563, $0589, $05ac, $05ce, $05ed        ; C3-B3
+    dw   $060a, $0627, $0642, $065b, $0672, $0689, $069e, $06b2, $06c4, $06d6, $06e7, $06f7        ; C4-B4
+    dw   $0706, $0714, $0721, $072d, $0739, $0744, $074f, $0759, $0762, $076b, $0773, $077b        ; C5-B5
+    dw   $0783, $078a, $0790, $0797, $079d, $07a2, $07a7, $07ac, $07b1, $07b6, $07ba, $07be        ; C6-B6
+    dw   $07c1, $07c4, $07c8, $07cb, $07ce, $07d1, $07d4, $07d6, $07d9, $07db, $07dd, $07df        ; C7-B7
 
 data_22_4460_TrackPointerTables:
 ; Where every track in this bank starts. Two lists of self-relative words - each entry
@@ -759,8 +757,8 @@ data_22_4460_TrackPointerTables:
 ; everything between that word and there.
 ;
 ; 12 music tracks - 3 songs of four - followed by 66 sound effects. The sfx are
-; byte-identical to bank $21's in every bank that has them, so the INCBINs below
-; point at one shared set of files rather than a copy per bank
+; byte-identical to bank $21's in every bank that has them, so the INCLUDEs below
+; pull in one shared set of track files rather than a copy per bank
     dw   .sfx_list - @                             ; where the sfx half starts
 
 .music_list:
@@ -846,158 +844,158 @@ data_22_4460_TrackPointerTables:
     dw   audio_22_6ba3_Sfx_Unused41 - @              ; driver sfx id $41 - no .data_00_116c_SFXChannelTable row reaches it
 
 audio_22_44fe_Music_ScreamTv_Ch1:
-    INCBIN "data/audio/music/music_scream_tv_ch1.bin" ; MUSIC_SCREAM_TV ch1
+    INCLUDE "data/audio/music/music_scream_tv_ch1.asm"         ; MUSIC_SCREAM_TV ch1
 audio_22_49d6_Music_ScreamTv_Ch2:
-    INCBIN "data/audio/music/music_scream_tv_ch2.bin" ; MUSIC_SCREAM_TV ch2
+    INCLUDE "data/audio/music/music_scream_tv_ch2.asm"         ; MUSIC_SCREAM_TV ch2
 audio_22_4c68_Music_ScreamTv_Ch3:
-    INCBIN "data/audio/music/music_scream_tv_ch3.bin" ; MUSIC_SCREAM_TV ch3
+    INCLUDE "data/audio/music/music_scream_tv_ch3.asm"         ; MUSIC_SCREAM_TV ch3
 audio_22_4f9b_Music_ScreamTv_Ch4:
-    INCBIN "data/audio/music/music_circuit_central_ch4.bin" ; MUSIC_SCREAM_TV ch4
+    INCLUDE "data/audio/music/music_circuit_central_ch4.asm"   ; MUSIC_SCREAM_TV ch4
 audio_22_4fb1_Music_Unk04_Ch1:
-    INCBIN "data/audio/music/music_unk_04_ch1.bin"  ; MUSIC_UNK_04 ch1
+    INCLUDE "data/audio/music/music_unk_04_ch1.asm"            ; MUSIC_UNK_04 ch1
 audio_22_5117_Music_Unk04_Ch2:
-    INCBIN "data/audio/music/music_unk_04_ch2.bin"  ; MUSIC_UNK_04 ch2
+    INCLUDE "data/audio/music/music_unk_04_ch2.asm"            ; MUSIC_UNK_04 ch2
 audio_22_58a5_Music_Unk04_Ch3:
-    INCBIN "data/audio/music/music_unk_04_ch3.bin"  ; MUSIC_UNK_04 ch3
+    INCLUDE "data/audio/music/music_unk_04_ch3.asm"            ; MUSIC_UNK_04 ch3
 audio_22_5aa4_Music_Unk04_Ch4:
-    INCBIN "data/audio/music/music_unk_04_ch4.bin"  ; MUSIC_UNK_04 ch4
+    INCLUDE "data/audio/music/music_unk_04_ch4.asm"            ; MUSIC_UNK_04 ch4
 audio_22_5aa6_Music_Rezopolis_Ch1:
-    INCBIN "data/audio/music/music_rezopolis_ch1.bin" ; MUSIC_REZOPOLIS ch1
+    INCLUDE "data/audio/music/music_rezopolis_ch1.asm"         ; MUSIC_REZOPOLIS ch1
 audio_22_5bd0_Music_Rezopolis_Ch2:
-    INCBIN "data/audio/music/music_rezopolis_ch2.bin" ; MUSIC_REZOPOLIS ch2
+    INCLUDE "data/audio/music/music_rezopolis_ch2.asm"         ; MUSIC_REZOPOLIS ch2
 audio_22_5ea4_Music_Rezopolis_Ch3:
-    INCBIN "data/audio/music/music_rezopolis_ch3.bin" ; MUSIC_REZOPOLIS ch3
+    INCLUDE "data/audio/music/music_rezopolis_ch3.asm"         ; MUSIC_REZOPOLIS ch3
 audio_22_60fd_Music_Rezopolis_Ch4:
-    INCBIN "data/audio/music/music_rezopolis_ch4.bin" ; MUSIC_REZOPOLIS ch4
+    INCLUDE "data/audio/music/music_rezopolis_ch4.asm"         ; MUSIC_REZOPOLIS ch4
 audio_22_6149_Sfx_Empty:
-    INCBIN "data/audio/sfx/sfx_empty.bin"           ; SFX_EMPTY (sfx $00)
+    INCLUDE "data/audio/sfx/sfx_empty.asm"                     ; SFX_EMPTY (sfx $00)
 audio_22_615d_Sfx_01:
-    INCBIN "data/audio/sfx/sfx_01.bin"              ; SFX_01 (sfx $01)
+    INCLUDE "data/audio/sfx/sfx_01.asm"                        ; SFX_01 (sfx $01)
 audio_22_617b_Sfx_TvSmash:
-    INCBIN "data/audio/sfx/sfx_tv_smash.bin"        ; SFX_TV_SMASH (sfx $02)
+    INCLUDE "data/audio/sfx/sfx_tv_smash.asm"                  ; SFX_TV_SMASH (sfx $02)
 audio_22_61a5_Sfx_SilverRemote:
-    INCBIN "data/audio/sfx/sfx_silver_remote.bin"   ; SFX_SILVER_REMOTE (sfx $03)
+    INCLUDE "data/audio/sfx/sfx_silver_remote.asm"             ; SFX_SILVER_REMOTE (sfx $03)
 audio_22_61e7_Sfx_GoldRemote:
-    INCBIN "data/audio/sfx/sfx_gold_remote.bin"     ; SFX_GOLD_REMOTE (sfx $04)
+    INCLUDE "data/audio/sfx/sfx_gold_remote.asm"               ; SFX_GOLD_REMOTE (sfx $04)
 audio_22_624f_Sfx_05:
-    INCBIN "data/audio/sfx/sfx_05.bin"              ; SFX_05 (sfx $05)
+    INCLUDE "data/audio/sfx/sfx_05.asm"                        ; SFX_05 (sfx $05)
 audio_22_625d_Sfx_Collectible:
-    INCBIN "data/audio/sfx/sfx_collectible.bin"     ; SFX_COLLECTIBLE (sfx $06)
+    INCLUDE "data/audio/sfx/sfx_collectible.asm"               ; SFX_COLLECTIBLE (sfx $06)
 audio_22_6299_Sfx_07:
-    INCBIN "data/audio/sfx/sfx_05.bin"              ; SFX_07 (sfx $07)
+    INCLUDE "data/audio/sfx/sfx_05.asm"                        ; SFX_07 (sfx $07)
 audio_22_62a7_Sfx_08:
-    INCBIN "data/audio/sfx/sfx_05.bin"              ; SFX_08 (sfx $08)
+    INCLUDE "data/audio/sfx/sfx_05.asm"                        ; SFX_08 (sfx $08)
 audio_22_62b5_Sfx_09:
-    INCBIN "data/audio/sfx/sfx_09.bin"              ; SFX_09 (sfx $09)
+    INCLUDE "data/audio/sfx/sfx_09.asm"                        ; SFX_09 (sfx $09)
 audio_22_62cb_Sfx_0a:
-    INCBIN "data/audio/sfx/sfx_0a.bin"              ; SFX_0A (sfx $0A)
+    INCLUDE "data/audio/sfx/sfx_0a.asm"                        ; SFX_0A (sfx $0A)
 audio_22_62df_Sfx_0b:
-    INCBIN "data/audio/sfx/sfx_0b.bin"              ; SFX_0B (sfx $0B)
+    INCLUDE "data/audio/sfx/sfx_0b.asm"                        ; SFX_0B (sfx $0B)
 audio_22_6301_Sfx_GexJump:
-    INCBIN "data/audio/sfx/sfx_gex_jump.bin"        ; SFX_GEX_JUMP (sfx $0C)
+    INCLUDE "data/audio/sfx/sfx_gex_jump.asm"                  ; SFX_GEX_JUMP (sfx $0C)
 audio_22_632b_Sfx_GexDoubleJump:
-    INCBIN "data/audio/sfx/sfx_gex_double_jump.bin" ; SFX_GEX_DOUBLE_JUMP (sfx $0D)
+    INCLUDE "data/audio/sfx/sfx_gex_double_jump.asm"           ; SFX_GEX_DOUBLE_JUMP (sfx $0D)
 audio_22_6389_Sfx_GexCollapse:
-    INCBIN "data/audio/sfx/sfx_gex_collapse.bin"    ; SFX_GEX_COLLAPSE (sfx $0E)
+    INCLUDE "data/audio/sfx/sfx_gex_collapse.asm"              ; SFX_GEX_COLLAPSE (sfx $0E)
 audio_22_63a1_Sfx_GexDeath:
-    INCBIN "data/audio/sfx/sfx_gex_death.bin"       ; SFX_GEX_DEATH (sfx $0F)
+    INCLUDE "data/audio/sfx/sfx_gex_death.asm"                 ; SFX_GEX_DEATH (sfx $0F)
 audio_22_63f9_Sfx_GexHurt:
-    INCBIN "data/audio/sfx/sfx_gex_hurt.bin"        ; SFX_GEX_HURT (sfx $10)
+    INCLUDE "data/audio/sfx/sfx_gex_hurt.asm"                  ; SFX_GEX_HURT (sfx $10)
 audio_22_6445_Sfx_GexSpawn:
-    INCBIN "data/audio/sfx/sfx_gex_spawn.bin"       ; SFX_GEX_SPAWN (sfx $11)
+    INCLUDE "data/audio/sfx/sfx_gex_spawn.asm"                 ; SFX_GEX_SPAWN (sfx $11)
 audio_22_65f3_Sfx_GexHitBounce:
-    INCBIN "data/audio/sfx/sfx_gex_hit_bounce.bin"  ; SFX_GEX_HIT_BOUNCE (sfx $12)
+    INCLUDE "data/audio/sfx/sfx_gex_hit_bounce.asm"            ; SFX_GEX_HIT_BOUNCE (sfx $12)
 audio_22_6617_Sfx_13:
-    INCBIN "data/audio/sfx/sfx_13.bin"              ; SFX_13 (sfx $13)
+    INCLUDE "data/audio/sfx/sfx_13.asm"                        ; SFX_13 (sfx $13)
 audio_22_666d_Sfx_GexPowerupActive:
-    INCBIN "data/audio/sfx/sfx_gex_powerup_active.bin"  ; SFX_GEX_POWERUP_ACTIVE (sfx $14)
+    INCLUDE "data/audio/sfx/sfx_gex_powerup_active.asm"        ; SFX_GEX_POWERUP_ACTIVE (sfx $14)
 audio_22_669b_Sfx_GexPowerupExpired:
-    INCBIN "data/audio/sfx/sfx_gex_powerup_expired.bin" ; SFX_GEX_POWERUP_EXPIRED (sfx $15)
+    INCLUDE "data/audio/sfx/sfx_gex_powerup_expired.asm"       ; SFX_GEX_POWERUP_EXPIRED (sfx $15)
 audio_22_66c9_Sfx_16:
-    INCBIN "data/audio/sfx/sfx_16.bin"              ; SFX_16 (sfx $16)
+    INCLUDE "data/audio/sfx/sfx_16.asm"                        ; SFX_16 (sfx $16)
 audio_22_66dd_Sfx_EnemyDefeated:
-    INCBIN "data/audio/sfx/sfx_enemy_defeated.bin"  ; SFX_ENEMY_DEFEATED (sfx $17)
+    INCLUDE "data/audio/sfx/sfx_enemy_defeated.asm"            ; SFX_ENEMY_DEFEATED (sfx $17)
 audio_22_66f5_Sfx_18:
-    INCBIN "data/audio/sfx/sfx_18.bin"              ; SFX_18 (sfx $18)
+    INCLUDE "data/audio/sfx/sfx_18.asm"                        ; SFX_18 (sfx $18)
 audio_22_6707_Sfx_HardHeadAreaHazard:
-    INCBIN "data/audio/sfx/sfx_05.bin"              ; SFX_HARD_HEAD_AREA_HAZARD (sfx $19)
+    INCLUDE "data/audio/sfx/sfx_05.asm"                        ; SFX_HARD_HEAD_AREA_HAZARD (sfx $19)
 audio_22_6715_Sfx_FallingHazard:
-    INCBIN "data/audio/sfx/sfx_falling_hazard.bin"  ; SFX_FALLING_HAZARD (sfx $1A)
+    INCLUDE "data/audio/sfx/sfx_falling_hazard.asm"            ; SFX_FALLING_HAZARD (sfx $1A)
 audio_22_672b_Sfx_1b:
-    INCBIN "data/audio/sfx/sfx_1b.bin"              ; SFX_1B (sfx $1B)
+    INCLUDE "data/audio/sfx/sfx_1b.asm"                        ; SFX_1B (sfx $1B)
 audio_22_6741_Sfx_Unused1C:
-    INCBIN "data/audio/sfx/sfx_unused_1c.bin"       ; driver sfx id $1C - no .data_00_116c_SFXChannelTable row reaches it
+    INCLUDE "data/audio/sfx/sfx_unused_1c.asm"                 ; driver sfx id $1C - no .data_00_116c_SFXChannelTable row reaches it
 audio_22_674b_Sfx_FlowerHammer:
-    INCBIN "data/audio/sfx/sfx_falling_hazard.bin"  ; SFX_FLOWER_HAMMER (sfx $1C)
+    INCLUDE "data/audio/sfx/sfx_falling_hazard.asm"            ; SFX_FLOWER_HAMMER (sfx $1C)
 audio_22_6761_Sfx_Bumblebee:
-    INCBIN "data/audio/sfx/sfx_bumblebee.bin"       ; SFX_BUMBLEBEE (sfx $1D)
+    INCLUDE "data/audio/sfx/sfx_bumblebee.asm"                 ; SFX_BUMBLEBEE (sfx $1D)
 audio_22_6795_Sfx_Rocket:
-    INCBIN "data/audio/sfx/sfx_shoot.bin"           ; SFX_ROCKET (sfx $1E)
+    INCLUDE "data/audio/sfx/sfx_shoot.asm"                     ; SFX_ROCKET (sfx $1E)
 audio_22_67a5_Sfx_1f:
-    INCBIN "data/audio/sfx/sfx_1f.bin"              ; SFX_1F (sfx $1F)
+    INCLUDE "data/audio/sfx/sfx_1f.asm"                        ; SFX_1F (sfx $1F)
 audio_22_67e9_Sfx_Hunter:
-    INCBIN "data/audio/sfx/sfx_shoot.bin"           ; SFX_HUNTER (sfx $20)
+    INCLUDE "data/audio/sfx/sfx_shoot.asm"                     ; SFX_HUNTER (sfx $20)
 audio_22_67f9_Sfx_21:
-    INCBIN "data/audio/sfx/sfx_21.bin"              ; SFX_21 (sfx $21)
+    INCLUDE "data/audio/sfx/sfx_21.asm"                        ; SFX_21 (sfx $21)
 audio_22_6835_Sfx_22:
-    INCBIN "data/audio/sfx/sfx_22.bin"              ; SFX_22 (sfx $22)
+    INCLUDE "data/audio/sfx/sfx_22.asm"                        ; SFX_22 (sfx $22)
 audio_22_6845_Sfx_23:
-    INCBIN "data/audio/sfx/sfx_23.bin"              ; SFX_23 (sfx $23)
+    INCLUDE "data/audio/sfx/sfx_23.asm"                        ; SFX_23 (sfx $23)
 audio_22_685d_Sfx_Unused25:
-    INCBIN "data/audio/sfx/sfx_unused_25.bin"       ; driver sfx id $25 - no .data_00_116c_SFXChannelTable row reaches it
+    INCLUDE "data/audio/sfx/sfx_unused_25.asm"                 ; driver sfx id $25 - no .data_00_116c_SFXChannelTable row reaches it
 audio_22_6865_Sfx_EnemyJump:
-    INCBIN "data/audio/sfx/sfx_enemy_jump.bin"      ; SFX_ENEMY_JUMP (sfx $24)
+    INCLUDE "data/audio/sfx/sfx_enemy_jump.asm"                ; SFX_ENEMY_JUMP (sfx $24)
 audio_22_688d_Sfx_25:
-    INCBIN "data/audio/sfx/sfx_25.bin"              ; SFX_25 (sfx $25)
+    INCLUDE "data/audio/sfx/sfx_25.asm"                        ; SFX_25 (sfx $25)
 audio_22_689f_Sfx_Unused28:
-    INCBIN "data/audio/sfx/sfx_unused_25.bin"       ; driver sfx id $28 - no .data_00_116c_SFXChannelTable row reaches it
+    INCLUDE "data/audio/sfx/sfx_unused_25.asm"                 ; driver sfx id $28 - no .data_00_116c_SFXChannelTable row reaches it
 audio_22_68a7_Sfx_26:
-    INCBIN "data/audio/sfx/sfx_26.bin"              ; SFX_26 (sfx $26)
+    INCLUDE "data/audio/sfx/sfx_26.asm"                        ; SFX_26 (sfx $26)
 audio_22_68b7_Sfx_FallingPlatform:
-    INCBIN "data/audio/sfx/sfx_falling_platform.bin" ; SFX_FALLING_PLATFORM (sfx $27)
+    INCLUDE "data/audio/sfx/sfx_falling_platform.asm"          ; SFX_FALLING_PLATFORM (sfx $27)
 audio_22_68c9_Sfx_28:
-    INCBIN "data/audio/sfx/sfx_28.bin"              ; SFX_28 (sfx $28)
+    INCLUDE "data/audio/sfx/sfx_28.asm"                        ; SFX_28 (sfx $28)
 audio_22_6909_Sfx_AltEnemyJump:
-    INCBIN "data/audio/sfx/sfx_enemy_jump.bin"      ; SFX_ALT_ENEMY_JUMP (sfx $29)
+    INCLUDE "data/audio/sfx/sfx_enemy_jump.asm"                ; SFX_ALT_ENEMY_JUMP (sfx $29)
 audio_22_6931_Sfx_GexPoweredJump:
-    INCBIN "data/audio/sfx/sfx_gex_powered_jump.bin"; SFX_GEX_POWERED_JUMP (sfx $2A)
+    INCLUDE "data/audio/sfx/sfx_gex_powered_jump.asm"; SFX_GEX_POWERED_JUMP (sfx $2A)
 audio_22_6943_Sfx_PoweredWalkway:
-    INCBIN "data/audio/sfx/sfx_powered_walkway.bin" ; SFX_POWERED_WALKWAY (sfx $2B)
+    INCLUDE "data/audio/sfx/sfx_powered_walkway.asm"           ; SFX_POWERED_WALKWAY (sfx $2B)
 audio_22_698b_Sfx_CannonRotate:
-    INCBIN "data/audio/sfx/sfx_cannon_rotate.bin"   ; SFX_CANNON_ROTATE (sfx $2C)
+    INCLUDE "data/audio/sfx/sfx_cannon_rotate.asm"             ; SFX_CANNON_ROTATE (sfx $2C)
 audio_22_69b7_Sfx_Jar:
-    INCBIN "data/audio/sfx/sfx_falling_hazard.bin"  ; SFX_JAR (sfx $2D)
+    INCLUDE "data/audio/sfx/sfx_falling_hazard.asm"            ; SFX_JAR (sfx $2D)
 audio_22_69cd_Sfx_2e:
-    INCBIN "data/audio/sfx/sfx_2e.bin"              ; SFX_2E (sfx $2E)
+    INCLUDE "data/audio/sfx/sfx_2e.asm"                        ; SFX_2E (sfx $2E)
 audio_22_69e3_Sfx_Unused32:
-    INCBIN "data/audio/sfx/sfx_unused_32.bin"       ; driver sfx id $32 - no .data_00_116c_SFXChannelTable row reaches it
+    INCLUDE "data/audio/sfx/sfx_unused_32.asm"                 ; driver sfx id $32 - no .data_00_116c_SFXChannelTable row reaches it
 audio_22_69ef_Sfx_Dragon:
-    INCBIN "data/audio/sfx/sfx_bumblebee.bin"       ; SFX_DRAGON (sfx $2F)
+    INCLUDE "data/audio/sfx/sfx_bumblebee.asm"                 ; SFX_DRAGON (sfx $2F)
 audio_22_6a23_Sfx_Cannon:
-    INCBIN "data/audio/sfx/sfx_gex_jump.bin"        ; SFX_CANNON (sfx $30)
+    INCLUDE "data/audio/sfx/sfx_gex_jump.asm"                  ; SFX_CANNON (sfx $30)
 audio_22_6a4d_Sfx_FallingBoulder:
-    INCBIN "data/audio/sfx/sfx_falling_boulder.bin" ; SFX_FALLING_BOULDER (sfx $31)
+    INCLUDE "data/audio/sfx/sfx_falling_boulder.asm"           ; SFX_FALLING_BOULDER (sfx $31)
 audio_22_6a81_Sfx_32:
-    INCBIN "data/audio/sfx/sfx_32.bin"              ; SFX_32 (sfx $32)
+    INCLUDE "data/audio/sfx/sfx_32.asm"                        ; SFX_32 (sfx $32)
 audio_22_6a99_Sfx_Pterosaur:
-    INCBIN "data/audio/sfx/sfx_pterosaur.bin"       ; SFX_PTEROSAUR (sfx $33)
+    INCLUDE "data/audio/sfx/sfx_pterosaur.asm"                 ; SFX_PTEROSAUR (sfx $33)
 audio_22_6ac7_Sfx_MultiProjectile:
-    INCBIN "data/audio/sfx/sfx_multi_projectile.bin" ; SFX_MULTI_PROJECTILE (sfx $34)
+    INCLUDE "data/audio/sfx/sfx_multi_projectile.asm"          ; SFX_MULTI_PROJECTILE (sfx $34)
 audio_22_6ad7_Sfx_Gear:
-    INCBIN "data/audio/sfx/sfx_cannon_rotate.bin"   ; SFX_GEAR (sfx $35)
+    INCLUDE "data/audio/sfx/sfx_cannon_rotate.asm"             ; SFX_GEAR (sfx $35)
 audio_22_6b03_Sfx_GunProjectile:
-    INCBIN "data/audio/sfx/sfx_shoot.bin"           ; SFX_GUN_PROJECTILE (sfx $36)
+    INCLUDE "data/audio/sfx/sfx_shoot.asm"                     ; SFX_GUN_PROJECTILE (sfx $36)
 audio_22_6b13_Sfx_Explosion:
-    INCBIN "data/audio/sfx/sfx_explosion.bin"       ; SFX_EXPLOSION (sfx $37)
+    INCLUDE "data/audio/sfx/sfx_explosion.asm"                 ; SFX_EXPLOSION (sfx $37)
 audio_22_6b6b_Sfx_RezHurt:
-    INCBIN "data/audio/sfx/sfx_falling_hazard.bin"  ; SFX_REZ_HURT (sfx $38)
+    INCLUDE "data/audio/sfx/sfx_falling_hazard.asm"            ; SFX_REZ_HURT (sfx $38)
 audio_22_6b81_Sfx_RezButton:
-    INCBIN "data/audio/sfx/sfx_rez_button.bin"      ; SFX_REZ_BUTTON (sfx $39)
+    INCLUDE "data/audio/sfx/sfx_rez_button.asm"                ; SFX_REZ_BUTTON (sfx $39)
 audio_22_6b97_Sfx_Unused3E:
-    INCBIN "data/audio/sfx/sfx_unused_3e.bin"       ; driver sfx id $3E - no .data_00_116c_SFXChannelTable row reaches it
+    INCLUDE "data/audio/sfx/sfx_unused_3e.asm"                 ; driver sfx id $3E - no .data_00_116c_SFXChannelTable row reaches it
 audio_22_6b9b_Sfx_Unused3F:
-    INCBIN "data/audio/sfx/sfx_unused_3f.bin"       ; driver sfx id $3F - no .data_00_116c_SFXChannelTable row reaches it
+    INCLUDE "data/audio/sfx/sfx_unused_3f.asm"                 ; driver sfx id $3F - no .data_00_116c_SFXChannelTable row reaches it
 audio_22_6b9f_Sfx_Unused40:
-    INCBIN "data/audio/sfx/sfx_unused_40.bin"       ; driver sfx id $40 - no .data_00_116c_SFXChannelTable row reaches it
+    INCLUDE "data/audio/sfx/sfx_unused_40.asm"                 ; driver sfx id $40 - no .data_00_116c_SFXChannelTable row reaches it
 audio_22_6ba3_Sfx_Unused41:
-    INCBIN "data/audio/sfx/sfx_unused_41.bin"       ; driver sfx id $41 - no .data_00_116c_SFXChannelTable row reaches it
+    INCLUDE "data/audio/sfx/sfx_unused_41.asm"                 ; driver sfx id $41 - no .data_00_116c_SFXChannelTable row reaches it
