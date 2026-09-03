@@ -1522,8 +1522,7 @@ wD75D_Player_XSpeedCurrent:
 ; call_02_4a45_Player_UpdateFacing ramps it one step per frame toward
 ; wD75E_Player_XSpeedTarget, and resets it to zero on a turn or when the d-pad is
 ; released, so Gex always accelerates from a standstill rather than snapping to
-; full speed. It was previously named wD75D_PlayerXSpeedPrev, which had the
-; relationship with wD75E backwards.
+; full speed.
 ;
 ; Two other readers treat it as something other than a speed:
 ;   call_03_52c5_CollisionHandler_StationaryPlatform / MovingPlatform use it as

@@ -4474,7 +4474,6 @@ call_02_6634_EntityAction_Unk6F_Update:
     ret
 
 call_02_6635_EntityAction_Unk70_Update:
-; ENTITY_UNK_70. The label used to read _Unk6F_Update, duplicating the entry above
     ret
 
 call_02_6636_EntityAction_Pincer_Update:

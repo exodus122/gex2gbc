@@ -167,10 +167,6 @@ call_00_2eb0_MapData_GetRecordAddr:
 ;                                              tilesets share a bank $1000 apart
 ;   $0C-$0F                                    unused, always $00
 ;
-; The bank fields are written as BANK(label) and the tileset offset as the label
-; itself, so the records follow main.asm automatically if a section is ever moved.
-; Every one still assembles to the byte it used to hold
-;
 ; Five of the sixteen bytes are dead. The record is padded to a power of two so
 ; call_00_2eb0_MapData_GetRecordAddr can index it with four `add HL,HL` shifts
 ; instead of a multiply - 80 bytes of ROM spent to avoid a multiply routine

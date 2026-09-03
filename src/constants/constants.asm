@@ -439,19 +439,6 @@ DEF DEMO_COUNT                   EQU 4 ; entries in data_00_076d_DemoLevelIds
 ; computed - entry 2 of data_00_076d_DemoLevelIds
 DEF DEMO_INDEX_FORCED            EQU 2
 
-; ROM banks the home code maps in directly rather than through a data table used to
-; be spelled out here as BANK_PLAYER_GFX_BASE / BANK_TV_ATTRIBUTES / BANK_TV_SCREENS /
-; BANK_AUDIO_DEFAULT. They are now written at their use sites as BANK() of something
-; that actually lives in the bank, so moving that data moves the constant with it:
-;
-;   player gfx base   BANK(image_player_walk_none_004_4000)   ; + (wD208_Player_SpriteID >> 6)
-;   tv attributes     BANK(image_013_00_scream_tv_screen)
-;   tv screens        BANK(image_014_4000)
-;   audio default     BANK(call_21_4000_Audio_Init)             ; until the first song change picks another
-;
-; A DEF ... EQU cannot hold any of them: EQU needs a value at the point it is written,
-; and these labels are not known until link time
-
 ; A sprite / screen id is split into a (bank, page) pair: the low bits pick a
 ; 256-byte page inside the $4000 window, the rest picks the bank
 DEF GFX_PAGE_INDEX_MASK          EQU $3F
@@ -916,8 +903,6 @@ DEF MENU_LCDC_NO_WINDOW                     EQU $C7 ; the same with the window o
 ; The Media Dimension TV picture staged by call_01_466b_MenuCmd_StageTVScreen. The
 ; artwork is raw tile data in a graphics bank, so its size lives here rather than
 ; in a header on the data
-; The bank used to be MENU_TV_SCREEN_BANK EQU $13; it is now
-; BANK(image_013_00_scream_tv_screen) at its one use site, so it follows the artwork
 DEF MENU_TV_SCREEN_WIDTH                    EQU 6
 DEF MENU_TV_SCREEN_HEIGHT                   EQU 5
 
