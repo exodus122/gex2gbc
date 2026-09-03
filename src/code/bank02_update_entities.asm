@@ -546,150 +546,150 @@ call_02_7030_Entity_NotifyActionChanged:
 ; carry SPRITE_FLAG_STREAMS_OWN_GFX but are left at $00 - ENTITY_UNK_3F, _4A, _6B, _79
 ; and _8E, none of which appears in any level's entity list, so they are unfinished
 ; rather than broken
-    db   $00             ; $00 ENTITY_GEX
-    db   $00             ; $01 ENTITY_COLLECTIBLE_SPAWN
-    db   $00             ; $02 ENTITY_UNK_02
-    db   $00             ; $03 ENTITY_TV_BUTTON
-    db   $18             ; $04 ENTITY_RED_REMOTE
-    db   $18             ; $05 ENTITY_SILVER_REMOTE
-    db   $18             ; $06 ENTITY_GOLD_REMOTE
-    db   $00             ; $07 ENTITY_ENEMY_DEFEATED
-    db   $19             ; $08 ENTITY_UNK_08
-    db   $00             ; $09 ENTITY_SCREAM_TV_FALLING_PLATFORM
-    db   $00             ; $0A ENTITY_SCREAM_TV_MOVING_PLATFORM
-    db   $00             ; $0B ENTITY_SCREAM_TV_PUSH_BLOCK
-    db   $1a             ; $0C ENTITY_SCREAM_TV_PUMPKIN
-    db   $1a             ; $0D ENTITY_SCREAM_TV_FRANKIE
-    db   $00             ; $0E ENTITY_SCREAM_TV_HEAD_GHOST
-    db   $00             ; $0F ENTITY_SCREAM_TV_HEAD_GHOST_HEAD
-    db   $1a             ; $10 ENTITY_SCREAM_TV_FLOATING_SKULL
-    db   $00             ; $11 ENTITY_SCREAM_TV_FLOATING_SKULL_PROJECTILE
-    db   $1b             ; $12 ENTITY_SCREAM_TV_ZOMBIE
-    db   $00             ; $13 ENTITY_SCREAM_TV_ZOMBIE_HEAD
-    db   $00             ; $14 ENTITY_SCREAM_TV_FALLING_AXE
-    db   $00             ; $15 ENTITY_SCREAM_TV_LANTERN
-    db   $19             ; $16 ENTITY_SCREAM_TV_BAT
-    db   $00             ; $17 ENTITY_SCREAM_TV_ORANGE_MOVING_PLATFORM
-    db   $18             ; $18 ENTITY_SCREAM_TV_DOOR_OPENING
-    db   $1a             ; $19 ENTITY_SCREAM_TV_GHOST
-    db   $00             ; $1A ENTITY_SCREAM_TV_CLIMB_WALL_SUN_ENEMY
-    db   $00             ; $1B ENTITY_SCREAM_TV_VANISHING_PLATFORM
-    db   $00             ; $1C ENTITY_SCREAM_TV_MONA_LISA_ELEVATOR
-    db   $00             ; $1D ENTITY_TOON_TV_HARD_HEAD_AREA_HAZARD
-    db   $00             ; $1E ENTITY_TOON_TV_STATIONARY_BEAR_TRAP
-    db   $00             ; $1F ENTITY_TOON_TV_MOVING_BEAR_TRAP
-    db   $00             ; $20 ENTITY_TOON_TV_BUMBLEBEE
-    db   $00             ; $21 ENTITY_TOON_TV_BOWLING_BALL
-    db   $00             ; $22 ENTITY_TOON_TV_CACTUS
-    db   $00             ; $23 ENTITY_TOON_TV_DOMINO
-    db   $00             ; $24 ENTITY_TOON_TV_SHARK
-    db   $00             ; $25 ENTITY_TOON_TV_FLOWER
-    db   $19             ; $26 ENTITY_TOON_TV_HUNTER
-    db   $00             ; $27 ENTITY_TOON_TV_MUSHROOM
-    db   $00             ; $28 ENTITY_TOON_TV_MUSHROOM_PROJECTILE
-    db   $00             ; $29 ENTITY_TOON_TV_LIZARD
-    db   $19             ; $2A ENTITY_TOON_TV_HAPPY_FACE
-    db   $00             ; $2B ENTITY_TOON_TV_VANISHING_BLOCK
-    db   $00             ; $2C ENTITY_TOON_TV_MOVING_BLOCK
-    db   $00             ; $2D ENTITY_TOON_TV_MOVING_LOG
-    db   $00             ; $2E ENTITY_TOON_TV_STATIONARY_LOG
-    db   $00             ; $2F ENTITY_TOON_TV_FLOWER_HAMMER
-    db   $00             ; $30 ENTITY_TOON_TV_HUNTER_BULLET
-    db   $00             ; $31 ENTITY_TOON_TV_ROCKET
-    db   $1b             ; $32 ENTITY_PRE_HISTORY_FAST_DINOSAUR
-    db   $1a             ; $33 ENTITY_PRE_HISTORY_DRAGONFLY
-    db   $19             ; $34 ENTITY_PRE_HISTORY_EGG
-    db   $00             ; $35 ENTITY_UNK_35
-    db   $00             ; $36 ENTITY_UNK_36
-    db   $00             ; $37 ENTITY_PRE_HISTORY_FALLING_LAVA
-    db   $00             ; $38 ENTITY_PRE_HISTORY_LAVA_RAFT
-    db   $00             ; $39 ENTITY_PRE_HISTORY_MOVING_PLATFORM
-    db   $00             ; $3A ENTITY_UNK_3A
-    db   $00             ; $3B ENTITY_UNK_3B
-    db   $1a             ; $3C ENTITY_PRE_HISTORY_PTEROSAUR
-    db   $00             ; $3D ENTITY_UNK_3D
-    db   $00             ; $3E ENTITY_PRE_HISTORY_FALLING_BOULDER
-    db   $00             ; $3F ENTITY_UNK_3F
-    db   $00             ; $40 ENTITY_PRE_HISTORY_BEETLE_HORIZONTAL
-    db   $00             ; $41 ENTITY_PRE_HISTORY_BEETLE_VERTICAL
-    db   $00             ; $42 ENTITY_PRE_HISTORY_ANT
-    db   $00             ; $43 ENTITY_PRE_HISTORY_FIRE_PLANT
-    db   $00             ; $44 ENTITY_PRE_HISTORY_FIRE_PLANT_PROJECTILES
-    db   $00             ; $45 ENTITY_PRE_HISTORY_GEYSER
-    db   $00             ; $46 ENTITY_UNK_46
-    db   $1a             ; $47 ENTITY_PRE_HISTORY_DINOSAUR
-    db   $1a             ; $48 ENTITY_PRE_HISTORY_TRICERATOPS
-    db   $00             ; $49 ENTITY_PRE_HISTORY_TRICERATOPS_HORN
-    db   $00             ; $4A ENTITY_UNK_4A
-    db   $00             ; $4B ENTITY_KUNG_FU_THEATER_HANGING_BLADE
-    db   $00             ; $4C ENTITY_KUNG_FU_THEATER_CANNON
-    db   $00             ; $4D ENTITY_KUNG_FU_THEATER_CANNON_PROJECTILE
-    db   $19             ; $4E ENTITY_KUNG_FU_THEATER_DRAGONFLY
-    db   $00             ; $4F ENTITY_KUNG_FU_THEATER_DRAGON_BODY_SEGMENT
-    db   $18             ; $50 ENTITY_KUNG_FU_THEATER_DRAGON_HEAD
-    db   $00             ; $51 ENTITY_UNK_51
-    db   $00             ; $52 ENTITY_KUNG_FU_THEATER_DRAGON_PROJECTILE
-    db   $18             ; $53 ENTITY_KUNG_FU_THEATER_WALKING_NINJA
-    db   $18             ; $54 ENTITY_KUNG_FU_THEATER_JUMPING_NINJA
-    db   $18             ; $55 ENTITY_KUNG_FU_THEATER_SAMURAI_BODY
-    db   $00             ; $56 ENTITY_KUNG_FU_THEATER_SAMURAI_HEAD
-    db   $00             ; $57 ENTITY_KUNG_FU_THEATER_LIZARD
-    db   $00             ; $58 ENTITY_KUNG_FU_THEATER_NINJA_PROJECTILE
-    db   $00             ; $59 ENTITY_KUNG_FU_THEATER_SPIKY_LOG
-    db   $00             ; $5A ENTITY_KUNG_FU_THEATER_TALL_JAR
-    db   $00             ; $5B ENTITY_KUNG_FU_THEATER_JAR
-    db   $00             ; $5C ENTITY_UNK_5C
-    db   $00             ; $5D ENTITY_UNK_5D
-    db   $00             ; $5E ENTITY_KUNG_FU_THEATER_VANISHING_PLATFORM
-    db   $00             ; $5F ENTITY_KUNG_FU_THEATER_MOVING_PLATFORM
-    db   $00             ; $60 ENTITY_UNK_60
-    db   $00             ; $61 ENTITY_KUNG_FU_THEATER_MOVING_RAFT
-    db   $00             ; $62 ENTITY_KUNG_FU_THEATER_STATIONARY_RAFT
-    db   $00             ; $63 ENTITY_UNK_63
-    db   $00             ; $64 ENTITY_UNK_64
-    db   $00             ; $65 ENTITY_REZOPOLIS_SPECIAL_MOVING_PLATFORM
-    db   $00             ; $66 ENTITY_REZOPOLIS_MOVING_PLATFORM
-    db   $00             ; $67 ENTITY_REZOPOLIS_RED_PLATFORM
-    db   $00             ; $68 ENTITY_REZOPOLIS_ACTIVATED_RED_PLATFORM
-    db   $00             ; $69 ENTITY_REZOPOLIS_TAILSPIN_PLATFORM
-    db   $00             ; $6A ENTITY_REZOPOLIS_TAILSPIN_GEAR
-    db   $00             ; $6B ENTITY_UNK_6B
-    db   $00             ; $6C ENTITY_UNK_6C
-    db   $00             ; $6D ENTITY_UNK_6D
-    db   $1b             ; $6E ENTITY_REZOPOLIS_GREEN_MONSTER
-    db   $00             ; $6F ENTITY_UNK_6F
-    db   $00             ; $70 ENTITY_UNK_70
-    db   $1b             ; $71 ENTITY_REZOPOLIS_PINCER
-    db   $00             ; $72 ENTITY_REZOPOLIS_FLAMETHROWER
-    db   $1b             ; $73 ENTITY_REZOPOLIS_UFO
-    db   $00             ; $74 ENTITY_REZOPOLIS_ANT
-    db   $00             ; $75 ENTITY_REZOPOLIS_ANT_SPAWNER
-    db   $00             ; $76 ENTITY_CIRCUIT_CENTRAL_ANT
-    db   $00             ; $77 ENTITY_CIRCUIT_CENTRAL_CAPACITOR
-    db   $00             ; $78 ENTITY_CIRCUIT_CENTRAL_POWER_UP
-    db   $00             ; $79 ENTITY_UNK_79
-    db   $00             ; $7A ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT
-    db   $00             ; $7B ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT_GEAR
-    db   $00             ; $7C ENTITY_CIRCUIT_CENTRAL_ELECTRIC_BALL
-    db   $00             ; $7D ENTITY_CIRCUIT_CENTRAL_MOVING_PLATFORM
-    db   $00             ; $7E ENTITY_CIRCUIT_CENTRAL_POWERED_PLAFORM
-    db   $00             ; $7F ENTITY_CIRCUIT_CENTRAL_LOWERING_PLATFORM
-    db   $1a             ; $80 ENTITY_CIRCUIT_CENTRAL_WALKER_ROBOT
-    db   $00             ; $81 ENTITY_CIRCUIT_CENTRAL_POWERED_WALKWAY
-    db   $00             ; $82 ENTITY_CIRCUIT_CENTRAL_WALKWAY_ACTIVATOR
-    db   $00             ; $83 ENTITY_CHANNEL_Z_ARCED_GUN_PROJECTILE
-    db   $00             ; $84 ENTITY_CHANNEL_Z_ARCED_GUN_PROJECTILE2
-    db   $00             ; $85 ENTITY_CHANNEL_Z_GUN_PROJECTILE
-    db   $1c             ; $86 ENTITY_CHANNEL_Z_REZ
-    db   $00             ; $87 ENTITY_CHANNEL_Z_UNUSED_PLATFORM_1
-    db   $00             ; $88 ENTITY_CHANNEL_Z_UNUSED_PLATFORM_2
-    db   $00             ; $89 ENTITY_CHANNEL_Z_REZ_FOLLOWING_FIRE
-    db   $00             ; $8A ENTITY_CHANNEL_Z_GUN_PROJECTILE_EXPLOSION
-    db   $00             ; $8B ENTITY_FINAL_BATTLE_BUTTON_PROJECTILE
-    db   $00             ; $8C ENTITY_CHANNEL_Z_FINAL_BATTLE_BUTTON
-    db   $1b             ; $8D ENTITY_CHANNEL_Z_REZ_PORTAL
-    db   $00             ; $8E ENTITY_UNK_8E
-    db   $00             ; $8F ENTITY_MEDIA_DIMENSION_MOVING_PLATFORM
+    db   $00                                                                ; $00 ENTITY_GEX
+    db   $00                                                                ; $01 ENTITY_COLLECTIBLE_SPAWN
+    db   $00                                                                ; $02 ENTITY_UNK_02
+    db   $00                                                                ; $03 ENTITY_TV_BUTTON
+    db   BANK(image_red_remote_018_4000)                                    ; $04 ENTITY_RED_REMOTE
+    db   BANK(image_red_remote_silver_remote_and_1_more_018_4800)           ; $05 ENTITY_SILVER_REMOTE
+    db   BANK(image_red_remote_silver_remote_and_1_more_018_4800)           ; $06 ENTITY_GOLD_REMOTE
+    db   $00                                                                ; $07 ENTITY_ENEMY_DEFEATED
+    db   BANK(image_unk_08_toon_tv_hunter_019_5a00)                         ; $08 ENTITY_UNK_08
+    db   $00                                                                ; $09 ENTITY_SCREAM_TV_FALLING_PLATFORM
+    db   $00                                                                ; $0A ENTITY_SCREAM_TV_MOVING_PLATFORM
+    db   $00                                                                ; $0B ENTITY_SCREAM_TV_PUSH_BLOCK
+    db   BANK(image_scream_tv_pumpkin_01a_5a00)                             ; $0C ENTITY_SCREAM_TV_PUMPKIN
+    db   BANK(image_scream_tv_frankie_01a_5f00)                             ; $0D ENTITY_SCREAM_TV_FRANKIE
+    db   $00                                                                ; $0E ENTITY_SCREAM_TV_HEAD_GHOST
+    db   $00                                                                ; $0F ENTITY_SCREAM_TV_HEAD_GHOST_HEAD
+    db   BANK(image_scream_tv_floating_skull_01a_7400)                      ; $10 ENTITY_SCREAM_TV_FLOATING_SKULL
+    db   $00                                                                ; $11 ENTITY_SCREAM_TV_FLOATING_SKULL_PROJECTILE
+    db   BANK(image_scream_tv_zombie_01b_6700)                              ; $12 ENTITY_SCREAM_TV_ZOMBIE
+    db   $00                                                                ; $13 ENTITY_SCREAM_TV_ZOMBIE_HEAD
+    db   $00                                                                ; $14 ENTITY_SCREAM_TV_FALLING_AXE
+    db   $00                                                                ; $15 ENTITY_SCREAM_TV_LANTERN
+    db   BANK(image_scream_tv_bat_019_7a00)                                 ; $16 ENTITY_SCREAM_TV_BAT
+    db   $00                                                                ; $17 ENTITY_SCREAM_TV_ORANGE_MOVING_PLATFORM
+    db   BANK(image_scream_tv_door_opening_018_7c00)                        ; $18 ENTITY_SCREAM_TV_DOOR_OPENING
+    db   BANK(image_scream_tv_ghost_01a_6b00)                               ; $19 ENTITY_SCREAM_TV_GHOST
+    db   $00                                                                ; $1A ENTITY_SCREAM_TV_CLIMB_WALL_SUN_ENEMY
+    db   $00                                                                ; $1B ENTITY_SCREAM_TV_VANISHING_PLATFORM
+    db   $00                                                                ; $1C ENTITY_SCREAM_TV_MONA_LISA_ELEVATOR
+    db   $00                                                                ; $1D ENTITY_TOON_TV_HARD_HEAD_AREA_HAZARD
+    db   $00                                                                ; $1E ENTITY_TOON_TV_STATIONARY_BEAR_TRAP
+    db   $00                                                                ; $1F ENTITY_TOON_TV_MOVING_BEAR_TRAP
+    db   $00                                                                ; $20 ENTITY_TOON_TV_BUMBLEBEE
+    db   $00                                                                ; $21 ENTITY_TOON_TV_BOWLING_BALL
+    db   $00                                                                ; $22 ENTITY_TOON_TV_CACTUS
+    db   $00                                                                ; $23 ENTITY_TOON_TV_DOMINO
+    db   $00                                                                ; $24 ENTITY_TOON_TV_SHARK
+    db   $00                                                                ; $25 ENTITY_TOON_TV_FLOWER
+    db   BANK(image_toon_tv_hunter_019_4600)                                ; $26 ENTITY_TOON_TV_HUNTER
+    db   $00                                                                ; $27 ENTITY_TOON_TV_MUSHROOM
+    db   $00                                                                ; $28 ENTITY_TOON_TV_MUSHROOM_PROJECTILE
+    db   $00                                                                ; $29 ENTITY_TOON_TV_LIZARD
+    db   BANK(image_toon_tv_happy_face_019_4100)                            ; $2A ENTITY_TOON_TV_HAPPY_FACE
+    db   $00                                                                ; $2B ENTITY_TOON_TV_VANISHING_BLOCK
+    db   $00                                                                ; $2C ENTITY_TOON_TV_MOVING_BLOCK
+    db   $00                                                                ; $2D ENTITY_TOON_TV_MOVING_LOG
+    db   $00                                                                ; $2E ENTITY_TOON_TV_STATIONARY_LOG
+    db   $00                                                                ; $2F ENTITY_TOON_TV_FLOWER_HAMMER
+    db   $00                                                                ; $30 ENTITY_TOON_TV_HUNTER_BULLET
+    db   $00                                                                ; $31 ENTITY_TOON_TV_ROCKET
+    db   BANK(image_pre_history_fast_dinosaur_01b_5a00)                     ; $32 ENTITY_PRE_HISTORY_FAST_DINOSAUR
+    db   BANK(image_pre_history_dragonfly_01a_4000)                         ; $33 ENTITY_PRE_HISTORY_DRAGONFLY
+    db   BANK(image_pre_history_egg_019_6d00)                               ; $34 ENTITY_PRE_HISTORY_EGG
+    db   $00                                                                ; $35 ENTITY_UNK_35
+    db   $00                                                                ; $36 ENTITY_UNK_36
+    db   $00                                                                ; $37 ENTITY_PRE_HISTORY_FALLING_LAVA
+    db   $00                                                                ; $38 ENTITY_PRE_HISTORY_LAVA_RAFT
+    db   $00                                                                ; $39 ENTITY_PRE_HISTORY_MOVING_PLATFORM
+    db   $00                                                                ; $3A ENTITY_UNK_3A
+    db   $00                                                                ; $3B ENTITY_UNK_3B
+    db   BANK(image_pre_history_pterosaur_01a_4600)                         ; $3C ENTITY_PRE_HISTORY_PTEROSAUR
+    db   $00                                                                ; $3D ENTITY_UNK_3D
+    db   $00                                                                ; $3E ENTITY_PRE_HISTORY_FALLING_BOULDER
+    db   $00                                                                ; $3F ENTITY_UNK_3F
+    db   $00                                                                ; $40 ENTITY_PRE_HISTORY_BEETLE_HORIZONTAL
+    db   $00                                                                ; $41 ENTITY_PRE_HISTORY_BEETLE_VERTICAL
+    db   $00                                                                ; $42 ENTITY_PRE_HISTORY_ANT
+    db   $00                                                                ; $43 ENTITY_PRE_HISTORY_FIRE_PLANT
+    db   $00                                                                ; $44 ENTITY_PRE_HISTORY_FIRE_PLANT_PROJECTILES
+    db   $00                                                                ; $45 ENTITY_PRE_HISTORY_GEYSER
+    db   $00                                                                ; $46 ENTITY_UNK_46
+    db   BANK(image_pre_history_dinosaur_01a_4c00)                          ; $47 ENTITY_PRE_HISTORY_DINOSAUR
+    db   BANK(image_pre_history_triceratops_01a_5400)                       ; $48 ENTITY_PRE_HISTORY_TRICERATOPS
+    db   $00                                                                ; $49 ENTITY_PRE_HISTORY_TRICERATOPS_HORN
+    db   $00                                                                ; $4A ENTITY_UNK_4A
+    db   $00                                                                ; $4B ENTITY_KUNG_FU_THEATER_HANGING_BLADE
+    db   $00                                                                ; $4C ENTITY_KUNG_FU_THEATER_CANNON
+    db   $00                                                                ; $4D ENTITY_KUNG_FU_THEATER_CANNON_PROJECTILE
+    db   BANK(image_kung_fu_theater_dragonfly_019_5f00)                     ; $4E ENTITY_KUNG_FU_THEATER_DRAGONFLY
+    db   $00                                                                ; $4F ENTITY_KUNG_FU_THEATER_DRAGON_BODY_SEGMENT
+    db   BANK(image_kung_fu_theater_dragon_head_018_7300)                   ; $50 ENTITY_KUNG_FU_THEATER_DRAGON_HEAD
+    db   $00                                                                ; $51 ENTITY_UNK_51
+    db   $00                                                                ; $52 ENTITY_KUNG_FU_THEATER_DRAGON_PROJECTILE
+    db   BANK(image_kung_fu_theater_walking_ninja_and_1_more_018_5800)      ; $53 ENTITY_KUNG_FU_THEATER_WALKING_NINJA
+    db   BANK(image_kung_fu_theater_walking_ninja_and_1_more_018_5800)      ; $54 ENTITY_KUNG_FU_THEATER_JUMPING_NINJA
+    db   BANK(image_kung_fu_theater_samurai_body_018_6700)                  ; $55 ENTITY_KUNG_FU_THEATER_SAMURAI_BODY
+    db   $00                                                                ; $56 ENTITY_KUNG_FU_THEATER_SAMURAI_HEAD
+    db   $00                                                                ; $57 ENTITY_KUNG_FU_THEATER_LIZARD
+    db   $00                                                                ; $58 ENTITY_KUNG_FU_THEATER_NINJA_PROJECTILE
+    db   $00                                                                ; $59 ENTITY_KUNG_FU_THEATER_SPIKY_LOG
+    db   $00                                                                ; $5A ENTITY_KUNG_FU_THEATER_TALL_JAR
+    db   $00                                                                ; $5B ENTITY_KUNG_FU_THEATER_JAR
+    db   $00                                                                ; $5C ENTITY_UNK_5C
+    db   $00                                                                ; $5D ENTITY_UNK_5D
+    db   $00                                                                ; $5E ENTITY_KUNG_FU_THEATER_VANISHING_PLATFORM
+    db   $00                                                                ; $5F ENTITY_KUNG_FU_THEATER_MOVING_PLATFORM
+    db   $00                                                                ; $60 ENTITY_UNK_60
+    db   $00                                                                ; $61 ENTITY_KUNG_FU_THEATER_MOVING_RAFT
+    db   $00                                                                ; $62 ENTITY_KUNG_FU_THEATER_STATIONARY_RAFT
+    db   $00                                                                ; $63 ENTITY_UNK_63
+    db   $00                                                                ; $64 ENTITY_UNK_64
+    db   $00                                                                ; $65 ENTITY_REZOPOLIS_SPECIAL_MOVING_PLATFORM
+    db   $00                                                                ; $66 ENTITY_REZOPOLIS_MOVING_PLATFORM
+    db   $00                                                                ; $67 ENTITY_REZOPOLIS_RED_PLATFORM
+    db   $00                                                                ; $68 ENTITY_REZOPOLIS_ACTIVATED_RED_PLATFORM
+    db   $00                                                                ; $69 ENTITY_REZOPOLIS_TAILSPIN_PLATFORM
+    db   $00                                                                ; $6A ENTITY_REZOPOLIS_TAILSPIN_GEAR
+    db   $00                                                                ; $6B ENTITY_UNK_6B
+    db   $00                                                                ; $6C ENTITY_UNK_6C
+    db   $00                                                                ; $6D ENTITY_UNK_6D
+    db   BANK(image_rezopolis_green_monster_01b_4a00)                       ; $6E ENTITY_REZOPOLIS_GREEN_MONSTER
+    db   $00                                                                ; $6F ENTITY_UNK_6F
+    db   $00                                                                ; $70 ENTITY_UNK_70
+    db   BANK(image_rezopolis_pincer_01b_5600)                              ; $71 ENTITY_REZOPOLIS_PINCER
+    db   $00                                                                ; $72 ENTITY_REZOPOLIS_FLAMETHROWER
+    db   BANK(image_rezopolis_ufo_01b_4000)                                 ; $73 ENTITY_REZOPOLIS_UFO
+    db   $00                                                                ; $74 ENTITY_REZOPOLIS_ANT
+    db   $00                                                                ; $75 ENTITY_REZOPOLIS_ANT_SPAWNER
+    db   $00                                                                ; $76 ENTITY_CIRCUIT_CENTRAL_ANT
+    db   $00                                                                ; $77 ENTITY_CIRCUIT_CENTRAL_CAPACITOR
+    db   $00                                                                ; $78 ENTITY_CIRCUIT_CENTRAL_POWER_UP
+    db   $00                                                                ; $79 ENTITY_UNK_79
+    db   $00                                                                ; $7A ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT
+    db   $00                                                                ; $7B ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT_GEAR
+    db   $00                                                                ; $7C ENTITY_CIRCUIT_CENTRAL_ELECTRIC_BALL
+    db   $00                                                                ; $7D ENTITY_CIRCUIT_CENTRAL_MOVING_PLATFORM
+    db   $00                                                                ; $7E ENTITY_CIRCUIT_CENTRAL_POWERED_PLAFORM
+    db   $00                                                                ; $7F ENTITY_CIRCUIT_CENTRAL_LOWERING_PLATFORM
+    db   BANK(image_circuit_central_walker_robot_01a_7700)                  ; $80 ENTITY_CIRCUIT_CENTRAL_WALKER_ROBOT
+    db   $00                                                                ; $81 ENTITY_CIRCUIT_CENTRAL_POWERED_WALKWAY
+    db   $00                                                                ; $82 ENTITY_CIRCUIT_CENTRAL_WALKWAY_ACTIVATOR
+    db   $00                                                                ; $83 ENTITY_CHANNEL_Z_ARCED_GUN_PROJECTILE
+    db   $00                                                                ; $84 ENTITY_CHANNEL_Z_ARCED_GUN_PROJECTILE2
+    db   $00                                                                ; $85 ENTITY_CHANNEL_Z_GUN_PROJECTILE
+    db   BANK(image_channel_z_rez_01c_4000)                                 ; $86 ENTITY_CHANNEL_Z_REZ
+    db   $00                                                                ; $87 ENTITY_CHANNEL_Z_UNUSED_PLATFORM_1
+    db   $00                                                                ; $88 ENTITY_CHANNEL_Z_UNUSED_PLATFORM_2
+    db   $00                                                                ; $89 ENTITY_CHANNEL_Z_REZ_FOLLOWING_FIRE
+    db   $00                                                                ; $8A ENTITY_CHANNEL_Z_GUN_PROJECTILE_EXPLOSION
+    db   $00                                                                ; $8B ENTITY_FINAL_BATTLE_BUTTON_PROJECTILE
+    db   $00                                                                ; $8C ENTITY_CHANNEL_Z_FINAL_BATTLE_BUTTON
+    db   BANK(image_channel_z_rez_portal_01b_6d00)                          ; $8D ENTITY_CHANNEL_Z_REZ_PORTAL
+    db   $00                                                                ; $8E ENTITY_UNK_8E
+    db   $00                                                                ; $8F ENTITY_MEDIA_DIMENSION_MOVING_PLATFORM
 
 call_02_70f1_Entity_RequestQueuedAction:
 ; Called when an animation sequence finishes. Reads ACTION_STATE, checks bit 7; if clear, returns (sequence loops).
@@ -975,64 +975,64 @@ call_02_722c_EntityGfxQueue_StartNextTransfer:
 ; one of the three shared VRAM windows". Sizes run from one to four pages, which is
 ; the entity's whole animation: the sprite shape tables in bank 3 never change, so a
 ; bigger entity is a bigger copy here rather than more layout data there
-    entity_gfx_descriptor $00, $0000, $0000, $0000             ; $00 the no-graphics sentinel - never transferred
-    entity_gfx_descriptor $12, $4000, $8400, $0100             ; $01 ENTITY_SCREAM_TV_FALLING_PLATFORM and 5 more
-    entity_gfx_descriptor $12, $4100, $8500, $0100             ; $02 ENTITY_SCREAM_TV_LANTERN
-    entity_gfx_descriptor $12, $5100, $8200, $0200             ; $03 ENTITY_TOON_TV_HARD_HEAD_AREA_HAZARD
-    entity_gfx_descriptor $12, $5300, $8200, $0200             ; $04 ENTITY_TOON_TV_MOVING_BEAR_TRAP
-    entity_gfx_descriptor $12, $5500, $8200, $0200             ; $05 ENTITY_TOON_TV_STATIONARY_BEAR_TRAP
-    entity_gfx_descriptor $12, $4b00, $8200, $0300             ; $06 ENTITY_TOON_TV_CACTUS
-    entity_gfx_descriptor $12, $4300, $8200, $0400             ; $07 ENTITY_TOON_TV_BOWLING_BALL
-    entity_gfx_descriptor $12, $4700, $8200, $0400             ; $08 ENTITY_TOON_TV_FLOWER
-    entity_gfx_descriptor $12, $4e00, $8200, $0300             ; $09 ENTITY_TOON_TV_LIZARD
-    entity_gfx_descriptor $12, $5d00, $8500, $0100             ; $0a ENTITY_TOON_TV_MOVING_LOG and 1 more
-    entity_gfx_descriptor $12, $5b00, $8400, $0100             ; $0b ENTITY_TOON_TV_MUSHROOM
-    entity_gfx_descriptor $12, $5e00, $8500, $0100             ; $0c ENTITY_TOON_TV_STATIONARY_LOG
-    entity_gfx_descriptor $12, $5a00, $8400, $0100             ; $0d ENTITY_TOON_TV_SHARK
-    entity_gfx_descriptor $12, $5900, $8400, $0100             ; $0e ENTITY_TOON_TV_DOMINO
-    entity_gfx_descriptor $12, $5700, $8200, $0200             ; $0f ENTITY_TOON_TV_BUMBLEBEE
-    entity_gfx_descriptor $12, $5f00, $8400, $0100             ; $10 ENTITY_TOON_TV_VANISHING_BLOCK and 1 more
-    entity_gfx_descriptor $12, $6000, $8400, $0100             ; $11 ENTITY_UNK_36
-    entity_gfx_descriptor $12, $6100, $8400, $0100             ; $12 ENTITY_PRE_HISTORY_FALLING_LAVA
-    entity_gfx_descriptor $12, $6300, $8200, $0300             ; $13 ENTITY_UNK_3D and 1 more
-    entity_gfx_descriptor $12, $6e00, $8400, $0200             ; $14 ENTITY_PRE_HISTORY_FIRE_PLANT
-    entity_gfx_descriptor $12, $7100, $8500, $0100             ; $15 ENTITY_KUNG_FU_THEATER_TALL_JAR
-    entity_gfx_descriptor $12, $7200, $8500, $0100             ; $16 ENTITY_KUNG_FU_THEATER_JAR
-    entity_gfx_descriptor $12, $7300, $8200, $0300             ; $17 ENTITY_KUNG_FU_THEATER_LIZARD
-    entity_gfx_descriptor $12, $7600, $8400, $0100             ; $18 ENTITY_KUNG_FU_THEATER_CANNON and 5 more
-    entity_gfx_descriptor $12, $7700, $8500, $0100             ; $19 ENTITY_KUNG_FU_THEATER_DRAGON_BODY_SEGMENT and 1 more
-    entity_gfx_descriptor $12, $7800, $8400, $0100             ; $1a ENTITY_KUNG_FU_THEATER_HANGING_BLADE
-    entity_gfx_descriptor $12, $7900, $8200, $0100             ; $1b ENTITY_UNK_5C and 1 more
-    entity_gfx_descriptor $12, $7a00, $8500, $0100             ; $1c ENTITY_UNK_60 and 2 more
-    entity_gfx_descriptor $12, $7b00, $8500, $0100             ; $1d ENTITY_KUNG_FU_THEATER_SPIKY_LOG and 2 more
-    entity_gfx_descriptor $12, $6600, $8200, $0200             ; $1e ENTITY_PRE_HISTORY_BEETLE_HORIZONTAL and 2 more
-    entity_gfx_descriptor $12, $7c00, $8200, $0200             ; $1f ENTITY_UNK_51
-    entity_gfx_descriptor $12, $6200, $8500, $0100             ; $20 ENTITY_PRE_HISTORY_LAVA_RAFT and 4 more
-    entity_gfx_descriptor $12, $6800, $8200, $0300             ; $21 ENTITY_PRE_HISTORY_GEYSER
-    entity_gfx_descriptor $12, $7000, $8500, $0100             ; $22 ENTITY_PRE_HISTORY_TRICERATOPS
-    entity_gfx_descriptor $12, $5c00, $8400, $0100             ; $23 ENTITY_TOON_TV_MUSHROOM_PROJECTILE
-    entity_gfx_descriptor $12, $4200, $8500, $0100             ; $24 ENTITY_SCREAM_TV_PUSH_BLOCK and 1 more
-    entity_gfx_descriptor $12, $6b00, $8200, $0300             ; $25 ENTITY_UNK_35
-    entity_gfx_descriptor $11, $4000, $8500, $0100             ; $26 ENTITY_UNK_64 and 4 more
-    entity_gfx_descriptor $11, $4100, $8400, $0100             ; $27 ENTITY_UNK_6C and 1 more
-    entity_gfx_descriptor $11, $4200, $8200, $0200             ; $28 ENTITY_REZOPOLIS_FLAMETHROWER
-    entity_gfx_descriptor $11, $4400, $8400, $0100             ; $29 ENTITY_REZOPOLIS_TAILSPIN_PLATFORM
-    entity_gfx_descriptor $11, $4500, $8200, $0200             ; $2a ENTITY_REZOPOLIS_TAILSPIN_GEAR
-    entity_gfx_descriptor $11, $4700, $8400, $0100             ; $2b ENTITY_UNK_6F and 1 more
-    entity_gfx_descriptor $11, $4800, $8200, $0200             ; $2c ENTITY_CIRCUIT_CENTRAL_ANT
-    entity_gfx_descriptor $11, $4a00, $8400, $0100             ; $2d ENTITY_CIRCUIT_CENTRAL_CAPACITOR
-    entity_gfx_descriptor $11, $4b00, $8400, $0100             ; $2e ENTITY_CIRCUIT_CENTRAL_POWER_UP
-    entity_gfx_descriptor $11, $4c00, $8200, $0200             ; $2f ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT and 1 more
-    entity_gfx_descriptor $11, $4e00, $8400, $0100             ; $30 ENTITY_CIRCUIT_CENTRAL_ELECTRIC_BALL
-    entity_gfx_descriptor $11, $4f00, $8500, $0100             ; $31 ENTITY_CIRCUIT_CENTRAL_MOVING_PLATFORM and 2 more
-    entity_gfx_descriptor $11, $5000, $8400, $0200             ; $32 ENTITY_CHANNEL_Z_ARCED_GUN_PROJECTILE and 6 more
-    entity_gfx_descriptor $11, $5200, $8200, $0200             ; $33 ENTITY_SCREAM_TV_HEAD_GHOST
-    entity_gfx_descriptor $11, $5400, $8400, $0200             ; $34 ENTITY_TOON_TV_ROCKET
-    entity_gfx_descriptor $11, $5600, $8400, $0100             ; $35 ENTITY_MEDIA_DIMENSION_MOVING_PLATFORM
-    entity_gfx_descriptor $11, $5700, $8500, $0100             ; $36 unused - no entity selects this id
-    entity_gfx_descriptor $11, $5800, $8400, $0100             ; $37 ENTITY_FINAL_BATTLE_BUTTON_PROJECTILE
-    entity_gfx_descriptor $11, $4800, $8400, $0200             ; $38 ENTITY_REZOPOLIS_ANT
-    entity_gfx_descriptor $11, $5900, $8500, $0100             ; $39 ENTITY_CHANNEL_Z_FINAL_BATTLE_BUTTON
+    entity_gfx_descriptor_none                                 ; $00 the no-graphics sentinel - never transferred
+    entity_gfx_descriptor image_gfx_01_scream_tv_falling_platform_and_5_more_012_4000, $8400, $0100                     ; $01 ENTITY_SCREAM_TV_FALLING_PLATFORM and 5 more
+    entity_gfx_descriptor image_gfx_02_scream_tv_lantern_012_4100, $8500, $0100                                         ; $02 ENTITY_SCREAM_TV_LANTERN
+    entity_gfx_descriptor image_gfx_03_toon_tv_hard_head_area_hazard_012_5100, $8200, $0200                             ; $03 ENTITY_TOON_TV_HARD_HEAD_AREA_HAZARD
+    entity_gfx_descriptor image_gfx_04_toon_tv_moving_bear_trap_012_5300, $8200, $0200                                  ; $04 ENTITY_TOON_TV_MOVING_BEAR_TRAP
+    entity_gfx_descriptor image_gfx_05_toon_tv_stationary_bear_trap_012_5500, $8200, $0200                              ; $05 ENTITY_TOON_TV_STATIONARY_BEAR_TRAP
+    entity_gfx_descriptor image_gfx_06_toon_tv_cactus_012_4b00, $8200, $0300                                            ; $06 ENTITY_TOON_TV_CACTUS
+    entity_gfx_descriptor image_gfx_07_toon_tv_bowling_ball_012_4300, $8200, $0400                                      ; $07 ENTITY_TOON_TV_BOWLING_BALL
+    entity_gfx_descriptor image_gfx_08_toon_tv_flower_012_4700, $8200, $0400                                            ; $08 ENTITY_TOON_TV_FLOWER
+    entity_gfx_descriptor image_gfx_09_toon_tv_lizard_012_4e00, $8200, $0300                                            ; $09 ENTITY_TOON_TV_LIZARD
+    entity_gfx_descriptor image_gfx_0a_toon_tv_moving_log_toon_tv_hunter_bullet_012_5d00, $8500, $0100                  ; $0a ENTITY_TOON_TV_MOVING_LOG and 1 more
+    entity_gfx_descriptor image_gfx_0b_toon_tv_mushroom_012_5b00, $8400, $0100                                          ; $0b ENTITY_TOON_TV_MUSHROOM
+    entity_gfx_descriptor image_gfx_0c_toon_tv_stationary_log_012_5e00, $8500, $0100                                    ; $0c ENTITY_TOON_TV_STATIONARY_LOG
+    entity_gfx_descriptor image_gfx_0d_toon_tv_shark_012_5a00, $8400, $0100                                             ; $0d ENTITY_TOON_TV_SHARK
+    entity_gfx_descriptor image_gfx_0e_toon_tv_domino_012_5900, $8400, $0100                                            ; $0e ENTITY_TOON_TV_DOMINO
+    entity_gfx_descriptor image_gfx_0f_toon_tv_bumblebee_012_5700, $8200, $0200                                         ; $0f ENTITY_TOON_TV_BUMBLEBEE
+    entity_gfx_descriptor image_gfx_10_toon_tv_vanishing_block_toon_tv_moving_block_012_5f00, $8400, $0100              ; $10 ENTITY_TOON_TV_VANISHING_BLOCK and 1 more
+    entity_gfx_descriptor image_gfx_11_unk_36_012_6000, $8400, $0100                                                    ; $11 ENTITY_UNK_36
+    entity_gfx_descriptor image_gfx_12_pre_history_falling_lava_012_6100, $8400, $0100                                  ; $12 ENTITY_PRE_HISTORY_FALLING_LAVA
+    entity_gfx_descriptor image_gfx_13_unk_3d_pre_history_falling_boulder_012_6300, $8200, $0300                        ; $13 ENTITY_UNK_3D and 1 more
+    entity_gfx_descriptor image_gfx_14_pre_history_fire_plant_012_6e00, $8400, $0200                                    ; $14 ENTITY_PRE_HISTORY_FIRE_PLANT
+    entity_gfx_descriptor image_gfx_15_kung_fu_theater_tall_jar_012_7100, $8500, $0100                                  ; $15 ENTITY_KUNG_FU_THEATER_TALL_JAR
+    entity_gfx_descriptor image_gfx_16_kung_fu_theater_jar_012_7200, $8500, $0100                                       ; $16 ENTITY_KUNG_FU_THEATER_JAR
+    entity_gfx_descriptor image_gfx_17_kung_fu_theater_lizard_012_7300, $8200, $0300                                    ; $17 ENTITY_KUNG_FU_THEATER_LIZARD
+    entity_gfx_descriptor image_gfx_18_kung_fu_theater_cannon_and_5_more_012_7600, $8400, $0100                         ; $18 ENTITY_KUNG_FU_THEATER_CANNON and 5 more
+    entity_gfx_descriptor image_gfx_19_kung_fu_theater_dragon_body_segment_and_1_more_012_7700, $8500, $0100            ; $19 ENTITY_KUNG_FU_THEATER_DRAGON_BODY_SEGMENT and 1 more
+    entity_gfx_descriptor image_gfx_1a_kung_fu_theater_hanging_blade_012_7800, $8400, $0100                             ; $1a ENTITY_KUNG_FU_THEATER_HANGING_BLADE
+    entity_gfx_descriptor image_gfx_1b_unk_5c_unk_5d_012_7900, $8200, $0100                                             ; $1b ENTITY_UNK_5C and 1 more
+    entity_gfx_descriptor image_gfx_1c_unk_60_kung_fu_theater_moving_raft_and_1_more_012_7a00, $8500, $0100             ; $1c ENTITY_UNK_60 and 2 more
+    entity_gfx_descriptor image_gfx_1d_kung_fu_theater_spiky_log_and_2_more_012_7b00, $8500, $0100                      ; $1d ENTITY_KUNG_FU_THEATER_SPIKY_LOG and 2 more
+    entity_gfx_descriptor image_gfx_1e_pre_history_beetle_horizontal_and_2_more_012_6600, $8200, $0200                  ; $1e ENTITY_PRE_HISTORY_BEETLE_HORIZONTAL and 2 more
+    entity_gfx_descriptor image_gfx_1f_unk_51_012_7c00, $8200, $0200                                                    ; $1f ENTITY_UNK_51
+    entity_gfx_descriptor image_gfx_20_pre_history_lava_raft_and_4_more_012_6200, $8500, $0100                          ; $20 ENTITY_PRE_HISTORY_LAVA_RAFT and 4 more
+    entity_gfx_descriptor image_gfx_21_pre_history_geyser_012_6800, $8200, $0300                                        ; $21 ENTITY_PRE_HISTORY_GEYSER
+    entity_gfx_descriptor image_gfx_22_pre_history_triceratops_012_7000, $8500, $0100                                   ; $22 ENTITY_PRE_HISTORY_TRICERATOPS
+    entity_gfx_descriptor image_gfx_23_toon_tv_mushroom_projectile_012_5c00, $8400, $0100                               ; $23 ENTITY_TOON_TV_MUSHROOM_PROJECTILE
+    entity_gfx_descriptor image_gfx_24_scream_tv_push_block_and_1_more_012_4200, $8500, $0100                           ; $24 ENTITY_SCREAM_TV_PUSH_BLOCK and 1 more
+    entity_gfx_descriptor image_gfx_25_unk_35_012_6b00, $8200, $0300                                                    ; $25 ENTITY_UNK_35
+    entity_gfx_descriptor image_gfx_26_unk_64_and_4_more_011_4000, $8500, $0100                                         ; $26 ENTITY_UNK_64 and 4 more
+    entity_gfx_descriptor image_gfx_27_unk_6c_unk_6d_011_4100, $8400, $0100                                             ; $27 ENTITY_UNK_6C and 1 more
+    entity_gfx_descriptor image_gfx_28_rezopolis_flamethrower_011_4200, $8200, $0200                                    ; $28 ENTITY_REZOPOLIS_FLAMETHROWER
+    entity_gfx_descriptor image_gfx_29_rezopolis_tailspin_platform_011_4400, $8400, $0100                               ; $29 ENTITY_REZOPOLIS_TAILSPIN_PLATFORM
+    entity_gfx_descriptor image_gfx_2a_rezopolis_tailspin_gear_011_4500, $8200, $0200                                   ; $2a ENTITY_REZOPOLIS_TAILSPIN_GEAR
+    entity_gfx_descriptor image_gfx_2b_unk_6f_unk_70_011_4700, $8400, $0100                                             ; $2b ENTITY_UNK_6F and 1 more
+    entity_gfx_descriptor image_gfx_2c_38_rezopolis_ant_circuit_central_ant_011_4800, $8200, $0200                      ; $2c ENTITY_CIRCUIT_CENTRAL_ANT
+    entity_gfx_descriptor image_gfx_2d_circuit_central_capacitor_011_4a00, $8400, $0100                                 ; $2d ENTITY_CIRCUIT_CENTRAL_CAPACITOR
+    entity_gfx_descriptor image_gfx_2e_circuit_central_power_up_011_4b00, $8400, $0100                                  ; $2e ENTITY_CIRCUIT_CENTRAL_POWER_UP
+    entity_gfx_descriptor image_gfx_2f_circuit_central_little_robot_and_1_more_011_4c00, $8200, $0200                   ; $2f ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT and 1 more
+    entity_gfx_descriptor image_gfx_30_circuit_central_electric_ball_011_4e00, $8400, $0100                             ; $30 ENTITY_CIRCUIT_CENTRAL_ELECTRIC_BALL
+    entity_gfx_descriptor image_gfx_31_circuit_central_moving_platform_and_2_more_011_4f00, $8500, $0100                ; $31 ENTITY_CIRCUIT_CENTRAL_MOVING_PLATFORM and 2 more
+    entity_gfx_descriptor image_gfx_32_channel_z_arced_gun_projectile_and_6_more_011_5000, $8400, $0200                 ; $32 ENTITY_CHANNEL_Z_ARCED_GUN_PROJECTILE and 6 more
+    entity_gfx_descriptor image_gfx_33_scream_tv_head_ghost_011_5200, $8200, $0200                                      ; $33 ENTITY_SCREAM_TV_HEAD_GHOST
+    entity_gfx_descriptor image_gfx_34_toon_tv_rocket_011_5400, $8400, $0200                                            ; $34 ENTITY_TOON_TV_ROCKET
+    entity_gfx_descriptor image_gfx_35_media_dimension_moving_platform_011_5600, $8400, $0100                           ; $35 ENTITY_MEDIA_DIMENSION_MOVING_PLATFORM
+    entity_gfx_descriptor image_gfx_36_unused_011_5700, $8500, $0100                                                    ; $36 unused - no entity selects this id
+    entity_gfx_descriptor image_gfx_37_final_battle_button_projectile_011_5800, $8400, $0100                            ; $37 ENTITY_FINAL_BATTLE_BUTTON_PROJECTILE
+    entity_gfx_descriptor image_gfx_2c_38_rezopolis_ant_circuit_central_ant_011_4800, $8400, $0200                      ; $38 ENTITY_REZOPOLIS_ANT
+    entity_gfx_descriptor image_gfx_39_channel_z_final_battle_button_011_5900, $8500, $0100                             ; $39 ENTITY_CHANNEL_Z_FINAL_BATTLE_BUTTON
 
 data_02_743c_EntityGfxAndPaletteTable:
 ; Two bytes per entity id, 144 rows, read by call_02_71c0_Entity_LoadGfxAndPalette

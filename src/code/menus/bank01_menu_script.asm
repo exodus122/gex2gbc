@@ -384,7 +384,7 @@ call_01_466b_MenuCmd_StageTVScreen:
     call call_01_4e5a_Menu_GetTileDataSize                                  ;; 01:469c $cd $5a $4e
     pop  HL                                            ;; 01:469f $e1
     ld   DE, wC000_BgMapTileIds                        ;; 01:46a0 $11 $00 $c0
-    ld   A, MENU_TV_SCREEN_BANK                        ;; 01:46a3 $3e $13
+    ld   A, BANK(image_013_00_scream_tv_screen)        ;; 01:46a3 $3e $13
     jp   call_00_07a1_FarMemCopy                       ;; 01:46a5 $c3 $a1 $07
 .data_01_46a8_MissionSelectPalette:
 ; MENU_PALETTE_BYTES of CGB background palettes for the mission select screen,
@@ -494,12 +494,12 @@ call_01_47a4_MenuCmd_LoadScreen:
 .data_01_47bb_PasswordScreen:
 ; The password keyboard's frame: a whole tileset plus tilemap in one go. Copied to
 ; wD6A5_ScreenDraw_TileDataBank onward, so the fields below are that block's layout
-    db   $09                                           ; tile data bank
+    db   BANK(image_009_4000)                          ; tile data bank
     db   $b6                                           ; first tile id, also added to every tilemap byte
     db   $14, $12                                      ; 20 x 18 tiles - the whole screen
-    dw   $42d0                                         ; tilemap, then the same many attribute bytes
-    dw   $4000                                         ; tile graphics
-    db   $d0, $02                                      ; $02d0 bytes of them
+    dw   image_009_4000_data                           ; tilemap, then the same many attribute bytes
+    dw   image_009_4000                                ; tile graphics
+    dw   image_009_4000_data - image_009_4000          ; ...and how many bytes of them
 
 call_01_47c5_MenuCmd_DrawCursorSprite:
 ; MENUCMD_SUB_DRAW_CURSOR. Stages the cursor's graphics like any other image, then

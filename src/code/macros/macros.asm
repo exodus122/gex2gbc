@@ -164,6 +164,35 @@ MACRO LOAD_OBJ_FIELD_TO_BC_ALT
     ld   b, HIGH(wD200_EntityMemory)
 ENDM
 
+; ==================================================================
+; Animation frame ids - bank02_entity_action_data.asm
+;
+; For anything drawn from a streamed page of tiles, a "frame id" is not an index:
+; it is where the tiles are. Writing these as an offset from the image's own label
+; is what lets the graphics banks be re-laid-out without hand-editing the animation
+; data - move an INCBIN and every frame id that names it follows
+; ==================================================================
+
+; Frame ids for an entity carrying SPRITE_FLAG_STREAMS_OWN_GFX. The id is the high
+; byte of the source address, and the bank it applies to comes from that entity's
+; row in .data_02_7061_EntityGfxBankTable - so one frame is one 256-byte page and a
+; run of frames is a run of pages
+MACRO sprite_frames ; base image label, page offsets...
+    FOR _i, 2, _NARG + 1
+        db   HIGH(\1) + (\<_i>)
+    ENDR
+ENDM
+
+; Frame ids for Gex, whose pages live in four consecutive banks starting at the one
+; holding image_player_walk_none_004_4000. One byte carries both halves of the
+; address: the top two bits are the bank offset, the low six the page inside that
+; bank - see call_00_098f_CopyPlayerGfxToVRAM, which takes the byte apart again
+MACRO player_frames ; base image label, page offsets...
+    FOR _i, 2, _NARG + 1
+        db   ((BANK(\1) - BANK(image_player_walk_none_004_4000)) << 6) + HIGH(\1) - ROMX_PAGE_BASE + (\<_i>)
+    ENDR
+ENDM
+
 MACRO SET_ACTION
     ld a, \1
     jp call_02_7102_Entity_SetAction
@@ -306,11 +335,22 @@ ENDM
 ; type's tiles live and where they go. call_02_722c_EntityGfxQueue_StartNextTransfer
 ; copies it straight into wD71F_GfxCopy_SrcBank onward and lets the vblank handler
 ; perform the copy, so the field order here IS that WRAM block's layout
-MACRO entity_gfx_descriptor ; source bank, source address, VRAM destination, bytes
-    db   \1
+MACRO entity_gfx_descriptor ; source label, VRAM destination, bytes
+    db   BANK(\1)
+    dw   \1
     dw   \2
     dw   \3
-    dw   \4
+    db   $00
+ENDM
+
+; The id $00 row. Not a descriptor at all - Entity_LoadGfxAndPalette only enqueues a
+; nonzero id, so nothing ever reads it - but the table is indexed, so the slot has to
+; be there
+MACRO entity_gfx_descriptor_none
+    db   $00
+    dw   $0000
+    dw   $0000
+    dw   $0000
     db   $00
 ENDM
 

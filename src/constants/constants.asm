@@ -4,72 +4,6 @@ DEF MBC1RomBank         EQU $2001
 DEF MBC1SRamBank        EQU $4001
 DEF MBC1SRamBankingMode EQU $6001
 
-; ROM Banks
-DEF BANK_00      EQU $00
-DEF BANK_01      EQU $01
-DEF BANK_02      EQU $02
-DEF BANK_03      EQU $03
-DEF BANK_04      EQU $04
-DEF BANK_05      EQU $05
-DEF BANK_06      EQU $06
-DEF BANK_07      EQU $07
-DEF BANK_08      EQU $08
-DEF BANK_09      EQU $09
-DEF BANK_0A      EQU $0A
-DEF BANK_0B      EQU $0B
-DEF BANK_0C      EQU $0C
-DEF BANK_0D      EQU $0D
-DEF BANK_0E      EQU $0E
-DEF BANK_0F      EQU $0F
-DEF BANK_10      EQU $10
-DEF BANK_11      EQU $11
-DEF BANK_12      EQU $12
-DEF BANK_13      EQU $13
-DEF BANK_14      EQU $14
-DEF BANK_15      EQU $15
-DEF BANK_16      EQU $16
-DEF BANK_17      EQU $17
-DEF BANK_18      EQU $18
-DEF BANK_19      EQU $19
-DEF BANK_1A      EQU $1A
-DEF BANK_1B      EQU $1B
-DEF BANK_1C      EQU $1C
-DEF BANK_1D      EQU $1D
-DEF BANK_1E      EQU $1E
-DEF BANK_1F      EQU $1F
-DEF BANK_20      EQU $20
-DEF BANK_21      EQU $21
-DEF BANK_22      EQU $22
-DEF BANK_23      EQU $23
-DEF BANK_24      EQU $24
-DEF BANK_25      EQU $25
-DEF BANK_26      EQU $26
-DEF BANK_27      EQU $27
-DEF BANK_28      EQU $28
-DEF BANK_29      EQU $29
-DEF BANK_2A      EQU $2A
-DEF BANK_2B      EQU $2B
-DEF BANK_2C      EQU $2C
-DEF BANK_2D      EQU $2D
-DEF BANK_2E      EQU $2E
-DEF BANK_2F      EQU $2F
-DEF BANK_30      EQU $30
-DEF BANK_31      EQU $31
-DEF BANK_32      EQU $32
-DEF BANK_33      EQU $33
-DEF BANK_34      EQU $34
-DEF BANK_35      EQU $35
-DEF BANK_36      EQU $36
-DEF BANK_37      EQU $37
-DEF BANK_38      EQU $38
-DEF BANK_39      EQU $39
-DEF BANK_3A      EQU $3A
-DEF BANK_3B      EQU $3B
-DEF BANK_3C      EQU $3C
-DEF BANK_3D      EQU $3D
-DEF BANK_3E      EQU $3E
-DEF BANK_3F      EQU $3F
-
 ; Inputs (defined in hardware.inc)
 ; DEF PADF_DOWN   EQU $80
 ; DEF PADF_UP     EQU $40
@@ -505,11 +439,18 @@ DEF DEMO_COUNT                   EQU 4 ; entries in data_00_076d_DemoLevelIds
 ; computed - entry 2 of data_00_076d_DemoLevelIds
 DEF DEMO_INDEX_FORCED            EQU 2
 
-; ROM banks the home code maps in directly rather than through a data table
-DEF BANK_PLAYER_GFX_BASE         EQU BANK_04 ; + (wD208_Player_SpriteID >> 6)
-DEF BANK_TV_ATTRIBUTES           EQU BANK_13
-DEF BANK_TV_SCREENS              EQU BANK_14
-DEF BANK_AUDIO_DEFAULT           EQU BANK_21 ; until the first song change picks another
+; ROM banks the home code maps in directly rather than through a data table used to
+; be spelled out here as BANK_PLAYER_GFX_BASE / BANK_TV_ATTRIBUTES / BANK_TV_SCREENS /
+; BANK_AUDIO_DEFAULT. They are now written at their use sites as BANK() of something
+; that actually lives in the bank, so moving that data moves the constant with it:
+;
+;   player gfx base   BANK(image_player_walk_none_004_4000)   ; + (wD208_Player_SpriteID >> 6)
+;   tv attributes     BANK(image_013_00_scream_tv_screen)
+;   tv screens        BANK(image_014_4000)
+;   audio default     BANK(call_21_4000_Audio_Init)             ; until the first song change picks another
+;
+; A DEF ... EQU cannot hold any of them: EQU needs a value at the point it is written,
+; and these labels are not known until link time
 
 ; A sprite / screen id is split into a (bank, page) pair: the low bits pick a
 ; 256-byte page inside the $4000 window, the rest picks the bank
@@ -975,7 +916,8 @@ DEF MENU_LCDC_NO_WINDOW                     EQU $C7 ; the same with the window o
 ; The Media Dimension TV picture staged by call_01_466b_MenuCmd_StageTVScreen. The
 ; artwork is raw tile data in a graphics bank, so its size lives here rather than
 ; in a header on the data
-DEF MENU_TV_SCREEN_BANK                     EQU $13
+; The bank used to be MENU_TV_SCREEN_BANK EQU $13; it is now
+; BANK(image_013_00_scream_tv_screen) at its one use site, so it follows the artwork
 DEF MENU_TV_SCREEN_WIDTH                    EQU 6
 DEF MENU_TV_SCREEN_HEIGHT                   EQU 5
 

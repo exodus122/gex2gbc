@@ -170,175 +170,182 @@
 data_02_755c:                                               ; ENTITY_GEX action $00 PLAYER_ACTION_SPAWN
     db   ACTION_STATE_HAS_PENDING | ACTION_STATE_ADVANCE_ON_END | PLAYER_ACTION_INTRO_WARP
     db   $00, $06, $0c                                      ; 12 frames at 6 ticks, then PLAYER_ACTION_INTRO_WARP
-    db   $9f, $a0, $a1, $a2, $a3, $a4, $a5, $a6
-    db   $a7, $a8, $a9, $aa
+    player_frames image_player_spawn_gold_remote_warp_006_5f00, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
     db   $00
 
 data_02_756d:                                               ; ENTITY_GEX action $01 PLAYER_ACTION_INTRO_WARP
     db   ACTION_STATE_HAS_PENDING | ACTION_STATE_ADVANCE_ON_END | PLAYER_ACTION_STAND
     db   $00, $04, $01                                      ; one frame, 4 ticks, then PLAYER_ACTION_STAND
-    db   $14
+    player_frames image_player_intro_warp_stand_004_5400, 0
     db   $00
 
 data_02_7573:                                               ; ENTITY_GEX action $02 PLAYER_ACTION_STAND
     db   $00, $00, $04, $04                                 ; 4 frames at 4 ticks, looping
-    db   $14, $15, $16, $17
+    player_frames image_player_intro_warp_stand_004_5400, 0
+    player_frames image_player_stand_004_5500, 0, 1, 2
     db   $00
 
 data_02_757c:                                               ; ENTITY_GEX action $03 PLAYER_ACTION_IDLE_ANIMATION
     db   ACTION_STATE_HAS_PENDING | ACTION_STATE_ADVANCE_ON_END | PLAYER_ACTION_STAND
     db   $00, $0a, $01                                      ; one frame, 10 ticks, then PLAYER_ACTION_STAND
-    db   $09
+    player_frames image_player_idle_animation_eat_fly_004_4900, 0
     db   $00
 
 data_02_7582:                                               ; ENTITY_GEX action $04 PLAYER_ACTION_WALK
     db   $00, $00, $04, $08                                 ; 8 frames at 4 ticks, looping
-    db   $00, $01, $02, $03, $04, $05, $06, $07
+    player_frames image_player_walk_none_004_4000, 0
+    player_frames image_player_walk_004_4100, 0, 1, 2, 3, 4, 5, 6
     db   $00
 
 data_02_758f:                                               ; ENTITY_GEX action $05 PLAYER_ACTION_RUN
     db   $00, $00, $04, $08                                 ; 8 frames at 4 ticks, looping
-    db   $0a, $0b, $0c, $0d, $0e, $0f, $10, $11
+    player_frames image_player_run_004_4a00, 0, 1, 2, 3, 4, 5, 6, 7
     db   $00
 
 data_02_759c:                                               ; ENTITY_GEX action $06 PLAYER_ACTION_SKID
     db   ACTION_STATE_HAS_PENDING | ACTION_STATE_ADVANCE_ON_END | PLAYER_ACTION_STAND
     db   $00, $04, $03                                      ; 3 frames at 4 ticks, then PLAYER_ACTION_STAND
-    db   $18, $19, $1a
+    player_frames image_player_skid_004_5800, 0, 1, 2
     db   $00
 
 data_02_75a4:                                               ; ENTITY_GEX action $07 PLAYER_ACTION_TEETER
     db   $00, $00, $04, $04                                 ; 4 frames at 4 ticks, looping
-    db   $32, $33, $34, $35
+    player_frames image_player_teeter_004_7200, 0, 1, 2, 3
     db   $00
 
 data_02_75ad:                                               ; ENTITY_GEX action $08 PLAYER_ACTION_CROUCH
     db   $00, $00, $0a, $01                                 ; one frame; ANIM_ENDED pulses every 10 ticks
-    db   $1d
+    player_frames image_player_crouch_004_5d00, 0
     db   $00
 
 data_02_75b3:                                               ; ENTITY_GEX action $09 PLAYER_ACTION_JUMP
     db   $00, SPRITE_FLAG_LOOP_LAST_FRAME, $04, $03         ; 3 frames at 4 ticks, then holds the last
-    db   $93, $94, $95
+    player_frames image_player_jump_hit_bounce_006_5300, 0, 1, 2
     db   $00
 
 data_02_75bb:                                               ; ENTITY_GEX action $0A PLAYER_ACTION_DOUBLE_JUMP
     db   $00, $00, $04, $01                                 ; one frame; ANIM_ENDED pulses every 4 ticks
-    db   $1b
+    player_frames image_player_double_jump_004_5b00, 0
     db   $00
 
 data_02_75c1:                                               ; ENTITY_GEX action $0B PLAYER_ACTION_NONE
     db   $00, $00, $0a, $01                                 ; one frame; ANIM_ENDED pulses every 10 ticks
-    db   $00
+    player_frames image_player_walk_none_004_4000, 0
     db   $00
 
 data_02_75c7:                                               ; ENTITY_GEX action $0C PLAYER_ACTION_KARATE_KICK
     db   $00, $00, $08, $02                                 ; 2 frames at 8 ticks, looping
-    db   $ac, $ad
+    player_frames image_player_karate_kick_006_6c00, 0, 1
     db   $00
 
 data_02_75ce:                                               ; ENTITY_GEX action $0D PLAYER_ACTION_TAIL_SPIN
     db   $00, SPRITE_FLAG_LOOP_LAST_FRAME, $04, $06         ; 6 frames at 4 ticks, then holds the last
-    db   $27, $22, $23, $24, $25, $26
+    player_frames image_player_tail_spin_004_6200, 5, 0, 1, 2, 3, 4
     db   $00
 
 data_02_75d9:                                               ; ENTITY_GEX action $0E PLAYER_ACTION_EAT_FLY
     db   ACTION_STATE_HAS_PENDING | ACTION_STATE_ADVANCE_ON_END | PLAYER_ACTION_STAND
     db   $00, $04, $01                                      ; one frame, 4 ticks, then PLAYER_ACTION_STAND
-    db   $09
+    player_frames image_player_idle_animation_eat_fly_004_4900, 0
     db   $00
 
 data_02_75df:                                               ; ENTITY_GEX action $0F PLAYER_ACTION_TAKE_DAMAGE
     db   ACTION_STATE_HAS_PENDING | ACTION_STATE_ADVANCE_ON_END | PLAYER_ACTION_STAND
     db   $00, $04, $05                                      ; 5 frames at 4 ticks, then PLAYER_ACTION_STAND
-    db   $8c, $8d, $8e, $8f, $1c
+    player_frames image_player_take_damage_006_4c00, 0, 1, 2, 3
+    player_frames image_player_take_damage_stop_immediate_and_1_more_004_5c00, 0
     db   $00
 
 data_02_75e9:                                               ; ENTITY_GEX action $10 PLAYER_ACTION_DEATH
     db   ACTION_STATE_HAS_PENDING | ACTION_STATE_ADVANCE_ON_END | PLAYER_ACTION_DEATH_SET_UP_WARP
     db   $00, $04, $04                                      ; 4 frames at 4 ticks, then PLAYER_ACTION_DEATH_SET_UP_WARP
-    db   $90, $91, $92, $96
+    player_frames image_player_death_006_5000, 0, 1, 2
+    player_frames image_player_death_006_5600, 0
     db   $00
 
 data_02_75f2:                                               ; ENTITY_GEX action $11 PLAYER_ACTION_DEATH_SET_UP_WARP
     db   $00, SPRITE_FLAG_LOOP_LAST_FRAME, $3c, $02         ; 2 frames at 60 ticks, then holds the last
-    db   $ab, $3b
+    player_frames image_player_death_set_up_warp_006_6b00, 0
+    player_frames image_player_death_set_up_warp_004_7b00, 0
     db   $00
 
 ; ENTITY_GEX action $12 PLAYER_ACTION_ENTER_TV
 ; ENTITY_GEX action $13 PLAYER_ACTION_ENTER_TV_ALT
 data_02_75f9:
     db   $00, SPRITE_FLAG_LOOP_LAST_FRAME, $0a, $0a         ; 10 frames at 10 ticks, then holds the last
-    db   $28, $29, $2a, $2b, $2c, $2d, $2e, $2f
-    db   $30, $31
+    player_frames image_player_enter_tv_enter_tv_alt_004_6800, 0, 1, 2, 3, 4, 5, 6
+    player_frames image_player_enter_tv_enter_tv_alt_and_1_more_004_6f00, 0, 1, 2
     db   $00
 
 data_02_7608:                                               ; ENTITY_GEX action $14 PLAYER_ACTION_EXIT_TV
     db   ACTION_STATE_HAS_PENDING | ACTION_STATE_ADVANCE_ON_END | PLAYER_ACTION_STAND
     db   $00, $0a, $0a                                      ; 10 frames at 10 ticks, then PLAYER_ACTION_STAND
-    db   $31, $30, $2f, $d1, $d2, $d3, $d4, $d5
-    db   $d6, $d7
+    player_frames image_player_enter_tv_enter_tv_alt_and_1_more_004_6f00, 2, 1, 0
+    player_frames image_player_exit_tv_007_5100, 0, 1, 2, 3, 4, 5, 6
     db   $00
 
 data_02_7617:                                               ; ENTITY_GEX action $15 PLAYER_ACTION_STANDING_PUSH
     db   $00, $00, $ff, $01                                 ; one frame, never ticks
-    db   $88
+    player_frames image_player_standing_push_walking_push_006_4800, 0
     db   $00
 
 data_02_761d:                                               ; ENTITY_GEX action $16 PLAYER_ACTION_WALKING_PUSH
     db   $00, $00, $04, $08                                 ; 8 frames at 4 ticks, looping
-    db   $84, $85, $86, $87, $88, $89, $8a, $8b
+    player_frames image_player_walking_push_006_4400, 0, 1, 2, 3
+    player_frames image_player_standing_push_walking_push_006_4800, 0
+    player_frames image_player_walking_push_006_4900, 0, 1, 2
     db   $00
 
 data_02_762a:                                               ; ENTITY_GEX action $17 PLAYER_ACTION_FREEFALL
     db   $00, $00, $04, $04                                 ; 4 frames at 4 ticks, looping
-    db   $1e, $1f, $20, $21
+    player_frames image_player_freefall_004_5e00, 0, 1, 2, 3
     db   $00
 
 data_02_7633:                                               ; ENTITY_GEX action $18 PLAYER_ACTION_STOP_IMMEDIATE
     db   ACTION_STATE_HAS_PENDING | ACTION_STATE_ADVANCE_ON_END | PLAYER_ACTION_STAND
     db   $00, $04, $01                                      ; one frame, 4 ticks, then PLAYER_ACTION_STAND
-    db   $1c
+    player_frames image_player_take_damage_stop_immediate_and_1_more_004_5c00, 0
     db   $00
 
 data_02_7639:                                               ; ENTITY_GEX action $19 PLAYER_ACTION_COLLAPSE
     db   ACTION_STATE_HAS_PENDING | ACTION_STATE_ADVANCE_ON_END | PLAYER_ACTION_STAND
     db   $00, $04, $09                                      ; 9 frames at 4 ticks, then PLAYER_ACTION_STAND
-    db   $1c, $36, $37, $38, $39, $3a, $38, $38
-    db   $1c
+    player_frames image_player_take_damage_stop_immediate_and_1_more_004_5c00, 0
+    player_frames image_player_collapse_004_7600, 0, 1, 2, 3, 4, 2, 2
+    player_frames image_player_take_damage_stop_immediate_and_1_more_004_5c00, 0
     db   $00
 
 data_02_7647:                                               ; ENTITY_GEX action $1A PLAYER_ACTION_ENTER_DOOR
     db   $00, SPRITE_FLAG_LOOP_LAST_FRAME, $06, $0c         ; 12 frames at 6 ticks, then holds the last
-    db   $ae, $af, $b0, $b1, $b2, $b3, $b4, $b5
-    db   $3c, $3c, $3c, $3c
+    player_frames image_player_enter_door_006_6e00, 0, 1, 2, 3, 4, 5, 6, 7
+    player_frames image_player_enter_door_004_7c00, 0, 0, 0, 0
     db   $00
 
 data_02_7658:                                               ; ENTITY_GEX action $1B PLAYER_ACTION_LEAVE_DOOR
     db   ACTION_STATE_HAS_PENDING | ACTION_STATE_ADVANCE_ON_END | PLAYER_ACTION_STAND
     db   $00, $06, $08                                      ; 8 frames at 6 ticks, then PLAYER_ACTION_STAND
-    db   $b6, $b7, $b8, $b9, $ba, $bb, $c0, $c1
+    player_frames image_player_leave_door_006_7600, 0, 1, 2, 3, 4, 5
+    player_frames image_player_leave_door_007_4000, 0, 1
     db   $00
 
 data_02_7665:                                               ; ENTITY_GEX action $1C PLAYER_ACTION_HIT_BOUNCE
     db   $00, SPRITE_FLAG_LOOP_LAST_FRAME, $04, $03         ; 3 frames at 4 ticks, then holds the last
-    db   $93, $94, $95
+    player_frames image_player_jump_hit_bounce_006_5300, 0, 1, 2
     db   $00
 
 data_02_766d:                                               ; ENTITY_GEX action $1D PLAYER_ACTION_CLIMB
     db   $00, $00, $ff, $01                                 ; one frame, never ticks
-    db   $40
+    player_frames image_player_climb_background_riding_rocket_005_4000, 0
     db   $00
 
 data_02_7673:                                               ; ENTITY_GEX action $1E PLAYER_ACTION_GOLD_REMOTE_WARP
     db   $00, SPRITE_FLAG_LOOP_LAST_FRAME, $06, $0c         ; 12 frames at 6 ticks, then holds the last
-    db   $aa, $a9, $a8, $a7, $a6, $a5, $a4, $a3
-    db   $a2, $a1, $a0, $9f
+    player_frames image_player_spawn_gold_remote_warp_006_5f00, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0
     db   $00
 
 data_02_7684:                                               ; ENTITY_GEX action $1F PLAYER_ACTION_RIDING_ROCKET
     db   $00, SPRITE_FLAG_LOOP_LAST_FRAME, $04, $01         ; one frame; ANIM_ENDED pulses every 4 ticks
-    db   $40
+    player_frames image_player_climb_background_riding_rocket_005_4000, 0
     db   $00
 
 ; ENTITY_UNK_02 action $00
@@ -367,7 +374,7 @@ data_02_768a:
 
 data_02_7690:                                               ; ENTITY_RED_REMOTE action $00
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $06, $08         ; 8 frames at 6 ticks, looping
-    db   $40, $41, $42, $43, $44, $45, $46, $47
+    sprite_frames image_red_remote_018_4000, 0, 1, 2, 3, 4, 5, 6, 7
     db   $00
 
 ; ENTITY_RED_REMOTE action $01
@@ -376,138 +383,145 @@ data_02_7690:                                               ; ENTITY_RED_REMOTE 
 ; ENTITY_GOLD_REMOTE action $01
 data_02_769d:
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $06, $06         ; 6 frames at 6 ticks, looping
-    db   $48, $49, $4a, $4b, $4c, $4d
+    sprite_frames image_red_remote_silver_remote_and_1_more_018_4800, 0, 1, 2, 3, 4, 5
     db   $00
 
 data_02_76a8:                                               ; ENTITY_GOLD_REMOTE action $00
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $06, $08         ; 8 frames at 6 ticks, looping
-    db   $50, $51, $52, $53, $54, $55, $56, $57
+    sprite_frames image_gold_remote_018_5000, 0, 1, 2, 3, 4, 5, 6, 7
     db   $00
 
 ; ENTITY_UNK_08 action $00
 ; ENTITY_SCREAM_TV_PUMPKIN action $00
+;
+; THE ONLY BLOCK SHARED BY TWO ENTITIES IN DIFFERENT GFX BANKS - the pumpkin's art is
+; in $1a, ENTITY_UNK_08's in $19 - so one frame id has to name a page in both. It works
+; only because image_unk_08_toon_tv_hunter_019_5a00 sits at the same page as the
+; pumpkin's image; the ids are anchored to the pumpkin below, and moving EITHER image
+; without moving the other breaks the entity anchored to the other one
 data_02_76b5:
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX | SPRITE_FLAG_LOOP_LAST_FRAME, $05, $05 ; 5 frames at 5 ticks, then holds the last
-    db   $5d, $5c, $5b, $5a, $5b
+    sprite_frames image_scream_tv_pumpkin_01a_5a00, 3, 2, 1, 0, 1
     db   $00
 
 data_02_76bf:                                               ; ENTITY_SCREAM_TV_PUMPKIN action $01
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX | SPRITE_FLAG_LOOP_LAST_FRAME, $05, $03 ; 3 frames at 5 ticks, then holds the last
-    db   $5c, $5d, $5e
+    sprite_frames image_scream_tv_pumpkin_01a_5a00, 2, 3, 4
     db   $00
 
 data_02_76c7:                                               ; ENTITY_SCREAM_TV_FRANKIE action $00
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $0a, $04         ; 4 frames at 10 ticks, looping
-    db   $5f, $60, $61, $60
+    sprite_frames image_scream_tv_frankie_01a_5f00, 0, 1, 2, 1
     db   $00
 
 data_02_76d0:                                               ; ENTITY_SCREAM_TV_FLOATING_SKULL action $00
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX | SPRITE_FLAG_LOOP_LAST_FRAME, $4b, $04 ; 4 frames at 75 ticks, then holds the last
-    db   $75, $74, $74, $74
+    sprite_frames image_scream_tv_floating_skull_01a_7400, 1, 0, 0, 0
     db   $00
 
 data_02_76d9:                                               ; ENTITY_SCREAM_TV_FLOATING_SKULL action $01
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX | SPRITE_FLAG_LOOP_LAST_FRAME, $0a, $01 ; one frame; ANIM_ENDED pulses every 10 ticks
-    db   $75
+    sprite_frames image_scream_tv_floating_skull_01a_7400, 1
     db   $00
 
 data_02_76df:                                               ; ENTITY_SCREAM_TV_FLOATING_SKULL action $02
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $0a, $01         ; one frame; ANIM_ENDED pulses every 10 ticks
-    db   $76
+    sprite_frames image_scream_tv_floating_skull_01a_7400, 2
     db   $00
 
 data_02_76e5:                                               ; ENTITY_SCREAM_TV_ZOMBIE action $00
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $0a, $03         ; 3 frames at 10 ticks, looping
-    db   $67, $68, $69
+    sprite_frames image_scream_tv_zombie_01b_6700, 0, 1, 2
     db   $68                                                ; beyond the frame count - never drawn
     db   $00
 
 data_02_76ee:                                               ; ENTITY_SCREAM_TV_ZOMBIE action $01
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $0a, $03         ; 3 frames at 10 ticks, looping
-    db   $6a, $6b, $6c
+    sprite_frames image_scream_tv_zombie_01b_6700, 3, 4, 5
     db   $6b                                                ; beyond the frame count - never drawn
     db   $00
 
 data_02_76f7:                                               ; ENTITY_SCREAM_TV_ZOMBIE action $02
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX | SPRITE_FLAG_LOOP_LAST_FRAME, $0a, $01 ; one frame; ANIM_ENDED pulses every 10 ticks
-    db   $6b
+    sprite_frames image_scream_tv_zombie_01b_6700, 4
     db   $00
 
 data_02_76fd:                                               ; ENTITY_SCREAM_TV_BAT action $00
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $0a, $04         ; 4 frames at 10 ticks, looping
-    db   $7a, $7b, $7c, $7d
+    sprite_frames image_scream_tv_bat_019_7a00, 0, 1, 2, 3
     db   $00
 
 data_02_7706:                                               ; ENTITY_SCREAM_TV_DOOR_OPENING action $00
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX | SPRITE_FLAG_LOOP_LAST_FRAME, $06, $04 ; 4 frames at 6 ticks, then holds the last
-    db   $7c, $7d, $7e, $7f
+    sprite_frames image_scream_tv_door_opening_018_7c00, 0, 1, 2, 3
     db   $00
 
 data_02_770f:                                               ; ENTITY_SCREAM_TV_DOOR_OPENING action $01
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX | SPRITE_FLAG_LOOP_LAST_FRAME, $06, $04 ; 4 frames at 6 ticks, then holds the last
-    db   $7f, $7e, $7d, $7c
+    sprite_frames image_scream_tv_door_opening_018_7c00, 3, 2, 1, 0
     db   $00
 
 data_02_7718:                                               ; ENTITY_SCREAM_TV_GHOST action $00
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX | SPRITE_FLAG_LOOP_LAST_FRAME, $04, $05 ; 5 frames at 4 ticks, then holds the last
-    db   $73, $72, $71, $70, $6f
+    sprite_frames image_scream_tv_ghost_01a_6f00, 4, 3, 2, 1, 0
     db   $00
 
 data_02_7722:                                               ; ENTITY_SCREAM_TV_GHOST action $01
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX | SPRITE_FLAG_LOOP_LAST_FRAME, $04, $05 ; 5 frames at 4 ticks, then holds the last
-    db   $6f, $70, $71, $72, $73
+    sprite_frames image_scream_tv_ghost_01a_6f00, 0, 1, 2, 3, 4
     db   $00
 
 data_02_772c:                                               ; ENTITY_SCREAM_TV_GHOST action $02
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $0a, $02         ; 2 frames at 10 ticks, looping
-    db   $6b, $6c
+    sprite_frames image_scream_tv_ghost_01a_6b00, 0, 1
     db   $00
 
 data_02_7733:                                               ; ENTITY_SCREAM_TV_GHOST action $03
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $0a, $02         ; 2 frames at 10 ticks, looping
-    db   $6b, $6c
+    sprite_frames image_scream_tv_ghost_01a_6b00, 0, 1
     db   $00
 
 data_02_773a:                                               ; ENTITY_TOON_TV_HAPPY_FACE action $00
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX | SPRITE_FLAG_LOOP_LAST_FRAME, $05, $05 ; 5 frames at 5 ticks, then holds the last
-    db   $42, $43, $44, $45, $44
+    sprite_frames image_toon_tv_happy_face_019_4100, 1, 2, 3, 4, 3
     db   $00
 
 data_02_7744:                                               ; ENTITY_TOON_TV_HAPPY_FACE action $01
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX | SPRITE_FLAG_LOOP_LAST_FRAME, $05, $03 ; 3 frames at 5 ticks, then holds the last
-    db   $43, $42, $41
+    sprite_frames image_toon_tv_happy_face_019_4100, 2, 1, 0
     db   $00
 
 data_02_774c:                                               ; ENTITY_TOON_TV_HUNTER action $00
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $06, $08         ; 8 frames at 6 ticks, looping
-    db   $46, $47, $48, $49, $4a, $4b, $4c, $4d
+    sprite_frames image_toon_tv_hunter_019_4600, 0, 1, 2, 3, 4, 5, 6, 7
     db   $00
 
 data_02_7759:                                               ; ENTITY_TOON_TV_HUNTER action $01
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $06, $0a         ; 10 frames at 6 ticks, looping
-    db   $59, $5a, $5b, $5c, $5d, $5e, $46, $46
-    db   $46, $46
+    sprite_frames image_toon_tv_hunter_019_4600, 19
+    sprite_frames image_unk_08_toon_tv_hunter_019_5a00, 0, 1, 2, 3
+    sprite_frames image_toon_tv_hunter_019_5e00, 0
+    sprite_frames image_toon_tv_hunter_019_4600, 0, 0, 0, 0
     db   $00
 
 data_02_7768:                                               ; ENTITY_TOON_TV_HUNTER action $02
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX | SPRITE_FLAG_LOOP_LAST_FRAME, $03, $0f ; 15 frames at 3 ticks, then holds the last
-    db   $4e, $4f, $50, $51, $52, $53, $54, $4e
-    db   $4f, $50, $51, $52, $53, $54, $4e
+    sprite_frames image_toon_tv_hunter_019_4600, 8, 9, 10, 11, 12, 13, 14, 8, 9, 10, 11, 12, 13, 14, 8
     db   $00
 
 data_02_777c:                                               ; ENTITY_TOON_TV_HUNTER action $03
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX | SPRITE_FLAG_LOOP_LAST_FRAME, $06, $03 ; 3 frames at 6 ticks, then holds the last
-    db   $55, $56, $57
+    sprite_frames image_toon_tv_hunter_019_4600, 15, 16, 17
     db   $00
 
 data_02_7784:                                               ; ENTITY_TOON_TV_HUNTER action $04
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $b4, $01         ; one frame; ANIM_ENDED pulses every 180 ticks
-    db   $58
+    sprite_frames image_toon_tv_hunter_019_4600, 18
     db   $00
 
 data_02_778a:                                               ; ENTITY_TOON_TV_HUNTER action $05
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX | SPRITE_FLAG_LOOP_LAST_FRAME, $06, $01 ; one frame; ANIM_ENDED pulses every 6 ticks
-    db   $57
+    sprite_frames image_toon_tv_hunter_019_4600, 17
     db   $00
 
 ; ENTITY_PRE_HISTORY_FAST_DINOSAUR action $00
@@ -517,7 +531,7 @@ data_02_778a:                                               ; ENTITY_TOON_TV_HUN
 ; ENTITY_UNK_79 action $00
 data_02_7790:
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $0a, $08         ; 8 frames at 10 ticks, looping
-    db   $5a, $5b, $5c, $5d, $5e, $5f, $60, $61
+    sprite_frames image_pre_history_fast_dinosaur_01b_5a00, 0, 1, 2, 3, 4, 5, 6, 7
     db   $00
 data_02_779d_Orphan:                                        ; unreachable - no action table points here
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $05, $05         ; 5 frames at 5 ticks, looping
@@ -526,84 +540,84 @@ data_02_779d_Orphan:                                        ; unreachable - no a
 
 data_02_77a7:                                               ; ENTITY_PRE_HISTORY_DRAGONFLY action $00
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $05, $06         ; 6 frames at 5 ticks, looping
-    db   $40, $41, $42, $43, $44, $45
+    sprite_frames image_pre_history_dragonfly_01a_4000, 0, 1, 2, 3, 4, 5
     db   $00
 
 data_02_77b2:                                               ; ENTITY_PRE_HISTORY_PTEROSAUR action $00
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $06, $06         ; 6 frames at 6 ticks, looping
-    db   $46, $47, $48, $49, $4a, $4b
+    sprite_frames image_pre_history_pterosaur_01a_4600, 0, 1, 2, 3, 4, 5
     db   $00
 
 data_02_77bd:                                               ; ENTITY_PRE_HISTORY_DINOSAUR action $00
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $06, $08         ; 8 frames at 6 ticks, looping
-    db   $4c, $4d, $4e, $4f, $50, $51, $52, $53
+    sprite_frames image_pre_history_dinosaur_01a_4c00, 0, 1, 2, 3, 4, 5, 6, 7
     db   $00
 
 data_02_77ca:                                               ; ENTITY_PRE_HISTORY_TRICERATOPS action $00
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $08, $06         ; 6 frames at 8 ticks, looping
-    db   $54, $55, $56, $57, $58, $59
+    sprite_frames image_pre_history_triceratops_01a_5400, 0, 1, 2, 3, 4, 5
     db   $00
 
 data_02_77d5:                                               ; ENTITY_PRE_HISTORY_EGG action $00
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $04, $08         ; 8 frames at 4 ticks, looping
-    db   $6d, $6e, $6f, $70, $6d, $71, $72, $74
+    sprite_frames image_pre_history_egg_019_6d00, 0, 1, 2, 3, 0, 4, 5
+    sprite_frames image_pre_history_egg_019_7400, 0
     db   $00
 
 data_02_77e2:                                               ; ENTITY_PRE_HISTORY_EGG action $01
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX | SPRITE_FLAG_LOOP_LAST_FRAME, $04, $03 ; 3 frames at 4 ticks, then holds the last
-    db   $74, $75, $76
+    sprite_frames image_pre_history_egg_019_7400, 0, 1, 2
     db   $00
 
 data_02_77ea:                                               ; ENTITY_PRE_HISTORY_EGG action $02
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX | SPRITE_FLAG_LOOP_LAST_FRAME, $04, $03 ; 3 frames at 4 ticks, then holds the last
-    db   $77, $78, $79
+    sprite_frames image_pre_history_egg_019_7400, 3, 4, 5
     db   $00
 
 data_02_77f2:                                               ; ENTITY_KUNG_FU_THEATER_DRAGONFLY action $00
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $05, $06         ; 6 frames at 5 ticks, looping
-    db   $5f, $60, $61, $62, $63, $64
+    sprite_frames image_kung_fu_theater_dragonfly_019_5f00, 0, 1, 2, 3, 4, 5
     db   $00
 
 ; ENTITY_KUNG_FU_THEATER_WALKING_NINJA action $00
 ; ENTITY_KUNG_FU_THEATER_JUMPING_NINJA action $00
 data_02_77fd:
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $0a, $04         ; 4 frames at 10 ticks, looping
-    db   $58, $59, $5a, $5b
+    sprite_frames image_kung_fu_theater_walking_ninja_and_1_more_018_5800, 0, 1, 2, 3
     db   $00
 
 ; ENTITY_KUNG_FU_THEATER_WALKING_NINJA action $01
 ; ENTITY_KUNG_FU_THEATER_JUMPING_NINJA action $01
 data_02_7806:
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $04, $0a         ; 10 frames at 4 ticks, looping
-    db   $5c, $5d, $5e, $5f, $60, $61, $60, $5f
-    db   $5e, $5d
+    sprite_frames image_kung_fu_theater_walking_ninja_and_1_more_018_5800, 4, 5, 6, 7, 8, 9, 8, 7, 6, 5
     db   $00
 
 ; ENTITY_KUNG_FU_THEATER_WALKING_NINJA action $02
 ; ENTITY_KUNG_FU_THEATER_JUMPING_NINJA action $02
 data_02_7815:
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX | SPRITE_FLAG_LOOP_LAST_FRAME, $04, $04 ; 4 frames at 4 ticks, then holds the last
-    db   $62, $65, $64, $63
+    sprite_frames image_kung_fu_theater_walking_ninja_and_1_more_018_5800, 10, 13, 12, 11
     db   $00
 
 data_02_781e:                                               ; ENTITY_KUNG_FU_THEATER_JUMPING_NINJA action $03
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX | SPRITE_FLAG_LOOP_LAST_FRAME, $ff, $01 ; one frame, never ticks
-    db   $66
+    sprite_frames image_kung_fu_theater_jumping_ninja_018_6600, 0
     db   $00
 
 data_02_7824:                                               ; ENTITY_KUNG_FU_THEATER_DRAGON_HEAD action $00
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $ff, $01         ; one frame, never ticks
-    db   $73
+    sprite_frames image_kung_fu_theater_dragon_head_018_7300, 0
     db   $00
 
 data_02_782a:                                               ; ENTITY_KUNG_FU_THEATER_SAMURAI_BODY action $00
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $06, $08         ; 8 frames at 6 ticks, looping
-    db   $67, $68, $69, $6a, $6b, $6c, $6d, $6e
+    sprite_frames image_kung_fu_theater_samurai_body_018_6700, 0, 1, 2, 3, 4, 5, 6, 7
     db   $00
 
 data_02_7837:                                               ; ENTITY_KUNG_FU_THEATER_SAMURAI_BODY action $01
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX | SPRITE_FLAG_LOOP_LAST_FRAME, $0a, $04 ; 4 frames at 10 ticks, then holds the last
-    db   $6f, $70, $71, $72
+    sprite_frames image_kung_fu_theater_samurai_body_018_6700, 8, 9, 10, 11
     db   $00
 data_02_7840_Orphan:                                        ; unreachable - no action table points here
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $06, $08         ; 8 frames at 6 ticks, looping
@@ -612,70 +626,67 @@ data_02_7840_Orphan:                                        ; unreachable - no a
 
 data_02_784d:                                               ; ENTITY_REZOPOLIS_UFO action $00
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $04, $0a         ; 10 frames at 4 ticks, looping
-    db   $40, $41, $42, $43, $44, $45, $44, $43
-    db   $42, $41
+    sprite_frames image_rezopolis_ufo_01b_4000, 0, 1, 2, 3, 4, 5, 4, 3, 2, 1
     db   $00
 
 data_02_785c:                                               ; ENTITY_REZOPOLIS_UFO action $01
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $04, $04         ; 4 frames at 4 ticks, looping
-    db   $47, $48, $49, $48
+    sprite_frames image_rezopolis_ufo_01b_4700, 0, 1, 2, 1
     db   $00
 
 data_02_7865:                                               ; ENTITY_REZOPOLIS_GREEN_MONSTER action $00
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $08, $08         ; 8 frames at 8 ticks, looping
-    db   $4a, $4b, $4c, $4d, $4e, $4f, $50, $51
+    sprite_frames image_rezopolis_green_monster_01b_4a00, 0, 1, 2, 3, 4, 5, 6, 7
     db   $00
 
 data_02_7872:                                               ; ENTITY_REZOPOLIS_GREEN_MONSTER action $01
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX | SPRITE_FLAG_LOOP_LAST_FRAME, $08, $02 ; 2 frames at 8 ticks, then holds the last
-    db   $52, $53
+    sprite_frames image_rezopolis_green_monster_01b_4a00, 8, 9
     db   $00
 
 data_02_7879:                                               ; ENTITY_REZOPOLIS_GREEN_MONSTER action $02
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $04, $02         ; 2 frames at 4 ticks, looping
-    db   $54, $55
+    sprite_frames image_rezopolis_green_monster_01b_4a00, 10, 11
     db   $00
 
 data_02_7880:                                               ; ENTITY_REZOPOLIS_PINCER action $00
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $04, $04         ; 4 frames at 4 ticks, looping
-    db   $56, $57, $58, $59
+    sprite_frames image_rezopolis_pincer_01b_5600, 0, 1, 2, 3
     db   $00
 
 data_02_7889:                                               ; ENTITY_CIRCUIT_CENTRAL_WALKER_ROBOT action $00
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $04, $06         ; 6 frames at 4 ticks, looping
-    db   $77, $78, $79, $7a, $7b, $7c
+    sprite_frames image_circuit_central_walker_robot_01a_7700, 0, 1, 2, 3, 4, 5
     db   $00
 
 data_02_7894:                                               ; ENTITY_CHANNEL_Z_REZ_PORTAL action $00
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $08, $0f         ; 15 frames at 8 ticks, looping
-    db   $6d, $6e, $6f, $70, $71, $72, $73, $74
-    db   $75, $76, $77, $78, $79, $7a, $7b
+    sprite_frames image_channel_z_rez_portal_01b_6d00, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
     db   $00
 
 data_02_78a8:                                               ; ENTITY_CHANNEL_Z_REZ action $00
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $08, $08         ; 8 frames at 8 ticks, looping
-    db   $50, $51, $52, $53, $54, $55, $56, $57
+    sprite_frames image_channel_z_rez_01c_4000, 16, 17, 18, 19, 20, 21, 22, 23
     db   $00
 
 data_02_78b5:                                               ; ENTITY_CHANNEL_Z_REZ action $01
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $08, $08         ; 8 frames at 8 ticks, looping
-    db   $57, $56, $55, $54, $53, $52, $51, $50
+    sprite_frames image_channel_z_rez_01c_4000, 23, 22, 21, 20, 19, 18, 17, 16
     db   $00
 
 data_02_78c2:                                               ; ENTITY_CHANNEL_Z_REZ action $04
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX | SPRITE_FLAG_LOOP_LAST_FRAME, $08, $10 ; 16 frames at 8 ticks, then holds the last
-    db   $57, $56, $55, $54, $53, $52, $51, $50
-    db   $50, $51, $52, $53, $54, $55, $56, $57
+    sprite_frames image_channel_z_rez_01c_4000, 23, 22, 21, 20, 19, 18, 17, 16, 16, 17, 18, 19, 20, 21, 22, 23
     db   $00
 
 data_02_78d7:                                               ; ENTITY_CHANNEL_Z_REZ action $02
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $08, $08         ; 8 frames at 8 ticks, looping
-    db   $40, $41, $42, $43, $44, $45, $46, $47
+    sprite_frames image_channel_z_rez_01c_4000, 0, 1, 2, 3, 4, 5, 6, 7
     db   $00
 
 data_02_78e4:                                               ; ENTITY_CHANNEL_Z_REZ action $03
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $08, $08         ; 8 frames at 8 ticks, looping
-    db   $48, $49, $4a, $4b, $4c, $4d, $4e, $4f
+    sprite_frames image_channel_z_rez_01c_4000, 8, 9, 10, 11, 12, 13, 14, 15
     db   $00
 
 ; ENTITY_CHANNEL_Z_REZ action $05
@@ -684,22 +695,23 @@ data_02_78e4:                                               ; ENTITY_CHANNEL_Z_R
 ; ENTITY_CHANNEL_Z_REZ action $08
 data_02_78f1:
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $08, $06         ; 6 frames at 8 ticks, looping
-    db   $76, $77, $78, $79, $7a, $7b
+    sprite_frames image_channel_z_rez_01c_7600, 0, 1, 2, 3, 4, 5
     db   $00
 
 data_02_78fc:                                               ; ENTITY_CHANNEL_Z_REZ action $09
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $08, $0a         ; 10 frames at 8 ticks, looping
-    db   $7c, $79, $7c, $79, $7c, $79, $7c, $79
-    db   $7c, $79
+    sprite_frames image_channel_z_rez_01c_7600, 6, 3, 6, 3, 6, 3, 6, 3, 6, 3
     db   $00
 
 data_02_790b:                                               ; ENTITY_CHANNEL_Z_REZ action $0A
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $08, $0a         ; 10 frames at 8 ticks, looping
-    db   $7c, $79, $7c, $79, $7c, $79, $7c, $79
-    db   $7c, $79
+    sprite_frames image_channel_z_rez_01c_7600, 6, 3, 6, 3, 6, 3, 6, 3, 6, 3
     db   $00
 
 data_02_791a:                                               ; ENTITY_UNK_8E action $00
+; The frame id stays a raw byte: ENTITY_UNK_8E's row in .data_02_7061_EntityGfxBankTable
+; is $00, so there is no bank for the page to be a page OF. Unfinished, and unreachable -
+; the entity is in no level's list
     db   $00, SPRITE_FLAG_STREAMS_OWN_GFX, $ff, $01         ; one frame, never ticks
     db   $00
     db   $00

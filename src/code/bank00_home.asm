@@ -180,7 +180,7 @@ call_00_0150_Init:
     ; Seed the bank stack with one entry (bank 1) and point the stack pointer at it
     ld   HL, wD59A_PtrToBankStackPosition                                     ;; 00:01bb $21 $9a $d5
     ld   DE, wD58A_BankStack                                     ;; 00:01be $11 $8a $d5
-    ld   A, BANK_01                                        ;; 00:01c1 $3e $01
+    ld   A, BANK(call_01_4000_MenuLoad)                ;; 00:01c1 $3e $01
     ld   [HL], E                                       ;; 00:01c3 $73
     inc  HL                                            ;; 00:01c4 $23
     ld   [HL], D                                       ;; 00:01c5 $72
@@ -201,7 +201,7 @@ call_00_0150_Init:
     ; is identical in all four banks, so which one runs it does not matter - but it
     ; points the driver's table pointer at its OWN bank, which is why this has to be
     ; set to the same bank the FARCALL enters
-    ld   A, BANK_AUDIO_DEFAULT                         ;; 00:01ea $3e $21
+    ld   A, BANK(call_21_4000_Audio_Init)              ;; 00:01ea $3e $21
     ld   [wD788_CurrentAudioBank], A                                    ;; 00:01ec $ea $88 $d7
     FARCALL call_21_4000_Audio_Init
     ld   A, $ff                                        ;; 00:01fa $3e $ff ; no song playing yet
@@ -1344,7 +1344,7 @@ call_00_08b1_MediaDimension_CopyTVAttributes:
     push DE                                            ;; 00:08b2 $d5
     push BC                                            ;; 00:08b3 $c5
     push HL                                            ;; 00:08b4 $e5
-    ld   A, BANK_TV_ATTRIBUTES                         ;; 00:08b5 $3e $13
+    ld   A, BANK(image_013_00_scream_tv_screen)   ;; 00:08b5 $3e $13
     call call_00_1089_SwitchBank                                  ;; 00:08b7 $cd $89 $10
     call call_00_2e3a_MapData_GetTVPaletteId                                  ;; 00:08ba $cd $3a $2e
     ld   DE, .data_00_08e6_TVAttributeTable                                      ;; 00:08bd $11 $e6 $08
@@ -1425,12 +1425,12 @@ call_00_08fc_StageNextGfxTransfer:
     ret                                                ;; 00:091d $c9
 .jr_00_091e:
     ; The sprite id is a page number: its top two bits pick one of four consecutive
-    ; banks from BANK_PLAYER_GFX_BASE, the low six a page inside that bank
+    ; banks from BANK(image_player_walk_none_004_4000), the low six a page inside that bank
     ld   A, [wD208_Player_SpriteID]                                    ;; 00:091e $fa $08 $d2
     rlca                                               ;; 00:0921 $07
     rlca                                               ;; 00:0922 $07
     and  A, $03                                        ;; 00:0923 $e6 $03
-    add  A, BANK_PLAYER_GFX_BASE                       ;; 00:0925 $c6 $04
+    add  A, BANK(image_player_walk_none_004_4000)   ;; 00:0925 $c6 $04
     call call_00_1089_SwitchBank                                  ;; 00:0927 $cd $89 $10
     ld   A, [wD208_Player_SpriteID]                                    ;; 00:092a $fa $08 $d2
     and  A, GFX_PAGE_INDEX_MASK                        ;; 00:092d $e6 $3f
@@ -1452,7 +1452,7 @@ call_00_08fc_StageNextGfxTransfer:
     ld   A, [wD721_GfxCopy_SrcAddrHi]                                    ;; 00:094f $fa $21 $d7
     jr   .jr_00_095e                                   ;; 00:0952 $18 $0a
 .jr_00_0954:
-    ld   A, BANK_TV_SCREENS                            ;; 00:0954 $3e $14
+    ld   A, BANK(image_014_4000)                 ;; 00:0954 $3e $14
     call call_00_1089_SwitchBank                                  ;; 00:0956 $cd $89 $10
     ld   A, [wD610_MediaDimension_TVScreenId]                                    ;; 00:0959 $fa $10 $d6
     add  A, ROMX_PAGE_BASE                             ;; 00:095c $c6 $40
@@ -1491,7 +1491,7 @@ call_00_098f_CopyPlayerGfxToVRAM:
     rlca                                               ;; 00:0994 $07
     rlca                                               ;; 00:0995 $07
     and  A, $03                                        ;; 00:0996 $e6 $03
-    add  A, BANK_PLAYER_GFX_BASE                       ;; 00:0998 $c6 $04
+    add  A, BANK(image_player_walk_none_004_4000)   ;; 00:0998 $c6 $04
     call call_00_1089_SwitchBank                                  ;; 00:099a $cd $89 $10
     ld   A, [wD208_Player_SpriteID]                                    ;; 00:099d $fa $08 $d2
     and  A, GFX_PAGE_INDEX_MASK                        ;; 00:09a0 $e6 $3f
@@ -1548,7 +1548,7 @@ call_00_09fd_CopyTVScreenToVRAM:
     ld   A, [wD610_MediaDimension_TVScreenId]                                    ;; 00:0a02 $fa $10 $d6
     cp   A, TV_SCREEN_NONE                             ;; 00:0a05 $fe $ff
     ret  Z                                             ;; 00:0a07 $c8
-    ld   A, BANK_TV_SCREENS                            ;; 00:0a08 $3e $14
+    ld   A, BANK(image_014_4000)                 ;; 00:0a08 $3e $14
     call call_00_1089_SwitchBank                                  ;; 00:0a0a $cd $89 $10
     ld   A, [wD610_MediaDimension_TVScreenId]                                    ;; 00:0a0d $fa $10 $d6
     add  A, ROMX_PAGE_BASE                             ;; 00:0a10 $c6 $40
@@ -1657,14 +1657,14 @@ call_00_0ab4_WaitForInterrupt:
     ret                                                ;; 00:0ac0 $c9
 
 call_00_0ac1_VBlank_UpdateVRAM:
-; The one VRAM write the game is allowed to do per vblank, banked into BANK_03.
+; The one VRAM write the game is allowed to do per vblank, banked into bank03_vram_write.asm.
 ; Priority order:
 ;   1. a pending bg map scroll column/row (MAP_PENDING_VRAM_TRANSFER)
 ;   2. a pending block patch attribute write (wD77B_BlockPatch_VramWritePending)
 ;   3. the next secondary tileset animation frame, when its delay expires
 ;   4. HUD_DIRTY_COLLECTIBLES / HUD_DIRTY_LIVES / HUD_DIRTY_TIMER reloads
 ;   5. otherwise the ordinary animated tile update
-    ld   A, BANK_03                                    ;; 00:0ac1 $3e $03
+    ld   A, BANK(call_03_6f5e_VRAM_WriteBgMapRowForVerticalScroll)   ;; 00:0ac1 $3e $03
     SET_MBC_BANK                                       ;; 00:0ac3
     ld   HL, wD6F9_BgMap_LoadingFlags                                     ;; 00:0ace $21 $f9 $d6
     bit  MAP_PENDING_VRAM_TRANSFER, [HL]                                       ;; 00:0ad1 $cb $7e
@@ -2179,7 +2179,12 @@ data_00_0db6_GfxStreamScript_MenuSprites:
 ;
 ; Used after the totals page is redrawn, which is why the transfer is spread over
 ; frames rather than done in one blocking copy: the screen stays on throughout
-    gfx_stream_header $08, $04, BANK_00
+;
+; The bank byte stays a literal - it is the one in this file that names no data, so
+; there is nothing to write BANK() of. RunGfxStream banks it in regardless, but the
+; copy never touches the ROMX window, so the value is a don't-care and $00 is what
+; the original ROM has
+    gfx_stream_header $08, $04, $00
     gfx_stream_chunk  wC000_BgMapTileIds + $000, $8460
     gfx_stream_chunk  wC000_BgMapTileIds + $040, $84a0
     gfx_stream_chunk  wC000_BgMapTileIds + $080, $84e0
@@ -2199,21 +2204,21 @@ data_00_0dd9_GfxStreamScriptTable_TitleOptions:
     dw   .data_00_0ddd_TitleOptions_Row0
     dw   .data_00_0df8_TitleOptions_Row1
 .data_00_0ddd_TitleOptions_Row0:
-    gfx_stream_header $06, $06, BANK_08
-    gfx_stream_chunk  $6fd0, $8cb0
-    gfx_stream_chunk  $7030, $8df0
-    gfx_stream_chunk  $7090, $9030
-    gfx_stream_chunk  $70f0, $9170
-    gfx_stream_chunk  $7150, $92b0
-    gfx_stream_chunk  $71b0, $93f0
+    gfx_stream_header $06, $06, BANK(image_title_options_008_2)
+    gfx_stream_chunk  image_title_options_008_2, $8cb0
+    gfx_stream_chunk  image_title_options_008_2 + $060, $8df0
+    gfx_stream_chunk  image_title_options_008_2 + $0c0, $9030
+    gfx_stream_chunk  image_title_options_008_2 + $120, $9170
+    gfx_stream_chunk  image_title_options_008_2 + $180, $92b0
+    gfx_stream_chunk  image_title_options_008_2 + $1e0, $93f0
 .data_00_0df8_TitleOptions_Row1:
-    gfx_stream_header $06, $06, BANK_08
-    gfx_stream_chunk  $7210, $8cb0
-    gfx_stream_chunk  $7270, $8df0
-    gfx_stream_chunk  $72d0, $9030
-    gfx_stream_chunk  $7330, $9170
-    gfx_stream_chunk  $7390, $92b0
-    gfx_stream_chunk  $73f0, $93f0
+    gfx_stream_header $06, $06, BANK(image_title_options_008_2)
+    gfx_stream_chunk  image_title_options_008_2 + $240, $8cb0
+    gfx_stream_chunk  image_title_options_008_2 + $2a0, $8df0
+    gfx_stream_chunk  image_title_options_008_2 + $300, $9030
+    gfx_stream_chunk  image_title_options_008_2 + $360, $9170
+    gfx_stream_chunk  image_title_options_008_2 + $3c0, $92b0
+    gfx_stream_chunk  image_title_options_008_2 + $420, $93f0
 
 data_00_0e13_GfxStreamScriptTable_AudioOptions:
 ; MENU_TYPE_AUDIO_OPTIONS_UNUSED, reached through .jp_01_445d. Same idea and the
@@ -2227,37 +2232,37 @@ data_00_0e13_GfxStreamScriptTable_AudioOptions:
     dw   .data_00_0e51_AudioOptions_Row2
     dw   .data_00_0e6c_AudioOptions_Row3
 .data_00_0e1b_AudioOptions_Row0:
-    gfx_stream_header $06, $06, BANK_0C
-    gfx_stream_chunk  $57e8, $8d00
-    gfx_stream_chunk  $5848, $8e40
-    gfx_stream_chunk  $58a8, $9080
-    gfx_stream_chunk  $5908, $91c0
-    gfx_stream_chunk  $5968, $9300
-    gfx_stream_chunk  $59c8, $9440
+    gfx_stream_header $06, $06, BANK(image_audio_options_00c_1)
+    gfx_stream_chunk  image_audio_options_00c_1, $8d00
+    gfx_stream_chunk  image_audio_options_00c_1 + $060, $8e40
+    gfx_stream_chunk  image_audio_options_00c_1 + $0c0, $9080
+    gfx_stream_chunk  image_audio_options_00c_1 + $120, $91c0
+    gfx_stream_chunk  image_audio_options_00c_1 + $180, $9300
+    gfx_stream_chunk  image_audio_options_00c_1 + $1e0, $9440
 .data_00_0e36_AudioOptions_Row1:
-    gfx_stream_header $06, $06, BANK_0C
-    gfx_stream_chunk  $5a28, $8d00
-    gfx_stream_chunk  $5a88, $8e40
-    gfx_stream_chunk  $5ae8, $9080
-    gfx_stream_chunk  $5b48, $91c0
-    gfx_stream_chunk  $5ba8, $9300
-    gfx_stream_chunk  $5c08, $9440
+    gfx_stream_header $06, $06, BANK(image_audio_options_00c_1)
+    gfx_stream_chunk  image_audio_options_00c_1 + $240, $8d00
+    gfx_stream_chunk  image_audio_options_00c_1 + $2a0, $8e40
+    gfx_stream_chunk  image_audio_options_00c_1 + $300, $9080
+    gfx_stream_chunk  image_audio_options_00c_1 + $360, $91c0
+    gfx_stream_chunk  image_audio_options_00c_1 + $3c0, $9300
+    gfx_stream_chunk  image_audio_options_00c_1 + $420, $9440
 .data_00_0e51_AudioOptions_Row2:
-    gfx_stream_header $06, $06, BANK_0C
-    gfx_stream_chunk  $5c68, $8d00
-    gfx_stream_chunk  $5cc8, $8e40
-    gfx_stream_chunk  $5d28, $9080
-    gfx_stream_chunk  $5d88, $91c0
-    gfx_stream_chunk  $5de8, $9300
-    gfx_stream_chunk  $5e48, $9440
+    gfx_stream_header $06, $06, BANK(image_audio_options_00c_1)
+    gfx_stream_chunk  image_audio_options_00c_1 + $480, $8d00
+    gfx_stream_chunk  image_audio_options_00c_1 + $4e0, $8e40
+    gfx_stream_chunk  image_audio_options_00c_1 + $540, $9080
+    gfx_stream_chunk  image_audio_options_00c_1 + $5a0, $91c0
+    gfx_stream_chunk  image_audio_options_00c_1 + $600, $9300
+    gfx_stream_chunk  image_audio_options_00c_1 + $660, $9440
 .data_00_0e6c_AudioOptions_Row3:
-    gfx_stream_header $06, $06, BANK_0C
-    gfx_stream_chunk  $5ea8, $8d00
-    gfx_stream_chunk  $5f08, $8e40
-    gfx_stream_chunk  $5f68, $9080
-    gfx_stream_chunk  $5fc8, $91c0
-    gfx_stream_chunk  $6028, $9300
-    gfx_stream_chunk  $6088, $9440
+    gfx_stream_header $06, $06, BANK(image_audio_options_00c_1)
+    gfx_stream_chunk  image_audio_options_00c_1 + $6c0, $8d00
+    gfx_stream_chunk  image_audio_options_00c_1 + $720, $8e40
+    gfx_stream_chunk  image_audio_options_00c_1 + $780, $9080
+    gfx_stream_chunk  image_audio_options_00c_1 + $7e0, $91c0
+    gfx_stream_chunk  image_audio_options_00c_1 + $840, $9300
+    gfx_stream_chunk  image_audio_options_00c_1 + $8a0, $9440
 
 call_00_0e87_ClearVRAMAndResetScroll:
 ; Zeroes the tile data and both tilemaps (in both VRAM banks on GBC), clears shadow OAM
@@ -3048,14 +3053,14 @@ call_00_120c_SetupMusic:
 ; The bank byte is also what leaves wD788_CurrentAudioBank pointing somewhere, which
 ; is how sound effects end up being played out of whichever bank the current song
 ; came from
-    music_record BANK_21, $04, MUSIC_FOUR_TRACKS  ; MUSIC_KUNG_FU_THEATER
-    music_record BANK_21, $00, MUSIC_FOUR_TRACKS  ; MUSIC_CIRCUIT_CENTRAL
-    music_record BANK_21, $08, MUSIC_FOUR_TRACKS  ; MUSIC_PREHISTORY_CHANNEL
-    music_record BANK_22, $08, MUSIC_FOUR_TRACKS  ; MUSIC_REZOPOLIS
-    music_record BANK_22, $04, MUSIC_FOUR_TRACKS  ; MUSIC_UNK_04
-    music_record BANK_22, $00, MUSIC_FOUR_TRACKS  ; MUSIC_SCREAM_TV
-    music_record BANK_23, $04, MUSIC_FOUR_TRACKS  ; MUSIC_TOON_TV
-    music_record BANK_23, $00, MUSIC_FOUR_TRACKS  ; MUSIC_MEDIA_DIMENSION
+    music_record BANK(data_21_4460_TrackPointerTables), $04, MUSIC_FOUR_TRACKS  ; MUSIC_KUNG_FU_THEATER
+    music_record BANK(data_21_4460_TrackPointerTables), $00, MUSIC_FOUR_TRACKS  ; MUSIC_CIRCUIT_CENTRAL
+    music_record BANK(data_21_4460_TrackPointerTables), $08, MUSIC_FOUR_TRACKS  ; MUSIC_PREHISTORY_CHANNEL
+    music_record BANK(data_22_4460_TrackPointerTables), $08, MUSIC_FOUR_TRACKS  ; MUSIC_REZOPOLIS
+    music_record BANK(data_22_4460_TrackPointerTables), $04, MUSIC_FOUR_TRACKS  ; MUSIC_UNK_04
+    music_record BANK(data_22_4460_TrackPointerTables), $00, MUSIC_FOUR_TRACKS  ; MUSIC_SCREAM_TV
+    music_record BANK(data_23_4460_TrackPointerTables), $04, MUSIC_FOUR_TRACKS  ; MUSIC_TOON_TV
+    music_record BANK(data_23_4460_TrackPointerTables), $00, MUSIC_FOUR_TRACKS  ; MUSIC_MEDIA_DIMENSION
 
 INCLUDE "code/bank00_bg_map.asm"
 INCLUDE "code/bank00_tile_hit_scripts.asm"
