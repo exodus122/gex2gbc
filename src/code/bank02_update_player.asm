@@ -766,20 +766,15 @@ call_02_4c28_Player_CheckLavaAndWaterTiles:
 ; Runs once per frame to answer two separate questions about liquid.
 ; First, is Gex standing in it at all: either the tile behind his body or the tile under his
 ; feet being TILE_TYPE_WATER, or the tile behind his body being TILE_TYPE_LAVA, counts. The
-; answer goes into wD74A_Player_InWaterOrLava, which the sprite builder uses to swap in the
-; wading frames. Note the flag is stored inverted - $00 means yes, $80 means no - because it
-; is produced by xoring $80 over the fall-through value.
+; answer goes into wD74A_Player_InWaterOrLava, which the sprite builder reads to draw the
+; wading effect. Each of the three liquid tests leaves A = $00 from its `sub` and jumps to
+; the shared tail at .jr_02_4c3f; only the fall-through loads A = $80. The `xor a,$80`
+; there therefore stores $80 when Gex IS in water or lava and $00 when he is not.
+; That byte is an OAM attribute bit rather than a flag: $80 is OAMF_PRI, and
+; call_03_5ca8_Player_BuildSprites ORs it into every sprite part, so being submerged puts
+; him behind the water and lava tiles and lets them cover his legs.
 ; Second, is he actually in lava, in which case he takes the hit: PLAYER_ACTION_HIT_BOUNCE is
 ; requested, which is the same recoil used when an enemy hits him. Water alone is harmless
-;
-; @bug The polarity described above is backwards. In the liquid cases the `sub`
-; leaves A = $00 and jumps to .jr_02_4c3f; the not-in-liquid fall-through loads
-; A = $80. The shared `xor a,$80` therefore stores $80 when Gex IS in water or lava
-; and $00 when he is NOT. The same inverted claim is repeated in the header of
-; call_03_5ca8_Player_BuildSprites and at wD74A_Player_InWaterOrLava in
-; constants/memory.asm. The code is right and the reading is the intuitive one:
-; OAMF_PRI ($80) is OR'd in while he is submerged, putting him behind the water and
-; lava tiles, which is what draws the wading effect.
     ld   A, [wD765_TileTypeBehindGexsLowerBody]
     sub  A, TILE_TYPE_WATER
     jr   Z, .jr_02_4c3f

@@ -1021,16 +1021,9 @@ call_03_5ca8_Player_BuildSprites:
 ; around him and he stays lit.
 ;
 ; Each part's attribute byte is OR'd with wD74A_Player_InWaterOrLava on the way out.
-; That byte is $80 - OAMF_PRI - while he is NOT in liquid and $00 while he is, so he
-; normally renders behind solid background pixels and comes to the front on the frames
-; he is in water or lava
-;
-; @bug The wD74A_Player_InWaterOrLava polarity stated at the end of this header is
-; inverted. call_02_4c28_Player_CheckLavaAndWaterTiles stores $80 when Gex IS in
-; liquid and $00 when he is not, so the OR below adds OAMF_PRI only while he is
-; submerged: he normally renders IN FRONT of the background and drops BEHIND it on
-; the frames he is in water or lava, which is what hides his legs. Same error at
-; wD74A_Player_InWaterOrLava in constants/memory.asm.
+; That byte is $80 - OAMF_PRI - while he IS in water or lava and $00 the rest of the
+; time, so he normally renders in front of the background and drops behind it on the
+; frames he is submerged, which is what lets the liquid tiles cover his legs
     ld   A, [wD586_PlayerGfxVramPage]
     ld   HL, wD20D_Player_FacingFlags
     bit  5, [HL]

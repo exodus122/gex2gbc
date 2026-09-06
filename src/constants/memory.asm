@@ -1392,17 +1392,17 @@ wD749_Player_ClimbingDirection:
 ; come out in; only 2 and 3 have real table rows
     ds 1                                               ;; d749
 wD74A_Player_InWaterOrLava:
-; $80 = Gex is not touching liquid, $00 = he is (the flag is built by xor $80,
-; so it reads inverted). Set every frame by
-; call_02_4c28_Player_CheckLavaAndWaterTiles and read by the sprite builder in
-; bank 3 to swap in the partially submerged frames
+; $80 = Gex IS touching liquid, $00 = he is not. Set every frame by
+; call_02_4c28_Player_CheckLavaAndWaterTiles, which reaches its shared `xor a,$80`
+; with A = $00 in the three liquid cases and A = $80 in the fall-through, so the byte
+; stored here is $80 exactly while he is in water or lava.
 ;
-; @bug The two values below are swapped. call_02_4c28_Player_CheckLavaAndWaterTiles
-; reaches the shared `xor a,$80` with A = $00 in the liquid cases and A = $80 in the
-; fall-through, so $80 means Gex IS touching liquid and $00 means he is not. The
-; sprite builder ORs the byte into the OAM attributes, so the $80 is OAMF_PRI putting
-; him behind the liquid tiles. The same inverted claim appears in the headers of
-; call_02_4c28_Player_CheckLavaAndWaterTiles and call_03_5ca8_Player_BuildSprites.
+; It is not really a boolean but an OAM attribute bit: $80 is OAMF_PRI, and
+; call_03_5ca8_Player_BuildSprites ORs this byte straight into every sprite part's
+; attributes. So while he is submerged his sprite drops behind the background and the
+; liquid tiles cover his legs; the rest of the time the OR contributes nothing.
+; call_02_6e17_Entities_InitAndSpawnAll clears it to $00 - the not-in-liquid state -
+; when a level loads.
     ds 1                                               ;; d74a
 
 wD74B_Player_ClimbingFlags:
@@ -1570,8 +1570,8 @@ wD761_Player_FloorSnapVelocity:
 ; the first grounded frame only if the snap is the smaller step of the two, otherwise
 ; the fall continues normally.
 ;
-; Nothing to do with ceilings despite the old name; the head-bonk case is the other
-; branch of that routine and it zeroes wD760_PlayerYVelocity, not this
+; Nothing to do with ceilings: the head-bonk case is the other branch of that routine
+; and it zeroes wD760_PlayerYVelocity, not this
     ds 1                                               ;; d761
 wD762_PlayerInitialYVelocity:
 ; y velocity when first entered the air (2a = jump, 36 = double jump). also set to 1 if fall off ledge

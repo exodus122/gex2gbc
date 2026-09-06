@@ -2459,16 +2459,9 @@ call_02_5b47_EntityAction_ToonTVMovingBlock_Run:
 ; it pauses and comes back; the same means it has completed a round trip, at which
 ; point it clears the block patch slot that started it and disarms itself
 ;
-; @bug The block patch slot address is built from raw literals - `add a,$8B` and
-; `adc a,$D7` - instead of LOW/HIGH(wD78B_BlockPatch_SlotTable). Every other routine
-; that reaches the same table (call_02_5348, call_02_5bb6, call_02_6409,
-; call_02_5aab) names the label, so this one silently stops pointing at it if the
-; table moves. Same class of raw address as `ld b,$48` in
-; call_03_4c76... see call_03_4c5a_BgCollision_GetTileAndFlags.
-;
-; @bug `ld a,01` at .jr_02_5B88 is a DECIMAL literal in a file that is otherwise
-; uniformly hex. It happens to assemble to the same $01 the action id needs, so the
-; ROM is unaffected, but it reads as a dropped `$` and will mislead the next edit.
+; The slot address is formed in DE as wD78B_BlockPatch_SlotTable plus the masked
+; index, the same table call_02_5348, call_02_5bb6, call_02_6409 and call_02_5aab
+; reach.
     call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_5B53
     ld   a,l
@@ -2483,10 +2476,10 @@ call_02_5b47_EntityAction_ToonTVMovingBlock_Run:
     cp   a,$FF
     jr   z,.jr_02_5B97                                 ; ungated - always running
     and  a,$0F
-    add  a,$8B
+    add  a,LOW(wD78B_BlockPatch_SlotTable)
     ld   e,a
     ld   a,$00
-    adc  a,$D7
+    adc  a,HIGH(wD78B_BlockPatch_SlotTable)
     ld   d,a                                           ; DE = wD78B_BlockPatch_SlotTable + index
     dec  l
     dec  l                                             ; $17 MISC_FLAGS
@@ -2511,7 +2504,7 @@ call_02_5b47_EntityAction_ToonTVMovingBlock_Run:
 .jr_02_5B88:
     inc  l                                             ; $18 MISC_TIMER_1
     ld   [hl],$46
-    ld   a,01
+    ld   a,$01
     jp   call_02_7102_Entity_SetAction                 ; pause before the return leg
 .jr_02_5B90:
     ld   a,[de]
@@ -2855,17 +2848,16 @@ call_02_5d0c_EntityAction_FallingBoulder_WaitForCue:
 ; Action $00. Invisible (data_02_7aae has SPRITE_FLAG_INVISIBLE) and parked $40
 ; above the top of the view - recomputed every frame, so it stays off-screen no
 ; matter how the camera moves. Drops when the frame counter's low 6 bits match
-; MISC_TIMER_1, a spawn parameter, so a line of boulders falls in sequence
+; MISC_TIMER_2, a spawn parameter, so a line of boulders falls in sequence.
 ;
-; @bug The phase is read out of MISC_TIMER_2, not MISC_TIMER_1 as the inline comment
-; below says. LOAD_OBJ_FIELD_TO_HL leaves A holding the whole low byte it built - slot
-; base | field - so after the macro A is slot|$10, and the `inc l` that follows moves L
-; without touching A. The `xor a,$09` therefore operates on $10, not $11, and lands on
-; $19 MISC_TIMER_2 rather than $18 MISC_TIMER_1. (That is consistent with the other
-; phase-driven entities - call_02_54ff_EntityAction_FallingAxe_WaitForCue reads
-; MISC_TIMER_2 outright - so it is the comment that is wrong, not the choice of field.)
-; This is the only bare `xor a,$xx` in the source whose stated source offset does not
-; match what the macro actually left in A.
+; The `xor a,$09` below is the field walk, and it starts from $10, not $11:
+; LOAD_OBJ_FIELD_TO_HL leaves A holding the whole low byte it built - slot base |
+; field - and the `inc l` that follows moves L without touching A. So the xor operates
+; on slot|$10 and lands on $19 MISC_TIMER_2, which is the same field the other
+; phase-driven entity reads (call_02_54ff_EntityAction_FallingAxe_WaitForCue takes
+; MISC_TIMER_2 outright). Worth reading twice - it is the only bare `xor a,$xx` in the
+; file whose starting offset is the one the macro left in A rather than the one L is
+; sitting on.
     ld   hl,wD6EF_BgMap_ScrollY
     ldi  a,[hl]
     ld   h,[hl]
@@ -2878,7 +2870,7 @@ call_02_5d0c_EntityAction_FallingBoulder_WaitForCue:
     ld   [hl],e
     inc  l
     ld   [hl],d
-    xor  a,$09                                         ; $11 -> $18 MISC_TIMER_1
+    xor  a,$09                                         ; A is still $10 -> $19 MISC_TIMER_2
     ld   l,a
     ld   a,[wD73B_VBlankFrameCounter]
     and  a,$3F                                         ; my phase in a 64-frame cycle

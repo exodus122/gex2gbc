@@ -1277,15 +1277,13 @@ call_00_084d_Screen_LoadFullscreenImage:
 ; wD6B0_FullscreenImage_Bank / wD6B1_FullscreenImage_Ptr.
 ; The image is one blob: FULLSCREEN_IMAGE_BLOCK0_SIZE bytes of tiles for _VRAM,
 ; FULLSCREEN_IMAGE_BLOCK1_SIZE more for _VRAM+$1000, and on GBC a 20x18 attribute map
-; after that. Nothing in the blob is a tilemap - the tilemap is generated instead, as
-; a running id 0..$FF over 24 rows, so the tiles land on the screen in the order they
-; appear in ROM and every image can use all 256 ids
+; after that. Nothing in the blob is a tilemap - the tilemap is generated instead, so
+; the tiles land on the screen in the order they appear in ROM.
 ;
-; @bug The generated tilemap is 18 rows, not the 24 claimed above. `ld b,$0c` gives
-; the first pass 12 rows; `ld b,$06` immediately before the `pop af / dec a / jr nz`
-; gives the second pass 6, so 12 + 6 = SCRN_Y_B exactly and nothing is written below
-; the visible screen. The running id does not reach $FF either: each pass restarts at
-; zero via the `xor a` at .jr_00_089b, so pass 1 emits ids $00-$EF and pass 2 $00-$77.
+; It is written in two passes, one per VRAM block: `ld b,$0c` gives the first 12 rows
+; and `ld b,$06` the second 6, which is SCRN_Y_B exactly, so nothing lands below the
+; visible screen. Each pass restarts its running tile id at zero via the `xor a` at
+; .jr_00_089b, so pass 1 emits ids $00-$EF and pass 2 $00-$77.
     ld   A, [wD6B0_FullscreenImage_Bank]                                    ;; 00:084d $fa $b0 $d6
     call call_00_1089_SwitchBank                                  ;; 00:0850 $cd $89 $10
     ld   HL, wD6B1_FullscreenImage_Ptr                                     ;; 00:0853 $21 $b1 $d6

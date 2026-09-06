@@ -637,9 +637,7 @@ call_00_3364_Entity_ApproachPlayerXWithBounds:
 call_00_33dd_Entity_ApplyXVelocityFriction:
 ; First checks SPRITE_FLAG_ON_SCREEN — if clear, returns immediately (offscreen entities are not simulated).
 ; Then branches on a bit of ENTITY_FIELD_MISC_FLAGS ($17) to decide add or subtract. NOT field $1D:
-; the `xor $1D` is applied to L while it still holds SPRITE_FLAGS ($0A), and $0A xor $1D = $17. The
-; bit is also spelled with a SPRITE_FLAG_* constant, which is the wrong family for a MISC_FLAGS read
-; even though the number happens to work:
+; the `xor $1D` is applied to L while it still holds SPRITE_FLAGS ($0A), and $0A xor $1D = $17:
 ; Bit 1 clear (.jr_02_33F2): Adds X velocity (C) into a subpixel accumulator. Includes a clamping check
 ;   — if the accumulator would overflow past $80 (i.e. exceed half-range), it saturates and folds the
 ;   remainder back through C before applying. Then adds the adjusted C into the X position subpixel field
@@ -650,23 +648,16 @@ call_00_33dd_Entity_ApplyXVelocityFriction:
 ; avoid wrap-around artifacts — essentially a friction/momentum integrator that bleeds off X velocity
 ; into position while preventing the accumulator from flipping sign unexpectedly.
 ;
-; @bug - wrong constant family, and a branch that only exists to skip a branch.
-; After the on-screen test, `ld a,l / xor a,$1D / ld l,a` walks L from
-; ENTITY_FIELD_SPRITE_FLAGS ($0A) to ENTITY_FIELD_MISC_FLAGS ($17), so the byte
-; under HL is MISC_FLAGS - but the bit is then named
-; `bit SPRITE_FLAG_LOOP_LAST_FRAME_BIT,[hl]`. That is a SPRITE_FLAGS constant being
-; used to index a MISC_FLAGS byte; it reads the intended bit only because the two
-; numbers coincide, and it silently stops meaning anything if either family is
-; renumbered.
-; Separately, `jr z,.jr_02_33F2 / jr .jr_02_341B` with `.jr_02_33F2` as the very
-; next instruction is a two-byte detour - `jr nz,.jr_02_341B` alone is equivalent.
+; @bug - a branch that exists only to skip a branch. `jr z,.jr_02_33F2` is followed
+; by `jr .jr_02_341B` with `.jr_02_33F2` as the very next instruction, so the pair
+; costs two bytes more than the `jr nz,.jr_02_341B` that would do the same job.
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_SPRITE_FLAGS
     bit  SPRITE_FLAG_ON_SCREEN_BIT,[hl]
     ret  z
     ld   a,l
     xor  a,$1D
     ld   l,a
-    bit  SPRITE_FLAG_LOOP_LAST_FRAME_BIT,[hl]
+    bit  MISC_FLAGS_BIT_1,[hl]
     jr   z,.jr_02_33F2
     jr   .jr_02_341B
 .jr_02_33F2:
@@ -887,8 +878,8 @@ call_00_34f5_Entity_IsPlayerStandingOnSelf:
 ;     ...
 ;     bit  0, B         ; and B is the "player is on me" answer
 ;
-; The old name (Entity_CompareMiscFlags) described the LOAD_OBJ_FIELD_TO_HL on the
-; first line and not what the routine actually decides - it never reads MISC_FLAGS
+; The LOAD_OBJ_FIELD_TO_HL on the first line is there to leave HL on MISC_FLAGS for
+; the caller; the routine itself never reads that byte
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_FLAGS
     ld   A, [wD74D_Player_EntityStoodOnLo]
     ld   B, A

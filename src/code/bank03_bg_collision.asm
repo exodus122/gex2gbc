@@ -260,7 +260,8 @@ call_03_4915_BgCollision_SidescrollerHandler:
 .jp_03_4a05_FloorCeilingCheck:
 ; Which of the two runs depends on the sign of the Y velocity, and only one ever does.
 ;
-; FLOOR (velocity zero or upward): take the tile under his feet and the one below it,
+; FLOOR (velocity zero or downward, i.e. stopped or falling): take the tile under his
+; feet and the one below it,
 ; then scan down through data_03_4000_TileSolidityRows a pixel row at a time - within
 ; the feet tile first, then continuing into the tile below - until his pixel column
 ; comes up solid. The number of rows walked is the gap to the floor, and it goes into
@@ -268,18 +269,14 @@ call_03_4915_BgCollision_SidescrollerHandler:
 ; Finding solid ground also raises BGCOLL_NO_COLLISION_BIT, which downstream means
 ; grounded. Giving up after BGCOLL_FLOOR_SEARCH_ROWS leaves him airborne.
 ;
-; CEILING (falling): one probe above his head, at a distance that grows with the fall
+; CEILING (rising): one probe above his head, at a distance that grows with the climb
 ; speed. A TILECOLL_CEILING tile there zeroes the Y velocity - the head bonk
 ;
-; @bug The two parenthetical labels below are inverted relative to the code. Y
-; velocity is signed with POSITIVE meaning upward - see the header of
-; call_02_4b78_Player_ApplyYVelocity - and the dispatch here is `jr z` to the floor
-; scan, then `bit 7,a / jr z` to the ceiling probe. So the ceiling probe runs when
-; the velocity is positive, i.e. while Gex is RISING, and the floor scan runs when
-; it is zero or negative, i.e. while he is stopped or FALLING. The code is correct;
-; "FLOOR (velocity zero or upward)" and "CEILING (falling)" have the two swapped,
-; which also makes the ceiling probe read as though it looked above his head while
-; he was on the way down.
+; Which of the two runs is decided by the sign, and Y velocity is signed with POSITIVE
+; meaning UPWARD - see the header of call_02_4b78_Player_ApplyYVelocity. The dispatch
+; below is `jr z` to the floor scan, then `bit 7,a / jr z` to the ceiling probe, so the
+; ceiling probe is the positive case (rising) and the floor scan takes zero and
+; negative (stopped or falling).
     xor  A, A
     ld   [wD761_Player_FloorSnapVelocity], A
     ld   HL, wD585_CollisionFlags
@@ -744,12 +741,6 @@ call_03_4c5a_BgCollision_GetTileAndFlags:
 ; Callers use one or the other or both - the climb handler tests the flags for
 ; TILECOLL_CLIMB_BLOCKED and then reads C to recognise a climbing stopper by its id. Unlike
 ; call_03_4bd4_BgCollision_IsPixelSolid this is whole-tile, with no per-pixel detail
-;
-; @bug `ld b,$48` hardcodes HIGH(data_03_4800_TileCollisionFlags) as a literal. That
-; table is defined at the top of this same file and every other reader in the file
-; spells it `HIGH(data_03_4800_TileCollisionFlags)`, so this one lookup silently
-; stops resolving if the INCBIN is moved or resized - exactly the class of raw
-; address the README says the source contains none of.
     ld   A, [wD210_Player_YPositionLo]
     add  A, B
     and  A, $f8
@@ -766,7 +757,7 @@ call_03_4c5a_BgCollision_GetTileAndFlags:
     or   A, L
     ld   L, A
     ld   C, [HL]
-    ld   B, $48
+    ld   B, HIGH(data_03_4800_TileCollisionFlags)
     ld   A, [BC]
     ld   B, A
     ret
