@@ -1414,6 +1414,14 @@ call_02_55f1_EntityAction_Ghost_Dormant:
 ; to slot (own slot | 2), field $17. The two only agree when the ghost is in slot
 ; 2, 3, 6 or 7, and even then the read address is wrong. Both are faithful to the
 ; ROM - see 02:55F1 and 03:4DE5
+;
+; @bug (original game) This action polls a flag that is not its own and that nothing
+; writes. HL is not set up before the read - an action function is entered through
+; call_00_10bd_JumpHL, so on entry HL is the address of this function, $55F1 - and
+; `or l` with any slot base leaves the low byte $F1 unchanged, so `bit 0,[hl]` always
+; tests $D2F1: byte $11 of slot 7, the high half of that slot's world Y. The
+; collision handler meant to raise the bit, .jr_03_4dd4_CollisionHandler_Ghost, has
+; the mirror-image fault and writes somewhere else again. See the QUIRK note above.
     ld   a,[wD757_LanternLitFlag]
     and  a
     jr   nz,.jr_02_5608
@@ -2290,6 +2298,12 @@ call_02_5a7d_EntityAction_ToonTVLizard_Update:
 ; after itself, so both outcomes run exactly the same code and the `and $3F` has
 ; no effect at all. Something was meant to happen once every 64 frames - a call
 ; that was removed, most likely - and the test was left behind
+;
+; @bug (original game) The frame-counter test below is vestigial: `jr nz,.jr_02_5A84`
+; targets the very next instruction, so both outcomes execute identically and the
+; `and a,$3F` has no observable effect at all. Whatever was meant to happen once every
+; 64 frames is gone; call_02_6335_EntityAction_KungFuLizard_Update is the same routine
+; with the dead test already absent.
     ld   a,[wD73B_VBlankFrameCounter]
     and  a,$3F
     jr   nz,.jr_02_5A84                                ; jumps to the next instruction
@@ -2329,6 +2343,14 @@ call_02_5a9a_EntityAction_HappyFace_Hop:
 ; ------------------------------------------------------------------
 
 call_02_5aab_EntityAction_ToonTVVanishingBlock_WaitForCue:
+;
+; @bug The block patch slot index is used unmasked. The three sibling routines that
+; index wD78B_BlockPatch_SlotTable from MISC_PARAM - call_02_5348, call_02_5bb6 and
+; call_02_6409 - all narrow it with `and a,$0f` first, because the table is only 16
+; bytes. Here `ld l,[hl]` takes the raw byte, so any spawn record with a value above
+; $0F reads past the end of the table (into wD79B onward) and the block silently
+; deletes itself or refuses to. No shipped level appears to supply such a value, so
+; this is latent rather than observable.
     call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_5AB7
     ld   a,l
@@ -2436,6 +2458,17 @@ call_02_5b47_EntityAction_ToonTVMovingBlock_Run:
 ; recorded start direction in bits 5/4. Different means it is at the far end, so
 ; it pauses and comes back; the same means it has completed a round trip, at which
 ; point it clears the block patch slot that started it and disarms itself
+;
+; @bug The block patch slot address is built from raw literals - `add a,$8B` and
+; `adc a,$D7` - instead of LOW/HIGH(wD78B_BlockPatch_SlotTable). Every other routine
+; that reaches the same table (call_02_5348, call_02_5bb6, call_02_6409,
+; call_02_5aab) names the label, so this one silently stops pointing at it if the
+; table moves. Same class of raw address as `ld b,$48` in
+; call_03_4c76... see call_03_4c5a_BgCollision_GetTileAndFlags.
+;
+; @bug `ld a,01` at .jr_02_5B88 is a DECIMAL literal in a file that is otherwise
+; uniformly hex. It happens to assemble to the same $01 the action id needs, so the
+; ROM is unaffected, but it reads as a dropped `$` and will mislead the next edit.
     call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_5B53
     ld   a,l
@@ -2823,6 +2856,16 @@ call_02_5d0c_EntityAction_FallingBoulder_WaitForCue:
 ; above the top of the view - recomputed every frame, so it stays off-screen no
 ; matter how the camera moves. Drops when the frame counter's low 6 bits match
 ; MISC_TIMER_1, a spawn parameter, so a line of boulders falls in sequence
+;
+; @bug The phase is read out of MISC_TIMER_2, not MISC_TIMER_1 as the inline comment
+; below says. LOAD_OBJ_FIELD_TO_HL leaves A holding the whole low byte it built - slot
+; base | field - so after the macro A is slot|$10, and the `inc l` that follows moves L
+; without touching A. The `xor a,$09` therefore operates on $10, not $11, and lands on
+; $19 MISC_TIMER_2 rather than $18 MISC_TIMER_1. (That is consistent with the other
+; phase-driven entities - call_02_54ff_EntityAction_FallingAxe_WaitForCue reads
+; MISC_TIMER_2 outright - so it is the comment that is wrong, not the choice of field.)
+; This is the only bare `xor a,$xx` in the source whose stated source offset does not
+; match what the macro actually left in A.
     ld   hl,wD6EF_BgMap_ScrollY
     ldi  a,[hl]
     ld   h,[hl]
@@ -3804,6 +3847,12 @@ call_02_62fc_EntityAction_SamuraiHead_Launched:
 ; QUIRK: the destination is the hardcoded wDA3B_EntityPalettes_Slot6, not this
 ; entity's own palette slot, so the recolour only lands on the right sprite when
 ; the head happens to occupy entity slot 6
+;
+; @bug (original game) The CGB recolour writes to a fixed palette slot. `ld de,
+; wDA3B_EntityPalettes_Slot6` names entity slot 6 outright instead of deriving the
+; destination from wD300_CurrentEntityAddrLo, so the head only tints itself when it
+; happens to have been allocated slot 6; in any other slot it repaints whatever
+; entity is in slot 6 and leaves itself the colour it had.
     call call_00_30af_Entity_ApplyGravityAndMoveY_Clamped
     call call_00_3154_Entity_ClampYToMaxYBound
     ret  c

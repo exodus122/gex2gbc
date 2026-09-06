@@ -3,6 +3,26 @@ call_01_4ecf_Password_RefreshCellGfx:
 ; graphics stream copying four tiles from the font at data_01_71e9_PasswordFont to the VRAM
 ; tiles that cell occupies. Only the edited cell is touched, so typing does not
 ; disturb the rest of the screen
+;
+; @bug (original game) This is the "typed value does not appear" bug noted at
+; wD668_PasswordValues in constants/memory.asm, and the cause is that the routine
+; builds its stream script inside the streamer's own live variables and then hands
+; that back to call_01_4d0a_Menu_StartGfxStream.
+;
+; wD6E2..wD6E8 are contiguous and do lay out as a valid one-chunk script - header at
+; wD6E2/E3/E4, then the (src, dest) pair at wD6E5/E7 - which is why the tail passes
+; HL = wD6E2. But StartGfxStream opens by spinning while wD6E2 is nonzero, and this
+; routine has just written $01 there. So it blocks until call_00_0d84_VBlank_RunGfxStream
+; decrements the count, and that transfer runs off wD6E9/wD6EA, the list pointer left
+; over from the PREVIOUS script - not the pair just written here. Only then does
+; StartGfxStream proceed, re-reading the now-zero wD6E2 as the chunk count and arming
+; a zero-length stream whose list pointer is finally set to wD6E5.
+;
+; Net effect: every keypress copies the previous keypress's tiles and arms nothing,
+; so the grid lags one keystroke behind and the first character typed after entering
+; the screen never appears at all. The busy-wait at the top of this routine is a
+; second copy of the same spin and does not help, because it runs before the $01 is
+; written.
     ld   A, [wD6E2_GfxStream_ChunksRemaining]                                    ;; 01:4ecf $fa $e2 $d6
     and  A, A                                          ;; 01:4ed2 $a7
     jr   NZ, call_01_4ecf_Password_RefreshCellGfx                              ;; 01:4ed3 $20 $fa

@@ -279,6 +279,14 @@ call_00_0150_Init:
     ; `inc A / and DEMO_COUNT - 1` computes it into A and the very next instruction
     ; overwrites A, so the stored index is always DEMO_INDEX_FORCED and the attract
     ; mode always plays Samurai Night Fever. The other three demos are unreachable
+    ;
+    ; @bug (original game) The attract-demo round-robin is computed and thrown away.
+    ; `inc a / and DEMO_COUNT - 1` produces the next index in A and the very next
+    ; instruction, `ld a,DEMO_INDEX_FORCED`, overwrites it before the store - so the
+    ; only value ever written to wD61D_AttractDemoIndex is $02. Three of the four
+    ; entries in data_00_076d_DemoLevelIds and data_00_0771_DemoInputScriptPointers are
+    ; dead as a result, and the attract mode always plays Samurai Night Fever. Same
+    ; shape as the discarded wall push-out in call_03_4915_BgCollision_SidescrollerHandler.
     ld   HL, wD61D_AttractDemoIndex                                     ;; 00:0276 $21 $1d $d6
     ld   A, [HL]                                       ;; 00:0279 $7e
     inc  A                                             ;; 00:027a $3c
@@ -851,6 +859,15 @@ call_00_0647_Player_SwapFlyPowerup:
 ; treats any nonzero value in that pair as an active shield, so swapping out fly
 ; $01 leaves the other power-up's shield reading as live for $0101 ticks. Not
 ; verified on hardware; the asymmetry is plain in the code either way
+;
+; @bug (original game) Swapping out FLY_POWERUP_SHIELD_1 arms the other shield
+; instead of clearing it. .jr_00_067a is entered straight off `cp a,FLY_POWERUP_SHIELD_1`
+; with A still holding $01, and the two stores that follow write that $01 into
+; wD755/wD756 - a timer of $0101 - where the mirrored FLY_POWERUP_SHIELD_2 path does
+; `xor a` first and genuinely zeroes its counterpart. Since
+; call_00_075b_Player_IsInvincible treats any nonzero value in the pair as a live
+; shield, displacing fly $01 hands the player roughly 257 ticks of the other
+; power-up's invincibility for free. See the fuller note above.
     ld   hl,wD742_Player_CurrentFly
     ld   c,[hl]                                        ; C = the fly being displaced
     ld   [hl],a
@@ -1263,6 +1280,12 @@ call_00_084d_Screen_LoadFullscreenImage:
 ; after that. Nothing in the blob is a tilemap - the tilemap is generated instead, as
 ; a running id 0..$FF over 24 rows, so the tiles land on the screen in the order they
 ; appear in ROM and every image can use all 256 ids
+;
+; @bug The generated tilemap is 18 rows, not the 24 claimed above. `ld b,$0c` gives
+; the first pass 12 rows; `ld b,$06` immediately before the `pop af / dec a / jr nz`
+; gives the second pass 6, so 12 + 6 = SCRN_Y_B exactly and nothing is written below
+; the visible screen. The running id does not reach $FF either: each pass restarts at
+; zero via the `xor a` at .jr_00_089b, so pass 1 emits ids $00-$EF and pass 2 $00-$77.
     ld   A, [wD6B0_FullscreenImage_Bank]                                    ;; 00:084d $fa $b0 $d6
     call call_00_1089_SwitchBank                                  ;; 00:0850 $cd $89 $10
     ld   HL, wD6B1_FullscreenImage_Ptr                                     ;; 00:0853 $21 $b1 $d6
@@ -1783,7 +1806,6 @@ call_00_0ac1_VBlank_UpdateVRAM:
     ld   L, A                                          ;; 00:0b68 $6f
     ld   A, [wD733_TilesetAnim_RowsPerFrame]                                    ;; 00:0b69 $fa $33 $d7
     ld   B, A                                          ;; 00:0b6c $47
-
 call_00_0b6d_CopyTileRows:
 ; Copies B tiles (TILE_SIZE_BYTES bytes each) from HL to DE. This is the hot copy
 ; in the whole graphics path - every streamed page and every tileset animation frame
@@ -3140,6 +3162,25 @@ call_00_3c54_Remotes_CountAndStore:
 ; That bit 7 is why every reader masks with $7F before comparing - see
 ; call_00_3899_Entity_CheckRemoteTotalsUnlock, which strips it off all three totals
 ; before testing them against a tv's requirements
+;
+; @bug REMOTE_TOTAL_CHANGED is written here and read nowhere. `set
+; REMOTE_TOTAL_CHANGED_BIT, [hl]` below is the only reference to the bit in the whole
+; source apart from its two constant definitions; every consumer of these three totals
+; masks it straight back off (`and a,$7f` in call_00_3899_Entity_CheckRemoteTotalsUnlock
+; and in call_02_6df1_EntityAction_MediaDimensionMovingPlatform_Update). There is no
+; "new tv unlocked" animation gated on it.
+;
+; @bug Because nothing ever clears that bit, the `cp a,[hl] / ret z` early-out stops
+; working after the first nonzero recount: [HL] then holds count|$80 while A holds the
+; bare count, so the compare never matches, the routine always falls through, and the
+; "the total changed" branch is taken on every single call. Harmless only because the
+; flag has no reader.
+;
+; @bug `ld b,LEVEL_COUNT` walks 30 entries, but level ids run $00-$1E - MAP_BOSS_TV_CHANNEL_Z
+; is $1E and LEVEL_COUNT is also $1E - so there are 31 of them and Channel Z's progress
+; byte is never counted into any of the three totals. The same off-by-one bounds the
+; new-game wipe at 00:02a5 and the totals-menu counters at 01:4855; see the note on
+; LEVEL_COUNT in constants/constants.asm.
     push HL                                            ;; 00:3c54 $e5
     ld   HL, wD629_RemoteProgressFlags                                     ;; 00:3c55 $21 $29 $d6
     ld   B, LEVEL_COUNT                                ;; 00:3c58 $06 $1e

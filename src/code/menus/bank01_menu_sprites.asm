@@ -4,6 +4,14 @@ call_01_4d0a_Menu_StartGfxStream:
 ; bank) followed by (src, dest) pairs, one pair copied per frame. Spins until
 ; any script already running has finished, so menus can queue these back to
 ; back without tracking completion themselves
+;
+; @bug (original game) The opening spin makes this routine unusable for a script that
+; lives in the streamer's own variables, and call_01_4ecf_Password_RefreshCellGfx
+; does exactly that. That caller writes the chunk count into wD6E2 itself before
+; jumping here, so the `jr nz` below waits for the vblank handler to consume a chunk
+; using the stale list pointer, and by the time the load runs the count read back out
+; of wD6E2 is zero. The password grid ends up one keystroke behind as a result - see
+; the header of call_01_4ecf_Password_RefreshCellGfx.
     ld   A, [wD6E2_GfxStream_ChunksRemaining]                                    ;; 01:4d0a $fa $e2 $d6
     and  A, A                                          ;; 01:4d0d $a7
     jr   NZ, call_01_4d0a_Menu_StartGfxStream                              ;; 01:4d0e $20 $fa

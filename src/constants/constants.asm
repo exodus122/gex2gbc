@@ -242,6 +242,21 @@ DEF MAP_BOSS_TV_CHANNEL_Z                         EQU $1E
 
 ; Levels 0-$1D plus the boss. Every loop over wD629_RemoteProgressFlags, and the
 ; totals menu's page counter, runs to LEVEL_COUNT
+; @bug LEVEL_COUNT is 30, but there are 31 levels - the comment above says so
+; itself: ids run $00 through MAP_BOSS_TV_CHANNEL_Z, which is $1E, and LEVEL_COUNT is
+; also $1E. The three per-level tables are all correctly sized 31
+; (.data_00_0579_CollectibleCountTable, .data_00_11ed_LevelMusic,
+; .data_02_491a_LevelSpecificEntityIdTable), but every loop bounded by this constant
+; stops one short of Channel Z:
+;   00:02a5  the new-game wipe of wD629_RemoteProgressFlags - so a soft reset followed
+;            by START GAME inherits whatever Channel Z flags the previous run left,
+;            and call_01_4349_Password_BuildPayload then encodes them
+;   00:3c58  call_00_3c54_Remotes_CountAndStore - Channel Z counts toward no total
+;   01:4855  the totals menu's own three counters, likewise
+; bank01_menu_load.asm already documents the paging consequence ("There are 31
+; entries but paging wraps at LEVEL_COUNT, so the last is never read"). Leaving the
+; boss level out of the TOTALS may well be deliberate; the uncleared progress byte on
+; a new game reads as an oversight.
 DEF LEVEL_COUNT                                   EQU $1E
 
 ; wD6F9_BgMap_LoadingFlags. Each scroll bit names the direction the camera moved,
@@ -672,6 +687,7 @@ DEF MAPDATA_ALT_BLOCKSET_MASK               EQU $08 ; this map's bit within the 
 DEF MAPDATA_TILESET_BANK                    EQU $09
 DEF MAPDATA_TILESET_OFFSET                  EQU $0A ; word
                                                     ; $0C-$0F unused, always $00
+                                                    
 DEF MAPDATA_RECORD_SIZE                     EQU $10
 
 DEF MAPDATA_TEXT_MISSION_BASE               EQU $02 ; mission N is at text block + this + N*2

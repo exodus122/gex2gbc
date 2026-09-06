@@ -1396,6 +1396,13 @@ wD74A_Player_InWaterOrLava:
 ; so it reads inverted). Set every frame by
 ; call_02_4c28_Player_CheckLavaAndWaterTiles and read by the sprite builder in
 ; bank 3 to swap in the partially submerged frames
+;
+; @bug The two values below are swapped. call_02_4c28_Player_CheckLavaAndWaterTiles
+; reaches the shared `xor a,$80` with A = $00 in the liquid cases and A = $80 in the
+; fall-through, so $80 means Gex IS touching liquid and $00 means he is not. The
+; sprite builder ORs the byte into the OAM attributes, so the $80 is OAMF_PRI putting
+; him behind the liquid tiles. The same inverted claim appears in the headers of
+; call_02_4c28_Player_CheckLavaAndWaterTiles and call_03_5ca8_Player_BuildSprites.
     ds 1                                               ;; d74a
 
 wD74B_Player_ClimbingFlags:

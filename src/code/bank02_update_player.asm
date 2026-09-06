@@ -109,6 +109,21 @@ call_02_48b7_Player_SpawnOpeningDoorEntity:
 ; (snapped to $E0 boundary, with a $0F offset and $10 Y flag) into the slot's position fields.
 ; Calls Entity_SetAction and Entity_ClearSlotCounter. Used to spawn a level-specific companion/effect
 ; entity tied to the player's position
+;
+; @bug (original game) The free-slot search has no "table full" exit, and falls
+; through onto the PLAYER. The scan walks L = $20, $40 ... $E0 looking for
+; ENTITY_ID_NONE; when the last slot is occupied `add a,$20` wraps L to $00, which
+; clears Z, the `jr nz` loop condition fails, and control drops into .jr_02_48d8
+; with L = $00. Everything after that then treats slot $00 - wD200, Gex's own entity
+; - as the newly allocated slot: wD300_CurrentEntityAddrLo is pointed at him, his
+; ENTITY_FIELD_ENTITY_ID is overwritten with the door entity id, two of his fields
+; are zeroed, his world position is rewritten snapped to $E0, and Entity_SetAction is
+; run against him.
+;
+; Reachable from call_02_4459_PlayerAction_EnterDoor, which fires mid-level on the
+; first frame of the door animation with whatever entities the room already holds. It
+; is safe from the other call site, call_02_6e68_Entities_InitNPCSlots, only because
+; that one has just filled all seven slots with $FF.
     push AF
     ld   HL, wD624_CurrentLevelId
     ld   L, [HL]
@@ -751,6 +766,15 @@ call_02_4c28_Player_CheckLavaAndWaterTiles:
 ; is produced by xoring $80 over the fall-through value.
 ; Second, is he actually in lava, in which case he takes the hit: PLAYER_ACTION_HIT_BOUNCE is
 ; requested, which is the same recoil used when an enemy hits him. Water alone is harmless
+;
+; @bug The polarity described above is backwards. In the liquid cases the `sub`
+; leaves A = $00 and jumps to .jr_02_4c3f; the not-in-liquid fall-through loads
+; A = $80. The shared `xor a,$80` therefore stores $80 when Gex IS in water or lava
+; and $00 when he is NOT. The same inverted claim is repeated in the header of
+; call_03_5ca8_Player_BuildSprites and at wD74A_Player_InWaterOrLava in
+; constants/memory.asm. The code is right and the reading is the intuitive one:
+; OAMF_PRI ($80) is OR'd in while he is submerged, putting him behind the water and
+; lava tiles, which is what draws the wading effect.
     ld   A, [wD765_TileTypeBehindGexsLowerBody]
     sub  A, TILE_TYPE_WATER
     jr   Z, .jr_02_4c3f

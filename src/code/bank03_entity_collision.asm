@@ -360,6 +360,14 @@ call_03_4c76_EntityCollision_Dispatch:
 ; (own slot | 2). call_02_55f1_EntityAction_Ghost_Dormant, which is supposed to
 ; read this bit back, has the mirror image of the same bug and reads $D2F1
 ; instead. Both are faithful to the ROM - see 03:4DE5 and 02:55F1
+;
+; @bug (original game) The "I was hit" bit is set on the wrong entity and the wrong
+; field. L still holds $57 from `ld hl,wD757_LanternLitFlag`, so `or l` sets bit 6 of
+; the slot base as well as the field offset and the `set 0,[hl]` lands on field $17
+; of slot (own slot | 2) rather than on this entity's own MISC_FLAGS. The reader,
+; call_02_55f1_EntityAction_Ghost_Dormant, has the mirror-image fault and always
+; tests $D2F1, so the two never agree and the ghost is never actually told it was
+; hit. See the QUIRK note above.
     call call_03_519b_Entity_CheckPlayerInteraction
     ret  nc
     ld   hl,wD757_LanternLitFlag

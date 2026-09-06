@@ -84,6 +84,23 @@ call_03_4915_BgCollision_SidescrollerHandler:
 ; The vertical lookahead is computed once up front: Y velocity minus 2, clamped so a
 ; fast fall does not probe absurdly far, then >> 4. Wall probing starts that far above
 ; his head so that a wall is caught on the frame he would enter it rather than after
+;
+; @bug The wall push-out is computed and then thrown away. On a wall hit the code
+; works out how far Gex has to be nudged to sit flush against the tile edge -
+; `ld a,$07 / sub [hl] / and $07` going right, `ld a,[hl] / and $07 / cpl / inc a`
+; going left - and the very next instruction at .jr_03_49b0_ClearPush is `xor a,a`,
+; which destroys it before it is stored. Both stores that follow therefore write
+; $00, so wD75C_PlayerXDeltaExtra and wD75D_Player_XSpeedCurrent are merely zeroed
+; and Gex is left wherever the frame's movement had already put him rather than
+; being snapped out of the wall. The two consecutive `xor a,a` are the tell: one of
+; them is a leftover, and the first store was meant to take the correction.
+;
+; @bug Dead computation in both wall-probe entry paths. .jr_02_4954_MovingRight and
+; the branch above it each compute `(X & $07) + E` into A and then jump/fall into
+; .jr_03_495c_ProbeWall, whose first real instruction is `ld a,e`. A is never read,
+; so the two branches differ only in the sign constant loaded into C. Harmless as
+; assembled, but the sub-tile offset that was clearly meant to aim the probe is not
+; reaching it.
     ld   A, [wD74D_Player_EntityStoodOnLo]
     and  A, A
     jr   Z, .jr_03_491d_CheckClimbing
@@ -248,6 +265,16 @@ call_03_4915_BgCollision_SidescrollerHandler:
 ;
 ; CEILING (falling): one probe above his head, at a distance that grows with the fall
 ; speed. A TILECOLL_CEILING tile there zeroes the Y velocity - the head bonk
+;
+; @bug The two parenthetical labels below are inverted relative to the code. Y
+; velocity is signed with POSITIVE meaning upward - see the header of
+; call_02_4b78_Player_ApplyYVelocity - and the dispatch here is `jr z` to the floor
+; scan, then `bit 7,a / jr z` to the ceiling probe. So the ceiling probe runs when
+; the velocity is positive, i.e. while Gex is RISING, and the floor scan runs when
+; it is zero or negative, i.e. while he is stopped or FALLING. The code is correct;
+; "FLOOR (velocity zero or upward)" and "CEILING (falling)" have the two swapped,
+; which also makes the ceiling probe read as though it looked above his head while
+; he was on the way down.
     xor  A, A
     ld   [wD761_Player_FloorSnapVelocity], A
     ld   HL, wD585_CollisionFlags
@@ -428,6 +455,16 @@ call_03_4ac4_BgCollision_ClimbingHandler:
 ; So in those two states each axis is served by exactly one half of the system: up and
 ; down move Gex but take the first exit above and are never collision-checked, while
 ; left and right are checked here and then ignored by the movement code
+;
+; @bug (original game) CLIMB_STATE_ALT_WALL and its tail-spin variant are checked on
+; one axis here and moved on the other. .data_03_4bc6_ClimbScript_AltWall answers
+; only PADF_LEFT | PADF_RIGHT, while .data_02_44e5 routes the ALT states to the same
+; handler as CLIMB_STATE_WALL, whose call_02_47d5_PlayerWallClimb_GetDirection masks
+; the pad down to up and down. The result is that in those two states up and down
+; move Gex with no collision check behind them (they take the "pressed nothing the
+; script handles" exit above, which returns before the probes run), and left and
+; right are probed here and then ignored by the movement code. See the fuller note
+; further down this header.
     ld   HL, wD585_CollisionFlags
     set  7, [HL]
     ld   A, [wD746_Player_ClimbingState]
@@ -702,6 +739,12 @@ call_03_4c5a_BgCollision_GetTileAndFlags:
 ; Callers use one or the other or both - the climb handler tests the flags for
 ; TILECOLL_CLIMB_BLOCKED and then reads C to recognise a climbing stopper by its id. Unlike
 ; call_03_4bd4_BgCollision_IsPixelSolid this is whole-tile, with no per-pixel detail
+;
+; @bug `ld b,$48` hardcodes HIGH(data_03_4800_TileCollisionFlags) as a literal. That
+; table is defined at the top of this same file and every other reader in the file
+; spells it `HIGH(data_03_4800_TileCollisionFlags)`, so this one lookup silently
+; stops resolving if the INCBIN is moved or resized - exactly the class of raw
+; address the README says the source contains none of.
     ld   A, [wD210_Player_YPositionLo]
     add  A, B
     and  A, $f8
