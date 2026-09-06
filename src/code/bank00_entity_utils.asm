@@ -649,6 +649,17 @@ call_00_33dd_Entity_ApplyXVelocityFriction:
 ; In both cases it's applying velocity-scaled positional drag with half-precision saturation clamping to
 ; avoid wrap-around artifacts — essentially a friction/momentum integrator that bleeds off X velocity
 ; into position while preventing the accumulator from flipping sign unexpectedly.
+;
+; @bug - wrong constant family, and a branch that only exists to skip a branch.
+; After the on-screen test, `ld a,l / xor a,$1D / ld l,a` walks L from
+; ENTITY_FIELD_SPRITE_FLAGS ($0A) to ENTITY_FIELD_MISC_FLAGS ($17), so the byte
+; under HL is MISC_FLAGS - but the bit is then named
+; `bit SPRITE_FLAG_LOOP_LAST_FRAME_BIT,[hl]`. That is a SPRITE_FLAGS constant being
+; used to index a MISC_FLAGS byte; it reads the intended bit only because the two
+; numbers coincide, and it silently stops meaning anything if either family is
+; renumbered.
+; Separately, `jr z,.jr_02_33F2 / jr .jr_02_341B` with `.jr_02_33F2` as the very
+; next instruction is a two-byte detour - `jr nz,.jr_02_341B` alone is equivalent.
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_SPRITE_FLAGS
     bit  SPRITE_FLAG_ON_SCREEN_BIT,[hl]
     ret  z
@@ -1483,6 +1494,11 @@ call_00_384e_Entity_CheckSpriteIdChanged:
 ; Nothing in the disassembly calls this - unlike its neighbour above, which is
 ; everywhere. Either the graphics streaming path checks the flag inline, or this
 ; is a leftover
+;
+; @bug - dead routine. Nothing in the disassembly calls it, unlike
+; call_00_3843_Entity_CheckAnimationEnded directly above, which is used everywhere.
+; Whatever consumes SPRITE_FLAG_ID_CHANGED_BIT tests the flag inline instead, so
+; this is three unreachable bytes.
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_SPRITE_FLAGS
     bit  SPRITE_FLAG_ID_CHANGED_BIT,[hl]
     ret

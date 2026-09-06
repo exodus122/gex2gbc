@@ -101,6 +101,11 @@ call_03_4915_BgCollision_SidescrollerHandler:
 ; so the two branches differ only in the sign constant loaded into C. Harmless as
 ; assembled, but the sub-tile offset that was clearly meant to aim the probe is not
 ; reaching it.
+;
+; @bug - the slope branch ends with `jr .jp_03_4a05_FloorCeilingCheck` immediately
+; before the `.jp_03_4a05_FloorCeilingCheck:` label, so both arms of the
+; `jr z` above it already land in the same place and the second `jr` can never do
+; anything. Two wasted bytes on the hottest path in the collision handler.
     ld   A, [wD74D_Player_EntityStoodOnLo]
     and  A, A
     jr   Z, .jr_03_491d_CheckClimbing

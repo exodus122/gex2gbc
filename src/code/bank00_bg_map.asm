@@ -1256,6 +1256,10 @@ call_00_18e4_BgMap_ApplyBlockPatchesToColumn:
 ; (the $CE00 table) is within 6 blocks of wD77A_BgMap_ScrollBlockY. Matches patch the
 ; wD70E_BgMap_TempScratchColumnMetaTileIDs buffer at HL+1 + (Y - wD77A_BgMap_ScrollBlockY) * 2.
 ; Falls through to BgMap_LoadSecondaryTileset
+;
+; @bug - the routine ends `pop HL / jr call_00_1922_BgMap_LoadSecondaryTileset`
+; with that label on the following line, so the `jr` is a two-byte no-op; falling
+; through does exactly the same thing.
     call call_00_1e3c_BgMap_MaskAltBlocksetFlags
     ld   A, [wD778_BlockPatch_SlotWriteHead]
     and  A, A

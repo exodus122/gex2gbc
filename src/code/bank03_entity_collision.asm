@@ -1532,6 +1532,15 @@ call_03_536f_CollisionHandler_MovingPlatform:
 ; ENTITY_FIELD_Y_VELOCITY into E and then immediately overwrites E with $10, so
 ; the landing tolerance is a constant 1 pixel and the platform's own vertical
 ; speed is not part of the test at all - see .jr_03_53ba below
+;
+; @bug - dead load in the landing test. At .jr_03_53ba the routine walks L to
+; ENTITY_FIELD_Y_VELOCITY (`ld a,l / xor a,$0d / ld l,a`), reads the platform's own
+; vertical speed with `ld E,[HL]`, and then overwrites it on the very next
+; instruction with `ld E,$10`. The platform's vertical speed is never part of the
+; landing tolerance, which is a constant one pixel after the four `sra E` shifts -
+; so a platform moving down fast can pass through Gex's feet without the landing
+; registering. The three instructions that compute the field address and read it
+; are all dead.
     LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_SCREEN_Y
     ld   A, [wD213_Player_ScreenYPosition]
     add  A, $0f

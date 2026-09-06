@@ -3028,6 +3028,14 @@ call_00_120c_SetupMusic:
 ;
 ; Ends by playing SFX_EMPTY through call_00_113e_PlaySFX, which is what silences
 ; whatever the sfx side was holding
+;
+; @bug - audio bank $24 is unreachable. .data_00_1244_MusicList below is the only
+; thing that ever writes wD788_CurrentAudioBank, and its eight records name banks
+; $21, $22 and $23 only. Nothing in the ROM can select bank $24, so its 66 tracks -
+; a full 16 KB bank, engine code and all - can never be played. It is also the odd
+; one out structurally: its sfx list is empty and all 66 entries sit in the music
+; list with single-channel headers, the shape a sound effect has rather than a
+; song.
     push AF                                            ;; 00:120c $f5
     call call_00_0ab4_WaitForInterrupt                                  ;; 00:120d $cd $b4 $0a
     pop  AF                                            ;; 00:1210 $f1

@@ -42,6 +42,13 @@ call_0b_4efe_Map_SetSpawnPosition:
 ;
 ; All three end in the same jump to call_00_13a6_BgMap_UpdateWindowFromPlayerPos,
 ; which is what makes the camera follow rather than tearing on the first frame
+;
+; @bug - the door-match probe is asymmetric between the axes. Converting Gex's
+; position back to a block, the X conversion subtracts DOOR_MATCH_X_BIAS first and
+; the Y conversion subtracts nothing, so the point matched against the door list is
+; half a block to the LEFT of his origin while being exactly on it vertically. A
+; door therefore triggers from a spot offset from the block it is actually placed
+; in, and the two axes disagree about where "he is standing here" means.
     ld   HL, wD621_WarpFlags
     ld   A, [HL]
     and  A, WARP_ENTERED_DOOR

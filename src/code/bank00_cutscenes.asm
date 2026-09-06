@@ -1358,6 +1358,14 @@ call_00_2dbf_Cutscene_UpdateMovement:
 ; `ld [HL],CUTSCENE_MOVE_SPEED_MAX`. So the speed is only ever $00 or $10 - the preview always
 ; glides at exactly one pixel per frame and the sub-pixel accumulator never does anything
 ; interesting. Presumably the ramp was meant to ease the pan in and out
+;
+; @bug - both speed-ramp branches are dead, so the cutscene camera has no ramp.
+; In the first branch `inc [HL] / dec [HL]` is a test for zero, but the `dec [HL]`
+; that follows it is immediately thrown away by `ld [HL],$00`; in the second, the
+; `inc [HL]` is thrown away by `ld [HL],CUTSCENE_MOVE_SPEED_MAX`. wD79D_Cutscene_MoveSpeed
+; is therefore only ever $00 or $10, the sub-pixel accumulator in
+; wD79E_Cutscene_MoveSubPixel never carries anything but a whole pixel, and every
+; preview pan glides at exactly one pixel per frame instead of easing in and out.
     ld   A, [wD75A_Player_EffectiveInputs]
     and  A, A
     jr   NZ, .jr_00_2dd1

@@ -507,6 +507,12 @@ call_01_47c5_MenuCmd_DrawCursorSprite:
 ; height and records the image index as wD6C1_Menu_CursorSpriteId. From here on
 ; call_01_4d72_Menu_DrawCursor redraws it every frame, so a script only ever declares
 ; the cursor once
+;
+; @bug - `sub A,$00` before `add A,MENU_CURSOR_ID_BASE` is a two-byte no-op: it
+; cannot change A and the flags it sets are discarded by the `add` that follows.
+; The pair reads as a base-subtract that was reduced to zero and left in.
+; gex3's call_01_46d4_MenuCmd_DrawCursorSprite has the same dead `sub A,$00` AND
+; lost the base add as well - see the note there.
     call call_01_465f_MenuCmd_StageImage2                                  ;; 01:47c5 $cd $5f $46
     xor  A, A                                          ;; 01:47c8 $af
     ld   [wD6B9_MenuCursor_OamSlot], A                                    ;; 01:47c9 $ea $b9 $d6

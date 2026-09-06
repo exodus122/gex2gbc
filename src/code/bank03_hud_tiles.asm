@@ -283,6 +283,11 @@ call_03_6d5e_HUD_LoadCollectibleCountDigits:
 ; selects the eleventh glyph in the font, which is blank - so a count under ten simply
 ; skips the tens byte and leaves the blank in place. Leading-zero suppression with no
 ; branch to do it
+;
+; @bug - the ones-digit call is written `jr call_03_6d88_HUD_LoadDigitTile` with
+; that label on the next line, so the branch is a two-byte no-op. The tens digit
+; just above uses a real `call`, so the two halves of the same pair are written
+; differently for no reason.
     ld   HL, wD64A_HUD_CollectibleCountTens
     ld   A, $0a
     ld   [HL+], A

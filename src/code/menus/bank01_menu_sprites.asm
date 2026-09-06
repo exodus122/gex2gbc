@@ -33,6 +33,10 @@ call_01_4d25_Menu_TickHideSprites:
 ; that it fires on this same frame - that is what makes a prompt vanish the
 ; instant the player responds to it, rather than after the full delay.
 ; A delay of zero disables the whole thing
+;
+; @bug - ends `jp call_01_4d3b_Menu_EraseSpriteGroup` with that label on the very
+; next line: three bytes that do what falling through already does. gex3's
+; call_01_4b6b_Menu_TickHideSprites has the same fault.
     ld   HL, wD6D8_Menu_HideSpritesDelay                                     ;; 01:4d25 $21 $d8 $d6
     ld   A, [HL]                                       ;; 01:4d28 $7e
     and  A, A                                          ;; 01:4d29 $a7
@@ -106,6 +110,9 @@ call_01_4d72_Menu_DrawCursor:
 ; Cursor id $12 is the password keyboard's highlight, which picks its tile from
 ; the cell under the cursor and blinks off bit 4 of wD6D6_Menu_BlinkCounter.
 ; $FF means this screen has no cursor and the routine does nothing
+;
+; @bug - ends `jp call_01_4dc8_Menu_BuildSpriteBlock` with that label on the very
+; next line, so the jump is three bytes of nothing.
     ld   A, [wD6C1_Menu_CursorSpriteId]                                    ;; 01:4d72 $fa $c1 $d6
     cp   A, MENU_CURSOR_NONE                           ;; 01:4d75 $fe $ff
     ret  Z                                             ;; 01:4d77 $c8

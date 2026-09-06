@@ -455,6 +455,11 @@ call_02_4a77_Player_ApplyXMovement:
 ; passes the threshold, and clear means a soft limit, where he still moves but the entity's
 ; offset is subtracted out. This is what lets Gex shove a tv button across the floor and
 ; stay glued to it rather than walking through it
+;
+; @bug - `jp .jp_02_4aaa` targets the label on the very next line, so it is three
+; bytes and four cycles of nothing. gex3 has the identical fault in the same routine
+; (call_02_5100_Player_ApplyXMovement, `jp call_02_518a_Player_MoveLeft`), which
+; places it in the shared ancestor of the two engines rather than in either port.
     ld   A, [wD746_Player_ClimbingState]
     cp   A, CLIMB_STATE_NOT_CLIMBING
     ret  NZ
