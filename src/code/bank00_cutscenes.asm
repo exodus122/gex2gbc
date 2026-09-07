@@ -32,11 +32,16 @@
 call_00_2329_Cutscene_LoadAndRun:
 ; B = skippable (nonzero means any button aborts), C = which cutscene slot to play.
 ;
-; The only call site is in call_00_0150_Init and passes C = CUTSCENE_SLOT_MISSION_BASE +
-; wD627_CurrentMission, which is why the lookup table below has a column of three at slots
-; $0A-$0C. The other slots are reached by the same expression with wD627 holding something
-; other than a mission number - so a scene is selected purely by what that variable contains
-; when the level is (re)initialised, and there is no separate "play cutscene" entry point.
+; Two ways in. The only `call` is in the level setup chain at 00:034d, which passes
+; C = CUTSCENE_SLOT_MISSION_BASE + wD627_CurrentMission - that is why the lookup table below
+; has a column of three at slots $0A-$0C.
+;
+; Everything else arrives by FALLING THROUGH from the end of
+; call_00_2305_BlockPatch_TickSlots, which has no `ret` and stops one byte before this
+; label. That path passes B = 0 and C = the wD78B_BlockPatch_SlotTable slot whose count-up
+; just expired, so a scene in slots $00-$09 or $0D-$0F is played a few seconds after the
+; switch, breakable or hub patch owning that slot number is triggered. Block patch slot n
+; and cutscene slot n are the same n throughout
 ;
 ; Two levels of lookup: (level, slot) gives a script index via
 ; .data_00_2472_CutsceneIndexLookupTable, and CUTSCENE_NONE there means this level has
@@ -56,7 +61,13 @@ call_00_2329_Cutscene_LoadAndRun:
 ;
 ; Each phase runs its own cut-down game loop rather than the real one: vblank wait, the phase's
 ; own update, entity update, and the VRAM transfer setup. Skipping jumps straight to the
-; restore code, and only a non-skipped preview bothers to rebuild the map on the way out
+; restore code.
+;
+; The exit test is on wD775_Cutscene_Skippable, not on whether the scene was actually skipped:
+; a SKIPPABLE scene returns as soon as the world state is restored, and only a non-skippable
+; one rebuilds the map and re-presents the screen. That falls out of the two entry points -
+; the mission previews pass B = 1 and are followed by level setup, which reloads the map
+; anyway, while the block patch scenes pass B = 0 and have to put the screen back themselves
     ld   A, B
     ld   [wD775_Cutscene_Skippable], A
     ld   B, $00
@@ -1349,7 +1360,9 @@ call_00_2dbf_Cutscene_UpdateMovement:
 ; nibble of wD79E_Cutscene_MoveSubPixel each frame, and whatever carries into the high nibble
 ; is the whole-pixel step applied to the position. Then the direction bits in wD75A decide
 ; which axis it goes on - and note nothing stops two bits being set, so a script can move
-; diagonally by using $30 or $90.
+; diagonally, which the shipped scripts do with PADF_UP | PADF_RIGHT ($50),
+; PADF_UP | PADF_LEFT ($60) and PADF_DOWN | PADF_RIGHT ($90). Two bits on the SAME axis
+; would just cancel out, since the pairs are applied one after the other.
 ;
 ; The two speed-ramp branches below look like acceleration and deceleration, but both are
 ; dead: each does an inc/dec of the speed and then immediately overwrites it with a constant.

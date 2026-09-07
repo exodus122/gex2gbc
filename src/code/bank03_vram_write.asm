@@ -60,12 +60,14 @@ call_03_6f5e_VRAM_WriteBgMapRowForVerticalScroll:
 ; Called on MAP_SCROLL_UP | MAP_SCROLL_DOWN, since scrolling vertically is exactly when a
 ; new row comes into view.
 ;
-; Reads wD6FA_BgMap_RowWritePosLo
-; to compute the target BG map address in 9800/9800/9800/C000 space. If wD59E_OnGBCFlag is set (GBC mode):
-; switches to VRAM bank 1 (rVBK=$01), reads the row's tile attribute bytes from the $CF00 bank,
-; writes them to $9800 address space via the $CF indirect read pattern (ld B,$CF; ld C,[HL]; ld A,[BC]),
-; then switches back to bank 0 and repeats for tile indices into $9800. If not GBC: directly copies
-; the tile bytes from $C0xx to $98xx without the attribute pass.
+; wD6FA_BgMap_RowWritePosLo / wD6FB_BgMap_RowWritePosHi hold one position that names two
+; addresses: the high byte is a $00-$03 map page, OR'd with $98 it is the destination in the
+; VRAM tilemap and OR'd with $C0 it is the source row in wC000_BgMapTileIds.
+;
+; On a GBC it makes two passes. The first switches to VRAM bank 1 and writes ATTRIBUTES,
+; which are not stored anywhere - each tile id is looked up in wCF00_TilesetPaletteIds by the
+; indirect pattern `ld B,$CF / ld C,[HL] / ld A,[BC]`. It then switches back to bank 0 and
+; makes the second pass, copying the tile ids themselves. A DMG runs only the second pass.
 ;
 ; Thirty-two entries, not thirty-one: the REPT runs SCRN_VX_B - 1 times and the write that
 ; follows it is the last column of the row, the one that needs no advance after it

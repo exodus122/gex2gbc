@@ -166,7 +166,7 @@ call_01_4d72_Menu_DrawCursor:
 call_01_4dc8_Menu_BuildSpriteBlock:
 ; Walks a sprite script at HL and emits the sprites into shadow OAM.
 ; First byte is the OAM slot to start writing at; then each entry is
-;   Y, X, tile, attributes, width in 8px columns, height in pixels
+;   Y, X, tile, attributes, width in 8px columns, height in 8px rows
 ; terminated by $FF. Y and X are stored relative to the visible screen, so $10
 ; and $08 are added back on. If bit 0 of the tile byte is set the rest of it is
 ; an index into wD5AA_Sprite_TileIdTable instead of a literal tile - that indirection is how the
@@ -209,10 +209,11 @@ call_01_4dc8_Menu_BuildSpriteBlock:
     jr   .jr_01_4dcf                                   ;; 01:4dff $18 $ce
 
 call_01_4e01_Menu_WriteSpriteRect:
-; Emits one rectangle of 8x16 sprites, C columns wide and B pixels tall,
-; starting at the OAM slot in wD6D5_Menu_OamSlot and advancing it. Tiles run
-; down each column before moving right, stepping the tile id by 2 (8x16 sprites
-; use tile pairs) and Y by $10
+; Emits one rectangle of 8x16 sprites, C columns wide and B rows of 8 pixels tall,
+; starting at the OAM slot in wD6D5_Menu_OamSlot and advancing it. The `srl B` turns
+; that row count into the number of hardware sprites per column, since each covers two
+; rows. Tiles run down each column before moving right, stepping the tile id by 2
+; (8x16 sprites use tile pairs) and Y by $10
     ld   HL, wD6D5_Menu_OamSlot                                     ;; 01:4e01 $21 $d5 $d6
     ld   L, [HL]                                       ;; 01:4e04 $6e
     ld   H, $00                                        ;; 01:4e05 $26 $00

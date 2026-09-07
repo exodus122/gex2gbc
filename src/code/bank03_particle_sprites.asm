@@ -28,7 +28,7 @@
 ;   BoulderDebris   bit 0   height, $44-$4E            attr $07
 ;   DefeatBurst     bit 0   height, $60/$62/$64        attr $01
 ;   FirePlant       bit 0   frame counter, $58/$5A     attr $04
-;   JarShards       bit 0   height bit 1, $5C/$5E      attr $04
+;   JarShards       bit 0   height bit 2, $5C/$5E      attr $04
 ;
 ; Note that two of them read the particle's HEIGHT to choose a tile, not its age or an
 ; animation frame - debris that has been thrown further up is drawn as a different
@@ -64,7 +64,8 @@ call_03_6549_Particles_BuildSpriteList_SkullFire:
     ld   a,[wD73B_VBlankFrameCounter]
     rrca
     rrca
-    and  a,$02                                         ; two frames, four frames each
+    and  a,$02                                         ; bit 3 of the counter: two frames,
+                                                       ; eight frames each
     add  a,$2C
     ld   [de],a
     inc  de
@@ -155,7 +156,14 @@ call_03_65b8_Particles_BuildSpriteList_BoulderDebris:
 ; PARTICLE_FIELD_XOFFSET before the store. The two instructions are the right way
 ; round in the other five ($2A $2A $D6 $04 rather than $2A $D6 $04 $2A). The result is
 ; that boulder debris sits four pixels right of where the same particle would be drawn
-; by any other effect - which is small enough to have gone unnoticed
+; by any other effect - which is small enough to have gone unnoticed.
+;
+; @bug (original game) The X centring bias is discarded. `ld a,[hl+] / sub $04 /
+; ld a,[hl+] / ld [de],a` subtracts the $04 from PARTICLE_FIELD_XSPEED and then reloads
+; A with PARTICLE_FIELD_XOFFSET before the store, so the sprite X written to the list is
+; the raw offset. Every other builder here reads both bytes first and subtracts after,
+; and the fix would be to swap the `sub a,$04` with the `ldi a,[hl]` that follows it.
+; The visible effect is that boulder debris is drawn four pixels to the right of centre
     call call_00_3a0a_Entity_GetSpriteListAndParticles
     push de
     inc  de
@@ -325,8 +333,9 @@ call_03_663a_Particles_BuildSpriteList_FirePlant:
 
 call_03_6675_Particles_BuildSpriteList_JarShards:
 ; The pieces a Kung Fu Theater jar breaks into. Two tiles, $5C and $5E, picked by
-; bit 1 of the particle's Y offset rather than by a timer or a clamped height - so a
-; shard swaps sprite every two pixels it rises or falls, and the shards tumble out of
+; bit 2 of the particle's Y offset rather than by a timer or a clamped height - the
+; single `rrca` before the `and $02` is what moves that bit into place - so a shard
+; swaps sprite every four pixels it rises or falls, and the shards tumble out of
 ; step with each other because each is at its own height. The cheapest of the six
 ; tile expressions and the liveliest looking
     call call_00_3a0a_Entity_GetSpriteListAndParticles

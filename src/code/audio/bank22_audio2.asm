@@ -5,7 +5,7 @@
 ; their own track data, so a track is addressed as (bank, id) and the bank is switched
 ; by wD788_CurrentAudioBank before any entry point here is called.
 ;
-; THREE ENTRY POINTS, called from bank 0:
+; FOUR ENTRY POINTS, called from bank 0:
 ;   Audio_Init      once, at boot - clears the driver's state and silences everything
 ;   Audio_PlaySfx   start sound effect id A
 ;   Audio_PlayMusic start music track id A
@@ -757,7 +757,7 @@ data_22_4460_TrackPointerTables:
 ; everything between that word and there.
 ;
 ; 12 music tracks - 3 songs of four - followed by 66 sound effects. The sfx are
-; byte-identical to bank $21's in every bank that has them, so the INCLUDEs below
+; byte-identical across every bank that has them, so the INCLUDEs below
 ; pull in one shared set of track files rather than a copy per bank
     dw   .sfx_list - @                             ; where the sfx half starts
 

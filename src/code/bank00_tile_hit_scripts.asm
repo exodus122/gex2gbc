@@ -49,8 +49,8 @@ call_00_1f80_TileHitScript_Run:
 ; and a step count byte from the script. If count is zero: skips block patch setup, jumps straight to
 ; calling DE (fire-and-forget). If nonzero: stores count to wD77D (sequence length), next byte
 ; to wD787 (timer reload), reads X/Y block offset into E/D, reads width/height into wD784/wD785,
-; stores remaining script pointer to wD780/wD781. Computes the VRAM tilemap address for the patch
-; rectangle from player Y (low byte masked $E0) shifted left 2 and D × 32, combined with player X low
+; stores remaining script pointer to wD780/wD781. Computes the wC000_BgMapTileIds shadow map
+; address for the patch rectangle from player Y (low byte masked $E0) shifted left 2 and D × 32, combined with player X low
 ; byte + E × 32 masked to $1C → stored to wD77E/wD77F. Recalculates wD782/wD783 as player block
 ; coords + D/E offset (the final target block coordinates for collision lookup).
 ; Zeroes wD786_BlockPatch_StepTimer. Pops and conditionally calls DE if nonzero
@@ -227,7 +227,7 @@ data_00_1ff6_TileHitScriptTable:
 ;   the rectangle lands over the whole object either way.
 ;
 ;   A step count of 0 means fire-and-forget: TileHitScript_Run calls the callback and returns
-;   without touching the block patch state at all. .data_00_2266_TileHitScript_KungFu_DoorSwitch
+;   without touching the block patch state at all. data_00_2266_TileHitScript_KungFu_DoorSwitch
 ;   is the one script that does this.
 dw data_00_2074_TileHitScript_CheckpointTV_Left               ; Collision Tile $FF
 dw data_00_20d3_TileHitScript_FlyTV2_1                        ; Collision Tile $FE
@@ -503,9 +503,12 @@ data_00_21c2_TileHitScript_Breakable_RightTile:
 ; so the rectangle covers the pair when the RIGHT half is hit.
 ;
 ; Worth noting the final step's flags are $0C = BLOCKPATCH_STEP_COLLISION |
-; BLOCKPATCH_STEP_TILES, not the $0A the cutscene animations use. Bit 2 rewrites the
-; collision block, so the last frame of the crumble is what actually makes the
-; block passable - the four frames before it are cosmetic
+; BLOCKPATCH_STEP_TILES, not the $0A the cutscene animations use. Every TILES step
+; already writes both the tile ids and the collision bytes of its blocks into the
+; shadow maps, so the hole opens as the crumble plays; what bit 2 adds on the last
+; step is that it overwrites the payload step 1 REGISTERed - the first crumble frame -
+; with the last one, so scrolling away and back leaves the hole open instead of
+; snapping the object back to the start of its animation
     blockpatch_header 0, 5, 8, -1, 0, 2, 1
     blockpatch_step BLOCKPATCH_STEP_REGISTER | BLOCKPATCH_STEP_TILES | BLOCKPATCH_STEP_SFX ; step 1/5
     blockpatch_sfx  SFX_25
@@ -714,12 +717,24 @@ call_00_22ff_Cannon_FaceLeft:
     ret
 
 call_00_2305_BlockPatch_TickSlots:
-; Scans all 16 wD78B_BlockPatch_SlotTable slots. For each slot with value ≥ 2: increments it.
+; Scans all 16 wD78B_BlockPatch_SlotTable slots. For each slot with value >= 2: increments it.
 ; If the increment wraps to zero (overflowed from $FF): decrements back to $FF, checks wD77D
-; and wD77B (if either nonzero, a sequence is busy — returns without triggering). Otherwise
+; and wD77B (if either nonzero, a sequence is busy - returns without triggering). Otherwise
 ; sets the slot to $01, re-arming it for the next attack. Slots with value 0 or 1 are skipped.
 ; This drives the per-frame countdown for triggered tiles (state $02 = just triggered, counts
-; up to $FF = expired, then re-arms to $01 = active/waiting)
+; up to $FF = expired, then re-arms to $01 = active/waiting).
+;
+; IT ENDS WITHOUT A RET, and that is deliberate: the last instruction sits at $2327-$2328
+; and $2329 is call_00_2329_Cutscene_LoadAndRun, so re-arming a slot falls straight into it
+; with B = 0 (not skippable, from the `ld b,$00` at the top) and C = the slot index the loop
+; stopped on. That is how the game plays the "here is what you just opened" clip roughly four
+; seconds after a switch is hit: wD78B slot n and cutscene slot n are the same n, which is
+; why .data_00_2472_CutsceneIndexLookupTable is CUTSCENE_SLOTS_PER_LEVEL = 16 columns wide
+; and why the Media Dimension records in .data_00_1375_MediaDimension_InitialPatches carry
+; slot numbers $00-$03 matching that level's four scenes. It is also the only path to any
+; cutscene slot other than the mission previews at $0A-$0C.
+;
+; Only one slot can fire per frame, since the fall-through never comes back to the scan
     ld   HL, wD78B_BlockPatch_SlotTable
     ld   B, $00
     ld   C, $00

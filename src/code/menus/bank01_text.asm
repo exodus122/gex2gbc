@@ -2,10 +2,14 @@
 ; MENU AND MAP TEXT - included into bank $01 by bank01_menus.asm
 ;
 ; Strings for the menu text renderer (call_01_4a8f_Text_Render). A string is a run
-; of plain ASCII codes in which bit 7 marks the LAST byte of a line - that is what
-; END_TEXT or's on - and a $00 byte after a line end finishes the string. There is
-; no separate line terminator and no length byte, so a one-line string is just its
-; characters with END_TEXT folded into the last one.
+; of plain ASCII codes closed by a single END_TEXT ($80) byte; there is no length
+; byte. Bit 7 is what marks a line end, and END_TEXT is the only byte here that has
+; it set, so every string in ROM is one line long.
+;
+; Multiple lines only ever exist in the copy call_01_4bd3_Text_WrapAndAlign makes in
+; wD5A6_TextBuffer: it stops copying after the first byte with bit 7 set, appends a
+; $00, and then breaks the line by writing $80 over spaces. So $80 ends a line and
+; $00 ends the string, and neither byte is ever drawn.
 ;
 ; Two groups live here. The fixed menu strings come first, then the per-map text
 ; blocks: four pointers each, being the level's name followed by its three mission
@@ -148,7 +152,7 @@ data_01_5f80_Text_TVBossTV:
 ; keep the shape regular.
 ;
 ; The missions read as instructions ("JUMP TO THE TEETERING ROCK") because that is
-; exactly what they are: data_01_49a7_MissionStatusText picks the "n of m remotes"
+; exactly what they are: .data_01_49a7_MissionStatusText picks the "n of m remotes"
 ; line separately, and these say what to do to earn one
 ; ------------------------------------------------------------------
 data_01_5f88_MapText_MediaDimension:

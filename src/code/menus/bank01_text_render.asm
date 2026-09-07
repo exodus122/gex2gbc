@@ -388,7 +388,8 @@ call_01_4bd3_Text_WrapAndAlign:
 
 call_01_4c81_Text_MeasureLine:
 ; BC = pixel width of the line starting at wD69B, summing each glyph's advance from
-; wD6A1 plus TEXT_CHAR_SPACING, and stopping after the character with bit 7 set.
+; wD6A1 plus TEXT_CHAR_SPACING, and stopping at the END_TEXT byte, which is not
+; itself measured.
 ;
 ; The `inc BC` per character adds the inter-character gap; the single `dec BC` at
 ; the end removes the one trailing gap, so a line is measured edge to edge. An
@@ -477,7 +478,7 @@ call_01_4cab_Text_SelectGlyph:
 
 call_01_4ce5_Text_FormatByte:
 ; Writes A (0-255) into wD5A6_TextBuffer as decimal digits with no leading zeros,
-; terminated by $80 on the last digit as the renderer expects.
+; followed by the END_TEXT byte the renderer expects.
 ;
 ; Each digit is produced by starting the cell at $2F and `inc [HL]` once per
 ; successful subtraction of 100 then 10, so the digit is built in place and the

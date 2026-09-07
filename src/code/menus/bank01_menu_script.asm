@@ -38,7 +38,7 @@ call_01_446f_LoadMenuGraphics:
     ld   A, [HL+]                                      ;; 01:44aa $2a
     ld   [wD6E1_RasterSplit_LCDCValue], A                                    ;; 01:44ab $ea $e1 $d6
     ld   C, [HL]                                       ;; 01:44ae $4e
-    FARCALL call_0b_5537_BgPalette_LoadMonoOrGetSpriteParams
+    FARCALL call_0b_5537_Palettes_LoadSet
     ld   A, MENU_WOBBLE_OFF                            ;; 01:44ba $3e $ff
     ld   [wD6EB_RasterWobble_StartLine], A             ;; 01:44bc $ea $eb $d6 ; OnSelectionChanged turns it back on if the screen wants it
     call call_01_43e6_Menu_OnSelectionChanged                                  ;; 01:44bf $cd $e6 $43
@@ -342,7 +342,7 @@ call_01_44e6_MenuScript_RunCommand:
     dw   call_01_4916_MenuCmd_SetChainedScript                                  ;; 01:464b pP
     dw   call_01_491d_MenuCmd_LoadFullscreenImage                                  ;; 01:464d pP
     dw   call_01_4969_MenuCmd_SetMissionStatusText
-    dw   call_01_49d7_MenuCmd_StageCollectibleIcon                            ;; 01:464f ????
+    dw   call_01_49d7_MenuCmd_StageCollectibleIcon                            ;; 01:4651 ????
 
 call_01_4653_MenuCmd_StageImage1:
 ; MENUCMD_SUB_STAGE_IMAGE1. Argument indexes data_01_74e9_ImageTable1; the image's
@@ -755,7 +755,7 @@ call_01_48fd_MenuCmd_SetPasswordCharText:
     ld   a,[hl]
     ld   [wD60A_OneCharString],a
     ld   a,END_TEXT
-    ld   [wD60B_OneCharStringEnd],a                    ; bit 7 alone: an empty line, ending the string
+    ld   [wD60B_OneCharStringEnd],a                    ; the END_TEXT byte that closes it
     ld   hl,wD60A_OneCharString
     jp   call_01_4e6f_Menu_SetScriptSrcPtr
 
@@ -891,9 +891,8 @@ call_01_49d7_MenuCmd_StageCollectibleIcon:
 ; copied to wDAAB - which is 96 bytes INTO the set just written, so this second copy
 ; patches palettes 12, 13 and 14 of it rather than going anywhere new.
 ;
-; Those trailing bytes are three CGB palettes, despite the wDAAB_MenuBgMapTileIds
-; label and the old MENU_COLLECTIBLE_TILEMAP_BYTES name - the .bin files, which are
-; called palette_*_collectibles.bin, had it right
+; Those trailing bytes are three CGB palettes, not tile data - the .bin files they come
+; from are named palette_*_collectibles.bin
     ld   hl,.data_01_4a0f_PauseMenuPalette
     ld   de,wDA4B_DynamicPalette
     ld   bc,MENU_PALETTE_BYTES
@@ -911,8 +910,8 @@ call_01_49d7_MenuCmd_StageCollectibleIcon:
     call call_01_4e5a_Menu_GetTileDataSize
     pop  hl
     ld   de,wC000_BgMapTileIds
-    call call_00_07b0_MemCopy                          ; HL now sits on the tilemap ids that follow
-    ld   de,wDAAB_MenuBgMapTileIds
+    call call_00_07b0_MemCopy                          ; HL now sits on the palettes that follow
+    ld   de,wDAAB_MenuCollectiblePalettes
     ld   bc,MENU_COLLECTIBLE_PALETTE_BYTES
     jp   call_00_07b0_MemCopy
 .data_01_4a0f_PauseMenuPalette:

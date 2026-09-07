@@ -24,7 +24,7 @@ call_00_30af_Entity_ApplyGravityAndMoveY_Clamped:
     ld   B, A
     jp   call_00_37d8_Entity_MoveY
 
-call_00_30da_Entity_ApplyGravityMoveY_WithFloorCollision:
+call_00_30da_Entity_ApplyGravityMoveY_WithCeilingCollision:
 ; Same gravity and clamp as above, and it keeps the sign-extension - what it drops
 ; is the `cpl / inc A` NEGATION. That is not a cosmetic difference: for the same
 ; stored YVEL the two routines move the entity in OPPOSITE directions.
@@ -32,9 +32,10 @@ call_00_30da_Entity_ApplyGravityMoveY_WithFloorCollision:
 ; Because of that, "gravity" here pulls UPWARDS. call_00_30af treats a positive
 ; YVEL as up and subtracting 2 as falling; this routine treats a positive YVEL as
 ; down, so subtracting 2 accelerates the entity towards the ceiling until it is
-; clamped there. Its one caller, call_02_5ccf_EntityAction_Pterosaur_Update, is
-; built around exactly that: hanging at the top of its span is the rest state and
-; a positive velocity is a swoop DOWN.
+; clamped there. Its callers are built around exactly that:
+; call_02_5ccf_EntityAction_Pterosaur_Update, where hanging at the top of its span
+; is the rest state and a positive velocity is a swoop DOWN, and the three
+; ceiling-mounted Channel Z gun shots, whose arcs curve up rather than down.
 ;
 ; Applies the delta to YPOS inline, then calls Entity_GetMinYBound - the CEILING,
 ; not a floor - and, if YPOS has reached or passed it, snaps YPOS to the bound and
@@ -363,18 +364,18 @@ call_00_3251_Entity_UpdateFacingMomentumAndMoveX:
     ld   l,a
     ldi  a,[hl]
     bit  5,c
-    jr   z,.jr_02_326A
+    jr   z,.jr_00_326a
     cpl
     inc  a
     cp   [hl]
-    jr   z,.jr_02_326E
+    jr   z,.jr_00_326e
     dec  [hl]
-    jr   .jr_02_326E
-.jr_02_326A:
+    jr   .jr_00_326e
+.jr_00_326a:
     cp   [hl]
-    jr   z,.jr_02_326E
+    jr   z,.jr_00_326e
     inc  [hl]
-.jr_02_326E:
+.jr_00_326e:
     ldi  a,[hl]
     ld   c,a
     ld   a,[hl]
@@ -417,10 +418,10 @@ call_00_329a_Entity_UpdateFacingMomentumMoveX_WithWallFlip:
     ld   l,a
     ldi  a,[hl]
     bit  5,c
-    jr   z,.jr_02_32AE
+    jr   z,.jr_00_32ae
     cpl
     inc  a
-.jr_02_32AE:
+.jr_00_32ae:
     add  [hl]
     ld   c,a
     and  a,$0F
@@ -443,19 +444,19 @@ call_00_329a_Entity_UpdateFacingMomentumMoveX_WithWallFlip:
     add  [hl]
     ldd  [hl],a
     bit  7,a
-    jr   z,.jr_02_32D2
+    jr   z,.jr_00_32d2
     cpl
     inc  a
-.jr_02_32D2:
+.jr_00_32d2:
     cp   [hl]
-    jr   c,.jr_02_32DD
+    jr   c,.jr_00_32dd
     ld   a,l
     xor  a,$17
     ld   l,a
     ld   a,[hl]
     xor  a,$20
     ld   [hl],a
-.jr_02_32DD:
+.jr_00_32dd:
     pop  bc
     jp   call_00_37c9_Entity_MoveX
 
@@ -477,25 +478,25 @@ call_00_32f2_Entity_NudgeXVelocityTowardC_Signed:
 ; bits before deciding direction
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_X_VELOCITY
     bit  7,c
-    jr   nz,.jr_02_3309
+    jr   nz,.jr_00_3309
     bit  7,[hl]
-    jr   nz,.jr_02_3314
+    jr   nz,.jr_00_3314
     ld   a,[hl]
     cp   c
     ret  z
-    jr   c,.jr_02_3314
-    jr   .jr_02_3312
-.jr_02_3309:
+    jr   c,.jr_00_3314
+    jr   .jr_00_3312
+.jr_00_3309:
     bit  7,[hl]
-    jr   z,.jr_02_3312
+    jr   z,.jr_00_3312
     ld   a,[hl]
     cp   c
     ret  z
-    jr   c,.jr_02_3314
-.jr_02_3312:
+    jr   c,.jr_00_3314
+.jr_00_3312:
     dec  [hl]
     ret
-.jr_02_3314:
+.jr_00_3314:
     inc  [hl]
     ret
 
@@ -503,25 +504,25 @@ call_00_3316_Entity_NudgeYVelocityTowardC_Signed:
 ; Identical signed nudge logic as above, applied to Y velocity
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_Y_VELOCITY
     bit  7,c
-    jr   nz,.jr_02_332D
+    jr   nz,.jr_00_332d
     bit  7,[hl]
-    jr   nz,.jr_02_3338
+    jr   nz,.jr_00_3338
     ld   a,[hl]
     cp   c
     ret  z
-    jr   c,.jr_02_3338
-    jr   .jr_02_3336
-.jr_02_332D:
+    jr   c,.jr_00_3338
+    jr   .jr_00_3336
+.jr_00_332d:
     bit  7,[hl]
-    jr   z,.jr_02_3336
+    jr   z,.jr_00_3336
     ld   a,[hl]
     cp   c
     ret  z
-    jr   c,.jr_02_3338
-.jr_02_3336:
+    jr   c,.jr_00_3338
+.jr_00_3336:
     dec  [hl]
     ret
-.jr_02_3338:
+.jr_00_3338:
     inc  [hl]
     ret
 
@@ -579,27 +580,27 @@ call_00_3364_Entity_ApproachPlayerXWithBounds:
     ld   hl,wD76A_Player_BlockX
     ld   a,[hl]
     cp   c
-    jr   c,.jr_02_33A5
+    jr   c,.jr_00_33a5
     ld   a,b
     cp   [hl]
-    jr   c,.jr_02_33A5
+    jr   c,.jr_00_33a5
     ld   a,e
     cp   [hl]
-    jr   z,.jr_02_33A5
+    jr   z,.jr_00_33a5
     ld   d,$00
-    jr   c,.jr_02_339C
+    jr   c,.jr_00_339c
     ld   d,$20
-.jr_02_339C:
+.jr_00_339c:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
     ld   [hl],d
-.jr_02_33A5:
+.jr_00_33a5:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
     bit  5,[hl]
-    jr   z,.jr_02_33C7
+    jr   z,.jr_00_33c7
     ld   a,e
     cp   c
-    jr   c,.jr_02_33CB
-.jr_02_33B5:
+    jr   c,.jr_00_33cb
+.jr_00_33b5:
     ld   [hl],$20
     ld   a,l
     xor  a,$11
@@ -614,11 +615,11 @@ call_00_3364_Entity_ApproachPlayerXWithBounds:
     sbc  a,$00
     ld   [hl],a
     ret
-.jr_02_33C7:
+.jr_00_33c7:
     ld   a,e
     cp   b
-    jr   nc,.jr_02_33B5
-.jr_02_33CB:
+    jr   nc,.jr_00_33b5
+.jr_00_33cb:
     ld   [hl],$00
     ld   a,l
     xor  a,$11
@@ -638,19 +639,19 @@ call_00_33dd_Entity_ApplyXVelocityFriction:
 ; First checks SPRITE_FLAG_ON_SCREEN — if clear, returns immediately (offscreen entities are not simulated).
 ; Then branches on a bit of ENTITY_FIELD_MISC_FLAGS ($17) to decide add or subtract. NOT field $1D:
 ; the `xor $1D` is applied to L while it still holds SPRITE_FLAGS ($0A), and $0A xor $1D = $17:
-; Bit 1 clear (.jr_02_33F2): Adds X velocity (C) into a subpixel accumulator. Includes a clamping check
+; Bit 1 clear (.jr_00_33f2): Adds X velocity (C) into a subpixel accumulator. Includes a clamping check
 ;   — if the accumulator would overflow past $80 (i.e. exceed half-range), it saturates and folds the
 ;   remainder back through C before applying. Then adds the adjusted C into the X position subpixel field
 ;   and propagates carry into the high byte.
-; Bit 1 set (.jr_02_341B): Same logic but subtracts — if the accumulator would go below $80 it saturates similarly.
+; Bit 1 set (.jr_00_341b): Same logic but subtracts — if the accumulator would go below $80 it saturates similarly.
 ;   Subtracts from the X position subpixel field with borrow propagation.
 ; In both cases it's applying velocity-scaled positional drag with half-precision saturation clamping to
 ; avoid wrap-around artifacts — essentially a friction/momentum integrator that bleeds off X velocity
 ; into position while preventing the accumulator from flipping sign unexpectedly.
 ;
-; @bug - a branch that exists only to skip a branch. `jr z,.jr_02_33F2` is followed
-; by `jr .jr_02_341B` with `.jr_02_33F2` as the very next instruction, so the pair
-; costs two bytes more than the `jr nz,.jr_02_341B` that would do the same job.
+; @bug - a branch that exists only to skip a branch. `jr z,.jr_00_33f2` is followed
+; by `jr .jr_00_341b` with `.jr_00_33f2` as the very next instruction, so the pair
+; costs two bytes more than the `jr nz,.jr_00_341b` that would do the same job.
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_SPRITE_FLAGS
     bit  SPRITE_FLAG_ON_SCREEN_BIT,[hl]
     ret  z
@@ -658,27 +659,27 @@ call_00_33dd_Entity_ApplyXVelocityFriction:
     xor  a,$1D
     ld   l,a
     bit  MISC_FLAGS_BIT_1,[hl]
-    jr   z,.jr_02_33F2
-    jr   .jr_02_341B
-.jr_02_33F2:
+    jr   z,.jr_00_33f2
+    jr   .jr_00_341b
+.jr_00_33f2:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_X_VELOCITY
     ld   c,[hl]
     dec  l
     bit  7,[hl]
-    jr   nz,.jr_02_340C
+    jr   nz,.jr_00_340c
     ld   a,[hl]
     add  c
     cp   a,$80
-    jr   c,.jr_02_340E
+    jr   c,.jr_00_340e
     sub  a,$7F
     cpl
     inc  a
     add  c
     ld   c,a
-.jr_02_340C:
+.jr_00_340c:
     ld   a,[hl]
     add  c
-.jr_02_340E:
+.jr_00_340e:
     ld   [hl],a
     ld   a,l
     xor  a,$15
@@ -690,23 +691,23 @@ call_00_33dd_Entity_ApplyXVelocityFriction:
     adc  a,$00
     ld   [hl],a
     ret
-.jr_02_341B:
+.jr_00_341b:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_X_VELOCITY
     ld   c,[hl]
     dec  l
     bit  7,[hl]
-    jr   z,.jr_02_3433
+    jr   z,.jr_00_3433
     ld   a,[hl]
     sub  c
     cp   a,$80
-    jr   nc,.jr_02_3435
+    jr   nc,.jr_00_3435
     sub  a,$80
     add  c
     ld   c,a
-.jr_02_3433:
+.jr_00_3433:
     ld   a,[hl]
     sub  c
-.jr_02_3435:
+.jr_00_3435:
     ld   [hl],a
     ld   a,l
     xor  a,$15
@@ -728,10 +729,10 @@ call_00_3442_Entity_MoveXByFacingSpeed:
     ld   l,a
     ld   a,[hl]
     bit  5,c
-    jr   z,.jr_02_3455
+    jr   z,.jr_00_3455
     cpl
     inc  a
-.jr_02_3455:
+.jr_00_3455:
     ld   c,a
     cp   a,$80
     ld   a,$FF
@@ -1198,9 +1199,9 @@ call_00_36da_Entity_FaceAwayFromPlayer:
     ld   a,[wD20F_Player_XPositionHi]
     sbc  [hl]
     ld   c,$00
-    jr   c,.jr_02_36F1
+    jr   c,.jr_00_36f1
     ld   c,$20
-.jr_02_36F1:
+.jr_00_36f1:
     ld   a,l
     xor  a,$02
     ld   l,a
@@ -1306,10 +1307,10 @@ call_00_3760_Entity_PatrolY_FacingBased:
     ld   l,a
     ldi  a,[hl]
     bit  6,c
-    jr   nz,.jr_02_3774
+    jr   nz,.jr_00_3774
     cpl
     inc  a
-.jr_02_3774:
+.jr_00_3774:
     add  [hl]
     ld   c,a
     and  a,$0F
@@ -1357,14 +1358,14 @@ call_00_3760_Entity_PatrolY_FacingBased:
     ld   a,d
     cp   c
     ld   c,$40
-    jr   c,.jr_02_37BD
+    jr   c,.jr_00_37bd
     ld   a,b
     cp   d
     ld   c,$00
-    jr   c,.jr_02_37BD
+    jr   c,.jr_00_37bd
     xor  a
     ret
-.jr_02_37BD:
+.jr_00_37bd:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_FACING_FLAGS
     ld   a,[hl]
     ld   [hl],c
@@ -1617,7 +1618,7 @@ call_00_38c1_Entity_CheckRedRemoteProgressFlag:
     dec  A
     srl  A
     ld   E, A
-    ld   HL, .data_02_38ed
+    ld   HL, .data_00_38ed
     add  HL, DE
     ld   A, [HL]
     ld   HL, wD624_CurrentLevelId
@@ -1628,7 +1629,7 @@ call_00_38c1_Entity_CheckRedRemoteProgressFlag:
     and  A, [HL]
     ld   E, A
     ret
-.data_02_38ed:
+.data_00_38ed:
     db   $01, $02, $04
 
 call_00_38f0_Entity_ClearAllSlots:

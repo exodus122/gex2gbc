@@ -221,7 +221,7 @@ data_03_5446_EntitySpriteDescriptors:
     db   $0a, $00                                         ; $7B ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT_GEAR - layout $0a/$0b by action
     db   $0a, $00                                         ; $7C ENTITY_CIRCUIT_CENTRAL_ELECTRIC_BALL - layout $0a/$0b by action
     db   $26, $00                                         ; $7D ENTITY_CIRCUIT_CENTRAL_MOVING_PLATFORM - layout $26/$27 by action
-    db   $26, $00                                         ; $7E ENTITY_CIRCUIT_CENTRAL_POWERED_PLAFORM - layout $26/$27 by action
+    db   $26, $00                                         ; $7E ENTITY_CIRCUIT_CENTRAL_POWERED_PLATFORM - layout $26/$27 by action
     db   $26, $00                                         ; $7F ENTITY_CIRCUIT_CENTRAL_LOWERING_PLATFORM - layout $26/$27 by action
     db   SPRITE_SHAPE_24x32, $20                          ; $80 ENTITY_CIRCUIT_CENTRAL_WALKER_ROBOT - 24x32, centred
     db   $08, $00                                         ; $81 ENTITY_CIRCUIT_CENTRAL_POWERED_WALKWAY - invis, never read here
@@ -1393,7 +1393,7 @@ call_03_5ebf_Entity_BuildSprites:
     ld   [DE], A
 .jr_03_5f58_Entity_SelectSpritePath:
 ; Picks one of five drawing paths from the SPRITE_FLAG_* bits, tested in this order:
-; invisible, embedded sprite list, streams-own-gfx, layout-by-action, and finally the
+; invisible, embedded sprite list, streams-own-gfx, fixed-shape, and finally the
 ; shape path below as the default.
 ;
 ; The shape path (and its streams-own-gfx twin, which is the same 91 bytes again -
@@ -2308,8 +2308,9 @@ call_03_6540_OAM_FinishFrame:
 ; NPC region: collectible sprites, then the HUD row, then blank every slot the frame
 ; did not use.
 ;
-; Only the middle step is HUD, and it does not build all the sprites - it finishes a
-; list the entity code started
+; The order is safe because the blank pass only reaches $5F - the last byte before
+; wCC60_ShadowOAM_CollectibleSprites - so it can never erase the collectible or HUD
+; entries the two calls above it have just written
     call call_03_6499_Collectible_BuildSprites
     call call_03_5b5b_HUD_BuildSprites
     jp   call_03_6484_OAM_ClearUnusedEntries

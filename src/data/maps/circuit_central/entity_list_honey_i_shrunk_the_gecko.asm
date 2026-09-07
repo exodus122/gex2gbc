@@ -28,7 +28,7 @@
     db   $69, $67, $05
     db   $03, $00, $00, $00, $00, $00, $00, $00
 
-    db   ENTITY_CIRCUIT_CENTRAL_POWERED_PLAFORM
+    db   ENTITY_CIRCUIT_CENTRAL_POWERED_PLATFORM
     dw   $0f50, $0130
     db   $7b, $79, $0a
     db   $05, $5a, $ff, $10, $00, $00, $00, $00
@@ -38,12 +38,12 @@
     db   $6e, $69, $0b
     db   $09, $00, $00, $00, $00, $00, $00, $00
 
-    db   ENTITY_CIRCUIT_CENTRAL_POWERED_PLAFORM
+    db   ENTITY_CIRCUIT_CENTRAL_POWERED_PLATFORM
     dw   $0df0, $0160
     db   $7a, $6e, $0c
     db   $0a, $08, $ff, $10, $00, $00, $00, $00
 
-    db   ENTITY_CIRCUIT_CENTRAL_POWERED_PLAFORM
+    db   ENTITY_CIRCUIT_CENTRAL_POWERED_PLATFORM
     dw   $0d10, $01d0
     db   $69, $67, $0f
     db   $0a, $5a, $ff, $10, $00, $00, $00, $00
@@ -58,7 +58,7 @@
     db   $35, $33, $10
     db   $0c, $00, $00, $00, $00, $00, $00, $00
 
-    db   ENTITY_CIRCUIT_CENTRAL_POWERED_PLAFORM
+    db   ENTITY_CIRCUIT_CENTRAL_POWERED_PLATFORM
     dw   $0f30, $0200
     db   $7a, $67, $11
     db   $0f, $a8, $ff, $10, $00, $00, $00, $00
@@ -148,7 +148,7 @@
     db   $69, $63, $2b
     db   $29, $00, $00, $00, $00, $00, $00, $00
 
-    db   ENTITY_CIRCUIT_CENTRAL_POWERED_PLAFORM
+    db   ENTITY_CIRCUIT_CENTRAL_POWERED_PLATFORM
     dw   $0d70, $0540
     db   $6c, $6a, $2b
     db   $22, $5a, $ff, $10, $00, $00, $00, $00
@@ -178,7 +178,7 @@
     db   $5e, $5c, $2e
     db   $2c, $00, $00, $00, $00, $00, $00, $00
 
-    db   ENTITY_CIRCUIT_CENTRAL_POWERED_PLAFORM
+    db   ENTITY_CIRCUIT_CENTRAL_POWERED_PLATFORM
     dw   $0410, $05c0
     db   $21, $1f, $2f
     db   $25, $5a, $ff, $10, $00, $00, $00, $00

@@ -95,7 +95,7 @@ call_03_4915_BgCollision_SidescrollerHandler:
 ; being snapped out of the wall. The two consecutive `xor a,a` are the tell: one of
 ; them is a leftover, and the first store was meant to take the correction.
 ;
-; @bug Dead computation in both wall-probe entry paths. .jr_02_4954_MovingRight and
+; @bug Dead computation in both wall-probe entry paths. .jr_03_4954_MovingRight and
 ; the branch above it each compute `(X & $07) + E` into A and then jump/fall into
 ; .jr_03_495c_ProbeWall, whose first real instruction is `ld a,e`. A is never read,
 ; so the two branches differ only in the sign constant loaded into C. Harmless as

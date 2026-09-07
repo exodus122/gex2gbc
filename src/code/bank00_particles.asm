@@ -21,16 +21,16 @@ call_00_3951_Entity_SpawnEffectAtPlayer:
 ; helper it uses operates on "the current entity"
     ld   h,HIGH(wD220_OtherLoadedEntities)
     ld   a,LOW(wD220_OtherLoadedEntities)
-.jr_02_3955:
+.jr_00_3955:
     ld   l,a
     ld   a,[hl]
     cp   a,$FF
-    jr   z,.jr_02_3961
+    jr   z,.jr_00_3961
     ld   a,l
     add  a,$20
-    jr   nz,.jr_02_3955
+    jr   nz,.jr_00_3955
     ret
-.jr_02_3961:
+.jr_00_3961:
     ld   a,[wD300_CurrentEntityAddrLo]
     push af
     ld   a,l
@@ -346,9 +346,12 @@ call_00_3b8d_Entity_TickParticles:
 ;                                 each frame and is CLAMPED AT ZERO - hitting zero is
 ;                                 what ends the particle, so a particle dies when it
 ;                                 falls back to the height it launched from
-;   +3  PARTICLE_FIELD_XSPEED     horizontal speed as a fraction: the low nibble is
-;                                 added to the whole byte each frame, and the carry out
-;                                 is what steps the offset
+;   +3  PARTICLE_FIELD_XSPEED     horizontal speed as a fraction, and its own
+;                                 accumulator. Each frame the byte's LOW nibble is
+;                                 swapped up into the high nibble and added back to the
+;                                 whole byte, so the low nibble never changes and the
+;                                 byte gains n * $10 per frame - one carry out, and so
+;                                 one pixel of movement, every 16 / n frames
 ;   +4  PARTICLE_FIELD_XOFFSET    signed horizontal offset, stepped by +1 or -1 per
 ;                                 carry with the direction taken from its own sign bit
 ;

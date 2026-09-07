@@ -180,7 +180,7 @@ data_01_5654_MenuTypeLcdcAndPalette:
 ; script has finished drawing:
 ;
 ;   +0  db  LCDC value for the top of the screen -> wD6E1_RasterSplit_LCDCValue
-;   +1  db  palette set id, passed in C to call_0b_5537_BgPalette_LoadMonoOrGetSpriteParams
+;   +1  db  palette set id, passed in C to call_0b_5537_Palettes_LoadSet
 ;
 ; $D7 is the ordinary "BG + OBJ on, unsigned tiles" LCDC; the screens that use
 ; $C7 (the totals pages, the password keyboard, the credits) switch the window

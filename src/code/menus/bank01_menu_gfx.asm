@@ -72,7 +72,7 @@ data_01_65fe_FontDescriptors:
     INCBIN ".gfx/fonts/font_small.bin"
 .data_01_689f_MediumFont:
 ; 8x7 glyphs, stride 14. $23E bytes = 41 glyphs, one short of the 42-entry width table - index
-; $29 (apostrophe) would read into data_01_6add_font. The width table still carries a $02 for
+; $29 (apostrophe) would read into .data_01_6add_LargeFont. The width table still carries a $02 for
 ; it, so the entry is reachable in principle; presumably no string in this font uses one
     INCBIN ".gfx/fonts/font_medium.bin"
 .data_01_6add_LargeFont:

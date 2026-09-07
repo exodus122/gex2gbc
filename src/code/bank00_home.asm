@@ -141,7 +141,7 @@ call_00_0150_Init:
     xor  A, A                                          ;; 00:0169 $af
     ld   [MBC1SRamEnable], A                           ;; 00:016a $ea $01 $00
     ld   [MBC1SRamBankingMode], A                                    ;; 00:016d $ea $01 $60
-    ; Zero $C000-$DFFE by seeding one byte and copying it forward over itself
+    ; Zero $C000-$DFFF by seeding one byte and copying it forward over itself
     ld   HL, wC000_BgMapTileIds                                     ;; 00:0170 $21 $00 $c0
     ld   DE, wC000_BgMapTileIds+1                                     ;; 00:0173 $11 $01 $c0
     ld   BC, $1fff                                     ;; 00:0176 $01 $ff $1f
@@ -612,7 +612,7 @@ call_00_0521_Screen_PresentAndFadeIn:
     ld   A, LCD_ISR_VRAM_STREAM                        ;; 00:052f $3e $03
     call call_00_0bae_RequestLcdIsr                                  ;; 00:0531 $cd $ae $0b
     ld   C, $00                                        ;; 00:0534 $0e $00
-    FARCALL call_0b_5537_BgPalette_LoadMonoOrGetSpriteParams
+    FARCALL call_0b_5537_Palettes_LoadSet
     ld   A, LCDC_GAMEPLAY                              ;; 00:0541 $3e $c7
     call call_00_0f56_SetLCDCAndFadeIn                                  ;; 00:0543 $cd $56 $0f
     ret                                                ;; 00:0546 $c9
@@ -655,7 +655,7 @@ call_00_0562_Collectible_InitForLevel:
     ld   [HL], $01                                     ;; 00:0576 $36 $01
     ret                                                ;; 00:0578 $c9
 .data_00_0579_CollectibleCountTable:
-; One byte per level id, LEVEL_COUNT entries. Nonzero means "this is a bonus level":
+; One byte per level id, LEVEL_COUNT + 1 entries - the boss level has a row too. Nonzero means "this is a bonus level":
 ; the value is the collectible quota, and its mere presence is what puts
 ; wD623_CollectibleMode into quota mode, which in turn arms the countdown timer and
 ; flips wD649_CollectibleAmount from a rising score into a falling target.
@@ -917,7 +917,7 @@ call_00_068a_Player_ExtraLifeFly:
 
 call_00_0696_Player_Die:
 ; Starts the death animation and spends a life. The main loop only notices the death
-; later, when call_02_49d0_PlayerAction_Death raises WARP_DIED at the end of that
+; later, when call_02_4371_PlayerAction_Death raises WARP_DIED at the end of that
 ; animation - which is why the life is deducted here and the game-over test at
 ; 00:044e reads "no lives left" rather than "last life".
 ;
@@ -1322,9 +1322,10 @@ call_00_084d_Screen_LoadFullscreenImage:
     jr   NZ, .jr_00_087a                               ;; 00:088b $20 $ed
     SELECT_VRAM_BANK 0                                 ;; 00:088d $3e $00 $e0 $4f
 .jr_00_0891:
-    ; Generate the tilemap. Two passes of 12 rows, each pass restarting the tile id
-    ; at 0 and wrapping through $FF, which covers 24 rows in total - six more than
-    ; the screen shows, but the extra rows cost nothing and the loop is smaller
+    ; Generate the tilemap. Two passes, each restarting the tile id at 0: the first
+    ; runs the 12 rows of block 0 with the count already in B, and the `ld b,$06` at
+    ; the bottom sets up the 6 rows of block 1 for the second pass - 18 rows, which
+    ; is SCRN_Y_B exactly
     ld   HL, _SCRN0                                     ;; 00:0891 $21 $00 $98
     ld   DE, SCRN_VX_B - SCRN_X_B                      ;; 00:0894 $11 $0c $00
     ld   B, $0c                                        ;; 00:0897 $06 $0c
@@ -1907,7 +1908,7 @@ call_00_0bb9_InstallLcdIsr:
 ;   +$00  wCCA0_LcdIsrCode        reti when idle, push af when armed
 ;   +$04  wCCA4_LcdIsr_SrcAddrLo  low byte of the source cursor; also the progress
 ;                                 counter, since the handler writes it back each pass
-;   +$05  wCCA5_LcdIsr_SrcAddrHi  high byte, always HIGH(wD100_TilesToLoadBuffer) + 1
+;   +$05  wCCA5_LcdIsr_SrcAddrHi  high byte, always HIGH(wD100_TilesToLoadBuffer)
 ;   +$07  wCCA7_LcdIsr_DestPageHi destination VRAM page
 ;
 ; `ld e, l` is what makes the destination track the source: DE ends up as
@@ -2653,14 +2654,16 @@ call_00_1078_FarCall:
 ; Calls HL in bank A and comes back to the caller's bank. The FARCALL macro is what
 ; sets up A and HL; this is its body.
 ;
-; Note it loads wD59D_ReturnBank into A immediately before jumping, so the callee is
-; entered with A holding the bank to return to rather than anything the caller chose -
-; worth knowing before assuming A is a free argument register across a FARCALL.
-; The callee's return value in A does survive, since it is pushed around RestoreBank
+; A IS a usable argument register across a FARCALL, despite the bank number passing
+; through it: the macro stashes the caller's A in wD59D_FarCallArgA before overwriting
+; it with BANK(), and the `ld a,[wD59D_FarCallArgA]` below puts it back immediately
+; before the jump. That is the whole reason the variable exists - it carries nothing
+; about banks. The callee's return value in A survives too, since it is pushed around
+; RestoreBank
     push HL                                            ;; 00:1078 $e5
     call call_00_1089_SwitchBank                                  ;; 00:1079 $cd $89 $10
     pop  HL                                            ;; 00:107c $e1
-    ld   A, [wD59D_ReturnBank]                                    ;; 00:107d $fa $9d $d5
+    ld   A, [wD59D_FarCallArgA]                                    ;; 00:107d $fa $9d $d5
     call call_00_10bd_JumpHL                                  ;; 00:1080 $cd $bd $10
     push AF                                            ;; 00:1083 $f5
     call call_00_10a3_RestoreBank                                  ;; 00:1084 $cd $a3 $10

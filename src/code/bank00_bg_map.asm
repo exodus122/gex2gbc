@@ -182,7 +182,7 @@ call_00_12e4_BlockPatch_Init:
     db   $ff
 
 call_00_13a6_BgMap_UpdateWindowFromPlayerPos:
-; Summary: Uses Player position to calculate wD6ED_BgMap_ScrollX, wD6ED_BgMap_ScrollY, wD329_MapWindow_BlockXRangeMin,
+; Summary: Uses Player position to calculate wD6ED_BgMap_ScrollX, wD6EF_BgMap_ScrollY, wD329_MapWindow_BlockXRangeMin,
 ; wD32A_MapWindow_BlockXRangeMax, wD32B_MapWindow_BlockYRangeMin, and wD32C_MapWindow_BlockYRangeMax
 ;
 ; Computes the map scroll window X and Y positions from player world coordinates.
@@ -328,10 +328,17 @@ call_00_1472_BgMap_LoadRowForVerticalScroll:
 ; wD703_BgMap_TempScratchRowAltBlocksetFlags–wD70D. Calls call_00_18a7_BgMap_ApplyBlockPatchesToRow,
 ; which applies BOTH fix-ups to that scratch buffer before it is expanded: the alt blockset mask over
 ; the flag bytes, then any registered block patches over the metatile ids. Switches to
-; blockset/collision bank (wD6F7), then expands
-; each metatile into 8 tile IDs (2×4 tiles, GBC attribute bits set on alternating writes via set 3, H /
-; set 5, B) and writes them to the GBC tilemap at computed VRAM addresses. Handles tilemap row wrap at
-; $20-byte boundaries
+; blockset/collision bank (wD6F7), then expands each block into the four tile ids of the
+; row being loaded plus their four collision bytes.
+;
+; Nothing here touches VRAM. The destination is the pair of WRAM shadow maps -
+; wC000_BgMapTileIds and wC800_CurrentCollisionData - and `set 3, H` is what moves
+; between them ($C0xx vs $C8xx), exactly as `set 5, B` moves between the blockset's
+; tile half ($40xx-$4Fxx) and its collision half ($60xx-$6Fxx) in the same bank. The
+; two sets are toggled on alternating writes only to save instructions; every one of
+; the four columns gets both a tile id and a collision byte. The vblank routines in
+; bank03_vram_write.asm are what carry the shadow map out to VRAM later. Handles
+; tilemap row wrap at $20-byte boundaries
     ld   HL, wD6EF_BgMap_ScrollY
     ld   A, [HL+]
     ld   C, A
@@ -341,9 +348,9 @@ call_00_1472_BgMap_LoadRowForVerticalScroll:
     ld   A, [wD6F9_BgMap_LoadingFlags]
     and  A, MAP_SCROLL_DOWN
     jr   NZ, .jr_00_1486
-    ld   HL, $ffff
+    ld   HL, $ffff                                     ; -1: the row just above the camera
 .jr_00_1486:
-    add  HL, BC                                        ; HL = HL - 1
+    add  HL, BC                                        ; HL = camera Y + $90 (down) or camera Y - 1 (up)
     ld   C, L                                          ; bc = hl
     ld   B, H                                          ; bc = hl
     ld   HL, wD6ED_BgMap_ScrollX
@@ -534,9 +541,11 @@ call_00_157a_BgMap_LoadColumnForHorizontalScroll:
 ; otherwise the left edge column (camera X - 1);
 ; reads 6 metatile IDs (stepping $80 bytes = one map row apart) from the map bank and alt blockset
 ; bank into wD70E_BgMap_TempScratchColumnMetaTileIDs–wD71C. Calls call_00_18e4_BgMap_ApplyBlockPatchesToColumn for secondary tileset resolution. Expands each metatile
-; into 8 tile IDs and writes to VRAM column-wise, advancing HL by $20 (one tilemap row) per pair,
-; with GBC attribute toggling via set 3, H / set 5, B. Handles tilemap column wrap at 32-tile ($20)
-; boundaries
+; into the four tile ids of the column being loaded plus their four collision bytes,
+; writing them down wC000_BgMapTileIds / wC800_CurrentCollisionData column-wise and advancing
+; HL by $20 (one shadow map row) per pair. As in the row twin, `set 3, H` picks the collision
+; shadow map and `set 5, B` the collision half of the blockset bank; neither is a GBC attribute.
+; Handles tilemap column wrap at 32-tile ($20) boundaries
     ld   HL, wD6ED_BgMap_ScrollX
     ld   A, [HL+]
     ld   E, A
@@ -546,7 +555,7 @@ call_00_157a_BgMap_LoadColumnForHorizontalScroll:
     ld   A, [wD6F9_BgMap_LoadingFlags]
     and  A, MAP_SCROLL_RIGHT
     jr   NZ, .jr_00_158e
-    ld   HL, rIE
+    ld   HL, rIE                                       ; $ffff = -1, the column just left of the camera - not the register
 .jr_00_158e:
     add  HL, DE
     ld   E, L
@@ -755,17 +764,20 @@ call_00_157a_BgMap_LoadColumnForHorizontalScroll:
 
 call_00_169f_BlockPatch_WriteTiles:
 ; Writes a rectangular block of metatile graphics to the GBC BG tilemap, using metatile
-; indices from wD780/wD781 (data pointer) and the tilemap VRAM address from wD77E/wD77F.
+; indices from wD780/wD781 (data pointer) and the shadow bg map address from wD77E/wD77F.
 ; Switches to wD6F7_BgMap_BlocksetAndCollisionBank. For each metatile in the width × height rectangle:
 ; reads 2 bytes from the data pointer (blockset index C, alt blockset flag); sets B=$40 as
 ; the blockset page base, or $50 if the alt blockset flag is nonzero. This is the one place the
 ; two systems meet: a block patch's per-cell data carries an alt blockset selector alongside the
 ; metatile id;
-; expands the metatile to 8 tile IDs by reading 8 consecutive bytes from [BC] in the blockset bank.
-; Writes them to the tilemap in a 4×2 pattern: first row left-to-right, second row right-to-left,
-; with set 3, H toggling between the two halves of the interleaved GBC tilemap layout.
-; Each row advances HL by $20 (one tilemap row). After writing all columns in a row, L is wrapped
-; within its $20-byte aligned block; after all rows, HL advances by $80 (one full metatile row).
+; expands the block into its 4x4 tiles, one sub-row at a time: four tile ids written
+; left-to-right into wC000_BgMapTileIds, then the matching four collision bytes written
+; right-to-left into wC800_CurrentCollisionData. `set 3, H` is the move between those two
+; shadow maps and `set 5, B` the move between the blockset bank's tile half ($40xx-$4Fxx)
+; and its collision half ($60xx-$6Fxx) - neither has anything to do with GBC attributes.
+; `add a,$04` on B steps to the next of the four sub-rows and HL advances by $20 (one shadow
+; map row). After writing all columns in a row, L is wrapped within its $20-byte aligned
+; block; after all rows, HL advances by $80 (one full block row).
 ; After all metatiles, sets bit 0 of wD77B_BlockPatch_VramWritePending to gate further sequence steps
 ; until VBLANK flushes the write. Restores bank
     ld   A, [wD6F7_BgMap_BlocksetAndCollisionBank]
@@ -944,7 +956,7 @@ call_00_1779_BlockPatch_WriteAttributes:
 ; Writes GBC palette attribute bytes and tile IDs to the BG tilemap for a block patch rectangle.
 ; On GBC (wD59E_OnGBCFlag nonzero): switches to VRAM bank 1; for each of the width × height metatiles,
 ; reads 4 tile IDs per sub-row from the $C0xx block coordinate cache (using H bits 0–1 + $C0 as page),
-; looks up the palette attribute for each from $CFxx via B=$CF as page base, and writes the
+; looks up the palette attribute for each from wCF00_TilesetPaletteIds via B=$CF as page base, and writes the
 ; 4 attribute bytes to the tilemap. Advances through 4 sub-rows per metatile (+ $1D each),
 ; wraps L within $E0-aligned blocks, advances HL by $80 per metatile row. Restores VRAM bank 0
 ; afterward. Both GBC and DMG paths then write the plain tile IDs (4 per sub-row × 4 sub-rows
@@ -1309,8 +1321,9 @@ call_00_18e4_BgMap_ApplyBlockPatchesToColumn:
 call_00_1922_BgMap_LoadSecondaryTileset:
 ; Checks wD60F bit 2 (HDMA active) — returns if set. Advances HL by $0B to reach the tile area
 ; index within the strip. Looks up the current level ID in .data_00_1a2e_LevelSecondaryTilesetLookups
-; to get a per-world data pointer. Reads the first byte (base index C). Scans 6 entries backward
-; through the strip (from wD719 downward), checking each non-zero alt blockset byte against the world's
+; to get a per-world data pointer. Reads the first byte (base index C). Scans the strip's 6 blocks
+; backward from its last alt blockset flag - wD70D for a row strip, wD719 for a column strip -
+; checking each non-zero alt blockset byte against the world's
 ; secondary tileset index table — if a non-null entry is found, checks if its tileset index differs
 ; from wD72D (current secondary tileset). If different: stores the new index to wD72D, computes the
 ; tileset address using .data_LevelSecondaryTilesetBankTable (bank + offset per level), stores to
@@ -1336,7 +1349,7 @@ call_00_1922_BgMap_LoadSecondaryTileset:
     ld   C, A                                          ; c = a
     ld   E, L
     ld   D, H                                          ; de = hl
-    pop  HL                                            ; hl = d719
+    pop  HL                                            ; hl = wD70D (row strip) or wD719 (column strip)
     ld   B, $06
 .jr_00_1942: ; loading a value written from 3435 bank
     ld   A, [HL-]
@@ -1661,9 +1674,11 @@ call_00_1ec9_BlockPatch_Register:
 ; wD782_BlockPatch_TargetBlockX/wD783_BlockPatch_TargetBlockY into C/B. Reads the data pointer from
 ; wD780/wD781 into DE. Sets HL = $CE00 + slot index from wD778. For each cell in the width × height
 ; rectangle: writes B (current Y block coord) to $CE[slot], writes C (current X block coord) to $CD[slot],
-; then reads the cell's 2 bytes from DE and writes them to $CF[slot] and $CC[slot] - the `set 7,L` /
-; `dec H` pair walks between the four parallel $CC/$CD/$CE/$CF tables that together hold one patch
-; entry. C is bumped per column and B per row, so each cell is registered under its own map
+; then reads the cell's 2 bytes from DE and writes them to $CE[slot + $80] (block id) and
+; $CD[slot + $80] (alt blockset flag) - the `set 7,L` / `dec H` pair is what walks between the
+; four parallel halves, $CD00 / $CD80 / $CE00 / $CE80, that together hold one patch entry.
+; A slot is one byte of each, so there are $80 of them and the scan loops end on `bit 7,L`.
+; C is bumped per column and B per row, so each cell is registered under its own map
 ; coordinates.
 ;
 ; This is the step that makes a change PERMANENT: BlockPatch_WriteTiles only paints the tilemap, whereas
@@ -1719,8 +1734,17 @@ call_00_1f05_BlockPatch_WriteCollision:
 ; Searches the $CD00/$CE00 tables backward from wD778_BlockPatch_SlotWriteHead for a slot
 ; whose X byte ($CD[slot]) matches wD782_BlockPatch_TargetBlockX and whose Y byte ($CE[slot])
 ; matches wD783_BlockPatch_TargetBlockY. Stops when L wraps past bit 7 (scanned all slots).
-; On match: switches to $CE00 page with bit 7 of L set, then copies width × height × 2 bytes
-; from wD780/wD781 data pointer into the matched slot range in `$CE[slot
+; On match: sets bit 7 of L and switches to the $CE00 page, then copies the step's
+; width × height cells over the payload halves of the matched slot onward - block id into
+; $CE[slot + $80], alt blockset flag into $CD[slot + $80], the same pair
+; call_00_1ec9_BlockPatch_Register writes.
+;
+; So this does not touch the collision shadow map itself. It rewrites what a rectangle
+; ALREADY registered by BlockPatch_Register expands to, which is what the strip loaders
+; will pick up next time the camera brings the area back - and, because the block id also
+; selects the collision half of the blockset, what the player will collide with. That is
+; the sense in which it "writes collision". If no registered slot matches, it returns
+; having done nothing
     ld   HL, wD782_BlockPatch_TargetBlockX
     ld   C, [HL]
     ld   HL, wD783_BlockPatch_TargetBlockY

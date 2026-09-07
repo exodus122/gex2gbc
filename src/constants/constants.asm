@@ -588,7 +588,7 @@ DEF ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT      EQU $7A
 DEF ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT_GEAR EQU $7B
 DEF ENTITY_CIRCUIT_CENTRAL_ELECTRIC_BALL     EQU $7C
 DEF ENTITY_CIRCUIT_CENTRAL_MOVING_PLATFORM   EQU $7D
-DEF ENTITY_CIRCUIT_CENTRAL_POWERED_PLAFORM   EQU $7E
+DEF ENTITY_CIRCUIT_CENTRAL_POWERED_PLATFORM   EQU $7E
 DEF ENTITY_CIRCUIT_CENTRAL_LOWERING_PLATFORM EQU $7F
 DEF ENTITY_CIRCUIT_CENTRAL_WALKER_ROBOT      EQU $80
 DEF ENTITY_CIRCUIT_CENTRAL_POWERED_WALKWAY   EQU $81
@@ -1059,9 +1059,12 @@ DEF BLOCKPATCH_STEP_LOOP                      EQU $01 ; bit 0 - run the next ste
 DEF BLOCKPATCH_STEP_REGISTER                  EQU $02 ; bit 1 - BlockPatch_Register: commit
                                                     ;         the rectangle to the wCD00/wCE00
                                                     ;         slot tables so it survives a reload
-DEF BLOCKPATCH_STEP_COLLISION                 EQU $04 ; bit 2 - BgMap_FindAndWriteCollisionBlock
-DEF BLOCKPATCH_STEP_TILES                     EQU $08 ; bit 3 - BlockPatch_WriteTiles: draw this
-                                                    ;         step's blocks into the tilemap
+DEF BLOCKPATCH_STEP_COLLISION                 EQU $04 ; bit 2 - BlockPatch_WriteCollision: overwrite
+                                                    ;         an already-registered rectangle's
+                                                    ;         payload in place
+DEF BLOCKPATCH_STEP_TILES                     EQU $08 ; bit 3 - BlockPatch_WriteTiles: expand this
+                                                    ;         step's blocks into the wC000/wC800
+                                                    ;         shadow maps (tiles and collision both)
 DEF BLOCKPATCH_STEP_SFX                       EQU $20 ; bit 5 - PlaySFX; step carries one extra byte
 
 ; bit numbers for the same flags, for `bit n,[hl]` rather than `and`
@@ -1081,12 +1084,12 @@ DEF BLOCKPATCH_STEP_SFX_BIT                   EQU 5
 ; state. $04-$0C and $0A in particular are the animation player, and nothing
 ; outside the sprite code should be touching them:
 ;
-;   $04 SPRITE_IDS_PTR        the frame list for the current action
-;   $06 SPRITE_FRAME_COUNTER  frames left on the current frame (the tick)
-;   $07 SPRITE_COUNTER        which frame of the list we are on
+;   $04 ANIM_FRAME_LIST_PTR   the frame list for the current action
+;   $06 ANIM_FRAME_TIMER      frames left on the current frame (the tick)
+;   $07 ANIM_FRAME_INDEX      which frame of the list we are on
 ;   $08 SPRITE_ID             the frame that is actually drawn
 ;   $0A SPRITE_FLAGS          how to draw it (see below)
-;   $0B/$0C                   playback speed and length
+;   $0B ANIM_SPEED / $0C ANIM_FRAME_COUNT   playback speed and length
 ;
 ; call_02_7102_Entity_SetAction populates all of them at once from the 4-byte
 ; header of the action's data block, and call_02_6fda_Entity_TickAction
@@ -1130,7 +1133,7 @@ DEF ENTITY_FIELD_ACTION_STATE_FLAGS         EQU $09
 ;              Entity_NotifyActionChanged and Entities_DrawAll check
 ;   bit 4 set  layout is chosen by ACTION_ID rather than by animation frame,
 ;              via .data_03_608e_FixedSpriteShapeTable
-;   none set   the default path, indexed by SPRITE_COUNTER
+;   none set   the default path, indexed by ANIM_FRAME_INDEX
 ;
 ; The rest are status rather than configuration. Note bits 2 and 6 are both
 ; one-frame pulses - they are raised by TickAction and cleared again at the

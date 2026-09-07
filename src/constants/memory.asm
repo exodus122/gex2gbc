@@ -105,14 +105,27 @@ wCCFE_VBlankHookPtrLo:
 wCCFF_VBlankHookPtrHi:
     ds 1                                             ;; ccff
 
+; ------------------------------------------------------------------
+; Registered block patches ($CD00-$CEFF). Four parallel $80-entry tables, one slot
+; per patched block, written by call_00_1ec9_BlockPatch_Register and read back by
+; call_00_18a7_BgMap_ApplyBlockPatchesToRow and its column twin:
+;
+;   $CD00 + slot   block X            $CE00 + slot   block Y
+;   $CD80 + slot   alt blockset flag  $CE80 + slot   block id
+;
+; A slot is allocated by bumping wD778_BlockPatch_SlotWriteHead, so the two scan
+; loops walk backwards from it and end on `bit 7,L` - which is also why there are
+; $80 slots rather than $100. This is what makes a patch survive scrolling away and
+; back: the strip loaders re-stamp the pair over the freshly read blockmap before it
+; is expanded. Checkpoints, blood coolers, hidden Smellraiser switches and every
+; other permanently changed piece of geometry live here
+; ------------------------------------------------------------------
 wCD00_BgTileFlags:
-; updated when hit a checkpoint in a level, or a blood cooler
-; or hidden smellraiser switch, etc.
+; block X of each registered patch slot; $CD80 onward is the alt blockset flag half
     ds 256
 
 wCE00_BgTileFlags:
-; updated when hit a checkpoint in a level, or a blood cooler
-; or hidden smellraiser switch, etc.
+; block Y of each registered patch slot; $CE80 onward is the block id half
     ds 256
 
 wCF00_TilesetPaletteIds:
@@ -158,7 +171,7 @@ wD20A_Player_SpriteFlags:
     ds 3                                               ;; d20a
 wD20D_Player_FacingFlags:
     ds 1                                               ;; d20d
-; wD20E_Player_XPositionLo and wD20F_Player_XPositionHi_PlayerXPosition control gex's x coordinate position (can freeze wD20F_Player_XPositionHi_PlayerXPosition to sometimes fall through floors)
+; wD20E_Player_XPositionLo and wD20F_Player_XPositionHi control gex's x coordinate position (can freeze wD20F_Player_XPositionHi to sometimes fall through floors)
 wD20E_Player_XPositionLo:
     ds 1                                               ;; d20e
 wD20F_Player_XPositionHi:
@@ -225,9 +238,9 @@ wD335_Entity_OamAttr:
 ; into shadow OAM
     ds 1                                               ;; d335
 
-wD336_CurrentEntityToLoadPtr:
+wD336_CurrentEntityToLoadPtrLo:
     ds 1                                               ;; d336
-wD337_CurrentEntityToLoadPtr:
+wD337_CurrentEntityToLoadPtrHi:
     ds 1                                               ;; d337
 wD338_EntityLoadingFlag:
     ds 1                                               ;; d338
@@ -339,8 +352,11 @@ wD59A_PtrToBankStackPosition:
     ds 2                                               ;; d59a
 wD59C_CurrentROMBank:
     ds 1                                               ;; d59c
-wD59D_ReturnBank:
-; bank to return to after the upcoming bank switch
+wD59D_FarCallArgA:
+; The A register a FARCALL was issued with, held across the two `ld a` the macro needs
+; for the bank number and the target address. call_00_1078_FarCall reloads A from here
+; just before jumping, so a farcalled routine sees the A its caller set up. Nothing
+; else reads or writes it
     ds 1                                               ;; d59d
 
 wD59E_OnGBCFlag:
@@ -609,7 +625,7 @@ wD621_WarpFlags:
 ;   WARP_DIED         (02) the death animation finished
 ;
 ; The setter clears its own bit rather than the loop doing it, which is why
-; call_01_42bd_HandleTVWarp and call_0b_4051_MapSpawns_Apply both `and $ff ^ ...`
+; call_01_42bd_HandleTVWarp and call_0b_4efe_Map_SetSpawnPosition both `and $ff ^ ...`
     ds 1                                               ;; d621
 
 wD622_VBlankDoneFlag:
@@ -1196,7 +1212,7 @@ wD70F_BgMap_TempScratchColumnAltBlocksetFlags:
 ; ------------------------------------------------------------------
 ; Entity graphics queue.
 ; call_02_7211_EntityGfxQueue_Enqueue collects up to 4 pending graphics loads
-; (one per on-screen entity type) and call_02_722c_EntityGfxQueue_StartNext
+; (one per on-screen entity type) and call_02_722c_EntityGfxQueue_StartNextTransfer
 ; expands the next one into the wD71F.. descriptor and raises
 ; GFX_XFER_QUEUED_ENTITY_GFX.
 ; ------------------------------------------------------------------
@@ -1300,7 +1316,7 @@ wD73A_Entity_TileIdBase:
 ; streamed into. Where it comes from depends on the drawing path: the shape
 ; paths take it from byte +1 of the entity's row of
 ; data_03_5446_EntitySpriteDescriptors (always $20, the shared entity tile pages),
-; while the layout-by-action path takes it from the live
+; while the fixed-shape path takes it from the live
 ; ENTITY_FIELD_SPRITE_ID instead
     ds 1                                               ;; d73a
 wD73B_VBlankFrameCounter:
@@ -1559,7 +1575,7 @@ wD761_Player_FloorSnapVelocity:
 ; the gap below him, expressed in the same units as wD760_PlayerYVelocity so it can
 ; be dropped straight into it.
 ;
-; Written only by the floor branch of call_03_49dc_BgCollision_FloorCeilingCheck,
+; Written only by the floor branch of .jp_03_4a05_FloorCeilingCheck,
 ; which scans down through data_03_4000_TileSolidityRows a pixel row at a time and
 ; stores -(rows * 16). Zero therefore means he is already resting exactly on the
 ; floor. If no floor turns up within BGCOLL_FLOOR_SEARCH_ROWS it stores the search
@@ -1676,7 +1692,10 @@ wD775_Cutscene_Skippable:
     ds 2
 
 wD778_BlockPatch_SlotWriteHead:
-; Index into wD78B_BlockPatch_SlotTable slot table; incremented by BgMap_UpdateCollisionFlags as slots are filled
+; Write head for the wCD00/wCE00 registered-patch tables - NOT an index into
+; wD78B_BlockPatch_SlotTable, despite the name. call_00_1ec9_BlockPatch_Register writes
+; one slot per patched block from here and leaves it pointing past the last one; the two
+; strip loaders and call_00_1f05_BlockPatch_WriteCollision scan backwards from it
     ds 1                                               ;; d778
 
 ; ------------------------------------------------------------------
@@ -1708,7 +1727,7 @@ wD77C_BlockPatch_StepFlags:
 ; Flags for current sequence step - see the BLOCKPATCH_STEP_* constants:
 ; bit 0 = loop immediately (BLOCKPATCH_STEP_LOOP),
 ; bit 1 = call call_00_1ec9_BlockPatch_Register (BLOCKPATCH_STEP_REGISTER),
-; bit 2 = call call_00_1f05_BgMap_FindAndWriteCollisionBlock (BLOCKPATCH_STEP_COLLISION),
+; bit 2 = call call_00_1f05_BlockPatch_WriteCollision (BLOCKPATCH_STEP_COLLISION),
 ; bit 3 = call call_00_169f_BlockPatch_WriteTiles (BLOCKPATCH_STEP_TILES),
 ; bit 5 = call call_00_113e_PlaySFX before proceeding; the step carries one extra argument
 ;         byte after the flags for this (BLOCKPATCH_STEP_SFX)
@@ -1717,7 +1736,9 @@ wD77D_BlockPatch_StepsRemaining:
 ; Countdown of remaining steps in the active tile animation sequence; zero = sequence idle
     ds 1                                               ;; d77d
 wD77E_BlockPatch_TilemapAddrLo:
-; VRAM tilemap address where BlockPatch_WriteTiles will write the expanded tile block
+; Address in the wC000_BgMapTileIds shadow map ($C000-$C3FF) where BlockPatch_WriteTiles
+; will write the expanded tile block - not a VRAM address. call_00_1779_BlockPatch_WriteAttributes
+; is what turns it into the matching $98xx tilemap address when it flushes the rectangle
     ds 1                                               ;; d77e
 wD77F_BlockPatch_TilemapAddrHi:
     ds 1                                               ;; d77f
@@ -1771,13 +1792,21 @@ wD78A_MusicId:
     ds 1                                               ;; d78a
 
 wD78B_BlockPatch_SlotTable:
-; 16-byte table of slot states:
-; $00 = empty,
-; $01 = armed/active,
-; $02 = triggered/counting-up,
-; $FF = completed.
-; Each slot tracks one interactive tile region's state. Slots 0–15 correspond to tile
-; block patch regions registered by call_00_1ec9_BlockPatch_Register.
+; 16 event slots, one per column of .data_00_2472_CutsceneIndexLookupTable - slot n and
+; cutscene slot n are the same n. States:
+;   $00  empty / never armed
+;   $01  armed - the thing that owns this slot has been dealt with and is waiting
+;   $02  just triggered; call_00_2305_BlockPatch_TickSlots counts it up from here
+;   $FF  the top of that count. The tick routine then re-arms the slot to $01 and falls
+;        through into call_00_2329_Cutscene_LoadAndRun with C = this slot, which is how
+;        the "here is what you just opened" clip gets played
+;
+; Owners are scattered: call_00_2225_Switch_ArmSlotByPosition claims slots 0-8 by map
+; position, the two door switch tables likewise, CountedBreakable and the toon tv hunters
+; take 14 and 15, and call_00_12e4_BlockPatch_Init pre-arms 13-15 from
+; .data_00_1356_LevelInitialPatchSlots and the hub's slots 0-3 from
+; .data_00_1375_MediaDimension_InitialPatches. These are unrelated to the 128 registered
+; patch slots in wCD00/wCE00.
 ;
 ; The 16 bytes are contiguous ($D78B-$D79A) but declared in four pieces so that the
 ; slots code refers to by name get their own labels. Code indexes straight off
@@ -1805,7 +1834,7 @@ wD79B_Cutscene_MoveFramesRemaining:
 wD79D_Cutscene_MoveSpeed:
 ; movement speed in 1/16ths of a pixel per frame. Only ever $00 or
 ; CUTSCENE_MOVE_SPEED_MAX in practice - see the dead ramp code in
-; call_00_2dbf_MissionPreview_UpdateMovement
+; call_00_2dbf_Cutscene_UpdateMovement
     ds 1                                               ;; d79d
 wD79E_Cutscene_MoveSubPixel:
 ; sub-pixel accumulator. wD79D is added to the low nibble each frame and the
@@ -1846,12 +1875,12 @@ wDA4B_DynamicPalette:
 wDA7B_MediaDimensionTVPalette:
     ds 48                                              ;; da7b
 
-wDAAB_MenuBgMapTileIds:
-; MISNAMED - no tile ids ever reach here. This is the last 32 bytes of the
-; MENU_PALETTE_BYTES block that starts at wDA4B_DynamicPalette, and its only writer is
-; call_01_49d7_MenuCmd_StageCollectibleIcon, which drops
-; MENU_COLLECTIBLE_PALETTE_BYTES of CGB colour on it to give the collectible icon its
-; own palettes. The label is kept so the disassembly's symbol file stays stable
+wDAAB_MenuCollectiblePalettes:
+; Not a region of its own: these are the last 32 bytes of the MENU_PALETTE_BYTES block
+; that starts at wDA4B_DynamicPalette, i.e. CGB background palettes 12 upward. Its only
+; writer is call_01_49d7_MenuCmd_StageCollectibleIcon, which drops
+; MENU_COLLECTIBLE_PALETTE_BYTES of colour on it to give the collectible icon its own
+; palettes on top of whichever set the screen has just loaded
     ds 32                                              ;; daab
 
 ; ------------------------------------------------------------------
@@ -1881,7 +1910,7 @@ wDAD0_CurrentOBP1:
     ds 1                                               ;; dad0
 
 wDAD1_LevelBGP:
-; the level's "real" palettes, set by call_0b_5537_BgPalette_LoadMonoOrGetSpriteParams.
+; the level's "real" palettes, set by call_0b_5537_Palettes_LoadSet.
 ; These are what FADE_MODE_IN fades back to
     ds 1                                               ;; dad1
 

@@ -5,7 +5,7 @@
 ; their own track data, so a track is addressed as (bank, id) and the bank is switched
 ; by wD788_CurrentAudioBank before any entry point here is called.
 ;
-; THREE ENTRY POINTS, called from bank 0:
+; FOUR ENTRY POINTS, called from bank 0:
 ;   Audio_Init      once, at boot - clears the driver's state and silences everything
 ;   Audio_PlaySfx   start sound effect id A
 ;   Audio_PlayMusic start music track id A

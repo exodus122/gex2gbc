@@ -700,9 +700,10 @@ call_01_43e6_Menu_OnSelectionChanged:
 ;   .jp_01_445d  the same for the audio options screen
 ;   .jp_01_446e  do nothing - most screens
 ;
-; The two streaming entries reach into tables in bank00 whose names
-; (data_00_0dd9_GfxStreamScriptTable_TitleOptions / _ChannelZ) look like level names but
-; are really the title-options and audio-options highlight graphics
+; The two streaming entries index one pointer per row into
+; data_00_0dd9_GfxStreamScriptTable_TitleOptions and
+; data_00_0e13_GfxStreamScriptTable_AudioOptions in bank00, which hold the highlight
+; graphics for those screens' rows
     ld   HL, wD6DE_MenuType                                     ;; 01:43e6 $21 $de $d6
     ld   L, [HL]                                       ;; 01:43e9 $6e
     ld   H, $00                                        ;; 01:43ea $26 $00

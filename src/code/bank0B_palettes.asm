@@ -1,8 +1,12 @@
-call_0b_5537_BgPalette_LoadMonoOrGetSpriteParams:
-; Mono-mode (DMG) background palette loader, or sprite params setter in GBC mode.
-; If wD59E_OnGBCFlag is zero (DMG): loads wD624 (level ID) to index either .data_0b_555f (C=0, primary BG)
-; or .data_0b_55db (C≠0, secondary BG), copies 3 bytes into wDAD1_LevelBGP–wDAD3_LevelOBP1 (DMG palette register values).
-; If GBC (wD59E_OnGBCFlag nonzero), branches to call_0b_561b_GBC_LoadLevelBgPalette
+call_0b_5537_Palettes_LoadSet:
+; The one entry point for "load palette set C", called with C = 0 for the level's own
+; palettes and C = a menu/cutscene palette id otherwise.
+;
+; On a GBC it does nothing itself - it jumps straight to call_0b_561b_GBC_LoadLevelBgPalette,
+; which honours C the same way. The body below is the DMG path: a set is three register
+; values (BGP, OBP0, OBP1) rather than colours, taken from .data_0b_555f indexed by
+; wD624_CurrentLevelId when C is zero, and from .data_0b_55db indexed by C when it is not.
+; The records are four bytes apart but only three are read, so the fourth is spare
     ld   A, [wD59E_OnGBCFlag]
     and  A, A
     jp   NZ, call_0b_561b_GBC_LoadLevelBgPalette
@@ -315,7 +319,10 @@ call_0b_5df8_MediaDimension_LoadActiveTVPalette:
 
 call_0b_5ec3_UpdatePlayerObjPalette:
 ; Updates Gex's OBJ palette based on current power-up state. Returns if DMG.
-; Reads wD73B_VBlankFrameCounter low 5 bits; if ≥ 8 (not ?), checks powerup timers
+; This is the GBC version of the shield flicker: the low 5 bits of
+; wD73B_VBlankFrameCounter split every 32 frames into 8 frames of his normal colours and
+; 24 of the power-up ones, so the palette pulses rather than the sprite blinking.
+; With the counter at 8 or above it checks the powerup timers
 ; wD751_Player_CircuitPowerUpTimerLo/wD752_Player_CircuitPowerUpTimerHi →
 ; uses .data_0b_5efb (gold flash palette), then wD755_FlyPowerup2_TimerLo/wD756 → uses .data_0b_5f03
 ; (blue/white palette), then wD753_FlyPowerup1_TimerLo/wD754_FlyPowerup1_TimerHi → same blue/white palette.
@@ -382,10 +389,15 @@ call_0b_5f1b_FlyPowerup_LoadParticlePalette:
     db   $00, $00, $00, $00, $00, $03, $00, $03
 
 call_0b_5f57_Entity_LoadGBCPalette:
-; Loads a GBC OBJ palette for the current entity slot. Derives palette slot from wD300
-; (entity address low byte, rotated 3 bits). Reads entity ID from ENTITY_FIELD_ENTITY_ID,
-; multiplies by 8, indexes .data_entity_palettes for that entity's 8-byte color data, writes
-; to the computed wDA0B+ slot. Also stores the palette slot index in wD32D_Entity_OamAttrBase table entry for this entity slot
+; Loads a GBC OBJ palette for the current entity slot. Called with C = the CGB OBJ palette
+; number this entity is to use, which comes from byte +5 of its
+; data_0a_75fd_EntityAttributeTable record.
+;
+; Three addresses are built. wD300_CurrentEntityAddrLo rotated three bits gives this slot's
+; index into wD32D_Entity_OamAttrBase, where C is stored so the sprite builders can OR it
+; into every OAM attribute byte. C * 8 past wDA0B_Entity_Palettes is the destination.
+; ENTITY_FIELD_ENTITY_ID * 8 past .data_entity_palettes is the source. Eight bytes - four
+; CGB colours - are then copied across
     ld   A, [wD300_CurrentEntityAddrLo]
     rlca
     rlca

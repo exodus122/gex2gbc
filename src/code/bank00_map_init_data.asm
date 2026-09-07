@@ -9,7 +9,7 @@
 ; All of them read wD624_CurrentLevelId implicitly, so there is no "which map"
 ; argument anywhere - callers that want another map's data set wD624, call, and put
 ; it back. call_01_48df_MenuCmd_SetTotalsPageText and
-; call_00_4349_LoadEnteringMenu both do exactly that.
+; call_01_4349_Password_BuildPayload both do exactly that.
 ; ==================================================================
 
 call_00_2e3a_MapData_GetTVPaletteId:
@@ -24,7 +24,7 @@ call_00_2e3a_MapData_GetTVPaletteId:
 call_00_2e43_MapData_GetRemoteProgressId:
 ; A = this map's row in the remote/mission progress tables. Several maps share a
 ; row, which is how levels with the same mission structure share status strings -
-; see call_00_4969_MenuCmd_SetMissionStatusText
+; see call_01_4969_MenuCmd_SetMissionStatusText
     call call_00_2eb0_MapData_GetRecordAddr
     ld   DE, MAPDATA_REMOTE_PROGRESS_ID
     add  HL, DE
@@ -169,7 +169,7 @@ call_00_2eb0_MapData_GetRecordAddr:
 ;
 ; Five of the sixteen bytes are dead. The record is padded to a power of two so
 ; call_00_2eb0_MapData_GetRecordAddr can index it with four `add HL,HL` shifts
-; instead of a multiply - 80 bytes of ROM spent to avoid a multiply routine
+; instead of a multiply - 155 bytes of ROM spent to avoid a multiply routine
     ; $00 MAP_MEDIA_DIMENSION
     db   $00, $06
     dw   data_01_5f88_MapText_MediaDimension

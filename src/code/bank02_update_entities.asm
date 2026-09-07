@@ -136,7 +136,7 @@ data_02_4000_EntityActionJumpTable:
     dw   data_02_5113_EntityActions_CircuitCentralLittleRobotGear   ; $7B ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT_GEAR
     dw   data_02_5117_EntityActions_CircuitCentralElectricBall      ; $7C ENTITY_CIRCUIT_CENTRAL_ELECTRIC_BALL
     dw   data_02_511f_EntityActions_CircuitCentralMovingPlatform    ; $7D ENTITY_CIRCUIT_CENTRAL_MOVING_PLATFORM
-    dw   data_02_5123_EntityActions_CircuitCentralPoweredPlatform   ; $7E ENTITY_CIRCUIT_CENTRAL_POWERED_PLAFORM
+    dw   data_02_5123_EntityActions_CircuitCentralPoweredPlatform   ; $7E ENTITY_CIRCUIT_CENTRAL_POWERED_PLATFORM
     dw   data_02_512f_EntityActions_CircuitCentralLoweringPlatform  ; $7F ENTITY_CIRCUIT_CENTRAL_LOWERING_PLATFORM
     dw   data_02_5133_EntityActions_CircuitCentralWalkerRobot       ; $80 ENTITY_CIRCUIT_CENTRAL_WALKER_ROBOT
     dw   data_02_5137_EntityActions_CircuitCentralPoweredWalkway    ; $81 ENTITY_CIRCUIT_CENTRAL_POWERED_WALKWAY
@@ -198,7 +198,7 @@ call_02_6e17_Entities_InitAndSpawnAll:
     ld   [wD20D_Player_FacingFlags], A
 call_02_6e68_Entities_InitNPCSlots:
 ; Subset of above — only zeros entity interaction-tracking vars (wD74D–wD74F, wD587_EntityGfxVramPage) and
-; fills the 7 NPC slots (D220–D3E0) with $FF
+; fills the 7 NPC slots (wD220-wD2E0) with $FF
     xor  A, A
     ld   [wD587_EntityGfxVramPage], A
     ld   [wD74D_Player_EntityStoodOnLo], A
@@ -390,11 +390,11 @@ call_02_6f80_Entities_DrawAll:
 call_02_6fda_Entity_TickAction:
 ; The animation player, run once per frame for every entity including Gex.
 ;
-; SPRITE_FRAME_COUNTER counts down; $FF means "hold this frame forever" and is how an entity
+; ANIM_FRAME_TIMER counts down; $FF means "hold this frame forever" and is how an entity
 ; freezes its animation without a separate flag. When it reaches zero it reloads from
-; SPRITE_FRAME_COUNTER_MAX and SPRITE_COUNTER steps to the next frame.
+; ANIM_SPEED and ANIM_FRAME_INDEX steps to the next frame.
 ;
-; When SPRITE_COUNTER reaches SPRITE_COUNTER_MAX the sequence has run out, and what happens
+; When ANIM_FRAME_INDEX reaches ANIM_FRAME_COUNT the sequence has run out, and what happens
 ; next is declared by the action data rather than decided here:
 ;   ACTION_STATE_ADVANCE_ON_END  hand over to the pending action and stop. Only Gex's
 ;                                animation blocks ever set this - see the file header in
@@ -408,7 +408,7 @@ call_02_6fda_Entity_TickAction:
 ; a one-frame block becomes a metronome ticking every ANIM_SPEED frames - which is exactly what
 ; a good number of entities use theirs for.
 ;
-; Finally the new frame's sprite id is fetched through SPRITE_IDS_PTR into SPRITE_ID,
+; Finally the new frame's sprite id is fetched through ANIM_FRAME_LIST_PTR into SPRITE_ID,
 ; SPRITE_FLAG_ID_CHANGED is raised, and it falls through into
 ; Entity_NotifyActionChanged to get the tiles fetched
     ld   H, $d2
@@ -504,7 +504,7 @@ call_02_7030_Entity_NotifyActionChanged:
 ;
 ; So an enemy that animates by swapping its own tiles goes through here every time its
 ; frame changes, while a platform gets its artwork once on room load and never comes
-; back. Thirty entities use this path and ninety-three use the other; four appear in
+; back. Thirty entities use this path and ninety-seven use the other; four appear in
 ; both tables - ENTITY_PRE_HISTORY_TRICERATOPS and the three Kung Fu Theater humans -
 ; which is how a large enemy gets a streamed animation in one VRAM window plus a
 ; preloaded page in another
@@ -672,7 +672,7 @@ call_02_7030_Entity_NotifyActionChanged:
     db   $00                                                                ; $7B ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT_GEAR
     db   $00                                                                ; $7C ENTITY_CIRCUIT_CENTRAL_ELECTRIC_BALL
     db   $00                                                                ; $7D ENTITY_CIRCUIT_CENTRAL_MOVING_PLATFORM
-    db   $00                                                                ; $7E ENTITY_CIRCUIT_CENTRAL_POWERED_PLAFORM
+    db   $00                                                                ; $7E ENTITY_CIRCUIT_CENTRAL_POWERED_PLATFORM
     db   $00                                                                ; $7F ENTITY_CIRCUIT_CENTRAL_LOWERING_PLATFORM
     db   BANK(image_circuit_central_walker_robot_01a_7700)                  ; $80 ENTITY_CIRCUIT_CENTRAL_WALKER_ROBOT
     db   $00                                                                ; $81 ENTITY_CIRCUIT_CENTRAL_POWERED_WALKWAY
@@ -692,9 +692,15 @@ call_02_7030_Entity_NotifyActionChanged:
     db   $00                                                                ; $8F ENTITY_MEDIA_DIMENSION_MOVING_PLATFORM
 
 call_02_70f1_Entity_RequestQueuedAction:
-; Called when an animation sequence finishes. Reads ACTION_STATE, checks bit 7; if clear, returns (sequence loops).
-; If set, masks to low 5 bits and calls call_02_4ccd_Player_RequestAction (likely a state-machine transition
-; or death/reset handler)
+; Called by call_02_6fda_Entity_TickAction when an animation sequence finishes, and
+; also directly by call_02_41ad_PlayerAction_IntroWarp. Reads
+; ENTITY_FIELD_ACTION_STATE_FLAGS and returns unless ACTION_STATE_HAS_PENDING is set,
+; which is the "this block loops" case; otherwise the low five bits are the pending
+; action id and it is handed to call_02_4ccd_Player_RequestAction.
+;
+; Despite living in the shared entity code this is a player-only path: only Gex's
+; eleven blocks in bank02_entity_action_data.asm carry a nonzero byte +0, so no enemy
+; ever has a pending action to request
     LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_ACTION_STATE_FLAGS
     ld   A, [HL]
     bit  ACTION_STATE_HAS_PENDING_BIT, A
@@ -704,11 +710,12 @@ call_02_70f1_Entity_RequestQueuedAction:
 
 call_02_7102_Entity_SetAction:
 ; Sets a new action on the current entity. Masks action index to 5 bits, writes to ACTION_ID field,
-; then double-indexes data_02_4000_EntityDataTables (by entity ID, then by action index × 4) to get
+; then double-indexes data_02_4000_EntityActionJumpTable (by entity ID, then by action index × 4) to get
 ; the action function pointer and data pointer. Writes function pointer to ACTION_FUNC, reads 4 bytes
-; from the data block: byte 0 → ACTION_STATE | $20, byte 1 → SPRITE_FLAGS | $40, byte 2 → SPRITE_FRAME_COUNTER_MAX
-; and SPRITE_FRAME_COUNTER, byte 3 → SPRITE_COUNTER_MAX; sets SPRITE_IDS_PTR to 4 bytes into the data block;
-; zeroes SPRITE_COUNTER; writes byte 4 to SPRITE_ID; then falls into Entity_NotifyActionChanged
+; from the data block: byte 0 → ACTION_STATE_FLAGS | ACTION_STATE_IS_FIRST_FRAME, byte 1 → SPRITE_FLAGS with
+; SPRITE_FLAG_ID_CHANGED forced on, byte 2 → ANIM_SPEED (which also seeds ANIM_FRAME_TIMER),
+; byte 3 → ANIM_FRAME_COUNT; sets ANIM_FRAME_LIST_PTR to 4 bytes into the data block;
+; zeroes ANIM_FRAME_INDEX; writes byte 4 to SPRITE_ID; then falls into Entity_NotifyActionChanged
     and  A, $1f
     ld   C, A
     LOAD_OBJ_FIELD_TO_HL_ALT ENTITY_FIELD_ACTION_ID
@@ -759,7 +766,7 @@ call_02_7102_Entity_SetAction:
     ld   [DE], A                                       ; ENTITY_FIELD_ANIM_FRAME_LIST_PTR+1 = ptr to 5 bytes after start of data table
     inc  E                                             ; DE = ENTITY_FIELD_ANIM_FRAME_TIMER
     pop  AF
-    ld   [DE], A                                       ; ENTITY_FIELD_UNK_06 = third byte in data table
+    ld   [DE], A                                       ; ENTITY_FIELD_ANIM_FRAME_TIMER = third byte in data table
     inc  E                                             ; DE = ENTITY_FIELD_ANIM_FRAME_INDEX
     xor  A, A
     ld   [DE], A                                       ; ENTITY_FIELD_ANIM_FRAME_INDEX = 0
@@ -924,7 +931,7 @@ call_02_7211_EntityGfxQueue_Enqueue:
 call_02_722c_EntityGfxQueue_StartNextTransfer:
 ; If GFX_XFER_QUEUED_ENTITY_GFX is already set, returns immediately (a transfer is still
 ; pending). Otherwise pops the next entry off wD71A_EntityGfxQueue, indexes
-; .data_02_726c_EntityGfxDescriptors_EntityGfxDescriptors (8-byte records: src bank, src addr lo/hi,
+; .data_02_726c_EntityGfxDescriptors (8-byte records: src bank, src addr lo/hi,
 ; dest addr lo/hi, size lo/hi, pad), copies the record into
 ; wD71F_GfxCopy_SrcBank..wD725_GfxCopy_SizeHi and raises GFX_XFER_QUEUED_ENTITY_GFX
 ; so call_00_0a21_FlushEntityGfxQueue performs the copy
@@ -968,7 +975,7 @@ call_02_722c_EntityGfxQueue_StartNextTransfer:
 ; Fifty-eight tile-streaming jobs, indexed by the graphics-set id in byte +0 of a row
 ; of data_02_743c_EntityGfxAndPaletteTable. Id $00 is the "this entity has no tiles"
 ; sentinel, and its record is correspondingly all zeroes - nothing ever runs it,
-; because Entity_LoadGfxAndPalette only enqueues a nonzero id.
+; because call_02_71c8_Entities_QueueGraphicsAndPalettes only enqueues a nonzero id.
 ;
 ; Every source is in bank $11 or $12, the two entity tile banks, and every destination
 ; is $8200, $8400 or $8500 - so a job is always "page N of the entity tile bank into
@@ -1035,7 +1042,7 @@ call_02_722c_EntityGfxQueue_StartNextTransfer:
     entity_gfx_descriptor image_gfx_39_channel_z_final_battle_button_011_5900, $8500, $0100                             ; $39 ENTITY_CHANNEL_Z_FINAL_BATTLE_BUTTON
 
 data_02_743c_EntityGfxAndPaletteTable:
-; Two bytes per entity id, 144 rows, read by call_02_71c0_Entity_LoadGfxAndPalette
+; Two bytes per entity id, 144 rows, read by call_02_71c8_Entities_QueueGraphicsAndPalettes
 ; when a room's entities are placed.
 ;
 ;   +0  graphics-set id into .data_02_726c_EntityGfxDescriptors. $00 means the entity
@@ -1172,7 +1179,7 @@ data_02_743c_EntityGfxAndPaletteTable:
     db   $2f, $06              ; $7B ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT_GEAR
     db   $30, $05              ; $7C ENTITY_CIRCUIT_CENTRAL_ELECTRIC_BALL
     db   $31, $04              ; $7D ENTITY_CIRCUIT_CENTRAL_MOVING_PLATFORM
-    db   $31, $04              ; $7E ENTITY_CIRCUIT_CENTRAL_POWERED_PLAFORM
+    db   $31, $04              ; $7E ENTITY_CIRCUIT_CENTRAL_POWERED_PLATFORM
     db   $31, $04              ; $7F ENTITY_CIRCUIT_CENTRAL_LOWERING_PLATFORM
     db   $00, $07              ; $80 ENTITY_CIRCUIT_CENTRAL_WALKER_ROBOT
     db   $00, $07              ; $81 ENTITY_CIRCUIT_CENTRAL_POWERED_WALKWAY

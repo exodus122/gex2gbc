@@ -1294,7 +1294,7 @@ call_02_557c_EntityAction_Bat_Update:
 call_02_5589_EntityAction_ScreamTVOrangeMovingPlatform_Update:
 ; One action: the PATROLLING PLATFORM PROLOGUE above, then move and patrol. No
 ; switch gate, unlike call_02_5348 - this one runs from the moment it spawns.
-; Byte for byte the same routine as call_02_5628_EntityAction_ClimbWallSunEnemy,
+; Byte for byte the same routine as call_02_5628_EntityAction_ClimbWallSunEnemy_Update,
 ; which the level data configures for vertical travel instead
     call call_00_34ea_Entity_IsFirstFrameOfAction
     jr   z,.jr_02_5595
@@ -2788,7 +2788,7 @@ call_02_5cce_EntityAction_Unk3B_Update:
 
 call_02_5ccf_EntityAction_Pterosaur_Update:
 ; The one entity in the game that uses
-; call_00_30da_Entity_ApplyGravityMoveY_WithFloorCollision instead of the usual
+; call_00_30da_Entity_ApplyGravityMoveY_WithCeilingCollision instead of the usual
 ; call_00_30af, and the sign convention is the OPPOSITE way round because of it:
 ; here a positive Y velocity moves DOWN, and the per-frame "gravity" therefore
 ; accelerates the pterosaur UPWARDS. Left alone it floats to the top of its span
@@ -2805,7 +2805,7 @@ call_02_5ccf_EntityAction_Pterosaur_Update:
 ; on the frame Entity_MoveXByFacingMomentum_BoundsChecked reports a turn, so a
 ; pterosaur that has dived must walk its span to the far end before it may dive
 ; again
-    call call_00_30da_Entity_ApplyGravityMoveY_WithFloorCollision
+    call call_00_30da_Entity_ApplyGravityMoveY_WithCeilingCollision
     jr   nc,.jr_02_5CDF                                ; clamped: hanging at the ceiling
     call call_00_3345_Entity_CheckIfYVelocityIsZero    ; A = Y velocity
     ld   c,$20
@@ -4181,9 +4181,11 @@ call_02_649c_EntityAction_RezopolisMovingPlatform_Update:
 
 ; ------------------------------------------------------------------
 ; RED PLATFORMS - two entities, one that responds to being STOOD ON and one that
-; responds to the TAILSPIN CHARGE. Both write FACING_FLAGS = $80 every frame
-; (SPRITE_FLAG bit 7 in the OAM attribute byte - the CGB VRAM bank select), and
-; both keep their whole state machine in MISC_FLAGS bits 0-2 with MISC_TIMER_1 as
+; responds to the TAILSPIN CHARGE. Both write FACING_FLAGS = $80 every frame, and
+; since FACING_FLAGS is OR'd straight into the OAM attribute byte that is OAMF_PRI:
+; the platform is drawn BEHIND any non-zero background pixel, which is what lets it
+; sink into the floor rather than sliding over it. It is not a flip or a bank bit.
+; Both keep their whole state machine in MISC_FLAGS bits 0-2 with MISC_TIMER_1 as
 ; a sub-tick counter and MISC_TIMER_2 as the distance travelled
 ; ------------------------------------------------------------------
 
@@ -5267,7 +5269,7 @@ call_02_6a33_EntityAction_WalkerRobot_Update:
 ;
 ;   the WALKWAY entity ($81) does nothing at all in its action. Its collision
 ;     handler (.jr_03_5129) is what matters: touching it while the power-up timer
-;     is running writes $06 into one of the three wD5A3_ConveyorState slots
+;     is running writes $06 into one of the three wD5A3_ConveyorPowerTimer1 slots
 ;   the ANIMATED TILE code in bank03_map_tile_anim.asm reads those slots and
 ;     swaps the belt tiles for blank ones when the slot is empty, which is the
 ;     only reason a running belt looks different from a stopped one
@@ -5382,7 +5384,7 @@ call_02_6aac_EntityAction_ArcedGunProjectile_Arc:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_PARAM
     bit  0,[hl]
     jr   nz,.jr_02_6AC4
-    call call_00_30da_Entity_ApplyGravityMoveY_WithFloorCollision
+    call call_00_30da_Entity_ApplyGravityMoveY_WithCeilingCollision
     jp   nc,call_02_6c03_GunProjectile_Explode         ; reached the ceiling
     jp   call_02_6bf8_GunProjectile_ExplodeIfHit
 .jr_02_6AC4:
@@ -5415,7 +5417,7 @@ call_02_6af9_EntityAction_ArcedGunProjectile2_Arc:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_PARAM
     bit  0,[hl]
     jr   nz,.jr_02_6B17
-    call call_00_30da_Entity_ApplyGravityMoveY_WithFloorCollision
+    call call_00_30da_Entity_ApplyGravityMoveY_WithCeilingCollision
     jp   nc,call_02_6c03_GunProjectile_Explode
     jp   call_02_6bf8_GunProjectile_ExplodeIfHit
 .jr_02_6B17:
@@ -5449,7 +5451,7 @@ call_02_6b43_EntityAction_ArcedGunProjectile2_Drop:
     LOAD_OBJ_FIELD_TO_HL ENTITY_FIELD_MISC_PARAM
     bit  0,[hl]
     jr   nz,.jr_02_6B5B
-    call call_00_30da_Entity_ApplyGravityMoveY_WithFloorCollision
+    call call_00_30da_Entity_ApplyGravityMoveY_WithCeilingCollision
     jp   nc,call_02_6c03_GunProjectile_Explode
     jp   call_02_6bf8_GunProjectile_ExplodeIfHit
 .jr_02_6B5B:
@@ -5471,7 +5473,7 @@ call_02_6b6a_EntityAction_GunProjectile_WaitForCue:
 
 call_02_6b81_EntityAction_GunProjectile_Fly:
 ; Action $01. The straight shot: no gravity, just a Y velocity ramped towards
-; $30 (up) or $D0 (down) depending on which way the gun points, and it explodes
+; $30 (down) or $D0 (up) depending on which way the gun points, and it explodes
 ; when its own block row reaches the matching end of its bounding box. Compared
 ; per BLOCK rather than per pixel, so the shot has to land exactly on that row -
 ; which it does, because the velocity is a whole number of pixels by then

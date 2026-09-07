@@ -84,8 +84,8 @@ call_01_4f1b_Password_GetCellUnderCursor:
     ret                                                ;; 01:4f2f $c9
 
 call_01_4f30_Password_GetCellTileIndex:
-; A = index of the first VRAM tile backing the highlighted cell. Each cell is
-; four tiles wide in the tile map, and the keyboard's tiles start at $3E
+; A = index of the first VRAM tile backing the highlighted cell. Each cell is a 2x2
+; block, so four tiles per cell, and the keyboard's tiles start at $3E
     ld   A, [wD6E0_MenuSelectedRow]                                    ;; 01:4f30 $fa $e0 $d6
     add  A, A                                          ;; 01:4f33 $87
     ld   L, A                                          ;; 01:4f34 $6f
@@ -138,9 +138,10 @@ call_01_4f87_Password_ClearEntryGrid:
 ; cells. It is a fill written as a copy, not a copy - easy to misread as moving
 ; the exit button into the password boxes.
 ;
-; That covers the exit button plus the 28 boxes; the three fixed keys are then
-; stamped back over the blanks. wD667 is blanked and immediately rewritten, which
-; is redundant but harmless.
+; That covers all thirty cells - the exit button, the 28 boxes and the GO key - and
+; EXIT and GO are then stamped back over the blanks, along with PASSWORD_KEY_UNKNOWN
+; in wD685, which sits just past the grid and the fill never reached. wD667 is
+; blanked and immediately rewritten, which is redundant but harmless.
 ;
 ; Called before both password screens, so backing out of "wrong password" starts
 ; from an empty grid rather than leaving the bad guess on screen
@@ -442,14 +443,13 @@ call_01_5271_Password_DecodeAndApply:
     ld   A, MENU_RESULT_DISMISSED                      ;; 01:531a $3e $00
     ret                                                ;; 01:531c $c9
 .data_01_531d_LevelPayloadMasks:
-; A byte-for-byte duplicate of .data_01_43b6_LevelPayloadMasks - the encoder and
-; the decoder each carry their own copy rather than sharing one
 ; One byte per remote progress id: which bits of that level's
 ; wD629_RemoteProgressFlags are worth saving in a password. A level with three
 ; missions plus both hidden remotes costs five bits; a bonus level costs one.
 ; That is how thirty levels fit into a 64-bit payload.
-; call_01_5271_Password_DecodeAndApply keeps its own identical copy at
-; .data_01_531d_LevelPayloadMasks
+;
+; A byte-for-byte duplicate of .data_01_43b6_LevelPayloadMasks - the encoder and the
+; decoder each carry their own copy rather than sharing one
     db   $1f                                           ; id 0 - 3 missions + silver + gold
     db   $1b                                           ; id 1 - 2 missions + silver + gold
     db   $19                                           ; id 2 - 1 mission  + silver + gold

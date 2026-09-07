@@ -33,13 +33,13 @@ call_0a_4000_EntityList_LoadForCurrentLevel:
     ld   HL, wD624_CurrentLevelId
     ld   L, [HL]                                       ; L = current level
     ld   H, $00
-    add  HL, HL                                        ; multiply by 2?
+    add  HL, HL                                        ; two bytes per pointer
     ld   DE, .data_0a_4019
     add  HL, DE
     ld   A, [HL+]
-    ld   [wD336_CurrentEntityToLoadPtr], A
+    ld   [wD336_CurrentEntityToLoadPtrLo], A
     ld   A, [HL+]
-    ld   [wD337_CurrentEntityToLoadPtr], A
+    ld   [wD337_CurrentEntityToLoadPtrHi], A
     ld   A, $01
     ld   [wD338_EntityLoadingFlag], A
     ret
@@ -295,7 +295,7 @@ data_0a_75fd_EntityAttributeTable:
     db   $00, $00, $00, COLLISION_TYPE_NONE, $2f, $06, $00, $00             ; ENTITY_CIRCUIT_CENTRAL_LITTLE_ROBOT_GEAR
     db   $70, $08, $08, COLLISION_TYPE_ELECTRIC_BALL, $30, $05, $00, $00    ; ENTITY_CIRCUIT_CENTRAL_ELECTRIC_BALL
     db   $40, $10, $08, COLLISION_TYPE_MOVING_PLATFORM | COLLISION_TYPE_PLATFORM, $31, $04, $00, $00    ; ENTITY_CIRCUIT_CENTRAL_MOVING_PLATFORM
-    db   $70, $10, $08, COLLISION_TYPE_MOVING_PLATFORM | COLLISION_TYPE_PLATFORM, $31, $04, $00, $00    ; ENTITY_CIRCUIT_CENTRAL_POWERED_PLAFORM
+    db   $70, $10, $08, COLLISION_TYPE_MOVING_PLATFORM | COLLISION_TYPE_PLATFORM, $31, $04, $00, $00    ; ENTITY_CIRCUIT_CENTRAL_POWERED_PLATFORM
     db   $00, $10, $08, COLLISION_TYPE_MOVING_PLATFORM | COLLISION_TYPE_PLATFORM, $31, $04, $00, $00    ; ENTITY_CIRCUIT_CENTRAL_LOWERING_PLATFORM
     db   $00, $0c, $0c, COLLISION_TYPE_GENERIC_ENEMY, $00, $07, $00, $00    ; ENTITY_CIRCUIT_CENTRAL_WALKER_ROBOT
     db   $40, $10, $10, COLLISION_TYPE_POWERED_WALKWAY, $00, $07, $00, $00  ; ENTITY_CIRCUIT_CENTRAL_POWERED_WALKWAY
@@ -334,7 +334,7 @@ call_0a_7a7c_EntitySpawn_SpawnNextFromList:
     ld   H, $d2
     ld   A, $20
 .jr_0a_7a80:
-    ld   L, A                                          ; L = 0x20
+    ld   L, A                                          ; L = this slot's base, $20 first
     ld   A, [HL]                                       ; load from $d2xx, start at $d220
     cp   A, $ff                                        ; if loaded value is ff, then jump
     jr   Z, .jr_0a_7a8c
@@ -349,7 +349,7 @@ call_0a_7a7c_EntitySpawn_SpawnNextFromList:
     rlca
     rlca
     ld   [wD339_SpawningSlotIndex], A
-    ld   HL, wD336_CurrentEntityToLoadPtr
+    ld   HL, wD336_CurrentEntityToLoadPtrLo
     ld   E, [HL]
     inc  HL
     ld   D, [HL]
@@ -360,9 +360,9 @@ call_0a_7a7c_EntitySpawn_SpawnNextFromList:
     ld   HL, ENTITY_SPAWN_RECORD_SIZE
     add  HL, DE
     ld   A, L
-    ld   [wD336_CurrentEntityToLoadPtr], A
+    ld   [wD336_CurrentEntityToLoadPtrLo], A
     ld   A, H
-    ld   [wD337_CurrentEntityToLoadPtr], A                                    ; load 2 bytes 0x10 after first
+    ld   [wD337_CurrentEntityToLoadPtrHi], A           ; cursor moved on one $10-byte record
     ld   HL, wD338_EntityLoadingFlag
     ld   C, [HL]
     inc  [HL]

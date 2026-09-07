@@ -1,4 +1,4 @@
-    db   ENTITY_CIRCUIT_CENTRAL_POWERED_PLAFORM
+    db   ENTITY_CIRCUIT_CENTRAL_POWERED_PLATFORM
     dw   $06f0, $0200
     db   $38, $36, $11
     db   $09, $5a, $ff, $10, $00, $00, $00, $00

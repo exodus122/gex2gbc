@@ -2,11 +2,21 @@
 ; Banking and video primitives - bank00_home.asm
 ; ==================================================================
 
-; Point the MBC at the ROM bank in A. The cart is wired so that bit 5 of the ROM
-; bank number also has to select the SRAM bank, which is what the swap/rrca/and
-; does: it slides that bit down to bit 0 and writes it to MBC1SRamBank so the two
-; stay in step. (That upper-bits trick is why a 1MB cart works despite the header
-; saying MBC5.)
+; Point the MBC at the ROM bank in A. Two registers are written: the bank number
+; goes to $2001 and bit 5 of it - which is what the swap/rrca/and $01 extracts -
+; goes to $4001.
+;
+; That covers both readings of the cartridge. Under the MBC5 the header declares,
+; $2001 is the low byte of the ROM bank and carries all six bits of a 64-bank cart
+; on its own, so the second write lands on the RAM bank register and does nothing
+; (the header also says CART_SRAM_NONE). Under an MBC1 the same two registers are
+; BANK1 and BANK2, BANK1 only holds five bits, and bit 5 has to be handed to BANK2
+; for banks $20-$3F to be reachable at all. Either way the right bank is mapped,
+; and the ROM cannot settle which chip is really on the board.
+;
+; gex3 runs the same five instructions with `and a,$00`, so its BANK2 write is
+; always zero. Its highest bank is $7F, which an MBC1 could not reach that way, so
+; that cart at least has to be a real MBC5 and the two instructions are dead there.
 ;
 ; This is the bare register write with no bookkeeping. Code that has to come back
 ; to the bank it was in goes through call_00_1089_SwitchBank /
@@ -104,7 +114,7 @@ ENDM
 
 ; Calls a function in a different bank
 MACRO FARCALL
-    ld   [wD59D_ReturnBank], a
+    ld   [wD59D_FarCallArgA], a
 	ld   a, BANK(\1)
 	ld   hl, \1
 	call call_00_1078_FarCall
@@ -343,7 +353,7 @@ MACRO entity_gfx_descriptor ; source label, VRAM destination, bytes
     db   $00
 ENDM
 
-; The id $00 row. Not a descriptor at all - Entity_LoadGfxAndPalette only enqueues a
+; The id $00 row. Not a descriptor at all - call_02_71c8_Entities_QueueGraphicsAndPalettes only enqueues a
 ; nonzero id, so nothing ever reads it - but the table is indexed, so the slot has to
 ; be there
 MACRO entity_gfx_descriptor_none

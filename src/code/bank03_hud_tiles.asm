@@ -38,12 +38,12 @@ call_03_6941_HUD_LoadCollectibleSprites:
 ; Uses wD624 (level ID) to index .data_image_collectibles_03_6967 — a 31-entry pointer table mapping each
 ; level to one of 6 world-specific collectible tile sets (Toon TV, Scream TV, Circuit Central, Kung Fu Theater,
 ;  Prehistory Channel, Rezopolis). Then uses wD648_CollectibleMilestoneIndex (collectible type index, swap-shifted) as a sub-index
-; within that set to select the specific tile frame, and copies TWO tiles ($20 bytes) to VRAM $87E0
-; via VRAM_Copy32Bytes - the collectible icon is an 8x16 sprite, so it is two tiles, not the one
-; collectible icon is an 8x16 sprite.
+; within that set to select the specific tile frame, and copies TWO tiles ($20 bytes) to
+; VRAM_COLLECTIBLE_SPRITES via VRAM_Copy32Bytes - the icon is an 8x16 sprite, so it is two
+; tiles rather than one.
 ;
-; Also clears HUD_DIRTY_COLLECTIBLES (bit 3 of wD60E_HUDDirtyFlags) on entry, which the old
-; comment did not mention - this is the routine that services that dirty flag
+; It also clears HUD_DIRTY_COLLECTIBLES (bit 3 of wD60E_HUDDirtyFlags) on entry: this is the
+; routine that services that dirty flag
     ld   HL, wD60E_HUDDirtyFlags
     res  3, [HL]
     call call_03_6be5_HUD_LoadCollectiblePalette
@@ -207,7 +207,8 @@ call_03_6ceb_HUD_LoadTimerDigits:
 ; Loads the bonus level countdown timer digits. Clears bit 2 of wD60E_HUDDirtyFlags.
 ; Reads wD76F_LevelTimer_Minutes (minutes), wD770_LevelTimer_SecondsBCD high nibble (tens of seconds),
 ; and wD770_LevelTimer_SecondsBCD low nibble (seconds), calling call_03_6d88_HUD_LoadDigitTile for each to write digit tiles to VRAM $8748, $8768,
-; $8788 respectively. Falls through to call_03_6d5e_HUD_LoadCollectibleCountDigits to also load the collectible count digits
+; $8788 respectively. Then jumps forward over call_03_6d13_HUD_LoadLivesDigits to
+; call_03_6d5e_HUD_LoadCollectibleCountDigits, to also load the collectible count digits
     ld   HL, wD60E_HUDDirtyFlags
     res  2, [HL]
     ld   A, [wD76F_LevelTimer_Minutes]
