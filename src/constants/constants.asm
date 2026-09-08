@@ -405,6 +405,13 @@ DEF LEVEL_TIMER_SECONDS_UNDERFLOW EQU $99
 ; .data_00_074a_CollectibleMilestoneThresholds. Once the milestone index reaches
 ; the last entry it stops advancing, so from then on every multiple of
 ; COLLECTIBLE_EXTRA_LIFE_STEP is what pays out
+; A level's collectible list is a run of COLLECTIBLE_RECORD_SIZE-byte records in
+; 16x16-pixel grid cells, ending at the first record whose X is zero. gex3's records
+; carry a third byte, the map id, because a gex3 level is many maps
+DEF COLLECTIBLE_RECORD_SIZE      EQU 2    ; grid X, grid Y
+DEF COLLECTIBLE_LIST_END         EQU $00  ; in the grid X position
+DEF COLLECTIBLE_CELL_SIZE        EQU $10  ; one grid cell, in pixels
+
 DEF COLLECTIBLE_MILESTONE_1      EQU 30
 DEF COLLECTIBLE_MILESTONE_2      EQU 40
 DEF COLLECTIBLE_EXTRA_LIFE_STEP  EQU 50

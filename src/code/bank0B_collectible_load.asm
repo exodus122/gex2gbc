@@ -130,42 +130,42 @@ call_0b_4000_CollectibleList_LoadForCurrentLevel:
     dw   .data_40a0_media_dimension_collectible_list            ; MAP_UNUSED_1D
     dw   .data_40a0_media_dimension_collectible_list            ; MAP_BOSS_TV_CHANNEL_Z
 .data_40a0_media_dimension_collectible_list:
-    INCBIN "data/maps/media_dimension/collectible_list_media_dimension.bin"
+    INCLUDE "data/maps/media_dimension/collectible_list_media_dimension.asm"
 .data_40a4_out_of_toon_collectible_list:
-    INCBIN "data/maps/toon_tv/collectible_list_out_of_toon.bin"
+    INCLUDE "data/maps/toon_tv/collectible_list_out_of_toon.asm"
 .data_41b8_smellraiser_collectible_list:
-    INCBIN "data/maps/scream_tv/collectible_list_smellraiser.bin"
+    INCLUDE "data/maps/scream_tv/collectible_list_smellraiser.asm"
 .data_4254_frankensteinfeld_collectible_list:
-    INCBIN "data/maps/scream_tv/collectible_list_frankensteinfeld.bin"
+    INCLUDE "data/maps/scream_tv/collectible_list_frankensteinfeld.asm"
 .data_430a_wwwdotcomcom_collectible_list:
-    INCBIN "data/maps/circuit_central/collectible_list_wwwdotcomcom.bin"
+    INCLUDE "data/maps/circuit_central/collectible_list_wwwdotcomcom.asm"
 .data_4400_mao_tse_tongue_collectible_list:
-    INCBIN "data/maps/kung_fu_theater/collectible_list_mao_tse_tongue.bin"
+    INCLUDE "data/maps/kung_fu_theater/collectible_list_mao_tse_tongue.asm"
 .data_44d0_pangaea_90210_collectible_list:
-    INCBIN "data/maps/prehistory_channel/collectible_list_pangaea_90210.bin"
+    INCLUDE "data/maps/prehistory_channel/collectible_list_pangaea_90210.asm"
 .data_45b4_fine_tooning_collectible_list:
-    INCBIN "data/maps/toon_tv/collectible_list_fine_tooning.bin"
+    INCLUDE "data/maps/toon_tv/collectible_list_fine_tooning.asm"
 .data_467a_this_old_cave_collectible_list:
-    INCBIN "data/maps/prehistory_channel/collectible_list_this_old_cave.bin"
+    INCLUDE "data/maps/prehistory_channel/collectible_list_this_old_cave.asm"
 .data_4778_honey_i_shrunk_the_gecko_collectible_list:
-    INCBIN "data/maps/circuit_central/collectible_list_honey_i_shrunk_the_gecko.bin"
+    INCLUDE "data/maps/circuit_central/collectible_list_honey_i_shrunk_the_gecko.asm"
 .data_48fe_poltergex_collectible_list:
-    INCBIN "data/maps/scream_tv/collectible_list_poltergex.bin"
+    INCLUDE "data/maps/scream_tv/collectible_list_poltergex.asm"
 .data_497a_samurai_night_fever_collectible_list:
-    INCBIN "data/maps/kung_fu_theater/collectible_list_samurai_night_fever.bin"
+    INCLUDE "data/maps/kung_fu_theater/collectible_list_samurai_night_fever.asm"
 .data_4a66_no_weddings_and_a_funeral_collectible_list:
-    INCBIN "data/maps/rezopolis/collectible_list_no_weddings_and_a_funeral.bin"
+    INCLUDE "data/maps/rezopolis/collectible_list_no_weddings_and_a_funeral.asm"
 .data_4b0e_thursday_the_12th_collectible_list:
-    INCBIN "data/maps/scream_tv/collectible_list_thursday_the_12th.bin"
+    INCLUDE "data/maps/scream_tv/collectible_list_thursday_the_12th.asm"
 .data_4b0e_lizard_in_a_china_shop_collectible_list:
-    INCBIN "data/maps/kung_fu_theater/collectible_list_lizard_in_a_china_shop.bin"
+    INCLUDE "data/maps/kung_fu_theater/collectible_list_lizard_in_a_china_shop.asm"
 .data_4bb4_bugged_out_collectible_list:
-    INCBIN "data/maps/rezopolis/collectible_list_bugged_out.bin"
+    INCLUDE "data/maps/rezopolis/collectible_list_bugged_out.asm"
 .data_4bb6_chips_and_dips_collectible_list:
-    INCBIN "data/maps/circuit_central/collectible_list_chips_and_dips.bin"
+    INCLUDE "data/maps/circuit_central/collectible_list_chips_and_dips.asm"
 .data_4c2c_lava_dabba_doo_collectible_list:
-    INCBIN "data/maps/prehistory_channel/collectible_list_lava_dabba_doo.bin"
+    INCLUDE "data/maps/prehistory_channel/collectible_list_lava_dabba_doo.asm"
 .data_4d3a_texas_chainsaw_manicure_collectible_list:
-    INCBIN "data/maps/scream_tv/collectible_list_texas_chainsaw_manicure.bin"
+    INCLUDE "data/maps/scream_tv/collectible_list_texas_chainsaw_manicure.asm"
 .data_4dee_mazed_and_confused_collectible_list:
-    INCBIN "data/maps/rezopolis/collectible_list_mazed_and_confused.bin"
+    INCLUDE "data/maps/rezopolis/collectible_list_mazed_and_confused.asm"
