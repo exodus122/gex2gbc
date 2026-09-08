@@ -66,6 +66,24 @@ MACRO ARM_VRAM_STREAM_ISR_ALT
 ENDM
 
 ; ==================================================================
+; Blockset banks - main.asm
+; ==================================================================
+
+; Asserts that a channel's four blockset regions came out where the strip loaders
+; expect them: one $4000 bank based at $4000, four BLOCKSET_REGION_SIZE regions in
+; this order. Those loaders reach a region by setting bits of the address high byte
+; - `set 4, B` picks the alt blockset, `set 5, B` picks the tile types - so nothing
+; may sit between them and none may change size. Written after the four INCBINs
+; rather than emitting them, so main.asm stays a flat list of label/INCBIN pairs
+MACRO assert_blockset_bank ; channel name
+    ASSERT blockset_\1                == ROMX_PAGE_BASE << 8
+    ASSERT alt_blockset_\1            == blockset_\1 + BLOCKSET_REGION_SIZE
+    ASSERT blockset_tile_types_\1     == blockset_\1 + BLOCKSET_REGION_SIZE * 2
+    ASSERT alt_blockset_tile_types_\1 == blockset_\1 + BLOCKSET_REGION_SIZE * 3
+    ASSERT @                          == blockset_\1 + BLOCKSET_REGION_SIZE * 4
+ENDM
+
+; ==================================================================
 ; bank00_home.asm data tables
 ; ==================================================================
 

@@ -99,7 +99,7 @@ call_00_2e89_MapData_GetBlocksetAndCollisionBank:
 ; A = ROM bank holding both the blockset (metatile definitions) and the collision
 ; table for this map - the two live together, which is why one accessor covers both
     call call_00_2eb0_MapData_GetRecordAddr
-    ld   DE, MAPDATA_BLOCKSET_COLLISION_BANK
+    ld   DE, MAPDATA_BLOCKSET_BANK
     add  HL, DE
     ld   A, [HL]
     ret
@@ -158,8 +158,8 @@ call_00_2eb0_MapData_GetRecordAddr:
 ;                                              is the level name, 1..n the missions
 ;   $04       MAPDATA_BLOCKMAP_BANK            grid of block ids = the layout
 ;   $05       MAPDATA_ALT_BLOCKSET_BANK        flag plane, shared by up to 8 maps
-;   $06       MAPDATA_BLOCKSET_COLLISION_BANK  what each block id expands to, plus
-;                                              the collision table - one bank each
+;   $06       MAPDATA_BLOCKSET_BANK            what each block id expands to: all
+;                                              four regions, one bank per channel
 ;   $07                                        unused, always $00
 ;   $08       MAPDATA_ALT_BLOCKSET_MASK        this map's bit in that plane
 ;   $09       MAPDATA_TILESET_BANK
@@ -173,7 +173,7 @@ call_00_2eb0_MapData_GetRecordAddr:
     ; $00 MAP_MEDIA_DIMENSION
     db   $00, $06
     dw   data_01_5f88_MapText_MediaDimension
-    db   BANK(blockmap_media_dimension), BANK(alt_blockset_flags1), BANK(blockset_collision_media_dimension)
+    db   BANK(blockmap_media_dimension), BANK(alt_blockset_flags1), BANK(blockset_media_dimension)
     db   $00, ALT_BLOCKSET_MEDIA_DIMENSION, BANK(tileset_media_dimension)
     dw   tileset_media_dimension
     db   $00, $00, $00, $00
@@ -181,7 +181,7 @@ call_00_2eb0_MapData_GetRecordAddr:
     ; $01 MAP_TOON_TV_OUT_OF_TOON
     db   $07, $00
     dw   data_01_5fa7_MapText_ToonTvOutOfToon
-    db   BANK(blockmap_toon_tv), BANK(alt_blockset_flags1), BANK(blockset_collision_toon_tv)
+    db   BANK(blockmap_toon_tv), BANK(alt_blockset_flags1), BANK(blockset_toon_tv)
     db   $00, ALT_BLOCKSET_TOON_TV, BANK(tileset_toon_tv)
     dw   tileset_toon_tv
     db   $00, $00, $00, $00
@@ -189,7 +189,7 @@ call_00_2eb0_MapData_GetRecordAddr:
     ; $02 MAP_SCREAM_TV_SMELLRAISER
     db   $06, $00
     dw   data_01_6007_MapText_ScreamTvSmellraiser
-    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_collision_scream_tv)
+    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_scream_tv)
     db   $00, ALT_BLOCKSET_SCREAM_TV1, BANK(tileset_scream_tv)
     dw   tileset_scream_tv
     db   $00, $00, $00, $00
@@ -197,7 +197,7 @@ call_00_2eb0_MapData_GetRecordAddr:
     ; $03 MAP_SCREAM_TV_FRANKENSTEINFELD
     db   $06, $00
     dw   data_01_606a_MapText_ScreamTvFrankensteinfeld
-    db   BANK(blockmap_scream_tv2), BANK(alt_blockset_flags1), BANK(blockset_collision_scream_tv)
+    db   BANK(blockmap_scream_tv2), BANK(alt_blockset_flags1), BANK(blockset_scream_tv)
     db   $00, ALT_BLOCKSET_SCREAM_TV2, BANK(tileset_scream_tv)
     dw   tileset_scream_tv
     db   $00, $00, $00, $00
@@ -205,7 +205,7 @@ call_00_2eb0_MapData_GetRecordAddr:
     ; $04 MAP_CIRCUIT_CENTRAL_WWWDOTCOMCOM
     db   $01, $01
     dw   data_01_60ca_MapText_CircuitCentralWwwdotcomcom
-    db   BANK(blockmap_circuit_central3), BANK(alt_blockset_flags2), BANK(blockset_collision_circuit_central)
+    db   BANK(blockmap_circuit_central3), BANK(alt_blockset_flags2), BANK(blockset_circuit_central)
     db   $00, ALT_BLOCKSET_CIRCUIT_CENTRAL3, BANK(tileset_circuit_central)
     dw   tileset_circuit_central
     db   $00, $00, $00, $00
@@ -213,7 +213,7 @@ call_00_2eb0_MapData_GetRecordAddr:
     ; $05 MAP_KUNG_FU_THEATER_MAO_TSE_TONGUE
     db   $02, $01
     dw   data_01_611b_MapText_KungFuTheaterMaoTseTongue
-    db   BANK(blockmap_kung_fu_theater2), BANK(alt_blockset_flags1), BANK(blockset_collision_kung_fu_theater)
+    db   BANK(blockmap_kung_fu_theater2), BANK(alt_blockset_flags1), BANK(blockset_kung_fu_theater)
     db   $00, ALT_BLOCKSET_KUNG_FU_THEATER2, BANK(tileset_kung_fu_theater)
     dw   tileset_kung_fu_theater
     db   $00, $00, $00, $00
@@ -221,7 +221,7 @@ call_00_2eb0_MapData_GetRecordAddr:
     ; $06 MAP_UNUSED_06
     db   $05, $06
     dw   data_01_615f_MapText_Unused06
-    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_collision_media_dimension)
+    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_media_dimension)
     db   $00, ALT_BLOCKSET_NONE, BANK(tileset_media_dimension)
     dw   tileset_media_dimension
     db   $00, $00, $00, $00
@@ -229,7 +229,7 @@ call_00_2eb0_MapData_GetRecordAddr:
     ; $07 MAP_PRE_HISTORY_CHANNEL_PANGAEA_90210
     db   $03, $01
     dw   data_01_616b_MapText_PreHistoryChannelPangaea90210
-    db   BANK(blockmap_prehistory_channel1), BANK(alt_blockset_flags1), BANK(blockset_collision_prehistory_channel)
+    db   BANK(blockmap_prehistory_channel1), BANK(alt_blockset_flags1), BANK(blockset_prehistory_channel)
     db   $00, ALT_BLOCKSET_PREHISTORY_CHANNEL1, BANK(tileset_prehistory_channel)
     dw   tileset_prehistory_channel
     db   $00, $00, $00, $00
@@ -237,7 +237,7 @@ call_00_2eb0_MapData_GetRecordAddr:
     ; $08 MAP_TOON_TV_FINE_TOONING
     db   $07, $01
     dw   data_01_61ac_MapText_ToonTvFineTooning
-    db   BANK(blockmap_toon_tv), BANK(alt_blockset_flags1), BANK(blockset_collision_toon_tv)
+    db   BANK(blockmap_toon_tv), BANK(alt_blockset_flags1), BANK(blockset_toon_tv)
     db   $00, ALT_BLOCKSET_TOON_TV, BANK(tileset_toon_tv)
     dw   tileset_toon_tv
     db   $00, $00, $00, $00
@@ -245,7 +245,7 @@ call_00_2eb0_MapData_GetRecordAddr:
     ; $09 MAP_PRE_HISTORY_CHANNEL_THIS_OLD_CAVE
     db   $03, $00
     dw   data_01_61e2_MapText_PreHistoryChannelThisOldCave
-    db   BANK(blockmap_prehistory_channel2), BANK(alt_blockset_flags1), BANK(blockset_collision_prehistory_channel)
+    db   BANK(blockmap_prehistory_channel2), BANK(alt_blockset_flags1), BANK(blockset_prehistory_channel)
     db   $00, ALT_BLOCKSET_PREHISTORY_CHANNEL2, BANK(tileset_prehistory_channel)
     dw   tileset_prehistory_channel
     db   $00, $00, $00, $00
@@ -253,7 +253,7 @@ call_00_2eb0_MapData_GetRecordAddr:
     ; $0a MAP_CIRCUIT_CENTRAL_HONEY_I_SHRUNK_THE_GECKO
     db   $01, $00
     dw   data_01_623d_MapText_CircuitCentralHoneyIShrunkTheGecko
-    db   BANK(blockmap_circuit_central1), BANK(alt_blockset_flags2), BANK(blockset_collision_circuit_central)
+    db   BANK(blockmap_circuit_central1), BANK(alt_blockset_flags2), BANK(blockset_circuit_central)
     db   $00, ALT_BLOCKSET_CIRCUIT_CENTRAL1, BANK(tileset_circuit_central)
     dw   tileset_circuit_central
     db   $00, $00, $00, $00
@@ -261,7 +261,7 @@ call_00_2eb0_MapData_GetRecordAddr:
     ; $0b MAP_SCREAM_TV_POLTERGEX
     db   $06, $00
     dw   data_01_629b_MapText_ScreamTvPoltergex
-    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_collision_scream_tv)
+    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_scream_tv)
     db   $00, ALT_BLOCKSET_SCREAM_TV1, BANK(tileset_scream_tv)
     dw   tileset_scream_tv
     db   $00, $00, $00, $00
@@ -269,7 +269,7 @@ call_00_2eb0_MapData_GetRecordAddr:
     ; $0c MAP_UNUSED_0C
     db   $05, $06
     dw   data_01_62fa_MapText_Unused0c
-    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_collision_media_dimension)
+    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_media_dimension)
     db   $00, ALT_BLOCKSET_NONE, BANK(tileset_media_dimension)
     dw   tileset_media_dimension
     db   $00, $00, $00, $00
@@ -277,7 +277,7 @@ call_00_2eb0_MapData_GetRecordAddr:
     ; $0d MAP_KUNG_FU_THEATER_SAMURAI_NIGHT_FEVER
     db   $02, $00
     dw   data_01_6306_MapText_KungFuTheaterSamuraiNightFever
-    db   BANK(blockmap_kung_fu_theater1), BANK(alt_blockset_flags1), BANK(blockset_collision_kung_fu_theater)
+    db   BANK(blockmap_kung_fu_theater1), BANK(alt_blockset_flags1), BANK(blockset_kung_fu_theater)
     db   $00, ALT_BLOCKSET_KUNG_FU_THEATER1, BANK(tileset_kung_fu_theater)
     dw   tileset_kung_fu_theater
     db   $00, $00, $00, $00
@@ -285,7 +285,7 @@ call_00_2eb0_MapData_GetRecordAddr:
     ; $0e MAP_REZOPOLIS_NO_WEDDINGS_AND_A_FUNERAL
     db   $04, $02
     dw   data_01_6372_MapText_RezopolisNoWeddingsAndAFuneral
-    db   BANK(blockmap_rezopolis), BANK(alt_blockset_flags2), BANK(blockset_collision_rezopolis)
+    db   BANK(blockmap_rezopolis), BANK(alt_blockset_flags2), BANK(blockset_rezopolis)
     db   $00, ALT_BLOCKSET_REZOPOLIS, BANK(tileset_rezopolis)
     dw   tileset_rezopolis
     db   $00, $00, $00, $00
@@ -293,7 +293,7 @@ call_00_2eb0_MapData_GetRecordAddr:
     ; $0f MAP_UNUSED_0F
     db   $08, $06
     dw   data_01_63b4_MapText_Unused0f
-    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_collision_media_dimension)
+    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_media_dimension)
     db   $00, ALT_BLOCKSET_NONE, BANK(tileset_media_dimension)
     dw   tileset_media_dimension
     db   $00, $00, $00, $00
@@ -301,7 +301,7 @@ call_00_2eb0_MapData_GetRecordAddr:
     ; $10 MAP_SCREAM_TV_THURSDAY_THE_12TH
     db   $08, $05
     dw   data_01_63c0_MapText_ScreamTvThursdayThe12th
-    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_collision_scream_tv)
+    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_scream_tv)
     db   $00, ALT_BLOCKSET_SCREAM_TV1, BANK(tileset_scream_tv)
     dw   tileset_scream_tv
     db   $00, $00, $00, $00
@@ -309,7 +309,7 @@ call_00_2eb0_MapData_GetRecordAddr:
     ; $11 MAP_UNUSED_11
     db   $08, $06
     dw   data_01_63fd_MapText_Unused11
-    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_collision_media_dimension)
+    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_media_dimension)
     db   $00, ALT_BLOCKSET_NONE, BANK(tileset_media_dimension)
     dw   tileset_media_dimension
     db   $00, $00, $00, $00
@@ -317,7 +317,7 @@ call_00_2eb0_MapData_GetRecordAddr:
     ; $12 MAP_UNUSED_12
     db   $08, $06
     dw   data_01_6409_MapText_Unused12
-    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_collision_media_dimension)
+    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_media_dimension)
     db   $00, ALT_BLOCKSET_NONE, BANK(tileset_media_dimension)
     dw   tileset_media_dimension
     db   $00, $00, $00, $00
@@ -325,7 +325,7 @@ call_00_2eb0_MapData_GetRecordAddr:
     ; $13 MAP_UNUSED_13
     db   $08, $06
     dw   data_01_6415_MapText_Unused13
-    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_collision_rezopolis)
+    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_rezopolis)
     db   $00, ALT_BLOCKSET_NONE, BANK(tileset_media_dimension)
     dw   tileset_media_dimension
     db   $00, $00, $00, $00
@@ -333,7 +333,7 @@ call_00_2eb0_MapData_GetRecordAddr:
     ; $14 MAP_UNUSED_14
     db   $08, $06
     dw   data_01_6421_MapText_Unused14
-    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_collision_media_dimension)
+    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_media_dimension)
     db   $00, ALT_BLOCKSET_NONE, BANK(tileset_media_dimension)
     dw   tileset_media_dimension
     db   $00, $00, $00, $00
@@ -341,7 +341,7 @@ call_00_2eb0_MapData_GetRecordAddr:
     ; $15 MAP_KUNG_FU_THEATER_LIZARD_IN_A_CHINA_SHOP
     db   $08, $05
     dw   data_01_642d_MapText_KungFuTheaterLizardInAChinaShop
-    db   BANK(blockmap_kung_fu_theater1), BANK(alt_blockset_flags1), BANK(blockset_collision_kung_fu_theater)
+    db   BANK(blockmap_kung_fu_theater1), BANK(alt_blockset_flags1), BANK(blockset_kung_fu_theater)
     db   $00, ALT_BLOCKSET_KUNG_FU_THEATER1, BANK(tileset_kung_fu_theater)
     dw   tileset_kung_fu_theater
     db   $00, $00, $00, $00
@@ -349,7 +349,7 @@ call_00_2eb0_MapData_GetRecordAddr:
     ; $16 MAP_REZOPOLIS_BUGGED_OUT
     db   $08, $05
     dw   data_01_646f_MapText_RezopolisBuggedOut
-    db   BANK(blockmap_rezopolis), BANK(alt_blockset_flags2), BANK(blockset_collision_rezopolis)
+    db   BANK(blockmap_rezopolis), BANK(alt_blockset_flags2), BANK(blockset_rezopolis)
     db   $00, ALT_BLOCKSET_REZOPOLIS, BANK(tileset_rezopolis)
     dw   tileset_rezopolis
     db   $00, $00, $00, $00
@@ -357,7 +357,7 @@ call_00_2eb0_MapData_GetRecordAddr:
     ; $17 MAP_CIRCUIT_CENTRAL_CHIPS_AND_DIPS
     db   $08, $05
     dw   data_01_64a5_MapText_CircuitCentralChipsAndDips
-    db   BANK(blockmap_circuit_central2), BANK(alt_blockset_flags2), BANK(blockset_collision_circuit_central)
+    db   BANK(blockmap_circuit_central2), BANK(alt_blockset_flags2), BANK(blockset_circuit_central)
     db   $00, ALT_BLOCKSET_CIRCUIT_CENTRAL2, BANK(tileset_circuit_central)
     dw   tileset_circuit_central
     db   $00, $00, $00, $00
@@ -365,7 +365,7 @@ call_00_2eb0_MapData_GetRecordAddr:
     ; $18 MAP_PRE_HISTORY_CHANNEL_LAVA_DABBA_DOO
     db   $03, $04
     dw   data_01_64df_MapText_PreHistoryChannelLavaDabbaDoo
-    db   BANK(blockmap_prehistory_channel2), BANK(alt_blockset_flags1), BANK(blockset_collision_prehistory_channel)
+    db   BANK(blockmap_prehistory_channel2), BANK(alt_blockset_flags1), BANK(blockset_prehistory_channel)
     db   $00, ALT_BLOCKSET_PREHISTORY_CHANNEL2, BANK(tileset_prehistory_channel)
     dw   tileset_prehistory_channel
     db   $00, $00, $00, $00
@@ -373,7 +373,7 @@ call_00_2eb0_MapData_GetRecordAddr:
     ; $19 MAP_SCREAM_TV_TEXAS_CHAINSAW_MANICURE
     db   $06, $04
     dw   data_01_6512_MapText_ScreamTvTexasChainsawManicure
-    db   BANK(blockmap_scream_tv2), BANK(alt_blockset_flags1), BANK(blockset_collision_scream_tv)
+    db   BANK(blockmap_scream_tv2), BANK(alt_blockset_flags1), BANK(blockset_scream_tv)
     db   $00, ALT_BLOCKSET_SCREAM_TV2, BANK(tileset_scream_tv)
     dw   tileset_scream_tv
     db   $00, $00, $00, $00
@@ -381,7 +381,7 @@ call_00_2eb0_MapData_GetRecordAddr:
     ; $1a MAP_REZOPOLIS_MAZED_AND_CONFUSED
     db   $04, $03
     dw   data_01_6550_MapText_RezopolisMazedAndConfused
-    db   BANK(blockmap_rezopolis), BANK(alt_blockset_flags2), BANK(blockset_collision_rezopolis)
+    db   BANK(blockmap_rezopolis), BANK(alt_blockset_flags2), BANK(blockset_rezopolis)
     db   $00, ALT_BLOCKSET_REZOPOLIS, BANK(tileset_rezopolis)
     dw   tileset_rezopolis
     db   $00, $00, $00, $00
@@ -389,7 +389,7 @@ call_00_2eb0_MapData_GetRecordAddr:
     ; $1b MAP_UNUSED_1B
     db   $0a, $06
     dw   data_01_65a7_MapText_Unused1b
-    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_collision_media_dimension)
+    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_media_dimension)
     db   $00, ALT_BLOCKSET_NONE, BANK(tileset_media_dimension)
     dw   tileset_media_dimension
     db   $00, $00, $00, $00
@@ -397,7 +397,7 @@ call_00_2eb0_MapData_GetRecordAddr:
     ; $1c MAP_UNUSED_1C
     db   $0a, $06
     dw   data_01_65b3_MapText_Unused1c
-    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_collision_media_dimension)
+    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_media_dimension)
     db   $00, ALT_BLOCKSET_NONE, BANK(tileset_media_dimension)
     dw   tileset_media_dimension
     db   $00, $00, $00, $00
@@ -405,7 +405,7 @@ call_00_2eb0_MapData_GetRecordAddr:
     ; $1d MAP_UNUSED_1D
     db   $0a, $06
     dw   data_01_65bf_MapText_Unused1d
-    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_collision_media_dimension)
+    db   BANK(blockmap_scream_tv1), BANK(alt_blockset_flags1), BANK(blockset_media_dimension)
     db   $00, ALT_BLOCKSET_NONE, BANK(tileset_media_dimension)
     dw   tileset_media_dimension
     db   $00, $00, $00, $00
@@ -413,7 +413,7 @@ call_00_2eb0_MapData_GetRecordAddr:
     ; $1e MAP_BOSS_TV_CHANNEL_Z
     db   $0a, $05
     dw   data_01_65cb_MapText_BossTvChannelZ
-    db   BANK(blockmap_channel_z), BANK(alt_blockset_flags2), BANK(blockset_collision_channel_z)
+    db   BANK(blockmap_channel_z), BANK(alt_blockset_flags2), BANK(blockset_channel_z)
     db   $00, ALT_BLOCKSET_CHANNEL_Z, BANK(tileset_channel_z)
     dw   tileset_channel_z
     db   $00, $00, $00, $00

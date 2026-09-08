@@ -686,8 +686,8 @@ DEF MAPDATA_BLOCKMAP_BANK                   EQU $04 ; grid of block ids, one byt
                                                     ; block - see BLOCKMAP below
 DEF MAPDATA_ALT_BLOCKSET_BANK               EQU $05 ; bank $34 or $35 - the flag plane
                                                     ; described under ALT BLOCKSET below
-DEF MAPDATA_BLOCKSET_COLLISION_BANK         EQU $06 ; block definitions and the collision
-                                                    ; table, in that order
+DEF MAPDATA_BLOCKSET_BANK                   EQU $06 ; all four blockset regions - see
+                                                    ; BLOCKSET_REGION_SIZE below
                                                     ; $07 unused, always $00
 DEF MAPDATA_ALT_BLOCKSET_MASK               EQU $08 ; this map's bit within the flag
                                                     ; plane; $00 opts out entirely
@@ -988,8 +988,8 @@ DEF FONT_BYTES_PER_ROW                      EQU 2   ; 2bpp: plane 0 then plane 1
 ;
 ;   BLOCKMAP  MAPDATA_BLOCKMAP_BANK, banks $28-$33. A grid of block ids, one byte
 ;             per block, the level's actual layout.
-;   BLOCKSET  MAPDATA_BLOCKSET_COLLISION_BANK. What each id means - see the layout
-;             below. Both the graphics and the collision live in this one bank.
+;   BLOCKSET  MAPDATA_BLOCKSET_BANK. What each id means - see the layout below.
+;             Both the graphics and the tile types live in this one bank.
 ;   TILEMAP   the result, written into VRAM a strip at a time as the camera moves.
 ;
 ; So "blockmap" is the arrangement and "blockset" is the vocabulary - the file names
@@ -1005,8 +1005,15 @@ DEF FONT_BYTES_PER_ROW                      EQU 2   ; 2bpp: plane 0 then plane 1
 ; sixteen tiles: page $x0 is the block's top-left tile, $x1 the one to its right, and
 ; so on across then down.
 ;
-;   $4000-$4FFF  tile ids                $6000-$6FFF  tile types (collision)
-;   $5000-$5FFF  alt blockset tile ids   $7000-$7FFF  alt blockset tile types
+;   $4000-$4FFF  blockset                $6000-$6FFF  blockset tile types
+;   $5000-$5FFF  alt blockset            $7000-$7FFF  alt blockset tile types
+;
+; Each region is one file under src/data/maps/<channel>/, INCBIN'd in order in
+; main.asm and followed by assert_blockset_bank, which fails the build if they
+; ever stop landing on these boundaries.
+; "Tile types" rather than "collision" because gex3 uses collision_blockset for
+; something else - a blockset keyed by its own collision block ids, where these are
+; keyed by the same block id as the graphics beside them.
 ;
 ; The strip loaders read graphics and collision in the same pass, which is what those
 ; bit-twiddles on B are doing: `set 4, B` picks the alt half ($40 -> $50) and
@@ -1017,6 +1024,10 @@ DEF FONT_BYTES_PER_ROW                      EQU 2   ; 2bpp: plane 0 then plane 1
 ; TILE_TYPE_* and data_00_1ff6_TileHitScriptTable. Worth being clear that a block id
 ; and a tile type are unrelated numbering schemes that only happen to share 0-255;
 ; where the shipped blocksets make them match, that is authoring convention.
+; ------------------------------------------------------------------
+DEF BLOCKSET_REGION_SIZE                    EQU $1000 ; one of the four regions
+DEF BLOCKSET_BLOCKS                         EQU $100  ; entries in a region's page
+DEF BLOCKSET_TILES_PER_BLOCK                EQU 16    ; hence 16 pages per region
 ;
 ; ------------------------------------------------------------------
 ; TWO SEPARATE SYSTEMS ACT ON THE BACKGROUND MAP

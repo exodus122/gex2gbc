@@ -923,8 +923,15 @@ tileset_channel_z:
     INCBIN ".gfx/tilesets/tileset_channel_z.bin"
 
 SECTION "bank27", ROMX[$4000], BANK[$27]
-blockset_collision_channel_z:
-    INCBIN "data/maps/channel_z/blockset_collision_channel_z.bin"
+blockset_channel_z:
+    INCBIN "data/maps/channel_z/blockset_channel_z.bin"
+alt_blockset_channel_z:
+    INCBIN "data/maps/channel_z/alt_blockset_channel_z.bin"
+blockset_tile_types_channel_z:
+    INCBIN "data/maps/channel_z/blockset_tile_types_channel_z.bin"
+alt_blockset_tile_types_channel_z:
+    INCBIN "data/maps/channel_z/alt_blockset_tile_types_channel_z.bin"
+    assert_blockset_bank channel_z
 
 SECTION "bank28", ROMX[$4000], BANK[$28]
 blockmap_channel_z:
@@ -1005,24 +1012,59 @@ tileset_rezopolis:
     INCBIN ".gfx/tilesets/tileset_rezopolis.bin"
 
 SECTION "bank38", ROMX[$4000], BANK[$38]
-blockset_collision_media_dimension:
-    INCBIN "data/maps/media_dimension/blockset_collision_media_dimension.bin"
+blockset_media_dimension:
+    INCBIN "data/maps/media_dimension/blockset_media_dimension.bin"
+alt_blockset_media_dimension:
+    INCBIN "data/maps/media_dimension/alt_blockset_media_dimension.bin"
+blockset_tile_types_media_dimension:
+    INCBIN "data/maps/media_dimension/blockset_tile_types_media_dimension.bin"
+alt_blockset_tile_types_media_dimension:
+    INCBIN "data/maps/media_dimension/alt_blockset_tile_types_media_dimension.bin"
+    assert_blockset_bank media_dimension
 
 SECTION "bank39", ROMX[$4000], BANK[$39]
-blockset_collision_toon_tv:
-    INCBIN "data/maps/toon_tv/blockset_collision_toon_tv.bin"
+blockset_toon_tv:
+    INCBIN "data/maps/toon_tv/blockset_toon_tv.bin"
+alt_blockset_toon_tv:
+    INCBIN "data/maps/toon_tv/alt_blockset_toon_tv.bin"
+blockset_tile_types_toon_tv:
+    INCBIN "data/maps/toon_tv/blockset_tile_types_toon_tv.bin"
+alt_blockset_tile_types_toon_tv:
+    INCBIN "data/maps/toon_tv/alt_blockset_tile_types_toon_tv.bin"
+    assert_blockset_bank toon_tv
 
 SECTION "bank3A", ROMX[$4000], BANK[$3a]
-blockset_collision_scream_tv:
-    INCBIN "data/maps/scream_tv/blockset_collision_scream_tv.bin"
+blockset_scream_tv:
+    INCBIN "data/maps/scream_tv/blockset_scream_tv.bin"
+alt_blockset_scream_tv:
+    INCBIN "data/maps/scream_tv/alt_blockset_scream_tv.bin"
+blockset_tile_types_scream_tv:
+    INCBIN "data/maps/scream_tv/blockset_tile_types_scream_tv.bin"
+alt_blockset_tile_types_scream_tv:
+    INCBIN "data/maps/scream_tv/alt_blockset_tile_types_scream_tv.bin"
+    assert_blockset_bank scream_tv
 
 SECTION "bank3B", ROMX[$4000], BANK[$3b]
-blockset_collision_circuit_central:
-    INCBIN "data/maps/circuit_central/blockset_collision_circuit_central.bin"
+blockset_circuit_central:
+    INCBIN "data/maps/circuit_central/blockset_circuit_central.bin"
+alt_blockset_circuit_central:
+    INCBIN "data/maps/circuit_central/alt_blockset_circuit_central.bin"
+blockset_tile_types_circuit_central:
+    INCBIN "data/maps/circuit_central/blockset_tile_types_circuit_central.bin"
+alt_blockset_tile_types_circuit_central:
+    INCBIN "data/maps/circuit_central/alt_blockset_tile_types_circuit_central.bin"
+    assert_blockset_bank circuit_central
 
 SECTION "bank3C", ROMX[$4000], BANK[$3c]
-blockset_collision_kung_fu_theater:
-    INCBIN "data/maps/kung_fu_theater/blockset_collision_kung_fu_theater.bin"
+blockset_kung_fu_theater:
+    INCBIN "data/maps/kung_fu_theater/blockset_kung_fu_theater.bin"
+alt_blockset_kung_fu_theater:
+    INCBIN "data/maps/kung_fu_theater/alt_blockset_kung_fu_theater.bin"
+blockset_tile_types_kung_fu_theater:
+    INCBIN "data/maps/kung_fu_theater/blockset_tile_types_kung_fu_theater.bin"
+alt_blockset_tile_types_kung_fu_theater:
+    INCBIN "data/maps/kung_fu_theater/alt_blockset_tile_types_kung_fu_theater.bin"
+    assert_blockset_bank kung_fu_theater
 
 SECTION "bank3d", ROMX[$4000], BANK[$3d]
 image_credits4_03d_0:
@@ -1030,9 +1072,23 @@ image_credits4_03d_0:
     INCBIN "gfx/menus/palette_ids/image_credits4_03d_0_palette_ids.bin"
 
 SECTION "bank3E", ROMX[$4000], BANK[$3e]
-blockset_collision_prehistory_channel:
-    INCBIN "data/maps/prehistory_channel/blockset_collision_prehistory_channel.bin"
+blockset_prehistory_channel:
+    INCBIN "data/maps/prehistory_channel/blockset_prehistory_channel.bin"
+alt_blockset_prehistory_channel:
+    INCBIN "data/maps/prehistory_channel/alt_blockset_prehistory_channel.bin"
+blockset_tile_types_prehistory_channel:
+    INCBIN "data/maps/prehistory_channel/blockset_tile_types_prehistory_channel.bin"
+alt_blockset_tile_types_prehistory_channel:
+    INCBIN "data/maps/prehistory_channel/alt_blockset_tile_types_prehistory_channel.bin"
+    assert_blockset_bank prehistory_channel
 
 SECTION "bank3F", ROMX[$4000], BANK[$3f]
-blockset_collision_rezopolis:
-    INCBIN "data/maps/rezopolis/blockset_collision_rezopolis.bin"
+blockset_rezopolis:
+    INCBIN "data/maps/rezopolis/blockset_rezopolis.bin"
+alt_blockset_rezopolis:
+    INCBIN "data/maps/rezopolis/alt_blockset_rezopolis.bin"
+blockset_tile_types_rezopolis:
+    INCBIN "data/maps/rezopolis/blockset_tile_types_rezopolis.bin"
+alt_blockset_tile_types_rezopolis:
+    INCBIN "data/maps/rezopolis/alt_blockset_tile_types_rezopolis.bin"
+    assert_blockset_bank rezopolis
