@@ -1,0 +1,180 @@
+{
+  "_doc": [
+    "Record layouts for the binary map assets under src/data/maps/.",
+    "",
+    "This file is the schema, and it is the point of the whole arrangement: the .bin",
+    "files are the source of truth for the BYTES, and this file is the source of truth",
+    "for what those bytes MEAN. tools/render_map_asm.py reads both and emits the",
+    "annotated .asm that the ROM is actually assembled from.",
+    "",
+    "So documenting a newly-understood field is an edit HERE, not a code change, and",
+    "not 21 hand edits: name the field once and every map's generated .asm improves.",
+    "The same schema is what a map editor should read, so the record layout is not",
+    "defined separately in Python, in JS and in an asm comment.",
+    "",
+    "JSON rather than TOML only because tomllib needs Python 3.11 and the rest of the",
+    "build runs on 3.10. Comments therefore live in _doc / doc keys."
+  ],
+
+  "enums": {
+    "ENTITY_ID": {
+      "doc": "Entity type ids, scraped from the contiguous run of DEF lines between the two symbols below. Scoped by span rather than by an ENTITY_* prefix match on purpose: constants.asm reuses that prefix for ENTITY_FIELD_*, ENTITY_SLOT_*, ENTITY_SPAWN_*_OFFSET and friends, which are unrelated enums that would otherwise collide on value.",
+      "source": "src/constants/constants.asm",
+      "from": "ENTITY_GEX",
+      "to": "ENTITY_LIST_TERMINATOR"
+    },
+
+    "MAP_ID": {
+      "doc": "Map / level ids. Same span trick as above: constants.asm also uses MAP_ for the scroll-direction bits and the tile-animation modes, which are unrelated enums.",
+      "source": "src/constants/constants.asm",
+      "from": "MAP_MEDIA_DIMENSION",
+      "to": "MAP_BOSS_TV_CHANNEL_Z"
+    }
+  },
+
+  "assets": {
+    "entity_list": {
+      "doc": [
+        "One record per placed object, walked by call_0a_4000_EntityList_LoadForCurrentLevel",
+        "in bank0A_entity_load.asm. Field offsets below are exactly the",
+        "ENTITY_SPAWN_*_OFFSET constants in src/constants/constants.asm - if you retune",
+        "one there, change it here too.",
+        "",
+        "Record order is load-bearing: wD000_EntityFlags is indexed by an entry's",
+        "position in the list, so inserting a record renumbers every flag after it.",
+        "That is why each record's index is emitted as a comment.",
+        "",
+        "NOTE: offsets +7/+8 are named the other way round here than in constants.asm.",
+        "In all 857 records byte +7 >= byte +8, exactly as +5 >= +6 for the X axis, so",
+        "both axes store max then min and ENTITY_SPAWN_BOUNDINGBOX_YMIN_OFFSET /",
+        "_YMAX_OFFSET look swapped. Renaming those two constants is cosmetic and would",
+        "leave `make check` passing."
+      ],
+      "glob": "src/data/maps/*/entity_list_*.bin",
+      "record_size": 16,
+      "record_size_constant": "ENTITY_SPAWN_RECORD_SIZE",
+      "terminator": { "value": 255, "constant": "ENTITY_LIST_TERMINATOR" },
+      "index_comment": true,
+      "lines": [
+        { "emit": "db", "fields": [
+          { "at": 0, "name": "id", "type": "u8", "enum": "ENTITY_ID" }
+        ] },
+        { "emit": "dw", "comment": "world position", "fields": [
+          { "at": 1, "name": "x", "type": "u16", "decode": "block" },
+          { "at": 3, "name": "y", "type": "u16", "decode": "block" }
+        ] },
+        { "emit": "db", "comment": "room bounds in blocks, each axis max then min", "fields": [
+          { "at": 5, "name": "bbox_x_max", "type": "u8" },
+          { "at": 6, "name": "bbox_x_min", "type": "u8" },
+          { "at": 7, "name": "bbox_y_max", "type": "u8" },
+          { "at": 8, "name": "bbox_y_min", "type": "u8" }
+        ] },
+        { "emit": "db", "comment": "free parameters, meaning is per entity type", "fields": [
+          { "at": 9,  "name": "param1", "type": "u8" },
+          { "at": 10, "name": "param2", "type": "u8" },
+          { "at": 11, "name": "param3", "type": "u8" }
+        ] },
+        { "emit": "db", "comment": "spare - not read by any code found so far", "fields": [
+          { "at": 12, "name": "spare0", "type": "u8" },
+          { "at": 13, "name": "spare1", "type": "u8" },
+          { "at": 14, "name": "spare2", "type": "u8" },
+          { "at": 15, "name": "spare3", "type": "u8" }
+        ] }
+      ]
+    },
+
+    "door_list": {
+      "doc": [
+        "One level's doors, searched by call_0b_4efe_Map_SetSpawnPosition in",
+        "bank0B_map_spawns.asm. The search is linear and takes the first match, but no",
+        "list holds two records with the same source block, so record order never",
+        "matters here - unlike the entity lists.",
+        "",
+        "Everything is in BLOCK coordinates: the grid the blockmap is laid out in, 128 x",
+        "128 blocks per level. One block is SPAWN_UNITS_PER_BLOCK ($20) units of player",
+        "world position, so the routine shifts these up by 5 and adds a per-case offset.",
+        "",
+        "A record is one-directional. Most come in pairs, a record and its exact reverse,",
+        "which is what makes a door walkable both ways; the rest drop the player",
+        "somewhere they cannot walk back from. Thursday the 12th is the extreme case,",
+        "which is how a level whose mission is \"find the items in the time given\" is",
+        "built as a maze out of nothing but door records."
+      ],
+      "glob": "src/data/maps/*/doors_*.bin",
+      "record_size": 4,
+      "record_size_constant": "DOOR_RECORD_SIZE",
+      "terminator": { "value": 255, "constant": "SPAWN_LIST_END" },
+      "index_comment": true,
+      "annotate": { "kind": "reverse_pairs", "from": ["from_x", "from_y"], "to": ["to_x", "to_y"] },
+      "lines": [
+        { "emit": "db", "comment": "from block x, from block y, to block x, to block y", "fields": [
+          { "at": 0, "name": "from_x", "type": "u8" },
+          { "at": 1, "name": "from_y", "type": "u8" },
+          { "at": 2, "name": "to_x",   "type": "u8" },
+          { "at": 3, "name": "to_y",   "type": "u8" }
+        ] }
+      ]
+    },
+
+    "hub_spawn_points": {
+      "doc": [
+        "Where the player lands when they step back out of a TV into the Media Dimension,",
+        "in blocks. Indexed by wD628_MediaDimensionRespawnPoint, which bank02 computes as",
+        "(TV entity list index - 1) / 2 when a TV is entered - and that works out to a",
+        "LEVEL ID. So each level effectively records where its own TV stands in the hub,",
+        "and the player is put back in front of whichever TV they came out of.",
+        "",
+        "The empty entries are exactly the ten MAP_UNUSED_* slots, which is corroboration",
+        "that the index really is a map id."
+      ],
+      "glob": "src/data/maps/hub_spawn_points.bin",
+      "record_size": 2,
+      "index_comment": true,
+      "index_enum": "MAP_ID",
+      "zero_comment": "unused",
+      "lines": [
+        { "emit": "db", "comment": "block x, block y", "fields": [
+          { "at": 0, "name": "x", "type": "u8" },
+          { "at": 1, "name": "y", "type": "u8" }
+        ] }
+      ]
+    },
+
+    "level_checkpoint_spawns": {
+      "doc": [
+        "CHECKPOINTS_PER_LEVEL block coordinate pairs per level, indexed by",
+        "levelId * 8 + wD618_CheckpointSpawnId * 2. Checkpoint 0 is where the level",
+        "starts; the rest are set by call_00_208c_Checkpoint_WriteSpawnId when the player",
+        "smashes a checkpoint TV block.",
+        "",
+        "Only 20 of the 31 levels define a start at all, only 7 of those define a",
+        "checkpoint 1, and NO level uses checkpoint 2 or 3 - so the whole upper half of",
+        "every record is dead weight, and 194 of the 248 bytes here are zero."
+      ],
+      "glob": "src/data/maps/level_checkpoint_spawns.bin",
+      "record_size": 8,
+      "index_comment": true,
+      "index_enum": "MAP_ID",
+      "zero_comment": "no spawn defined",
+      "lines": [
+        { "emit": "db", "comment": "checkpoints 0-3, each a block x, block y pair", "fields": [
+          { "at": 0, "name": "cp0_x", "type": "u8" },
+          { "at": 1, "name": "cp0_y", "type": "u8" },
+          { "at": 2, "name": "cp1_x", "type": "u8" },
+          { "at": 3, "name": "cp1_y", "type": "u8" },
+          { "at": 4, "name": "cp2_x", "type": "u8" },
+          { "at": 5, "name": "cp2_y", "type": "u8" },
+          { "at": 6, "name": "cp3_x", "type": "u8" },
+          { "at": 7, "name": "cp3_y", "type": "u8" }
+        ] }
+      ]
+    }
+  },
+
+  "decoders": {
+    "block": {
+      "doc": "World position -> block coordinate. One block is $20 world units (SPAWN_UNITS_PER_BLOCK); the blockmap is 128x128 blocks.",
+      "shift": 5
+    }
+  }
+}

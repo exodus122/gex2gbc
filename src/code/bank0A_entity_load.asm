@@ -2,7 +2,13 @@
 ; ENTITY SPAWNING
 ;
 ; Every level has a flat list of entity records, one per placed object. The
-; lists are the .bin blobs below; the code walks them.
+; lists are the .bin blobs under src/data/maps/; the code walks them.
+;
+; What is INCLUDEd below is not hand-written - it is generated from those .bin files
+; by tools/render_map_asm.py, per the record layout in tools/map_formats.json. The
+; .bin is what a map editor reads and writes; the .asm is the readable, greppable,
+; reviewable view of it, and is what actually gets assembled, so the two cannot
+; disagree. Run `make maps-docs` after editing a .bin.
 ;
 ; Spawning is spread out rather than done at level start: Entities_UpdateAll
 ; calls EntitySpawn_SpawnNextFromList exactly once per frame, so at most one
@@ -76,47 +82,47 @@ call_0a_4000_EntityList_LoadForCurrentLevel:
     dw   .data_MediaDimension_entity_list         ; MAP_UNUSED_1D
     dw   .data_ChannelZ_entity_list               ; MAP_BOSS_TV_CHANNEL_Z
 .data_MediaDimension_entity_list:
-    INCBIN "data/maps/media_dimension/entity_list_media_dimension.bin"
+    INCLUDE "data/maps/media_dimension/entity_list_media_dimension.asm"
 .data_OutOfToon_entity_list:
-    INCBIN "data/maps/toon_tv/entity_list_out_of_toon.bin"
+    INCLUDE "data/maps/toon_tv/entity_list_out_of_toon.asm"
 .data_Smellraiser_entity_list:
-    INCBIN "data/maps/scream_tv/entity_list_smellraiser.bin"
+    INCLUDE "data/maps/scream_tv/entity_list_smellraiser.asm"
 .data_Frankensteinfeld_entity_list:
-    INCBIN "data/maps/scream_tv/entity_list_frankensteinfeld.bin"
+    INCLUDE "data/maps/scream_tv/entity_list_frankensteinfeld.asm"
 .data_wwwdotcomcom_entity_list:
-    INCBIN "data/maps/circuit_central/entity_list_wwwdotcomcom.bin"
+    INCLUDE "data/maps/circuit_central/entity_list_wwwdotcomcom.asm"
 .data_MaoTseTongue_entity_list:
-    INCBIN "data/maps/kung_fu_theater/entity_list_mao_tse_tongue.bin"
+    INCLUDE "data/maps/kung_fu_theater/entity_list_mao_tse_tongue.asm"
 .data_Pangaea90210_entity_list:
-    INCBIN "data/maps/prehistory_channel/entity_list_pangaea_90210.bin"
+    INCLUDE "data/maps/prehistory_channel/entity_list_pangaea_90210.asm"
 .data_FineTooning_entity_list:
-    INCBIN "data/maps/toon_tv/entity_list_fine_tooning.bin"
+    INCLUDE "data/maps/toon_tv/entity_list_fine_tooning.asm"
 .data_ThisOldCave_entity_list:
-    INCBIN "data/maps/prehistory_channel/entity_list_this_old_cave.bin"
+    INCLUDE "data/maps/prehistory_channel/entity_list_this_old_cave.asm"
 .data_HoneyIShrunkTheGecko_entity_list:
-    INCBIN "data/maps/circuit_central/entity_list_honey_i_shrunk_the_gecko.bin"
+    INCLUDE "data/maps/circuit_central/entity_list_honey_i_shrunk_the_gecko.asm"
 .data_Poltergex_entity_list:
-    INCBIN "data/maps/scream_tv/entity_list_poltergex.bin"
+    INCLUDE "data/maps/scream_tv/entity_list_poltergex.asm"
 .data_SamuraiNightFever_entity_list:
-    INCBIN "data/maps/kung_fu_theater/entity_list_samurai_night_fever.bin"
+    INCLUDE "data/maps/kung_fu_theater/entity_list_samurai_night_fever.asm"
 .data_NoWeddingsAndAFuneral_entity_list:
-    INCBIN "data/maps/rezopolis/entity_list_no_weddings_and_a_funeral.bin"
+    INCLUDE "data/maps/rezopolis/entity_list_no_weddings_and_a_funeral.asm"
 .data_ThursdayThe12th_entity_list:
-    INCBIN "data/maps/scream_tv/entity_list_thursday_the_12th.bin"
+    INCLUDE "data/maps/scream_tv/entity_list_thursday_the_12th.asm"
 .data_LizardInAChinaShop_entity_list:
-    INCBIN "data/maps/kung_fu_theater/entity_list_lizard_in_a_china_shop.bin"
+    INCLUDE "data/maps/kung_fu_theater/entity_list_lizard_in_a_china_shop.asm"
 .data_BuggedOut_entity_list:
-    INCBIN "data/maps/rezopolis/entity_list_bugged_out.bin"
+    INCLUDE "data/maps/rezopolis/entity_list_bugged_out.asm"
 .data_ChipsAndDips_entity_list:
-    INCBIN "data/maps/circuit_central/entity_list_chips_and_dips.bin"
+    INCLUDE "data/maps/circuit_central/entity_list_chips_and_dips.asm"
 .data_LavaDabbaDoo_entity_list:
-    INCBIN "data/maps/prehistory_channel/entity_list_lava_dabba_doo.bin"
+    INCLUDE "data/maps/prehistory_channel/entity_list_lava_dabba_doo.asm"
 .data_TexasChainsawManicure_entity_list:
-    INCBIN "data/maps/scream_tv/entity_list_texas_chainsaw_manicure.bin"
+    INCLUDE "data/maps/scream_tv/entity_list_texas_chainsaw_manicure.asm"
 .data_MazedAndConfused_entity_list:
-    INCBIN "data/maps/rezopolis/entity_list_mazed_and_confused.bin"
+    INCLUDE "data/maps/rezopolis/entity_list_mazed_and_confused.asm"
 .data_ChannelZ_entity_list:
-    INCBIN "data/maps/channel_z/entity_list_channel_z.bin"
+    INCLUDE "data/maps/channel_z/entity_list_channel_z.asm"
 
 data_0a_75fc:
 ; Byte 0 of ENTITY_GEX's record. The spawn code indexes from *here*, not from the label
