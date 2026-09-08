@@ -7,11 +7,20 @@ import os
 TV_PALETTE_ID = 0
 REMOTE_PROGRESS_ID = 1
 TEXT_PTR = 2
-MAP_BANK = 3
+BLOCKMAP_BANK = 3
 ALT_BLOCKSET_FLAGS_BANK = 4
-BLOCKSET_AND_COLLISION_BANK = 5
+BLOCKSET_BANK = 5
 LEVEL_DATA_UNK6 = 6 # seems unused
 ALT_BLOCKSET_BIT = 7
+
+# A channel's blockset bank is four 0x1000 regions, in the order main.asm INCBINs
+# them: blockset, alt blockset, blockset tile types, alt blockset tile types. The
+# strip loaders reach the other three by setting bits of the address high byte, so
+# one +BLOCKSET_TILE_TYPES step lands on the tile types of whichever of the two
+# blocksets the index started in - which is why the same constant works in both
+# loops below.
+ALT_BLOCKSET = 0x1000
+BLOCKSET_TILE_TYPES = 0x2000
 TILESET_BANK = 8
 TILESET_BANK_OFFSET = 9
 
@@ -67,7 +76,7 @@ if collision_override:
     tile_collision_flags_data = open("../../src/data/maps/data_03_4800_TileCollisionFlags.bin", "rb").read()
     
     tileset_img = PIL.Image.new("RGB", (128, 128))
-    draw2 = PIL.ImageDraw.Draw(tileset_img)
+    draw_blockset = PIL.ImageDraw.Draw(tileset_img)
     
     tile_counter = 0
     for y in range(0, 16):
@@ -341,7 +350,7 @@ for level_counter in range(0, len(level_names)):
             os.system('rm temp.bin')
 
     # create the level's blockset from the tileset
-    blockset_file = "../banks/bank_0"+f"{level_data[BLOCKSET_AND_COLLISION_BANK]:x}"+".bin"
+    blockset_file = "../banks/bank_0"+f"{level_data[BLOCKSET_BANK]:x}"+".bin"
     blockset_data = open(blockset_file, "rb").read()
     secondary_tileset_for_block_file = "../../src/data/maps/"+level_channel_name+"/secondary_tileset_for_block_"+level_channel_name+".bin"
     
@@ -360,12 +369,12 @@ for level_counter in range(0, len(level_names)):
         kill_tile = PIL.Image.new("RGB", (8, 8), (255, 192, 203))
 
         blockset_img = PIL.Image.new("RGB", (512, 512))
-        draw2 = PIL.ImageDraw.Draw(blockset_img)
+        draw_blockset = PIL.ImageDraw.Draw(blockset_img)
         
         block_counter = 0
         for y in range(0, 16):
             for x in range(0, 16):
-                #draw2.rectangle(((x*32,y*32), ((x+1)*32,(y+1)*32)), 0,3)
+                #draw_blockset.rectangle(((x*32,y*32), ((x+1)*32,(y+1)*32)), 0,3)
                 
                 block_img =  PIL.Image.new("RGB", (32, 32))
                 draw3 = PIL.ImageDraw.Draw(block_img)
@@ -378,8 +387,8 @@ for level_counter in range(0, len(level_names)):
                         #blockset_img.paste(tiles[blockset_data[block_counter]], (x*32, y*32))
                         
                         if collision_override == True:
-                            block_img.paste(collision_tiles[blockset_data[0x2000+val]], (inner_x*8, inner_y*8))
-                        elif blockset_data[0x2000+val] == 0x23 and show_kill_tiles == True:
+                            block_img.paste(collision_tiles[blockset_data[BLOCKSET_TILE_TYPES+val]], (inner_x*8, inner_y*8))
+                        elif blockset_data[BLOCKSET_TILE_TYPES+val] == 0x23 and show_kill_tiles == True:
                             block_img.paste(kill_tile, (inner_x*8, inner_y*8))
                         else:
                             block_img.paste(tiles[blockset_data[val]], (inner_x*8, inner_y*8))
@@ -397,19 +406,19 @@ for level_counter in range(0, len(level_names)):
         
         blockset_img.save(blockset_image_path+level_name+"_blockset.png")
         
-        #second blockset for each level
+        # the alt blockset: same block ids, expanded from the bank's second region
         
-        blockset_img2 = PIL.Image.new("RGB", (512, 512))
+        alt_blockset_img = PIL.Image.new("RGB", (512, 512))
         secondary_tileset_for_block = open(secondary_tileset_for_block_file, "rb").read()
-        draw2 = PIL.ImageDraw.Draw(blockset_img2)
+        draw_blockset = PIL.ImageDraw.Draw(alt_blockset_img)
         
         #print("secondary_tileset_for_block[0] is: "+str(secondary_tileset_for_block[0]))
         
         block_counter = 0
-        count = 0x1000
+        count = ALT_BLOCKSET
         for y in range(0, 16):
             for x in range(0, 16):
-                draw2.rectangle(((x*32,y*32), ((x+1)*32,(y+1)*32)), 0,3)
+                draw_blockset.rectangle(((x*32,y*32), ((x+1)*32,(y+1)*32)), 0,3)
                 
                 block_img =  PIL.Image.new("RGB", (32, 32))
                 draw3 = PIL.ImageDraw.Draw(block_img)
@@ -425,14 +434,14 @@ for level_counter in range(0, len(level_names)):
                 for inner_y in range(0, 4):
                     for inner_x in range(0, 4):
                         if collision_override == True:
-                            block_img.paste(collision_tiles[blockset_data[0x2000+val]], (inner_x*8, inner_y*8))
+                            block_img.paste(collision_tiles[blockset_data[BLOCKSET_TILE_TYPES+val]], (inner_x*8, inner_y*8))
                         else:
                             if secondary_tile_override != False and blockset_data[val] < 0x24:
                                 tile_to_paste = secondary_tiles[(0x24*(secondary_tileset_to_open-1))+blockset_data[val]]
                             else:
                                 tile_to_paste = tiles[blockset_data[val]]
                             
-                            if blockset_data[0x2000+val] == 0x23 and show_kill_tiles == True:
+                            if blockset_data[BLOCKSET_TILE_TYPES+val] == 0x23 and show_kill_tiles == True:
                                 block_img.paste(kill_tile, (inner_x*8, inner_y*8))
                             else:
                                 block_img.paste(tile_to_paste, (inner_x*8, inner_y*8))
@@ -445,17 +454,17 @@ for level_counter in range(0, len(level_names)):
                     draw3 = PIL.ImageDraw.Draw(block_img)
                     draw3.text((0, 0), "0x%02X" % (block_counter), (137, 243, 54))
                 
-                blockset_img2.paste(block_img, (x*32, y*32))
+                alt_blockset_img.paste(block_img, (x*32, y*32))
                 
                 count = count + 1
                 block_counter = block_counter + 1
         
-        blockset_img2.save(blockset_image_path+level_name+"_blockset2.png")
+        alt_blockset_img.save(blockset_image_path+level_name+"_alt_blockset.png")
     
     # create the level's map from the blocksets
     if create_maps:
-        map_file = "../banks/bank_0"+f"{level_data[MAP_BANK]:x}"+".bin"
-        map_data = open(map_file, 'rb').read()
+        blockmap_file = "../banks/bank_0"+f"{level_data[BLOCKMAP_BANK]:x}"+".bin"
+        blockmap_data = open(blockmap_file, 'rb').read()
 
         alt_blockset_flags_file = "../banks/bank_0"+f"{level_data[ALT_BLOCKSET_FLAGS_BANK]:x}"+".bin"
         alt_blockset_flags_data = open(alt_blockset_flags_file, 'rb').read()
@@ -478,29 +487,29 @@ for level_counter in range(0, len(level_names)):
         
         if not create_blocksets:
             blockset_img = PIL.Image.open(blockset_image_path+level_name+"_blockset.png")
-            blockset_img2 = PIL.Image.open(blockset_image_path+level_name+"_blockset2.png")
+            alt_blockset_img = PIL.Image.open(blockset_image_path+level_name+"_alt_blockset.png")
         
         blockset = []
         for y in range(0, 16):
             for x in range(0, 16):
                 blockset.append(blockset_img.crop((x*32, y*32, (x+1)*32, (y+1)*32)))
                 
-        blockset2 = []
+        alt_blockset = []
         for y in range(0, 16):
             for x in range(0, 16):
-                blockset2.append(blockset_img2.crop((x*32, y*32, (x+1)*32, (y+1)*32)))
+                alt_blockset.append(alt_blockset_img.crop((x*32, y*32, (x+1)*32, (y+1)*32)))
 
         count = 0
         img = PIL.Image.new("RGB", (4096, 4096))
         draw = PIL.ImageDraw.Draw(img)
         for y in range(0, 128):
             for x in range(0, 128):
-                draw.rectangle(((x*32,y*32), ((x+1)*32,(y+1)*32)), map_data[count],3)
+                draw.rectangle(((x*32,y*32), ((x+1)*32,(y+1)*32)), blockmap_data[count],3)
                 
                 if alt_blockset_flags_data[y*128+x] & alt_blockset_bit != 0:
-                    img.paste(blockset2[map_data[count]], (x*32, y*32))
+                    img.paste(alt_blockset[blockmap_data[count]], (x*32, y*32))
                 else:
-                    img.paste(blockset[map_data[count]], (x*32, y*32))
+                    img.paste(blockset[blockmap_data[count]], (x*32, y*32))
                 
                 count = count+1
 
